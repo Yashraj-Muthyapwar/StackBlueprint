@@ -32,9 +32,12 @@ function sizing(n: number) {
 }
 
 export function ArrayCanvas({ step }: { step: ArrayStep }) {
-  const { array, pointers, partitions = [], highlight } = step;
+  const array = step.array ?? [];
+  const pointers = step.pointers ?? [];
+  const partitions = step.partitions ?? [];
+  const highlight = step.highlight;
   const n = array.length;
-  const { CELL, GAP } = sizing(n);
+  const { CELL, GAP } = sizing(Math.max(1, n));
 
   const aboveSlots: Pointer[] = [];
   const belowSlots: Pointer[] = [];

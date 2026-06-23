@@ -1,28 +1,138 @@
+import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftRight,
-  Repeat,
+  Binary,
+  Boxes,
   Flag,
   Layers,
+  Maximize2,
+  Repeat,
+  Search,
+  Sigma,
+  SquareStack,
+  Target,
+  TrendingUp,
+  Triangle,
+  RotateCw,
+  FlipHorizontal,
+  Compass,
+  Network,
+  Workflow,
   Type,
   Link2,
   TreePine,
-  Network,
-  Binary,
-  Boxes,
-  Sigma,
   Hash,
-  Workflow,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-export type RoadmapLesson = {
-  title: string;
+import type { LessonBuilder } from "./types";
+
+import { oppositeEnds } from "./two-pointers/opposite-ends";
+import { fastSlow } from "./two-pointers/fast-slow";
+import { dutchFlag } from "./two-pointers/dutch-flag";
+
+import { fixedSize } from "./sliding-window/fixed-size";
+import { variableExpandShrink } from "./sliding-window/variable-expand-shrink";
+import { monotonicWindow } from "./sliding-window/monotonic-window";
+
+import { prefixSum } from "./prefix/prefix-sum";
+import { prefixXor } from "./prefix/prefix-xor";
+import { prefix2D } from "./prefix/prefix-2d";
+
+import { kadane } from "./kadane/max-subarray";
+import { maxProduct } from "./kadane/max-product-subarray";
+import { subarrayGivenXor } from "./kadane/subarray-given-xor";
+
+import { bsearchIndex } from "./binary-search/on-index";
+import { bsearchAnswer } from "./binary-search/on-answer";
+
+import { rotate90 } from "./matrix/rotate-90";
+import { transposeFlip } from "./matrix/transpose-flip";
+import { spiral } from "./matrix/spiral";
+import { diagonal } from "./matrix/diagonal";
+
+export type PatternEntry = {
   slug: string;
-  path: string;
-  icon: LucideIcon;
-  locked?: boolean;
+  title: string;
+  blurb: string;
+  category: string;
+  lessons: { builder: LessonBuilder; icon: LucideIcon }[];
 };
 
+export const patterns: PatternEntry[] = [
+  {
+    slug: "two-pointers",
+    title: "Two Pointers",
+    category: "Arrays",
+    blurb: "Two indices walk the array — converging, chasing, or partitioning.",
+    lessons: [
+      { builder: oppositeEnds, icon: ArrowLeftRight },
+      { builder: fastSlow, icon: Repeat },
+      { builder: dutchFlag, icon: Flag },
+    ],
+  },
+  {
+    slug: "sliding-window",
+    title: "Sliding Window",
+    category: "Arrays",
+    blurb: "A window of contiguous elements expands and contracts as the pointers walk.",
+    lessons: [
+      { builder: fixedSize, icon: SquareStack },
+      { builder: variableExpandShrink, icon: Maximize2 },
+      { builder: monotonicWindow, icon: TrendingUp },
+    ],
+  },
+  {
+    slug: "prefix",
+    title: "Prefix Based",
+    category: "Arrays",
+    blurb: "Precompute cumulative state so range queries become O(1) subtractions.",
+    lessons: [
+      { builder: prefixSum, icon: Sigma },
+      { builder: prefixXor, icon: Sigma },
+      { builder: prefix2D, icon: Layers },
+    ],
+  },
+  {
+    slug: "kadane",
+    title: "Kadane's / Subarray",
+    category: "Arrays",
+    blurb: "Greedy single-pass scans over subarrays — extend or restart.",
+    lessons: [
+      { builder: kadane, icon: TrendingUp },
+      { builder: maxProduct, icon: Triangle },
+      { builder: subarrayGivenXor, icon: Hash },
+    ],
+  },
+  {
+    slug: "binary-search",
+    title: "Binary Search",
+    category: "Arrays",
+    blurb: "Halve the search range each step — on indices, or on the answer itself.",
+    lessons: [
+      { builder: bsearchIndex, icon: Search },
+      { builder: bsearchAnswer, icon: Target },
+    ],
+  },
+  {
+    slug: "matrix",
+    title: "Matrix / 2D Array",
+    category: "Arrays",
+    blurb: "Index-arithmetic patterns over grids — rotations, traversals, transformations.",
+    lessons: [
+      { builder: rotate90, icon: RotateCw },
+      { builder: transposeFlip, icon: FlipHorizontal },
+      { builder: spiral, icon: Compass },
+      { builder: diagonal, icon: Compass },
+    ],
+  },
+];
+
+export const PATTERN_BY_SLUG: Record<string, PatternEntry> = Object.fromEntries(
+  patterns.map((p) => [p.slug, p]),
+);
+
+// ---- Sidebar roadmap shape ----
+export type RoadmapLesson = { title: string; slug: string; path: string; icon: LucideIcon };
 export type RoadmapPattern = {
   title: string;
   slug: string;
@@ -31,60 +141,23 @@ export type RoadmapPattern = {
   lessons: RoadmapLesson[];
   locked?: boolean;
 };
+export type RoadmapCategory = { title: string; icon: LucideIcon; patterns: RoadmapPattern[] };
 
-export type RoadmapCategory = {
-  title: string;
-  icon: LucideIcon;
-  patterns: RoadmapPattern[];
-};
+const arrayPatterns: RoadmapPattern[] = patterns.map((p) => ({
+  title: p.title,
+  slug: p.slug,
+  path: `/patterns/${p.slug}`,
+  blurb: p.blurb,
+  lessons: p.lessons.map((l) => ({
+    title: l.builder.title.replace(/^[^—]+—\s*/, ""),
+    slug: l.builder.slug,
+    path: `/patterns/${p.slug}/${l.builder.slug}`,
+    icon: l.icon,
+  })),
+}));
 
 export const roadmap: RoadmapCategory[] = [
-  {
-    title: "Arrays",
-    icon: Boxes,
-    patterns: [
-      {
-        title: "Two Pointers",
-        slug: "two-pointers",
-        path: "/patterns/two-pointers",
-        blurb: "Two indices walk the array — converging, chasing, or partitioning.",
-        lessons: [
-          {
-            title: "Opposite Ends",
-            slug: "opposite-ends",
-            path: "/patterns/two-pointers/opposite-ends",
-            icon: ArrowLeftRight,
-          },
-          {
-            title: "Fast & Slow",
-            slug: "fast-slow",
-            path: "/patterns/two-pointers/fast-slow",
-            icon: Repeat,
-          },
-          {
-            title: "Dutch Flag",
-            slug: "dutch-flag",
-            path: "/patterns/two-pointers/dutch-flag",
-            icon: Flag,
-          },
-        ],
-      },
-      {
-        title: "Sliding Window",
-        slug: "sliding-window",
-        blurb: "A window of contiguous elements expands and contracts.",
-        lessons: [],
-        locked: true,
-      },
-      {
-        title: "Prefix Sum",
-        slug: "prefix-sum",
-        blurb: "Precompute running totals to answer range queries in O(1).",
-        lessons: [],
-        locked: true,
-      },
-    ],
-  },
+  { title: "Arrays", icon: Boxes, patterns: arrayPatterns },
   {
     title: "Strings",
     icon: Type,
@@ -99,13 +172,6 @@ export const roadmap: RoadmapCategory[] = [
     patterns: [
       { title: "Reversal", slug: "reversal", blurb: "", lessons: [], locked: true },
       { title: "Merge", slug: "merge", blurb: "", lessons: [], locked: true },
-    ],
-  },
-  {
-    title: "Search",
-    icon: Binary,
-    patterns: [
-      { title: "Binary Search", slug: "binary-search", blurb: "", lessons: [], locked: true },
     ],
   },
   {
@@ -125,11 +191,6 @@ export const roadmap: RoadmapCategory[] = [
     ],
   },
   {
-    title: "Hashing",
-    icon: Hash,
-    patterns: [{ title: "Frequency Map", slug: "freq-map", blurb: "", lessons: [], locked: true }],
-  },
-  {
     title: "Dynamic Programming",
     icon: Layers,
     patterns: [
@@ -138,13 +199,13 @@ export const roadmap: RoadmapCategory[] = [
     ],
   },
   {
-    title: "Greedy",
-    icon: Sigma,
-    patterns: [{ title: "Intervals", slug: "intervals", blurb: "", lessons: [], locked: true }],
-  },
-  {
     title: "Backtracking",
     icon: Workflow,
     patterns: [{ title: "Subsets", slug: "subsets", blurb: "", lessons: [], locked: true }],
+  },
+  {
+    title: "Binary",
+    icon: Binary,
+    patterns: [{ title: "Bit DP", slug: "bit-dp", blurb: "", lessons: [], locked: true }],
   },
 ];

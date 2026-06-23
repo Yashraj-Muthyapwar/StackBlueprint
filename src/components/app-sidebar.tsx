@@ -67,7 +67,7 @@ export function AppSidebar() {
                           isActive={!!patternActive}
                           tooltip={pat.title}
                         >
-                          <Link to={pat.path!}>
+                          <Link to="/patterns/$pattern" params={{ pattern: pat.slug }}>
                             <ChevronRight className="size-3.5" />
                             <span>{pat.title}</span>
                           </Link>
@@ -81,7 +81,10 @@ export function AppSidebar() {
                             return (
                               <SidebarMenuSubItem key={les.slug}>
                                 <SidebarMenuSubButton asChild isActive={active}>
-                                  <Link to={les.path}>
+                                  <Link
+                                    to="/patterns/$pattern/$lesson"
+                                    params={{ pattern: pat.slug, lesson: les.slug }}
+                                  >
                                     <les.icon className="size-3.5" />
                                     <span>{les.title}</span>
                                   </Link>
