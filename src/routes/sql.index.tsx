@@ -13,7 +13,7 @@ import {
   Eye,
   FileCode2,
   Filter,
-  Function as FunctionIcon,
+  FunctionSquare as FunctionIcon,
   GitMerge,
   Hash,
   KeyRound,
