@@ -289,7 +289,10 @@ function LockedCategoryItem({
   pathname: string;
   onNavigate: () => void;
 }) {
-  const active = pathname === `/tracks/${cat.slug}`;
+  const isSql = cat.slug === "sql-mastery";
+  const active = isSql
+    ? pathname === "/sql" || pathname.startsWith("/sql/")
+    : pathname === `/tracks/${cat.slug}`;
   const [open, setOpen] = useState(false);
   return (
     <Collapsible open={open} onOpenChange={setOpen} asChild>
@@ -301,7 +304,9 @@ function LockedCategoryItem({
             className="text-muted-foreground/80"
           >
             <Lock className="size-3.5" />
-            <span className="flex-1 truncate text-left">Preview syllabus</span>
+            <span className="flex-1 truncate text-left">
+              {isSql ? "Syllabus" : "Preview syllabus"}
+            </span>
             <ChevronDown
               className={`ml-auto size-3 opacity-60 transition-transform group-data-[collapsible=icon]:hidden ${
                 open ? "rotate-180" : ""
@@ -314,14 +319,21 @@ function LockedCategoryItem({
             {cat.patterns.map((pat) => (
               <SidebarMenuSubItem key={pat.slug}>
                 <SidebarMenuSubButton asChild className="text-muted-foreground/70">
-                  <Link
-                    to="/tracks/$track"
-                    params={{ track: cat.slug }}
-                    onClick={onNavigate}
-                  >
-                    <Lock className="size-3" />
-                    <span>{pat.title}</span>
-                  </Link>
+                  {isSql ? (
+                    <Link to="/sql" onClick={onNavigate}>
+                      <Lock className="size-3" />
+                      <span>{pat.title}</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/tracks/$track"
+                      params={{ track: cat.slug }}
+                      onClick={onNavigate}
+                    >
+                      <Lock className="size-3" />
+                      <span>{pat.title}</span>
+                    </Link>
+                  )}
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
