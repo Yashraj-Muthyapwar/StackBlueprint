@@ -183,6 +183,8 @@ export const roadmap: RoadmapCategory[] = [
     slug: "patterns-dsa",
     icon: Boxes,
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
+    sectionTitle: "Arrays / Matrix",
+    overviewPath: "/patterns",
     patterns: arrayPatterns,
   },
   {
