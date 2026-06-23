@@ -48,8 +48,7 @@ function Landing() {
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
-              to="/patterns/$pattern/$lesson"
-              params={{ pattern: "two-pointers", lesson: "opposite-ends" }}
+              to="/patterns"
               className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
             >
               Start with Patterns (DSA)
