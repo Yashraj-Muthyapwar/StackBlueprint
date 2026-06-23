@@ -90,6 +90,6 @@ export const diagonal: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Matrix", kind: "intMatrix" }],
-  validate: ({ matrix }) => (matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : []),
+  zvalidate: ({ matrix }) => (matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : []),
   build,
 };

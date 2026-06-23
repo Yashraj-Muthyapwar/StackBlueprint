@@ -94,7 +94,7 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (non-negative)", kind: "intArray" },
     { key: "target", label: "Sum cap (≤ target)", kind: "int" },
   ],
-  validate: ({ arr }) => {
+  zvalidate: ({ arr }) => {
     const w: string[] = [];
     if (arr.some((v) => v < 0)) w.push("Expand-shrink relies on a monotonic metric. With negative values shrinking from the left may not restore the constraint.");
     return w;

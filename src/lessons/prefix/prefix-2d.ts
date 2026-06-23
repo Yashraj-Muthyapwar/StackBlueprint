@@ -79,7 +79,7 @@ export const prefix2D: LessonBuilder<Inputs> = {
     { key: "matrix", label: "Matrix", kind: "intMatrix", help: "rows by ; cells by ," },
     { key: "query", label: "Rect query r1,c1,r2,c2", kind: "intArray" },
   ],
-  validate: ({ matrix, query }) => {
+  zvalidate: ({ matrix, query }) => {
     const w: string[] = [];
     if (matrix.length === 0 || matrix[0]?.length === 0) w.push("Matrix must be non-empty.");
     if (query.length !== 4) w.push("Query must be exactly 4 ints: r1, c1, r2, c2.");

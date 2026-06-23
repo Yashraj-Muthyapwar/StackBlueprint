@@ -108,7 +108,7 @@ export const kadane: LessonBuilder<Inputs> = {
   code,
   defaultInputs: { arr: [-2, 1, -3, 4, -1, 2, 1, -5, 4] },
   inputs: [{ key: "arr", label: "Array", kind: "intArray" }],
-  validate: ({ arr }) => {
+  zvalidate: ({ arr }) => {
     const w: string[] = [];
     if (arr.length === 0) w.push("Array is empty.");
     if (arr.every((v) => v < 0)) w.push("All negatives — the answer is the single largest element.");

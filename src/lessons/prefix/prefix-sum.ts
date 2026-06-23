@@ -88,7 +88,7 @@ export const prefixSum: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array", kind: "intArray" },
     { key: "queries", label: "Queries (l,r pairs)", kind: "intPairs", help: "inclusive · `0,3; 1,4`" },
   ],
-  validate: ({ arr, queries }) => {
+  zvalidate: ({ arr, queries }) => {
     const w: string[] = [];
     for (const [l, r] of queries) {
       if (l < 0 || r >= arr.length || l > r) {

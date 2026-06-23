@@ -80,7 +80,7 @@ export const fastSlow: LessonBuilder<Inputs> = {
     { key: "nodes", label: "Node count", kind: "int", min: 3, max: 14, help: "3 – 14" },
     { key: "cycleTo", label: "Last node loops to index", kind: "int", help: "-1 for no cycle" },
   ],
-  validate: ({ nodes, cycleTo }) => {
+  zvalidate: ({ nodes, cycleTo }) => {
     const w: string[] = [];
     if (nodes < 3 || nodes > 14) w.push("Use 3–14 nodes for a readable visualization.");
     if (cycleTo !== -1 && (cycleTo < 0 || cycleTo >= nodes))

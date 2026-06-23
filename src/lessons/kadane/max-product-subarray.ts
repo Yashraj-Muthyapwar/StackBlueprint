@@ -62,6 +62,6 @@ export const maxProduct: LessonBuilder<Inputs> = {
   code,
   defaultInputs: { arr: [2, 3, -2, 4, -1, 2] },
   inputs: [{ key: "arr", label: "Array", kind: "intArray" }],
-  validate: ({ arr }) => (arr.length === 0 ? ["Array is empty."] : []),
+  zvalidate: ({ arr }) => (arr.length === 0 ? ["Array is empty."] : []),
   build,
 };

@@ -115,7 +115,7 @@ export const monotonicWindow: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array", kind: "intArray" },
     { key: "k", label: "Window size k", kind: "int", min: 1 },
   ],
-  validate: ({ arr, k }) => {
+  zvalidate: ({ arr, k }) => {
     const w: string[] = [];
     if (k < 1) w.push("k must be ≥ 1.");
     else if (k > arr.length) w.push("k must be ≤ array length.");

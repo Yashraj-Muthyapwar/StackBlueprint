@@ -82,7 +82,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (sorted)", kind: "intArray", help: "comma-separated" },
     { key: "target", label: "Target sum", kind: "int" },
   ],
-  validate: ({ arr, target }) => {
+  zvalidate: ({ arr, target }) => {
     const w: string[] = [];
     if (!isSortedAsc(arr)) w.push("Two-Sum with opposite-ends pointers requires a sorted array. With an unsorted array the algorithm can miss valid pairs or report wrong indices.");
     if (arr.length < 2) w.push("Array has fewer than 2 elements.");

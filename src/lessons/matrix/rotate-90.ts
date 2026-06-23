@@ -72,7 +72,7 @@ export const rotate90: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Square matrix", kind: "intMatrix" }],
-  validate: ({ matrix }) => {
+  zvalidate: ({ matrix }) => {
     const w: string[] = [];
     if (!matrix.length) w.push("Matrix is empty.");
     else if (matrix.some((r) => r.length !== matrix.length)) w.push("In-place rotation requires a square matrix.");

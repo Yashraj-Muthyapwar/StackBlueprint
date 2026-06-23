@@ -83,6 +83,6 @@ export const bsearchIndex: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (sorted)", kind: "intArray" },
     { key: "target", label: "Target", kind: "int" },
   ],
-  validate: ({ arr }) => (isSortedAsc(arr) ? [] : ["Binary search requires a sorted array. On unsorted data it returns wrong indices or -1."]),
+  zvalidate: ({ arr }) => (isSortedAsc(arr) ? [] : ["Binary search requires a sorted array. On unsorted data it returns wrong indices or -1."]),
   build,
 };
