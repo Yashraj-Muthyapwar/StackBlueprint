@@ -46,14 +46,16 @@ function Landing() {
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
-              to="/patterns/two-pointers/opposite-ends"
+              to="/patterns/$pattern/$lesson"
+              params={{ pattern: "two-pointers", lesson: "opposite-ends" }}
               className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
             >
               Start with Two Pointers
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              to="/patterns/two-pointers"
+              to="/patterns/$pattern"
+              params={{ pattern: "two-pointers" }}
               className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-5 py-2.5 text-sm text-foreground backdrop-blur transition-colors hover:border-foreground/30"
             >
               See the three variants
@@ -107,7 +109,8 @@ function Landing() {
                       p.path && !p.locked ? (
                         <Link
                           key={p.slug}
-                          to={p.path}
+                          to="/patterns/$pattern"
+                          params={{ pattern: p.slug }}
                           className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint transition-colors hover:bg-mint/20"
                         >
                           {p.title}
