@@ -12,6 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PatternsTwoPointersRouteImport } from './routes/patterns.two-pointers'
 import { Route as PatternsTwoPointersIndexRouteImport } from './routes/patterns.two-pointers.index'
+import { Route as PatternsTwoPointersOppositeEndsRouteImport } from './routes/patterns.two-pointers.opposite-ends'
+import { Route as PatternsTwoPointersFastSlowRouteImport } from './routes/patterns.two-pointers.fast-slow'
+import { Route as PatternsTwoPointersDutchFlagRouteImport } from './routes/patterns.two-pointers.dutch-flag'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,28 +32,73 @@ const PatternsTwoPointersIndexRoute =
     path: '/',
     getParentRoute: () => PatternsTwoPointersRoute,
   } as any)
+const PatternsTwoPointersOppositeEndsRoute =
+  PatternsTwoPointersOppositeEndsRouteImport.update({
+    id: '/opposite-ends',
+    path: '/opposite-ends',
+    getParentRoute: () => PatternsTwoPointersRoute,
+  } as any)
+const PatternsTwoPointersFastSlowRoute =
+  PatternsTwoPointersFastSlowRouteImport.update({
+    id: '/fast-slow',
+    path: '/fast-slow',
+    getParentRoute: () => PatternsTwoPointersRoute,
+  } as any)
+const PatternsTwoPointersDutchFlagRoute =
+  PatternsTwoPointersDutchFlagRouteImport.update({
+    id: '/dutch-flag',
+    path: '/dutch-flag',
+    getParentRoute: () => PatternsTwoPointersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/patterns/two-pointers': typeof PatternsTwoPointersRouteWithChildren
+  '/patterns/two-pointers/dutch-flag': typeof PatternsTwoPointersDutchFlagRoute
+  '/patterns/two-pointers/fast-slow': typeof PatternsTwoPointersFastSlowRoute
+  '/patterns/two-pointers/opposite-ends': typeof PatternsTwoPointersOppositeEndsRoute
   '/patterns/two-pointers/': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/patterns/two-pointers/dutch-flag': typeof PatternsTwoPointersDutchFlagRoute
+  '/patterns/two-pointers/fast-slow': typeof PatternsTwoPointersFastSlowRoute
+  '/patterns/two-pointers/opposite-ends': typeof PatternsTwoPointersOppositeEndsRoute
   '/patterns/two-pointers': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/patterns/two-pointers': typeof PatternsTwoPointersRouteWithChildren
+  '/patterns/two-pointers/dutch-flag': typeof PatternsTwoPointersDutchFlagRoute
+  '/patterns/two-pointers/fast-slow': typeof PatternsTwoPointersFastSlowRoute
+  '/patterns/two-pointers/opposite-ends': typeof PatternsTwoPointersOppositeEndsRoute
   '/patterns/two-pointers/': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/patterns/two-pointers' | '/patterns/two-pointers/'
+  fullPaths:
+    | '/'
+    | '/patterns/two-pointers'
+    | '/patterns/two-pointers/dutch-flag'
+    | '/patterns/two-pointers/fast-slow'
+    | '/patterns/two-pointers/opposite-ends'
+    | '/patterns/two-pointers/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/patterns/two-pointers'
-  id: '__root__' | '/' | '/patterns/two-pointers' | '/patterns/two-pointers/'
+  to:
+    | '/'
+    | '/patterns/two-pointers/dutch-flag'
+    | '/patterns/two-pointers/fast-slow'
+    | '/patterns/two-pointers/opposite-ends'
+    | '/patterns/two-pointers'
+  id:
+    | '__root__'
+    | '/'
+    | '/patterns/two-pointers'
+    | '/patterns/two-pointers/dutch-flag'
+    | '/patterns/two-pointers/fast-slow'
+    | '/patterns/two-pointers/opposite-ends'
+    | '/patterns/two-pointers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -81,14 +129,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatternsTwoPointersIndexRouteImport
       parentRoute: typeof PatternsTwoPointersRoute
     }
+    '/patterns/two-pointers/opposite-ends': {
+      id: '/patterns/two-pointers/opposite-ends'
+      path: '/opposite-ends'
+      fullPath: '/patterns/two-pointers/opposite-ends'
+      preLoaderRoute: typeof PatternsTwoPointersOppositeEndsRouteImport
+      parentRoute: typeof PatternsTwoPointersRoute
+    }
+    '/patterns/two-pointers/fast-slow': {
+      id: '/patterns/two-pointers/fast-slow'
+      path: '/fast-slow'
+      fullPath: '/patterns/two-pointers/fast-slow'
+      preLoaderRoute: typeof PatternsTwoPointersFastSlowRouteImport
+      parentRoute: typeof PatternsTwoPointersRoute
+    }
+    '/patterns/two-pointers/dutch-flag': {
+      id: '/patterns/two-pointers/dutch-flag'
+      path: '/dutch-flag'
+      fullPath: '/patterns/two-pointers/dutch-flag'
+      preLoaderRoute: typeof PatternsTwoPointersDutchFlagRouteImport
+      parentRoute: typeof PatternsTwoPointersRoute
+    }
   }
 }
 
 interface PatternsTwoPointersRouteChildren {
+  PatternsTwoPointersDutchFlagRoute: typeof PatternsTwoPointersDutchFlagRoute
+  PatternsTwoPointersFastSlowRoute: typeof PatternsTwoPointersFastSlowRoute
+  PatternsTwoPointersOppositeEndsRoute: typeof PatternsTwoPointersOppositeEndsRoute
   PatternsTwoPointersIndexRoute: typeof PatternsTwoPointersIndexRoute
 }
 
 const PatternsTwoPointersRouteChildren: PatternsTwoPointersRouteChildren = {
+  PatternsTwoPointersDutchFlagRoute: PatternsTwoPointersDutchFlagRoute,
+  PatternsTwoPointersFastSlowRoute: PatternsTwoPointersFastSlowRoute,
+  PatternsTwoPointersOppositeEndsRoute: PatternsTwoPointersOppositeEndsRoute,
   PatternsTwoPointersIndexRoute: PatternsTwoPointersIndexRoute,
 }
 
