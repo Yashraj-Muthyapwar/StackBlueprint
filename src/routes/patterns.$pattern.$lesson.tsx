@@ -21,15 +21,16 @@ export const Route = createFileRoute("/patterns/$pattern/$lesson")({
   loader: ({ params }) => {
     const p = PATTERN_BY_SLUG[params.pattern];
     if (!p) throw notFound();
-    const idx = p.lessons.findIndex((x) => x.builder.slug === params.lesson);
-    if (idx < 0) throw notFound();
-    return { pattern: p, idx };
+    if (!p.lessons.find((x) => x.builder.slug === params.lesson)) throw notFound();
+    return null;
   },
   component: LessonPage,
 });
 
 function LessonPage() {
-  const { pattern: p, idx } = Route.useLoaderData();
+  const { pattern, lesson } = Route.useParams();
+  const p = PATTERN_BY_SLUG[pattern];
+  const idx = p.lessons.findIndex((x) => x.builder.slug === lesson);
   const entry = p.lessons[idx];
   const prev = idx > 0 ? p.lessons[idx - 1] : null;
   const next = idx < p.lessons.length - 1 ? p.lessons[idx + 1] : null;

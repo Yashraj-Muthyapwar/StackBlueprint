@@ -17,15 +17,15 @@ export const Route = createFileRoute("/patterns/$pattern/")({
     };
   },
   loader: ({ params }) => {
-    const p = PATTERN_BY_SLUG[params.pattern];
-    if (!p) throw notFound();
-    return { pattern: p };
+    if (!PATTERN_BY_SLUG[params.pattern]) throw notFound();
+    return null;
   },
   component: PatternIndex,
 });
 
 function PatternIndex() {
-  const { pattern: p } = Route.useLoaderData();
+  const { pattern } = Route.useParams();
+  const p = PATTERN_BY_SLUG[pattern];
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
@@ -36,7 +36,7 @@ function PatternIndex() {
         <p className="mt-4 max-w-2xl text-balance text-muted-foreground lg:text-lg">{p.blurb}</p>
 
         <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {p.lessons.map((les: typeof p.lessons[number], i: number) => (
+          {p.lessons.map((les, i: number) => (
             <Link
               key={les.builder.slug}
               to="/patterns/$pattern/$lesson"
