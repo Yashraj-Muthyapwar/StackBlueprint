@@ -140,12 +140,7 @@ function Landing() {
               );
 
               return isUnlocked ? (
-                <Link
-                  key={cat.slug}
-                  to="/patterns/$pattern"
-                  params={{ pattern: cat.patterns[0]!.slug }}
-                  className="block"
-                >
+                <Link key={cat.slug} to="/patterns" className="block">
                   {card}
                 </Link>
               ) : (
