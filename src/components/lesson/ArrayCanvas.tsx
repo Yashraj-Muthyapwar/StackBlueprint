@@ -34,6 +34,7 @@ function sizing(n: number) {
 export function ArrayCanvas({ step }: { step: ArrayStep }) {
   const { array, pointers, partitions = [], highlight } = step;
   const n = array.length;
+  const { CELL, GAP } = sizing(n);
 
   const aboveSlots: Pointer[] = [];
   const belowSlots: Pointer[] = [];
