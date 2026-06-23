@@ -14,6 +14,7 @@ import { Route as SqlIndexRouteImport } from './routes/sql.index'
 import { Route as PatternsIndexRouteImport } from './routes/patterns.index'
 import { Route as TracksTrackRouteImport } from './routes/tracks.$track'
 import { Route as PatternsPatternRouteImport } from './routes/patterns.$pattern'
+import { Route as SqlFoundationsTopicRouteImport } from './routes/sql.foundations.$topic'
 import { Route as PatternsPatternIndexRouteImport } from './routes/patterns.$pattern.index'
 import { Route as PatternsPatternLessonRouteImport } from './routes/patterns.$pattern.$lesson'
 
@@ -42,6 +43,11 @@ const PatternsPatternRoute = PatternsPatternRouteImport.update({
   path: '/patterns/$pattern',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SqlFoundationsTopicRoute = SqlFoundationsTopicRouteImport.update({
+  id: '/sql/foundations/$topic',
+  path: '/sql/foundations/$topic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PatternsPatternIndexRoute = PatternsPatternIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/tracks/$track': typeof TracksTrackRoute
   '/patterns/': typeof PatternsIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/sql/foundations/$topic': typeof SqlFoundationsTopicRoute
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/tracks/$track': typeof TracksTrackRoute
   '/patterns': typeof PatternsIndexRoute
   '/sql': typeof SqlIndexRoute
+  '/sql/foundations/$topic': typeof SqlFoundationsTopicRoute
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/$pattern': typeof PatternsPatternIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/tracks/$track': typeof TracksTrackRoute
   '/patterns/': typeof PatternsIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/sql/foundations/$topic': typeof SqlFoundationsTopicRoute
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/tracks/$track'
     | '/patterns/'
     | '/sql/'
+    | '/sql/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/$pattern/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/tracks/$track'
     | '/patterns'
     | '/sql'
+    | '/sql/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/$pattern'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/tracks/$track'
     | '/patterns/'
     | '/sql/'
+    | '/sql/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/$pattern/'
   fileRoutesById: FileRoutesById
@@ -115,6 +127,7 @@ export interface RootRouteChildren {
   TracksTrackRoute: typeof TracksTrackRoute
   PatternsIndexRoute: typeof PatternsIndexRoute
   SqlIndexRoute: typeof SqlIndexRoute
+  SqlFoundationsTopicRoute: typeof SqlFoundationsTopicRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -154,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatternsPatternRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sql/foundations/$topic': {
+      id: '/sql/foundations/$topic'
+      path: '/sql/foundations/$topic'
+      fullPath: '/sql/foundations/$topic'
+      preLoaderRoute: typeof SqlFoundationsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/patterns/$pattern/': {
       id: '/patterns/$pattern/'
       path: '/'
@@ -191,6 +211,7 @@ const rootRouteChildren: RootRouteChildren = {
   TracksTrackRoute: TracksTrackRoute,
   PatternsIndexRoute: PatternsIndexRoute,
   SqlIndexRoute: SqlIndexRoute,
+  SqlFoundationsTopicRoute: SqlFoundationsTopicRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
