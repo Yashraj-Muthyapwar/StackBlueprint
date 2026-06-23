@@ -58,6 +58,11 @@ const tablesAndRows: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "table-build",
+      caption: "How a relation comes to life",
+    },
+    {
       kind: "diagram",
       caption: "users — a relation with 3 attributes and 4 tuples",
       ascii: `┌────┬──────────────┬─────────────────────┐
@@ -195,6 +200,11 @@ const foreignKeys: LessonContent = {
         "A foreign key is a column whose value must match a primary key value in another table. It's the database's way of saying 'this order belongs to a real customer that actually exists'. The engine refuses any INSERT or UPDATE that would point to a missing parent row.",
         "Foreign keys also control what happens when the parent goes away: ON DELETE CASCADE removes the children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (the default) blocks the delete entirely.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "foreign-key",
+      caption: "Referential integrity in motion",
     },
     {
       kind: "code",
