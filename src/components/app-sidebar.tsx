@@ -1,7 +1,13 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronRight, Lock, Layers } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Layers } from "lucide-react";
+import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import {
   Sidebar,
   SidebarContent,
@@ -15,19 +21,25 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { setOpenMobile, isMobile } = useSidebar();
+  const closeMobile = () => {
+    if (isMobile) setOpenMobile(false);
+  };
 
   return (
     <Sidebar collapsible="icon" className="border-r border-hairline">
       <SidebarHeader className="border-b border-hairline">
         <Link
           to="/"
+          onClick={closeMobile}
           className="flex items-center gap-2 px-2 py-1.5 text-foreground transition-colors hover:text-mint"
         >
-          <div className="grid size-7 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
+          <div className="grid size-7 shrink-0 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
             <Layers className="size-4" />
           </div>
           <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
@@ -40,92 +52,172 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-1 py-3">
-        {roadmap.map((cat) => {
-          const categoryActive = cat.locked && pathname === `/tracks/${cat.slug}`;
-          return (
-            <SidebarGroup key={cat.slug}>
-              <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                <cat.icon className="size-3" />
-                {cat.title}
-                {cat.locked && <Lock className="ml-auto size-3 opacity-60" />}
-              </SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {cat.locked ? (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={categoryActive}
-                        tooltip={`${cat.title} — preview syllabus`}
-                        className="text-muted-foreground/80"
-                      >
-                        <Link to="/tracks/$track" params={{ track: cat.slug }}>
-                          <Lock className="size-3.5" />
-                          <span>Preview syllabus</span>
-                        </Link>
-                      </SidebarMenuButton>
-                      <SidebarMenuSub className="border-hairline">
-                        {cat.patterns.map((pat) => (
-                          <SidebarMenuSubItem key={pat.slug}>
-                            <SidebarMenuSubButton
-                              asChild
-                              className="text-muted-foreground/70"
-                            >
-                              <Link to="/tracks/$track" params={{ track: cat.slug }}>
-                                <Lock className="size-3" />
-                                <span>{pat.title}</span>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </SidebarMenuItem>
-                  ) : (
-                    cat.patterns.map((pat) => {
-                      const patternActive = pat.path && pathname.startsWith(pat.path);
-                      return (
-                        <SidebarMenuItem key={pat.slug}>
-                          <SidebarMenuButton
-                            asChild
-                            isActive={!!patternActive}
-                            tooltip={pat.title}
-                          >
-                            <Link to="/patterns/$pattern" params={{ pattern: pat.slug }}>
-                              <ChevronRight className="size-3.5" />
-                              <span>{pat.title}</span>
-                            </Link>
-                          </SidebarMenuButton>
+        {roadmap.map((cat) => (
+          <SidebarGroup key={cat.slug}>
+            <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+              <cat.icon className="size-3" />
+              {cat.overviewPath ? (
+                <Link
+                  to={cat.overviewPath}
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
+              ) : (
+                <span>{cat.title}</span>
+              )}
+              {cat.locked && <Lock className="ml-auto size-3 opacity-60" />}
+            </SidebarGroupLabel>
 
-                          {pat.lessons.length > 0 && (
-                            <SidebarMenuSub className="border-hairline">
-                              {pat.lessons.map((les) => {
-                                const active = pathname === les.path;
-                                return (
-                                  <SidebarMenuSubItem key={les.slug}>
-                                    <SidebarMenuSubButton asChild isActive={active}>
-                                      <Link
-                                        to="/patterns/$pattern/$lesson"
-                                        params={{ pattern: pat.slug, lesson: les.slug }}
-                                      >
-                                        <les.icon className="size-3.5" />
-                                        <span>{les.title}</span>
-                                      </Link>
-                                    </SidebarMenuSubButton>
-                                  </SidebarMenuSubItem>
-                                );
-                              })}
-                            </SidebarMenuSub>
-                          )}
-                        </SidebarMenuItem>
-                      );
-                    })
-                  )}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          );
-        })}
+            <SidebarGroupContent>
+              {cat.sectionTitle && (
+                <div className="mb-1 mt-2 px-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
+                  {cat.sectionTitle}
+                </div>
+              )}
+              <SidebarMenu>
+                {cat.locked ? (
+                  <LockedCategoryItem cat={cat} pathname={pathname} onNavigate={closeMobile} />
+                ) : (
+                  cat.patterns.map((pat) => (
+                    <PatternItem
+                      key={pat.slug}
+                      pat={pat}
+                      pathname={pathname}
+                      onNavigate={closeMobile}
+                    />
+                  ))
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function PatternItem({
+  pat,
+  pathname,
+  onNavigate,
+}: {
+  pat: import("@/lessons/roadmap").RoadmapPattern;
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  const patternActive = !!pat.path && pathname.startsWith(pat.path);
+  const [open, setOpen] = useState(patternActive);
+  const hasLessons = pat.lessons.length > 0;
+
+  if (!hasLessons) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
+          <Link
+            to="/patterns/$pattern"
+            params={{ pattern: pat.slug }}
+            onClick={onNavigate}
+          >
+            <ChevronRight className="size-3.5" />
+            <span>{pat.title}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} asChild>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton isActive={patternActive} tooltip={pat.title}>
+            <ChevronRight
+              className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+            />
+            <span className="flex-1 truncate text-left">{pat.title}</span>
+            <ChevronDown
+              className={`ml-auto size-3 opacity-60 transition-transform group-data-[collapsible=icon]:hidden ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="border-hairline">
+            {pat.lessons.map((les) => {
+              const active = pathname === les.path;
+              return (
+                <SidebarMenuSubItem key={les.slug}>
+                  <SidebarMenuSubButton asChild isActive={active}>
+                    <Link
+                      to="/patterns/$pattern/$lesson"
+                      params={{ pattern: pat.slug, lesson: les.slug }}
+                      onClick={onNavigate}
+                    >
+                      <les.icon className="size-3.5" />
+                      <span>{les.title}</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
+function LockedCategoryItem({
+  cat,
+  pathname,
+  onNavigate,
+}: {
+  cat: import("@/lessons/roadmap").RoadmapCategory;
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  const active = pathname === `/tracks/${cat.slug}`;
+  const [open, setOpen] = useState(false);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} asChild>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            isActive={active}
+            tooltip={`${cat.title} — preview syllabus`}
+            className="text-muted-foreground/80"
+          >
+            <Lock className="size-3.5" />
+            <span className="flex-1 truncate text-left">Preview syllabus</span>
+            <ChevronDown
+              className={`ml-auto size-3 opacity-60 transition-transform group-data-[collapsible=icon]:hidden ${
+                open ? "rotate-180" : ""
+              }`}
+            />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="border-hairline">
+            {cat.patterns.map((pat) => (
+              <SidebarMenuSubItem key={pat.slug}>
+                <SidebarMenuSubButton asChild className="text-muted-foreground/70">
+                  <Link
+                    to="/tracks/$track"
+                    params={{ track: cat.slug }}
+                    onClick={onNavigate}
+                  >
+                    <Lock className="size-3" />
+                    <span>{pat.title}</span>
+                  </Link>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
   );
 }
