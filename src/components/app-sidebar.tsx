@@ -32,7 +32,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-hairline">
+    <Sidebar collapsible="offcanvas" className="border-r border-hairline">
       <SidebarHeader className="border-b border-hairline">
         <Link
           to="/"
@@ -42,7 +42,7 @@ export function AppSidebar() {
           <div className="grid size-7 shrink-0 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
             <Layers className="size-4" />
           </div>
-          <div className="flex flex-col leading-tight group-data-[collapsible=icon]:hidden">
+          <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold tracking-tight">DataVizCore</span>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               Roadmap to mastery
@@ -71,14 +71,16 @@ export function AppSidebar() {
             </SidebarGroupLabel>
 
             <SidebarGroupContent>
-              {cat.sectionTitle && (
-                <div className="mb-1 mt-2 px-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground/70 group-data-[collapsible=icon]:hidden">
-                  {cat.sectionTitle}
-                </div>
-              )}
               <SidebarMenu>
                 {cat.locked ? (
                   <LockedCategoryItem cat={cat} pathname={pathname} onNavigate={closeMobile} />
+                ) : cat.sectionTitle ? (
+                  <SectionMaster
+                    title={cat.sectionTitle}
+                    patterns={cat.patterns}
+                    pathname={pathname}
+                    onNavigate={closeMobile}
+                  />
                 ) : (
                   cat.patterns.map((pat) => (
                     <PatternItem
@@ -95,6 +97,117 @@ export function AppSidebar() {
         ))}
       </SidebarContent>
     </Sidebar>
+  );
+}
+
+function SectionMaster({
+  title,
+  patterns,
+  pathname,
+  onNavigate,
+}: {
+  title: string;
+  patterns: import("@/lessons/roadmap").RoadmapPattern[];
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  const anyActive = patterns.some((p) => !!p.path && pathname.startsWith(p.path));
+  const [open, setOpen] = useState(anyActive || true);
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} asChild>
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton tooltip={title} className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80 hover:text-foreground">
+            <ChevronRight
+              className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+            />
+            <span className="flex-1 truncate text-left">{title}</span>
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="border-hairline">
+            {patterns.map((pat) => (
+              <NestedPatternItem
+                key={pat.slug}
+                pat={pat}
+                pathname={pathname}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  );
+}
+
+function NestedPatternItem({
+  pat,
+  pathname,
+  onNavigate,
+}: {
+  pat: import("@/lessons/roadmap").RoadmapPattern;
+  pathname: string;
+  onNavigate: () => void;
+}) {
+  const patternActive = !!pat.path && pathname.startsWith(pat.path);
+  const [open, setOpen] = useState(patternActive);
+  const hasLessons = pat.lessons.length > 0;
+
+  if (!hasLessons) {
+    return (
+      <SidebarMenuSubItem>
+        <SidebarMenuSubButton asChild isActive={patternActive}>
+          <Link
+            to="/patterns/$pattern"
+            params={{ pattern: pat.slug }}
+            onClick={onNavigate}
+          >
+            <ChevronRight className="size-3.5" />
+            <span>{pat.title}</span>
+          </Link>
+        </SidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    );
+  }
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen} asChild>
+      <SidebarMenuSubItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuSubButton isActive={patternActive} className="cursor-pointer">
+            <ChevronRight
+              className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+            />
+            <span className="flex-1 truncate text-left">{pat.title}</span>
+            <ChevronDown
+              className={`ml-auto size-3 opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </SidebarMenuSubButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="border-hairline">
+            {pat.lessons.map((les) => {
+              const active = pathname === les.path;
+              return (
+                <SidebarMenuSubItem key={les.slug}>
+                  <SidebarMenuSubButton asChild isActive={active}>
+                    <Link
+                      to="/patterns/$pattern/$lesson"
+                      params={{ pattern: pat.slug, lesson: les.slug }}
+                      onClick={onNavigate}
+                    >
+                      <les.icon className="size-3.5" />
+                      <span>{les.title}</span>
+                    </Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuSubItem>
+    </Collapsible>
   );
 }
 
