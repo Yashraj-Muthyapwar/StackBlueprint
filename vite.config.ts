@@ -7,9 +7,19 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // Force-enable Nitro when Vercel is building the app, otherwise leave it alone
+  nitro: !!process.env.VERCEL,
+
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  
+  // (Optional) This silences that 500kb chunk warning you saw earlier
+  vite: {
+    build: {
+      chunkSizeWarningLimit: 1000,
+    }
+  }
 });
