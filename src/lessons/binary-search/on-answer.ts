@@ -75,6 +75,7 @@ export const bsearchAnswer: LessonBuilder<Inputs> = {
   slug: "on-answer",
   title: "Binary Search on Answer",
   subtitle: "When the answer space is monotonic (feasible / infeasible), binary search the answer itself.",
+  problem: "Given a non-negative integer x, compute the integer square root: the largest integer r such that r*r <= x.",
   variant: "bsearch-answer",
   view: "array",
   code,

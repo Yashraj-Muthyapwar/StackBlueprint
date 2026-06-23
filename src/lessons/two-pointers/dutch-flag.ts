@@ -102,6 +102,7 @@ export const dutchFlag: LessonBuilder<Inputs> = {
   slug: "dutch-flag",
   title: "Two Pointers — Dutch Flag",
   subtitle: "Partition an array of 0s, 1s, and 2s into three zones using three pointers in a single pass.",
+  problem: "Given an array containing only 0s, 1s, and 2s, sort it in a single pass and in place so all 0s come first, then 1s, then 2s.",
   variant: "dutch-flag",
   view: "array",
   code,

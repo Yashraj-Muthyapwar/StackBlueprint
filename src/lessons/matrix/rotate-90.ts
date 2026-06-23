@@ -60,6 +60,7 @@ export const rotate90: LessonBuilder<Inputs> = {
   slug: "rotate-90",
   title: "Matrix Rotate 90° (Clockwise)",
   subtitle: "Transpose, then reverse each row — an in-place 90° rotation.",
+  problem: "Rotate an n×n matrix by 90° clockwise, in place, without allocating a second matrix.",
   variant: "rotate-90",
   view: "matrix",
   code,

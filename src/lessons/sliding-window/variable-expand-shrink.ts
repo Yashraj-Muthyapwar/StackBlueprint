@@ -86,6 +86,7 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
   slug: "variable-expand-shrink",
   title: "Sliding Window — Variable (Expand & Shrink)",
   subtitle: "Expand the right edge; shrink from the left whenever a constraint is violated.",
+  problem: "Given a string s, return the length of the longest substring that contains no repeating characters.",
   variant: "variable-expand-shrink",
   view: "array",
   code,

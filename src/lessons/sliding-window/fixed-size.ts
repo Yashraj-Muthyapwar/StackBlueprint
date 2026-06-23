@@ -89,6 +89,7 @@ export const fixedSize: LessonBuilder<Inputs> = {
   slug: "fixed-size",
   title: "Sliding Window — Fixed Size",
   subtitle: "A window of size k slides across the array. Each step add the new element, drop the old one.",
+  problem: "Given an array of integers and a window size k, return the maximum sum of any contiguous subarray of length exactly k.",
   variant: "fixed-size",
   view: "array",
   code,

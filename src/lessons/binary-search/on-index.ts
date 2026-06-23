@@ -75,6 +75,7 @@ export const bsearchIndex: LessonBuilder<Inputs> = {
   slug: "on-index",
   title: "Binary Search on Index",
   subtitle: "Search a sorted array by halving the index range each step.",
+  problem: "Given a sorted array and a target value, return the index of the target if present, otherwise -1, in O(log n) time.",
   variant: "bsearch-index",
   view: "array",
   code,

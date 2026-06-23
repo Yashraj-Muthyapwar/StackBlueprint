@@ -79,6 +79,7 @@ export const diagonal: LessonBuilder<Inputs> = {
   slug: "diagonal-traversal",
   title: "Matrix Diagonal Traversal",
   subtitle: "Walk anti-diagonals; alternate the direction so the zigzag is continuous.",
+  problem: "Given an m×n matrix, traverse it diagonally in a zigzag pattern: alternate going up-right and down-left along each anti-diagonal.",
   variant: "diagonal",
   view: "matrix",
   code,

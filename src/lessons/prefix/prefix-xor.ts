@@ -65,6 +65,7 @@ export const prefixXor: LessonBuilder<Inputs> = {
   slug: "prefix-xor",
   title: "Prefix XOR",
   subtitle: "XOR is its own inverse — range XOR becomes pre[r+1] ^ pre[l].",
+  problem: "Given an array, answer range XOR queries [l, r] in O(1) using a prefix XOR array.",
   variant: "prefix-xor",
   view: "array",
   code,
