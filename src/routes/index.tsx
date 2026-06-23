@@ -77,10 +77,12 @@ function Landing() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
             {roadmap.map((cat) => {
               const isUnlocked = !cat.locked;
+              const isSql = cat.slug === "sql-mastery";
+              const hasContent = isUnlocked || isSql;
               const card = (
                 <div
                   className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-colors ${
-                    isUnlocked
+                    hasContent
                       ? "border-hairline bg-surface hover:border-mint/40"
                       : "border-hairline/60 bg-surface/40 hover:border-foreground/20"
                   }`}
@@ -88,16 +90,16 @@ function Landing() {
                   <div className="mb-4 flex items-center justify-between">
                     <div
                       className={`grid size-10 place-items-center rounded-md ${
-                        isUnlocked
+                        hasContent
                           ? "bg-mint/15 text-mint ring-1 ring-mint/30"
                           : "bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
                       }`}
                     >
                       <cat.icon className="size-5" />
                     </div>
-                    {isUnlocked ? (
+                    {hasContent ? (
                       <span className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
-                        Active
+                        {isUnlocked ? "Active" : "In Progress"}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
@@ -114,7 +116,7 @@ function Landing() {
                       <span
                         key={p.slug}
                         className={
-                          isUnlocked
+                          hasContent
                             ? "rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint"
                             : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/80"
                         }
@@ -125,9 +127,10 @@ function Landing() {
                   </div>
 
                   <div className="mt-6 inline-flex items-center gap-1.5 text-sm">
-                    {isUnlocked ? (
+                    {hasContent ? (
                       <span className="text-mint">
-                        Open track <ArrowRight className="ml-1 inline size-4" />
+                        {isSql && !isUnlocked ? "Open syllabus" : "Open track"}{" "}
+                        <ArrowRight className="ml-1 inline size-4" />
                       </span>
                     ) : (
                       <span className="text-muted-foreground">
@@ -145,7 +148,7 @@ function Landing() {
                   </Link>
                 );
               }
-              if (cat.slug === "sql-mastery") {
+              if (isSql) {
                 return (
                   <Link key={cat.slug} to="/sql" className="block">
                     {card}
@@ -163,6 +166,7 @@ function Landing() {
                 </Link>
               );
             })}
+
           </div>
         </div>
       </section>
