@@ -53,6 +53,7 @@ export const transposeFlip: LessonBuilder<Inputs> = {
   slug: "transpose-flip",
   title: "Transpose & Flip",
   subtitle: "Compose two simple passes — transpose, then reverse rows — for rotations and reflections.",
+  problem: "Given an n×n matrix, transpose it and then flip rows or columns to realize rotations and reflections.",
   variant: "transpose-flip",
   view: "matrix",
   code,

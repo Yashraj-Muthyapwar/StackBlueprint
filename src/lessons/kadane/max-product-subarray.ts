@@ -57,6 +57,7 @@ export const maxProduct: LessonBuilder<Inputs> = {
   slug: "max-product-subarray",
   title: "Max Product Subarray",
   subtitle: "A negative flips signs — keep both the running max and the running min.",
+  problem: "Given an integer array, return the largest product achievable by any contiguous non-empty subarray.",
   variant: "max-product",
   view: "array",
   code,

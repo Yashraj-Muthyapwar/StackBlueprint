@@ -74,6 +74,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
   slug: "opposite-ends",
   title: "Two Pointers — Opposite Ends",
   subtitle: "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
+  problem: "Given a sorted array of integers and a target T, return indices (i, j) such that arr[i] + arr[j] == T, or None if no such pair exists.",
   variant: "opposite-ends",
   view: "array",
   code,

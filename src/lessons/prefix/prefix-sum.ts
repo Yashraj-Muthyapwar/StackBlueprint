@@ -80,6 +80,7 @@ export const prefixSum: LessonBuilder<Inputs> = {
   slug: "prefix-sum",
   title: "Prefix Sum",
   subtitle: "Precompute running totals; any range sum becomes a single subtraction.",
+  problem: "Given an array, preprocess it so that the sum of any range [l, r] can be answered in O(1) per query.",
   variant: "prefix-sum",
   view: "array",
   code,

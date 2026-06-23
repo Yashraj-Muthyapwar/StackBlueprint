@@ -68,6 +68,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   slug: string;
   title: string;
   subtitle: string;
+  /** Concise problem statement shown under the lesson title. */
+  problem?: string;
   variant: string;
   view: View;
   code: string;
@@ -77,6 +79,7 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   build: (inputs: TInputs) => Step[];
   shape?: (inputs: TInputs) => LinkedListShape;
 };
+
 
 // Backwards-compat alias for existing canvases.
 export type ArrayStep = Step;

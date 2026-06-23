@@ -72,6 +72,7 @@ export const fastSlow: LessonBuilder<Inputs> = {
   slug: "fast-slow",
   title: "Two Pointers — Fast & Slow",
   subtitle: "Tortoise & hare: two pointers move at different speeds through a linked list to detect a cycle.",
+  problem: "Given the head of a singly linked list, return True if the list contains a cycle and False otherwise. Use O(1) extra space.",
   variant: "fast-slow",
   view: "linked-list",
   code,

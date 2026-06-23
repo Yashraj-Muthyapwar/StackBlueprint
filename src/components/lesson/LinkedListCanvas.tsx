@@ -9,10 +9,13 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
 };
 
 function sizing(n: number) {
-  if (n <= 5) return { NODE: 56, GAP_X: 44 };
-  if (n <= 7) return { NODE: 48, GAP_X: 32 };
-  return { NODE: 40, GAP_X: 24 };
+  if (n <= 5) return { NODE: 52, GAP_X: 30 };
+  if (n <= 7) return { NODE: 40, GAP_X: 22 };
+  if (n <= 10) return { NODE: 34, GAP_X: 16 };
+  return { NODE: 28, GAP_X: 12 };
 }
+
+
 
 export function LinkedListCanvas({
   step,
@@ -146,30 +149,31 @@ export function LinkedListCanvas({
             );
           })}
 
-          {/* above pointers */}
+          {/* above pointers — sit clearly above the node */}
           {above.map((ps, i) =>
             ps.length === 0 ? null : (
               <PointerCaret
                 key={`above-${i}`}
                 ps={ps}
                 x={positions[i] + 20}
-                y={130 - NODE / 2 - 12}
+                y={130 - NODE / 2 - 26}
                 direction="down"
               />
             ),
           )}
-          {/* below pointers */}
+          {/* below pointers — sit clearly below the node */}
           {below.map((ps, i) =>
             ps.length === 0 ? null : (
               <PointerCaret
                 key={`below-${i}`}
                 ps={ps}
                 x={positions[i] + 20}
-                y={130 + NODE / 2 + 12}
+                y={130 + NODE / 2 + 26}
                 direction="up"
               />
             ),
           )}
+
         </div>
       </div>
     </div>

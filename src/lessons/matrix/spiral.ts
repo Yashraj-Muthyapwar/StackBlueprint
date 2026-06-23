@@ -83,6 +83,7 @@ export const spiral: LessonBuilder<Inputs> = {
   slug: "spiral-traversal",
   title: "Matrix Spiral Traversal",
   subtitle: "Four shrinking bounds — top, bottom, left, right — peel the matrix layer by layer.",
+  problem: "Given an m×n matrix, return all its elements in spiral order, starting from the top-left and moving inward.",
   variant: "spiral",
   view: "matrix",
   code,

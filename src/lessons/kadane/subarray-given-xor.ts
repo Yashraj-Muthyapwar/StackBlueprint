@@ -48,6 +48,7 @@ export const subarrayGivenXor: LessonBuilder<Inputs> = {
   slug: "subarray-given-xor",
   title: "Subarrays with Given XOR",
   subtitle: "If prefix XOR up to i is P, count earlier prefixes equal to P ^ k.",
+  problem: "Given an array and an integer k, count the number of contiguous subarrays whose XOR equals k.",
   variant: "subarray-xor",
   view: "array",
   code,

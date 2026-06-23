@@ -63,6 +63,7 @@ export const prefix2D: LessonBuilder<Inputs> = {
   slug: "prefix-2d",
   title: "Prefix Sum — 2D",
   subtitle: "Inclusion–exclusion over a 2D prefix matrix answers rectangle sums in O(1).",
+  problem: "Given a matrix, preprocess it so that the sum of any sub-rectangle (r1, c1, r2, c2) can be answered in O(1) per query.",
   variant: "prefix-2d",
   view: "matrix",
   code,

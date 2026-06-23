@@ -107,6 +107,7 @@ export const monotonicWindow: LessonBuilder<Inputs> = {
   slug: "monotonic-window",
   title: "Sliding Window — Monotonic Deque",
   subtitle: "Maintain a deque of decreasing values so the front is always the window's max.",
+  problem: "Given an array and a window size k, return the maximum of every contiguous subarray of length k in O(n) time.",
   variant: "monotonic-window",
   view: "array",
   code,

@@ -103,6 +103,7 @@ export const kadane: LessonBuilder<Inputs> = {
   slug: "max-subarray",
   title: "Kadane's — Max Subarray Sum",
   subtitle: "At each index, decide: extend the current subarray or restart fresh.",
+  problem: "Given an integer array, return the largest sum achievable by any contiguous non-empty subarray.",
   variant: "kadane",
   view: "array",
   code,
