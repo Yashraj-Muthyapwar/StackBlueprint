@@ -405,12 +405,13 @@ function SqlIndex() {
             Back to roadmap
           </Link>
 
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-3 py-1 backdrop-blur">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-4 py-1.5 backdrop-blur">
             <Sparkles className="size-3.5 text-mint" />
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              SQL Mastery · {unlockedTopics} of {totalTopics} topics unlocked
+            <span className="font-mono text-[11px] uppercase leading-relaxed tracking-[0.2em] text-muted-foreground">
+              SQL Mastery <span className="mx-1 text-muted-foreground/50">·</span> {unlockedTopics} of {totalTopics} topics unlocked
             </span>
           </div>
+
           <h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-5xl">
             SQL & databases, from{" "}
             <span className="text-mint">SELECT to query plans.</span>
