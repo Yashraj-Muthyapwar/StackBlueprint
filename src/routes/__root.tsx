@@ -82,18 +82,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Patterns — visual DSA explainer" },
+      { title: "DataVizCore — Your roadmap to engineering mastery" },
       {
         name: "description",
         content:
-          "A visual, animated explainer for DSA patterns. Watch code and data move in lockstep, one step at a time.",
+          "DataVizCore — a visual roadmap to engineering mastery across DSA patterns, SQL, system design, and data warehouses.",
       },
-      { name: "author", content: "Patterns" },
-      { property: "og:title", content: "Patterns — visual DSA explainer" },
+      { name: "author", content: "DataVizCore" },
+      { property: "og:title", content: "DataVizCore — Your roadmap to engineering mastery" },
       {
         property: "og:description",
         content:
-          "Learn Data Structures & Algorithm patterns by watching them animate step-by-step alongside Python code.",
+          "Interactive, animated lessons that move in lockstep with code — DSA patterns today; SQL, system design, and warehouses next.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -133,7 +133,7 @@ function RootComponent() {
               <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
               <div className="ml-1 h-4 w-px bg-hairline" />
               <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                patterns
+                datavizcore
               </span>
             </header>
             <main className="min-w-0 flex-1">

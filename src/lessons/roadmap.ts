@@ -1,13 +1,14 @@
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowLeftRight,
-  Binary,
   Boxes,
+  Database,
   Flag,
   Layers,
   Maximize2,
   Repeat,
   Search,
+  Server,
   Sigma,
   SquareStack,
   Target,
@@ -16,11 +17,7 @@ import {
   RotateCw,
   FlipHorizontal,
   Compass,
-  Network,
-  Workflow,
-  Type,
-  Link2,
-  TreePine,
+  Cloud,
   Hash,
 } from "lucide-react";
 
@@ -132,7 +129,12 @@ export const PATTERN_BY_SLUG: Record<string, PatternEntry> = Object.fromEntries(
 );
 
 // ---- Sidebar roadmap shape ----
-export type RoadmapLesson = { title: string; slug: string; path: string; icon: LucideIcon };
+export type RoadmapLesson = {
+  title: string;
+  slug: string;
+  path: string;
+  icon: LucideIcon;
+};
 export type RoadmapPattern = {
   title: string;
   slug: string;
@@ -141,7 +143,14 @@ export type RoadmapPattern = {
   lessons: RoadmapLesson[];
   locked?: boolean;
 };
-export type RoadmapCategory = { title: string; icon: LucideIcon; patterns: RoadmapPattern[] };
+export type RoadmapCategory = {
+  title: string;
+  slug: string;
+  icon: LucideIcon;
+  blurb: string;
+  patterns: RoadmapPattern[];
+  locked?: boolean;
+};
 
 const arrayPatterns: RoadmapPattern[] = patterns.map((p) => ({
   title: p.title,
@@ -156,56 +165,61 @@ const arrayPatterns: RoadmapPattern[] = patterns.map((p) => ({
   })),
 }));
 
+const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
+  title,
+  slug,
+  blurb,
+  lessons: [],
+  locked: true,
+});
+
 export const roadmap: RoadmapCategory[] = [
-  { title: "Arrays", icon: Boxes, patterns: arrayPatterns },
   {
-    title: "Strings",
-    icon: Type,
+    title: "Patterns (DSA)",
+    slug: "patterns-dsa",
+    icon: Boxes,
+    blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
+    patterns: arrayPatterns,
+  },
+  {
+    title: "SQL Mastery",
+    slug: "sql-mastery",
+    icon: Database,
+    locked: true,
+    blurb: "From joins to query plans — write SQL that scales with your data.",
     patterns: [
-      { title: "Palindromes", slug: "palindromes", blurb: "", lessons: [], locked: true },
-      { title: "Anagrams", slug: "anagrams", blurb: "", lessons: [], locked: true },
+      lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
+      lockedPattern("Window Functions", "window-functions", "ROW_NUMBER, RANK, LAG/LEAD, framed aggregates — analytics inside SQL."),
+      lockedPattern("CTEs", "ctes", "Common Table Expressions and recursive CTEs for readable, layered queries."),
+      lockedPattern("Optimization", "optimization", "Reading EXPLAIN plans, indexing strategy, and rewriting hot queries."),
     ],
   },
   {
-    title: "Linked Lists",
-    icon: Link2,
+    title: "System Design",
+    slug: "system-design",
+    icon: Server,
+    locked: true,
+    blurb: "Design systems that survive scale, failure, and traffic spikes.",
     patterns: [
-      { title: "Reversal", slug: "reversal", blurb: "", lessons: [], locked: true },
-      { title: "Merge", slug: "merge", blurb: "", lessons: [], locked: true },
+      lockedPattern("Scalability", "scalability", "Vertical vs horizontal scaling, load balancing, sharding, and stateless services."),
+      lockedPattern("Caching", "caching", "Cache placement, eviction policies, invalidation, and consistency trade-offs."),
+      lockedPattern("Databases", "databases", "OLTP vs OLAP, SQL vs NoSQL, replication, partitioning, and CAP trade-offs."),
     ],
   },
   {
-    title: "Trees",
-    icon: TreePine,
+    title: "Data Warehouses",
+    slug: "data-warehouses",
+    icon: Cloud,
+    locked: true,
+    blurb: "Cloud warehouses, modeling, and the cost/perf knobs that matter.",
     patterns: [
-      { title: "DFS", slug: "tree-dfs", blurb: "", lessons: [], locked: true },
-      { title: "BFS", slug: "tree-bfs", blurb: "", lessons: [], locked: true },
+      lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
+      lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
+      lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
     ],
-  },
-  {
-    title: "Graphs",
-    icon: Network,
-    patterns: [
-      { title: "BFS / DFS", slug: "graph-traversal", blurb: "", lessons: [], locked: true },
-      { title: "Union Find", slug: "union-find", blurb: "", lessons: [], locked: true },
-    ],
-  },
-  {
-    title: "Dynamic Programming",
-    icon: Layers,
-    patterns: [
-      { title: "1D DP", slug: "1d-dp", blurb: "", lessons: [], locked: true },
-      { title: "2D DP", slug: "2d-dp", blurb: "", lessons: [], locked: true },
-    ],
-  },
-  {
-    title: "Backtracking",
-    icon: Workflow,
-    patterns: [{ title: "Subsets", slug: "subsets", blurb: "", lessons: [], locked: true }],
-  },
-  {
-    title: "Binary",
-    icon: Binary,
-    patterns: [{ title: "Bit DP", slug: "bit-dp", blurb: "", lessons: [], locked: true }],
   },
 ];
+
+export const CATEGORY_BY_SLUG: Record<string, RoadmapCategory> = Object.fromEntries(
+  roadmap.map((c) => [c.slug, c]),
+);
