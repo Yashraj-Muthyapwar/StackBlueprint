@@ -1,5 +1,6 @@
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { LessonAnimation } from "@/components/sql/LessonAnimation";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -211,6 +212,9 @@ export function SectionRenderer({ section }: { section: Section }) {
           ) : null}
         </figure>
       );
+
+    case "animation":
+      return <LessonAnimation variant={section.variant} caption={section.caption} />;
 
     case "takeaways":
       return (

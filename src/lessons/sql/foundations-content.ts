@@ -12,6 +12,17 @@ export type Section =
       body: string;
     }
   | { kind: "diagram"; ascii: string; caption?: string }
+  | {
+      kind: "animation";
+      variant:
+        | "pipeline"
+        | "select-projection"
+        | "table-build"
+        | "foreign-key"
+        | "null-truth"
+        | "type-sizes";
+      caption?: string;
+    }
   | { kind: "takeaways"; items: string[] };
 
 export type LessonContent = {
@@ -45,6 +56,11 @@ const tablesAndRows: LessonContent = {
         "A relational database stores data as relations. A relation is just a set of tuples that all share the same shape (the same columns, in the same types). In SQL we call a relation a table, a tuple a row, and an attribute a column.",
         "The word 'set' matters: rows have no inherent order, and (in pure theory) no duplicates. SQL relaxes both rules — tables are technically multisets and ORDER BY exists — but the mental model is still 'unordered set of records'. Any query that depends on physical row order is a bug waiting to happen.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "table-build",
+      caption: "How a relation comes to life",
     },
     {
       kind: "diagram",
@@ -184,6 +200,11 @@ const foreignKeys: LessonContent = {
         "A foreign key is a column whose value must match a primary key value in another table. It's the database's way of saying 'this order belongs to a real customer that actually exists'. The engine refuses any INSERT or UPDATE that would point to a missing parent row.",
         "Foreign keys also control what happens when the parent goes away: ON DELETE CASCADE removes the children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (the default) blocks the delete entirely.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "foreign-key",
+      caption: "Referential integrity in motion",
     },
     {
       kind: "code",
@@ -357,6 +378,11 @@ const numericText: LessonContent = {
       body: [
         "Type choice is not cosmetic. It changes storage size, index size, comparison speed, and the kinds of bugs your schema can have. A 4-byte INT vs an 8-byte BIGINT, multiplied across a billion-row table, is the difference between a 4GB index and an 8GB index — which is the difference between staying in memory and spilling to disk.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "type-sizes",
+      caption: "Storage size grows fast",
     },
     {
       kind: "table",
@@ -560,6 +586,11 @@ const nullSemantics: LessonContent = {
       body: [
         "NULL means 'we don't know'. It's not zero, not empty string, not false. And because we don't know, almost any operation on NULL returns NULL — including comparisons. This is called three-valued logic: results can be TRUE, FALSE, or UNKNOWN.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "null-truth",
+      caption: "Three-valued logic, one row at a time",
     },
     {
       kind: "diagram",
@@ -777,6 +808,11 @@ const selectFrom: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "select-projection",
+      caption: "SELECT * vs. picking the columns you need",
+    },
+    {
       kind: "code",
       language: "sql",
       caption: "Projection and aliasing",
@@ -968,6 +1004,11 @@ const logicalOrder: LessonContent = {
       body: [
         "SQL is written SELECT-first but evaluated FROM-first. Knowing the real order is the single most useful piece of mental machinery in the language — it explains every 'why can't I reference my alias here?' question you'll ever have.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "pipeline",
+      caption: "Watch a query flow through the 7-step pipeline",
     },
     {
       kind: "diagram",
