@@ -180,9 +180,6 @@ function NestedPatternItem({
               className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
             />
             <span className="flex-1 truncate text-left">{pat.title}</span>
-            <ChevronDown
-              className={`ml-auto size-3 opacity-60 transition-transform ${open ? "rotate-180" : ""}`}
-            />
           </SidebarMenuSubButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
