@@ -231,12 +231,13 @@ function PatternsIndex() {
                 </div>
               );
 
-              if (!t.locked && t.to === "/patterns/two-pointers") {
+              if (!t.locked && t.to) {
+                const slug = t.to.replace("/patterns/", "");
                 return (
                   <Link
                     key={t.title}
                     to="/patterns/$pattern"
-                    params={{ pattern: "two-pointers" }}
+                    params={{ pattern: slug }}
                     className="block"
                   >
                     {card}
