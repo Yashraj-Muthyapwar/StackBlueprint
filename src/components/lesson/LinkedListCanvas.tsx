@@ -9,11 +9,12 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
 };
 
 function sizing(n: number) {
-  if (n <= 5) return { NODE: 56, GAP_X: 36 };
-  if (n <= 7) return { NODE: 44, GAP_X: 26 };
-  if (n <= 10) return { NODE: 38, GAP_X: 20 };
-  return { NODE: 32, GAP_X: 14 };
+  if (n <= 5) return { NODE: 52, GAP_X: 30 };
+  if (n <= 7) return { NODE: 40, GAP_X: 22 };
+  if (n <= 10) return { NODE: 34, GAP_X: 16 };
+  return { NODE: 28, GAP_X: 12 };
 }
+
 
 
 export function LinkedListCanvas({
