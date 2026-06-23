@@ -1,5 +1,6 @@
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { LessonAnimation } from "@/components/sql/LessonAnimation";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
