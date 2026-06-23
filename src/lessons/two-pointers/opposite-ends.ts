@@ -1,4 +1,4 @@
-import type { ArrayStep, Lesson } from "./types";
+import type { ArrayStep, Lesson } from "../types";
 
 const code = `def two_sum(arr, target):
     l, r = 0, len(arr) - 1
