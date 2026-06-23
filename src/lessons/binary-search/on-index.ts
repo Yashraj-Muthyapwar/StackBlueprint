@@ -24,12 +24,12 @@ function build({ arr, target }: Inputs): Step[] {
   }
   let lo = 0,
     hi = n - 1;
-  const ptrs = (mid?: number) => {
-    const out = [
-      { name: "lo", index: lo, color: "mint" as const, placement: "above" as const },
-      { name: "hi", index: hi, color: "amber" as const, placement: "above" as const },
+  const ptrs = (mid?: number): import("../types").Pointer[] => {
+    const out: import("../types").Pointer[] = [
+      { name: "lo", index: lo, color: "mint", placement: "above" },
+      { name: "hi", index: hi, color: "amber", placement: "above" },
     ];
-    if (mid !== undefined) out.push({ name: "mid", index: mid, color: "violet" as const, placement: "below" as const });
+    if (mid !== undefined) out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
     return out;
   };
   const partFor = (): Step["partitions"] => (lo <= hi ? [{ from: lo, to: hi, tone: "mid", label: "search" }] : []);
