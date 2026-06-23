@@ -103,6 +103,16 @@ export const dutchFlag: LessonBuilder<Inputs> = {
   title: "Two Pointers — Dutch Flag",
   subtitle: "Partition an array of 0s, 1s, and 2s into three zones using three pointers in a single pass.",
   problem: "Given an array containing only 0s, 1s, and 2s, sort it in a single pass and in place so all 0s come first, then 1s, then 2s.",
+  spotIt: [
+    "Sort or partition an array into a small fixed number of categories (e.g. 0/1/2, neg/zero/pos).",
+    "Constraints demand a single pass and in-place rearrangement.",
+    "Phrases like 'sort colors', 'move zeros', 'partition around a pivot'.",
+  ],
+  avoidWhen: [
+    "There are many distinct keys \u2014 use counting sort or a comparison sort.",
+    "Relative order of equal elements must be preserved (Dutch flag is not stable).",
+    "You only need to count categories, not rearrange them.",
+  ],
   variant: "dutch-flag",
   view: "array",
   code,

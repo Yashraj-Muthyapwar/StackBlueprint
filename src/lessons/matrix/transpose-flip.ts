@@ -54,6 +54,16 @@ export const transposeFlip: LessonBuilder<Inputs> = {
   title: "Transpose & Flip",
   subtitle: "Compose two simple passes — transpose, then reverse rows — for rotations and reflections.",
   problem: "Given an n×n matrix, transpose it and then flip rows or columns to realize rotations and reflections.",
+  spotIt: [
+    "Any 90\u00b0 rotation, reflection, or 'mirror' on a matrix.",
+    "Two simple passes are cleaner than a single index-mapping pass.",
+    "Interviewer asks you to reason about composing simpler transforms.",
+  ],
+  avoidWhen: [
+    "You must do it in a single pass for cache reasons \u2014 use direct index mapping.",
+    "Matrix is huge and two passes double the I/O cost.",
+    "Transform isn't a composition of transpose + flip (e.g. arbitrary rotation).",
+  ],
   variant: "transpose-flip",
   view: "matrix",
   code,

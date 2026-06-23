@@ -49,6 +49,16 @@ export const subarrayGivenXor: LessonBuilder<Inputs> = {
   title: "Subarrays with Given XOR",
   subtitle: "If prefix XOR up to i is P, count earlier prefixes equal to P ^ k.",
   problem: "Given an array and an integer k, count the number of contiguous subarrays whose XOR equals k.",
+  spotIt: [
+    "'Count / find subarrays whose XOR equals K'.",
+    "Range XOR + hash map of prefix XOR counts.",
+    "Variants: 'subarrays with sum K' (same trick with sums).",
+  ],
+  avoidWhen: [
+    "K is not fixed and changes per query \u2014 preprocess differently.",
+    "You need the longest such subarray and there are duplicates \u2014 store first-seen index, not counts.",
+    "Aggregation isn't invertible (AND / OR) \u2014 the prefix trick breaks.",
+  ],
   variant: "subarray-xor",
   view: "array",
   code,

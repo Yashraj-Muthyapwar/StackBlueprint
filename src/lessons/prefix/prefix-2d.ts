@@ -64,6 +64,16 @@ export const prefix2D: LessonBuilder<Inputs> = {
   title: "Prefix Sum — 2D",
   subtitle: "Inclusion–exclusion over a 2D prefix matrix answers rectangle sums in O(1).",
   problem: "Given a matrix, preprocess it so that the sum of any sub-rectangle (r1, c1, r2, c2) can be answered in O(1) per query.",
+  spotIt: [
+    "Many sub-rectangle sum queries on a static matrix.",
+    "Problems like 'count sub-matrices with sum K' or 'max sum sub-rectangle'.",
+    "Editorial mentions inclusion\u2013exclusion or O(1) per rectangle.",
+  ],
+  avoidWhen: [
+    "Matrix changes between queries \u2014 use a 2D Fenwick tree.",
+    "Only one or two queries \u2014 direct iteration is simpler.",
+    "You need non-additive stats (max / min) over rectangles \u2014 different DS needed.",
+  ],
   variant: "prefix-2d",
   view: "matrix",
   code,

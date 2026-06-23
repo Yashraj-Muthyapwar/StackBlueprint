@@ -84,6 +84,16 @@ export const spiral: LessonBuilder<Inputs> = {
   title: "Matrix Spiral Traversal",
   subtitle: "Four shrinking bounds — top, bottom, left, right — peel the matrix layer by layer.",
   problem: "Given an m×n matrix, return all its elements in spiral order, starting from the top-left and moving inward.",
+  spotIt: [
+    "'Print / collect the matrix in spiral order from outside in.'",
+    "Output must follow a layered traversal pattern.",
+    "Variants: generate a spiral matrix, spiral order of a rectangular grid.",
+  ],
+  avoidWhen: [
+    "You just need to visit every cell \u2014 a normal nested loop is simpler.",
+    "Traversal order is row-major or column-major \u2014 no spiral needed.",
+    "Matrix is sparse \u2014 pure traversal wastes time on empty cells.",
+  ],
   variant: "spiral",
   view: "matrix",
   code,

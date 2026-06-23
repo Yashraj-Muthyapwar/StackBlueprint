@@ -81,6 +81,16 @@ export const prefixSum: LessonBuilder<Inputs> = {
   title: "Prefix Sum",
   subtitle: "Precompute running totals; any range sum becomes a single subtraction.",
   problem: "Given an array, preprocess it so that the sum of any range [l, r] can be answered in O(1) per query.",
+  spotIt: [
+    "Many range-sum queries on a static array.",
+    "Problems like 'subarray sum equals K' or 'number of subarrays with sum divisible by K' (prefix + hash map).",
+    "Editorial mentions O(1) per query after O(n) preprocessing.",
+  ],
+  avoidWhen: [
+    "The array is frequently updated \u2014 use a Fenwick tree / segment tree.",
+    "You need range min / max / gcd, not sum \u2014 prefix sums don't apply.",
+    "Only a single query: just iterate, skip preprocessing.",
+  ],
   variant: "prefix-sum",
   view: "array",
   code,

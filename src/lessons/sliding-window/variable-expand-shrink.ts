@@ -87,6 +87,16 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
   title: "Sliding Window — Variable (Expand & Shrink)",
   subtitle: "Expand the right edge; shrink from the left whenever a constraint is violated.",
   problem: "Given a string s, return the length of the longest substring that contains no repeating characters.",
+  spotIt: [
+    "'Longest / shortest substring or subarray satisfying a condition' on a contiguous range.",
+    "Condition can be checked incrementally as you add or remove one element.",
+    "Constraint hints: distinct characters, sum \u2264 S, at most K of something.",
+  ],
+  avoidWhen: [
+    "The valid range is non-monotonic \u2014 shrinking from the left can skip valid answers.",
+    "You need all subarrays, not just the optimal one \u2014 use prefix sums or hashing.",
+    "Elements are not contiguous (subsequences / subsets) \u2014 sliding window doesn't apply.",
+  ],
   variant: "variable-expand-shrink",
   view: "array",
   code,

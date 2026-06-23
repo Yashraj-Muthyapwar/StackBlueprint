@@ -76,6 +76,16 @@ export const bsearchIndex: LessonBuilder<Inputs> = {
   title: "Binary Search on Index",
   subtitle: "Search a sorted array by halving the index range each step.",
   problem: "Given a sorted array and a target value, return the index of the target if present, otherwise -1, in O(log n) time.",
+  spotIt: [
+    "Sorted array (or rotated sorted) and a target / boundary lookup.",
+    "Required complexity is O(log n).",
+    "Phrases: 'first / last occurrence', 'insertion position', 'peak element'.",
+  ],
+  avoidWhen: [
+    "Data is unsorted and sorting costs more than the queries save.",
+    "You need every match \u2014 a linear scan is simpler.",
+    "Comparator isn't monotonic across the index \u2014 binary search will miss the answer.",
+  ],
   variant: "bsearch-index",
   view: "array",
   code,

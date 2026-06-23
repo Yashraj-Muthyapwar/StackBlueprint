@@ -80,6 +80,16 @@ export const diagonal: LessonBuilder<Inputs> = {
   title: "Matrix Diagonal Traversal",
   subtitle: "Walk anti-diagonals; alternate the direction so the zigzag is continuous.",
   problem: "Given an m×n matrix, traverse it diagonally in a zigzag pattern: alternate going up-right and down-left along each anti-diagonal.",
+  spotIt: [
+    "'Traverse the matrix diagonally', zigzag, or anti-diagonal order.",
+    "Problems grouping elements by r+c (anti-diagonal) or r-c (main diagonal).",
+    "Variants: diagonal sort, zigzag conversion.",
+  ],
+  avoidWhen: [
+    "Order doesn't matter \u2014 use row-major and skip the bookkeeping.",
+    "You only care about one specific diagonal \u2014 index it directly.",
+    "The grid is jagged / non-rectangular \u2014 diagonals aren't well defined.",
+  ],
   variant: "diagonal",
   view: "matrix",
   code,
