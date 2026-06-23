@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { LessonPlayer } from "@/components/lesson/LessonPlayer";
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
 
@@ -45,7 +46,15 @@ function LessonPage() {
           <p className="mt-2 max-w-3xl text-balance text-[15px] text-muted-foreground">{entry.builder.subtitle}</p>
         </div>
 
-        <LessonPlayer key={entry.builder.slug} builder={entry.builder} />
+        <ClientOnly
+          fallback={
+            <div className="grid min-h-[420px] place-items-center rounded-2xl border border-hairline bg-surface text-xs text-muted-foreground">
+              loading lesson…
+            </div>
+          }
+        >
+          <LessonPlayer key={entry.builder.slug} builder={entry.builder} />
+        </ClientOnly>
 
         <div className="mt-8 flex items-center justify-between gap-3">
           {prev ? (
