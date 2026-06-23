@@ -213,6 +213,9 @@ export function SectionRenderer({ section }: { section: Section }) {
         </figure>
       );
 
+    case "animation":
+      return <LessonAnimation variant={section.variant} caption={section.caption} />;
+
     case "takeaways":
       return (
         <section className="rounded-xl border border-mint/30 bg-mint/5 p-5">
