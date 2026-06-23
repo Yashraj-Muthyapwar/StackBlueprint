@@ -1,4 +1,4 @@
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { LessonPlayer } from "@/components/lesson/LessonPlayer";
@@ -11,26 +11,25 @@ export const Route = createFileRoute("/patterns/$pattern/$lesson")({
     if (!l) return { meta: [{ title: "Lesson" }] };
     return {
       meta: [
-        { title: `${l.title}` },
+        { title: l.title },
         { name: "description", content: l.subtitle },
         { property: "og:title", content: l.title },
         { property: "og:description", content: l.subtitle },
       ],
     };
   },
-  loader: ({ params }) => {
-    const p = PATTERN_BY_SLUG[params.pattern];
-    if (!p) throw notFound();
-    if (!p.lessons.find((x) => x.builder.slug === params.lesson)) throw notFound();
-    return null;
-  },
   component: LessonPage,
+  notFoundComponent: () => (
+    <div className="px-6 py-16 text-center text-muted-foreground">Lesson not found.</div>
+  ),
 });
 
 function LessonPage() {
   const { pattern, lesson } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
+  if (!p) return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
   const idx = p.lessons.findIndex((x) => x.builder.slug === lesson);
+  if (idx < 0) return <div className="px-6 py-16 text-center text-muted-foreground">Lesson not found.</div>;
   const entry = p.lessons[idx];
   const prev = idx > 0 ? p.lessons[idx - 1] : null;
   const next = idx < p.lessons.length - 1 ? p.lessons[idx + 1] : null;

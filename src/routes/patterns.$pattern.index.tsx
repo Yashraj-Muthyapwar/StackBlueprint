@@ -1,4 +1,4 @@
-import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
@@ -16,16 +16,13 @@ export const Route = createFileRoute("/patterns/$pattern/")({
       ],
     };
   },
-  loader: ({ params }) => {
-    if (!PATTERN_BY_SLUG[params.pattern]) throw notFound();
-    return null;
-  },
   component: PatternIndex,
 });
 
 function PatternIndex() {
   const { pattern } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
+  if (!p) return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
