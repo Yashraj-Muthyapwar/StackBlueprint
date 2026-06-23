@@ -132,9 +132,12 @@ function RootComponent() {
             <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b border-hairline bg-background/80 px-3 backdrop-blur">
               <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
               <div className="ml-1 h-4 w-px bg-hairline" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+              <Link
+                to="/"
+                className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+              >
                 datavizcore
-              </span>
+              </Link>
             </header>
             <main className="min-w-0 flex-1">
               <Outlet />
