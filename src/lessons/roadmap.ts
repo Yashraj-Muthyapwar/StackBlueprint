@@ -148,6 +148,10 @@ export type RoadmapCategory = {
   slug: string;
   icon: LucideIcon;
   blurb: string;
+  /** Optional grouping label shown above the patterns (e.g. "Arrays / Matrix"). */
+  sectionTitle?: string;
+  /** Path to the category's overview page when the category is unlocked. */
+  overviewPath?: string;
   patterns: RoadmapPattern[];
   locked?: boolean;
 };
