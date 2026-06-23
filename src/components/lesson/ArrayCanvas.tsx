@@ -25,8 +25,11 @@ const PARTITION_LABEL: Record<"low" | "mid" | "high", string> = {
   high: "var(--amber)",
 };
 
-const CELL = 64; // px tile width
-const GAP = 10;
+function sizing(n: number) {
+  if (n <= 7) return { CELL: 64, GAP: 10 };
+  if (n <= 9) return { CELL: 54, GAP: 8 };
+  return { CELL: 44, GAP: 6 };
+}
 
 export function ArrayCanvas({ step }: { step: ArrayStep }) {
   const { array, pointers, partitions = [], highlight } = step;
