@@ -56,9 +56,9 @@ export function AppSidebar() {
           <SidebarGroup key={cat.slug}>
             <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
               <cat.icon className="size-3" />
-              {cat.overviewPath ? (
+              {cat.overviewPath === "/patterns" ? (
                 <Link
-                  to={cat.overviewPath}
+                  to="/patterns"
                   onClick={closeMobile}
                   className="transition-colors hover:text-foreground"
                 >
