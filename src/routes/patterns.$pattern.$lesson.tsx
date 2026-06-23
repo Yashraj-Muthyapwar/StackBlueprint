@@ -68,6 +68,48 @@ function LessonPage() {
           <LessonPlayer key={entry.builder.slug} builder={entry.builder} />
         </ClientOnly>
 
+        {(entry.builder.spotIt?.length || entry.builder.avoidWhen?.length) ? (
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {entry.builder.spotIt?.length ? (
+              <div className="rounded-2xl border border-mint/30 bg-mint/[0.04] px-4 py-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="size-1.5 rounded-full bg-mint shadow-[0_0_10px_var(--mint)]" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-mint">
+                    how to spot it in an interview
+                  </span>
+                </div>
+                <ul className="space-y-1.5 text-[14px] leading-relaxed text-foreground/90">
+                  {entry.builder.spotIt.map((s, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="mt-2 size-1 shrink-0 rounded-full bg-mint/70" />
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {entry.builder.avoidWhen?.length ? (
+              <div className="rounded-2xl border border-rose/30 bg-rose/[0.04] px-4 py-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <div className="size-1.5 rounded-full bg-rose shadow-[0_0_10px_var(--rose)]" />
+                  <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-rose">
+                    when to avoid this pattern
+                  </span>
+                </div>
+                <ul className="space-y-1.5 text-[14px] leading-relaxed text-foreground/90">
+                  {entry.builder.avoidWhen.map((s, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="mt-2 size-1 shrink-0 rounded-full bg-rose/70" />
+                      <span>{s}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+
         <div className="mt-8 flex items-center justify-between gap-3">
           {prev ? (
             <Link
