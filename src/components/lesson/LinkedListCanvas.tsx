@@ -8,8 +8,11 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
   rose: "var(--rose)",
 };
 
-const NODE = 56;
-const GAP_X = 44;
+function sizing(n: number) {
+  if (n <= 5) return { NODE: 56, GAP_X: 44 };
+  if (n <= 7) return { NODE: 48, GAP_X: 32 };
+  return { NODE: 40, GAP_X: 24 };
+}
 
 export function LinkedListCanvas({
   step,
