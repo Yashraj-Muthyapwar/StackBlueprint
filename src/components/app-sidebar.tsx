@@ -112,7 +112,7 @@ function SectionMaster({
   onNavigate: () => void;
 }) {
   const anyActive = patterns.some((p) => !!p.path && pathname.startsWith(p.path));
-  const [open, setOpen] = useState(anyActive || true);
+  const [open, setOpen] = useState<boolean>(true);
   return (
     <Collapsible open={open} onOpenChange={setOpen} asChild>
       <SidebarMenuItem>
