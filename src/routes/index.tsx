@@ -6,16 +6,17 @@ import { roadmap } from "@/lessons/roadmap";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Patterns — learn DSA by watching it move" },
+      { title: "DataVizCore — Your roadmap to engineering mastery" },
       {
         name: "description",
         content:
-          "An animated, step-by-step DSA pattern explainer. Code and visualization in lockstep.",
+          "DataVizCore — interactive, animated learning paths for DSA patterns, SQL, system design, and data warehouses.",
       },
-      { property: "og:title", content: "Patterns — learn DSA by watching it move" },
+      { property: "og:title", content: "DataVizCore — Your roadmap to engineering mastery" },
       {
         property: "og:description",
-        content: "Watch every pointer, swap, and partition unfold next to the Python code that drives it.",
+        content:
+          "A unified visual roadmap for engineers: DSA patterns, SQL mastery, system design, and data warehouses.",
       },
     ],
   }),
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const unlockedCategories = roadmap.filter((c) => !c.locked).length;
   return (
     <div className="relative">
       <div className="grid-bg absolute inset-0 -z-10 opacity-50" />
@@ -33,16 +35,16 @@ function Landing() {
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-3 py-1 backdrop-blur">
             <Sparkles className="size-3.5 text-mint" />
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Two Pointers — now unlocked
+              DataVizCore · Patterns track live
             </span>
           </div>
           <h1 className="text-balance text-5xl font-semibold tracking-tight text-foreground lg:text-7xl">
-            Watch the algorithm,{" "}
-            <span className="text-mint">line by line.</span>
+            Your roadmap to{" "}
+            <span className="text-mint">engineering mastery.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-balance text-lg text-muted-foreground">
-            A visual explainer for DSA patterns. Pointers glide, swaps arc, partitions tint —
-            every motion locked to the Python line that caused it.
+            DataVizCore is a visual, interactive playbook for the things engineers actually get asked
+            about — DSA patterns, SQL, system design, and the data warehouses they all run on.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link
@@ -50,15 +52,15 @@ function Landing() {
               params={{ pattern: "two-pointers", lesson: "opposite-ends" }}
               className="group inline-flex items-center gap-2 rounded-full bg-mint px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
             >
-              Start with Two Pointers
+              Start with Patterns (DSA)
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              to="/patterns/$pattern"
-              params={{ pattern: "two-pointers" }}
+              to="/tracks/$track"
+              params={{ track: "sql-mastery" }}
               className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-5 py-2.5 text-sm text-foreground backdrop-blur transition-colors hover:border-foreground/30"
             >
-              See the three variants
+              Preview SQL Mastery
             </Link>
           </div>
         </div>
@@ -68,64 +70,94 @@ function Landing() {
       <section className="px-8 py-16 lg:px-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 flex items-baseline justify-between">
-            <h2 className="text-2xl font-semibold tracking-tight">Roadmap</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">The roadmap</h2>
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {roadmap.length} categories · 1 unlocked
+              {roadmap.length} tracks · {unlockedCategories} unlocked
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
             {roadmap.map((cat) => {
-              const unlockedPatterns = cat.patterns.filter((p) => !p.locked);
-              const isUnlocked = unlockedPatterns.length > 0;
-              return (
+              const isUnlocked = !cat.locked;
+              const card = (
                 <div
-                  key={cat.title}
-                  className={`group relative overflow-hidden rounded-2xl border p-5 transition-colors ${
+                  className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-colors ${
                     isUnlocked
                       ? "border-hairline bg-surface hover:border-mint/40"
-                      : "border-hairline/60 bg-surface/40"
+                      : "border-hairline/60 bg-surface/40 hover:border-foreground/20"
                   }`}
                 >
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="mb-4 flex items-center justify-between">
                     <div
-                      className={`grid size-9 place-items-center rounded-md ${
+                      className={`grid size-10 place-items-center rounded-md ${
                         isUnlocked
                           ? "bg-mint/15 text-mint ring-1 ring-mint/30"
-                          : "bg-surface-2 text-muted-foreground/60 ring-1 ring-hairline"
+                          : "bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
                       }`}
                     >
-                      <cat.icon className="size-4" />
+                      <cat.icon className="size-5" />
                     </div>
-                    {!isUnlocked && <Lock className="size-3.5 text-muted-foreground/60" />}
+                    {isUnlocked ? (
+                      <span className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
+                        <Lock className="size-3" />
+                        Locked
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-base font-medium tracking-tight">{cat.title}</h3>
-                  <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-                    {cat.patterns.length} patterns
-                  </p>
+                  <h3 className="text-lg font-medium tracking-tight">{cat.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">{cat.blurb}</p>
 
-                  <div className="mt-4 flex flex-wrap gap-1.5">
-                    {cat.patterns.map((p) =>
-                      p.path && !p.locked ? (
-                        <Link
-                          key={p.slug}
-                          to="/patterns/$pattern"
-                          params={{ pattern: p.slug }}
-                          className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint transition-colors hover:bg-mint/20"
-                        >
-                          {p.title}
-                        </Link>
-                      ) : (
-                        <span
-                          key={p.slug}
-                          className="rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/70"
-                        >
-                          {p.title}
-                        </span>
-                      ),
+                  <div className="mt-5 flex flex-wrap gap-1.5">
+                    {cat.patterns.map((p) => (
+                      <span
+                        key={p.slug}
+                        className={
+                          isUnlocked
+                            ? "rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint"
+                            : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/80"
+                        }
+                      >
+                        {p.title}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm">
+                    {isUnlocked ? (
+                      <span className="text-mint">
+                        Open track <ArrowRight className="ml-1 inline size-4" />
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Preview syllabus <ArrowRight className="ml-1 inline size-4" />
+                      </span>
                     )}
                   </div>
                 </div>
+              );
+
+              return isUnlocked ? (
+                <Link
+                  key={cat.slug}
+                  to="/patterns/$pattern"
+                  params={{ pattern: cat.patterns[0]!.slug }}
+                  className="block"
+                >
+                  {card}
+                </Link>
+              ) : (
+                <Link
+                  key={cat.slug}
+                  to="/tracks/$track"
+                  params={{ track: cat.slug }}
+                  className="block"
+                >
+                  {card}
+                </Link>
               );
             })}
           </div>
@@ -141,17 +173,17 @@ function Landing() {
               {
                 k: "01",
                 t: "Code on the right",
-                d: "Annotated Python with a sliding highlight on the currently-executing line.",
+                d: "Annotated source with a sliding highlight on the currently-executing line.",
               },
               {
                 k: "02",
                 t: "Visualization on the left",
-                d: "Array tiles, pointer carets, partition bands — animated with spring easing.",
+                d: "Tiles, pointers, partitions, and grids — animated with spring easing.",
               },
               {
                 k: "03",
                 t: "You drive it",
-                d: "Step, autoplay, scrub. Spacebar plays, arrow keys step. Speed 0.25× → 2×.",
+                d: "Step, autoplay, scrub, and feed in your own inputs to see the algorithm react.",
               },
             ].map((s) => (
               <div key={s.k} className="rounded-2xl border border-hairline bg-surface p-5">
