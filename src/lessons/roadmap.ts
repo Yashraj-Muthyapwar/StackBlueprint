@@ -47,6 +47,16 @@ import { transposeFlip } from "./matrix/transpose-flip";
 import { spiral } from "./matrix/spiral";
 import { diagonal } from "./matrix/diagonal";
 
+import { longestSubstringNoRepeat } from "./strings/longest-substring-no-repeat";
+import { minWindowSubstring } from "./strings/min-window-substring";
+import { anagramInString } from "./strings/anagram-in-string";
+import { palindromeCheck } from "./strings/palindrome-check";
+import { reverseWords } from "./strings/reverse-words";
+import { stringCompression } from "./strings/string-compression";
+import { kmp } from "./strings/kmp";
+import { rabinKarp } from "./strings/rabin-karp";
+import { zAlgorithm } from "./strings/z-algorithm";
+
 export type PatternEntry = {
   slug: string;
   title: string;
@@ -122,6 +132,39 @@ export const patterns: PatternEntry[] = [
       { builder: diagonal, icon: Compass },
     ],
   },
+  {
+    slug: "sliding-window-string",
+    title: "Sliding Window",
+    category: "Strings",
+    blurb: "Windowed substring problems — distinct chars, cover-of-pattern, anagrams.",
+    lessons: [
+      { builder: longestSubstringNoRepeat, icon: Maximize2 },
+      { builder: minWindowSubstring, icon: Target },
+      { builder: anagramInString, icon: Repeat },
+    ],
+  },
+  {
+    slug: "two-pointers-string",
+    title: "Two Pointers",
+    category: "Strings",
+    blurb: "Mirror/converging pointers and in-place reads-writes over char buffers.",
+    lessons: [
+      { builder: palindromeCheck, icon: ArrowLeftRight },
+      { builder: reverseWords, icon: Repeat },
+      { builder: stringCompression, icon: Hash },
+    ],
+  },
+  {
+    slug: "pattern-matching",
+    title: "Pattern Matching",
+    category: "Strings",
+    blurb: "Exact substring search: KMP failure function, Rabin–Karp rolling hash, Z-algorithm.",
+    lessons: [
+      { builder: kmp, icon: Search },
+      { builder: rabinKarp, icon: Hash },
+      { builder: zAlgorithm, icon: Target },
+    ],
+  },
 ];
 
 export const PATTERN_BY_SLUG: Record<string, PatternEntry> = Object.fromEntries(
@@ -143,6 +186,10 @@ export type RoadmapPattern = {
   lessons: RoadmapLesson[];
   locked?: boolean;
 };
+export type RoadmapSection = {
+  title: string;
+  patterns: RoadmapPattern[];
+};
 export type RoadmapCategory = {
   title: string;
   slug: string;
@@ -150,13 +197,15 @@ export type RoadmapCategory = {
   blurb: string;
   /** Optional grouping label shown above the patterns (e.g. "Arrays / Matrix"). */
   sectionTitle?: string;
+  /** Multiple labelled sub-sections under this category (rendered in order). */
+  sections?: RoadmapSection[];
   /** Path to the category's overview page when the category is unlocked. */
   overviewPath?: string;
   patterns: RoadmapPattern[];
   locked?: boolean;
 };
 
-const arrayPatterns: RoadmapPattern[] = patterns.map((p) => ({
+const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
   title: p.title,
   slug: p.slug,
   path: `/patterns/${p.slug}`,
@@ -167,7 +216,14 @@ const arrayPatterns: RoadmapPattern[] = patterns.map((p) => ({
     path: `/patterns/${p.slug}/${l.builder.slug}`,
     icon: l.icon,
   })),
-}));
+});
+
+const arrayPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Arrays")
+  .map(toRoadmapPattern);
+const stringPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Strings")
+  .map(toRoadmapPattern);
 
 const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
   title,
@@ -183,9 +239,12 @@ export const roadmap: RoadmapCategory[] = [
     slug: "patterns-dsa",
     icon: Boxes,
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
-    sectionTitle: "Arrays / Matrix",
     overviewPath: "/patterns",
-    patterns: arrayPatterns,
+    sections: [
+      { title: "Arrays / Matrix", patterns: arrayPatterns },
+      { title: "Strings", patterns: stringPatterns },
+    ],
+    patterns: [...arrayPatterns, ...stringPatterns],
   },
   {
     title: "SQL Mastery",

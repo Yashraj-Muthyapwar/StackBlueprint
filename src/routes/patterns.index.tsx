@@ -19,6 +19,10 @@ import type { LucideIcon } from "lucide-react";
 
 import { patterns } from "@/lessons/roadmap";
 
+const arrayPatternTitles = patterns.filter((p) => p.category === "Arrays").map((p) => p.title);
+const stringPatternTitles = patterns.filter((p) => p.category === "Strings").map((p) => p.title);
+const firstStringSlug = patterns.find((p) => p.category === "Strings")?.slug ?? "sliding-window-string";
+
 export const Route = createFileRoute("/patterns/")({
   head: () => ({
     meta: [
@@ -55,14 +59,16 @@ const topics: Topic[] = [
     icon: Boxes,
     locked: false,
     to: "/patterns/two-pointers",
-    patternsList: patterns.map((p) => p.title),
+    patternsList: arrayPatternTitles,
   },
   {
     title: "Strings",
-    blurb: "Hashing, palindromes, rolling hash, KMP, Z-algorithm, and substring search.",
+    blurb:
+      "Sliding window on characters, two-pointer scans, and exact matching with KMP, Rabin–Karp, and Z.",
     icon: Type,
-    locked: true,
-    patternsList: ["Hashing", "Palindromes", "KMP / Z", "Substring search"],
+    locked: false,
+    to: `/patterns/${firstStringSlug}`,
+    patternsList: stringPatternTitles,
   },
   {
     title: "Linked List",
@@ -225,12 +231,13 @@ function PatternsIndex() {
                 </div>
               );
 
-              if (!t.locked && t.to === "/patterns/two-pointers") {
+              if (!t.locked && t.to) {
+                const slug = t.to.replace("/patterns/", "");
                 return (
                   <Link
                     key={t.title}
                     to="/patterns/$pattern"
-                    params={{ pattern: "two-pointers" }}
+                    params={{ pattern: slug }}
                     className="block"
                   >
                     {card}
