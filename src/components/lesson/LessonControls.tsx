@@ -1,0 +1,171 @@
+import { useState } from "react";
+import { AlertTriangle, Play, RotateCcw } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import type { InputField, LessonBuilder } from "@/lessons/types";
+import {
+  parseIntArray,
+  parseIntMatrix,
+  parseIntPairs,
+  stringifyIntArray,
+  stringifyIntMatrix,
+  stringifyIntPairs,
+} from "@/lessons/util";
+
+type RawValues = Record<string, string>;
+
+function defaultsToRaw(builder: LessonBuilder): RawValues {
+  const out: RawValues = {};
+  for (const f of builder.inputs) {
+    const v = (builder.defaultInputs as Record<string, unknown>)[f.key];
+    if (f.kind === "intArray") out[f.key] = stringifyIntArray((v as number[]) ?? []);
+    else if (f.kind === "intMatrix") out[f.key] = stringifyIntMatrix((v as number[][]) ?? []);
+    else if (f.kind === "intPairs") out[f.key] = stringifyIntPairs((v as [number, number][]) ?? []);
+    else out[f.key] = String(v ?? "");
+  }
+  return out;
+}
+
+function parseRaw(builder: LessonBuilder, raw: RawValues): { inputs?: Record<string, unknown>; error?: string } {
+  const out: Record<string, unknown> = {};
+  try {
+    for (const f of builder.inputs) {
+      const r = raw[f.key] ?? "";
+      if (f.kind === "intArray") out[f.key] = parseIntArray(r);
+      else if (f.kind === "intMatrix") out[f.key] = parseIntMatrix(r);
+      else if (f.kind === "intPairs") out[f.key] = parseIntPairs(r);
+      else if (f.kind === "int") {
+        const n = Number(r);
+        if (!Number.isFinite(n)) throw new Error(`${f.label} must be a number`);
+        out[f.key] = n;
+      }
+    }
+    return { inputs: out };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export function LessonControls({
+  builder,
+  onRun,
+}: {
+  builder: LessonBuilder;
+  onRun: (inputs: Record<string, unknown>, warnings: string[]) => void;
+}) {
+  const [raw, setRaw] = useState<RawValues>(() => defaultsToRaw(builder));
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
+
+  const run = () => {
+    const { inputs, error } = parseRaw(builder, raw);
+    if (error || !inputs) {
+      setParseError(error ?? "Invalid input");
+      return;
+    }
+    setParseError(null);
+    const w = builder.validate ? builder.validate(inputs) : [];
+    setWarnings(w);
+    onRun(inputs, w);
+  };
+
+  const reset = () => {
+    setRaw(defaultsToRaw(builder));
+    setParseError(null);
+    const w = builder.validate ? builder.validate(builder.defaultInputs as Record<string, unknown>) : [];
+    setWarnings(w);
+    onRun(builder.defaultInputs as Record<string, unknown>, w);
+  };
+
+  return (
+    <div className="rounded-2xl border border-hairline bg-surface">
+      <div className="flex items-center justify-between border-b border-hairline px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <div className="size-1.5 rounded-full bg-amber shadow-[0_0_10px_var(--amber)]" />
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            inputs · edit, then run
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Button size="sm" variant="ghost" onClick={reset} title="Reset to default">
+            <RotateCcw className="mr-1 size-3.5" /> Default
+          </Button>
+          <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
+            <Play className="mr-1 size-3.5" /> Run
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 px-4 py-3 md:grid-cols-2">
+        {builder.inputs.map((f) => (
+          <FieldEditor key={f.key} field={f} value={raw[f.key] ?? ""} onChange={(v) => setRaw((r) => ({ ...r, [f.key]: v }))} />
+        ))}
+      </div>
+
+      {(parseError || warnings.length > 0) && (
+        <div className="border-t border-hairline px-4 py-2.5">
+          {parseError && (
+            <div className="flex items-start gap-2 rounded-md border border-rose/40 bg-rose/10 px-3 py-2 text-xs text-foreground">
+              <AlertTriangle className="mt-px size-3.5 shrink-0 text-rose" />
+              <span>
+                <span className="font-mono text-rose">parse error</span> · {parseError}
+              </span>
+            </div>
+          )}
+          {warnings.length > 0 && !parseError && (
+            <div className="space-y-1.5">
+              {warnings.map((w, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-2 rounded-md border border-amber/40 bg-amber/10 px-3 py-2 text-xs text-foreground"
+                >
+                  <AlertTriangle className="mt-px size-3.5 shrink-0 text-amber" />
+                  <span>
+                    <span className="font-mono text-amber">warning</span> · {w}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FieldEditor({
+  field,
+  value,
+  onChange,
+}: {
+  field: InputField;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const isLarge = field.kind === "intMatrix";
+  return (
+    <label className="block">
+      <div className="mb-1 flex items-baseline justify-between">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{field.label}</span>
+        {field.help && <span className="text-[10px] text-muted-foreground/60">{field.help}</span>}
+      </div>
+      {isLarge ? (
+        <Textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="min-h-[68px] font-mono text-xs"
+          spellCheck={false}
+        />
+      ) : (
+        <Input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 font-mono text-xs"
+          spellCheck={false}
+        />
+      )}
+    </label>
+  );
+}
