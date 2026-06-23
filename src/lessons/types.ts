@@ -70,6 +70,10 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   subtitle: string;
   /** Concise problem statement shown under the lesson title. */
   problem?: string;
+  /** Signals in an interview prompt that hint this pattern applies. */
+  spotIt?: string[];
+  /** Situations where this pattern is the wrong tool. */
+  avoidWhen?: string[];
   variant: string;
   view: View;
   code: string;
