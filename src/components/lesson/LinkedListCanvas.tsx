@@ -146,30 +146,31 @@ export function LinkedListCanvas({
             );
           })}
 
-          {/* above pointers */}
+          {/* above pointers — sit clearly above the node */}
           {above.map((ps, i) =>
             ps.length === 0 ? null : (
               <PointerCaret
                 key={`above-${i}`}
                 ps={ps}
                 x={positions[i] + 20}
-                y={130 - NODE / 2 - 12}
+                y={130 - NODE / 2 - 26}
                 direction="down"
               />
             ),
           )}
-          {/* below pointers */}
+          {/* below pointers — sit clearly below the node */}
           {below.map((ps, i) =>
             ps.length === 0 ? null : (
               <PointerCaret
                 key={`below-${i}`}
                 ps={ps}
                 x={positions[i] + 20}
-                y={130 + NODE / 2 + 12}
+                y={130 + NODE / 2 + 26}
                 direction="up"
               />
             ),
           )}
+
         </div>
       </div>
     </div>
