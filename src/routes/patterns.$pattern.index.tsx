@@ -36,7 +36,7 @@ function PatternIndex() {
         <p className="mt-4 max-w-2xl text-balance text-muted-foreground lg:text-lg">{p.blurb}</p>
 
         <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {p.lessons.map((les, i) => (
+          {p.lessons.map((les: typeof p.lessons[number], i: number) => (
             <Link
               key={les.builder.slug}
               to="/patterns/$pattern/$lesson"
