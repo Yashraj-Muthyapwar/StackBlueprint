@@ -23,6 +23,7 @@ export function LinkedListCanvas({
 }) {
   const n = shape.nodes;
   const labels = shape.labels ?? Array.from({ length: n }, (_, i) => String(i));
+  const { NODE, GAP_X } = sizing(n);
 
   const totalWidth = n * NODE + (n - 1) * GAP_X;
   const positions = Array.from({ length: n }, (_, i) => i * (NODE + GAP_X) + NODE / 2);
