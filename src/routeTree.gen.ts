@@ -16,7 +16,6 @@ import { Route as TracksTrackRouteImport } from './routes/tracks.$track'
 import { Route as PatternsPatternRouteImport } from './routes/patterns.$pattern'
 import { Route as PatternsPatternIndexRouteImport } from './routes/patterns.$pattern.index'
 import { Route as SqlFoundationsTopicRouteImport } from './routes/sql.foundations.$topic'
-import { Route as SqlFoundationsTopicLessonRouteImport } from './routes/sql.foundations.$topic.$lesson'
 import { Route as PatternsPatternLessonRouteImport } from './routes/patterns.$pattern.$lesson'
 import { Route as SqlFoundationsTopicLessonRouteImport } from './routes/sql.foundations.$topic.$lesson'
 
@@ -53,6 +52,11 @@ const PatternsPatternIndexRoute = PatternsPatternIndexRouteImport.update({
 const SqlFoundationsTopicRoute = SqlFoundationsTopicRouteImport.update({
   id: '/sql/foundations/$topic',
   path: '/sql/foundations/$topic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SqlFoundationsTopicLessonRoute = SqlFoundationsTopicLessonRouteImport.update({
+  id: '/sql/foundations/$topic/$lesson',
+  path: '/sql/foundations/$topic/$lesson',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PatternsPatternLessonRoute = PatternsPatternLessonRouteImport.update({
