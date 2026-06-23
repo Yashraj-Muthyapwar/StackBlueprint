@@ -54,11 +54,6 @@ const SqlFoundationsTopicRoute = SqlFoundationsTopicRouteImport.update({
   path: '/sql/foundations/$topic',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SqlFoundationsTopicLessonRoute = SqlFoundationsTopicLessonRouteImport.update({
-  id: '/sql/foundations/$topic/$lesson',
-  path: '/sql/foundations/$topic/$lesson',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PatternsPatternLessonRoute = PatternsPatternLessonRouteImport.update({
   id: '/$lesson',
   path: '/$lesson',
