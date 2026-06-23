@@ -10,33 +10,52 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PatternsTwoPointersRouteImport } from './routes/patterns.two-pointers'
+import { Route as PatternsTwoPointersIndexRouteImport } from './routes/patterns.two-pointers.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatternsTwoPointersRoute = PatternsTwoPointersRouteImport.update({
+  id: '/patterns/two-pointers',
+  path: '/patterns/two-pointers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatternsTwoPointersIndexRoute =
+  PatternsTwoPointersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PatternsTwoPointersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/patterns/two-pointers': typeof PatternsTwoPointersRouteWithChildren
+  '/patterns/two-pointers/': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/patterns/two-pointers': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/patterns/two-pointers': typeof PatternsTwoPointersRouteWithChildren
+  '/patterns/two-pointers/': typeof PatternsTwoPointersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/patterns/two-pointers' | '/patterns/two-pointers/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/patterns/two-pointers'
+  id: '__root__' | '/' | '/patterns/two-pointers' | '/patterns/two-pointers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PatternsTwoPointersRoute: typeof PatternsTwoPointersRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +67,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patterns/two-pointers': {
+      id: '/patterns/two-pointers'
+      path: '/patterns/two-pointers'
+      fullPath: '/patterns/two-pointers'
+      preLoaderRoute: typeof PatternsTwoPointersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patterns/two-pointers/': {
+      id: '/patterns/two-pointers/'
+      path: '/'
+      fullPath: '/patterns/two-pointers/'
+      preLoaderRoute: typeof PatternsTwoPointersIndexRouteImport
+      parentRoute: typeof PatternsTwoPointersRoute
+    }
   }
 }
 
+interface PatternsTwoPointersRouteChildren {
+  PatternsTwoPointersIndexRoute: typeof PatternsTwoPointersIndexRoute
+}
+
+const PatternsTwoPointersRouteChildren: PatternsTwoPointersRouteChildren = {
+  PatternsTwoPointersIndexRoute: PatternsTwoPointersIndexRoute,
+}
+
+const PatternsTwoPointersRouteWithChildren =
+  PatternsTwoPointersRoute._addFileChildren(PatternsTwoPointersRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PatternsTwoPointersRoute: PatternsTwoPointersRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
