@@ -108,6 +108,16 @@ export const monotonicWindow: LessonBuilder<Inputs> = {
   title: "Sliding Window — Monotonic Deque",
   subtitle: "Maintain a deque of decreasing values so the front is always the window's max.",
   problem: "Given an array and a window size k, return the maximum of every contiguous subarray of length k in O(n) time.",
+  spotIt: [
+    "'Max / min in every window of size k' or 'next greater element in a window'.",
+    "You need O(n) and a plain heap gives O(n log k) \u2014 deque is the trick.",
+    "Problem talks about 'maintain running max/min as the window slides'.",
+  ],
+  avoidWhen: [
+    "You need the k-th element (not just max/min) \u2014 use a multiset / heap.",
+    "Window is unordered or the value you track isn't monotonic.",
+    "Updates aren't append-only on one end and pop-only on the other.",
+  ],
   variant: "monotonic-window",
   view: "array",
   code,

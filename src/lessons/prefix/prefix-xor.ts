@@ -66,6 +66,16 @@ export const prefixXor: LessonBuilder<Inputs> = {
   title: "Prefix XOR",
   subtitle: "XOR is its own inverse — range XOR becomes pre[r+1] ^ pre[l].",
   problem: "Given an array, answer range XOR queries [l, r] in O(1) using a prefix XOR array.",
+  spotIt: [
+    "Range XOR queries, or 'count subarrays with XOR equal to K'.",
+    "Problems involving toggling bits, parity, or 'find the odd one out' over ranges.",
+    "Need O(1) per query and XOR is the aggregation.",
+  ],
+  avoidWhen: [
+    "Aggregation is sum / product / min \u2014 different prefix structure.",
+    "Elements can change between queries \u2014 use a Fenwick tree over XOR.",
+    "Problem is about bitwise AND / OR over ranges (those aren't invertible).",
+  ],
   variant: "prefix-xor",
   view: "array",
   code,

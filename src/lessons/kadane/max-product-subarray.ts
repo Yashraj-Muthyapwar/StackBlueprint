@@ -58,6 +58,16 @@ export const maxProduct: LessonBuilder<Inputs> = {
   title: "Max Product Subarray",
   subtitle: "A negative flips signs — keep both the running max and the running min.",
   problem: "Given an integer array, return the largest product achievable by any contiguous non-empty subarray.",
+  spotIt: [
+    "'Maximum product of a contiguous subarray' with negatives and zeros in the input.",
+    "Sign can flip \u2014 you need to track both running max and running min.",
+    "Brute force is O(n\u00b2); interviewer wants O(n).",
+  ],
+  avoidWhen: [
+    "Array is all non-negative \u2014 a simple running product or sliding window suffices.",
+    "You need product over arbitrary subsequences \u2014 this is DP, not Kadane.",
+    "Overflow is a hard constraint \u2014 use logs or big integers instead.",
+  ],
   variant: "max-product",
   view: "array",
   code,

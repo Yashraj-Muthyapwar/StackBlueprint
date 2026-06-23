@@ -75,6 +75,16 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
   title: "Two Pointers — Opposite Ends",
   subtitle: "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
   problem: "Given a sorted array of integers and a target T, return indices (i, j) such that arr[i] + arr[j] == T, or None if no such pair exists.",
+  spotIt: [
+    "Input is a sorted array (or can be sorted) and you're asked about a pair / triplet / sum / closest.",
+    "Question hints at O(n) after sorting, or 'do it in O(1) extra space'.",
+    "Phrases like 'find two numbers that sum to target', 'container with most water', 'reverse / palindrome check'.",
+  ],
+  avoidWhen: [
+    "Array is unsorted and sorting would destroy required index order.",
+    "You need to count all pairs (not just find one) \u2014 a hash map is usually better.",
+    "Data is a stream / linked list without random access \u2014 use fast-slow or a hash set instead.",
+  ],
   variant: "opposite-ends",
   view: "array",
   code,

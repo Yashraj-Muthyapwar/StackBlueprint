@@ -104,6 +104,16 @@ export const kadane: LessonBuilder<Inputs> = {
   title: "Kadane's — Max Subarray Sum",
   subtitle: "At each index, decide: extend the current subarray or restart fresh.",
   problem: "Given an integer array, return the largest sum achievable by any contiguous non-empty subarray.",
+  spotIt: [
+    "'Maximum sum contiguous subarray' or any variant ('circular', 'with one deletion').",
+    "Array contains negatives \u2014 otherwise the answer is just the total sum.",
+    "Interviewer asks for O(n) and O(1) space.",
+  ],
+  avoidWhen: [
+    "You need the actual indices and the problem disallows extra state \u2014 be careful with bookkeeping.",
+    "Subarrays don't have to be contiguous \u2014 switch to DP on subsets or greedy.",
+    "Aggregation is product, not sum \u2014 use the product-subarray variant.",
+  ],
   variant: "kadane",
   view: "array",
   code,

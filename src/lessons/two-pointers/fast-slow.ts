@@ -73,6 +73,16 @@ export const fastSlow: LessonBuilder<Inputs> = {
   title: "Two Pointers — Fast & Slow",
   subtitle: "Tortoise & hare: two pointers move at different speeds through a linked list to detect a cycle.",
   problem: "Given the head of a singly linked list, return True if the list contains a cycle and False otherwise. Use O(1) extra space.",
+  spotIt: [
+    "Linked list problems mentioning cycle detection, middle node, or k-th from end.",
+    "Constraint says O(1) extra space \u2014 rules out a visited-set approach.",
+    "Numeric problems like 'happy number' where you iterate a function and need cycle detection.",
+  ],
+  avoidWhen: [
+    "You need the exact cycle length immediately and a counter / hash map is simpler.",
+    "Random access is available and indexing is faster than walking pointers.",
+    "Problem requires modifying or sorting the list \u2014 different traversal pattern fits better.",
+  ],
   variant: "fast-slow",
   view: "linked-list",
   code,

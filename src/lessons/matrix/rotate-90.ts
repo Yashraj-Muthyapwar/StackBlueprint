@@ -61,6 +61,16 @@ export const rotate90: LessonBuilder<Inputs> = {
   title: "Matrix Rotate 90° (Clockwise)",
   subtitle: "Transpose, then reverse each row — an in-place 90° rotation.",
   problem: "Rotate an n×n matrix by 90° clockwise, in place, without allocating a second matrix.",
+  spotIt: [
+    "'Rotate an n\u00d7n matrix in place by 90\u00b0.'",
+    "Constraints forbid allocating a second matrix.",
+    "Variations: rotate 180\u00b0 / 270\u00b0, rotate image clockwise / counter-clockwise.",
+  ],
+  avoidWhen: [
+    "Matrix is not square \u2014 use a transpose + dimension swap into a new matrix.",
+    "Extra memory is fine \u2014 a straight index-mapping copy is simpler.",
+    "You need to rotate by an arbitrary angle, not a multiple of 90\u00b0.",
+  ],
   variant: "rotate-90",
   view: "matrix",
   code,

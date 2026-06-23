@@ -76,6 +76,16 @@ export const bsearchAnswer: LessonBuilder<Inputs> = {
   title: "Binary Search on Answer",
   subtitle: "When the answer space is monotonic (feasible / infeasible), binary search the answer itself.",
   problem: "Given a non-negative integer x, compute the integer square root: the largest integer r such that r*r <= x.",
+  spotIt: [
+    "'Minimum / maximum value such that a check passes' with a clear feasible/infeasible boundary.",
+    "You can write a fast feasibility check but can't enumerate all answers.",
+    "Phrases: 'minimize the largest', 'split array', 'capacity to ship', 'eat bananas in H hours'.",
+  ],
+  avoidWhen: [
+    "Feasibility is not monotonic in the answer \u2014 binary search will lock onto the wrong side.",
+    "The answer space is tiny \u2014 just iterate.",
+    "Check function is too slow \u2014 bring the per-step cost down first.",
+  ],
   variant: "bsearch-answer",
   view: "array",
   code,
