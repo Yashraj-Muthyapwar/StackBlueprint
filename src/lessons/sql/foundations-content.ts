@@ -380,6 +380,11 @@ const numericText: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "type-sizes",
+      caption: "Storage size grows fast",
+    },
+    {
       kind: "table",
       caption: "Numeric types (PostgreSQL)",
       headers: ["Type", "Bytes", "Range / precision", "Use for"],
@@ -581,6 +586,11 @@ const nullSemantics: LessonContent = {
       body: [
         "NULL means 'we don't know'. It's not zero, not empty string, not false. And because we don't know, almost any operation on NULL returns NULL — including comparisons. This is called three-valued logic: results can be TRUE, FALSE, or UNKNOWN.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "null-truth",
+      caption: "Three-valued logic, one row at a time",
     },
     {
       kind: "diagram",
@@ -798,6 +808,11 @@ const selectFrom: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "select-projection",
+      caption: "SELECT * vs. picking the columns you need",
+    },
+    {
       kind: "code",
       language: "sql",
       caption: "Projection and aliasing",
@@ -989,6 +1004,11 @@ const logicalOrder: LessonContent = {
       body: [
         "SQL is written SELECT-first but evaluated FROM-first. Knowing the real order is the single most useful piece of mental machinery in the language — it explains every 'why can't I reference my alias here?' question you'll ever have.",
       ],
+    },
+    {
+      kind: "animation",
+      variant: "pipeline",
+      caption: "Watch a query flow through the 7-step pipeline",
     },
     {
       kind: "diagram",
