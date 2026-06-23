@@ -10,33 +10,69 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PatternsPatternRouteImport } from './routes/patterns.$pattern'
+import { Route as PatternsPatternIndexRouteImport } from './routes/patterns.$pattern.index'
+import { Route as PatternsPatternLessonRouteImport } from './routes/patterns.$pattern.$lesson'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PatternsPatternRoute = PatternsPatternRouteImport.update({
+  id: '/patterns/$pattern',
+  path: '/patterns/$pattern',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatternsPatternIndexRoute = PatternsPatternIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PatternsPatternRoute,
+} as any)
+const PatternsPatternLessonRoute = PatternsPatternLessonRouteImport.update({
+  id: '/$lesson',
+  path: '/$lesson',
+  getParentRoute: () => PatternsPatternRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
+  '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
+  '/patterns/$pattern/': typeof PatternsPatternIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
+  '/patterns/$pattern': typeof PatternsPatternIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
+  '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
+  '/patterns/$pattern/': typeof PatternsPatternIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/patterns/$pattern'
+    | '/patterns/$pattern/$lesson'
+    | '/patterns/$pattern/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/patterns/$pattern/$lesson' | '/patterns/$pattern'
+  id:
+    | '__root__'
+    | '/'
+    | '/patterns/$pattern'
+    | '/patterns/$pattern/$lesson'
+    | '/patterns/$pattern/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +84,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/patterns/$pattern': {
+      id: '/patterns/$pattern'
+      path: '/patterns/$pattern'
+      fullPath: '/patterns/$pattern'
+      preLoaderRoute: typeof PatternsPatternRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patterns/$pattern/': {
+      id: '/patterns/$pattern/'
+      path: '/'
+      fullPath: '/patterns/$pattern/'
+      preLoaderRoute: typeof PatternsPatternIndexRouteImport
+      parentRoute: typeof PatternsPatternRoute
+    }
+    '/patterns/$pattern/$lesson': {
+      id: '/patterns/$pattern/$lesson'
+      path: '/$lesson'
+      fullPath: '/patterns/$pattern/$lesson'
+      preLoaderRoute: typeof PatternsPatternLessonRouteImport
+      parentRoute: typeof PatternsPatternRoute
+    }
   }
 }
 
+interface PatternsPatternRouteChildren {
+  PatternsPatternLessonRoute: typeof PatternsPatternLessonRoute
+  PatternsPatternIndexRoute: typeof PatternsPatternIndexRoute
+}
+
+const PatternsPatternRouteChildren: PatternsPatternRouteChildren = {
+  PatternsPatternLessonRoute: PatternsPatternLessonRoute,
+  PatternsPatternIndexRoute: PatternsPatternIndexRoute,
+}
+
+const PatternsPatternRouteWithChildren = PatternsPatternRoute._addFileChildren(
+  PatternsPatternRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PatternsPatternRoute: PatternsPatternRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

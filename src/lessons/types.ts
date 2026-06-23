@@ -63,7 +63,8 @@ export type InputField =
   | { key: string; label: string; kind: "intMatrix"; help?: string }
   | { key: string; label: string; kind: "intPairs"; help?: string };
 
-export type LessonBuilder<TInputs extends Record<string, unknown> = Record<string, unknown>> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   slug: string;
   title: string;
   subtitle: string;
