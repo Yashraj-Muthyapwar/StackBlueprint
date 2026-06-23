@@ -55,11 +55,10 @@ function Landing() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              to="/tracks/$track"
-              params={{ track: "sql-mastery" }}
+              to="/sql"
               className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-5 py-2.5 text-sm text-foreground backdrop-blur transition-colors hover:border-foreground/30"
             >
-              Preview SQL Mastery
+              Explore SQL Mastery
             </Link>
           </div>
         </div>
@@ -139,11 +138,21 @@ function Landing() {
                 </div>
               );
 
-              return isUnlocked ? (
-                <Link key={cat.slug} to="/patterns" className="block">
-                  {card}
-                </Link>
-              ) : (
+              if (isUnlocked) {
+                return (
+                  <Link key={cat.slug} to="/patterns" className="block">
+                    {card}
+                  </Link>
+                );
+              }
+              if (cat.slug === "sql-mastery") {
+                return (
+                  <Link key={cat.slug} to="/sql" className="block">
+                    {card}
+                  </Link>
+                );
+              }
+              return (
                 <Link
                   key={cat.slug}
                   to="/tracks/$track"
