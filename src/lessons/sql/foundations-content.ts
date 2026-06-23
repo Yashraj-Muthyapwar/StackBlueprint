@@ -12,6 +12,17 @@ export type Section =
       body: string;
     }
   | { kind: "diagram"; ascii: string; caption?: string }
+  | {
+      kind: "animation";
+      variant:
+        | "pipeline"
+        | "select-projection"
+        | "table-build"
+        | "foreign-key"
+        | "null-truth"
+        | "type-sizes";
+      caption?: string;
+    }
   | { kind: "takeaways"; items: string[] };
 
 export type LessonContent = {
