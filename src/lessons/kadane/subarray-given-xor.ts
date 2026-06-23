@@ -56,6 +56,6 @@ export const subarrayGivenXor: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (non-negative ints)", kind: "intArray" },
     { key: "k", label: "Target XOR k", kind: "int" },
   ],
-  zvalidate: ({ arr }) => (arr.some((v) => v < 0) ? ["Use non-negative ints for XOR in this demo."] : []),
+  validate: ({ arr }) => (arr.some((v) => v < 0) ? ["Use non-negative ints for XOR in this demo."] : []),
   build,
 };

@@ -80,7 +80,7 @@ export const bsearchAnswer: LessonBuilder<Inputs> = {
   code,
   defaultInputs: { x: 30 },
   inputs: [{ key: "x", label: "x  (compute ⌊√x⌋)", kind: "int", min: 0, max: 64 }],
-  zvalidate: ({ x }) => {
+  validate: ({ x }) => {
     const w: string[] = [];
     if (x < 0) w.push("x must be ≥ 0.");
     if (x > 64) w.push("Keep x ≤ 64 for a readable search space.");

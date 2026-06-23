@@ -97,7 +97,7 @@ export const fixedSize: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array", kind: "intArray" },
     { key: "k", label: "Window size k", kind: "int", min: 1 },
   ],
-  zvalidate: ({ arr, k }) => {
+  validate: ({ arr, k }) => {
     const w: string[] = [];
     if (!Number.isInteger(k) || k < 1) w.push("k must be a positive integer.");
     else if (k > arr.length) w.push(`k (${k}) > array length (${arr.length}).`);

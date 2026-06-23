@@ -107,7 +107,7 @@ export const dutchFlag: LessonBuilder<Inputs> = {
   code,
   defaultInputs: { arr: [2, 0, 2, 1, 1, 0, 0, 2, 1] },
   inputs: [{ key: "arr", label: "Array (values 0/1/2)", kind: "intArray" }],
-  zvalidate: ({ arr }) => {
+  validate: ({ arr }) => {
     const w: string[] = [];
     const bad = arr.filter((v) => v !== 0 && v !== 1 && v !== 2);
     if (bad.length) w.push(`Dutch Flag expects only 0/1/2. Found: ${[...new Set(bad)].join(", ")}.`);

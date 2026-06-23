@@ -63,6 +63,6 @@ export const transposeFlip: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Matrix (any shape)", kind: "intMatrix" }],
-  zvalidate: ({ matrix }) => (matrix.length === 0 || matrix[0].length === 0 ? ["Matrix is empty."] : []),
+  validate: ({ matrix }) => (matrix.length === 0 || matrix[0].length === 0 ? ["Matrix is empty."] : []),
   build,
 };

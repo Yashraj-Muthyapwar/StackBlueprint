@@ -73,7 +73,7 @@ export const prefixXor: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (non-negative ints)", kind: "intArray" },
     { key: "queries", label: "Queries (l,r pairs)", kind: "intPairs" },
   ],
-  zvalidate: ({ arr, queries }) => {
+  validate: ({ arr, queries }) => {
     const w: string[] = [];
     if (arr.some((v) => v < 0)) w.push("XOR is defined for non-negative ints in this demo.");
     for (const [l, r] of queries) if (l < 0 || r >= arr.length || l > r) w.push(`Query [${l},${r}] out of bounds.`);
