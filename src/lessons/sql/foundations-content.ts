@@ -246,8 +246,8 @@ const foreignKeys: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "foreign-key",
-      caption: "Referential integrity in motion",
+      variant: "fk-deep",
+      caption: "Parent → child → orphan rejection → CASCADE → SET NULL → RESTRICT",
     },
     {
       kind: "code",
