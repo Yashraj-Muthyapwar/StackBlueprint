@@ -38,6 +38,8 @@ export type Section =
         | "query-structure"
         | "select-distinct"
         | "offset-pagination"
+        | "sql-comments"
+        | "sql-operators"
         | "q-bool"
         | "q-range"
         | "q-like"
@@ -1479,6 +1481,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlCommands, selectFrom, whereLesson, orderLimit, logicalOrder],
+    lessons: [sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };
