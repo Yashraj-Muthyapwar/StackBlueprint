@@ -9,7 +9,11 @@ export type AnimationVariant =
   | "table-build"
   | "foreign-key"
   | "null-truth"
-  | "type-sizes";
+  | "type-sizes"
+  | "where-filter"
+  | "group-by-agg"
+  | "join-types"
+  | "set-ops";
 
 export function LessonAnimation({
   variant,
@@ -67,6 +71,10 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
         {variant === "foreign-key" && <ForeignKeyAnim step={step} />}
         {variant === "null-truth" && <NullTruthAnim step={step} />}
         {variant === "type-sizes" && <TypeSizesAnim step={step} />}
+        {variant === "where-filter" && <WhereFilterAnim step={step} />}
+        {variant === "group-by-agg" && <GroupByAggAnim step={step} />}
+        {variant === "join-types" && <JoinTypesAnim step={step} />}
+        {variant === "set-ops" && <SetOpsAnim step={step} />}
       </div>
       <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
         <div className="flex items-center gap-1">
@@ -129,6 +137,10 @@ const STEP_COUNTS: Record<AnimationVariant, number> = {
   "foreign-key": 3,
   "null-truth": 4,
   "type-sizes": 4,
+  "where-filter": 4,
+  "group-by-agg": 4,
+  "join-types": 4,
+  "set-ops": 3,
 };
 
 // ---------- PIPELINE: SELECT logical query order ----------
@@ -747,6 +759,353 @@ function TypeSizesAnim({ step }: { step: number }) {
       <div className="pt-2 text-sm text-muted-foreground">
         Smaller type → smaller index → faster query. Pick the smallest type that
         fits the real range of your data.
+      </div>
+    </div>
+  );
+}
+
+// ---------- WHERE filter cascade ----------
+
+function WhereFilterAnim({ step }: { step: number }) {
+  const products = [
+    { id: 1, name: "Pen", price: 3, category: 3, deleted: false },
+    { id: 2, name: "Pencil", price: 2, category: 3, deleted: false },
+    { id: 3, name: "Notebook", price: 25, category: 5, deleted: false },
+    { id: 4, name: "Keyboard", price: 120, category: 7, deleted: false },
+    { id: 5, name: "Old Pen", price: 1, category: 3, deleted: true },
+    { id: 6, name: "Mouse", price: 45, category: 7, deleted: false },
+  ];
+  // Step 0: all rows. 1: price BETWEEN 10 AND 100. 2: + category IN (5,7). 3: + deleted_at IS NULL
+  const pass = (r: (typeof products)[number]) => {
+    if (step >= 1 && !(r.price >= 10 && r.price <= 100)) return false;
+    if (step >= 2 && !([5, 7].includes(r.category))) return false;
+    if (step >= 3 && r.deleted) return false;
+    return true;
+  };
+  const predicates = [
+    { label: "no filter", note: "All rows from the FROM relation." },
+    { label: "price BETWEEN 10 AND 100", note: "Drop rows outside the price band." },
+    { label: "AND category_id IN (5, 7)", note: "Keep only matching categories." },
+    { label: "AND deleted_at IS NULL", note: "Soft-deleted rows fall away." },
+  ];
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+      <RowGrid
+        cols={["id", "name", "price", "cat", "deleted"]}
+        rows={products.map((r) => ({
+          key: `p-${r.id}`,
+          cells: [r.id, r.name, `$${r.price}`, r.category, r.deleted ? "✓" : "—"],
+          dimmed: !pass(r),
+          accent: pass(r) ? "mint" : undefined,
+        }))}
+      />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="self-start rounded-lg border border-mint/40 bg-mint/10 p-3"
+        >
+          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-mint">
+            WHERE
+          </div>
+          <div className="mt-1 font-mono text-[12.5px] text-foreground/90">
+            {predicates[step].label}
+          </div>
+          <div className="mt-2 text-sm text-muted-foreground">{predicates[step].note}</div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ---------- GROUP BY collapse ----------
+
+function GroupByAggAnim({ step }: { step: number }) {
+  const sales = [
+    { id: 1, region: "EU", amount: 40 },
+    { id: 2, region: "US", amount: 90 },
+    { id: 3, region: "EU", amount: 25 },
+    { id: 4, region: "APAC", amount: 60 },
+    { id: 5, region: "US", amount: 110 },
+    { id: 6, region: "EU", amount: 55 },
+  ];
+  const groups = useMemo(() => {
+    const m = new Map<string, { region: string; rows: typeof sales; sum: number; count: number; avg: number }>();
+    sales.forEach((r) => {
+      const g = m.get(r.region) ?? { region: r.region, rows: [], sum: 0, count: 0, avg: 0 };
+      g.rows.push(r);
+      g.sum += r.amount;
+      g.count += 1;
+      g.avg = g.sum / g.count;
+      m.set(r.region, g);
+    });
+    return Array.from(m.values());
+  }, []);
+  const havingPass = groups.filter((g) => g.sum >= 100);
+  const notes = [
+    "Start: raw rows from `sales`.",
+    "GROUP BY region — rows fall into buckets by region.",
+    "SELECT region, SUM, COUNT, AVG — one row per group.",
+    "HAVING SUM(amount) >= 100 — drop groups that don't meet the bar.",
+  ];
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+      <div className="min-h-[260px]">
+        {step === 0 && (
+          <RowGrid
+            cols={["id", "region", "amount"]}
+            rows={sales.map((r) => ({ key: `s-${r.id}`, cells: [r.id, r.region, `$${r.amount}`] }))}
+          />
+        )}
+        {step === 1 && (
+          <div className="space-y-2">
+            {groups.map((g) => (
+              <motion.div
+                key={g.region}
+                layout
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-lg border border-violet/30 bg-violet/5 p-3"
+              >
+                <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-violet">
+                  group: {g.region}
+                </div>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {g.rows.map((r) => (
+                    <span
+                      key={r.id}
+                      className="rounded-md bg-surface px-2 py-1 font-mono text-[11px] text-muted-foreground ring-1 ring-hairline"
+                    >
+                      #{r.id} · ${r.amount}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        {step === 2 && (
+          <RowGrid
+            cols={["region", "SUM", "COUNT", "AVG"]}
+            rows={groups.map((g) => ({
+              key: g.region,
+              cells: [g.region, `$${g.sum}`, g.count, `$${g.avg.toFixed(1)}`],
+              accent: "mint",
+            }))}
+          />
+        )}
+        {step === 3 && (
+          <RowGrid
+            cols={["region", "SUM", "passes HAVING?"]}
+            rows={groups.map((g) => ({
+              key: g.region,
+              cells: [g.region, `$${g.sum}`, g.sum >= 100 ? "✓ keep" : "✗ drop"],
+              dimmed: g.sum < 100,
+              accent: g.sum >= 100 ? "mint" : "rose",
+            }))}
+          />
+        )}
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="self-start rounded-lg border border-mint/40 bg-mint/10 p-3 text-sm text-foreground/90"
+        >
+          {notes[step]}
+          {step === 3 && havingPass.length === 0 ? " (no group survived)" : ""}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ---------- Join types ----------
+
+function JoinTypesAnim({ step }: { step: number }) {
+  const users = [
+    { id: 1, name: "Ada" },
+    { id: 2, name: "Linus" },
+    { id: 3, name: "Grace" },
+  ];
+  const orders = [
+    { id: 101, user_id: 1, total: 40 },
+    { id: 102, user_id: 1, total: 60 },
+    { id: 104, user_id: 2, total: 25 },
+    { id: 105, user_id: 4, total: 90 }, // orphan
+  ];
+  const meta = [
+    { label: "INNER JOIN", note: "Only matched pairs survive — Grace and the orphan vanish." },
+    { label: "LEFT JOIN", note: "Every user; orders that don't match become NULLs on the right." },
+    { label: "RIGHT JOIN", note: "Every order; users without orders become NULLs on the left." },
+    { label: "FULL OUTER JOIN", note: "Union of LEFT and RIGHT — every unmatched side gets NULLs." },
+  ];
+
+  // Build joined rows per variant
+  type Pair = { u: typeof users[number] | null; o: typeof orders[number] | null };
+  let pairs: Pair[] = [];
+  if (step === 0) {
+    pairs = orders
+      .map((o): Pair => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }))
+      .filter((p) => p.u !== null);
+  } else if (step === 1) {
+    pairs = users.flatMap((u): Pair[] => {
+      const matches = orders.filter((o) => o.user_id === u.id);
+      return matches.length ? matches.map((o) => ({ u, o })) : [{ u, o: null }];
+    });
+  } else if (step === 2) {
+    pairs = orders.map((o): Pair => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }));
+  } else {
+    const seen = new Set<number>();
+    pairs = users.flatMap((u): Pair[] => {
+      const matches = orders.filter((o) => o.user_id === u.id);
+      matches.forEach((o) => seen.add(o.id));
+      return matches.length ? matches.map((o) => ({ u, o })) : [{ u, o: null }];
+    });
+    orders.filter((o) => !seen.has(o.id)).forEach((o) => pairs.push({ u: null, o }));
+  }
+
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+      <div className="overflow-hidden rounded-lg border border-hairline">
+        <div className="grid grid-cols-4 border-b border-hairline bg-surface-2/60 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="px-3 py-2">user.id</div>
+          <div className="px-3 py-2">user.name</div>
+          <div className="px-3 py-2">order.id</div>
+          <div className="px-3 py-2">order.total</div>
+        </div>
+        <AnimatePresence initial={false}>
+          {pairs.map((p, i) => (
+            <motion.div
+              key={`${step}-${i}`}
+              layout
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="grid grid-cols-4 border-b border-hairline/60 font-mono text-[12.5px] last:border-b-0"
+            >
+              <div className={`px-3 py-2 ${p.u ? "" : "text-amber"}`}>{p.u?.id ?? "NULL"}</div>
+              <div className={`px-3 py-2 ${p.u ? "" : "text-amber"}`}>{p.u?.name ?? "NULL"}</div>
+              <div className={`px-3 py-2 ${p.o ? "" : "text-amber"}`}>{p.o?.id ?? "NULL"}</div>
+              <div className={`px-3 py-2 ${p.o ? "" : "text-amber"}`}>
+                {p.o ? `$${p.o.total}` : "NULL"}
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="self-start rounded-lg border border-mint/40 bg-mint/10 p-3"
+        >
+          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-mint">
+            {meta[step].label}
+          </div>
+          <div className="mt-1.5 text-sm text-foreground/90">{meta[step].note}</div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// ---------- Set operations ----------
+
+function SetOpsAnim({ step }: { step: number }) {
+  const A = [1, 2, 3, 4];
+  const B = [3, 4, 5, 6];
+  const variants = [
+    { label: "UNION", result: Array.from(new Set([...A, ...B])).sort((a, b) => a - b), note: "Combine both sets; UNION removes duplicates (UNION ALL keeps them)." },
+    { label: "INTERSECT", result: A.filter((x) => B.includes(x)), note: "Rows present in BOTH sets." },
+    { label: "EXCEPT", result: A.filter((x) => !B.includes(x)), note: "Rows in A that are NOT in B (a.k.a. MINUS)." },
+  ];
+  const v = variants[step];
+  const inResult = (x: number) => v.result.includes(x);
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+      <div className="space-y-4">
+        <SetRow label="A" items={A} highlight={inResult} />
+        <SetRow label="B" items={B} highlight={(x) => v.label === "UNION" ? inResult(x) : v.label === "INTERSECT" ? inResult(x) : false} />
+        <div className="border-t border-hairline pt-3">
+          <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-mint">
+            {v.label}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <AnimatePresence initial={false}>
+              {v.result.map((x) => (
+                <motion.span
+                  key={`${step}-${x}`}
+                  layout
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.3 }}
+                  className="rounded-md bg-mint/15 px-2.5 py-1 font-mono text-[12.5px] text-mint ring-1 ring-mint/40"
+                >
+                  {x}
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </div>
+        </div>
+      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.3 }}
+          className="self-start rounded-lg border border-mint/40 bg-mint/10 p-3 text-sm text-foreground/90"
+        >
+          {v.note}
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function SetRow({
+  label,
+  items,
+  highlight,
+}: {
+  label: string;
+  items: number[];
+  highlight: (x: number) => boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="w-8 font-mono text-[11px] uppercase tracking-[0.14em] text-violet">
+        {label}
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {items.map((x) => (
+          <span
+            key={x}
+            className={
+              "rounded-md px-2.5 py-1 font-mono text-[12.5px] ring-1 " +
+              (highlight(x)
+                ? "bg-mint/10 text-mint ring-mint/40"
+                : "bg-surface-2/50 text-muted-foreground ring-hairline")
+            }
+          >
+            {x}
+          </span>
+        ))}
       </div>
     </div>
   );
