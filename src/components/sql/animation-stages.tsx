@@ -1244,18 +1244,23 @@ const projStages: Stage[] = [
       "       created_at AS signup_at",
       "FROM   users",
     ],
-    table: {
-      name: "users",
-      cols: ["user_id", "email_addr", "signup_at"],   // ← UPDATE THIS
-      rows: usersP.map(r => [r[0], r[2], r[3]]),       // ← PICK THE RIGHT VALUES
-    },
+    table: { name: "users", cols: pCols, rows: usersP },
     steps: [
-      st([0,1,2], "kept",
-        "AS renames columns in the result...",
-        { highlightCols: [0,1,2], noteTone: "violet" }),
+      st([0,1,2,3], "kept",
+        "AS renames columns in the result projection. Aliases are not visible in WHERE/GROUP BY (SELECT runs last) — only ORDER BY can reuse them.",
+        {
+          highlightCols: [0, 1, 2],
+          noteTone: "violet",
+          rowsOverride: [
+            r("a", 1, "ada@ex.com",   "2026-01-04"),
+            r("b", 2, "linus@ex.com", "2026-01-05"),
+            r("c", 3, "grace@ex.com", "2026-02-11"),
+          ],
+          colsOverride: ["user_id", "email_addr", "signup_at"],
+        }),
     ],
-   },     
- ];
+  },
+];
 
 // ----- table-build -----
 const usersTB: Row[] = [
