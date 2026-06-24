@@ -1235,6 +1235,7 @@ const projStages: Stage[] = [
       st([0], "kept", "Narrow projection — smaller payload, can also enable index-only scans.", { highlightCols: [0,1] }),
     ],
   },
+
   {
     name: "Aliases for downstream code",
     sql: [
@@ -1243,14 +1244,18 @@ const projStages: Stage[] = [
       "       created_at AS signup_at",
       "FROM   users",
     ],
-    table: { name: "users", cols: pCols, rows: usersP },
+    table: {
+      name: "users",
+      cols: ["user_id", "email_addr", "signup_at"],   // ← UPDATE THIS
+      rows: usersP.map(r => [r[0], r[2], r[3]]),       // ← PICK THE RIGHT VALUES
+    },
     steps: [
       st([0,1,2], "kept",
-        "AS renames columns in the result. Aliases are not visible in WHERE/GROUP BY (SELECT runs last) — only ORDER BY can reuse them.",
+        "AS renames columns in the result...",
         { highlightCols: [0,1,2], noteTone: "violet" }),
     ],
-  },
-];
+   },     
+ ];
 
 // ----- table-build -----
 const usersTB: Row[] = [
