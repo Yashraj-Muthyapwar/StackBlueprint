@@ -148,6 +148,7 @@ const STEP_COUNTS: Record<AnimationVariant, number> = {
   "group-by-agg": 4,
   "join-types": 4,
   "set-ops": 3,
+  ...QUERYING_STEP_COUNTS,
 };
 
 // ---------- PIPELINE: SELECT logical query order ----------
