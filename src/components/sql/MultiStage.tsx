@@ -36,6 +36,18 @@ export type StageStep = {
   colsOverride?: string[];
   /** Optional secondary panel (e.g. aggregate result card, bucket cards). */
   side?: React.ReactNode;
+
+  // ---- DUAL-TABLE (join) layout ----
+  /** Per-row states for the LEFT source table in a dual layout. */
+  leftStates?: (RowState | undefined)[];
+  /** Per-row states for the RIGHT source table in a dual layout. */
+  rightStates?: (RowState | undefined)[];
+  /** Result rows produced by joining the two source tables this step. */
+  resultRows?: Row[];
+  /** Column headers for the result panel. */
+  resultCols?: string[];
+  /** Title for the result panel. Defaults to "result". */
+  resultTitle?: string;
 };
 
 export type Stage = {
@@ -44,7 +56,12 @@ export type Stage = {
   /** One-line subtitle shown under the banner. */
   blurb?: string;
   sql: string[];
-  table: { name: string; cols: string[]; rows: Row[] };
+  /** Single source table (default layout). */
+  table?: { name: string; cols: string[]; rows: Row[] };
+  /** Left source table (dual / join layout). */
+  leftTable?: { name: string; cols: string[]; rows: Row[] };
+  /** Right source table (dual / join layout). */
+  rightTable?: { name: string; cols: string[]; rows: Row[] };
   steps: StageStep[];
 };
 
