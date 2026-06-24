@@ -39,6 +39,34 @@ function LessonPage() {
     <div className="px-6 py-8 lg:px-10">
       <div className="mx-auto max-w-6xl">
         <div className="mb-6">
+          <nav
+            aria-label="Breadcrumb"
+            className="mb-3 flex flex-wrap items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+          >
+            <Link to="/patterns" className="hover:text-foreground">
+              Patterns
+            </Link>
+            <ChevronRight className="size-3" />
+            <Link
+              to="/patterns/category/$category"
+              params={{ category: p.category.toLowerCase() === "arrays" ? "arrays" : "strings" }}
+              className="hover:text-foreground"
+            >
+              {p.category}
+            </Link>
+            <ChevronRight className="size-3" />
+            <Link
+              to="/patterns/$pattern"
+              params={{ pattern: p.slug }}
+              className="hover:text-foreground"
+            >
+              {p.title}
+            </Link>
+            <ChevronRight className="size-3" />
+            <span className="text-foreground">
+              {String(idx + 1).padStart(2, "0")} / {String(p.lessons.length).padStart(2, "0")}
+            </span>
+          </nav>
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             {p.category} · {p.title} · {String(idx + 1).padStart(2, "0")} / {String(p.lessons.length).padStart(2, "0")}
           </p>

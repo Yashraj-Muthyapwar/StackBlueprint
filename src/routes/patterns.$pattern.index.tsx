@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
 
@@ -23,9 +23,28 @@ function PatternIndex() {
   const { pattern } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
   if (!p) return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
+  const categorySlug = p.category.toLowerCase() === "arrays" ? "arrays" : "strings";
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-3 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
+        >
+          <Link to="/patterns" className="hover:text-foreground">
+            Patterns
+          </Link>
+          <ChevronRight className="size-3" />
+          <Link
+            to="/patterns/category/$category"
+            params={{ category: categorySlug }}
+            className="hover:text-foreground"
+          >
+            {p.category}
+          </Link>
+          <ChevronRight className="size-3" />
+          <span className="text-foreground">{p.title}</span>
+        </nav>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           {p.category} · Pattern
         </p>

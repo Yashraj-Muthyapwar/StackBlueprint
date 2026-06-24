@@ -21,7 +21,6 @@ import { patterns } from "@/lessons/roadmap";
 
 const arrayPatternTitles = patterns.filter((p) => p.category === "Arrays").map((p) => p.title);
 const stringPatternTitles = patterns.filter((p) => p.category === "Strings").map((p) => p.title);
-const firstStringSlug = patterns.find((p) => p.category === "Strings")?.slug ?? "sliding-window-string";
 
 export const Route = createFileRoute("/patterns/")({
   head: () => ({
@@ -58,7 +57,7 @@ const topics: Topic[] = [
       "Two pointers, sliding window, prefix-based, Kadane's, binary search, and matrix traversals.",
     icon: Boxes,
     locked: false,
-    to: "/patterns/two-pointers",
+    to: "/patterns/category/arrays",
     patternsList: arrayPatternTitles,
   },
   {
@@ -67,7 +66,7 @@ const topics: Topic[] = [
       "Sliding window on characters, two-pointer scans, and exact matching with KMP, Rabin–Karp, and Z.",
     icon: Type,
     locked: false,
-    to: `/patterns/${firstStringSlug}`,
+    to: "/patterns/category/strings",
     patternsList: stringPatternTitles,
   },
   {
@@ -232,12 +231,12 @@ function PatternsIndex() {
               );
 
               if (!t.locked && t.to) {
-                const slug = t.to.replace("/patterns/", "");
+                const category = t.to.replace("/patterns/category/", "");
                 return (
                   <Link
                     key={t.title}
-                    to="/patterns/$pattern"
-                    params={{ pattern: slug }}
+                    to="/patterns/category/$category"
+                    params={{ category }}
                     className="block"
                   >
                     {card}
