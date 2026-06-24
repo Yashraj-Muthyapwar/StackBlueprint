@@ -158,10 +158,23 @@ const rangeStages: Stage[] = [
     table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
     steps: [
       st([2], () => "dropped" as RowState,
-        "NOT IN expands to status<>'refund' AND status<>NULL. The second compares to NULL → UNKNOWN → row drops. ZERO rows returned.",
+        "NOT IN expands to status<>'refund' AND status<>NULL. The second comparison is UNKNOWN for every row → 3VL drops everything. ZERO rows returned.",
         { highlightCols: [3], noteTone: "rose" }),
-      st([2], pass((r) => r.cells[3] !== "refund"),
-        "Fix: NOT IN (SELECT … WHERE x IS NOT NULL), or use NOT EXISTS which handles NULL correctly.",
+    ],
+  },
+  {
+    name: "Fix: filter NULLs first",
+    blurb: "Rewrite with an explicit IS NOT NULL — or use NOT EXISTS",
+    sql: [
+      "SELECT id, customer, status",
+      "FROM   orders",
+      "WHERE  status <> 'refund'",
+      "       AND status IS NOT NULL",
+    ],
+    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    steps: [
+      st([2,3], pass((r) => r.cells[3] !== "refund" && r.cells[3] !== null),
+        "Now the predicate is TRUE/FALSE — never UNKNOWN. 5 rows survive; only Alan (refund) drops.",
         { highlightCols: [3], noteTone: "mint" }),
     ],
   },
