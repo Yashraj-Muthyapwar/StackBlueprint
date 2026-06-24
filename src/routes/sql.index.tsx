@@ -118,6 +118,8 @@ const sections: Section[] = [
         blurb: "AND/OR/NOT, IN, BETWEEN, LIKE, ILIKE, and the NULL three-valued logic trap.",
         icon: Filter,
         modules: ["Boolean logic", "IN / BETWEEN", "Pattern match", "NULL pitfalls"],
+        unlocked: true,
+        routeBase: "querying",
       },
       {
         slug: "aggregations",
@@ -125,6 +127,8 @@ const sections: Section[] = [
         blurb: "COUNT, SUM, AVG, MIN, MAX, HAVING — and what GROUP BY really does to a row.",
         icon: Sigma,
         modules: ["Aggregate funcs", "GROUP BY", "HAVING", "GROUPING SETS"],
+        unlocked: true,
+        routeBase: "querying",
       },
       {
         slug: "joins",
@@ -133,6 +137,8 @@ const sections: Section[] = [
           "INNER, LEFT, RIGHT, FULL, SEMI, ANTI, CROSS — pick the right join for the shape of your data.",
         icon: GitMerge,
         modules: ["INNER / OUTER", "Self joins", "Semi & anti", "Join algorithms"],
+        unlocked: true,
+        routeBase: "querying",
       },
       {
         slug: "subqueries",
@@ -140,9 +146,12 @@ const sections: Section[] = [
         blurb: "Scalar, correlated, EXISTS, UNION/INTERSECT/EXCEPT — when a subquery beats a join.",
         icon: Layers,
         modules: ["Scalar subqueries", "Correlated", "EXISTS / IN", "UNION / EXCEPT"],
+        unlocked: true,
+        routeBase: "querying",
       },
     ],
   },
+
   {
     group: "Specialized Data Handling",
     groupBlurb:
