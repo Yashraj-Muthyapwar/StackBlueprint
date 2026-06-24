@@ -28,7 +28,8 @@ const PARTITION_LABEL: Record<"low" | "mid" | "high", string> = {
 function sizing(n: number) {
   if (n <= 7) return { CELL: 64, GAP: 10 };
   if (n <= 9) return { CELL: 54, GAP: 8 };
-  return { CELL: 44, GAP: 6 };
+  if (n <= 14) return { CELL: 44, GAP: 6 };
+  return { CELL: 34, GAP: 5 };
 }
 
 export function ArrayCanvas({ step }: { step: ArrayStep }) {

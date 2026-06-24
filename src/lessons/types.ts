@@ -41,7 +41,7 @@ export type Step = {
   narration: string;
   status?: string;
   // array view
-  array?: number[];
+  array?: (number | string)[];
   pointers?: Pointer[];
   partitions?: Partition[];
   highlight?: Highlight;
@@ -61,7 +61,8 @@ export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string }
   | { key: string; label: string; kind: "int"; min?: number; max?: number; help?: string }
   | { key: string; label: string; kind: "intMatrix"; help?: string }
-  | { key: string; label: string; kind: "intPairs"; help?: string };
+  | { key: string; label: string; kind: "intPairs"; help?: string }
+  | { key: string; label: string; kind: "string"; help?: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LessonBuilder<TInputs extends Record<string, any> = any> = {

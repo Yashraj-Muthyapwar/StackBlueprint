@@ -74,6 +74,16 @@ export function AppSidebar() {
               <SidebarMenu>
                 {cat.locked ? (
                   <LockedCategoryItem cat={cat} pathname={pathname} onNavigate={closeMobile} />
+                ) : cat.sections && cat.sections.length > 0 ? (
+                  cat.sections.map((sec) => (
+                    <SectionMaster
+                      key={sec.title}
+                      title={sec.title}
+                      patterns={sec.patterns}
+                      pathname={pathname}
+                      onNavigate={closeMobile}
+                    />
+                  ))
                 ) : cat.sectionTitle ? (
                   <SectionMaster
                     title={cat.sectionTitle}
