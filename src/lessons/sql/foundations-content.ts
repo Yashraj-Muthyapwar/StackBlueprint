@@ -896,12 +896,81 @@ FROM (
 GROUP BY plan;`,
     },
     {
+      kind: "prose",
+      heading: "DISTINCT — collapse duplicate rows",
+      body: [
+        "By default a SELECT keeps every input row, even when the projected values repeat. Add `DISTINCT` immediately after `SELECT` and the engine runs a dedupe pass (hash or sort) over the projected tuple — every UNIQUE combination of selected columns survives exactly once.",
+        "`DISTINCT` is evaluated over the WHOLE projection, not just the first column. `SELECT DISTINCT a, b` gives unique (a, b) pairs, not unique a's. For per-column counts of unique values, use `COUNT(DISTINCT col)` inside an aggregate instead.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "select-distinct",
+      caption: "DISTINCT dedupes the projected tuple — one column, many columns, and COUNT(DISTINCT)",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DISTINCT in three shapes",
+      code: `-- Unique values in one column
+SELECT DISTINCT country
+FROM   customers;
+
+-- Unique combinations across columns
+SELECT DISTINCT country, plan
+FROM   customers;
+
+-- Count unique without returning the values
+SELECT COUNT(*)                AS rows_seen,
+       COUNT(DISTINCT country) AS unique_countries
+FROM   customers;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "DISTINCT is not free",
+      body: "Dedupe requires either a sort or a hash table over the projected rows. On large result sets COUNT(DISTINCT col) above ~10 M unique keys can spill to disk — consider HyperLogLog (approx_count_distinct) for that scale.",
+    },
+    {
+      kind: "prose",
+      heading: "The structure of a SQL query",
+      body: [
+        "A real SELECT statement is built from clauses that snap together in a specific order. Each clause is optional after FROM — but the order is fixed: SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT.",
+        "Think of each clause as a station on an assembly line. FROM brings in the raw rows, WHERE drops the ones that don't pass the predicate, GROUP BY collapses the survivors into buckets, HAVING filters those buckets, SELECT projects (and renames) the columns the caller will actually see, ORDER BY sorts them, and LIMIT caps how many flow out the door.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "query-structure",
+      caption: "Build a full SELECT one clause at a time, watching rows transform at each station",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Every clause in one query",
+      code: `SELECT  customer,
+        SUM(total) AS revenue       -- 5. project + alias
+FROM    orders                       -- 1. source
+WHERE   status = 'paid'              -- 2. row filter
+GROUP   BY customer                  -- 3. collapse
+HAVING  SUM(total) > 200             -- 4. group filter
+ORDER   BY revenue DESC              -- 6. sort
+LIMIT   2;                           -- 7. cap`,
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Reading the clause order is reading the engine",
+      body: "The number in the comment above is the LOGICAL execution order — not the written order. Once you internalise it, 'why can't I use my alias here?' answers itself: the alias only exists from step 5 onward.",
+    },
+    {
       kind: "takeaways",
       items: [
         "Name your columns; never SELECT * in production code.",
         "Use AS to alias for clarity (works for both tables and columns).",
         "FROM accepts any relation: table, subquery, CTE, view, JOIN.",
-        "Computations in the SELECT list run per row — keep them cheap or move them into a CTE.",
+        "DISTINCT dedupes the entire projected row, not a single column.",
+        "Clauses run in a fixed logical order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
       ],
     },
   ],
