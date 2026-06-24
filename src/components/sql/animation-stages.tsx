@@ -2147,6 +2147,401 @@ const introStorage: Stage[] = [
 ];
 
 // ============================================================
+// FOUNDATIONS — Select Fundamentals deep dives
+// ============================================================
+
+// ---------- commands-map: visual tree of SQL command families ----------
+type CmdNode = { key: string; verbs: string[]; tone: Tone; desc: string };
+const CMD_FAMILIES: CmdNode[] = [
+  { key: "DDL", tone: "violet",  desc: "Data Definition — schema/structure",     verbs: ["CREATE","ALTER","DROP","TRUNCATE","RENAME"] },
+  { key: "DML", tone: "mint",    desc: "Data Manipulation — rows in tables",     verbs: ["INSERT","UPDATE","DELETE","MERGE"] },
+  { key: "DQL", tone: "amber",   desc: "Data Query — pure reads",                verbs: ["SELECT"] },
+  { key: "DCL", tone: "rose",    desc: "Data Control — permissions",             verbs: ["GRANT","REVOKE"] },
+  { key: "TCL", tone: "neutral", desc: "Transaction Control — atomic units",     verbs: ["BEGIN","COMMIT","ROLLBACK","SAVEPOINT"] },
+];
+
+const toneRing: Record<Tone, string> = {
+  mint:    "border-mint/50 bg-mint/10 text-mint",
+  rose:    "border-rose/50 bg-rose/10 text-rose",
+  amber:   "border-amber/50 bg-amber/10 text-amber",
+  violet:  "border-violet/50 bg-violet/10 text-violet",
+  neutral: "border-hairline bg-surface-2/60 text-foreground/80",
+};
+
+const CommandsMap = ({ active }: { active: string | null }) => (
+  <div className="rounded-lg border border-hairline bg-surface-2/30 p-4">
+    <div className="mx-auto mb-3 w-fit rounded-md border border-mint/40 bg-mint/10 px-3 py-1 text-center font-mono text-[12px] text-mint">
+      SQL Commands
+    </div>
+    <div className="grid grid-cols-5 gap-2">
+      {CMD_FAMILIES.map((f) => {
+        const isActive = active === f.key || active === "all";
+        const dim = active && active !== "all" && active !== f.key;
+        return (
+          <div key={f.key} className={`transition-opacity ${dim ? "opacity-30" : "opacity-100"}`}>
+            <div className={`rounded-md border px-2 py-1 text-center font-mono text-[11px] ${isActive ? toneRing[f.tone] : "border-hairline bg-surface text-muted-foreground"}`}>
+              {f.key}
+            </div>
+            <div className="mt-2 flex flex-col gap-1.5">
+              {f.verbs.map((v) => (
+                <div
+                  key={v}
+                  className={`rounded border px-1.5 py-0.5 text-center font-mono text-[10.5px] ${isActive ? "border-mint/30 bg-mint/5 text-foreground/90" : "border-hairline/60 bg-surface text-muted-foreground"}`}
+                >
+                  {v}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    {active && active !== "all" ? (
+      <div className="mt-3 rounded-md border border-hairline bg-surface px-3 py-2 font-mono text-[11.5px] text-foreground/85">
+        <span className="text-mint">{active}</span> — {CMD_FAMILIES.find((f) => f.key === active)?.desc}
+      </div>
+    ) : null}
+  </div>
+);
+
+const commandsMapStages: Stage[] = [
+  {
+    name: "All five families at a glance",
+    blurb: "Every SQL statement belongs to exactly one",
+    sql: ["-- SQL = DDL + DML + DQL + DCL + TCL"],
+    steps: [
+      st([0], "kept", "Five families. Each has a different blast radius and is granted to different roles in production.",
+        { side: <CommandsMap active="all" />, noteTone: "violet" }),
+    ],
+  },
+  {
+    name: "DDL — Data Definition",
+    sql: ["CREATE TABLE products (", "  id BIGSERIAL PRIMARY KEY,", "  name TEXT NOT NULL", ");", "ALTER  TABLE products ADD COLUMN sku TEXT;", "DROP   TABLE products;"],
+    steps: [
+      st([0,1,2,3], "kept", "CREATE builds the shape. ALTER changes it. DROP removes it. In most engines DDL is auto-committed — DROP is final the instant it returns.",
+        { side: <CommandsMap active="DDL" />, noteTone: "violet" }),
+    ],
+  },
+  {
+    name: "DML — Data Manipulation",
+    sql: ["INSERT INTO products (name) VALUES ('Pen');", "UPDATE products SET name = 'Gel Pen' WHERE id = 1;", "DELETE FROM products WHERE id = 1;"],
+    steps: [
+      st([0,1,2], "kept", "DML moves rows in and out. Always transactional — wrap in BEGIN / COMMIT so you can ROLLBACK on mistakes.",
+        { side: <CommandsMap active="DML" />, noteTone: "mint" }),
+    ],
+  },
+  {
+    name: "DQL — Data Query",
+    sql: ["SELECT id, name, price", "FROM   products", "WHERE  price < 50", "ORDER  BY price DESC;"],
+    steps: [
+      st([0,1,2,3], "kept", "DQL is read-only. The safest permission you can grant — give analytics roles DQL and nothing else.",
+        { side: <CommandsMap active="DQL" />, noteTone: "amber" }),
+    ],
+  },
+  {
+    name: "DCL — Data Control",
+    sql: ["GRANT  SELECT, INSERT ON products TO app_user;", "REVOKE DELETE ON products FROM app_user;"],
+    steps: [
+      st([0,1], "kept", "DCL controls WHO can do WHAT. Usually managed by DBAs / migrations, never by application code.",
+        { side: <CommandsMap active="DCL" />, noteTone: "rose" }),
+    ],
+  },
+  {
+    name: "TCL — Transaction Control",
+    sql: ["BEGIN;", "  UPDATE accounts SET balance = balance - 100 WHERE id = 1;", "  SAVEPOINT after_debit;", "  UPDATE accounts SET balance = balance + 100 WHERE id = 2;", "COMMIT;"],
+    steps: [
+      st([0,1,2,3,4], "kept", "TCL bundles statements into an atomic unit. SAVEPOINT lets you roll back a slice without losing the whole transaction.",
+        { side: <CommandsMap active="TCL" />, noteTone: "neutral" }),
+    ],
+  },
+];
+
+// ---------- query-structure: build a SELECT clause by clause ----------
+const QS_COLS = ["id", "customer", "country", "total", "status", "placed_at"];
+const QS_ROWS: Row[] = [
+  r(1, 101, "Ada",   "US", 320, "paid",    "2026-06-01"),
+  r(2, 102, "Linus", "FI", 80,  "paid",    "2026-06-03"),
+  r(3, 103, "Ada",   "US", 120, "paid",    "2026-06-05"),
+  r(4, 104, "Grace", "US", 540, "paid",    "2026-06-07"),
+  r(5, 105, "Linus", "FI", 60,  "refund",  "2026-06-09"),
+  r(6, 106, "Ada",   "US", 90,  "paid",    "2026-06-11"),
+  r(7, 107, "Alan",  "UK", 410, "paid",    "2026-06-12"),
+  r(8, 108, "Grace", "US", 200, "paid",    "2026-06-14"),
+];
+
+const grpResult = (rows: Row[]): Row[] => {
+  const buckets: Record<string, { customer: string; revenue: number; n: number }> = {};
+  rows.forEach((row) => {
+    const c = String(row.cells[1]);
+    const t = Number(row.cells[3]);
+    buckets[c] ??= { customer: c, revenue: 0, n: 0 };
+    buckets[c].revenue += t;
+    buckets[c].n += 1;
+  });
+  return Object.values(buckets).map((b) => r(b.customer, b.customer, b.revenue, b.n));
+};
+
+const queryStructureStages: Stage[] = [
+  {
+    name: "FROM — pick the source",
+    sql: ["FROM orders"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([0], "pending", "Step 1 of the logical pipeline. FROM names the relation we'll work with — 8 rows enter the pipe.",
+        { noteTone: "neutral" }),
+    ],
+  },
+  {
+    name: "WHERE — row-level filter",
+    sql: ["SELECT *", "FROM   orders", "WHERE  status = 'paid'", "       AND placed_at >= '2026-06-01'"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([2,3], pass((row) => row.cells[4] === "paid"),
+        "WHERE evaluates row-by-row. Refund row drops; 7 paid rows survive into the next step.",
+        { highlightCols: [4,5] }),
+    ],
+  },
+  {
+    name: "GROUP BY — collapse into buckets",
+    sql: ["SELECT customer,", "       SUM(total)  AS revenue,", "       COUNT(*)    AS orders", "FROM   orders", "WHERE  status = 'paid'", "GROUP  BY customer"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([5], pass((row) => row.cells[4] === "paid"),
+        "GROUP BY hashes surviving rows by customer. Each bucket will reduce into one output row.",
+        { highlightCols: [1] }),
+      st([0,1,2,5], "kept",
+        "Aggregates SUM/COUNT reduce per bucket. 7 rows → 4 grouped rows.",
+        {
+          rowsOverride: grpResult(QS_ROWS.filter((row) => row.cells[4] === "paid")),
+          colsOverride: ["customer", "revenue", "orders"],
+          noteTone: "mint",
+        }),
+    ],
+  },
+  {
+    name: "HAVING — filter the groups",
+    sql: ["SELECT customer,", "       SUM(total) AS revenue", "FROM   orders", "WHERE  status = 'paid'", "GROUP  BY customer", "HAVING SUM(total) > 200"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([5], "kept",
+        "HAVING runs AFTER aggregation — it filters GROUPS, not rows. Buckets with revenue ≤ 200 fall away.",
+        {
+          rowsOverride: grpResult(QS_ROWS.filter((row) => row.cells[4] === "paid"))
+            .filter((row) => Number(row.cells[2]) > 200)
+            .map((row) => r(row.key, row.cells[1], row.cells[2])),
+          colsOverride: ["customer", "revenue"],
+          noteTone: "violet",
+        }),
+    ],
+  },
+  {
+    name: "ORDER BY — sort the survivors",
+    sql: ["SELECT customer,", "       SUM(total) AS revenue", "FROM   orders", "WHERE  status = 'paid'", "GROUP  BY customer", "HAVING SUM(total) > 200", "ORDER  BY revenue DESC"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([6], "kept",
+        "ORDER BY runs after SELECT — it can reuse the 'revenue' alias because the projection has happened.",
+        {
+          rowsOverride: grpResult(QS_ROWS.filter((row) => row.cells[4] === "paid"))
+            .filter((row) => Number(row.cells[2]) > 200)
+            .map((row) => r(row.key, row.cells[1], row.cells[2]))
+            .sort((a, b) => Number(b.cells[1]) - Number(a.cells[1])),
+          colsOverride: ["customer", "revenue"],
+          noteTone: "amber",
+        }),
+    ],
+  },
+  {
+    name: "LIMIT — cap the output",
+    sql: ["SELECT customer,", "       SUM(total) AS revenue", "FROM   orders", "WHERE  status = 'paid'", "GROUP  BY customer", "HAVING SUM(total) > 200", "ORDER  BY revenue DESC", "LIMIT  2"],
+    table: { name: "orders", cols: QS_COLS, rows: QS_ROWS },
+    steps: [
+      st([7], "kept",
+        "LIMIT is the last step. We finally hand the client just the top 2 customers. Pipeline: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
+        {
+          rowsOverride: grpResult(QS_ROWS.filter((row) => row.cells[4] === "paid"))
+            .filter((row) => Number(row.cells[2]) > 200)
+            .map((row) => r(row.key, row.cells[1], row.cells[2]))
+            .sort((a, b) => Number(b.cells[1]) - Number(a.cells[1]))
+            .slice(0, 2),
+          colsOverride: ["customer", "revenue"],
+          noteTone: "mint",
+        }),
+    ],
+  },
+];
+
+// ---------- select-distinct ----------
+const DST_COLS = ["id", "customer", "country", "plan"];
+const DST_ROWS: Row[] = [
+  r(1, 1, "Ada",   "US", "pro"),
+  r(2, 2, "Linus", "FI", "free"),
+  r(3, 3, "Ada",   "US", "pro"),
+  r(4, 4, "Grace", "US", "pro"),
+  r(5, 5, "Linus", "FI", "pro"),
+  r(6, 6, "Alan",  "UK", "free"),
+  r(7, 7, "Ada",   "US", "free"),
+];
+
+const distinctStages: Stage[] = [
+  {
+    name: "Without DISTINCT — duplicates everywhere",
+    sql: ["SELECT country", "FROM   customers"],
+    table: { name: "customers", cols: DST_COLS, rows: DST_ROWS },
+    steps: [
+      st([0,1], "kept",
+        "Projection without DISTINCT preserves every input row — 7 values, with US repeated 4 times and FI twice.",
+        { highlightCols: [2] }),
+    ],
+  },
+  {
+    name: "DISTINCT one column",
+    sql: ["SELECT DISTINCT country", "FROM   customers"],
+    table: { name: "customers", cols: DST_COLS, rows: DST_ROWS },
+    steps: [
+      st([0,1], "kept",
+        "DISTINCT runs a hash/sort dedupe pass after the projection. 7 → 3 unique countries: US, FI, UK.",
+        {
+          rowsOverride: [r("US","US"), r("FI","FI"), r("UK","UK")],
+          colsOverride: ["country"],
+          noteTone: "mint",
+        }),
+    ],
+  },
+  {
+    name: "DISTINCT applies to the WHOLE row",
+    sql: ["SELECT DISTINCT country, plan", "FROM   customers"],
+    table: { name: "customers", cols: DST_COLS, rows: DST_ROWS },
+    steps: [
+      st([0,1], "kept",
+        "DISTINCT looks at the entire projected tuple, not just the first column. 7 → 5 unique pairs.",
+        {
+          rowsOverride: [
+            r("a","US","pro"),
+            r("b","FI","free"),
+            r("c","US","free"),
+            r("d","FI","pro"),
+            r("e","UK","free"),
+          ],
+          colsOverride: ["country","plan"],
+          noteTone: "violet",
+        }),
+    ],
+  },
+  {
+    name: "COUNT(DISTINCT …) — cardinality, not rows",
+    sql: ["SELECT COUNT(*)              AS rows_seen,", "       COUNT(DISTINCT country) AS unique_countries", "FROM   customers"],
+    table: { name: "customers", cols: DST_COLS, rows: DST_ROWS },
+    steps: [
+      st([0,1,2], "kept",
+        "COUNT(*) = 7 input rows. COUNT(DISTINCT country) = 3 unique values. Different questions, different answers — DISTINCT is memory-heavy on large cardinalities.",
+        {
+          rowsOverride: [r("k", 7, 3)],
+          colsOverride: ["rows_seen","unique_countries"],
+          noteTone: "amber",
+        }),
+    ],
+  },
+];
+
+// ---------- offset-pagination + 2nd highest salary ----------
+const SAL_COLS = ["id", "name", "salary"];
+const SAL_ROWS: Row[] = [
+  r(1, 1, "Ada",    140000),
+  r(2, 2, "Linus",  120000),
+  r(3, 3, "Grace",  95000),
+  r(4, 4, "Alan",   150000),
+  r(5, 5, "Edsger", 80000),
+  r(6, 6, "Donald", 110000),
+  r(7, 7, "Barbara",95000),
+];
+
+const sortedDesc = [...SAL_ROWS].sort((a, b) => Number(b.cells[2]) - Number(a.cells[2]));
+
+const offsetStages: Stage[] = [
+  {
+    name: "ORDER BY — sort the table",
+    sql: ["SELECT id, name, salary", "FROM   employees", "ORDER  BY salary DESC"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([0,1,2], "kept",
+        "Without an explicit sort, OFFSET / LIMIT are meaningless. Pagination starts with a deterministic ORDER BY.",
+        {
+          rowsOverride: sortedDesc,
+          colsOverride: SAL_COLS,
+          noteTone: "neutral",
+        }),
+    ],
+  },
+  {
+    name: "LIMIT — page 1 (top 3)",
+    sql: ["SELECT id, name, salary", "FROM   employees", "ORDER  BY salary DESC", "LIMIT  3"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([3], "kept",
+        "LIMIT 3 keeps the first 3 rows of the sorted stream. This is page 1 of a 3-per-page listing.",
+        {
+          rowsOverride: sortedDesc.slice(0, 3),
+          colsOverride: SAL_COLS,
+          noteTone: "mint",
+        }),
+    ],
+  },
+  {
+    name: "OFFSET — skip to page 2",
+    sql: ["SELECT id, name, salary", "FROM   employees", "ORDER  BY salary DESC", "LIMIT  3 OFFSET 3"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([3], "kept",
+        "OFFSET 3 walks past the first 3 rows, then LIMIT 3 keeps the next 3. That's page 2 — formula: OFFSET = (page - 1) × page_size.",
+        {
+          rowsOverride: sortedDesc.slice(3, 6),
+          colsOverride: SAL_COLS,
+          noteTone: "violet",
+        }),
+    ],
+  },
+  {
+    name: "Second highest salary — LIMIT 1 OFFSET 1",
+    sql: ["SELECT salary AS second_highest", "FROM   employees", "ORDER  BY salary DESC", "LIMIT  1 OFFSET 1"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([0,2,3], "kept",
+        "Classic interview question. Sort DESC, OFFSET 1 (skip the highest), LIMIT 1 (take the next). Caveat: ties at the top break this — see the DISTINCT variant.",
+        {
+          rowsOverride: [r("x", sortedDesc[1].cells[2] as number)],
+          colsOverride: ["second_highest"],
+          noteTone: "amber",
+        }),
+    ],
+  },
+  {
+    name: "Tie-safe — DISTINCT + OFFSET",
+    sql: ["SELECT DISTINCT salary AS second_highest", "FROM   employees", "ORDER  BY salary DESC", "LIMIT  1 OFFSET 1"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([0,2,3], "kept",
+        "DISTINCT collapses duplicate salaries first, so OFFSET counts unique salary tiers — robust against two employees sharing the top salary.",
+        {
+          rowsOverride: [r("y", Array.from(new Set(sortedDesc.map((row) => row.cells[2])))[1] as number)],
+          colsOverride: ["second_highest"],
+          noteTone: "mint",
+        }),
+    ],
+  },
+  {
+    name: "Why deep OFFSET is slow",
+    sql: ["-- page 500 of a 20-per-page list", "SELECT id, name, salary", "FROM   employees", "ORDER  BY salary DESC", "LIMIT  20 OFFSET 9980"],
+    table: { name: "employees", cols: SAL_COLS, rows: SAL_ROWS },
+    steps: [
+      st([1,2,3,4], "kept",
+        "OFFSET 9980 forces the engine to READ AND DISCARD 9980 rows before returning 20. Cost grows linearly with the page number — switch to keyset (WHERE salary < $last) for deep lists.",
+        { noteTone: "rose" }),
+    ],
+  },
+];
+
+// ============================================================
 // (Optional / unused) where-filter, group-by-agg, join-types, set-ops
 // for the foundations variant union — alias to richer Querying stages.
 // ============================================================
