@@ -1105,9 +1105,241 @@ LIMIT   10;`,
   ],
 };
 
+// ---------- INTRO ----------
+
+const introWhatIsDb: LessonContent = {
+  slug: "what-is-a-database",
+  title: "What is a Database?",
+  subtitle: "Before SQL — the thing SQL talks to.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A database is structured, persistent, shared state",
+      body: [
+        "A database is a long-lived, structured store of facts that many programs and people can read and write at the same time — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus it adds concurrency, integrity, and a query language.",
+        "The software that wraps the data and gives it those properties is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite — these are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-what-is-db",
+      caption: "From flat files to a real database",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why not just a spreadsheet or a JSON file?",
+      body: "Spreadsheets and JSON break the moment you need more than one writer, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to ALL of those at once — not a fancier spreadsheet.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database = structured + persistent + concurrent + queryable.",
+        "A DBMS is the program that enforces those properties.",
+        "SQL is the language you use to talk to it.",
+      ],
+    },
+  ],
+};
+
+const introDbTypes: LessonContent = {
+  slug: "types-of-databases",
+  title: "Types of Databases",
+  subtitle: "Relational, document, key-value, graph, columnar — and when each one wins.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "There is no single 'database' — there are families",
+      body: [
+        "Different shapes of data and different access patterns gave rise to different database families. Picking the right family for the workload is the single highest-leverage architectural decision you make on a system. Picking the wrong one usually means rewriting in 18 months.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-db-types",
+      caption: "Five families — relational, document, key-value, graph, columnar",
+    },
+    {
+      kind: "table",
+      caption: "When to reach for each family",
+      headers: ["Family", "Best for", "Examples"],
+      rows: [
+        ["Relational (SQL)", "Transactions, integrity, joins, reports", "PostgreSQL, MySQL, SQL Server"],
+        ["Document", "Shape-varying records, rapid iteration", "MongoDB, CouchDB, DynamoDB"],
+        ["Key-value", "Hot lookups, sessions, caches", "Redis, Memcached, etcd"],
+        ["Graph", "Many-to-many traversal (social, fraud)", "Neo4j, Memgraph"],
+        ["Columnar / OLAP", "Aggregations over billions of rows", "ClickHouse, DuckDB, BigQuery, Snowflake"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Default to relational",
+      body: "If you don't have a strong reason to choose otherwise, start with a relational database. It gives you the broadest set of guarantees, the most tooling, the most engineers who can help, and a clean path to add caches or analytics later.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Pick the family that matches the access pattern, not the data shape alone.",
+        "Relational is the default; the others solve specific problems.",
+        "Real systems often combine families (Postgres + Redis + ClickHouse).",
+      ],
+    },
+  ],
+};
+
+const introHowDbWorks: LessonContent = {
+  slug: "how-databases-work",
+  title: "How a Database Works",
+  subtitle: "Client → parser → planner → executor → result, in five steps.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Every query takes the same path",
+      body: [
+        "When you press Enter on a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'because step N made an expensive choice'.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-how-db-works",
+      caption: "Watch one query travel through the engine",
+    },
+    {
+      kind: "prose",
+      heading: "The five stages",
+      body: [
+        "1. CONNECTION — your client opens an authenticated TCP/TLS session to the DB. The SQL text travels over the wire.",
+        "2. PARSER — the engine tokenises the SQL and builds an Abstract Syntax Tree. Syntax errors die here.",
+        "3. PLANNER / OPTIMISER — the engine considers many possible execution strategies (sequential scan vs index scan, different join orders, hash vs sort), estimates the cost of each using statistics, and picks the cheapest.",
+        "4. EXECUTOR — the chosen plan runs: it reads pages from disk (or the buffer cache), applies filters, joins, aggregates, and sorts.",
+        "5. RESULT — matching rows are serialised in the wire protocol and streamed back to the client.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "EXPLAIN shows you the plan",
+      body: "`EXPLAIN ANALYZE <query>` makes the planner reveal which strategy it chose and how long each step actually took. It's the single most useful debugging tool in databases.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Parser → Planner → Executor is the spine of every DBMS.",
+        "The planner uses table statistics to pick a plan.",
+        "EXPLAIN ANALYZE is your X-ray of any query.",
+      ],
+    },
+  ],
+};
+
+const introHowQueryingWorks: LessonContent = {
+  slug: "how-querying-works",
+  title: "How Querying Works",
+  subtitle: "SQL is declarative — describe WHAT you want, the engine works out HOW.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Declarative vs imperative",
+      body: [
+        "In application code, you tell the computer the steps: 'open the file, read each line, check the condition, push to an array, sort the array, print the first 10'. That is imperative.",
+        "In SQL, you describe the RESULT you want — which rows, which columns, in what order. The engine plans the steps. As your data grows from 100 rows to 100 million, the same SQL keeps working; the engine just picks a different plan under the hood.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-querying",
+      caption: "Filter → project → sort → limit → aggregate",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "The shape of every SELECT",
+      code: `SELECT  email, balance           -- 5. project the columns
+FROM    users                    -- 1. choose the source
+WHERE   balance > 100            -- 2. filter rows
+GROUP   BY email                 -- 3. (optional) collapse into groups
+HAVING  COUNT(*) >= 1            -- 4. filter groups
+ORDER   BY balance DESC          -- 6. sort the survivors
+LIMIT   10;                      -- 7. cap the output`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Written vs executed order",
+      body: "You write SELECT first, but the engine runs it almost LAST. Learning the logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question you'll ever have.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SQL is declarative — describe the result, not the steps.",
+        "Filter → project → group → sort → limit is the universal shape.",
+        "Aggregates collapse N rows into 1 per group — the bridge from raw events to reports.",
+      ],
+    },
+  ],
+};
+
+const introHowStorage: LessonContent = {
+  slug: "how-data-is-stored",
+  title: "How Databases Store Data",
+  subtitle: "Pages, heap files, indexes, buffer cache, and the write-ahead log.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "From row to disk",
+      body: [
+        "A table is not stored as 'a list of rows'. It is stored as an ORDERED FILE OF FIXED-SIZE PAGES — typically 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads a single row from disk; it always reads a whole page and then picks rows out of it. This is why narrow rows are faster: more rows per page means fewer page reads.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-storage",
+      caption: "Pages → heap → index → buffer cache + WAL",
+    },
+    {
+      kind: "prose",
+      heading: "Why indexes matter",
+      body: [
+        "Without an index, finding `id = 3` requires scanning every page of the table — a SEQUENTIAL SCAN, O(N). An index is a separate, SORTED data structure (typically a B-Tree) that maps keys to physical row addresses. Lookup becomes O(log N). The trade: indexes take space on disk, slow down INSERT/UPDATE/DELETE slightly, and must be maintained.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Speed AND durability — the WAL trick",
+      body: [
+        "If every write had to land on disk synchronously, performance would collapse. Real databases use TWO tricks. First, a BUFFER CACHE keeps hot pages in RAM. Second, a WRITE-AHEAD LOG (WAL) records every change as a sequential append BEFORE the actual page is updated. On COMMIT, only the WAL needs to be fsynced — random heap writes happen later in the background. On crash, the WAL is replayed to recover.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "The whole storage story in one sentence",
+      body: "Rows live in pages, pages live in heap files, indexes are sorted shortcuts to pages, hot pages stay in RAM, and the WAL makes commits both fast and crash-safe.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Tables are stored as fixed-size pages, not individual rows.",
+        "Indexes turn O(N) scans into O(log N) lookups — at the cost of write speed.",
+        "Buffer cache + WAL give you fast COMMITs and crash safety simultaneously.",
+      ],
+    },
+  ],
+};
+
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
+  "intro": {
+    slug: "intro",
+    title: "Intro to Databases",
+    category: "Foundations",
+    iconKey: "database",
+    blurb:
+      "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
+    lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
+  },
   "relational-model": {
     slug: "relational-model",
     title: "Relational Model",
