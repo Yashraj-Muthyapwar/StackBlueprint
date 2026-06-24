@@ -71,6 +71,10 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
         {variant === "foreign-key" && <ForeignKeyAnim step={step} />}
         {variant === "null-truth" && <NullTruthAnim step={step} />}
         {variant === "type-sizes" && <TypeSizesAnim step={step} />}
+        {variant === "where-filter" && <WhereFilterAnim step={step} />}
+        {variant === "group-by-agg" && <GroupByAggAnim step={step} />}
+        {variant === "join-types" && <JoinTypesAnim step={step} />}
+        {variant === "set-ops" && <SetOpsAnim step={step} />}
       </div>
       <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
         <div className="flex items-center gap-1">
