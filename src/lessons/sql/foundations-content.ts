@@ -38,6 +38,8 @@ export type Section =
         | "query-structure"
         | "select-distinct"
         | "offset-pagination"
+        | "sql-comments"
+        | "sql-operators"
         | "q-bool"
         | "q-range"
         | "q-like"
@@ -1138,6 +1140,249 @@ LIMIT  20;`,
   ],
 };
 
+const sqlComments: LessonContent = {
+  slug: "sql-comments",
+  title: "SQL Comments",
+  subtitle:
+    "Single-line, multi-line, inline — and how comments become your best debugging tool.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What a comment is (and is not)",
+      body: [
+        "Comments are descriptions in the code that help readers understand the intent and functionality of a SQL command. They are written for humans — the database management system strips them out before the query ever runs, so they have ZERO effect on the result, the plan, or performance.",
+        "Every dialect supports two flavours: the single-line `--` form and the multi-line `/* … */` form. Use them to label intent, justify a tricky predicate, or temporarily silence a statement while you debug.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "sql-comments",
+      caption: "Watch the parser strip every comment, then run only what remains",
+    },
+    {
+      kind: "prose",
+      heading: "Single-line comments — `--`",
+      body: [
+        "Two dashes start a comment that runs to the end of the line. The line below them is parsed normally.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Single-line comment above a statement",
+      code: `-- fetch all records from the Students table
+SELECT *
+FROM   Students;`,
+    },
+    {
+      kind: "prose",
+      heading: "Comments on the same line as code",
+      body: [
+        "You can also tack a `--` comment onto the end of a line. Everything to the LEFT of the dashes is still SQL; everything to the right is ignored.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Inline single-line comments",
+      code: `SELECT *           -- select all columns
+FROM   Students;   -- from the Students table`,
+    },
+    {
+      kind: "prose",
+      heading: "Multi-line comments — `/* … */`",
+      body: [
+        "Wrap any block of text in `/*` and `*/`. The comment can span as many lines as you like and can even sit INSIDE a statement — the parser treats the comment as a single whitespace, so `FROM /* table name here */ Students` is identical to `FROM Students`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Multi-line comment above a statement",
+      code: `/* selecting all records
+   from the
+   Students table */
+SELECT *
+FROM   Students;`,
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Multi-line comment inside a statement",
+      code: `SELECT *
+FROM   /* table name here */ Students;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Debugging trick — comment out, don't delete",
+      body: "To skip a statement temporarily, wrap it in /* … */ instead of deleting. The text stays in the editor for context, and you can re-enable it by removing two characters.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Disabling a query while you debug",
+      code: `/* SELECT *
+   FROM Customers; */
+-- the statement above is ignored by the DBMS
+
+SELECT *
+FROM   Students;`,
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`--` runs to end of line; `/* … */` spans any number of lines.",
+        "Comments are stripped before execution — no runtime cost, no result change.",
+        "Comments may appear at the start, end, or middle of a statement.",
+        "Comment out blocks while debugging instead of deleting them.",
+      ],
+    },
+  ],
+};
+
+const sqlOperators: LessonContent = {
+  slug: "sql-operators",
+  title: "SQL Operators",
+  subtitle:
+    "Arithmetic, comparison, and logical operators — the punctuation of every SELECT, WHERE, and ON clause.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What an operator does",
+      body: [
+        "Operators are symbols (and a handful of keywords) that perform an operation on one or two values. They show up everywhere — inside SELECT projections, WHERE predicates, JOIN ... ON conditions, HAVING filters, and CHECK constraints.",
+        "SQL groups operators into three families: ARITHMETIC operators compute new numbers, COMPARISON operators ask a yes/no question between two values, and LOGICAL operators combine those yes/no answers into bigger ones.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "sql-operators",
+      caption: "Tour each family in turn — arithmetic in SELECT, comparison in WHERE, logical to combine",
+    },
+    {
+      kind: "prose",
+      heading: "Arithmetic operators (+  -  *  /  %)",
+      body: [
+        "Arithmetic operators take two numeric inputs and return a number. Use them in the SELECT list to derive new columns (price after tax, half-price, totals) or in WHERE clauses to express formulas.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Arithmetic operators",
+      headers: ["Operator", "Meaning", "Example"],
+      rows: [
+        ["+", "Addition", "amount + 100"],
+        ["-", "Subtraction", "amount - 20"],
+        ["*", "Multiplication", "amount * 4"],
+        ["/", "Division", "amount / 2"],
+        ["%", "Modulo (remainder)", "10 % 3 → 1"],
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Arithmetic in a projection",
+      code: `-- adds 100 to every amount and exposes it as total_amount
+SELECT item, amount, amount + 100 AS total_amount
+FROM   Orders;
+
+-- subtracts 20 (a flat discount)
+SELECT item, amount, amount - 20  AS offer_price   FROM Orders;
+
+-- multiplies and divides
+SELECT item, amount, amount * 4   AS bulk_price    FROM Orders;
+SELECT item, amount, amount / 2   AS half_price    FROM Orders;
+
+-- modulo returns the remainder
+SELECT 10 % 3 AS result;   -- 1`,
+    },
+    {
+      kind: "prose",
+      heading: "Comparison operators (=  <  >  <=  >=  <>)",
+      body: [
+        "Comparison operators take two values and return TRUE, FALSE, or UNKNOWN (when either side is NULL). They are the building blocks of every WHERE clause.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Comparison operators",
+      headers: ["Operator", "Meaning"],
+      rows: [
+        ["=", "Equal to"],
+        ["<", "Less than"],
+        [">", "Greater than"],
+        ["<=", "Less than or equal to"],
+        [">=", "Greater than or equal to"],
+        ["<> or !=", "Not equal to"],
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Comparison in WHERE",
+      code: `-- equality
+SELECT order_id, item, amount FROM Orders WHERE customer_id = 4;
+
+-- strict and inclusive bounds
+SELECT order_id, item, amount FROM Orders WHERE amount <  400;
+SELECT order_id, item, amount FROM Orders WHERE amount >  400;
+SELECT order_id, item, amount FROM Orders WHERE amount <= 400;
+SELECT order_id, item, amount FROM Orders WHERE amount >= 400;
+
+-- not equal — both spellings work
+SELECT order_id, item, amount FROM Orders WHERE amount != 400;
+SELECT order_id, item, amount FROM Orders WHERE amount <> 400;`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Beware NULL in a comparison",
+      body: "`amount = NULL` is never TRUE — it evaluates to UNKNOWN, so the row is dropped. Use `IS NULL` / `IS NOT NULL` for null tests. (See the NULL Semantics lesson for the three-valued-logic deep dive.)",
+    },
+    {
+      kind: "prose",
+      heading: "Logical operators",
+      body: [
+        "Logical operators glue comparison results together. The core trio is `AND`, `OR`, `NOT`; the broader family also includes `BETWEEN`, `IN`, `LIKE`, `IS NULL`, `EXISTS`, and the quantified `ANY` / `ALL`.",
+        "Each of them returns TRUE / FALSE / UNKNOWN and can be combined with the others. Most have their own deep-dive lessons in the Querying track — the table below is a map so you know which clause to reach for.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Logical operator family",
+      headers: ["Operator", "Asks"],
+      rows: [
+        ["AND", "Are BOTH predicates true?"],
+        ["OR", "Is AT LEAST ONE predicate true?"],
+        ["NOT", "Flip TRUE↔FALSE (UNKNOWN stays UNKNOWN)"],
+        ["BETWEEN a AND b", "Is the value in the inclusive range [a, b]?"],
+        ["IN (…)", "Is the value one of this fixed set?"],
+        ["LIKE 'pat%'", "Does the string match this wildcard pattern?"],
+        ["IS NULL / IS NOT NULL", "Is the value missing?"],
+        ["EXISTS (subquery)", "Does the subquery return at least one row?"],
+        ["ANY / ALL (subquery)", "Compare value to ANY or ALL of a result set"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Precedence cheat-sheet",
+      body: "Arithmetic binds tightest, then comparison, then NOT, then AND, then OR. When in doubt — parenthesise. `WHERE a OR b AND c` means `WHERE a OR (b AND c)`, which is almost never what you wanted.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Three families: arithmetic (numbers), comparison (yes/no), logical (combine).",
+        "Comparison and logical operators return TRUE / FALSE / UNKNOWN.",
+        "`= NULL` never works — use `IS NULL`.",
+        "AND binds tighter than OR — always parenthesise mixed expressions.",
+        "Use `<>` or `!=` for not-equal — same operator, two spellings.",
+      ],
+    },
+  ],
+};
+
 const logicalOrder: LessonContent = {
   slug: "logical-order",
   title: "Logical Query Order",
@@ -1479,6 +1724,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlCommands, selectFrom, whereLesson, orderLimit, logicalOrder],
+    lessons: [sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };
