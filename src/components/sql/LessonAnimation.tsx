@@ -953,24 +953,25 @@ function JoinTypesAnim({ step }: { step: number }) {
   let pairs: Pair[] = [];
   if (step === 0) {
     pairs = orders
-      .map((o) => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }))
-      .filter((p): p is Pair => p.u !== null);
+      .map((o): Pair => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }))
+      .filter((p) => p.u !== null);
   } else if (step === 1) {
-    pairs = users.flatMap((u) => {
+    pairs = users.flatMap((u): Pair[] => {
       const matches = orders.filter((o) => o.user_id === u.id);
       return matches.length ? matches.map((o) => ({ u, o })) : [{ u, o: null }];
     });
   } else if (step === 2) {
-    pairs = orders.map((o) => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }));
+    pairs = orders.map((o): Pair => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }));
   } else {
     const seen = new Set<number>();
-    pairs = users.flatMap((u) => {
+    pairs = users.flatMap((u): Pair[] => {
       const matches = orders.filter((o) => o.user_id === u.id);
       matches.forEach((o) => seen.add(o.id));
       return matches.length ? matches.map((o) => ({ u, o })) : [{ u, o: null }];
     });
     orders.filter((o) => !seen.has(o.id)).forEach((o) => pairs.push({ u: null, o }));
   }
+
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
