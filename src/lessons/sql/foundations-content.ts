@@ -25,6 +25,15 @@ export type Section =
         | "group-by-agg"
         | "join-types"
         | "set-ops"
+        | "table-anatomy"
+        | "pk-anatomy"
+        | "fk-deep"
+        | "normalization"
+        | "intro-what-is-db"
+        | "intro-db-types"
+        | "intro-how-db-works"
+        | "intro-querying"
+        | "intro-storage"
         | "q-bool"
         | "q-range"
         | "q-like"
@@ -71,16 +80,18 @@ const tablesAndRows: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "The mental model",
+      heading: "Database, table, column, row — the four words",
       body: [
-        "A relational database stores data as relations. A relation is just a set of tuples that all share the same shape (the same columns, in the same types). In SQL we call a relation a table, a tuple a row, and an attribute a column.",
-        "The word 'set' matters: rows have no inherent order, and (in pure theory) no duplicates. SQL relaxes both rules — tables are technically multisets and ORDER BY exists — but the mental model is still 'unordered set of records'. Any query that depends on physical row order is a bug waiting to happen.",
+        "A DATABASE is the outermost container. It groups related tables under one name (e.g. `app_db`) and gives them shared auth, backups, and transactions. One server can host many databases.",
+        "A TABLE lives inside a database. It is a 2-D grid with a fixed shape — a collection of records that all follow the same column layout. Think of it as a strongly-typed spreadsheet that the engine enforces.",
+        "A COLUMN is a vertical slice of the table. It has a NAME and a DATA TYPE (INTEGER, TEXT, TIMESTAMPTZ, …). Every cell in that column must obey the type. Columns can also carry constraints — NOT NULL, UNIQUE, CHECK, DEFAULT — that the engine enforces on every write.",
+        "A ROW (also called a tuple or record) is one horizontal entry — one complete instance of the shape. A row in `users` is a single user: one value for every column. Rows are the unit you INSERT, UPDATE, DELETE, and read back.",
       ],
     },
     {
       kind: "animation",
-      variant: "table-build",
-      caption: "How a relation comes to life",
+      variant: "table-anatomy",
+      caption: "Database → Table → Column → Row, one concept at a time",
     },
     {
       kind: "diagram",
@@ -152,6 +163,11 @@ const primaryKeys: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "pk-anatomy",
+      caption: "Declare → insert → reject NULL → reject duplicate → composite → surrogate",
+    },
+    {
       kind: "code",
       language: "sql",
       caption: "Two ways to declare a primary key",
@@ -168,6 +184,12 @@ CREATE TABLE order_items (
   qty        INT    NOT NULL CHECK (qty > 0),
   PRIMARY KEY (order_id, product_id)
 );`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "What goes wrong without a PK",
+      body: "Inserting NULL into a PK column raises 'null value violates not-null constraint'. Inserting a duplicate raises 'duplicate key value violates unique constraint'. Both errors are GOOD — they catch logic bugs at write time instead of leaving silently corrupt data behind.",
     },
     {
       kind: "table",
@@ -199,6 +221,7 @@ CREATE TABLE order_items (
       kind: "takeaways",
       items: [
         "Primary key = unique + not null + immutable identity.",
+        "NULL in a PK column is rejected; duplicates are rejected.",
         "Prefer a surrogate (BIGSERIAL / UUID) plus a UNIQUE on the natural value.",
         "Composite keys are fine, but they make foreign keys verbose.",
         "Never reuse a deleted primary key value.",
@@ -223,8 +246,8 @@ const foreignKeys: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "foreign-key",
-      caption: "Referential integrity in motion",
+      variant: "fk-deep",
+      caption: "Parent → child → orphan rejection → CASCADE → SET NULL → RESTRICT",
     },
     {
       kind: "code",
@@ -297,8 +320,8 @@ N : M     students >──< courses
 
 const normalization: LessonContent = {
   slug: "normalization",
-  title: "Normalization Basics",
-  subtitle: "1NF → 3NF in plain English: kill duplicates, kill update anomalies.",
+  title: "Normalization — 1NF → 5NF → Denormalize",
+  subtitle: "Walk every normal form against the same table, then see when to undo it.",
   sections: [
     {
       kind: "prose",
@@ -309,46 +332,26 @@ const normalization: LessonContent = {
       ],
     },
     {
-      kind: "table",
-      caption: "Denormalized — the smell",
-      headers: ["order_id", "customer", "customer_email", "items"],
-      rows: [
-        ["101", "Ada", "ada@ex.com", "Pen, Notebook, Pen"],
-        ["102", "Ada", "ada@x.com", "Notebook"],
-        ["103", "Linus", "linus@ex.com", "Keyboard"],
-      ],
+      kind: "animation",
+      variant: "normalization",
+      caption: "Same data, decomposed step by step: Unnormalized → 1NF → 2NF → 3NF → BCNF → 4NF → 5NF → Denormalize",
     },
     {
       kind: "prose",
+      heading: "The forms in plain English",
       body: [
-        "Spot the bugs: Ada's email is inconsistent across rows (update anomaly), 'items' is a comma-separated list inside a single cell (not atomic), and there's no clean way to ask 'how many notebooks did we sell?'.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "1NF — atomic values, one fact per cell",
-      body: [
-        "Every column holds a single, atomic value. No comma-separated lists, no JSON blobs standing in for relationships. Each row is uniquely identified.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "2NF — no partial dependencies on a composite key",
-      body: [
-        "If your primary key is composite (a, b), every non-key column must depend on the WHOLE key, not just part of it. If 'customer_email' depends only on customer_id, it doesn't belong in order_items — it belongs in customers.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "3NF — no transitive dependencies",
-      body: [
-        "Non-key columns depend only on the key, not on other non-key columns. If 'city' depends on 'zip_code', and 'zip_code' is a non-key column, then 'city' is transitively dependent — pull it into its own table.",
+        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row uniquely identifiable.",
+        "2NF — applies when the primary key is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one half.",
+        "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
+        "BCNF — a stricter 3NF: for EVERY functional dependency X → Y, X must be a superkey. Rare to need beyond 3NF, but fixes some edge cases 3NF doesn't.",
+        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes (a teacher's subjects AND classrooms), put them in separate tables.",
+        "5NF (PJNF) — the final form. Decompose until ONLY the natural join can losslessly rebuild the original. Theoretical bar; you rarely write SQL with 5NF in mind.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Normalized to 3NF",
+      caption: "A canonical 3NF shape — what most teams ship",
       code: `CREATE TABLE customers (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -374,11 +377,20 @@ CREATE TABLE order_items (
       body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document why every time. Premature denormalization is the #1 source of data drift in young codebases.",
     },
     {
+      kind: "prose",
+      heading: "When (and how) to denormalize",
+      body: [
+        "Denormalization repeats data so reads avoid expensive joins. Typical examples: store `customer_name` on `orders` so a list view doesn't join 5 tables; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
+        "The cost is consistency: every change to the canonical source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes — and accept that some staleness will appear under load.",
+      ],
+    },
+    {
       kind: "takeaways",
       items: [
         "1NF: atomic cells, no lists.",
         "2NF: full dependency on the whole composite key.",
         "3NF: no transitive dependencies between non-key columns.",
+        "BCNF / 4NF / 5NF: stricter forms — useful theory, rarely needed past 3NF.",
         "Normalize by default; denormalize with intent and measurement.",
       ],
     },
@@ -1093,9 +1105,241 @@ LIMIT   10;`,
   ],
 };
 
+// ---------- INTRO ----------
+
+const introWhatIsDb: LessonContent = {
+  slug: "what-is-a-database",
+  title: "What is a Database?",
+  subtitle: "Before SQL — the thing SQL talks to.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A database is structured, persistent, shared state",
+      body: [
+        "A database is a long-lived, structured store of facts that many programs and people can read and write at the same time — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus it adds concurrency, integrity, and a query language.",
+        "The software that wraps the data and gives it those properties is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite — these are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-what-is-db",
+      caption: "From flat files to a real database",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why not just a spreadsheet or a JSON file?",
+      body: "Spreadsheets and JSON break the moment you need more than one writer, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to ALL of those at once — not a fancier spreadsheet.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database = structured + persistent + concurrent + queryable.",
+        "A DBMS is the program that enforces those properties.",
+        "SQL is the language you use to talk to it.",
+      ],
+    },
+  ],
+};
+
+const introDbTypes: LessonContent = {
+  slug: "types-of-databases",
+  title: "Types of Databases",
+  subtitle: "Relational, document, key-value, graph, columnar — and when each one wins.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "There is no single 'database' — there are families",
+      body: [
+        "Different shapes of data and different access patterns gave rise to different database families. Picking the right family for the workload is the single highest-leverage architectural decision you make on a system. Picking the wrong one usually means rewriting in 18 months.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-db-types",
+      caption: "Five families — relational, document, key-value, graph, columnar",
+    },
+    {
+      kind: "table",
+      caption: "When to reach for each family",
+      headers: ["Family", "Best for", "Examples"],
+      rows: [
+        ["Relational (SQL)", "Transactions, integrity, joins, reports", "PostgreSQL, MySQL, SQL Server"],
+        ["Document", "Shape-varying records, rapid iteration", "MongoDB, CouchDB, DynamoDB"],
+        ["Key-value", "Hot lookups, sessions, caches", "Redis, Memcached, etcd"],
+        ["Graph", "Many-to-many traversal (social, fraud)", "Neo4j, Memgraph"],
+        ["Columnar / OLAP", "Aggregations over billions of rows", "ClickHouse, DuckDB, BigQuery, Snowflake"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Default to relational",
+      body: "If you don't have a strong reason to choose otherwise, start with a relational database. It gives you the broadest set of guarantees, the most tooling, the most engineers who can help, and a clean path to add caches or analytics later.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Pick the family that matches the access pattern, not the data shape alone.",
+        "Relational is the default; the others solve specific problems.",
+        "Real systems often combine families (Postgres + Redis + ClickHouse).",
+      ],
+    },
+  ],
+};
+
+const introHowDbWorks: LessonContent = {
+  slug: "how-databases-work",
+  title: "How a Database Works",
+  subtitle: "Client → parser → planner → executor → result, in five steps.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Every query takes the same path",
+      body: [
+        "When you press Enter on a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'because step N made an expensive choice'.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-how-db-works",
+      caption: "Watch one query travel through the engine",
+    },
+    {
+      kind: "prose",
+      heading: "The five stages",
+      body: [
+        "1. CONNECTION — your client opens an authenticated TCP/TLS session to the DB. The SQL text travels over the wire.",
+        "2. PARSER — the engine tokenises the SQL and builds an Abstract Syntax Tree. Syntax errors die here.",
+        "3. PLANNER / OPTIMISER — the engine considers many possible execution strategies (sequential scan vs index scan, different join orders, hash vs sort), estimates the cost of each using statistics, and picks the cheapest.",
+        "4. EXECUTOR — the chosen plan runs: it reads pages from disk (or the buffer cache), applies filters, joins, aggregates, and sorts.",
+        "5. RESULT — matching rows are serialised in the wire protocol and streamed back to the client.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "EXPLAIN shows you the plan",
+      body: "`EXPLAIN ANALYZE <query>` makes the planner reveal which strategy it chose and how long each step actually took. It's the single most useful debugging tool in databases.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Parser → Planner → Executor is the spine of every DBMS.",
+        "The planner uses table statistics to pick a plan.",
+        "EXPLAIN ANALYZE is your X-ray of any query.",
+      ],
+    },
+  ],
+};
+
+const introHowQueryingWorks: LessonContent = {
+  slug: "how-querying-works",
+  title: "How Querying Works",
+  subtitle: "SQL is declarative — describe WHAT you want, the engine works out HOW.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Declarative vs imperative",
+      body: [
+        "In application code, you tell the computer the steps: 'open the file, read each line, check the condition, push to an array, sort the array, print the first 10'. That is imperative.",
+        "In SQL, you describe the RESULT you want — which rows, which columns, in what order. The engine plans the steps. As your data grows from 100 rows to 100 million, the same SQL keeps working; the engine just picks a different plan under the hood.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-querying",
+      caption: "Filter → project → sort → limit → aggregate",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "The shape of every SELECT",
+      code: `SELECT  email, balance           -- 5. project the columns
+FROM    users                    -- 1. choose the source
+WHERE   balance > 100            -- 2. filter rows
+GROUP   BY email                 -- 3. (optional) collapse into groups
+HAVING  COUNT(*) >= 1            -- 4. filter groups
+ORDER   BY balance DESC          -- 6. sort the survivors
+LIMIT   10;                      -- 7. cap the output`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Written vs executed order",
+      body: "You write SELECT first, but the engine runs it almost LAST. Learning the logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question you'll ever have.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SQL is declarative — describe the result, not the steps.",
+        "Filter → project → group → sort → limit is the universal shape.",
+        "Aggregates collapse N rows into 1 per group — the bridge from raw events to reports.",
+      ],
+    },
+  ],
+};
+
+const introHowStorage: LessonContent = {
+  slug: "how-data-is-stored",
+  title: "How Databases Store Data",
+  subtitle: "Pages, heap files, indexes, buffer cache, and the write-ahead log.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "From row to disk",
+      body: [
+        "A table is not stored as 'a list of rows'. It is stored as an ORDERED FILE OF FIXED-SIZE PAGES — typically 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads a single row from disk; it always reads a whole page and then picks rows out of it. This is why narrow rows are faster: more rows per page means fewer page reads.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-storage",
+      caption: "Pages → heap → index → buffer cache + WAL",
+    },
+    {
+      kind: "prose",
+      heading: "Why indexes matter",
+      body: [
+        "Without an index, finding `id = 3` requires scanning every page of the table — a SEQUENTIAL SCAN, O(N). An index is a separate, SORTED data structure (typically a B-Tree) that maps keys to physical row addresses. Lookup becomes O(log N). The trade: indexes take space on disk, slow down INSERT/UPDATE/DELETE slightly, and must be maintained.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Speed AND durability — the WAL trick",
+      body: [
+        "If every write had to land on disk synchronously, performance would collapse. Real databases use TWO tricks. First, a BUFFER CACHE keeps hot pages in RAM. Second, a WRITE-AHEAD LOG (WAL) records every change as a sequential append BEFORE the actual page is updated. On COMMIT, only the WAL needs to be fsynced — random heap writes happen later in the background. On crash, the WAL is replayed to recover.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "The whole storage story in one sentence",
+      body: "Rows live in pages, pages live in heap files, indexes are sorted shortcuts to pages, hot pages stay in RAM, and the WAL makes commits both fast and crash-safe.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Tables are stored as fixed-size pages, not individual rows.",
+        "Indexes turn O(N) scans into O(log N) lookups — at the cost of write speed.",
+        "Buffer cache + WAL give you fast COMMITs and crash safety simultaneously.",
+      ],
+    },
+  ],
+};
+
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
+  "intro": {
+    slug: "intro",
+    title: "Intro to Databases",
+    category: "Foundations",
+    iconKey: "database",
+    blurb:
+      "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
+    lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
+  },
   "relational-model": {
     slug: "relational-model",
     title: "Relational Model",
