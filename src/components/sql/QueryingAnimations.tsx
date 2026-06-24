@@ -72,7 +72,7 @@ export function QueryingAnimation({
 
 // ------------ Shared helpers ------------
 
-function Caption({ tone = "mint", title, children }: { tone?: "mint" | "violet" | "amber" | "rose"; title?: string; children: React.ReactNode }) {
+function Caption({ tone = "mint", title, children }: { tone?: "mint" | "violet" | "amber" | "rose" | "neutral"; title?: string; children: React.ReactNode }) {
   const toneCls =
     tone === "violet" ? "border-violet/40 bg-violet/10 text-violet" :
     tone === "amber" ? "border-amber/40 bg-amber/10 text-amber" :
