@@ -82,16 +82,16 @@ const tablesAndRows: LessonContent = {
   slug: "tables-and-rows",
   title: "Tables, Rows & Columns",
   subtitle:
-    "Why relations are sets of tuples — and how that one idea shapes every query you'll ever write.",
+    "A relation is just a set of tuples — and that one idea underpins every query you'll write.",
   sections: [
     {
       kind: "prose",
-      heading: "Database, table, column, row — the four words",
+      heading: "The four words you'll use every day",
       body: [
-        "A DATABASE is the outermost container. It groups related tables under one name (e.g. `app_db`) and gives them shared auth, backups, and transactions. One server can host many databases.",
-        "A TABLE lives inside a database. It is a 2-D grid with a fixed shape — a collection of records that all follow the same column layout. Think of it as a strongly-typed spreadsheet that the engine enforces.",
-        "A COLUMN is a vertical slice of the table. It has a NAME and a DATA TYPE (INTEGER, TEXT, TIMESTAMPTZ, …). Every cell in that column must obey the type. Columns can also carry constraints — NOT NULL, UNIQUE, CHECK, DEFAULT — that the engine enforces on every write.",
-        "A ROW (also called a tuple or record) is one horizontal entry — one complete instance of the shape. A row in `users` is a single user: one value for every column. Rows are the unit you INSERT, UPDATE, DELETE, and read back.",
+        "A DATABASE is the outermost container — it groups related tables under one name (`app_db`) with shared auth, backups, and transactions. One server can host many databases.",
+        "A TABLE is a 2-D grid with a fixed shape: a collection of records that all share the same column layout. Think strongly-typed spreadsheet enforced by the engine.",
+        "A COLUMN is a named, typed vertical slice (INTEGER, TEXT, TIMESTAMPTZ, …). Every cell must obey the type. Constraints — NOT NULL, UNIQUE, CHECK, DEFAULT — are enforced on every write.",
+        "A ROW (tuple / record) is one horizontal entry — one complete instance of the shape. Rows are the unit you INSERT, UPDATE, DELETE, and read back.",
       ],
     },
     {
@@ -132,20 +132,20 @@ INSERT INTO users (email) VALUES
       kind: "prose",
       heading: "Schema vs instance",
       body: [
-        "The schema is the shape: column names + types + constraints. The instance is the current set of rows. Schemas change rarely (migrations); instances change constantly (every INSERT, UPDATE, DELETE).",
-        "Every row in a table must match the schema exactly — same columns, types compatible, all constraints satisfied. The database refuses to store a row that doesn't fit. This is the relational model's superpower: data integrity is enforced at write time, not query time.",
+        "The schema is the shape: column names, types, and constraints. The instance is the current set of rows. Schemas change rarely (migrations); instances change constantly.",
+        "Every row must match the schema exactly — right columns, compatible types, all constraints satisfied. The database refuses any write that doesn't fit. Integrity is enforced at write time, not at query time.",
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Rows are unordered",
-      body: "SELECT * FROM users may return rows in any order the engine finds convenient. If you need a specific order, you must say ORDER BY — and the order must be deterministic (tie-break on a unique column like id).",
+      title: "Rows have no guaranteed order",
+      body: "SELECT * FROM users may return rows in any order the engine finds convenient. For a specific order, you must use ORDER BY — and always tie-break on a unique column like id.",
     },
     {
       kind: "takeaways",
       items: [
-        "A table is a set of rows that share the same column shape.",
+        "A table is a set of rows sharing the same column shape.",
         "Schema defines the shape; instance is the current data.",
         "Row order is never guaranteed without ORDER BY.",
         "Constraints (NOT NULL, UNIQUE, CHECK) enforce integrity at write time.",
@@ -158,14 +158,14 @@ const primaryKeys: LessonContent = {
   slug: "primary-keys",
   title: "Primary Keys",
   subtitle:
-    "What makes a key, why every table needs one, and the eternal natural vs surrogate debate.",
+    "What makes a key, why every table needs one, and the natural vs surrogate debate.",
   sections: [
     {
       kind: "prose",
       heading: "Identity is everything",
       body: [
-        "A primary key is the column (or set of columns) that uniquely identifies each row. No two rows can share the same primary key value, and primary key columns can never be NULL. This is how the database — and your application — refers to a specific record over its entire lifetime.",
-        "Without a primary key you can't safely UPDATE a single row, DELETE a single row, or join two tables together without ambiguity. 'Every table has a primary key' is one of the few rules in databases that has no real exceptions.",
+        "A primary key uniquely identifies each row. No two rows can share the same PK value, and PK columns can never be NULL. It's how the database — and your application — refers to a specific record over its entire lifetime.",
+        "Without a primary key you can't safely UPDATE or DELETE a single row, or join tables without ambiguity. 'Every table has a primary key' is one of the few rules in databases with no real exceptions.",
       ],
     },
     {
@@ -195,7 +195,7 @@ CREATE TABLE order_items (
       kind: "callout",
       tone: "warn",
       title: "What goes wrong without a PK",
-      body: "Inserting NULL into a PK column raises 'null value violates not-null constraint'. Inserting a duplicate raises 'duplicate key value violates unique constraint'. Both errors are GOOD — they catch logic bugs at write time instead of leaving silently corrupt data behind.",
+      body: "A NULL in a PK column raises 'null value violates not-null constraint'. A duplicate raises 'duplicate key value violates unique constraint'. Both errors are good — they catch logic bugs at write time, not after the fact.",
     },
     {
       kind: "table",
@@ -213,14 +213,14 @@ CREATE TABLE order_items (
       kind: "callout",
       tone: "info",
       title: "Default to surrogate",
-      body: "Use a BIGSERIAL or UUID surrogate key for the primary key, and add a UNIQUE constraint on the natural key (email, sku, etc). You get a stable identifier for foreign keys plus the integrity guarantee on the business value.",
+      body: "Use a BIGSERIAL or UUID as the primary key, then add a UNIQUE constraint on the natural key (email, sku, etc.). You get a stable identifier for foreign keys and integrity on the business value.",
     },
     {
       kind: "prose",
       heading: "Composite keys",
       body: [
-        "Sometimes the natural identity of a row spans multiple columns — a row in order_items is identified by (order_id, product_id), not by either column alone. That's a composite primary key.",
-        "Composite keys are correct but verbose: every foreign key referencing this table must also be composite. Many teams add a surrogate id BIGSERIAL PRIMARY KEY and keep (order_id, product_id) as a UNIQUE constraint — cleaner FKs, same integrity.",
+        "Sometimes identity spans multiple columns — a row in order_items is identified by (order_id, product_id) together. That's a composite primary key.",
+        "Composite keys are correct but verbose: every foreign key referencing this table must also be composite. Many teams add a surrogate `id BIGSERIAL PRIMARY KEY` and keep (order_id, product_id) as a UNIQUE constraint — cleaner FKs, same integrity.",
       ],
     },
     {
@@ -240,14 +240,14 @@ const foreignKeys: LessonContent = {
   slug: "foreign-keys",
   title: "Foreign Keys & Relationships",
   subtitle:
-    "1:1, 1:N, N:M — modeling how entities connect without losing referential integrity.",
+    "1:1, 1:N, N:M — how to model entity relationships without losing referential integrity.",
   sections: [
     {
       kind: "prose",
       heading: "What a foreign key actually does",
       body: [
-        "A foreign key is a column whose value must match a primary key value in another table. It's the database's way of saying 'this order belongs to a real customer that actually exists'. The engine refuses any INSERT or UPDATE that would point to a missing parent row.",
-        "Foreign keys also control what happens when the parent goes away: ON DELETE CASCADE removes the children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (the default) blocks the delete entirely.",
+        "A foreign key is a column whose value must match a primary key in another table. It's the engine's way of saying 'this order must belong to a customer that actually exists' — any INSERT or UPDATE pointing to a missing parent row is rejected.",
+        "FKs also control what happens when the parent is deleted: ON DELETE CASCADE removes children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (default) blocks the delete entirely.",
       ],
     },
     {
@@ -292,7 +292,7 @@ N : M     students >──< courses
       kind: "prose",
       heading: "Many-to-many needs a join table",
       body: [
-        "There is no such thing as a 'many-to-many foreign key'. You model N:M by creating a third table — usually called a join, link, or junction table — whose primary key is the composite of two foreign keys.",
+        "There is no 'many-to-many foreign key'. Model N:M with a third table — a join, link, or junction table — whose primary key is the composite of the two foreign keys.",
       ],
     },
     {
@@ -310,13 +310,13 @@ N : M     students >──< courses
       kind: "callout",
       tone: "warn",
       title: "Always index your foreign keys",
-      body: "PostgreSQL does NOT auto-index the child side of a foreign key. Without an index, a DELETE on the parent has to scan the entire child table to find references — a 200ms delete becomes a 30-second delete on a real dataset.",
+      body: "PostgreSQL does NOT auto-index the child side of a FK. Without an index, deleting a parent row scans the entire child table. A 200 ms delete becomes 30 seconds on real data.",
     },
     {
       kind: "takeaways",
       items: [
-        "Foreign keys = guaranteed referential integrity, enforced by the engine.",
-        "Pick ON DELETE behavior deliberately: CASCADE, SET NULL, or RESTRICT.",
+        "Foreign keys = referential integrity enforced by the engine.",
+        "Choose ON DELETE behavior deliberately: CASCADE, SET NULL, or RESTRICT.",
         "N:M is always modeled with a join table whose PK is the composite FK pair.",
         "Always add an index on the child-side foreign key column.",
       ],
@@ -333,8 +333,8 @@ const normalization: LessonContent = {
       kind: "prose",
       heading: "Why normalize?",
       body: [
-        "Normalization is the practice of splitting data across tables so that each fact lives in exactly one place. The payoff is fewer bugs: when an address changes, you update it in one row instead of hunting down every copy.",
-        "The opposite — packing everything into one wide table — feels easier at first, but creates three classic problems: update anomalies (change in one place, stale in another), insert anomalies (can't add a course unless a student enrolls), and delete anomalies (delete a student and lose the course's existence).",
+        "Normalization means every fact lives in exactly one place. When an address changes, you update one row — not every copy. That's the payoff.",
+        "Skipping it creates three classic problems: update anomalies (change one copy, leave others stale), insert anomalies (can't add a course unless a student enrolls), and delete anomalies (delete a student and lose the course).",
       ],
     },
     {
@@ -346,12 +346,12 @@ const normalization: LessonContent = {
       kind: "prose",
       heading: "The forms in plain English",
       body: [
-        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row uniquely identifiable.",
-        "2NF — applies when the primary key is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one half.",
+        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row is uniquely identifiable.",
+        "2NF — applies when the PK is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
         "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
-        "BCNF — a stricter 3NF: for EVERY functional dependency X → Y, X must be a superkey. Rare to need beyond 3NF, but fixes some edge cases 3NF doesn't.",
-        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes (a teacher's subjects AND classrooms), put them in separate tables.",
-        "5NF (PJNF) — the final form. Decompose until ONLY the natural join can losslessly rebuild the original. Theoretical bar; you rarely write SQL with 5NF in mind.",
+        "BCNF — a stricter 3NF: for every functional dependency X → Y, X must be a superkey. Rarely needed beyond 3NF, but it closes some edge cases.",
+        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes, put them in separate tables.",
+        "5NF (PJNF) — decompose until only a natural join can losslessly rebuild the original. Theoretical bar; rarely applied directly.",
       ],
     },
     {
@@ -380,14 +380,14 @@ CREATE TABLE order_items (
       kind: "callout",
       tone: "success",
       title: "Normalize first, denormalize when measured",
-      body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document why every time. Premature denormalization is the #1 source of data drift in young codebases.",
+      body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document the reason every time. Premature denormalization is the #1 source of data drift in young codebases.",
     },
     {
       kind: "prose",
       heading: "When (and how) to denormalize",
       body: [
-        "Denormalization repeats data so reads avoid expensive joins. Typical examples: store `customer_name` on `orders` so a list view doesn't join 5 tables; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
-        "The cost is consistency: every change to the canonical source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes — and accept that some staleness will appear under load.",
+        "Denormalization deliberately repeats data so reads skip expensive joins. Common examples: copy `customer_name` onto `orders` for list views; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
+        "The cost is consistency — every change to the source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes, and accept some staleness under load.",
       ],
     },
     {
@@ -408,13 +408,13 @@ CREATE TABLE order_items (
 const numericText: LessonContent = {
   slug: "numeric-text",
   title: "Numeric & Text Types",
-  subtitle: "INT vs BIGINT, NUMERIC precision, VARCHAR vs TEXT — and why it matters.",
+  subtitle: "INT vs BIGINT, NUMERIC precision, VARCHAR vs TEXT — and why the choice matters.",
   sections: [
     {
       kind: "prose",
       heading: "Pick the smallest type that fits",
       body: [
-        "Type choice is not cosmetic. It changes storage size, index size, comparison speed, and the kinds of bugs your schema can have. A 4-byte INT vs an 8-byte BIGINT, multiplied across a billion-row table, is the difference between a 4GB index and an 8GB index — which is the difference between staying in memory and spilling to disk.",
+        "Type choice is not cosmetic. It changes storage, index size, and query speed. A 4-byte INT vs an 8-byte BIGINT across a billion-row table is the difference between a 4 GB index and an 8 GB index — the difference between staying in RAM and spilling to disk.",
       ],
     },
     {
@@ -479,13 +479,13 @@ const datesTimestamps: LessonContent = {
   slug: "dates-timestamps",
   title: "Dates, Timestamps & Time Zones",
   subtitle:
-    "TIMESTAMP vs TIMESTAMPTZ, intervals, and the eternal UTC question.",
+    "TIMESTAMP vs TIMESTAMPTZ, intervals, and why UTC is the only safe storage choice.",
   sections: [
     {
       kind: "prose",
-      heading: "There are only three temporal types worth knowing",
+      heading: "Three temporal types worth knowing",
       body: [
-        "DATE — a calendar date with no time. TIMESTAMP — a date plus time, with no time zone awareness. TIMESTAMPTZ — a date plus time stored as UTC, displayed in the session's time zone. Almost always you want TIMESTAMPTZ.",
+        "DATE stores a calendar date with no time. TIMESTAMP stores date + time with no time zone awareness. TIMESTAMPTZ stores date + time normalized to UTC and displayed in the session's time zone. Almost always you want TIMESTAMPTZ.",
       ],
     },
     {
@@ -502,7 +502,7 @@ const datesTimestamps: LessonContent = {
       kind: "callout",
       tone: "warn",
       title: "TIMESTAMP (without TZ) silently loses information",
-      body: "Inserting '2026-03-09 02:30:00' into a TIMESTAMP column tells the database nothing about whether that's New York time, Tokyo time, or UTC. The next reader has no way to know. TIMESTAMPTZ always stores the instant in UTC and renders it for the current session's TZ.",
+      body: "Inserting '2026-03-09 02:30:00' into a TIMESTAMP column gives the DB no hint whether that's New York time, Tokyo time, or UTC. The next reader can't know. TIMESTAMPTZ always stores the instant in UTC and converts it for the session's zone.",
     },
     {
       kind: "code",
@@ -526,15 +526,15 @@ FROM   orders;`,
     },
     {
       kind: "prose",
-      heading: "The one rule that prevents 80% of TZ bugs",
+      heading: "The rule that prevents 80% of TZ bugs",
       body: [
-        "Store in UTC (TIMESTAMPTZ). Convert at the edge — when rendering to a user, when accepting input from a user. Never store local time and 'remember' which zone it was in via a side channel. That information will be lost or mismatched, guaranteed.",
+        "Store in UTC (TIMESTAMPTZ). Convert at the edge — when rendering to a user or accepting their input. Never store local time and rely on a side channel to remember the zone. That information will be lost or mismatched.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "TIMESTAMPTZ by default; DATE when there's truly no time.",
+        "TIMESTAMPTZ by default; DATE when there's truly no time component.",
         "Avoid plain TIMESTAMP — it loses time-zone information.",
         "Do arithmetic with INTERVAL ('7 days', '1 hour 30 min').",
         "Convert to the user's zone at the render boundary, not in storage.",
@@ -553,7 +553,7 @@ const jsonJsonb: LessonContent = {
       kind: "prose",
       heading: "JSON vs JSONB",
       body: [
-        "JSON stores the document as text exactly as inserted — preserving whitespace, key order, and duplicates. JSONB parses it into a binary tree once at write time, throwing away formatting but enabling fast lookups and indexing. For 99% of applications, JSONB is the right choice.",
+        "JSON stores the document as-is — preserving whitespace, key order, and duplicates. JSONB parses it into a binary tree at write time, discarding formatting but enabling fast lookups and indexing. For 99% of applications, JSONB is the right choice.",
       ],
     },
     {
@@ -587,7 +587,7 @@ CREATE INDEX idx_events_payload ON events USING GIN (payload);`,
       kind: "callout",
       tone: "warn",
       title: "JSONB is not a schema escape hatch",
-      body: "If a field is queried, filtered, joined, or validated — promote it to a real column. JSONB is great for shape-varying metadata (webhook payloads, feature flags, audit blobs). It is bad for fields that 'definitely exist on every row'.",
+      body: "If a field is queried, filtered, joined, or validated — promote it to a real column. JSONB is great for shape-varying metadata (webhook payloads, feature flags, audit blobs). It's bad for fields that 'definitely exist on every row'.",
     },
     {
       kind: "table",
@@ -622,7 +622,7 @@ const nullSemantics: LessonContent = {
       kind: "prose",
       heading: "NULL is not a value — it's 'unknown'",
       body: [
-        "NULL means 'we don't know'. It's not zero, not empty string, not false. And because we don't know, almost any operation on NULL returns NULL — including comparisons. This is called three-valued logic: results can be TRUE, FALSE, or UNKNOWN.",
+        "NULL means 'we don't know'. It's not zero, not empty string, not false. Almost any operation on NULL returns NULL — including comparisons. This is three-valued logic: results can be TRUE, FALSE, or UNKNOWN.",
       ],
     },
     {
@@ -669,7 +669,7 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
       kind: "prose",
       heading: "Design with NULL deliberately",
       body: [
-        "NOT NULL by default. Only allow NULL when 'unknown' is a real, distinct state from 'zero' or 'empty'. A 'deleted_at TIMESTAMPTZ' nullable column is a good NULL — NULL means 'not deleted'. A 'login_count INT' nullable column is a bad NULL — zero would mean the same thing without the three-valued mess.",
+        "Default columns to NOT NULL. Only allow NULL when 'unknown' is a real, distinct state — not just a synonym for zero or empty. `deleted_at TIMESTAMPTZ` nullable is a good NULL (NULL means 'not deleted'). `login_count INT` nullable is a bad NULL — zero means the same thing without the three-valued mess.",
       ],
     },
     {
@@ -690,13 +690,13 @@ const sqlCommands: LessonContent = {
   slug: "sql-commands",
   title: "Types of SQL Commands (DDL, DML, DCL, DQL, TCL)",
   subtitle:
-    "The five families every SQL statement belongs to — and why grouping them this way changes how you think about safety.",
+    "Five families every SQL statement belongs to — and why knowing them changes how you think about permissions.",
   sections: [
     {
       kind: "prose",
       heading: "Five families, one language",
       body: [
-        "SQL looks like a single language, but every statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each family has different safety properties, different rollback rules, and — in production — different humans allowed to run it.",
+        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each has different safety properties, rollback rules, and — in production — different roles allowed to run it.",
       ],
     },
     {
@@ -720,7 +720,7 @@ const sqlCommands: LessonContent = {
       kind: "prose",
       heading: "DDL — shape of the world",
       body: [
-        "DDL changes the schema: it creates tables, alters columns, drops indexes. In most engines, DDL is auto-committed — DROP TABLE is final the instant it returns. PostgreSQL is the rare exception: DDL is transactional, so you can BEGIN, DROP TABLE x, then ROLLBACK and the table is still there.",
+        "DDL changes the schema: creates tables, alters columns, drops indexes. Most engines auto-commit DDL — DROP TABLE is final the instant it returns. PostgreSQL is the rare exception: DDL is transactional, so you can BEGIN, DROP TABLE x, then ROLLBACK and the table is still there.",
       ],
     },
     {
@@ -743,7 +743,7 @@ DROP   TABLE products;`,
       kind: "prose",
       heading: "DML — change the rows",
       body: [
-        "DML adds, modifies, or removes rows. Unlike DDL, DML is always transactional — you can wrap it in a transaction, see the effect, and ROLLBACK if it's wrong. This is the family you spend the most time around in application code.",
+        "DML adds, modifies, or removes rows. Unlike DDL, DML is always transactional — wrap it in a transaction, inspect the effect, and ROLLBACK if wrong. This is the family you spend the most time with in application code.",
       ],
     },
     {
@@ -768,7 +768,7 @@ WHEN NOT MATCHED THEN INSERT (sku, qty) VALUES (x.sku, x.qty);`,
       kind: "prose",
       heading: "DQL — pure reads",
       body: [
-        "DQL is just SELECT (and its supporting cast: WITH, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT). It never changes data. Most textbooks lump DQL under DML, but treating it as its own family is useful — read-only access is the safest permission you can grant.",
+        "DQL is SELECT and its supporting cast: WITH, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. It never changes data. Treating DQL as its own family is useful — read-only access is the safest permission you can grant.",
       ],
     },
     {
@@ -785,7 +785,7 @@ LIMIT  20;`,
       kind: "prose",
       heading: "DCL — who is allowed to do what",
       body: [
-        "DCL controls permissions. In a healthy system, the application connects as a role with narrow DML/DQL privileges; only migrations run as a role that can DDL; only humans (and audited tools) can GRANT.",
+        "DCL controls permissions. In a healthy system, the app connects as a role with narrow DML/DQL privileges; only migrations run as a role with DDL; only humans (and audited tools) run GRANT.",
       ],
     },
     {
@@ -800,7 +800,7 @@ REVOKE DELETE ON products FROM app_user;`,
       kind: "prose",
       heading: "TCL — atomic units of work",
       body: [
-        "TCL defines the boundaries of a transaction — a group of statements that either all succeed or all fail. SAVEPOINTs are nested checkpoints inside a transaction you can selectively roll back to.",
+        "TCL defines transaction boundaries — a group of statements that either all succeed or all fail. SAVEPOINTs are nested checkpoints inside a transaction you can selectively roll back to.",
       ],
     },
     {
@@ -822,7 +822,7 @@ COMMIT;`,
       kind: "callout",
       tone: "success",
       title: "Why the taxonomy matters",
-      body: "Production permissioning is built on these families. You give the app role DML+DQL, the migration role DDL, and DCL stays with humans. Knowing which family a statement belongs to instantly tells you who should be allowed to run it.",
+      body: "Production permissioning maps directly to these families. The app role gets DML+DQL, the migration role gets DDL, and DCL stays with humans. Knowing the family tells you immediately who should be able to run a given statement.",
     },
     {
       kind: "takeaways",
@@ -847,7 +847,7 @@ const selectFrom: LessonContent = {
       kind: "prose",
       heading: "The shape of a SELECT",
       body: [
-        "Every SELECT names two things: which columns to project (the SELECT list) and where to read from (the FROM clause). Everything else — WHERE, GROUP BY, ORDER BY — is filtering, grouping, or sorting that result.",
+        "Every SELECT names two things: which columns to project (the SELECT list) and where to read from (the FROM clause). Everything else — WHERE, GROUP BY, ORDER BY — filters, groups, or sorts that result.",
       ],
     },
     {
@@ -876,13 +876,13 @@ FROM   users;`,
       kind: "callout",
       tone: "warn",
       title: "Avoid SELECT * in application code",
-      body: "It's fragile (a new column changes your row shape), wasteful (returns columns you didn't need), and slow (no covering index can help). Use SELECT * only at the REPL while exploring.",
+      body: "It's fragile (a new column silently changes your row shape), wasteful (returns columns you didn't need), and slow (covering indexes can't help). Use SELECT * only at the REPL while exploring.",
     },
     {
       kind: "prose",
       heading: "FROM is not just one table",
       body: [
-        "FROM can take a base table, a subquery (derived table), a CTE, a view, or a JOIN of any of those. Whatever you put after FROM, the engine treats it as a relation — same rules apply.",
+        "FROM can take a base table, a subquery, a CTE, a view, or a JOIN of any of those. Whatever you put after FROM, the engine treats it as a relation — same rules apply.",
       ],
     },
     {
@@ -901,8 +901,8 @@ GROUP BY plan;`,
       kind: "prose",
       heading: "DISTINCT — collapse duplicate rows",
       body: [
-        "By default a SELECT keeps every input row, even when the projected values repeat. Add `DISTINCT` immediately after `SELECT` and the engine runs a dedupe pass (hash or sort) over the projected tuple — every UNIQUE combination of selected columns survives exactly once.",
-        "`DISTINCT` is evaluated over the WHOLE projection, not just the first column. `SELECT DISTINCT a, b` gives unique (a, b) pairs, not unique a's. For per-column counts of unique values, use `COUNT(DISTINCT col)` inside an aggregate instead.",
+        "By default SELECT keeps every input row, even when projected values repeat. Add DISTINCT and the engine deduplicates the projected tuple — every unique combination of selected columns survives exactly once.",
+        "DISTINCT applies to the WHOLE projection, not just the first column. `SELECT DISTINCT a, b` gives unique (a, b) pairs, not unique a's. For per-column unique counts, use `COUNT(DISTINCT col)` inside an aggregate.",
       ],
     },
     {
@@ -931,14 +931,14 @@ FROM   customers;`,
       kind: "callout",
       tone: "info",
       title: "DISTINCT is not free",
-      body: "Dedupe requires either a sort or a hash table over the projected rows. On large result sets COUNT(DISTINCT col) above ~10 M unique keys can spill to disk — consider HyperLogLog (approx_count_distinct) for that scale.",
+      body: "Dedupe requires a sort or a hash table over the projected rows. On large result sets, COUNT(DISTINCT col) above ~10 M unique keys can spill to disk — consider HyperLogLog (approx_count_distinct) at that scale.",
     },
     {
       kind: "prose",
       heading: "The structure of a SQL query",
       body: [
-        "A real SELECT statement is built from clauses that snap together in a specific order. Each clause is optional after FROM — but the order is fixed: SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT.",
-        "Think of each clause as a station on an assembly line. FROM brings in the raw rows, WHERE drops the ones that don't pass the predicate, GROUP BY collapses the survivors into buckets, HAVING filters those buckets, SELECT projects (and renames) the columns the caller will actually see, ORDER BY sorts them, and LIMIT caps how many flow out the door.",
+        "A full SELECT is built from clauses in a fixed order: SELECT, FROM, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. Each clause is optional after FROM — but the order never changes.",
+        "Think of it as an assembly line. FROM brings in raw rows, WHERE drops failures, GROUP BY collapses survivors into buckets, HAVING filters those buckets, SELECT projects columns the caller sees, ORDER BY sorts them, LIMIT caps the output.",
       ],
     },
     {
@@ -962,8 +962,8 @@ LIMIT   2;                           -- 7. cap`,
     {
       kind: "callout",
       tone: "success",
-      title: "Reading the clause order is reading the engine",
-      body: "The number in the comment above is the LOGICAL execution order — not the written order. Once you internalise it, 'why can't I use my alias here?' answers itself: the alias only exists from step 5 onward.",
+      title: "The comment numbers are the execution order",
+      body: "SELECT is written first but runs at step 5. That's why you can't reference a SELECT-list alias in WHERE — the alias doesn't exist until step 5, and WHERE runs at step 2.",
     },
     {
       kind: "takeaways",
@@ -987,7 +987,7 @@ const whereLesson: LessonContent = {
       kind: "prose",
       heading: "WHERE happens before SELECT",
       body: [
-        "WHERE filters rows out of the FROM relation before any aggregation or projection. The predicate runs once per candidate row; a row keeps moving down the pipeline only if the predicate returns TRUE (UNKNOWN drops the row too — see NULL Semantics).",
+        "WHERE filters rows from the FROM relation before aggregation or projection. The predicate runs once per candidate row — a row advances only if it returns TRUE. UNKNOWN (the NULL case) drops the row too.",
       ],
     },
     {
@@ -1005,7 +1005,7 @@ WHERE  price BETWEEN 10 AND 50          -- inclusive range
       kind: "prose",
       heading: "Sargable vs non-sargable",
       body: [
-        "A predicate is sargable (Search ARGument ABLE) when the engine can use an index on the column. Wrapping a column in a function usually breaks that — the engine has to compute the function for every row.",
+        "A predicate is sargable (Search ARGument ABLE) when the engine can use an index. Wrapping a column in a function usually breaks that — the engine must compute the function for every row instead of using the index.",
       ],
     },
     {
@@ -1021,8 +1021,8 @@ WHERE  price BETWEEN 10 AND 50          -- inclusive range
     {
       kind: "callout",
       tone: "info",
-      title: "AND short-circuits left to right",
-      body: "Postgres reorders predicates by selectivity, but as a habit put the cheapest and most selective predicate first — it makes EXPLAIN easier to read and the intent obvious.",
+      title: "Put selective predicates first",
+      body: "Postgres reorders predicates by selectivity, but as a habit put the cheapest and most selective predicate first — it makes EXPLAIN easier to read and intent obvious.",
     },
     {
       kind: "takeaways",
@@ -1045,7 +1045,7 @@ const orderLimit: LessonContent = {
       kind: "prose",
       heading: "Order is opt-in",
       body: [
-        "Without ORDER BY, row order is undefined — and not stable across runs. ORDER BY is the only thing that makes a result deterministic. For pagination, that determinism must be bulletproof: tie-break on a unique column or you'll see rows repeat or vanish between pages.",
+        "Without ORDER BY, row order is undefined and not stable across runs. ORDER BY is the only thing that makes results deterministic. For pagination, that determinism must be bulletproof — always tie-break on a unique column or rows will repeat or vanish between pages.",
       ],
     },
     {
@@ -1066,8 +1066,8 @@ ORDER  BY deleted_at DESC NULLS LAST;`,
       kind: "prose",
       heading: "LIMIT and OFFSET — paging through results",
       body: [
-        "`LIMIT N` caps the output at the first N rows of the sorted stream. `OFFSET M` tells the engine to walk past the first M rows before LIMIT starts counting — that's how every classic 'page 2' query is built. The formula is just `OFFSET = (page - 1) × page_size`.",
-        "A famous interview application: getting the SECOND HIGHEST salary. Sort DESC, OFFSET 1 to skip the maximum, LIMIT 1 to grab the next row. Wrap with `DISTINCT` if duplicate top salaries would otherwise share rank 1.",
+        "`LIMIT N` caps output at the first N rows. `OFFSET M` skips the first M rows before LIMIT starts counting — the formula for page P is `OFFSET = (P - 1) × page_size`.",
+        "A common interview question: the second-highest salary. Sort DESC, OFFSET 1 to skip the maximum, LIMIT 1 to grab the next. Add DISTINCT if duplicate top salaries would share rank 1.",
       ],
     },
     {
@@ -1101,7 +1101,7 @@ LIMIT  1 OFFSET 1;`,
       kind: "prose",
       heading: "Why deep OFFSET hurts — keyset to the rescue",
       body: [
-        "OFFSET 1000 LIMIT 20 looks innocent but forces the engine to read AND discard 1000 rows every time the user clicks 'next'. Cost grows linearly with the page number. For deep pagination, use KEYSET (a.k.a. seek) pagination: remember the last seen sort key and ask for the next page AFTER it — O(1) per page regardless of depth.",
+        "OFFSET 1000 LIMIT 20 forces the engine to read and discard 1000 rows every request. Cost grows linearly with page number. Keyset (seek) pagination avoids this: remember the last sort key and ask for rows AFTER it — O(1) per page regardless of depth.",
       ],
     },
     {
@@ -1144,14 +1144,14 @@ const sqlComments: LessonContent = {
   slug: "sql-comments",
   title: "SQL Comments",
   subtitle:
-    "Single-line, multi-line, inline — and how comments become your best debugging tool.",
+    "Single-line and multi-line comments — stripped before execution, useful for humans.",
   sections: [
     {
       kind: "prose",
       heading: "What a comment is (and is not)",
       body: [
-        "Comments are descriptions in the code that help readers understand the intent and functionality of a SQL command. They are written for humans — the database management system strips them out before the query ever runs, so they have ZERO effect on the result, the plan, or performance.",
-        "Every dialect supports two flavours: the single-line `--` form and the multi-line `/* … */` form. Use them to label intent, justify a tricky predicate, or temporarily silence a statement while you debug.",
+        "Comments are notes for humans. The database strips them out before the query runs — zero effect on the result, the plan, or performance.",
+        "SQL has two flavors: `--` runs to end-of-line; `/* … */` spans any number of lines. Both can appear at the start, end, or inside a statement.",
       ],
     },
     {
@@ -1163,7 +1163,7 @@ const sqlComments: LessonContent = {
       kind: "prose",
       heading: "Single-line comments — `--`",
       body: [
-        "Two dashes start a comment that runs to the end of the line. The line below them is parsed normally.",
+        "Two dashes start a comment that runs to the end of the line. Code on subsequent lines is parsed normally.",
       ],
     },
     {
@@ -1178,7 +1178,7 @@ FROM   Students;`,
       kind: "prose",
       heading: "Comments on the same line as code",
       body: [
-        "You can also tack a `--` comment onto the end of a line. Everything to the LEFT of the dashes is still SQL; everything to the right is ignored.",
+        "Tack `--` onto the end of any line. Everything to the left is still SQL; everything to the right is ignored.",
       ],
     },
     {
@@ -1192,7 +1192,7 @@ FROM   Students;   -- from the Students table`,
       kind: "prose",
       heading: "Multi-line comments — `/* … */`",
       body: [
-        "Wrap any block of text in `/*` and `*/`. The comment can span as many lines as you like and can even sit INSIDE a statement — the parser treats the comment as a single whitespace, so `FROM /* table name here */ Students` is identical to `FROM Students`.",
+        "Wrap any block in `/*` and `*/`. It can span many lines and even sit inside a statement — the parser treats it as whitespace, so `FROM /* note */ Students` is identical to `FROM Students`.",
       ],
     },
     {
@@ -1245,14 +1245,14 @@ const sqlOperators: LessonContent = {
   slug: "sql-operators",
   title: "SQL Operators",
   subtitle:
-    "Arithmetic, comparison, and logical operators — the punctuation of every SELECT, WHERE, and ON clause.",
+    "Arithmetic, comparison, and logical operators — the building blocks of every WHERE and ON clause.",
   sections: [
     {
       kind: "prose",
       heading: "What an operator does",
       body: [
-        "Operators are symbols (and a handful of keywords) that perform an operation on one or two values. They show up everywhere — inside SELECT projections, WHERE predicates, JOIN ... ON conditions, HAVING filters, and CHECK constraints.",
-        "SQL groups operators into three families: ARITHMETIC operators compute new numbers, COMPARISON operators ask a yes/no question between two values, and LOGICAL operators combine those yes/no answers into bigger ones.",
+        "Operators are symbols (and a few keywords) that compute a result from one or two values. They appear in SELECT projections, WHERE predicates, JOIN ON conditions, HAVING filters, and CHECK constraints.",
+        "SQL groups them into three families: arithmetic (compute numbers), comparison (ask a yes/no question), and logical (combine yes/no answers into bigger ones).",
       ],
     },
     {
@@ -1264,7 +1264,7 @@ const sqlOperators: LessonContent = {
       kind: "prose",
       heading: "Arithmetic operators (+  -  *  /  %)",
       body: [
-        "Arithmetic operators take two numeric inputs and return a number. Use them in the SELECT list to derive new columns (price after tax, half-price, totals) or in WHERE clauses to express formulas.",
+        "Arithmetic operators take two numeric inputs and return a number. Use them in SELECT to derive new columns (price after tax, totals) or in WHERE to express formulas.",
       ],
     },
     {
@@ -1338,14 +1338,14 @@ SELECT order_id, item, amount FROM Orders WHERE amount <> 400;`,
       kind: "callout",
       tone: "warn",
       title: "Beware NULL in a comparison",
-      body: "`amount = NULL` is never TRUE — it evaluates to UNKNOWN, so the row is dropped. Use `IS NULL` / `IS NOT NULL` for null tests. (See the NULL Semantics lesson for the three-valued-logic deep dive.)",
+      body: "`amount = NULL` is never TRUE — it evaluates to UNKNOWN, so the row is dropped. Use `IS NULL` / `IS NOT NULL` for null tests. (See the NULL Semantics lesson for the full three-valued-logic deep dive.)",
     },
     {
       kind: "prose",
       heading: "Logical operators",
       body: [
-        "Logical operators glue comparison results together. The core trio is `AND`, `OR`, `NOT`; the broader family also includes `BETWEEN`, `IN`, `LIKE`, `IS NULL`, `EXISTS`, and the quantified `ANY` / `ALL`.",
-        "Each of them returns TRUE / FALSE / UNKNOWN and can be combined with the others. Most have their own deep-dive lessons in the Querying track — the table below is a map so you know which clause to reach for.",
+        "Logical operators combine comparison results. The core trio is AND, OR, NOT; the broader family includes BETWEEN, IN, LIKE, IS NULL, EXISTS, and the quantifiers ANY / ALL.",
+        "Each returns TRUE / FALSE / UNKNOWN and can be combined with the others. The table below is a map so you know which operator to reach for.",
       ],
     },
     {
@@ -1393,7 +1393,7 @@ const logicalOrder: LessonContent = {
       kind: "prose",
       heading: "Written order ≠ executed order",
       body: [
-        "SQL is written SELECT-first but evaluated FROM-first. Knowing the real order is the single most useful piece of mental machinery in the language — it explains every 'why can't I reference my alias here?' question you'll ever have.",
+        "SQL is written SELECT-first but evaluated FROM-first. Knowing the real order explains every 'why can't I reference my alias here?' question you'll ever have.",
       ],
     },
     {
@@ -1475,8 +1475,8 @@ const introWhatIsDb: LessonContent = {
       kind: "prose",
       heading: "A database is structured, persistent, shared state",
       body: [
-        "A database is a long-lived, structured store of facts that many programs and people can read and write at the same time — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus it adds concurrency, integrity, and a query language.",
-        "The software that wraps the data and gives it those properties is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite — these are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
+        "A database is a long-lived, structured store of facts that many programs and people can read and write concurrently — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus concurrency, integrity, and a query language.",
+        "The software that wraps the data is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
       ],
     },
     {
@@ -1488,7 +1488,7 @@ const introWhatIsDb: LessonContent = {
       kind: "callout",
       tone: "info",
       title: "Why not just a spreadsheet or a JSON file?",
-      body: "Spreadsheets and JSON break the moment you need more than one writer, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to ALL of those at once — not a fancier spreadsheet.",
+      body: "Spreadsheets and JSON break the moment you need concurrent writers, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to all of those at once.",
     },
     {
       kind: "takeaways",
@@ -1510,7 +1510,7 @@ const introDbTypes: LessonContent = {
       kind: "prose",
       heading: "There is no single 'database' — there are families",
       body: [
-        "Different shapes of data and different access patterns gave rise to different database families. Picking the right family for the workload is the single highest-leverage architectural decision you make on a system. Picking the wrong one usually means rewriting in 18 months.",
+        "Different data shapes and access patterns gave rise to different database families. Picking the right family is the highest-leverage architectural decision on a system. Picking the wrong one usually means rewriting in 18 months.",
       ],
     },
     {
@@ -1534,7 +1534,7 @@ const introDbTypes: LessonContent = {
       kind: "callout",
       tone: "success",
       title: "Default to relational",
-      body: "If you don't have a strong reason to choose otherwise, start with a relational database. It gives you the broadest set of guarantees, the most tooling, the most engineers who can help, and a clean path to add caches or analytics later.",
+      body: "Without a strong reason to choose otherwise, start with a relational database. It gives you the broadest guarantees, the most tooling, and a clean path to add caches or analytics later.",
     },
     {
       kind: "takeaways",
@@ -1556,7 +1556,7 @@ const introHowDbWorks: LessonContent = {
       kind: "prose",
       heading: "Every query takes the same path",
       body: [
-        "When you press Enter on a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'because step N made an expensive choice'.",
+        "When you run a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'step N made an expensive choice'.",
       ],
     },
     {
@@ -1568,18 +1568,18 @@ const introHowDbWorks: LessonContent = {
       kind: "prose",
       heading: "The five stages",
       body: [
-        "1. CONNECTION — your client opens an authenticated TCP/TLS session to the DB. The SQL text travels over the wire.",
+        "1. CONNECTION — your client opens an authenticated TCP/TLS session. The SQL text travels over the wire.",
         "2. PARSER — the engine tokenises the SQL and builds an Abstract Syntax Tree. Syntax errors die here.",
-        "3. PLANNER / OPTIMISER — the engine considers many possible execution strategies (sequential scan vs index scan, different join orders, hash vs sort), estimates the cost of each using statistics, and picks the cheapest.",
-        "4. EXECUTOR — the chosen plan runs: it reads pages from disk (or the buffer cache), applies filters, joins, aggregates, and sorts.",
-        "5. RESULT — matching rows are serialised in the wire protocol and streamed back to the client.",
+        "3. PLANNER / OPTIMISER — the engine considers many execution strategies (sequential scan vs index scan, different join orders), estimates cost using statistics, and picks the cheapest.",
+        "4. EXECUTOR — the chosen plan runs: reads pages from disk (or the buffer cache), applies filters, joins, aggregates, sorts.",
+        "5. RESULT — matching rows are serialised and streamed back to the client.",
       ],
     },
     {
       kind: "callout",
       tone: "info",
       title: "EXPLAIN shows you the plan",
-      body: "`EXPLAIN ANALYZE <query>` makes the planner reveal which strategy it chose and how long each step actually took. It's the single most useful debugging tool in databases.",
+      body: "`EXPLAIN ANALYZE <query>` reveals which strategy the planner chose and how long each step actually took. It's the most useful debugging tool in databases.",
     },
     {
       kind: "takeaways",
@@ -1601,8 +1601,8 @@ const introHowQueryingWorks: LessonContent = {
       kind: "prose",
       heading: "Declarative vs imperative",
       body: [
-        "In application code, you tell the computer the steps: 'open the file, read each line, check the condition, push to an array, sort the array, print the first 10'. That is imperative.",
-        "In SQL, you describe the RESULT you want — which rows, which columns, in what order. The engine plans the steps. As your data grows from 100 rows to 100 million, the same SQL keeps working; the engine just picks a different plan under the hood.",
+        "In application code, you tell the computer the steps: open the file, read each line, check the condition, push to an array, sort, print. That is imperative.",
+        "In SQL, you describe the result — which rows, which columns, in what order. The engine plans the steps. As data grows from 100 rows to 100 million, the same SQL keeps working; the engine picks a different plan under the hood.",
       ],
     },
     {
@@ -1626,7 +1626,7 @@ LIMIT   10;                      -- 7. cap the output`,
       kind: "callout",
       tone: "info",
       title: "Written vs executed order",
-      body: "You write SELECT first, but the engine runs it almost LAST. Learning the logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question you'll ever have.",
+      body: "You write SELECT first, but the engine runs it almost last. The logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question.",
     },
     {
       kind: "takeaways",
@@ -1648,7 +1648,7 @@ const introHowStorage: LessonContent = {
       kind: "prose",
       heading: "From row to disk",
       body: [
-        "A table is not stored as 'a list of rows'. It is stored as an ORDERED FILE OF FIXED-SIZE PAGES — typically 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads a single row from disk; it always reads a whole page and then picks rows out of it. This is why narrow rows are faster: more rows per page means fewer page reads.",
+        "A table is not stored as a list of rows. It is an ordered file of fixed-size pages — 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads one row from disk; it reads a whole page and picks rows out of it. Narrow rows mean more rows per page, fewer page reads, faster queries.",
       ],
     },
     {
@@ -1660,14 +1660,14 @@ const introHowStorage: LessonContent = {
       kind: "prose",
       heading: "Why indexes matter",
       body: [
-        "Without an index, finding `id = 3` requires scanning every page of the table — a SEQUENTIAL SCAN, O(N). An index is a separate, SORTED data structure (typically a B-Tree) that maps keys to physical row addresses. Lookup becomes O(log N). The trade: indexes take space on disk, slow down INSERT/UPDATE/DELETE slightly, and must be maintained.",
+        "Without an index, finding `id = 3` requires scanning every page — a sequential scan, O(N). An index is a separate sorted structure (typically a B-Tree) that maps keys to row addresses, making lookup O(log N). The trade-off: indexes consume disk space, slow INSERT/UPDATE/DELETE slightly, and must be maintained.",
       ],
     },
     {
       kind: "prose",
       heading: "Speed AND durability — the WAL trick",
       body: [
-        "If every write had to land on disk synchronously, performance would collapse. Real databases use TWO tricks. First, a BUFFER CACHE keeps hot pages in RAM. Second, a WRITE-AHEAD LOG (WAL) records every change as a sequential append BEFORE the actual page is updated. On COMMIT, only the WAL needs to be fsynced — random heap writes happen later in the background. On crash, the WAL is replayed to recover.",
+        "If every write landed on disk synchronously, performance would collapse. Databases use two tricks: a BUFFER CACHE keeps hot pages in RAM, and a WRITE-AHEAD LOG (WAL) records every change as a sequential append before the page is updated. On COMMIT, only the WAL needs fsync — random heap writes happen in the background. On crash, the WAL is replayed to recover.",
       ],
     },
     {

@@ -16,14 +16,14 @@ import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 const booleanLogic: LessonContent = {
   slug: "boolean-logic",
   title: "1.1 Boolean Logic (AND / OR / NOT)",
-  subtitle: "Order of precedence, short-circuit paths, and the three-valued truth table.",
+  subtitle: "Precedence rules, short-circuit evaluation, and three-valued truth.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Compound predicates are how an engine carves a billion-row stream into the precise sliver an analyst actually wants — get the boolean algebra wrong and the report silently lies.",
-        "Think of WHERE as a hardware logic gate stacked per row: NOT inverters fire first, AND gates fuse signals next, and OR multiplexers merge the survivors — exactly like a CPU's ALU evaluating a conditional jump.",
+        "WHERE evaluates one boolean expression per row — get the algebra wrong and the query silently returns the wrong rows.",
+        "Precedence order: NOT fires first, then AND, then OR — the same hierarchy as in most programming languages.",
       ],
     },
     {
@@ -35,9 +35,9 @@ const booleanLogic: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: render the source table as a vertical stack of row cards on the left canvas; each card shows id, category, price. A predicate ribbon (AND/OR/NOT tokens) materialises on the right with precedence brackets greyed out.",
-        "Phase 2 — Action: a scanner bar glides top-to-bottom across the row stack. As it touches a card, the NOT token pulses first, the AND token tints the row amber, the OR token fans into two branches; rows whose final truth value is TRUE arc rightward into the result viewport, FALSE rows compress to 30% opacity and slide left into a discard tray, UNKNOWN rows shimmer purple and fall into the same discard tray.",
-        "Phase 3 — Final State: the result viewport holds only TRUE rows in their original order; a precedence overlay locks in showing the parsed tree (NOT → AND → OR) for the executed query.",
+        "Rows enter as cards on the left; a predicate ribbon shows AND/OR/NOT tokens with precedence brackets dimmed.",
+        "The scanner applies NOT first, AND second, OR last. TRUE rows arc right; FALSE and UNKNOWN rows fade into the discard tray.",
+        "The result viewport holds only TRUE rows; a parsed-tree overlay confirms the NOT → AND → OR evaluation order.",
       ],
     },
     {
@@ -84,14 +84,14 @@ WHERE (category = 'pen' OR category = 'pencil')   -- /* OR branch fans first */
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — operator precedence ambushes",
-      body: "AND binds tighter than OR. `a OR b AND c` is parsed as `a OR (b AND c)` — most developers read it left-to-right and ship a query that silently widens the result set. Always parenthesize mixed operators; the parser does what you typed, not what you meant.",
+      title: "Logic Trap — operator precedence",
+      body: "`a OR b AND c` parses as `a OR (b AND c)` because AND binds tighter. Always parenthesize mixed operators — the parser does exactly what you typed.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "The PostgreSQL planner reorders predicates by estimated selectivity from pg_statistic, then push-down evaluates them as a short-circuited expression tree. A poorly ordered OR can suppress an index scan and force a sequential scan over the whole heap — confirm with EXPLAIN (ANALYZE, BUFFERS) before promoting to production.",
+      title: "Planner impact",
+      body: "PostgreSQL reorders predicates by estimated selectivity from pg_statistic and short-circuits them. A miswritten OR can suppress an index scan — verify with EXPLAIN (ANALYZE, BUFFERS).",
     },
     {
       kind: "takeaways",
@@ -109,14 +109,14 @@ WHERE (category = 'pen' OR category = 'pencil')   -- /* OR branch fans first */
 const inBetween: LessonContent = {
   slug: "in-between",
   title: "1.2 Range & Set Filtering (IN / BETWEEN)",
-  subtitle: "Inclusive boundaries, set transformation mechanics, and the OR rewrite the optimizer performs.",
+  subtitle: "Inclusive bounds, set membership, and the OR expansion the optimizer generates.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Hand-rolling `x = 1 OR x = 2 OR x = 3 OR …` for membership tests is unreadable and unindexable — IN and BETWEEN compress that into a single declarative predicate the optimizer can re-plan as an index range scan.",
-        "Mentally, IN is a hash-set probe (O(1) average lookup against a tiny in-memory set) and BETWEEN is a B-Tree index seek to the low key followed by a linear walk to the high key — identical to a sorted-array bisect_left / bisect_right pair.",
+        "IN and BETWEEN compress repeated equality checks into a single predicate the optimizer can plan as an index range scan.",
+        "IN is a hash-set probe; BETWEEN is a B-Tree seek to the low bound followed by a walk to the high bound — both ends inclusive.",
       ],
     },
     {
@@ -128,9 +128,9 @@ const inBetween: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: source rows fan out on the left; a yellow probe-set chip `{2, 4, 6}` floats top-right, and a green range visor `[10, 20]` floats bottom-right. All rows start at 100% opacity.",
-        "Phase 2 — Action: each row arcs upward into the probe-set; matching ids glow yellow and pass through, misses dim to 40% opacity. The same rows then arc downward into the range visor; ids inside [10, 20] glow green and snap to the result viewport, outliers compress to a discard tray.",
-        "Phase 3 — Final State: result viewport contains only rows that satisfied IN OR BETWEEN; an overlay shows the equivalent OR-rewrite the planner generated.",
+        "Source rows fan left; a yellow set chip {2,4,6} floats top-right and a green range visor [10,20] floats bottom-right.",
+        "Rows probe the set chip first (misses dim), then enter the range visor; ids inside [10,20] snap to the viewport, outliers discard.",
+        "The viewport holds rows satisfying both predicates; an overlay shows the OR-rewrite the planner generated internally.",
       ],
     },
     {
@@ -174,14 +174,14 @@ WHERE (customer_id = 2 OR customer_id = 4 OR customer_id = 6)
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL poisons the set",
-      body: "`x NOT IN (1, 2, NULL)` expands to `x<>1 AND x<>2 AND x<>NULL` — the last clause evaluates to UNKNOWN, dragging the whole AND chain to UNKNOWN, and the row is dropped. Always strip NULLs from the inner set or rewrite as `NOT EXISTS`.",
+      title: "Logic Trap — NOT IN with a NULL poisons the set",
+      body: "`x NOT IN (1, 2, NULL)` expands to `x<>1 AND x<>2 AND x<>NULL`. The last clause is UNKNOWN, collapsing the whole row. Strip NULLs from the inner set or rewrite as NOT EXISTS.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "PostgreSQL converts small IN lists (< 100 elements) into a ScalarArrayOpExpr — a vectorised in-memory hash probe. Above the threshold it materialises the list as an implicit VALUES join, which may degrade to a hash join. BETWEEN against an indexed column triggers an index range scan; wrapping the column in a function (e.g. `BETWEEN lower(x) AND …`) suppresses the index and forces a sequential scan.",
+      title: "Planner impact",
+      body: "PostgreSQL converts small IN lists into a ScalarArrayOpExpr (vectorised hash probe); larger lists become an implicit VALUES join. BETWEEN on an indexed column triggers a range scan — wrapping the column in any function kills it.",
     },
     {
       kind: "takeaways",
