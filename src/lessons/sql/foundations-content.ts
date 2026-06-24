@@ -80,16 +80,18 @@ const tablesAndRows: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "The mental model",
+      heading: "Database, table, column, row — the four words",
       body: [
-        "A relational database stores data as relations. A relation is just a set of tuples that all share the same shape (the same columns, in the same types). In SQL we call a relation a table, a tuple a row, and an attribute a column.",
-        "The word 'set' matters: rows have no inherent order, and (in pure theory) no duplicates. SQL relaxes both rules — tables are technically multisets and ORDER BY exists — but the mental model is still 'unordered set of records'. Any query that depends on physical row order is a bug waiting to happen.",
+        "A DATABASE is the outermost container. It groups related tables under one name (e.g. `app_db`) and gives them shared auth, backups, and transactions. One server can host many databases.",
+        "A TABLE lives inside a database. It is a 2-D grid with a fixed shape — a collection of records that all follow the same column layout. Think of it as a strongly-typed spreadsheet that the engine enforces.",
+        "A COLUMN is a vertical slice of the table. It has a NAME and a DATA TYPE (INTEGER, TEXT, TIMESTAMPTZ, …). Every cell in that column must obey the type. Columns can also carry constraints — NOT NULL, UNIQUE, CHECK, DEFAULT — that the engine enforces on every write.",
+        "A ROW (also called a tuple or record) is one horizontal entry — one complete instance of the shape. A row in `users` is a single user: one value for every column. Rows are the unit you INSERT, UPDATE, DELETE, and read back.",
       ],
     },
     {
       kind: "animation",
-      variant: "table-build",
-      caption: "How a relation comes to life",
+      variant: "table-anatomy",
+      caption: "Database → Table → Column → Row, one concept at a time",
     },
     {
       kind: "diagram",
