@@ -20,7 +20,11 @@ export type Section =
         | "table-build"
         | "foreign-key"
         | "null-truth"
-        | "type-sizes";
+        | "type-sizes"
+        | "where-filter"
+        | "group-by-agg"
+        | "join-types"
+        | "set-ops";
       caption?: string;
     }
   | { kind: "takeaways"; items: string[] };
