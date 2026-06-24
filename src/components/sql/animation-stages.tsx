@@ -2595,6 +2595,12 @@ export const STAGES_REGISTRY = {
   "intro-how-db-works": introHow,
   "intro-querying":     introQuerying,
   "intro-storage":      introStorage,
+  // SELECT Fundamentals deep dives
+  "commands-map":       commandsMapStages,
+  "query-structure":    queryStructureStages,
+  "select-distinct":    distinctStages,
+  "offset-pagination":  offsetStages,
+
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
