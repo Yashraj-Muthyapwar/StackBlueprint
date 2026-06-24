@@ -158,10 +158,23 @@ const rangeStages: Stage[] = [
     table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
     steps: [
       st([2], () => "dropped" as RowState,
-        "NOT IN expands to status<>'refund' AND status<>NULL. The second compares to NULL → UNKNOWN → row drops. ZERO rows returned.",
+        "NOT IN expands to status<>'refund' AND status<>NULL. The second comparison is UNKNOWN for every row → 3VL drops everything. ZERO rows returned.",
         { highlightCols: [3], noteTone: "rose" }),
-      st([2], pass((r) => r.cells[3] !== "refund"),
-        "Fix: NOT IN (SELECT … WHERE x IS NOT NULL), or use NOT EXISTS which handles NULL correctly.",
+    ],
+  },
+  {
+    name: "Fix: filter NULLs first",
+    blurb: "Rewrite with an explicit IS NOT NULL — or use NOT EXISTS",
+    sql: [
+      "SELECT id, customer, status",
+      "FROM   orders",
+      "WHERE  status <> 'refund'",
+      "       AND status IS NOT NULL",
+    ],
+    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    steps: [
+      st([2,3], pass((r) => r.cells[3] !== "refund" && r.cells[3] !== null),
+        "Now the predicate is TRUE/FALSE — never UNKNOWN. 5 rows survive; only Alan (refund) drops.",
         { highlightCols: [3], noteTone: "mint" }),
     ],
   },
@@ -463,6 +476,10 @@ const havingStages: Stage[] = [
       st([3], pass((r) => r.cells[3] === "paid"),
         "Surviving rows bucket by customer. Aggregates compute per bucket.",
         { highlightCols: [1], side: bucketPanel([{k:"Ada",sum:125},{k:"Linus",sum:195},{k:"Bob",sum:50}]) }),
+      st([0,3], "added",
+        "Final projection: only customer and SUM(total) AS revenue leave the operator — 3 rows.",
+        { rowsOverride: [r("ada","Ada",125), r("lin","Linus",195), r("bob","Bob",50)],
+          colsOverride: ["customer","revenue"], noteTone: "violet" }),
     ],
   },
   {
@@ -477,8 +494,12 @@ const havingStages: Stage[] = [
     table: { name: "orders", cols: HCOLS, rows: ORD_H },
     steps: [
       st([4], pass((r) => r.cells[3] === "paid"),
-        "HAVING is WHERE for groups — runs AFTER aggregation. Bob's $50 falls below threshold and the bucket is dropped.",
-        { side: bucketPanel([{k:"Ada ✓",sum:125},{k:"Linus ✓",sum:195}]) }),
+        "HAVING is WHERE for groups — runs AFTER aggregation. Bob's $50 bucket falls below threshold and is dropped.",
+        { side: bucketPanel([{k:"Ada ✓",sum:125},{k:"Linus ✓",sum:195},{k:"Bob ✗",sum:50}]) }),
+      st([0,4], "added",
+        "Result projection — exactly the columns named in SELECT.",
+        { rowsOverride: [r("ada","Ada",125), r("lin","Linus",195)],
+          colsOverride: ["customer","revenue"], noteTone: "violet" }),
     ],
   },
   {
@@ -492,9 +513,20 @@ const havingStages: Stage[] = [
     ],
     table: { name: "orders", cols: HCOLS, rows: ORD_H },
     steps: [
-      st([0,1,2,3,4], pass((r) => r.cells[3] === "paid" && (r.cells[1] === "Ada" || r.cells[1] === "Linus")),
-        "SELECT runs LAST — that's why you can't reference column aliases in WHERE or GROUP BY in standard SQL.",
-        { noteTone: "violet" }),
+      st([1], "pending", "Step 1 — FROM resolves the source relation.",
+        { noteTone: "neutral" }),
+      st([2], pass((r) => r.cells[3] === "paid"),
+        "Step 2 — WHERE filters raw rows. Grace (pending) drops.", { highlightCols: [3] }),
+      st([3], pass((r) => r.cells[3] === "paid"),
+        "Step 3 — GROUP BY hashes survivors by customer (Ada, Linus, Bob).",
+        { highlightCols: [1], side: bucketPanel([{k:"Ada",sum:125},{k:"Linus",sum:195},{k:"Bob",sum:50}]) }),
+      st([4], pass((r) => r.cells[3] === "paid" && r.cells[1] !== "Bob"),
+        "Step 4 — HAVING drops Bob's bucket (50 < 100).",
+        { side: bucketPanel([{k:"Ada ✓",sum:125},{k:"Linus ✓",sum:195}]) }),
+      st([0], "added",
+        "Step 5 — SELECT runs LAST. Only the projected columns reach the client; that's why aliases declared here are invisible to WHERE / GROUP BY.",
+        { rowsOverride: [r("ada","Ada",125), r("lin","Linus",195)],
+          colsOverride: ["customer","revenue"], noteTone: "violet" }),
     ],
   },
 ];
@@ -573,102 +605,160 @@ const cubeStages: Stage[] = [
 // Module 3: Joins
 // ============================================================
 
-// ----- q-venn: INNER, LEFT, RIGHT, FULL -----
+// ----- q-venn: INNER, LEFT, RIGHT, FULL — dual-table step-by-step -----
+// Source tables used by every join stage.
 const USERS_J: Row[] = [
   r(1, 1, "Ada"),
   r(2, 2, "Linus"),
   r(3, 3, "Grace"),
 ];
 const ORDERS_J: Row[] = [
-  r(11, 11, 1, "$45"),
-  r(12, 12, 1, "$30"),
-  r(13, 13, 2, "$120"),
-  r(14, 14, 99, "$10"),  // orphan
+  r(11, 11, 1,  "$45"),
+  r(12, 12, 1,  "$30"),
+  r(13, 13, 2,  "$120"),
+  r(14, 14, 99, "$10"),  // orphan — no matching user
 ];
+const USERS_COLS = ["id", "name"];
+const ORDERS_COLS = ["id", "user_id", "total"];
+const RES_COLS = ["u.id", "u.name", "o.id", "o.total"];
 
-const joinResult = (kind: "INNER"|"LEFT"|"RIGHT"|"FULL") => {
-  const rows: Row[] = [];
-  if (kind === "INNER" || kind === "LEFT" || kind === "FULL") {
-    rows.push(r("a1", 1, "Ada", 11, "$45"));
-    rows.push(r("a2", 1, "Ada", 12, "$30"));
-    rows.push(r("l1", 2, "Linus", 13, "$120"));
-  }
-  if (kind === "LEFT" || kind === "FULL") rows.push(r("g", 3, "Grace", null, null));
-  if (kind === "RIGHT" || kind === "FULL") rows.push(r("o", null, null, 14, "$10"));
-  if (kind === "RIGHT") {
-    rows.unshift(r("a1", 1, "Ada", 11, "$45"), r("a2", 1, "Ada", 12, "$30"), r("l1", 2, "Linus", 13, "$120"));
-  }
-  return rows;
-};
+// Helpers to build per-row state arrays for the dual layout.
+const mark = <T,>(arr: T[], idx: number[], state: RowState): (RowState | undefined)[] =>
+  arr.map((_, i) => (idx.includes(i) ? state : undefined));
 
-const venn = (kind: "INNER"|"LEFT"|"RIGHT"|"FULL"): React.ReactNode => {
-  const left = kind === "LEFT" || kind === "FULL";
-  const right = kind === "RIGHT" || kind === "FULL";
-  return (
-    <div className="flex items-center justify-center gap-2 rounded-lg border border-hairline bg-surface-2/40 p-3">
-      <div className={`h-16 w-16 rounded-full border-2 ${left ? "border-mint bg-mint/20" : "border-mint/40"} -mr-6`} />
-      <div className="z-10 h-16 w-16 rounded-full border-2 border-mint bg-mint/40" />
-      <div className={`h-16 w-16 rounded-full border-2 ${right ? "border-mint bg-mint/20" : "border-mint/40"} -ml-6`} />
-    </div>
-  );
-};
+// Build result rows for a matched pair.
+const pair = (u: Row, o: Row | null): Row =>
+  o
+    ? r(`${u.cells[0]}-${o.cells[0]}`, u.cells[0]!, u.cells[1]!, o.cells[0]!, o.cells[2]!)
+    : r(`${u.cells[0]}-NULL`, u.cells[0]!, u.cells[1]!, null, null);
+const orphanRight = (o: Row): Row =>
+  r(`NULL-${o.cells[0]}`, null, null, o.cells[0]!, o.cells[2]!);
+
+// Pre-compute matching result rows.
+const ADA_45  = pair(USERS_J[0], ORDERS_J[0]);
+const ADA_30  = pair(USERS_J[0], ORDERS_J[1]);
+const LIN_120 = pair(USERS_J[1], ORDERS_J[2]);
+const GRACE_NULL = pair(USERS_J[2], null);
+const NULL_ORPHAN = orphanRight(ORDERS_J[3]);
 
 const vennStages: Stage[] = [
+  // ─────────────── INNER JOIN ───────────────
   {
-    name: "INNER JOIN — intersection",
+    name: "INNER JOIN — matched pairs only",
+    blurb: "Keep a row only when ON predicate is TRUE",
     sql: [
-      "SELECT u.id, u.name, o.id AS order_id, o.total",
+      "SELECT u.id, u.name, o.id, o.total",
       "FROM   users u",
       "INNER  JOIN orders o ON o.user_id = u.id",
     ],
-    table: { name: "result", cols: ["user_id","name","order_id","total"], rows: joinResult("INNER") },
+    leftTable: { name: "users  u", cols: USERS_COLS, rows: USERS_J },
+    rightTable:{ name: "orders o", cols: ORDERS_COLS, rows: ORDERS_J },
     steps: [
-      st([2], "added", "Only rows where the predicate u.id = o.user_id is TRUE. Grace (no orders) and the orphan order vanish.",
-        { side: venn("INNER") }),
+      { activeLines: [1,2], note: "Two source relations. The join walks every left row and probes the right side on o.user_id = u.id." },
+      { activeLines: [2], leftStates: mark(USERS_J,[0],"kept"), rightStates: mark(ORDERS_J,[0,1],"kept"),
+        resultRows: [ADA_45, ADA_30], resultCols: RES_COLS,
+        note: "Probe u=Ada(id=1). Orders #11 and #12 carry user_id=1 → emit 2 paired rows." },
+      { activeLines: [2], leftStates: mark(USERS_J,[1],"kept"), rightStates: mark(ORDERS_J,[2],"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Probe u=Linus(id=2). Order #13 matches → 1 more row." },
+      { activeLines: [2], leftStates: mark(USERS_J,[2],"dropped"),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Probe u=Grace(id=3). No order has user_id=3 → Grace is DROPPED. INNER never invents NULLs.",
+        noteTone: "amber" },
+      { activeLines: [2], leftStates: USERS_J.map((_,i)=> i===2 ? "dropped" : "kept"),
+        rightStates: ORDERS_J.map((_,i)=> i===3 ? "dropped" : "kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Orphan order #14 (user_id=99) finds no user → also dropped. INNER keeps only the intersection." },
     ],
   },
+
+  // ─────────────── LEFT JOIN ───────────────
   {
-    name: "LEFT JOIN — keep all left rows",
+    name: "LEFT JOIN — keep every left row",
+    blurb: "Unmatched left rows survive; right columns become NULL",
     sql: [
-      "SELECT u.id, u.name, o.id AS order_id, o.total",
+      "SELECT u.id, u.name, o.id, o.total",
       "FROM   users u",
       "LEFT   JOIN orders o ON o.user_id = u.id",
     ],
-    table: { name: "result", cols: ["user_id","name","order_id","total"], rows: joinResult("LEFT") },
+    leftTable: { name: "users  u  (preserved)", cols: USERS_COLS, rows: USERS_J },
+    rightTable:{ name: "orders o", cols: ORDERS_COLS, rows: ORDERS_J },
     steps: [
-      st([2], "added", "Every user appears at least once. No match? Right-side columns become NULL. Grace appears with NULL order.",
-        { side: venn("LEFT") }),
+      { activeLines: [1,2], note: "LEFT JOIN promises: every users row appears at least once in the output." },
+      { activeLines: [2], leftStates: mark(USERS_J,[0],"kept"), rightStates: mark(ORDERS_J,[0,1],"kept"),
+        resultRows: [ADA_45, ADA_30], resultCols: RES_COLS,
+        note: "Ada matches → 2 rows, same as INNER." },
+      { activeLines: [2], leftStates: mark(USERS_J,[1],"kept"), rightStates: mark(ORDERS_J,[2],"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Linus matches → 1 row." },
+      { activeLines: [2], leftStates: mark(USERS_J,[2],"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120, GRACE_NULL], resultCols: RES_COLS,
+        note: "Grace has NO order. LEFT JOIN still emits her — with NULL for o.id and o.total.",
+        noteTone: "mint" },
+      { activeLines: [2], leftStates: USERS_J.map(()=>"kept"), rightStates: mark(ORDERS_J,[3],"dropped"),
+        resultRows: [ADA_45, ADA_30, LIN_120, GRACE_NULL], resultCols: RES_COLS,
+        note: "Orphan order #14 is STILL dropped — only the LEFT side is preserved." },
     ],
   },
+
+  // ─────────────── RIGHT JOIN ───────────────
   {
-    name: "RIGHT JOIN — keep all right rows",
+    name: "RIGHT JOIN — keep every right row",
+    blurb: "Mirror of LEFT — orphan rows on the right survive",
     sql: [
-      "SELECT u.id, u.name, o.id AS order_id, o.total",
+      "SELECT u.id, u.name, o.id, o.total",
       "FROM   users u",
       "RIGHT  JOIN orders o ON o.user_id = u.id",
     ],
-    table: { name: "result", cols: ["user_id","name","order_id","total"], rows: joinResult("RIGHT") },
+    leftTable: { name: "users  u", cols: USERS_COLS, rows: USERS_J },
+    rightTable:{ name: "orders o  (preserved)", cols: ORDERS_COLS, rows: ORDERS_J },
     steps: [
-      st([2], "added", "Mirror of LEFT. Orphan order 14 (user_id=99) surfaces with NULL user. Convention: prefer LEFT and reorder tables.",
-        { side: venn("RIGHT") }),
+      { activeLines: [1,2], note: "RIGHT JOIN promises every orders row appears at least once." },
+      { activeLines: [2], leftStates: mark(USERS_J,[0],"kept"), rightStates: mark(ORDERS_J,[0,1],"kept"),
+        resultRows: [ADA_45, ADA_30], resultCols: RES_COLS,
+        note: "Orders #11 and #12 find Ada — 2 matched rows." },
+      { activeLines: [2], leftStates: mark(USERS_J,[1],"kept"), rightStates: mark(ORDERS_J,[2],"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Order #13 finds Linus — 1 more row." },
+      { activeLines: [2], leftStates: mark(USERS_J,[2],"dropped"), rightStates: mark(ORDERS_J,[3],"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120, NULL_ORPHAN], resultCols: RES_COLS,
+        note: "Orphan order #14 (user_id=99) is preserved with NULL user columns. Grace (no order) is dropped.",
+        noteTone: "mint" },
+      { activeLines: [2], note: "Convention: prefer LEFT and swap the operand order — it reads more naturally in code reviews." },
     ],
   },
+
+  // ─────────────── FULL OUTER JOIN ───────────────
   {
-    name: "FULL OUTER JOIN — union of both",
+    name: "FULL OUTER JOIN — keep BOTH sides",
+    blurb: "Union of LEFT and RIGHT semantics — unmatched on either side survives",
     sql: [
-      "SELECT u.id, u.name, o.id AS order_id, o.total",
+      "SELECT u.id, u.name, o.id, o.total",
       "FROM   users u",
       "FULL   JOIN orders o ON o.user_id = u.id",
     ],
-    table: { name: "result", cols: ["user_id","name","order_id","total"], rows: joinResult("FULL") },
+    leftTable: { name: "users  u  (preserved)", cols: USERS_COLS, rows: USERS_J },
+    rightTable:{ name: "orders o  (preserved)", cols: ORDERS_COLS, rows: ORDERS_J },
     steps: [
-      st([2], "added", "Both unmatched sides preserved. Useful for reconciliation: 'who is on side A but not side B, and vice versa?'",
-        { side: venn("FULL") }),
+      { activeLines: [1,2], note: "FULL = every row from EITHER side appears at least once. Use for reconciliation reports." },
+      { activeLines: [2], leftStates: USERS_J.map((_,i)=> i<2 ? "kept" : undefined),
+        rightStates: ORDERS_J.map((_,i)=> i<3 ? "kept" : undefined),
+        resultRows: [ADA_45, ADA_30, LIN_120], resultCols: RES_COLS,
+        note: "Matched portion first — same 3 rows as INNER." },
+      { activeLines: [2], leftStates: USERS_J.map((_,i)=> i===2 ? "kept" : "kept"),
+        rightStates: ORDERS_J.map((_,i)=> i<3 ? "kept" : undefined),
+        resultRows: [ADA_45, ADA_30, LIN_120, GRACE_NULL], resultCols: RES_COLS,
+        note: "Add unmatched left rows (Grace) padded with NULLs — exactly what LEFT contributes.",
+        noteTone: "mint" },
+      { activeLines: [2], leftStates: USERS_J.map(()=>"kept"), rightStates: ORDERS_J.map(()=>"kept"),
+        resultRows: [ADA_45, ADA_30, LIN_120, GRACE_NULL, NULL_ORPHAN], resultCols: RES_COLS,
+        note: "Add unmatched right rows (orphan #14) padded with NULLs — what RIGHT contributes. 5 rows total.",
+        noteTone: "mint" },
     ],
   },
 ];
 
-// ----- q-self: alias, parent-child, hierarchy -----
+// ----- q-self: SELF JOIN — same table twice -----
 const EMP_S: Row[] = [
   r(1, 1, "Ada",   null),
   r(2, 2, "Linus", 1),
@@ -677,58 +767,68 @@ const EMP_S: Row[] = [
   r(5, 5, "Eve",   2),
 ];
 const SCOLS = ["id", "name", "manager_id"];
+const SELF_RES_COLS = ["emp", "manager"];
+
+const selfRow = (eIdx: number, mIdx: number | null) =>
+  r(`${eIdx}-${mIdx ?? "x"}`,
+    String(EMP_S[eIdx].cells[1]),
+    mIdx === null ? null : String(EMP_S[mIdx].cells[1]));
 
 const selfStages: Stage[] = [
   {
-    name: "Alias the table twice",
-    sql: [
-      "SELECT e.name, m.name AS manager",
-      "FROM   employees e, employees m",
-      "WHERE  e.manager_id = m.id",
-    ],
-    table: { name: "employees", cols: SCOLS, rows: EMP_S },
-    steps: [
-      st([1], "kept",
-        "The SAME table is referenced twice with two aliases — the engine treats them as independent relations.",
-        { highlightCols: [0,1,2] }),
-    ],
-  },
-  {
-    name: "Parent-child match",
+    name: "Same table, two aliases",
+    blurb: "An employee row can play TWO roles: employee (e) and manager (m)",
     sql: [
       "SELECT e.name AS emp, m.name AS manager",
       "FROM   employees e",
       "JOIN   employees m ON e.manager_id = m.id",
     ],
-    table: { name: "(e ⨝ m)", cols: ["emp","manager"], rows: [
-      r("lin","Linus","Ada"),
-      r("gra","Grace","Ada"),
-      r("bob","Bob","Linus"),
-      r("eve","Eve","Linus"),
-    ]},
+    leftTable: { name: "employees  e  (each row = an employee)", cols: SCOLS, rows: EMP_S },
+    rightTable:{ name: "employees  m  (same table, alias m = manager)", cols: SCOLS, rows: EMP_S },
     steps: [
-      st([2], "added",
-        "Each row is glued to its parent. Ada drops (no manager — NULL fails the equi-join, exactly like an INNER JOIN on a nullable FK).", { noteTone: "amber" }),
+      { activeLines: [1,2], note: "The engine reads employees TWICE — once as e, once as m. They are independent cursors over the same data." },
+      { activeLines: [2], leftStates: mark(EMP_S,[0],"dropped"),
+        resultRows: [], resultCols: SELF_RES_COLS,
+        note: "Probe e=Ada. Ada.manager_id = NULL → ON-predicate UNKNOWN → drop. Roots fall out of an INNER self-join.",
+        noteTone: "amber" },
+      { activeLines: [2], leftStates: mark(EMP_S,[1],"kept"), rightStates: mark(EMP_S,[0],"kept"),
+        resultRows: [selfRow(1,0)], resultCols: SELF_RES_COLS,
+        note: "Probe e=Linus (manager_id=1). Find m where m.id=1 → Ada. Emit (Linus, Ada)." },
+      { activeLines: [2], leftStates: mark(EMP_S,[2],"kept"), rightStates: mark(EMP_S,[0],"kept"),
+        resultRows: [selfRow(1,0), selfRow(2,0)], resultCols: SELF_RES_COLS,
+        note: "Probe e=Grace (manager_id=1). m=Ada again. Emit (Grace, Ada)." },
+      { activeLines: [2], leftStates: mark(EMP_S,[3],"kept"), rightStates: mark(EMP_S,[1],"kept"),
+        resultRows: [selfRow(1,0), selfRow(2,0), selfRow(3,1)], resultCols: SELF_RES_COLS,
+        note: "Probe e=Bob (manager_id=2). m=Linus. Emit (Bob, Linus)." },
+      { activeLines: [2], leftStates: mark(EMP_S,[4],"kept"), rightStates: mark(EMP_S,[1],"kept"),
+        resultRows: [selfRow(1,0), selfRow(2,0), selfRow(3,1), selfRow(4,1)], resultCols: SELF_RES_COLS,
+        note: "Probe e=Eve (manager_id=2). m=Linus. Done — 4 rows, Ada absent." },
     ],
   },
   {
-    name: "Keep the root with LEFT",
+    name: "Use LEFT JOIN to keep the root",
+    blurb: "Same data — swap INNER for LEFT so the CEO survives",
     sql: [
       "SELECT e.name AS emp,",
       "       COALESCE(m.name, '— root —') AS manager",
       "FROM   employees e",
       "LEFT   JOIN employees m ON e.manager_id = m.id",
     ],
-    table: { name: "(e ⟕ m)", cols: ["emp","manager"], rows: [
-      r("ada","Ada","— root —"),
-      r("lin","Linus","Ada"),
-      r("gra","Grace","Ada"),
-      r("bob","Bob","Linus"),
-      r("eve","Eve","Linus"),
-    ]},
+    leftTable: { name: "employees  e  (preserved)", cols: SCOLS, rows: EMP_S },
+    rightTable:{ name: "employees  m", cols: SCOLS, rows: EMP_S },
     steps: [
-      st([3], "added",
-        "LEFT JOIN preserves Ada. For arbitrary-depth trees use a recursive CTE — self-join only walks ONE level."),
+      { activeLines: [3], leftStates: mark(EMP_S,[0],"kept"),
+        resultRows: [r("ada-root","Ada","— root —")], resultCols: SELF_RES_COLS,
+        note: "Ada has no manager — LEFT preserves her. COALESCE swaps the NULL for a friendly label.",
+        noteTone: "mint" },
+      { activeLines: [3], leftStates: mark(EMP_S,[1,2],"kept"), rightStates: mark(EMP_S,[0],"kept"),
+        resultRows: [r("ada-root","Ada","— root —"), selfRow(1,0), selfRow(2,0)], resultCols: SELF_RES_COLS,
+        note: "Linus and Grace match Ada." },
+      { activeLines: [3], leftStates: mark(EMP_S,[3,4],"kept"), rightStates: mark(EMP_S,[1],"kept"),
+        resultRows: [r("ada-root","Ada","— root —"), selfRow(1,0), selfRow(2,0), selfRow(3,1), selfRow(4,1)],
+        resultCols: SELF_RES_COLS,
+        note: "Bob and Eve match Linus. 5 rows — the full org chart, one level up." },
+      { activeLines: [3], note: "Self-join walks ONE level. For arbitrary-depth hierarchies (org chart, threaded comments), use a recursive CTE." },
     ],
   },
 ];

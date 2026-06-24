@@ -36,6 +36,18 @@ export type StageStep = {
   colsOverride?: string[];
   /** Optional secondary panel (e.g. aggregate result card, bucket cards). */
   side?: React.ReactNode;
+
+  // ---- DUAL-TABLE (join) layout ----
+  /** Per-row states for the LEFT source table in a dual layout. */
+  leftStates?: (RowState | undefined)[];
+  /** Per-row states for the RIGHT source table in a dual layout. */
+  rightStates?: (RowState | undefined)[];
+  /** Result rows produced by joining the two source tables this step. */
+  resultRows?: Row[];
+  /** Column headers for the result panel. */
+  resultCols?: string[];
+  /** Title for the result panel. Defaults to "result". */
+  resultTitle?: string;
 };
 
 export type Stage = {
@@ -44,7 +56,12 @@ export type Stage = {
   /** One-line subtitle shown under the banner. */
   blurb?: string;
   sql: string[];
-  table: { name: string; cols: string[]; rows: Row[] };
+  /** Single source table (default layout). */
+  table?: { name: string; cols: string[]; rows: Row[] };
+  /** Left source table (dual / join layout). */
+  leftTable?: { name: string; cols: string[]; rows: Row[] };
+  /** Right source table (dual / join layout). */
+  rightTable?: { name: string; cols: string[]; rows: Row[] };
   steps: StageStep[];
 };
 
@@ -287,11 +304,7 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
   const { stageIdx, local } = useMemo(() => locate(stages, step), [stages, step]);
   const s = stages[stageIdx];
   const stepCfg = s.steps[local];
-  const cols = stepCfg.colsOverride ?? s.table.cols;
-  const baseRows = stepCfg.rowsOverride ?? s.table.rows;
-  const states = stepCfg.rowsOverride
-    ? baseRows.map(() => "added" as RowState)
-    : baseRows.map((r, i) => stepCfg.rowState?.(r, i));
+  const isDual = !!(s.leftTable && s.rightTable);
 
   return (
     <div className="grid gap-3">
@@ -299,23 +312,11 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-3">
           <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={`${stageIdx}-${local}-${stepCfg.rowsOverride ? "o" : "b"}`}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.2 }}
-            >
-              <MiniTable
-                title={stepCfg.rowsOverride ? `${s.table.name} → result` : s.table.name}
-                cols={cols}
-                rows={baseRows}
-                states={states}
-                highlightCols={stepCfg.highlightCols}
-              />
-            </motion.div>
-          </AnimatePresence>
+          {isDual ? (
+            <DualPanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
+          ) : (
+            <SinglePanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
+          )}
           {stepCfg.side ? <div>{stepCfg.side}</div> : null}
         </div>
         <AnimatePresence mode="wait">
@@ -330,6 +331,79 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
           </motion.div>
         </AnimatePresence>
       </div>
+    </div>
+  );
+}
+
+function SinglePanel({
+  stage,
+  step,
+  stageIdx,
+  local,
+}: { stage: Stage; step: StageStep; stageIdx: number; local: number }) {
+  if (!stage.table) return null;
+  const cols = step.colsOverride ?? stage.table.cols;
+  const baseRows = step.rowsOverride ?? stage.table.rows;
+  const states = step.rowsOverride
+    ? baseRows.map(() => "added" as RowState)
+    : baseRows.map((r, i) => step.rowState?.(r, i));
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={`${stageIdx}-${local}-${step.rowsOverride ? "o" : "b"}`}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.2 }}
+      >
+        <MiniTable
+          title={step.rowsOverride ? `${stage.table.name} → result` : stage.table.name}
+          cols={cols}
+          rows={baseRows}
+          states={states}
+          highlightCols={step.highlightCols}
+        />
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function DualPanel({
+  stage,
+  step,
+  stageIdx,
+  local,
+}: { stage: Stage; step: StageStep; stageIdx: number; local: number }) {
+  const left = stage.leftTable!;
+  const right = stage.rightTable!;
+  return (
+    <div className="space-y-3">
+      <div className="grid gap-3 md:grid-cols-2">
+        <MiniTable title={left.name} cols={left.cols} rows={left.rows} states={step.leftStates} />
+        <MiniTable title={right.name} cols={right.cols} rows={right.rows} states={step.rightStates} />
+      </div>
+      {step.resultRows ? (
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`${stageIdx}-${local}-res`}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.25 }}
+          >
+            <MiniTable
+              title={step.resultTitle ?? "result"}
+              cols={step.resultCols ?? []}
+              rows={step.resultRows}
+              states={step.resultRows.map(() => "added" as RowState)}
+            />
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        <div className="rounded-lg border border-dashed border-hairline px-3 py-4 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+          result · 0 rows
+        </div>
+      )}
     </div>
   );
 }
