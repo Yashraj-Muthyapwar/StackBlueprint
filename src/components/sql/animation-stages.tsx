@@ -2854,6 +2854,10 @@ export const STAGES_REGISTRY = {
   "query-structure":    queryStructureStages,
   "select-distinct":    distinctStages,
   "offset-pagination":  offsetStages,
+  "sql-comments":       commentsStages,
+  "sql-operators":      operatorsStages,
+
+
 
 } as const;
 
