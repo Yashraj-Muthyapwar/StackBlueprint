@@ -57,7 +57,7 @@ const topics: Topic[] = [
       "Two pointers, sliding window, prefix-based, Kadane's, binary search, and matrix traversals.",
     icon: Boxes,
     locked: false,
-    to: "/patterns/two-pointers",
+    to: "/patterns/category/arrays",
     patternsList: arrayPatternTitles,
   },
   {
@@ -66,7 +66,7 @@ const topics: Topic[] = [
       "Sliding window on characters, two-pointer scans, and exact matching with KMP, Rabin–Karp, and Z.",
     icon: Type,
     locked: false,
-    to: `/patterns/${firstStringSlug}`,
+    to: "/patterns/category/strings",
     patternsList: stringPatternTitles,
   },
   {
