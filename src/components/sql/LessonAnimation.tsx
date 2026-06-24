@@ -2,6 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Pause, Play, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
+import {
+  QueryingAnimation,
+  QUERYING_STEP_COUNTS,
+  type QueryingVariant,
+} from "@/components/sql/QueryingAnimations";
 
 export type AnimationVariant =
   | "pipeline"
@@ -13,7 +18,8 @@ export type AnimationVariant =
   | "where-filter"
   | "group-by-agg"
   | "join-types"
-  | "set-ops";
+  | "set-ops"
+  | QueryingVariant;
 
 export function LessonAnimation({
   variant,
@@ -75,6 +81,7 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
         {variant === "group-by-agg" && <GroupByAggAnim step={step} />}
         {variant === "join-types" && <JoinTypesAnim step={step} />}
         {variant === "set-ops" && <SetOpsAnim step={step} />}
+        {variant.startsWith("q-") && <QueryingAnimation variant={variant as QueryingVariant} step={step} />}
       </div>
       <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
         <div className="flex items-center gap-1">
@@ -141,6 +148,7 @@ const STEP_COUNTS: Record<AnimationVariant, number> = {
   "group-by-agg": 4,
   "join-types": 4,
   "set-ops": 3,
+  ...QUERYING_STEP_COUNTS,
 };
 
 // ---------- PIPELINE: SELECT logical query order ----------

@@ -24,7 +24,23 @@ export type Section =
         | "where-filter"
         | "group-by-agg"
         | "join-types"
-        | "set-ops";
+        | "set-ops"
+        | "q-bool"
+        | "q-range"
+        | "q-like"
+        | "q-null3vl"
+        | "q-aggr"
+        | "q-grpby"
+        | "q-having"
+        | "q-cube"
+        | "q-venn"
+        | "q-self"
+        | "q-semianti"
+        | "q-algos"
+        | "q-scalar"
+        | "q-corr"
+        | "q-existsin"
+        | "q-setops";
       caption?: string;
     }
   | { kind: "takeaways"; items: string[] };

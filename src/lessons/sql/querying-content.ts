@@ -28,7 +28,7 @@ const booleanLogic: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "where-filter",
+      variant: "q-bool",
       caption: "Per-row predicate evaluation — survivors flow down, rejects fade out.",
     },
     {
@@ -121,7 +121,7 @@ const inBetween: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "where-filter",
+      variant: "q-range",
       caption: "IN fans the row against a set probe; BETWEEN clamps it inside a range visor.",
     },
     {
@@ -211,7 +211,7 @@ const likeIlike: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "where-filter",
+      variant: "q-like",
       caption: "Anchored prefix rides the index; leading % triggers a full scan.",
     },
     {
@@ -308,7 +308,7 @@ const nullPitfalls: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "null-truth",
+      variant: "q-null3vl",
       caption: "NULL = NULL evaluates UNKNOWN — the row falls through the floor.",
     },
     {
@@ -410,7 +410,7 @@ const aggregateFns: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "group-by-agg",
+      variant: "q-aggr",
       caption: "Rows stream into an accumulator pill — NULLs slip past for SUM, are counted by COUNT(*).",
     },
     {
@@ -505,7 +505,7 @@ const groupByLesson: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "group-by-agg",
+      variant: "q-grpby",
       caption: "Rows hash into bucket lanes; aggregates collapse each lane into one row.",
     },
     {
@@ -603,7 +603,7 @@ const havingLesson: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "group-by-agg",
+      variant: "q-having",
       caption: "Pre-aggregation rows pass WHERE; post-aggregation buckets pass HAVING.",
     },
     {
@@ -701,7 +701,7 @@ const groupingSets: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "group-by-agg",
+      variant: "q-cube",
       caption: "Each row fans into multiple bucket lanes — one per grouping set.",
     },
     {
@@ -807,7 +807,7 @@ const innerOuter: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "join-types",
+      variant: "q-venn",
       caption: "Toggle INNER / LEFT / RIGHT / FULL — watch unmatched rows pad with NULL.",
     },
     {
@@ -906,7 +906,7 @@ const selfJoins: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "join-types",
+      variant: "q-self",
       caption: "Two aliased copies of the same table meet at the join predicate.",
     },
     {
@@ -1007,7 +1007,7 @@ const semiAnti: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "join-types",
+      variant: "q-semianti",
       caption: "Probe terminates on first match — left row passes through unchanged.",
     },
     {
@@ -1111,7 +1111,7 @@ const joinAlgorithms: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "join-types",
+      variant: "q-algos",
       caption: "Hash builds an in-memory bucket map; Sort-Merge zips two ordered streams.",
     },
     {
@@ -1211,7 +1211,7 @@ const scalarSubqueries: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "where-filter",
+      variant: "q-scalar",
       caption: "Inner query collapses to a single scalar pill — outer rows compare against it.",
     },
     {
@@ -1305,7 +1305,7 @@ const correlatedSubqueries: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "where-filter",
+      variant: "q-corr",
       caption: "Inner subquery re-fires for every outer row — count the iterations.",
     },
     {
@@ -1400,7 +1400,7 @@ const existsVsIn: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "join-types",
+      variant: "q-existsin",
       caption: "EXISTS short-circuits; IN materialises the inner set then probes.",
     },
     {
@@ -1500,7 +1500,7 @@ const setOps: LessonContent = {
     },
     {
       kind: "animation",
-      variant: "set-ops",
+      variant: "q-setops",
       caption: "Two result streams meet — UNION dedupes, UNION ALL just appends.",
     },
     {
