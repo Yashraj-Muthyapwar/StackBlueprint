@@ -163,6 +163,11 @@ const primaryKeys: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "pk-anatomy",
+      caption: "Declare → insert → reject NULL → reject duplicate → composite → surrogate",
+    },
+    {
       kind: "code",
       language: "sql",
       caption: "Two ways to declare a primary key",
@@ -179,6 +184,12 @@ CREATE TABLE order_items (
   qty        INT    NOT NULL CHECK (qty > 0),
   PRIMARY KEY (order_id, product_id)
 );`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "What goes wrong without a PK",
+      body: "Inserting NULL into a PK column raises 'null value violates not-null constraint'. Inserting a duplicate raises 'duplicate key value violates unique constraint'. Both errors are GOOD — they catch logic bugs at write time instead of leaving silently corrupt data behind.",
     },
     {
       kind: "table",
@@ -210,6 +221,7 @@ CREATE TABLE order_items (
       kind: "takeaways",
       items: [
         "Primary key = unique + not null + immutable identity.",
+        "NULL in a PK column is rejected; duplicates are rejected.",
         "Prefer a surrogate (BIGSERIAL / UUID) plus a UNIQUE on the natural value.",
         "Composite keys are fine, but they make foreign keys verbose.",
         "Never reuse a deleted primary key value.",
