@@ -560,7 +560,7 @@ GROUP  BY region, currency;`,
       rows: [
         ["Warm-up [1729]", "Find Followers Count", "Single-column GROUP BY + COUNT."],
         ["Drill [1484]", "Group Sold Products By The Date", "GROUP BY + STRING_AGG / array aggregation."],
-        ["Challenge [1granklin / 1158]", "Market Analysis I", "GROUP BY combined with multiple joins and date filtering."],
+        ["Challenge [1158]", "Market Analysis I", "GROUP BY combined with multiple joins and date filtering."],
       ],
     },
     {
@@ -760,7 +760,7 @@ GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dim
       rows: [
         ["Warm-up [1303]", "Find the Team Size", "Basic GROUP BY producing per-key totals (warmup for marginal sums)."],
         ["Drill [1393]", "Capital Gain/Loss", "Multi-dimensional aggregation across two pivots."],
-        ["Challenge [1another / 1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
+        ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
       ],
     },
     {
@@ -863,19 +863,19 @@ WHERE  o.customer_id IS NULL;                   -- /* customers who never ordere
       rows: [
         ["Warm-up [175]", "Combine Two Tables", "Pure LEFT JOIN syntactic validation."],
         ["Drill [197]", "Rising Temperature", "INNER JOIN with a predicate on the join condition."],
-        ["Challenge [1views / 178]", "Rank Scores", "Outer join fused with window-style ranking aggregation."],
+        ["Challenge [178]", "Rank Scores", "Outer join fused with window-style ranking aggregation."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — predicate in WHERE silently converts LEFT into INNER",
+      title: "Logic Trap — predicate in WHERE silently converts LEFT into INNER",
       body: "`LEFT JOIN orders o ON o.customer_id = c.id WHERE o.status = 'paid'` drops every customer with no paid order — `o.status` is NULL for unmatched rows and `NULL = 'paid'` is UNKNOWN. Move the predicate onto the ON clause (`AND o.status='paid'`) to preserve the outer semantic.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — index the join key",
       body: "Without statistics the planner assumes a Cartesian-style worst case and may choose a Nested Loop Join with O(M×N) cost — disastrous on million-row tables. Make sure the join key has an index on at least the inner side; ANALYZE after bulk loads so the planner picks Hash or Sort-Merge instead.",
     },
     {
@@ -970,13 +970,13 @@ JOIN   people p2
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — forgetting the asymmetry predicate",
+      title: "Logic Trap — missing the asymmetry predicate",
       body: "A pair-finding self join without `a.id < b.id` returns both `(a,b)` and `(b,a)` and also self-pairs `(a,a)`, inflating cardinality 2× plus N. Always include an ordering predicate to make the relation strictly antisymmetric.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — shared_buffers and recursive CTEs",
       body: "Self joins read the same heap twice — make sure shared_buffers can hold the table, otherwise the second alias re-fetches pages from disk. For deep hierarchical walks (N levels), a recursive CTE (`WITH RECURSIVE`) outperforms N chained self joins because it traverses the tree once instead of N×.",
     },
     {
@@ -1068,19 +1068,19 @@ WHERE  c.id IN (SELECT customer_id FROM orders);`,
       rows: [
         ["Warm-up [183]", "Customers Who Never Order", "Pure anti-join syntactic validation."],
         ["Drill [1378]", "Replace Employee ID With The Unique Identifier", "Semi-join style filtering with LEFT JOIN."],
-        ["Challenge [1another / 1series]", "Customer Placing the Largest Number of Orders", "Anti / semi join fused with aggregation and TOP-N filtering."],
+        ["Challenge [586]", "Customer Placing the Largest Number of Orders", "Anti / semi join fused with aggregation and TOP-N filtering."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL annihilates the result",
+      title: "Logic Trap — NOT IN with a NULL annihilates the result",
       body: "If the inner SELECT can ever return a NULL, `WHERE x NOT IN (subquery)` returns zero rows — UNKNOWN poisons the predicate. Always switch to `NOT EXISTS`, which compares row-by-row and is NULL-safe.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — Hash Semi/Anti Join",
       body: "Modern planners (PostgreSQL ≥ 9.0) rewrite EXISTS and IN to Hash Semi Join / Hash Anti Join — a single hash build over the inner relation, then a probe-and-stop on the outer. INNER JOIN + DISTINCT does the same logical work but pays for an additional sort or hash dedupe pass; EXPLAIN ANALYZE makes the cost difference obvious.",
     },
     {
@@ -1163,20 +1163,20 @@ RESET enable_hashjoin;              -- /* always reset session knobs */`,
       headers: ["Tier", "Problem", "Focus"],
       rows: [
         ["Warm-up [197]", "Rising Temperature", "Two-row join with index opportunity — observe plan."],
-        ["Drill [1granklin / 1132]", "Reported Posts II", "Join with aggregation — Hash Join in the plan."],
+        ["Drill [1132]", "Reported Posts II", "Join with aggregation — Hash Join in the plan."],
         ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-join + aggregation — full plan-reading exercise."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — stale statistics cause the planner to pick Nested Loop on a billion rows",
+      title: "Logic Trap — stale statistics force Nested Loop on large tables",
       body: "After a bulk load (COPY, INSERT…SELECT) without `ANALYZE`, the planner still believes the table is empty and chooses Nested Loop — turning a 5-second hash join into hours of CPU-bound torture. Always `ANALYZE` after large mutations.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — spill-to-disk signals",
       body: "Hash Join spills to disk when build side > work_mem — visible as 'Disk Hash Batches: > 1' in EXPLAIN ANALYZE. Sort-Merge spills via tape-merge when input > work_mem (look for 'external merge'). Bumping work_mem session-locally or rewriting the query to shrink the inner relation is almost always cheaper than tuning shared memory.",
     },
     {
@@ -1268,13 +1268,13 @@ FROM   orders;                                       -- /* single-value lookup *
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — runtime cardinality error",
+      title: "Logic Trap — runtime cardinality error",
       body: "If a scalar subquery returns more than one row, PostgreSQL raises `more than one row returned by a subquery used as an expression`. Always guard with `LIMIT 1` and an explicit `ORDER BY`, or change the call site to an `IN` / `EXISTS` semi-join.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — InitPlan vs SubPlan",
       body: "An uncorrelated scalar subquery is evaluated exactly once and cached as an InitPlan node — effectively free at the outer level. The planner can even fold it into a constant. The performance trap is forgetting that a syntactically scalar subquery referencing the outer row turns into a correlated subquery (next lesson) and runs once per row.",
     },
     {
@@ -1363,13 +1363,13 @@ WHERE salary > dept_avg;             -- /* one pass, no per-row re-execution */`
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — silently quadratic",
+      title: "Logic Trap — silently quadratic",
       body: "A correlated subquery against a 1M-row outer table fires the inner 1M times — even when the inner is cheap, the per-row overhead and cache thrashing dominate. Always check EXPLAIN ANALYZE: if the inner plan node shows `loops = 1000000`, rewrite as a window function or a JOIN against a pre-aggregated derived table.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — when decorrelation fails",
       body: "Modern PostgreSQL can sometimes 'decorrelate' simple SubPlans into a single Hash Join — but only for restricted shapes. Any inner aggregate, LIMIT, or DISTINCT defeats decorrelation. Rule of thumb: if the inner depends on the outer AND involves an aggregate, refactor to a window function or a LATERAL join up front.",
     },
     {
@@ -1456,20 +1456,20 @@ WHERE  c.id NOT IN (
       headers: ["Tier", "Problem", "Focus"],
       rows: [
         ["Warm-up [183]", "Customers Who Never Order", "Pure NOT EXISTS / LEFT JOIN syntactic validation."],
-        ["Drill [1another / 1series]", "Customers Who Bought All Products", "EXISTS-style universal quantifier."],
-        ["Challenge [1another / 1series2]", "Active Businesses", "EXISTS fused with aggregation and threshold logic."],
+        ["Drill [1045]", "Customers Who Bought All Products", "EXISTS-style universal quantifier."],
+        ["Challenge [1565]", "Unique Orders and Customers Per Month", "EXISTS fused with aggregation and threshold logic."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL silently empties the result",
+      title: "Logic Trap — NOT IN with a NULL silently empties the result",
       body: "If any value returned by the inner query of `NOT IN` is NULL, the entire predicate becomes UNKNOWN and every outer row is dropped. This is the single most cited SQL anti-pattern in code review — convert to `NOT EXISTS` reflexively.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — Semi/Anti Join planner rewrites",
       body: "PostgreSQL ≥ 9.0 rewrites both `IN (subquery)` and `EXISTS (subquery)` into Hash Semi Join when the inner is uncorrelated. NOT IN is harder to rewrite because of the NULL semantic — the planner cannot transform it into a clean Anti Join unless it can prove the inner column is NOT NULL (via constraint or explicit filter).",
     },
     {
@@ -1557,21 +1557,21 @@ LIMIT  100;`,
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [1series / 1series2]", "Combine Two Tables variants", "Basic UNION ALL vs UNION syntactic validation."],
-        ["Drill [1series / 1another]", "Friend Requests II", "INTERSECT / UNION fused with aggregation."],
-        ["Challenge [1series / 1series3]", "Active Users", "Multi-set composition combined with date windows."],
+        ["Warm-up [1795]", "Rearrange Products Table", "Basic UNION ALL vs UNION syntactic validation."],
+        ["Drill [602]", "Friend Requests II: Who Has the Most Friends", "UNION fused with aggregation and de-duplication."],
+        ["Challenge [1412]", "Find the Quiet Students in All Exams", "Multi-set composition combined with ranking and filtering."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — type & column-count mismatches are runtime errors",
+      title: "Logic Trap — column count or type mismatch is a runtime error",
       body: "Both queries must project the exact same number of columns with implicitly-castable types. Output column names always come from the first SELECT. Casting `INT` to `BIGINT` across the boundary is silent, but `INT` vs `TEXT` raises `each UNION query must have the same number of columns` at runtime.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — UNION ALL vs UNION cost cliff",
       body: "UNION executes both children, then runs a HashAggregate or Sort + Unique node to dedupe — typically the dominant cost. UNION ALL is a cheap Append. INTERSECT/EXCEPT also require dedupe via SetOp node and may spill to disk on large inputs. If you know duplicates cannot exist, ALWAYS use UNION ALL — the difference is often 2-10× wall-clock.",
     },
     {
