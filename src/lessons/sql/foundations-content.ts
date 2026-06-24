@@ -694,6 +694,11 @@ const sqlCommands: LessonContent = {
       ],
     },
     {
+      kind: "animation",
+      variant: "commands-map",
+      caption: "The SQL command family tree — DDL · DML · DQL · DCL · TCL",
+    },
+    {
       kind: "table",
       caption: "The five families at a glance",
       headers: ["Family", "Stands for", "Verbs", "What it changes"],
