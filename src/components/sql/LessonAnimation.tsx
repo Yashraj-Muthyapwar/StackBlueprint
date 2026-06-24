@@ -137,6 +137,10 @@ const STEP_COUNTS: Record<AnimationVariant, number> = {
   "foreign-key": 3,
   "null-truth": 4,
   "type-sizes": 4,
+  "where-filter": 4,
+  "group-by-agg": 4,
+  "join-types": 4,
+  "set-ops": 3,
 };
 
 // ---------- PIPELINE: SELECT logical query order ----------
