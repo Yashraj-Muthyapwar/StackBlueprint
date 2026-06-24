@@ -1062,9 +1062,44 @@ ORDER  BY deleted_at DESC NULLS LAST;`,
     },
     {
       kind: "prose",
-      heading: "Pagination: OFFSET vs keyset",
+      heading: "LIMIT and OFFSET — paging through results",
       body: [
-        "OFFSET 1000 LIMIT 20 looks innocent but forces the engine to walk and discard 1000 rows every time the user clicks 'next'. For deep pagination, use keyset (a.k.a. seek) pagination: remember the last seen sort key and ask for the next page after it.",
+        "`LIMIT N` caps the output at the first N rows of the sorted stream. `OFFSET M` tells the engine to walk past the first M rows before LIMIT starts counting — that's how every classic 'page 2' query is built. The formula is just `OFFSET = (page - 1) × page_size`.",
+        "A famous interview application: getting the SECOND HIGHEST salary. Sort DESC, OFFSET 1 to skip the maximum, LIMIT 1 to grab the next row. Wrap with `DISTINCT` if duplicate top salaries would otherwise share rank 1.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "offset-pagination",
+      caption: "LIMIT / OFFSET in action — pages 1 & 2, the second-highest-salary trick, and why deep OFFSET is slow",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Pagination with OFFSET",
+      code: `-- Page 1 (first 20 rows)
+SELECT id, name, salary
+FROM   employees
+ORDER  BY salary DESC, id DESC
+LIMIT  20;
+
+-- Page 2 (skip 20, take 20)
+SELECT id, name, salary
+FROM   employees
+ORDER  BY salary DESC, id DESC
+LIMIT  20 OFFSET 20;
+
+-- Second highest salary (interview classic)
+SELECT DISTINCT salary AS second_highest
+FROM   employees
+ORDER  BY salary DESC
+LIMIT  1 OFFSET 1;`,
+    },
+    {
+      kind: "prose",
+      heading: "Why deep OFFSET hurts — keyset to the rescue",
+      body: [
+        "OFFSET 1000 LIMIT 20 looks innocent but forces the engine to read AND discard 1000 rows every time the user clicks 'next'. Cost grows linearly with the page number. For deep pagination, use KEYSET (a.k.a. seek) pagination: remember the last seen sort key and ask for the next page AFTER it — O(1) per page regardless of depth.",
       ],
     },
     {
@@ -1094,9 +1129,10 @@ LIMIT  20;`,
       kind: "takeaways",
       items: [
         "No ORDER BY → no guaranteed order.",
-        "Always tie-break on a unique column (usually id).",
+        "Always tie-break on a unique column (usually id) before paginating.",
         "Be explicit about NULL placement with NULLS FIRST / NULLS LAST.",
-        "Prefer keyset pagination over OFFSET for deep lists.",
+        "OFFSET = (page - 1) × page_size — and `LIMIT 1 OFFSET 1` is the second-highest trick.",
+        "Prefer keyset pagination over deep OFFSET — same answer, constant cost.",
       ],
     },
   ],
