@@ -83,6 +83,14 @@ const sections: Section[] = [
       "The mental model before the syntax — tables, rows, types, and how a query actually runs.",
     topics: [
       {
+        slug: "intro",
+        title: "Intro to Databases",
+        blurb: "What a database is, the families, how an engine answers a query, and how bytes live on disk.",
+        icon: Database,
+        modules: ["What is a database?", "Types of databases", "How a database works", "How querying works", "How data is stored"],
+        unlocked: true,
+      },
+      {
         slug: "relational-model",
         title: "Relational Model",
         blurb: "Tables, rows, columns, primary & foreign keys, and why the relational model wins.",
