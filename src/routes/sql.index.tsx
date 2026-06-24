@@ -519,7 +519,17 @@ function SqlIndex() {
                   );
 
                   if (t.unlocked) {
-                    return (
+                    const base = t.routeBase ?? "foundations";
+                    return base === "querying" ? (
+                      <Link
+                        key={t.title}
+                        to="/sql/querying/$topic"
+                        params={{ topic: t.slug }}
+                        className="block"
+                      >
+                        {card}
+                      </Link>
+                    ) : (
                       <Link
                         key={t.title}
                         to="/sql/foundations/$topic"
@@ -530,6 +540,7 @@ function SqlIndex() {
                       </Link>
                     );
                   }
+
                   return (
                     <div key={t.title} aria-disabled className="block cursor-not-allowed">
                       {card}
