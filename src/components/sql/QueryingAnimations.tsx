@@ -2,8 +2,11 @@ import { useMemo } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 /**
- * Lesson-specific animations for SQL Track 02 (Querying Data).
- * Each lesson gets a unique visual tailored to its concept.
+ * Lesson-specific SQL animations for Track 02 (Querying Data).
+ * Each variant renders:
+ *   - a real query (multi-line SQL with the active clause highlighted)
+ *   - the real source table(s) with sample rows
+ *   - a step-by-step execution: predicates apply, groups form, joins build, etc.
  */
 
 export type QueryingVariant =
@@ -31,14 +34,14 @@ export const QUERYING_STEP_COUNTS: Record<QueryingVariant, number> = {
   "q-null3vl": 4,
   "q-aggr": 5,
   "q-grpby": 4,
-  "q-having": 4,
+  "q-having": 5,
   "q-cube": 4,
   "q-venn": 4,
-  "q-self": 3,
+  "q-self": 4,
   "q-semianti": 3,
   "q-algos": 3,
   "q-scalar": 3,
-  "q-corr": 3,
+  "q-corr": 4,
   "q-existsin": 3,
   "q-setops": 4,
 };
@@ -70,906 +73,1322 @@ export function QueryingAnimation({
   }
 }
 
-// ------------ Shared helpers ------------
+// ============================================================
+// Shared layout & helpers
+// ============================================================
 
-function Caption({ tone = "mint", title, children }: { tone?: "mint" | "violet" | "amber" | "rose" | "neutral"; title?: string; children: React.ReactNode }) {
-  const toneCls =
-    tone === "violet" ? "border-violet/40 bg-violet/10 text-violet" :
-    tone === "amber" ? "border-amber/40 bg-amber/10 text-amber" :
+const KEYWORDS = new Set([
+  "SELECT","FROM","WHERE","AND","OR","NOT","NULL","IS","IN","BETWEEN","LIKE","ILIKE",
+  "GROUP","BY","HAVING","ORDER","LIMIT","ON","JOIN","INNER","LEFT","RIGHT","FULL",
+  "OUTER","CROSS","UNION","ALL","DISTINCT","AS","EXISTS","CASE","WHEN","THEN","ELSE","END",
+  "COUNT","SUM","AVG","MIN","MAX","ROLLUP","CUBE","GROUPING","SETS","WITH","INTERSECT","EXCEPT",
+]);
+
+function hl(line: string): React.ReactNode[] {
+  const out: React.ReactNode[] = [];
+  let i = 0, key = 0;
+  while (i < line.length) {
+    const c = line[i];
+    if (c === "-" && line[i + 1] === "-") {
+      out.push(<span key={key++} className="text-muted-foreground/60">{line.slice(i)}</span>);
+      break;
+    }
+    if (c === "'") {
+      const end = line.indexOf("'", i + 1);
+      const stop = end === -1 ? line.length : end + 1;
+      out.push(<span key={key++} className="text-amber">{line.slice(i, stop)}</span>);
+      i = stop;
+      continue;
+    }
+    if (/[A-Za-z_]/.test(c)) {
+      let j = i + 1;
+      while (j < line.length && /[A-Za-z0-9_]/.test(line[j])) j++;
+      const w = line.slice(i, j);
+      out.push(
+        KEYWORDS.has(w.toUpperCase())
+          ? <span key={key++} className="text-mint">{w}</span>
+          : <span key={key++}>{w}</span>
+      );
+      i = j;
+      continue;
+    }
+    if (/[0-9]/.test(c)) {
+      let j = i + 1;
+      while (j < line.length && /[0-9.]/.test(line[j])) j++;
+      out.push(<span key={key++} className="text-violet">{line.slice(i, j)}</span>);
+      i = j;
+      continue;
+    }
+    out.push(<span key={key++}>{c}</span>);
+    i++;
+  }
+  return out;
+}
+
+function QueryBlock({ lines, activeLines }: { lines: string[]; activeLines: number[] }) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-hairline bg-surface-2/50">
+      <div className="border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+        query
+      </div>
+      <pre className="m-0 px-3 py-2 font-mono text-[12.5px] leading-relaxed">
+        {lines.map((ln, i) => {
+          const active = activeLines.includes(i);
+          return (
+            <motion.div
+              key={i}
+              animate={{
+                backgroundColor: active ? "rgba(64,224,180,0.10)" : "rgba(0,0,0,0)",
+                opacity: activeLines.length === 0 || active ? 1 : 0.55,
+              }}
+              transition={{ duration: 0.25 }}
+              className={`rounded px-1 ${active ? "ring-1 ring-mint/30" : ""}`}
+            >
+              {hl(ln.padEnd(1, " "))}
+            </motion.div>
+          );
+        })}
+      </pre>
+    </div>
+  );
+}
+
+type Tone = "mint" | "rose" | "amber" | "violet" | "neutral";
+
+function MiniTable({
+  title,
+  cols,
+  rows,
+}: {
+  title?: string;
+  cols: string[];
+  rows: {
+    key: string;
+    cells: (string | number | null)[];
+    state?: "kept" | "dropped" | "pending" | "added";
+    highlightCols?: number[];
+  }[];
+}) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-hairline">
+      {title ? (
+        <div className="flex items-center justify-between border-b border-hairline bg-surface-2/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+          <span>{title}</span>
+          <span>{rows.filter((r) => r.state !== "dropped").length} rows</span>
+        </div>
+      ) : null}
+      <div
+        className="grid border-b border-hairline bg-surface-2/40 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground"
+        style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(0,1fr))` }}
+      >
+        {cols.map((c) => (
+          <div key={c} className="px-2.5 py-1.5">{c}</div>
+        ))}
+      </div>
+      <AnimatePresence initial={false}>
+        {rows.map((r) => {
+          const tone =
+            r.state === "kept" || r.state === "added" ? "mint" :
+            r.state === "dropped" ? "rose" : "neutral";
+          const bg =
+            tone === "mint" ? "bg-mint/5" :
+            tone === "rose" ? "bg-rose/5" : "";
+          return (
+            <motion.div
+              key={r.key}
+              layout
+              initial={{ opacity: 0, y: 4 }}
+              animate={{
+                opacity: r.state === "dropped" ? 0.3 : 1,
+                y: 0,
+                filter: r.state === "dropped" ? "grayscale(0.7)" : "grayscale(0)",
+              }}
+              exit={{ opacity: 0, x: -10 }}
+              transition={{ duration: 0.3 }}
+              className={`grid border-b border-hairline/60 last:border-b-0 ${bg}`}
+              style={{ gridTemplateColumns: `repeat(${r.cells.length}, minmax(0,1fr))` }}
+            >
+              {r.cells.map((c, i) => {
+                const isNull = c === null;
+                const hi = r.highlightCols?.includes(i);
+                return (
+                  <div
+                    key={i}
+                    className={`px-2.5 py-1.5 font-mono text-[12px] ${
+                      hi ? "bg-mint/15 text-mint" :
+                      isNull ? "text-amber" :
+                      r.state === "dropped" ? "text-muted-foreground line-through" :
+                      "text-foreground/85"
+                    }`}
+                  >
+                    {isNull ? "NULL" : String(c)}
+                  </div>
+                );
+              })}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function Note({ tone = "mint", children }: { tone?: Tone; children: React.ReactNode }) {
+  const cls =
     tone === "rose" ? "border-rose/40 bg-rose/10 text-rose" :
+    tone === "amber" ? "border-amber/40 bg-amber/10 text-amber" :
+    tone === "violet" ? "border-violet/40 bg-violet/10 text-violet" :
+    tone === "neutral" ? "border-hairline bg-surface-2/40 text-muted-foreground" :
     "border-mint/40 bg-mint/10 text-mint";
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key={title ?? String(children)}
-        initial={{ opacity: 0, y: 6 }}
+        key={String(children).slice(0, 24)}
+        initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -6 }}
-        transition={{ duration: 0.3 }}
-        className={`self-start rounded-lg border p-3 ${toneCls}`}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.25 }}
+        className={`rounded-md border px-3 py-2 text-[12.5px] ${cls}`}
       >
-        {title ? (
-          <div className="font-mono text-[11px] uppercase tracking-[0.14em]">{title}</div>
-        ) : null}
-        <div className="mt-1 text-sm text-foreground/90">{children}</div>
+        {children}
       </motion.div>
     </AnimatePresence>
   );
 }
 
-function Chip({
-  children,
-  tone = "neutral",
-}: {
-  children: React.ReactNode;
-  tone?: "neutral" | "mint" | "rose" | "amber" | "violet";
-}) {
-  const cls =
-    tone === "mint" ? "bg-mint/15 text-mint ring-mint/40" :
-    tone === "rose" ? "bg-rose/15 text-rose ring-rose/40" :
-    tone === "amber" ? "bg-amber/15 text-amber ring-amber/40" :
-    tone === "violet" ? "bg-violet/15 text-violet ring-violet/40" :
-    "bg-surface-2/50 text-muted-foreground ring-hairline";
-  return (
-    <span className={`rounded-md px-2 py-0.5 font-mono text-[12px] ring-1 ${cls}`}>{children}</span>
-  );
-}
-
-// ============ 1.1 Boolean Logic ============
+// ============================================================
+// 1.1 Boolean Logic
+// ============================================================
 
 function BoolLogic({ step }: { step: number }) {
-  // Build truth table progressively: AND, OR, NOT, short-circuit
-  const rows = [
-    { a: "T", b: "T", and: "T", or: "T" },
-    { a: "T", b: "F", and: "F", or: "T" },
-    { a: "F", b: "T", and: "F", or: "T" },
-    { a: "F", b: "F", and: "F", or: "F" },
+  const data = [
+    { id: 1, name: "Pen",      price: 3,   stock: true,  cat: "office" },
+    { id: 2, name: "Notebook", price: 25,  stock: true,  cat: "office" },
+    { id: 3, name: "Keyboard", price: 120, stock: false, cat: "tech"   },
+    { id: 4, name: "Monitor",  price: 320, stock: true,  cat: "tech"   },
+    { id: 5, name: "Sticker",  price: 2,   stock: true,  cat: "sale"   },
+    { id: 6, name: "Mouse",    price: 45,  stock: false, cat: "tech"   },
   ];
-  const showAnd = step >= 0;
-  const showOr = step >= 1;
-  const showNot = step >= 2;
-  const shortCircuit = step >= 3;
-  const captions = [
-    { title: "AND", body: "AND returns TRUE only when both operands are TRUE." },
-    { title: "OR", body: "OR returns TRUE if either operand is TRUE." },
-    { title: "NOT", body: "NOT flips the value: NOT TRUE = FALSE, NOT FALSE = TRUE." },
-    { title: "SHORT-CIRCUIT", body: "Engines stop evaluating once the result is decided — false AND … skips the rest." },
+  const q = [
+    "SELECT id, name, price, stock, cat",
+    "FROM   products",
+    "WHERE  price > 50",
+    "       AND stock = true",
+    "       OR cat = 'sale'",
   ];
+  const cond1 = (r: typeof data[number]) => r.price > 50;
+  const cond2 = (r: typeof data[number]) => r.stock === true;
+  const cond3 = (r: typeof data[number]) => r.cat === "sale";
+  const pass = (r: typeof data[number]) => {
+    if (step === 0) return null; // raw
+    if (step === 1) return cond1(r);              // price > 50
+    if (step === 2) return cond1(r) && cond2(r);  // AND stock
+    return (cond1(r) && cond2(r)) || cond3(r);    // OR cat = sale
+  };
+  const active = [[0, 1], [2], [2, 3], [2, 3, 4]][step];
+  const notes = [
+    "Source rows from the products table before any predicate runs.",
+    "Apply price > 50 — three rows pass, three are tagged for elimination.",
+    "AND short-circuits: the Keyboard already failed price, but Mouse now fails on stock=false.",
+    "OR rescues the Sticker — cat='sale' makes the whole predicate TRUE regardless of price/stock.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="overflow-hidden rounded-lg border border-hairline">
-        <div className="grid grid-cols-5 border-b border-hairline bg-surface-2/60 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
-          <div className="px-3 py-2">A</div>
-          <div className="px-3 py-2">B</div>
-          <div className="px-3 py-2">A AND B</div>
-          <div className="px-3 py-2">A OR B</div>
-          <div className="px-3 py-2">NOT A</div>
-        </div>
-        {rows.map((r, i) => {
-          const skipped = shortCircuit && r.a === "F"; // short-circuit AND: B not eval
-          return (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.06 }}
-              className="grid grid-cols-5 border-b border-hairline/60 font-mono text-[12.5px] last:border-b-0"
-            >
-              <div className="px-3 py-2">{r.a}</div>
-              <div className={`px-3 py-2 ${skipped ? "text-amber/70 line-through" : ""}`}>{r.b}</div>
-              <div className={`px-3 py-2 ${showAnd ? (r.and === "T" ? "text-mint" : "text-rose") : "text-muted-foreground/40"}`}>{showAnd ? r.and : "·"}</div>
-              <div className={`px-3 py-2 ${showOr ? (r.or === "T" ? "text-mint" : "text-rose") : "text-muted-foreground/40"}`}>{showOr ? r.or : "·"}</div>
-              <div className={`px-3 py-2 ${showNot ? (r.a === "T" ? "text-rose" : "text-mint") : "text-muted-foreground/40"}`}>{showNot ? (r.a === "T" ? "F" : "T") : "·"}</div>
-            </motion.div>
-          );
-        })}
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={active} />
+        <MiniTable
+          title="products"
+          cols={["id", "name", "price", "stock", "cat"]}
+          rows={data.map((r) => {
+            const p = pass(r);
+            return {
+              key: `${r.id}`,
+              cells: [r.id, r.name, `$${r.price}`, r.stock ? "true" : "false", r.cat],
+              state: p === null ? "pending" : p ? "kept" : "dropped",
+            };
+          })}
+        />
       </div>
-      <Caption title={captions[step].title}>{captions[step].body}</Caption>
+      <Note>{notes}</Note>
     </div>
   );
 }
 
-// ============ 1.2 Range & Set (IN / BETWEEN) ============
+// ============================================================
+// 1.2 Range & Set Filtering (BETWEEN + IN)
+// ============================================================
 
 function RangeSet({ step }: { step: number }) {
-  const items = [3, 8, 12, 17, 25, 33, 41, 50, 64];
-  const inRange = (n: number) => n >= 10 && n <= 40;
-  const inSet = (n: number) => [12, 25, 41].includes(n);
-  const between = step >= 1;
-  const setStep = step >= 2;
-  const both = step === 3;
-  const captions = [
-    { title: "raw values", body: "Unfiltered column values on a number line." },
-    { title: "BETWEEN 10 AND 40", body: "Inclusive range — both endpoints survive." },
-    { title: "IN (12, 25, 41)", body: "Set membership — only listed values match." },
-    { title: "OR vs IN", body: "IN rewrites to a hash probe; long OR chains may stay as sequential checks." },
+  const data = [
+    { id: 101, customer: "Ada",   total: 45,  status: "paid"    },
+    { id: 102, customer: "Linus", total: 120, status: "paid"    },
+    { id: 103, customer: "Grace", total: 8,   status: "pending" },
+    { id: 104, customer: "Bob",   total: 75,  status: "shipped" },
+    { id: 105, customer: "Alan",  total: 250, status: "refund"  },
+    { id: 106, customer: "Eve",   total: 180, status: "shipped" },
   ];
+  const q = [
+    "SELECT id, customer, total, status",
+    "FROM   orders",
+    "WHERE  total BETWEEN 50 AND 200",
+    "       AND status IN ('paid', 'shipped')",
+  ];
+  const c1 = (r: typeof data[number]) => r.total >= 50 && r.total <= 200;
+  const c2 = (r: typeof data[number]) => ["paid", "shipped"].includes(r.status);
+  const pass = (r: typeof data[number]) => {
+    if (step === 0) return null;
+    if (step === 1) return c1(r);
+    if (step === 2) return c1(r) && c2(r);
+    return c1(r) && c2(r);
+  };
+  const active = [[0, 1], [2], [3], [2, 3]][step];
+  const notes = [
+    "Raw orders table — 6 rows before filtering.",
+    "BETWEEN 50 AND 200 is inclusive — Ada (45) and Grace (8) fall below; Alan (250) is above.",
+    "IN ('paid','shipped') is a hash probe — Bob and Eve survive, no IN-list members rejected.",
+    "Final result: 3 rows where BOTH the range AND the set predicate are TRUE.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="space-y-5">
-        {/* Number line */}
-        <div className="relative h-20 rounded-lg border border-hairline bg-surface-2/40 p-3">
-          <div className="absolute inset-x-3 top-1/2 h-px bg-hairline" />
-          {between && (
-            <motion.div
-              layout
-              initial={{ scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.5 }}
-              style={{ originX: 0, left: `${3 + (10 / 70) * 90}%`, width: `${((40 - 10) / 70) * 90}%` }}
-              className="absolute top-1/2 h-2 -translate-y-1/2 rounded-full bg-mint/30 ring-1 ring-mint/60"
-            />
-          )}
-          {items.map((n) => {
-            const x = ((n - 0) / 70) * 90 + 3;
-            const matches = (between && inRange(n)) || (setStep && inSet(n));
-            const accent = both ? (inRange(n) && inSet(n)) : matches;
-            return (
-              <motion.div
-                key={n}
-                initial={{ scale: 0.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.02 * n }}
-                style={{ left: `${x}%` }}
-                className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-              >
-                <div className={`size-7 rounded-full ring-1 grid place-items-center font-mono text-[11px] ${
-                  accent ? "bg-mint/20 text-mint ring-mint/50" :
-                  matches ? "bg-violet/15 text-violet ring-violet/40" :
-                  "bg-surface text-muted-foreground ring-hairline"
-                }`}>{n}</div>
-              </motion.div>
-            );
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={active} />
+        <MiniTable
+          title="orders"
+          cols={["id", "customer", "total", "status"]}
+          rows={data.map((r) => {
+            const p = pass(r);
+            return {
+              key: `${r.id}`,
+              cells: [r.id, r.customer, `$${r.total}`, r.status],
+              state: p === null ? "pending" : p ? "kept" : "dropped",
+              highlightCols:
+                step === 1 ? [2] : step === 2 ? [3] : step === 3 ? [2, 3] : [],
+            };
           })}
-        </div>
-        {/* Set bucket */}
-        {setStep && (
-          <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-lg border border-violet/30 bg-violet/5 p-3">
-            <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-violet">IN-list hash</div>
-            <div className="mt-1.5 flex gap-2">
-              {[12, 25, 41].map((x) => <Chip key={x} tone="violet">{x}</Chip>)}
-            </div>
-          </motion.div>
-        )}
+        />
       </div>
-      <Caption title={captions[step].title}>{captions[step].body}</Caption>
+      <Note>{notes}</Note>
     </div>
   );
 }
 
-// ============ 1.3 LIKE / ILIKE ============
+// ============================================================
+// 1.3 Pattern Matching (LIKE / ILIKE)
+// ============================================================
 
 function LikePattern({ step }: { step: number }) {
-  const names = ["alpha", "alphabet", "Alpine", "beta", "alpaca"];
-  const patterns = [
-    { title: "anchored — 'al%'", expr: "name LIKE 'al%'", test: (s: string) => s.toLowerCase().startsWith("al"), index: "B-Tree index seek ✓", tone: "mint" as const },
-    { title: "leading wildcard — '%pha'", expr: "name LIKE '%pha'", test: (s: string) => s.toLowerCase().endsWith("pha"), index: "Full scan — B-Tree useless ✗", tone: "rose" as const },
-    { title: "ILIKE — case-insensitive", expr: "name ILIKE 'ALP%'", test: (s: string) => s.toLowerCase().startsWith("alp"), index: "Use citext / expression index", tone: "amber" as const },
-    { title: "underscore — single char", expr: "name LIKE 'al_ha'", test: (s: string) => /^al.ha$/i.test(s), index: "Anchored prefix still seekable", tone: "mint" as const },
+  const data = [
+    { id: 1, name: "Alice",   email: "alice@gmail.com"    },
+    { id: 2, name: "alex",    email: "alex@yahoo.com"     },
+    { id: 3, name: "Bob",     email: "bob@gmail.com"      },
+    { id: 4, name: "Aria",    email: "aria@outlook.com"   },
+    { id: 5, name: "Charlie", email: "charlie@gmail.com"  },
+    { id: 6, name: "amber",   email: "amber@protonmail.io"},
   ];
-  const p = patterns[step];
+  const q = [
+    "SELECT id, name, email",
+    "FROM   users",
+    "WHERE  email LIKE '%@gmail.com'",
+    "       AND name  ILIKE 'a%'",
+  ];
+  const c1 = (r: typeof data[number]) => r.email.endsWith("@gmail.com");
+  const c2 = (r: typeof data[number]) => r.name.toLowerCase().startsWith("a");
+  const pass = (r: typeof data[number]) => {
+    if (step === 0) return null;
+    if (step === 1) return c1(r);
+    if (step === 2) return c1(r) && c2(r);
+    return c1(r) && c2(r);
+  };
+  const active = [[0, 1], [2], [3], [2, 3]][step];
+  const notes = [
+    "Raw users — names mix case (Alice vs alex vs amber).",
+    "LIKE '%@gmail.com' has a LEADING wildcard → full scan (B-Tree can't seek mid-string).",
+    "ILIKE 'a%' is case-insensitive AND anchored — uppercase 'Alice' & 'Aria' still match.",
+    "Final survivors: gmail addresses whose name starts with A or a — 2 rows.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-3">
-        <div className="rounded-lg border border-hairline bg-surface-2/40 p-3 font-mono text-[12.5px] text-foreground/90">
-          WHERE <span className="text-mint">{p.expr}</span>
-        </div>
-        <div className="space-y-1.5">
-          {names.map((n) => {
-            const match = p.test(n);
-            return (
-              <motion.div
-                key={n}
-                layout
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={`flex items-center gap-3 rounded-md border px-3 py-1.5 font-mono text-[12.5px] ${
-                  match ? "border-mint/40 bg-mint/5 text-mint" : "border-hairline bg-surface text-muted-foreground"
-                }`}
-              >
-                <span className="w-5">{match ? "✓" : "·"}</span>
-                <span>{n}</span>
-              </motion.div>
-            );
+        <QueryBlock lines={q} activeLines={active} />
+        <MiniTable
+          title="users"
+          cols={["id", "name", "email"]}
+          rows={data.map((r) => {
+            const p = pass(r);
+            return {
+              key: `${r.id}`,
+              cells: [r.id, r.name, r.email],
+              state: p === null ? "pending" : p ? "kept" : "dropped",
+              highlightCols: step === 1 ? [2] : step === 2 ? [1] : step === 3 ? [1, 2] : [],
+            };
           })}
-        </div>
-        <div className={`rounded-md px-3 py-2 font-mono text-[11px] ring-1 ${
-          p.tone === "mint" ? "bg-mint/10 text-mint ring-mint/40" :
-          p.tone === "rose" ? "bg-rose/10 text-rose ring-rose/40" :
-          "bg-amber/10 text-amber ring-amber/40"
-        }`}>{p.index}</div>
+        />
       </div>
-      <Caption title={p.title} tone={p.tone}>
-        {step === 0 && "Anchored prefix lets the optimizer walk the B-Tree directly to matches."}
-        {step === 1 && "A leading % forces a full table scan — the B-Tree can't seek mid-string."}
-        {step === 2 && "ILIKE folds case; use citext or LOWER(col) expression index to stay seekable."}
-        {step === 3 && "Underscore matches exactly one character; prefix anchoring is preserved."}
-      </Caption>
+      <Note tone={step === 1 ? "amber" : "mint"}>{notes}</Note>
     </div>
   );
 }
 
-// ============ 1.4 NULL 3-Valued Logic ============
+// ============================================================
+// 1.4 NULL Pitfalls (Three-Valued Logic)
+// ============================================================
 
 function Null3VL({ step }: { step: number }) {
-  // Show NULL behavior: comparison, AND, OR, IS NULL
-  const tabs = [
-    { title: "= NULL", body: "Returns UNKNOWN — never TRUE. Use IS NULL instead.", rows: [["1", "= NULL", "UNKNOWN"], ["NULL", "= NULL", "UNKNOWN"], ["NULL", "IS NULL", "TRUE"]] },
-    { title: "AND with NULL", body: "TRUE AND NULL = NULL. FALSE AND NULL = FALSE (short-circuits).", rows: [["TRUE", "AND NULL", "NULL"], ["FALSE", "AND NULL", "FALSE"], ["NULL", "AND NULL", "NULL"]] },
-    { title: "OR with NULL", body: "TRUE OR NULL = TRUE (short-circuits). FALSE OR NULL = NULL.", rows: [["TRUE", "OR NULL", "TRUE"], ["FALSE", "OR NULL", "NULL"], ["NULL", "OR NULL", "NULL"]] },
-    { title: "WHERE drops UNKNOWN", body: "Only TRUE rows survive WHERE — UNKNOWN rows vanish silently.", rows: [["x = 5", "→ TRUE", "kept"], ["x = NULL", "→ UNKNOWN", "dropped"], ["x IS NULL", "→ TRUE", "kept"]] },
+  const data = [
+    { id: 1, name: "Ada",   manager_id: 0 as number | null },
+    { id: 2, name: "Linus", manager_id: 1 },
+    { id: 3, name: "Grace", manager_id: null },
+    { id: 4, name: "Bob",   manager_id: 2 },
+    { id: 5, name: "Eve",   manager_id: null },
   ];
-  const t = tabs[step];
+  // step 0: raw, 1: WHERE manager_id <> 1 (NULL rows drop silently), 2: add OR IS NULL fix, 3: explanation
+  const q0 = [
+    "SELECT id, name, manager_id",
+    "FROM   employees",
+    "WHERE  manager_id <> 1",
+  ];
+  const q1 = [
+    "SELECT id, name, manager_id",
+    "FROM   employees",
+    "WHERE  manager_id <> 1",
+    "       OR manager_id IS NULL",
+  ];
+  const lines = step >= 2 ? q1 : q0;
+  const active = step === 0 ? [0, 1] : step === 1 ? [2] : step === 2 ? [3] : [2, 3];
+  type Eval = "TRUE" | "FALSE" | "UNKNOWN";
+  const evalRow = (r: typeof data[number]): Eval => {
+    if (r.manager_id === null) return step >= 2 ? "TRUE" : "UNKNOWN";
+    return r.manager_id !== 1 ? "TRUE" : "FALSE";
+  };
+  const pass = (r: typeof data[number]) => {
+    if (step === 0) return null;
+    const v = evalRow(r);
+    return v === "TRUE";
+  };
+  const notes = [
+    "Source: Grace and Eve have NULL manager_id (unknown / unassigned).",
+    "WHERE manager_id <> 1 → NULL comparisons return UNKNOWN, NOT TRUE → those rows VANISH silently.",
+    "Fix: explicitly OR manager_id IS NULL — IS NULL is the only test that returns TRUE for NULL.",
+    "Lesson: every nullable column needs an explicit NULL branch in WHERE / NOT IN / CHECK.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="overflow-hidden rounded-lg border border-hairline">
-        <div className="grid grid-cols-3 border-b border-hairline bg-surface-2/60 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
-          <div className="px-3 py-2">A</div>
-          <div className="px-3 py-2">op</div>
-          <div className="px-3 py-2">result</div>
-        </div>
-        <AnimatePresence mode="wait">
-          <motion.div key={step}>
-            {t.rows.map((r, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="grid grid-cols-3 border-b border-hairline/60 font-mono text-[12.5px] last:border-b-0"
-              >
-                <div className="px-3 py-2">{r[0]}</div>
-                <div className="px-3 py-2 text-muted-foreground">{r[1]}</div>
-                <div className={`px-3 py-2 ${
-                  r[2] === "TRUE" || r[2] === "kept" ? "text-mint" :
-                  r[2] === "FALSE" || r[2] === "dropped" ? "text-rose" :
-                  "text-amber"
-                }`}>{r[2]}</div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </AnimatePresence>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={lines} activeLines={active} />
+        <MiniTable
+          title="employees"
+          cols={["id", "name", "manager_id", "<> 1 ?"]}
+          rows={data.map((r) => {
+            const v = step === 0 ? "—" : evalRow(r);
+            const p = pass(r);
+            return {
+              key: `${r.id}`,
+              cells: [r.id, r.name, r.manager_id, v],
+              state: p === null ? "pending" : p ? "kept" : "dropped",
+            };
+          })}
+        />
       </div>
-      <Caption title={t.title} tone="amber">{t.body}</Caption>
+      <Note tone={step === 1 ? "rose" : step >= 2 ? "mint" : "neutral"}>{notes}</Note>
     </div>
   );
 }
 
-// ============ 2.1 Aggregate Functions ============
+// ============================================================
+// 2.1 Aggregate Functions
+// ============================================================
 
 function Aggregates({ step }: { step: number }) {
-  const rows = [
-    { id: 1, v: 40 as number | null },
-    { id: 2, v: null },
-    { id: 3, v: 25 },
-    { id: 4, v: 90 },
-    { id: 5, v: 15 },
+  const data = [
+    { id: 1, region: "EU",   amount: 40 as number | null },
+    { id: 2, region: "US",   amount: null },
+    { id: 3, region: "EU",   amount: 25 },
+    { id: 4, region: "APAC", amount: 90 },
+    { id: 5, region: "US",   amount: 110 },
+    { id: 6, region: "EU",   amount: null },
   ];
-  const vals = rows.map((r) => r.v).filter((v): v is number => v !== null);
+  const vals = data.map((r) => r.amount).filter((v): v is number => v !== null);
   const fns = [
-    { title: "COUNT(*)", value: rows.length, body: "Counts every row — NULLs included." },
-    { title: "COUNT(v)", value: vals.length, body: "Counts NON-NULL values only — NULL rows are skipped." },
-    { title: "SUM(v)", value: vals.reduce((a, b) => a + b, 0), body: "Sums non-NULL values. SUM of all NULLs = NULL (not 0!)." },
-    { title: "AVG(v)", value: +(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2), body: "SUM / COUNT(v), not COUNT(*). AVG silently excludes NULL." },
-    { title: "MIN / MAX", value: `${Math.min(...vals)} / ${Math.max(...vals)}`, body: "Extremes over non-NULL values." },
+    { agg: "COUNT(*)",      val: data.length,                                        note: "Counts EVERY row, NULLs included → 6." },
+    { agg: "COUNT(amount)", val: vals.length,                                        note: "Counts non-NULL values only → NULLs in 'amount' are skipped." },
+    { agg: "SUM(amount)",   val: `$${vals.reduce((a, b) => a + b, 0)}`,             note: "Sum of non-NULL values. SUM of an all-NULL column is NULL, not 0!" },
+    { agg: "AVG(amount)",   val: `$${(vals.reduce((a, b) => a + b, 0) / vals.length).toFixed(2)}`, note: "SUM / COUNT(amount), NOT COUNT(*). AVG silently excludes NULL rows." },
+    { agg: "MIN/MAX(amount)", val: `${Math.min(...vals)} / ${Math.max(...vals)}`,    note: "Extremes over non-NULL values only." },
   ];
-  const fn = fns[step];
+  const q = [
+    "SELECT COUNT(*),",
+    "       COUNT(amount),",
+    "       SUM(amount),",
+    "       AVG(amount),",
+    "       MIN(amount), MAX(amount)",
+    "FROM   sales;",
+  ];
+  const active = [[0], [1], [2], [3], [4]][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-3">
-        <div className="overflow-hidden rounded-lg border border-hairline">
-          <div className="grid grid-cols-2 border-b border-hairline bg-surface-2/60 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
-            <div className="px-3 py-2">id</div>
-            <div className="px-3 py-2">v</div>
-          </div>
-          {rows.map((r) => {
-            const skipped = step >= 1 && r.v === null;
-            return (
-              <motion.div
-                key={r.id}
-                animate={{ opacity: skipped ? 0.3 : 1 }}
-                className="grid grid-cols-2 border-b border-hairline/60 font-mono text-[12.5px] last:border-b-0"
-              >
-                <div className="px-3 py-2">{r.id}</div>
-                <div className={`px-3 py-2 ${r.v === null ? "text-amber" : ""}`}>{r.v === null ? "NULL" : r.v}</div>
-              </motion.div>
-            );
-          })}
-        </div>
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="rounded-lg border border-mint/40 bg-mint/10 px-4 py-3"
-        >
-          <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-mint">{fn.title}</div>
-          <div className="mt-1 font-mono text-2xl text-mint">= {fn.value}</div>
-        </motion.div>
-      </div>
-      <Caption title="result">{fn.body}</Caption>
-    </div>
-  );
-}
-
-// ============ 2.2 GROUP BY (hash bucket) ============
-
-function GroupByHash({ step }: { step: number }) {
-  const rows = [
-    { id: 1, k: "EU", v: 40 },
-    { id: 2, k: "US", v: 90 },
-    { id: 3, k: "EU", v: 25 },
-    { id: 4, k: "APAC", v: 60 },
-    { id: 5, k: "US", v: 110 },
-  ];
-  const seenUpTo = Math.min(rows.length, [1, 3, 5, 5][step]);
-  const buckets = useMemo(() => {
-    const m = new Map<string, { k: string; rows: typeof rows; sum: number }>();
-    rows.slice(0, seenUpTo).forEach((r) => {
-      const b = m.get(r.k) ?? { k: r.k, rows: [], sum: 0 };
-      b.rows.push(r);
-      b.sum += r.v;
-      m.set(r.k, b);
-    });
-    return Array.from(m.values());
-  }, [seenUpTo]);
-  const captions = [
-    "Hash the key of row 1 → bucket created.",
-    "More rows hash into matching buckets.",
-    "All rows distributed across hash buckets.",
-    "Collapse each bucket → one output row per group.",
-  ];
-  return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <div className="mb-1.5 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">incoming rows</div>
-          <div className="space-y-1">
-            {rows.map((r, i) => (
-              <motion.div
-                key={r.id}
-                animate={{ opacity: i < seenUpTo ? 1 : 0.3, x: i < seenUpTo ? 0 : -6 }}
-                className="flex items-center justify-between rounded-md border border-hairline bg-surface px-2.5 py-1 font-mono text-[12px]"
-              >
-                <span>#{r.id}</span>
-                <Chip tone={i < seenUpTo ? "violet" : "neutral"}>{r.k}</Chip>
-                <span className="text-muted-foreground">${r.v}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-        <div>
-          <div className="mb-1.5 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">hash buckets</div>
+        <QueryBlock lines={q} activeLines={active} />
+        <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_180px]">
+          <MiniTable
+            title="sales"
+            cols={["id", "region", "amount"]}
+            rows={data.map((r) => ({
+              key: `${r.id}`,
+              cells: [r.id, r.region, r.amount === null ? null : `$${r.amount}`],
+              state: step >= 1 && r.amount === null ? "dropped" : "pending",
+            }))}
+          />
           <div className="space-y-2">
-            <AnimatePresence>
-              {buckets.map((b) => (
-                <motion.div
-                  key={b.k}
-                  layout
-                  initial={{ opacity: 0, scale: 0.85 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="rounded-md border border-mint/40 bg-mint/5 p-2"
-                >
-                  <div className="flex items-center justify-between font-mono text-[11px]">
-                    <span className="text-mint">{b.k}</span>
-                    {step >= 3 ? <span className="text-mint">Σ ${b.sum}</span> : <span className="text-muted-foreground">{b.rows.length} rows</span>}
-                  </div>
-                  {step < 3 && (
-                    <div className="mt-1 flex flex-wrap gap-1">
-                      {b.rows.map((r) => <Chip key={r.id}>#{r.id}</Chip>)}
-                    </div>
-                  )}
-                </motion.div>
-              ))}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.25 }}
+                className="rounded-lg border border-mint/40 bg-mint/10 p-3"
+              >
+                <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-mint">{fns[step].agg}</div>
+                <div className="mt-1 font-mono text-2xl text-mint">= {fns[step].val}</div>
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>
       </div>
-      <Caption>{captions[step]}</Caption>
+      <Note tone={step === 1 || step === 3 ? "amber" : "mint"}>{fns[step].note}</Note>
     </div>
   );
 }
 
-// ============ 2.3 HAVING tower (pipeline order) ============
+// ============================================================
+// 2.2 GROUP BY — hash bucket
+// ============================================================
+
+function GroupByHash({ step }: { step: number }) {
+  const data = [
+    { id: 1, region: "EU",   amount: 40 },
+    { id: 2, region: "US",   amount: 90 },
+    { id: 3, region: "EU",   amount: 25 },
+    { id: 4, region: "APAC", amount: 60 },
+    { id: 5, region: "US",   amount: 110 },
+    { id: 6, region: "EU",   amount: 55 },
+  ];
+  const q = [
+    "SELECT region, SUM(amount) AS total",
+    "FROM   sales",
+    "GROUP  BY region;",
+  ];
+  const active = [[0, 1], [2], [2], [0, 2]][step];
+  const buckets = useMemo(() => {
+    const m = new Map<string, { region: string; rows: typeof data; sum: number }>();
+    data.forEach((r) => {
+      const b = m.get(r.region) ?? { region: r.region, rows: [], sum: 0 };
+      b.rows.push(r); b.sum += r.amount;
+      m.set(r.region, b);
+    });
+    return Array.from(m.values());
+  }, []);
+  const notes = [
+    "Scan sales — 6 raw rows on the way to the GROUP BY operator.",
+    "Hash each row by region → 3 buckets (EU, US, APAC) fill up.",
+    "Reduce each bucket: SUM(amount) over its row list.",
+    "One output row per group — region is now a key, total is the aggregate.",
+  ][step];
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={active} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="sales (scan)"
+            cols={["id", "region", "amount"]}
+            rows={data.map((r) => ({
+              key: `${r.id}`,
+              cells: [r.id, r.region, `$${r.amount}`],
+              state: step === 0 ? "pending" : "kept",
+              highlightCols: step >= 1 ? [1] : [],
+            }))}
+          />
+          {step >= 1 && (
+            <div className="space-y-2">
+              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
+                {step === 3 ? "result" : "hash buckets"}
+              </div>
+              {step < 3 ? (
+                buckets.map((b) => (
+                  <motion.div
+                    key={b.region}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="rounded-md border border-violet/40 bg-violet/5 p-2"
+                  >
+                    <div className="flex items-center justify-between font-mono text-[11.5px]">
+                      <span className="text-violet">region = {b.region}</span>
+                      {step >= 2 && <span className="text-mint">Σ = ${b.sum}</span>}
+                    </div>
+                    {step === 1 && (
+                      <div className="mt-1 flex flex-wrap gap-1">
+                        {b.rows.map((r) => (
+                          <span key={r.id} className="rounded-md bg-surface px-1.5 py-0.5 font-mono text-[10.5px] text-muted-foreground ring-1 ring-hairline">
+                            #{r.id}·${r.amount}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                ))
+              ) : (
+                <MiniTable
+                  cols={["region", "total"]}
+                  rows={buckets.map((b) => ({
+                    key: b.region, cells: [b.region, `$${b.sum}`], state: "added",
+                  }))}
+                />
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <Note>{notes}</Note>
+    </div>
+  );
+}
+
+// ============================================================
+// 2.3 HAVING — 5-stage pipeline with real rows
+// ============================================================
 
 function HavingTower({ step }: { step: number }) {
-  const stages = [
-    { name: "FROM", note: "Load orders table — 7 rows." },
-    { name: "WHERE", note: "Row-level filter: status = 'paid' → 5 rows survive." },
-    { name: "GROUP BY", note: "Collapse into buckets by customer → 3 groups." },
-    { name: "HAVING", note: "Group-level filter: SUM(total) >= 100 → 2 groups remain." },
+  const data = [
+    { id: 1, customer: "Ada",   total: 45,  status: "paid"    },
+    { id: 2, customer: "Linus", total: 120, status: "paid"    },
+    { id: 3, customer: "Grace", total: 30,  status: "pending" },
+    { id: 4, customer: "Ada",   total: 80,  status: "paid"    },
+    { id: 5, customer: "Bob",   total: 50,  status: "paid"    },
+    { id: 6, customer: "Linus", total: 75,  status: "paid"    },
   ];
+  const q = [
+    "SELECT customer, SUM(total) AS revenue",
+    "FROM   orders                             -- 1. FROM",
+    "WHERE  status = 'paid'                    -- 2. WHERE",
+    "GROUP  BY customer                        -- 3. GROUP BY",
+    "HAVING SUM(total) >= 100;                 -- 4. HAVING",
+  ];
+  const active = [[1], [2], [3], [4], [0, 4]][step];
+
+  // Stage results
+  const afterWhere = data.filter((r) => step < 1 ? true : r.status === "paid");
+  const grouped = useMemo(() => {
+    if (step < 2) return [] as { customer: string; revenue: number }[];
+    const src = data.filter((r) => r.status === "paid");
+    const m = new Map<string, number>();
+    src.forEach((r) => m.set(r.customer, (m.get(r.customer) ?? 0) + r.total));
+    return Array.from(m, ([customer, revenue]) => ({ customer, revenue }));
+  }, [step]);
+  const afterHaving = grouped.filter((g) => g.revenue >= 100);
+
+  const notes = [
+    "1. FROM loads the orders relation — all 6 raw rows.",
+    "2. WHERE runs row-by-row BEFORE grouping. Grace's pending order drops.",
+    "3. GROUP BY collapses the surviving rows into one bucket per customer.",
+    "4. HAVING filters GROUPS — Bob's $50 falls below the threshold.",
+    "Final SELECT projects the surviving aggregates. Note SELECT runs LAST.",
+  ][step];
+
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="space-y-2">
-        {stages.map((s, i) => {
-          const active = i === step;
-          const done = i < step;
-          return (
-            <motion.div
-              key={s.name}
-              initial={{ opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.08 }}
-              className={`flex items-center gap-3 rounded-lg border px-3 py-2 ${
-                active ? "border-mint/50 bg-mint/10" :
-                done ? "border-hairline bg-surface-2/40" :
-                "border-hairline/50 bg-surface opacity-50"
-              }`}
-            >
-              <div className={`grid size-7 place-items-center rounded-md font-mono text-[11px] ${
-                active ? "bg-mint text-bg" : done ? "bg-mint/20 text-mint" : "bg-surface-2 text-muted-foreground"
-              }`}>{i + 1}</div>
-              <div className="flex-1">
-                <div className={`font-mono text-[12.5px] ${active ? "text-mint" : "text-foreground/90"}`}>{s.name}</div>
-                <div className="text-[11.5px] text-muted-foreground">{s.note}</div>
-              </div>
-              {i < stages.length - 1 && (
-                <div className="font-mono text-muted-foreground/60">↓</div>
-              )}
-            </motion.div>
-          );
-        })}
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={active} />
+        {step <= 1 ? (
+          <MiniTable
+            title={step === 0 ? "orders (FROM)" : "after WHERE"}
+            cols={["id", "customer", "total", "status"]}
+            rows={data.map((r) => ({
+              key: `${r.id}`,
+              cells: [r.id, r.customer, `$${r.total}`, r.status],
+              state: step === 0 ? "pending" : r.status === "paid" ? "kept" : "dropped",
+              highlightCols: step === 1 ? [3] : [],
+            }))}
+          />
+        ) : (
+          <div className="grid gap-3 lg:grid-cols-2">
+            <MiniTable
+              title="after WHERE"
+              cols={["id", "customer", "total"]}
+              rows={afterWhere.map((r) => ({
+                key: `${r.id}`,
+                cells: [r.id, r.customer, `$${r.total}`],
+                state: "kept",
+              }))}
+            />
+            <MiniTable
+              title={step === 2 ? "after GROUP BY" : step === 3 ? "after HAVING" : "SELECT result"}
+              cols={["customer", "revenue"]}
+              rows={(step === 2 ? grouped : afterHaving.length ? afterHaving : grouped).map((g) => ({
+                key: g.customer,
+                cells: [g.customer, `$${g.revenue}`],
+                state: step >= 3 && g.revenue < 100 ? "dropped" : "kept",
+              }))}
+            />
+          </div>
+        )}
       </div>
-      <Caption title={stages[step].name}>
-        HAVING runs <em className="not-italic text-mint">after</em> GROUP BY, so it can reference aggregates. Predicates that don't need aggregates belong in WHERE for early pruning.
-      </Caption>
+      <Note>{notes}</Note>
     </div>
   );
 }
 
-// ============ 2.4 GROUPING SETS / ROLLUP / CUBE ============
+// ============================================================
+// 2.4 GROUPING SETS / ROLLUP / CUBE
+// ============================================================
 
 function GroupingCube({ step }: { step: number }) {
-  // Show which dimension combinations are computed
-  const dims = ["region", "product"];
-  const sets = [
-    { title: "GROUP BY region", combos: [["region"]] },
-    { title: "GROUPING SETS ((region),(product))", combos: [["region"], ["product"]] },
-    { title: "ROLLUP (region, product)", combos: [["region", "product"], ["region"], []] },
-    { title: "CUBE (region, product)", combos: [["region", "product"], ["region"], ["product"], []] },
+  const data = [
+    { region: "EU", product: "Pen",      amount: 40 },
+    { region: "EU", product: "Notebook", amount: 60 },
+    { region: "US", product: "Pen",      amount: 90 },
+    { region: "US", product: "Notebook", amount: 110 },
   ];
-  const s = sets[step];
-  const allCombos = [["region", "product"], ["region"], ["product"], []];
+  // Step 0: per (region,product). 1: per region. 2: per product. 3: grand total.
+  const tiers = [
+    { title: "GROUP BY region, product", rows: data.map((r) => ({ region: r.region, product: r.product, amt: r.amount })) },
+    { title: "ROLLUP → subtotal per region",
+      rows: Array.from(
+        data.reduce((m, r) => m.set(r.region, (m.get(r.region) ?? 0) + r.amount), new Map<string, number>()),
+        ([region, amt]) => ({ region, product: "∅" as string | "∅", amt })
+      ) },
+    { title: "CUBE → subtotal per product",
+      rows: Array.from(
+        data.reduce((m, r) => m.set(r.product, (m.get(r.product) ?? 0) + r.amount), new Map<string, number>()),
+        ([product, amt]) => ({ region: "∅" as string, product, amt })
+      ) },
+    { title: "GRAND TOTAL",
+      rows: [{ region: "∅", product: "∅", amt: data.reduce((s, r) => s + r.amount, 0) }] },
+  ];
+  const q = [
+    "SELECT region, product, SUM(amount)",
+    "FROM   sales",
+    "GROUP  BY CUBE (region, product);",
+  ];
+  const notes = [
+    "Leaf level: one row per (region, product) — the detail cells.",
+    "ROLLUP collapses 'product' into a subtotal per region (product = NULL marker).",
+    "CUBE additionally produces every other dimension subset — per product across all regions.",
+    "And the grand total — both dimensions collapsed (region = NULL, product = NULL).",
+  ][step];
+  const t = tiers[step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-3">
-        <div className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">dimension lattice</div>
-        <div className="grid grid-cols-4 gap-2">
-          {allCombos.map((c) => {
-            const included = s.combos.some((sc) => sc.length === c.length && sc.every((x, i) => x === c[i]));
-            return (
-              <motion.div
-                key={c.join("|") || "∅"}
-                animate={{
-                  scale: included ? 1 : 0.92,
-                  opacity: included ? 1 : 0.35,
-                }}
-                className={`rounded-lg border p-3 text-center ${
-                  included ? "border-mint/50 bg-mint/10" : "border-hairline bg-surface"
-                }`}
-              >
-                <div className={`font-mono text-[11px] ${included ? "text-mint" : "text-muted-foreground"}`}>
-                  {c.length === 0 ? "GRAND TOTAL" : c.join(" × ")}
-                </div>
-                <div className="mt-1 text-[10.5px] text-muted-foreground/70">
-                  {c.length === 0 ? "1 row" : c.length === 1 ? "per-dim" : "leaf"}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-        <div className="rounded-md bg-surface-2/40 px-3 py-2 font-mono text-[11.5px] text-foreground/85">
-          {s.title}
-        </div>
+        <QueryBlock lines={q} activeLines={[2]} />
+        <MiniTable
+          title="sales (source)"
+          cols={["region", "product", "amount"]}
+          rows={data.map((r, i) => ({
+            key: `s${i}`,
+            cells: [r.region, r.product, `$${r.amount}`],
+            state: "pending",
+          }))}
+        />
+        <MiniTable
+          title={t.title}
+          cols={["region", "product", "SUM"]}
+          rows={t.rows.map((r, i) => ({
+            key: `${step}-${i}`,
+            cells: [r.region, r.product, `$${r.amt}`],
+            state: "added",
+          }))}
+        />
       </div>
-      <Caption title="lattice">
-        {step === 0 && "Single bucket per region — one level only."}
-        {step === 1 && "Two independent grouping sets unioned in one pass."}
-        {step === 2 && "ROLLUP walks up the hierarchy: detail → sub-totals → grand total."}
-        {step === 3 && "CUBE computes every combination — 2ⁿ groupings for n columns."}
-      </Caption>
+      <Note tone="violet">{notes}</Note>
     </div>
   );
 }
 
-// ============ 3.1 Join shapes (Venn) ============
+// ============================================================
+// 3.1 Join shapes (INNER / LEFT / RIGHT / FULL) on real tables
+// ============================================================
 
 function JoinVenn({ step }: { step: number }) {
-  const types = [
-    { title: "INNER JOIN", left: false, mid: true, right: false, note: "Intersection only — matched pairs survive." },
-    { title: "LEFT JOIN", left: true, mid: true, right: false, note: "Every left row; right side NULLs when unmatched." },
-    { title: "RIGHT JOIN", left: false, mid: true, right: true, note: "Every right row; left side NULLs when unmatched." },
-    { title: "FULL OUTER", left: true, mid: true, right: true, note: "Union — every unmatched side fills with NULLs." },
+  const users = [
+    { id: 1, name: "Ada"   },
+    { id: 2, name: "Linus" },
+    { id: 3, name: "Grace" },
   ];
-  const t = types[step];
+  const orders = [
+    { id: 101, user_id: 1, total: 40 },
+    { id: 102, user_id: 2, total: 90 },
+    { id: 103, user_id: 4, total: 25 }, // orphan
+  ];
+  const kinds = ["INNER", "LEFT", "RIGHT", "FULL OUTER"];
+  const q = [
+    "SELECT u.name, o.id AS order_id, o.total",
+    `FROM   users  u`,
+    `${kinds[step]} JOIN orders o ON o.user_id = u.id;`,
+  ];
+  type Row = { u: typeof users[number] | null; o: typeof orders[number] | null };
+  const result: Row[] = useMemo(() => {
+    if (step === 0) {
+      return orders
+        .map((o): Row => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }))
+        .filter((p) => p.u !== null);
+    }
+    if (step === 1) {
+      return users.flatMap((u): Row[] => {
+        const ms = orders.filter((o) => o.user_id === u.id);
+        return ms.length ? ms.map((o) => ({ u, o })) : [{ u, o: null }];
+      });
+    }
+    if (step === 2) {
+      return orders.map((o): Row => ({ u: users.find((u) => u.id === o.user_id) ?? null, o }));
+    }
+    const seen = new Set<number>();
+    const acc: Row[] = users.flatMap((u): Row[] => {
+      const ms = orders.filter((o) => o.user_id === u.id);
+      ms.forEach((o) => seen.add(o.id));
+      return ms.length ? ms.map((o) => ({ u, o })) : [{ u, o: null }];
+    });
+    orders.filter((o) => !seen.has(o.id)).forEach((o) => acc.push({ u: null, o }));
+    return acc;
+  }, [step]);
+  const notes = [
+    "INNER: only matched pairs survive — Grace (no orders) and order 103 (orphan user_id=4) vanish.",
+    "LEFT: every user is kept — Grace appears with NULL order columns.",
+    "RIGHT: every order is kept — orphan order 103 appears with NULL user columns.",
+    "FULL OUTER: union of LEFT and RIGHT — Grace AND the orphan order both appear with NULLs.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="relative h-[220px] rounded-lg border border-hairline bg-surface-2/30">
-        <svg viewBox="0 0 320 200" className="absolute inset-0 h-full w-full">
-          <defs>
-            <mask id="leftOnly"><rect width="320" height="200" fill="white" /><circle cx="200" cy="100" r="70" fill="black" /></mask>
-            <mask id="rightOnly"><rect width="320" height="200" fill="white" /><circle cx="120" cy="100" r="70" fill="black" /></mask>
-          </defs>
-          {/* left circle base */}
-          <circle cx="120" cy="100" r="70" className="fill-violet/10 stroke-violet/40" />
-          <circle cx="200" cy="100" r="70" className="fill-mint/10 stroke-mint/40" />
-          {/* highlights */}
-          {t.left && <circle cx="120" cy="100" r="70" className="fill-violet/40" mask="url(#leftOnly)" />}
-          {t.right && <circle cx="200" cy="100" r="70" className="fill-mint/40" mask="url(#rightOnly)" />}
-          {t.mid && (
-            <g>
-              <circle cx="120" cy="100" r="70" className="fill-amber/40" mask="url(#leftOnly)" style={{ display: "none" }} />
-              {/* intersection: draw both circles clipped */}
-              <clipPath id="clipL"><circle cx="120" cy="100" r="70" /></clipPath>
-              <circle cx="200" cy="100" r="70" className="fill-amber/40" clipPath="url(#clipL)" />
-            </g>
-          )}
-          <text x="80" y="105" textAnchor="middle" className="fill-violet font-mono text-[11px]">users</text>
-          <text x="240" y="105" textAnchor="middle" className="fill-mint font-mono text-[11px]">orders</text>
-        </svg>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={[2]} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="users (u)"
+            cols={["id", "name"]}
+            rows={users.map((u) => ({ key: `u${u.id}`, cells: [u.id, u.name], state: "pending" }))}
+          />
+          <MiniTable
+            title="orders (o)"
+            cols={["id", "user_id", "total"]}
+            rows={orders.map((o) => ({ key: `o${o.id}`, cells: [o.id, o.user_id, `$${o.total}`], state: "pending" }))}
+          />
+        </div>
+        <MiniTable
+          title={`${kinds[step]} JOIN result`}
+          cols={["u.name", "o.id", "o.total"]}
+          rows={result.map((p, i) => ({
+            key: `${step}-${i}`,
+            cells: [p.u?.name ?? null, p.o?.id ?? null, p.o ? `$${p.o.total}` : null],
+            state: "added",
+          }))}
+        />
       </div>
-      <Caption title={t.title}>{t.note}</Caption>
+      <Note>{notes}</Note>
     </div>
   );
 }
 
-// ============ 3.2 Self joins (employee tree) ============
+// ============================================================
+// 3.2 Self join — employee → manager via aliasing
+// ============================================================
 
 function SelfJoinTree({ step }: { step: number }) {
-  // Show table -> aliased self-join -> hierarchy
   const emp = [
-    { id: 1, name: "Ada", mgr: null },
-    { id: 2, name: "Linus", mgr: 1 },
-    { id: 3, name: "Grace", mgr: 1 },
-    { id: 4, name: "Bob", mgr: 2 },
-    { id: 5, name: "Alan", mgr: 2 },
+    { id: 1, name: "Ada",   manager_id: null as number | null },
+    { id: 2, name: "Linus", manager_id: 1 },
+    { id: 3, name: "Grace", manager_id: 1 },
+    { id: 4, name: "Bob",   manager_id: 2 },
+    { id: 5, name: "Alan",  manager_id: 2 },
   ];
+  const q = [
+    "SELECT e.name AS employee,",
+    "       m.name AS manager",
+    "FROM   employees e",
+    "LEFT JOIN employees m ON e.manager_id = m.id;",
+  ];
+  const active = [[0, 1, 2], [3], [3], [0, 1, 3]][step];
+  const joined = emp.map((e) => ({
+    employee: e.name,
+    manager: emp.find((m) => m.id === e.manager_id)?.name ?? null,
+  }));
+  const notes = [
+    "Single table — manager_id is a FK back into the same table (Ada is the CEO, NULL).",
+    "Aliasing the same table TWICE (as e and as m) lets us treat it as two logical tables.",
+    "Join condition: e.manager_id = m.id — each employee row pairs with its manager row.",
+    "Result reconstructs the org chart. Ada's manager is NULL (LEFT JOIN preserves her).",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      {step === 0 && (
-        <div className="overflow-hidden rounded-lg border border-hairline">
-          <div className="grid grid-cols-3 border-b border-hairline bg-surface-2/60 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground">
-            <div className="px-3 py-2">id</div><div className="px-3 py-2">name</div><div className="px-3 py-2">manager_id</div>
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={active} />
+        {step <= 0 && (
+          <MiniTable
+            title="employees"
+            cols={["id", "name", "manager_id"]}
+            rows={emp.map((e) => ({ key: `${e.id}`, cells: [e.id, e.name, e.manager_id], state: "pending" }))}
+          />
+        )}
+        {step >= 1 && step < 3 && (
+          <div className="grid gap-3 lg:grid-cols-2">
+            <MiniTable
+              title="employees e (left)"
+              cols={["id", "name", "manager_id"]}
+              rows={emp.map((e) => ({ key: `e${e.id}`, cells: [e.id, e.name, e.manager_id], state: "pending", highlightCols: step === 2 ? [2] : [] }))}
+            />
+            <MiniTable
+              title="employees m (right)"
+              cols={["id", "name"]}
+              rows={emp.map((e) => ({ key: `m${e.id}`, cells: [e.id, e.name], state: "pending", highlightCols: step === 2 ? [0] : [] }))}
+            />
           </div>
-          {emp.map((e) => (
-            <div key={e.id} className="grid grid-cols-3 border-b border-hairline/60 font-mono text-[12.5px] last:border-b-0">
-              <div className="px-3 py-2">{e.id}</div>
-              <div className="px-3 py-2">{e.name}</div>
-              <div className={`px-3 py-2 ${e.mgr === null ? "text-amber" : ""}`}>{e.mgr ?? "NULL"}</div>
-            </div>
-          ))}
-        </div>
-      )}
-      {step === 1 && (
-        <div className="grid grid-cols-2 gap-3">
-          {["e (employee)", "m (manager)"].map((alias) => (
-            <div key={alias} className="rounded-lg border border-violet/40 bg-violet/5 p-2">
-              <div className="mb-1 font-mono text-[11px] text-violet">{alias}</div>
-              {emp.map((x) => (
-                <div key={x.id} className="font-mono text-[12px] text-foreground/80">#{x.id} {x.name}</div>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
-      {step === 2 && (
-        <div className="space-y-2">
-          {[1].map((rootId) => (
-            <Tree key={rootId} id={rootId} emp={emp} depth={0} />
-          ))}
-        </div>
-      )}
-      <Caption title={["raw table", "two aliases", "hierarchy"][step]}>
-        {step === 0 && "Single table — the manager_id is a foreign key back into the same table."}
-        {step === 1 && "Aliasing the same table twice (e, m) lets us join row-to-row within itself."}
-        {step === 2 && "Joining e.manager_id = m.id reconstructs the org tree."}
-      </Caption>
-    </div>
-  );
-}
-
-function Tree({ id, emp, depth }: { id: number; emp: { id: number; name: string; mgr: number | null }[]; depth: number }) {
-  const me = emp.find((x) => x.id === id);
-  if (!me) return null;
-  const kids = emp.filter((x) => x.mgr === id);
-  return (
-    <div style={{ marginLeft: depth * 18 }}>
-      <motion.div
-        initial={{ opacity: 0, x: -6 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: depth * 0.1 }}
-        className="inline-flex items-center gap-2 rounded-md border border-mint/40 bg-mint/5 px-2 py-1 font-mono text-[12px] text-mint"
-      >
-        {depth > 0 && <span className="text-muted-foreground">└</span>}
-        #{me.id} {me.name}
-      </motion.div>
-      <div className="mt-1 space-y-1">
-        {kids.map((k) => <Tree key={k.id} id={k.id} emp={emp} depth={depth + 1} />)}
+        )}
+        {step === 3 && (
+          <MiniTable
+            title="result"
+            cols={["employee", "manager"]}
+            rows={joined.map((r, i) => ({ key: `r${i}`, cells: [r.employee, r.manager], state: "added" }))}
+          />
+        )}
       </div>
+      <Note tone="violet">{notes}</Note>
     </div>
   );
 }
 
-// ============ 3.3 Semi/Anti joins ============
+// ============================================================
+// 3.3 Semi / Anti joins via EXISTS / NOT EXISTS
+// ============================================================
 
 function SemiAnti({ step }: { step: number }) {
   const users = [
-    { id: 1, name: "Ada" },
+    { id: 1, name: "Ada"   },
     { id: 2, name: "Linus" },
     { id: 3, name: "Grace" },
-    { id: 4, name: "Alan" },
+    { id: 4, name: "Alan"  },
   ];
-  const orderUserIds = new Set([1, 2]);
-  const variants = [
-    { title: "all users", filter: () => true, tone: "neutral" as const },
-    { title: "SEMI — EXISTS (has order)", filter: (u: typeof users[number]) => orderUserIds.has(u.id), tone: "mint" as const },
-    { title: "ANTI — NOT EXISTS (no order)", filter: (u: typeof users[number]) => !orderUserIds.has(u.id), tone: "rose" as const },
+  const orders = [
+    { id: 101, user_id: 1, total: 40 },
+    { id: 102, user_id: 1, total: 60 },
+    { id: 103, user_id: 2, total: 25 },
   ];
-  const v = variants[step];
+  const hasOrder = new Set(orders.map((o) => o.user_id));
+  const semiQ = [
+    "SELECT u.id, u.name",
+    "FROM   users u",
+    "WHERE  EXISTS (",
+    "         SELECT 1 FROM orders o WHERE o.user_id = u.id",
+    "       );",
+  ];
+  const antiQ = [
+    "SELECT u.id, u.name",
+    "FROM   users u",
+    "WHERE  NOT EXISTS (",
+    "         SELECT 1 FROM orders o WHERE o.user_id = u.id",
+    "       );",
+  ];
+  const lines = step === 2 ? antiQ : semiQ;
+  const notes = [
+    "Source: 4 users, 3 orders. Ada and Linus have orders; Grace and Alan don't.",
+    "SEMI (EXISTS) — keep the LEFT row as soon as ONE inner match is found. No row duplication.",
+    "ANTI (NOT EXISTS) — keep the LEFT row only when ZERO inner matches exist. Opposite filter.",
+  ][step];
+  const pass = (u: typeof users[number]) => {
+    if (step === 0) return null;
+    if (step === 1) return hasOrder.has(u.id);
+    return !hasOrder.has(u.id);
+  };
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="space-y-1.5">
-        {users.map((u) => {
-          const kept = v.filter(u);
-          return (
-            <motion.div
-              key={u.id}
-              animate={{ opacity: kept ? 1 : 0.3, x: kept ? 0 : -6 }}
-              className={`flex items-center gap-3 rounded-md border px-3 py-1.5 font-mono text-[12.5px] ${
-                kept && step === 1 ? "border-mint/40 bg-mint/5 text-mint" :
-                kept && step === 2 ? "border-rose/40 bg-rose/5 text-rose" :
-                "border-hairline bg-surface text-foreground/80"
-              }`}
-            >
-              <span className="w-5">{kept ? "✓" : "·"}</span>
-              <span>#{u.id} {u.name}</span>
-              <span className="ml-auto text-[11px] text-muted-foreground">
-                {orderUserIds.has(u.id) ? "has order" : "no order"}
-              </span>
-            </motion.div>
-          );
-        })}
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={lines} activeLines={step === 0 ? [0, 1] : [2, 3]} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="users (left)"
+            cols={["id", "name", "has order?"]}
+            rows={users.map((u) => {
+              const p = pass(u);
+              return {
+                key: `${u.id}`,
+                cells: [u.id, u.name, hasOrder.has(u.id) ? "yes" : "no"],
+                state: p === null ? "pending" : p ? "kept" : "dropped",
+              };
+            })}
+          />
+          <MiniTable
+            title="orders (inner)"
+            cols={["id", "user_id", "total"]}
+            rows={orders.map((o) => ({ key: `o${o.id}`, cells: [o.id, o.user_id, `$${o.total}`], state: "pending" }))}
+          />
+        </div>
       </div>
-      <Caption title={v.title} tone={v.tone}>
-        {step === 0 && "Start with the left side — every user row."}
-        {step === 1 && "EXISTS keeps a row as soon as ONE match is found — no duplication, no widening."}
-        {step === 2 && "NOT EXISTS keeps rows with zero matches — the opposite filter, also dedup-safe."}
-      </Caption>
+      <Note tone={step === 2 ? "rose" : "mint"}>{notes}</Note>
     </div>
   );
 }
 
-// ============ 3.4 Join algorithms ============
+// ============================================================
+// 3.4 Join algorithms — same query, different plans
+// ============================================================
 
 function JoinAlgos({ step }: { step: number }) {
-  const algos = [
-    {
-      title: "Nested Loop",
-      body: "For each row in outer, scan inner. O(N×M). Wins on tiny inputs or when inner has an index lookup.",
-      tone: "amber" as const,
-    },
-    {
-      title: "Hash Join",
-      body: "Build hash table from smaller side, probe with larger. O(N+M). Default for big equi-joins.",
-      tone: "mint" as const,
-    },
-    {
-      title: "Sort-Merge",
-      body: "Sort both sides on join key, then zipper-merge. O(N log N). Wins when inputs are already sorted.",
-      tone: "violet" as const,
-    },
+  const a = [{ id: 1 }, { id: 2 }, { id: 3 }];
+  const b = [{ a_id: 1, v: "x" }, { a_id: 2, v: "y" }, { a_id: 2, v: "z" }];
+  const q = [
+    "SELECT a.id, b.v",
+    "FROM   a",
+    "JOIN   b ON b.a_id = a.id;",
   ];
-  const a = algos[step];
+  const plans = [
+    { name: "Nested Loop", body: "For EACH row in a (outer), scan b (inner). 3 × 3 = 9 probes. Good for tiny inputs or indexed inner.", tone: "amber" as Tone },
+    { name: "Hash Join",   body: "Build hash table from smaller side (a), probe with b in O(N+M). Default for large equi-joins.", tone: "mint" as Tone },
+    { name: "Sort-Merge",  body: "Sort both sides on join key, zipper-merge in O(N log N). Wins when inputs already sorted (indexed scan).", tone: "violet" as Tone },
+  ];
+  const p = plans[step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="h-[220px] rounded-lg border border-hairline bg-surface-2/30 p-4">
-        {step === 0 && (
-          <div className="grid h-full grid-cols-2 gap-4">
-            <div className="space-y-1">
-              {[1, 2, 3].map((i) => (
-                <motion.div key={i} animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 1, repeat: Infinity, delay: i * 0.3 }} className="rounded-md bg-amber/15 px-2 py-1 font-mono text-[12px] text-amber ring-1 ring-amber/40">outer #{i}</motion.div>
-              ))}
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={[2]} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable title="a" cols={["id"]} rows={a.map((r) => ({ key: `a${r.id}`, cells: [r.id], state: "pending" }))} />
+          <MiniTable title="b" cols={["a_id", "v"]} rows={b.map((r, i) => ({ key: `b${i}`, cells: [r.a_id, r.v], state: "pending" }))} />
+        </div>
+        <div className={`rounded-lg border p-3 ${
+          p.tone === "amber" ? "border-amber/40 bg-amber/5" :
+          p.tone === "mint" ? "border-mint/40 bg-mint/5" :
+          "border-violet/40 bg-violet/5"
+        }`}>
+          <div className={`font-mono text-[11px] uppercase tracking-[0.14em] ${
+            p.tone === "amber" ? "text-amber" : p.tone === "mint" ? "text-mint" : "text-violet"
+          }`}>plan: {p.name}</div>
+          {step === 0 && (
+            <div className="mt-2 grid grid-cols-3 gap-1.5 font-mono text-[11px]">
+              {a.flatMap((ar) => b.map((br, i) => (
+                <motion.div
+                  key={`${ar.id}-${i}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: (ar.id - 1) * 0.15 + i * 0.04 }}
+                  className={`rounded px-1.5 py-0.5 ring-1 ${
+                    ar.id === br.a_id ? "bg-mint/15 text-mint ring-mint/40" : "bg-surface text-muted-foreground ring-hairline"
+                  }`}
+                >a{ar.id}·b{i}</motion.div>
+              )))}
             </div>
-            <div className="space-y-1">
-              {[1, 2, 3, 4, 5].map((j) => (
-                <motion.div key={j} animate={{ opacity: [0.4, 1, 0.4] }} transition={{ duration: 0.5, repeat: Infinity, delay: j * 0.1 }} className="rounded-md bg-surface px-2 py-1 font-mono text-[12px] text-muted-foreground ring-1 ring-hairline">inner #{j}</motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-        {step === 1 && (
-          <div className="grid h-full grid-cols-2 gap-4">
-            <div>
-              <div className="mb-1 font-mono text-[11px] text-mint">hash table</div>
-              {["A→1", "B→2", "C→3"].map((x) => (
-                <motion.div key={x} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="rounded-md bg-mint/10 px-2 py-1 font-mono text-[12px] text-mint ring-1 ring-mint/40">{x}</motion.div>
-              ))}
-            </div>
-            <div>
-              <div className="mb-1 font-mono text-[11px] text-muted-foreground">probe stream</div>
-              {["A", "C", "B", "A"].map((p, i) => (
-                <motion.div key={i} initial={{ x: 30, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: i * 0.2 }} className="mb-1 rounded-md bg-surface px-2 py-1 font-mono text-[12px] ring-1 ring-hairline">{p} → hit</motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-        {step === 2 && (
-          <div className="grid h-full grid-cols-2 gap-4">
-            {[["1", "2", "3", "5"], ["1", "3", "4", "5"]].map((arr, idx) => (
-              <div key={idx} className="space-y-1">
-                <div className="font-mono text-[11px] text-violet">sorted side {idx + 1}</div>
-                {arr.map((n, i) => (
-                  <motion.div key={i} initial={{ y: -6, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }} className="rounded-md bg-violet/10 px-2 py-1 font-mono text-[12px] text-violet ring-1 ring-violet/40">{n}</motion.div>
-                ))}
+          )}
+          {step === 1 && (
+            <div className="mt-2 grid grid-cols-2 gap-3 font-mono text-[11.5px]">
+              <div>
+                <div className="text-mint/70">hash(a)</div>
+                {a.map((ar) => <div key={ar.id} className="text-mint">{ar.id} → ✓</div>)}
               </div>
-            ))}
-          </div>
-        )}
+              <div>
+                <div className="text-muted-foreground">probe b</div>
+                {b.map((br, i) => <div key={i} className="text-foreground/85">b{i} → a{br.a_id}</div>)}
+              </div>
+            </div>
+          )}
+          {step === 2 && (
+            <div className="mt-2 grid grid-cols-2 gap-3 font-mono text-[11.5px]">
+              <div>
+                <div className="text-violet/70">sorted a</div>
+                {[1, 2, 3].map((x) => <div key={x} className="text-violet">{x}</div>)}
+              </div>
+              <div>
+                <div className="text-violet/70">sorted b.a_id</div>
+                {[1, 2, 2].map((x, i) => <div key={i} className="text-violet">{x}</div>)}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      <Caption title={a.title} tone={a.tone}>{a.body}</Caption>
+      <Note tone={p.tone}>{p.body}</Note>
     </div>
   );
 }
 
-// ============ 4.1 Scalar subqueries ============
+// ============================================================
+// 4.1 Scalar Subqueries
+// ============================================================
 
 function ScalarSub({ step }: { step: number }) {
-  const steps = [
-    { title: "inner runs", outer: "SELECT name, (SELECT AVG(salary) FROM emp) AS avg", inner: "MATERIALIZE → 67500", body: "The scalar subquery executes once and produces a single value." },
-    { title: "value plugged", outer: "SELECT name, 67500 AS avg", inner: "constant fold", body: "The planner substitutes the result into the outer projection." },
-    { title: "cardinality trap", outer: "SELECT name, (SELECT salary FROM emp WHERE dept='ENG')", inner: "ERROR: more than one row", body: "Scalar context demands ≤1 row — multiple rows trigger a runtime error." },
+  const emp = [
+    { id: 1, name: "Ada",   dept: "ENG", salary: 80 },
+    { id: 2, name: "Linus", dept: "ENG", salary: 90 },
+    { id: 3, name: "Grace", dept: "OPS", salary: 60 },
+    { id: 4, name: "Bob",   dept: "ENG", salary: 70 },
   ];
-  const s = steps[step];
+  const avg = +(emp.reduce((s, e) => s + e.salary, 0) / emp.length).toFixed(2);
+  const q = [
+    "SELECT name, salary,",
+    "       (SELECT AVG(salary) FROM employees) AS avg_pay",
+    "FROM   employees;",
+  ];
+  const active = [[1], [1], [0, 2]][step];
+  const notes = [
+    "Step 1 — the planner runs the inner query first: SELECT AVG(salary) FROM employees.",
+    `Step 2 — the inner produces a single scalar value (${avg}) and folds it as a constant.`,
+    "Step 3 — outer SELECT projects each row alongside the cached scalar. One inner execution, total.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-3">
-        <div className="rounded-lg border border-hairline bg-surface-2/40 p-3 font-mono text-[12.5px] text-foreground/85">
-          {s.outer}
-        </div>
-        <motion.div
-          key={step}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className={`rounded-lg border p-3 font-mono text-[12.5px] ${
-            step === 2 ? "border-rose/40 bg-rose/10 text-rose" : "border-mint/40 bg-mint/10 text-mint"
-          }`}
-        >
-          ↳ inner: {s.inner}
-        </motion.div>
-      </div>
-      <Caption title={s.title} tone={step === 2 ? "rose" : "mint"}>{s.body}</Caption>
-    </div>
-  );
-}
-
-// ============ 4.2 Correlated subqueries (O(N²)) ============
-
-function Correlated({ step }: { step: number }) {
-  const rows = [1, 2, 3, 4, 5];
-  const captions = [
-    { title: "outer scan", body: "Outer query reads 5 rows from the orders table." },
-    { title: "inner runs per row", body: "Inner subquery re-executes for EACH outer row — O(N²) blowup." },
-    { title: "rewrite as JOIN", body: "Most correlated subqueries can be rewritten as a single JOIN + GROUP BY." },
-  ];
-  return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="space-y-2">
-        {rows.map((r, i) => (
+        <QueryBlock lines={q} activeLines={active} />
+        <MiniTable
+          title="employees"
+          cols={["id", "name", "dept", "salary"]}
+          rows={emp.map((e) => ({
+            key: `${e.id}`,
+            cells: [e.id, e.name, e.dept, `$${e.salary}`],
+            state: "pending",
+            highlightCols: step === 0 ? [3] : [],
+          }))}
+        />
+        {step >= 1 && (
           <motion.div
-            key={r}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: i * 0.1 }}
-            className="flex items-center gap-3"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="rounded-lg border border-mint/40 bg-mint/10 p-3 font-mono text-[12.5px] text-mint"
           >
-            <div className="grid size-7 place-items-center rounded-md bg-violet/15 font-mono text-[11px] text-violet ring-1 ring-violet/40">o{r}</div>
-            {step >= 1 && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: "auto", opacity: 1 }}
-                transition={{ delay: 0.2 + i * 0.1 }}
-                className="flex items-center gap-1 overflow-hidden"
-              >
-                <span className="text-muted-foreground">→</span>
-                {[1, 2, 3].map((j) => (
-                  <span key={j} className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ring-1 ${
-                    step === 2 ? "bg-mint/10 text-mint ring-mint/30" : "bg-rose/10 text-rose ring-rose/30"
-                  }`}>q</span>
-                ))}
-                <span className="ml-1 font-mono text-[11px] text-muted-foreground">
-                  {step === 2 ? "joined" : "× N executions"}
-                </span>
-              </motion.div>
-            )}
+            inner result → <span className="text-foreground">{avg}</span> (constant, used for every outer row)
           </motion.div>
-        ))}
-      </div>
-      <Caption title={captions[step].title} tone={step === 1 ? "rose" : "mint"}>{captions[step].body}</Caption>
-    </div>
-  );
-}
-
-// ============ 4.3 EXISTS vs IN ============
-
-function ExistsVsIn({ step }: { step: number }) {
-  const captions = [
-    { title: "IN — materialize list", body: "Inner query produces a value list; outer scans and tests membership." },
-    { title: "EXISTS — short circuit", body: "Inner stops on the FIRST match per outer row — often faster on large inner sets." },
-    { title: "NOT IN — NULL trap", body: "If the inner list contains a NULL, NOT IN returns UNKNOWN for every row → empty result." },
-  ];
-  const c = captions[step];
-  return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
-      <div className="space-y-3">
-        {step === 0 && (
-          <div className="rounded-lg border border-violet/40 bg-violet/5 p-3">
-            <div className="font-mono text-[11px] text-violet">materialized list</div>
-            <div className="mt-1.5 flex flex-wrap gap-1.5">{[10, 20, 30, 40, 50].map((x) => <Chip key={x} tone="violet">{x}</Chip>)}</div>
-          </div>
-        )}
-        {step === 1 && (
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => (
-              <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.15 }} className="flex items-center gap-2 rounded-md border border-mint/40 bg-mint/5 px-3 py-1.5 font-mono text-[12px] text-mint">
-                row #{i} → probe inner → <span className="text-mint">first hit ✓</span> → stop
-              </motion.div>
-            ))}
-          </div>
         )}
         {step === 2 && (
-          <div className="space-y-2">
-            <div className="rounded-md border border-rose/40 bg-rose/5 p-2 font-mono text-[12px] text-rose">
-              inner: {`{10, 20, NULL}`}
-            </div>
-            <div className="rounded-md border border-rose/40 bg-rose/10 p-3 font-mono text-[12px] text-rose">
-              x NOT IN (10, 20, NULL) ≡ x ≠ 10 AND x ≠ 20 AND x ≠ NULL → UNKNOWN
-            </div>
-            <div className="font-mono text-[11px] text-amber">→ entire WHERE filters out everything (zero rows)</div>
-          </div>
+          <MiniTable
+            title="result"
+            cols={["name", "salary", "avg_pay"]}
+            rows={emp.map((e) => ({
+              key: `r${e.id}`,
+              cells: [e.name, `$${e.salary}`, `$${avg}`],
+              state: "added",
+            }))}
+          />
         )}
       </div>
-      <Caption title={c.title} tone={step === 2 ? "rose" : step === 1 ? "mint" : "violet"}>{c.body}</Caption>
+      <Note>{notes}</Note>
     </div>
   );
 }
 
-// ============ 4.4 Set operations detail ============
+// ============================================================
+// 4.2 Correlated subqueries — O(N²)
+// ============================================================
 
-function SetOpsDetail({ step }: { step: number }) {
-  const A = [1, 2, 2, 3];
-  const B = [2, 3, 3, 4];
-  const ops = [
-    { title: "UNION", note: "Concatenate then DEDUPLICATE (hash/sort). Hidden cost.", result: Array.from(new Set([...A, ...B])).sort() },
-    { title: "UNION ALL", note: "Pure append — keeps duplicates. Fastest set op.", result: [...A, ...B] },
-    { title: "INTERSECT", note: "Rows present in BOTH, deduplicated.", result: Array.from(new Set(A.filter((x) => B.includes(x)))) },
-    { title: "EXCEPT", note: "Rows in A not in B, deduplicated.", result: Array.from(new Set(A.filter((x) => !B.includes(x)))) },
+function Correlated({ step }: { step: number }) {
+  const orders = [
+    { id: 1, customer: "Ada"   },
+    { id: 2, customer: "Linus" },
+    { id: 3, customer: "Grace" },
   ];
-  const o = ops[step];
+  const items = [
+    { order_id: 1, sku: "A" },
+    { order_id: 1, sku: "B" },
+    { order_id: 2, sku: "C" },
+    { order_id: 3, sku: "D" },
+    { order_id: 3, sku: "E" },
+    { order_id: 3, sku: "F" },
+  ];
+  const slowQ = [
+    "SELECT o.id, o.customer,",
+    "       (SELECT COUNT(*) FROM items i",
+    "        WHERE i.order_id = o.id) AS item_count",
+    "FROM   orders o;",
+  ];
+  const fastQ = [
+    "SELECT o.id, o.customer, COUNT(i.order_id) AS item_count",
+    "FROM   orders o",
+    "LEFT JOIN items i ON i.order_id = o.id",
+    "GROUP BY o.id, o.customer;",
+  ];
+  const lines = step === 3 ? fastQ : slowQ;
+  const active = step === 0 ? [0, 3] : step === 1 ? [1, 2] : step === 2 ? [1, 2] : [1, 2, 3];
+  const visibleRow = step === 1 ? 0 : step === 2 ? orders.length - 1 : -1;
+  const counts = orders.map((o) => items.filter((i) => i.order_id === o.id).length);
+  const notes = [
+    "Outer scan: read each order. The inner subquery references o.id — that's the 'correlation'.",
+    "Row 1 → inner SELECT COUNT(*) FROM items WHERE order_id = 1 runs and returns 2.",
+    "Row N → inner runs AGAIN for each outer row. N outer × inner cost = O(N × M) per scan.",
+    "Rewrite as a single LEFT JOIN + GROUP BY. Planner reads each table ONCE.",
+  ][step];
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_240px]">
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-3">
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <div className="mb-1 font-mono text-[11px] text-violet">A (bag)</div>
-            <div className="flex flex-wrap gap-1.5">{A.map((x, i) => <Chip key={i} tone="violet">{x}</Chip>)}</div>
-          </div>
-          <div className="flex-1">
-            <div className="mb-1 font-mono text-[11px] text-amber">B (bag)</div>
-            <div className="flex flex-wrap gap-1.5">{B.map((x, i) => <Chip key={i} tone="amber">{x}</Chip>)}</div>
-          </div>
-        </div>
-        <div className="rounded-lg border border-mint/40 bg-mint/5 p-3">
-          <div className="font-mono text-[11px] text-mint">{o.title} result</div>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            <AnimatePresence initial={false}>
-              {o.result.map((x, i) => (
-                <motion.span key={`${step}-${i}`} layout initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="rounded-md bg-mint/15 px-2 py-1 font-mono text-[12px] text-mint ring-1 ring-mint/40">{x}</motion.span>
-              ))}
-            </AnimatePresence>
-          </div>
+        <QueryBlock lines={lines} activeLines={active} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="orders o (outer)"
+            cols={["id", "customer", "count"]}
+            rows={orders.map((o, i) => ({
+              key: `${o.id}`,
+              cells: [o.id, o.customer, step >= 1 && (step === 3 || i <= visibleRow) ? counts[i] : "·"],
+              state: step >= 1 && i === visibleRow ? "kept" : "pending",
+            }))}
+          />
+          <MiniTable
+            title="items i (inner)"
+            cols={["order_id", "sku"]}
+            rows={items.map((it, i) => ({
+              key: `i${i}`,
+              cells: [it.order_id, it.sku],
+              state: step === 1 && it.order_id === 1 ? "kept" :
+                     step === 2 && it.order_id === orders[orders.length - 1].id ? "kept" : "pending",
+            }))}
+          />
         </div>
       </div>
-      <Caption title={o.title} tone={step === 1 ? "mint" : "violet"}>{o.note}</Caption>
+      <Note tone={step === 2 ? "rose" : step === 3 ? "mint" : "neutral"}>{notes}</Note>
     </div>
   );
+}
+
+// ============================================================
+// 4.3 EXISTS vs IN
+// ============================================================
+
+function ExistsVsIn({ step }: { step: number }) {
+  const users = [
+    { id: 1, name: "Ada"   },
+    { id: 2, name: "Linus" },
+    { id: 3, name: "Grace" },
+    { id: 4, name: "Alan"  },
+  ];
+  const orders = [
+    { id: 101, user_id: 1 },
+    { id: 102, user_id: 1 },
+    { id: 103, user_id: 2 },
+    { id: 104, user_id: null as number | null },
+  ];
+  const inQ = [
+    "SELECT id, name",
+    "FROM   users",
+    "WHERE  id IN (SELECT user_id FROM orders);",
+  ];
+  const existsQ = [
+    "SELECT id, name",
+    "FROM   users u",
+    "WHERE  EXISTS (SELECT 1 FROM orders o",
+    "               WHERE o.user_id = u.id);",
+  ];
+  const notInQ = [
+    "SELECT id, name",
+    "FROM   users",
+    "WHERE  id NOT IN (SELECT user_id FROM orders);   -- contains NULL!",
+  ];
+  const lines = step === 0 ? inQ : step === 1 ? existsQ : notInQ;
+  const matched = new Set(orders.filter((o) => o.user_id !== null).map((o) => o.user_id as number));
+  const result =
+    step === 2
+      ? [] // NOT IN poisoned by NULL — empty
+      : users.filter((u) => matched.has(u.id));
+  const notes = [
+    "IN materializes the inner result {1, 1, 2, NULL}, then probes each outer id against it.",
+    "EXISTS stops on the FIRST inner match per outer row → never materializes the full inner set.",
+    "NOT IN with a NULL in the inner set returns UNKNOWN for every row → result is EMPTY. Use NOT EXISTS.",
+  ][step];
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={lines} activeLines={[2]} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="users (outer)"
+            cols={["id", "name"]}
+            rows={users.map((u) => ({
+              key: `u${u.id}`,
+              cells: [u.id, u.name],
+              state: step === 2 ? "dropped" : matched.has(u.id) ? "kept" : "dropped",
+            }))}
+          />
+          <MiniTable
+            title="orders.user_id (inner)"
+            cols={["user_id"]}
+            rows={orders.map((o, i) => ({
+              key: `o${i}`,
+              cells: [o.user_id],
+              state: step === 2 && o.user_id === null ? "kept" : "pending",
+            }))}
+          />
+        </div>
+        {step !== 2 && (
+          <MiniTable
+            title="result"
+            cols={["id", "name"]}
+            rows={result.map((u) => ({ key: `r${u.id}`, cells: [u.id, u.name], state: "added" }))}
+          />
+        )}
+      </div>
+      <Note tone={step === 2 ? "rose" : step === 1 ? "mint" : "violet"}>{notes}</Note>
+    </div>
+  );
+}
+
+// ============================================================
+// 4.4 Set Operations
+// ============================================================
+
+function SetOpsDetail({ step }: { step: number }) {
+  const A = [
+    { id: 1, email: "a@x.com" },
+    { id: 2, email: "b@x.com" },
+    { id: 3, email: "c@x.com" },
+    { id: 2, email: "b@x.com" }, // duplicate
+  ];
+  const B = [
+    { id: 3, email: "c@x.com" },
+    { id: 4, email: "d@x.com" },
+    { id: 5, email: "e@x.com" },
+  ];
+  const ops = [
+    { name: "UNION",     body: "Combine then DEDUPLICATE (sort/hash) → unique rows only. Hidden CPU cost.",
+      rows: dedupe([...A, ...B]) },
+    { name: "UNION ALL", body: "Pure append — keeps duplicates → fastest set op, no sort/hash.",
+      rows: [...A, ...B] },
+    { name: "INTERSECT", body: "Rows present in BOTH sides, deduplicated.",
+      rows: dedupe(A.filter((a) => B.some((b) => b.id === a.id))) },
+    { name: "EXCEPT",    body: "Rows in A NOT in B (a.k.a. MINUS), deduplicated.",
+      rows: dedupe(A.filter((a) => !B.some((b) => b.id === a.id))) },
+  ];
+  const o = ops[step];
+  const q = [
+    "SELECT id, email FROM customers_eu",
+    `${o.name}`,
+    "SELECT id, email FROM customers_us;",
+  ];
+  return (
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="space-y-3">
+        <QueryBlock lines={q} activeLines={[1]} />
+        <div className="grid gap-3 lg:grid-cols-2">
+          <MiniTable
+            title="customers_eu (A)"
+            cols={["id", "email"]}
+            rows={A.map((r, i) => ({ key: `a${i}`, cells: [r.id, r.email], state: "pending" }))}
+          />
+          <MiniTable
+            title="customers_us (B)"
+            cols={["id", "email"]}
+            rows={B.map((r, i) => ({ key: `b${i}`, cells: [r.id, r.email], state: "pending" }))}
+          />
+        </div>
+        <MiniTable
+          title={`${o.name} → ${o.rows.length} rows`}
+          cols={["id", "email"]}
+          rows={o.rows.map((r, i) => ({ key: `${step}-${i}`, cells: [r.id, r.email], state: "added" }))}
+        />
+      </div>
+      <Note tone={step === 1 ? "mint" : "violet"}>{o.body}</Note>
+    </div>
+  );
+}
+
+function dedupe<T extends { id: number; email: string }>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const r of rows) {
+    const k = `${r.id}|${r.email}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(r);
+  }
+  return out;
 }
