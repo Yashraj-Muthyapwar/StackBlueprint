@@ -18,7 +18,8 @@ export type AnimationVariant =
   | "where-filter"
   | "group-by-agg"
   | "join-types"
-  | "set-ops";
+  | "set-ops"
+  | QueryingVariant;
 
 export function LessonAnimation({
   variant,
