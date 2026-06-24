@@ -16,14 +16,14 @@ import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 const booleanLogic: LessonContent = {
   slug: "boolean-logic",
   title: "1.1 Boolean Logic (AND / OR / NOT)",
-  subtitle: "Order of precedence, short-circuit paths, and the three-valued truth table.",
+  subtitle: "Precedence rules, short-circuit evaluation, and three-valued truth.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Compound predicates are how an engine carves a billion-row stream into the precise sliver an analyst actually wants — get the boolean algebra wrong and the report silently lies.",
-        "Think of WHERE as a hardware logic gate stacked per row: NOT inverters fire first, AND gates fuse signals next, and OR multiplexers merge the survivors — exactly like a CPU's ALU evaluating a conditional jump.",
+        "WHERE evaluates one boolean expression per row — get the algebra wrong and the query silently returns the wrong rows.",
+        "Precedence order: NOT fires first, then AND, then OR — the same hierarchy as in most programming languages.",
       ],
     },
     {
@@ -35,9 +35,9 @@ const booleanLogic: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: render the source table as a vertical stack of row cards on the left canvas; each card shows id, category, price. A predicate ribbon (AND/OR/NOT tokens) materialises on the right with precedence brackets greyed out.",
-        "Phase 2 — Action: a scanner bar glides top-to-bottom across the row stack. As it touches a card, the NOT token pulses first, the AND token tints the row amber, the OR token fans into two branches; rows whose final truth value is TRUE arc rightward into the result viewport, FALSE rows compress to 30% opacity and slide left into a discard tray, UNKNOWN rows shimmer purple and fall into the same discard tray.",
-        "Phase 3 — Final State: the result viewport holds only TRUE rows in their original order; a precedence overlay locks in showing the parsed tree (NOT → AND → OR) for the executed query.",
+        "Rows enter as cards on the left; a predicate ribbon shows AND/OR/NOT tokens with precedence brackets dimmed.",
+        "The scanner applies NOT first, AND second, OR last. TRUE rows arc right; FALSE and UNKNOWN rows fade into the discard tray.",
+        "The result viewport holds only TRUE rows; a parsed-tree overlay confirms the NOT → AND → OR evaluation order.",
       ],
     },
     {
@@ -84,14 +84,14 @@ WHERE (category = 'pen' OR category = 'pencil')   -- /* OR branch fans first */
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — operator precedence ambushes",
-      body: "AND binds tighter than OR. `a OR b AND c` is parsed as `a OR (b AND c)` — most developers read it left-to-right and ship a query that silently widens the result set. Always parenthesize mixed operators; the parser does what you typed, not what you meant.",
+      title: "Logic Trap — operator precedence",
+      body: "`a OR b AND c` parses as `a OR (b AND c)` because AND binds tighter. Always parenthesize mixed operators — the parser does exactly what you typed.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "The PostgreSQL planner reorders predicates by estimated selectivity from pg_statistic, then push-down evaluates them as a short-circuited expression tree. A poorly ordered OR can suppress an index scan and force a sequential scan over the whole heap — confirm with EXPLAIN (ANALYZE, BUFFERS) before promoting to production.",
+      title: "Planner impact",
+      body: "PostgreSQL reorders predicates by estimated selectivity from pg_statistic and short-circuits them. A miswritten OR can suppress an index scan — verify with EXPLAIN (ANALYZE, BUFFERS).",
     },
     {
       kind: "takeaways",
@@ -109,14 +109,14 @@ WHERE (category = 'pen' OR category = 'pencil')   -- /* OR branch fans first */
 const inBetween: LessonContent = {
   slug: "in-between",
   title: "1.2 Range & Set Filtering (IN / BETWEEN)",
-  subtitle: "Inclusive boundaries, set transformation mechanics, and the OR rewrite the optimizer performs.",
+  subtitle: "Inclusive bounds, set membership, and the OR expansion the optimizer generates.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Hand-rolling `x = 1 OR x = 2 OR x = 3 OR …` for membership tests is unreadable and unindexable — IN and BETWEEN compress that into a single declarative predicate the optimizer can re-plan as an index range scan.",
-        "Mentally, IN is a hash-set probe (O(1) average lookup against a tiny in-memory set) and BETWEEN is a B-Tree index seek to the low key followed by a linear walk to the high key — identical to a sorted-array bisect_left / bisect_right pair.",
+        "IN and BETWEEN compress repeated equality checks into a single predicate the optimizer can plan as an index range scan.",
+        "IN is a hash-set probe; BETWEEN is a B-Tree seek to the low bound followed by a walk to the high bound — both ends inclusive.",
       ],
     },
     {
@@ -128,9 +128,9 @@ const inBetween: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: source rows fan out on the left; a yellow probe-set chip `{2, 4, 6}` floats top-right, and a green range visor `[10, 20]` floats bottom-right. All rows start at 100% opacity.",
-        "Phase 2 — Action: each row arcs upward into the probe-set; matching ids glow yellow and pass through, misses dim to 40% opacity. The same rows then arc downward into the range visor; ids inside [10, 20] glow green and snap to the result viewport, outliers compress to a discard tray.",
-        "Phase 3 — Final State: result viewport contains only rows that satisfied IN OR BETWEEN; an overlay shows the equivalent OR-rewrite the planner generated.",
+        "Source rows fan left; a yellow set chip {2,4,6} floats top-right and a green range visor [10,20] floats bottom-right.",
+        "Rows probe the set chip first (misses dim), then enter the range visor; ids inside [10,20] snap to the viewport, outliers discard.",
+        "The viewport holds rows satisfying both predicates; an overlay shows the OR-rewrite the planner generated internally.",
       ],
     },
     {
@@ -174,14 +174,14 @@ WHERE (customer_id = 2 OR customer_id = 4 OR customer_id = 6)
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL poisons the set",
-      body: "`x NOT IN (1, 2, NULL)` expands to `x<>1 AND x<>2 AND x<>NULL` — the last clause evaluates to UNKNOWN, dragging the whole AND chain to UNKNOWN, and the row is dropped. Always strip NULLs from the inner set or rewrite as `NOT EXISTS`.",
+      title: "Logic Trap — NOT IN with a NULL poisons the set",
+      body: "`x NOT IN (1, 2, NULL)` expands to `x<>1 AND x<>2 AND x<>NULL`. The last clause is UNKNOWN, collapsing the whole row. Strip NULLs from the inner set or rewrite as NOT EXISTS.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "PostgreSQL converts small IN lists (< 100 elements) into a ScalarArrayOpExpr — a vectorised in-memory hash probe. Above the threshold it materialises the list as an implicit VALUES join, which may degrade to a hash join. BETWEEN against an indexed column triggers an index range scan; wrapping the column in a function (e.g. `BETWEEN lower(x) AND …`) suppresses the index and forces a sequential scan.",
+      title: "Planner impact",
+      body: "PostgreSQL converts small IN lists into a ScalarArrayOpExpr (vectorised hash probe); larger lists become an implicit VALUES join. BETWEEN on an indexed column triggers a range scan — wrapping the column in any function kills it.",
     },
     {
       kind: "takeaways",
@@ -199,14 +199,14 @@ WHERE (customer_id = 2 OR customer_id = 4 OR customer_id = 6)
 const likeIlike: LessonContent = {
   slug: "like-ilike",
   title: "1.3 Pattern Matching (LIKE / ILIKE)",
-  subtitle: "Wildcards, escaping, and why leading % destroys your B-Tree index.",
+  subtitle: "Wildcards, escaping, and why a leading % forces a full table scan.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Substring and prefix search are the backbone of every search bar, audit-log filter, and email-domain classifier — LIKE turns naïve string scanning into a declarative pattern the optimizer can route through an index.",
-        "A LIKE pattern compiles to a tiny non-backtracking automaton, similar to a hand-coded `str.startswith` / `str.find` — anchored prefixes can ride a B-Tree the same way a sorted-array bisect locates a key.",
+        "LIKE and ILIKE are how SQL expresses prefix and substring filters — anchored patterns can hit a B-Tree index; unanchored patterns cannot.",
+        "An anchored prefix (`foo%`) lets the engine descend the B-Tree to the first match and scan forward. A leading wildcard (`%foo`) forces a full heap scan.",
       ],
     },
     {
@@ -218,9 +218,9 @@ const likeIlike: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: render the index as a B-Tree fan on the left, and the heap table as a long row stream on the right. The pattern token `'foo%'` glows green; the pattern token `'%foo'` glows red beside it.",
-        "Phase 2 — Action: for the green pattern, a focused beam descends through the B-Tree, lights one leaf node, and pulls a tight range of rows up into the viewport. For the red pattern, the beam refuses to enter the tree, snaps to the heap, and a slow horizontal sweep tints every row — the engine is reading them all.",
-        "Phase 3 — Final State: viewport on top shows the prefix-matched rows with an index-scan badge; viewport on bottom shows the same rows but with a sequential-scan badge and a buffer-read counter pegged at table size.",
+        "A B-Tree index sits left; the heap sits right. The anchored pattern glows green, the leading-wildcard pattern glows red.",
+        "The green pattern descends the B-Tree to a leaf and reads a tight range. The red pattern skips the index entirely and sweeps every heap row.",
+        "Top viewport: index-scan badge, few blocks read. Bottom viewport: sequential-scan badge, buffer counter at table size.",
       ],
     },
     {
@@ -271,14 +271,14 @@ WHERE  action LIKE 'user\\_login%' ESCAPE '\\';  -- /* '_' is now literal, not w
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — '%' is greedy and silent",
-      body: "`LIKE 'a%z'` matches any string starting with 'a' and ending with 'z' — including `'az'` (zero chars between). Reviewers often miss that the wildcard matches the empty string, leading to overly permissive audit queries.",
+      title: "Logic Trap — '%' matches the empty string",
+      body: "`LIKE 'a%z'` matches `'az'` — the wildcard can match zero characters. Reviewers often miss this, producing audit queries that are wider than intended.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "PostgreSQL can use a B-Tree on `text_pattern_ops` for anchored LIKE. A leading wildcard suppresses the index entirely → sequential scan with O(N×M) substring cost. Migrate to a `pg_trgm` GIN index or full-text search (`tsvector`) for `%substring%` workloads; without it, a 100M-row table will read every block from disk.",
+      title: "Planner impact",
+      body: "An anchored LIKE on a `text_pattern_ops` B-Tree is fast. A leading wildcard forces a sequential scan — O(N×M). Use a `pg_trgm` GIN index or `tsvector` for substring workloads.",
     },
     {
       kind: "takeaways",
@@ -296,14 +296,14 @@ WHERE  action LIKE 'user\\_login%' ESCAPE '\\';  -- /* '_' is now literal, not w
 const nullPitfalls: LessonContent = {
   slug: "null-pitfalls",
   title: "1.4 The NULL Pitfalls (Three-Valued Logic)",
-  subtitle: "Why expression = NULL is UNKNOWN and how rows vanish silently from your filters.",
+  subtitle: "Why col = NULL is always UNKNOWN and how rows vanish silently.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "NULL represents 'unknown', not 'empty' — and every silent data-quality bug in production analytics can be traced back to forgetting that distinction.",
-        "Treat NULL like a floating-point NaN: every arithmetic or comparison touching it produces NaN/UNKNOWN, and the WHERE clause drops anything that isn't a hard TRUE — exactly how `if (NaN > 0)` is always falsy in IEEE-754.",
+        "NULL means 'unknown', not empty. Every silent data-quality bug in analytics starts with forgetting that distinction.",
+        "Think of NULL as IEEE-754 NaN: any comparison or arithmetic produces UNKNOWN, and WHERE only keeps hard TRUE.",
       ],
     },
     {
@@ -315,9 +315,9 @@ const nullPitfalls: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: stack of customer rows on the left; the email column on some rows shows a translucent purple NULL token instead of text. Predicate ribbon `email = 'a@b.com'` floats top-right.",
-        "Phase 2 — Action: scanner descends; rows where email equals the literal glow green and arc right; rows where email is NULL flash purple — the equality token short-circuits to UNKNOWN, the row card tilts and falls off the canvas. A second pass swaps the predicate to `email IS NULL` and the same purple rows now arc right.",
-        "Phase 3 — Final State: viewport shows two side-by-side panes — `= NULL` returns zero rows, `IS NULL` returns every NULL row.",
+        "Customer rows stack left; rows with a NULL email show a purple token. The predicate ribbon reads `email = 'a@b.com'`.",
+        "Rows matching the literal glow green. NULL rows flash purple and fall off-canvas (UNKNOWN). A second pass with `email IS NULL` sends those same rows right.",
+        "Side-by-side: `= NULL` returns zero rows; `IS NULL` returns every NULL row.",
       ],
     },
     {
@@ -369,14 +369,14 @@ WHERE  email IS DISTINCT FROM 'admin@x.com';   -- /* NULL counts as "different" 
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — silent row loss in NOT IN and CHECK constraints",
-      body: "`WHERE x NOT IN (subquery)` returns zero rows the moment the subquery emits a single NULL — the whole predicate collapses to UNKNOWN. Same trap in CHECK constraints: `CHECK (status <> 'banned')` allows NULL status through, because UNKNOWN is not FALSE.",
+      title: "Logic Trap — NULL silently drops rows from NOT IN and CHECK",
+      body: "`NOT IN` returns zero rows if the subquery emits a single NULL. CHECK constraints have the same trap: `CHECK (status <> 'banned')` passes NULL because UNKNOWN is not FALSE.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "By default PostgreSQL B-Tree indexes DO store NULL entries, so IS NULL can use an index — but only with a `WHERE col IS NULL` partial index or recent planner versions. Aggregates like SUM/AVG silently skip NULLs; COUNT(*) counts NULL rows, COUNT(col) does not. These asymmetries are the #1 source of off-by-one analytics defects.",
+      title: "Planner and aggregate impact",
+      body: "B-Tree indexes store NULLs, so IS NULL can use an index with a partial index or a modern planner. SUM/AVG silently skip NULLs; COUNT(*) counts NULL rows but COUNT(col) does not — the leading cause of off-by-one analytics bugs.",
     },
     {
       kind: "takeaways",
@@ -398,14 +398,14 @@ WHERE  email IS DISTINCT FROM 'admin@x.com';   -- /* NULL counts as "different" 
 const aggregateFns: LessonContent = {
   slug: "aggregate-functions",
   title: "2.1 Aggregate Functions (COUNT / SUM / AVG / MIN / MAX)",
-  subtitle: "Scalar reducers, NULL omission, and the COUNT(*) vs COUNT(column) asymmetry.",
+  subtitle: "Streaming reducers, NULL skipping, and the COUNT(*) vs COUNT(col) asymmetry.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Aggregates are how a billion-row fact table collapses into a single KPI — every dashboard tile, alert threshold, and finance close depends on them being numerically exact.",
-        "An aggregate is a streaming fold: the engine maintains a tiny accumulator state per row, identical to `functools.reduce(lambda acc, x: acc + x, stream, 0)` — and like that reduce, it has to decide what to do with None.",
+        "Aggregate functions fold a row stream into a single value — every dashboard KPI depends on their NULL semantics being exact.",
+        "Internally each aggregate maintains a running accumulator per row. The key design decision: skip NULL inputs or count them?",
       ],
     },
     {
@@ -417,9 +417,9 @@ const aggregateFns: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: a vertical column of row cards on the left; on the right, five accumulator pills labelled COUNT(*), COUNT(amount), SUM(amount), AVG(amount), MAX(amount), each starting at 0/NULL.",
-        "Phase 2 — Action: rows stream upward one at a time. As each card touches the pill row: COUNT(*) increments unconditionally (NULL row glows grey but still ticks the counter); COUNT(amount) only increments on non-NULL; SUM adds the value; AVG updates both its running sum and count; MAX glows orange when a new high arrives.",
-        "Phase 3 — Final State: pills hold final scalars. A tooltip on COUNT(*) shows 'rows: 5', COUNT(amount) shows 'rows with value: 4' — the asymmetry is rendered explicit.",
+        "Row cards stream left; five accumulator pills (COUNT*, COUNT(amount), SUM, AVG, MAX) sit right, each starting at 0 or NULL.",
+        "Each row touches every pill. COUNT(*) ticks unconditionally; COUNT(amount) skips NULL; SUM adds; AVG updates running sum and non-null count; MAX glows on a new high.",
+        "Pills show final scalars. COUNT(*) = 5, COUNT(amount) = 4 — the asymmetry is shown explicitly.",
       ],
     },
     {
@@ -468,14 +468,14 @@ FROM   orders;`,
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — AVG is NOT SUM/COUNT(*)",
-      body: "AVG divides by the count of NON-NULL values. If half your `amount` rows are NULL, `AVG(amount)` will be twice `SUM(amount)/COUNT(*)`. Document explicitly which denominator the business wants.",
+      title: "Logic Trap — AVG divides by non-NULL count, not row count",
+      body: "AVG(amount) = SUM(amount) / COUNT(amount). If half the rows are NULL, that result is double SUM/COUNT(*). Agree with stakeholders which denominator is correct.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "Plain SUM/MIN/MAX run in a single sequential scan with O(1) memory. COUNT(DISTINCT col) requires a hash-set sized to cardinality and can spill to disk when it exceeds work_mem — for high-cardinality columns, prefer HyperLogLog (`postgres_fdw` / `hll` extension) for approximate counts at 100× less memory.",
+      title: "Memory and spill cost",
+      body: "SUM/MIN/MAX run in O(1) memory. COUNT(DISTINCT col) builds a hash set sized to cardinality — it spills to disk above work_mem. Use the `hll` extension for approximate counts on high-cardinality columns.",
     },
     {
       kind: "takeaways",
@@ -493,14 +493,14 @@ FROM   orders;`,
 const groupByLesson: LessonContent = {
   slug: "group-by",
   title: "2.2 The Collapse Engine (GROUP BY)",
-  subtitle: "Physical transformation of row stream into uniquely-keyed bucket arrays.",
+  subtitle: "Hashing rows into per-key buckets and reducing each bucket to one output row.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "GROUP BY is the foundational pivot operation that turns transactional grain into analytical grain — every cohort analysis, funnel, or daily-active-user count starts here.",
-        "Imagine a Python `collections.defaultdict(list)` keyed on the grouping columns: each incoming row is hashed into its bucket, then a reduce function is applied to every bucket — that's exactly the engine's HashAggregate operator.",
+        "GROUP BY turns transactional rows into analytical summaries — every cohort, funnel, and DAU metric starts here.",
+        "HashAggregate works like a `defaultdict(list)`: each row hashes into a bucket, then each bucket is reduced to one output row.",
       ],
     },
     {
@@ -512,9 +512,9 @@ const groupByLesson: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: raw orders table on the left with columns (region, amount); an empty bucket array (3 lanes labelled APAC / EMEA / NA) hovers centre; the result viewport on the right is empty.",
-        "Phase 2 — Action: each row arcs from the source table toward its bucket lane based on the hash of `region`; the bucket lane swells slightly with each arrival, and a tiny running-sum chip ticks up. Once the stream ends, each bucket pill compresses into a single output row that slides into the result viewport.",
-        "Phase 3 — Final State: viewport holds exactly three rows — one per region — each carrying `SUM(amount)` and `COUNT(*)`. A side panel shows the HashAggregate plan node with memory usage.",
+        "Raw orders sit left; three empty bucket lanes (APAC/EMEA/NA) hover centre; the result viewport is empty.",
+        "Each row arcs to its bucket lane by region hash; the running-sum chip ticks. When the stream ends, each bucket compresses to one output row.",
+        "Viewport holds one row per region with SUM and COUNT. A side panel shows the HashAggregate plan node and memory usage.",
       ],
     },
     {
@@ -560,20 +560,20 @@ GROUP  BY region, currency;`,
       rows: [
         ["Warm-up [1729]", "Find Followers Count", "Single-column GROUP BY + COUNT."],
         ["Drill [1484]", "Group Sold Products By The Date", "GROUP BY + STRING_AGG / array aggregation."],
-        ["Challenge [1granklin / 1158]", "Market Analysis I", "GROUP BY combined with multiple joins and date filtering."],
+        ["Challenge [1158]", "Market Analysis I", "GROUP BY combined with multiple joins and date filtering."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — selecting a non-grouped, non-aggregated column",
-      body: "`SELECT region, customer_id, SUM(amount) FROM orders GROUP BY region` is a logical error — `customer_id` has no defined value at the bucket level. PostgreSQL rejects it; MySQL (without ONLY_FULL_GROUP_BY) silently picks a random value per bucket, producing non-deterministic dashboards.",
+      title: "Logic Trap — non-grouped columns in SELECT",
+      body: "`SELECT region, customer_id, SUM(amount) … GROUP BY region` is illegal — customer_id has no defined value per bucket. PostgreSQL rejects it; MySQL without ONLY_FULL_GROUP_BY silently picks a random value.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "The planner chooses between HashAggregate (in-memory hash table) and GroupAggregate (sorted input, streaming reduce). HashAggregate is faster when distinct keys fit in `work_mem`; once it overflows it spills batches to disk and switches algorithms. EXPLAIN ANALYZE will display 'Disk: 128MB' when this happens — bump work_mem or prune the grouping set.",
+      title: "HashAggregate vs GroupAggregate",
+      body: "HashAggregate wins when distinct keys fit in work_mem. When it overflows it spills batches to disk — shown as 'Disk: NNmb' in EXPLAIN ANALYZE. GroupAggregate streams a pre-sorted input and avoids the hash table entirely.",
     },
     {
       kind: "takeaways",
@@ -591,14 +591,14 @@ GROUP  BY region, currency;`,
 const havingLesson: LessonContent = {
   slug: "having",
   title: "2.3 Evaluation Filtering (HAVING)",
-  subtitle: "Why HAVING runs strictly after aggregation — and the cost of misplacing the predicate.",
+  subtitle: "HAVING filters whole buckets after aggregation — WHERE filters individual rows before.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "WHERE filters individual rows before the bucket collapse; HAVING filters whole buckets after the collapse — confusing the two is the most common cause of slow aggregation queries.",
-        "Picture a two-stage warehouse conveyor: WHERE is the inbound quality-control gate before items enter pallets, HAVING is the outbound gate that rejects entire pallets whose summary metrics fail — and you never want to reject single items at the outbound gate.",
+        "WHERE filters rows before bucketing; HAVING filters buckets after aggregation. Confusing them is the most common cause of slow GROUP BY queries.",
+        "Think of it as two gates on a conveyor: WHERE rejects individual items before pallets are packed; HAVING rejects entire pallets after packing.",
       ],
     },
     {
@@ -610,9 +610,9 @@ const havingLesson: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: raw row stream on far left; a WHERE gate, then a GROUP BY bucket array, then a HAVING gate, then the result viewport on far right.",
-        "Phase 2 — Action: rows arc through the WHERE gate; rejects fade. Survivors stream into bucket lanes and collapse to one aggregate card per bucket. Each aggregate card then arcs toward the HAVING gate; cards whose aggregate fails the predicate dim to 30% opacity and slide off-canvas; the rest reach the viewport.",
-        "Phase 3 — Final State: viewport holds the buckets whose summed metric passed the HAVING threshold; an annotation badge highlights that HAVING was evaluated AFTER aggregation.",
+        "Left to right: raw rows → WHERE gate → GROUP BY buckets → HAVING gate → result viewport.",
+        "Rows pass the WHERE gate; survivors bucket and collapse. Each bucket card then hits the HAVING gate — failures dim and slide off; survivors reach the viewport.",
+        "Viewport holds buckets that passed the HAVING threshold; a badge confirms HAVING ran after aggregation.",
       ],
     },
     {
@@ -664,14 +664,14 @@ GROUP  BY region;`,
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — HAVING on a non-aggregated column is legal but wasteful",
-      body: "HAVING accepts any boolean expression, including non-aggregates. `HAVING region = 'APAC'` is syntactically valid but forces the engine to build every bucket and then throw most away — push the predicate to WHERE so the planner can prune rows earlier and possibly use an index.",
+      title: "Logic Trap — non-aggregate predicates in HAVING",
+      body: "`HAVING region = 'APAC'` is legal but wasteful — the engine builds all buckets then discards most. Move it to WHERE so the planner prunes rows before bucketing and can use an index.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "Aggregation is one of the most memory-intensive operators; pushing predicates from HAVING into WHERE shrinks the row stream feeding HashAggregate, often by orders of magnitude. Verify with EXPLAIN ANALYZE — the rows-removed-by-filter counter on the Seq Scan or Index Scan node should jump after the rewrite.",
+      title: "Push early, aggregate less",
+      body: "Moving predicates from HAVING to WHERE shrinks the row stream into HashAggregate, often by orders of magnitude. Verify in EXPLAIN ANALYZE: the rows-removed-by-filter counter on the scan node should jump after the rewrite.",
     },
     {
       kind: "takeaways",
@@ -689,14 +689,14 @@ GROUP  BY region;`,
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
   title: "2.4 Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
-  subtitle: "Generate cube / rollup permutations in a single table pass — no UNION ALL pipelines.",
+  subtitle: "All subtotal permutations in one table scan — no UNION ALL required.",
   sections: [
     {
       kind: "prose",
       heading: "1. The 'Why' — Conceptual Anchor",
       body: [
-        "Finance and BI dashboards routinely need totals at multiple grain levels (region, region+quarter, grand total) — naïvely UNION-ALL-ing three GROUP BY queries scans the fact table three times.",
-        "GROUPING SETS is the SQL analogue of a single-pass NumPy `sum(axis=…)` family — one scan, many marginal totals, like building a multi-axis pivot table by streaming each row into multiple accumulator arrays at once.",
+        "BI dashboards need totals at multiple grains — region, region+quarter, grand total. UNION ALL of separate GROUP BYs scans the table once per query.",
+        "GROUPING SETS streams each row into multiple accumulator arrays simultaneously — one scan, all marginal totals.",
       ],
     },
     {
@@ -708,9 +708,9 @@ const groupingSets: LessonContent = {
       kind: "prose",
       heading: "2. Visual Logic — Animation Blueprint",
       body: [
-        "Phase 1 — Initial State: source fact rows on the left (region, quarter, amount); three vertical bucket arrays on the right labelled `(region)`, `(quarter)`, `(region, quarter)`, plus a single grand-total pill.",
-        "Phase 2 — Action: each row simultaneously fans into all three bucket arrays AND the grand-total pill, splitting into translucent copies. Each bucket accumulates its partial sum. The single source scan is highlighted at the top — note it never replays.",
-        "Phase 3 — Final State: result viewport contains every marginal combination — region totals, quarter totals, region×quarter detail, and one grand-total row; GROUPING() column distinguishes which dimensions are aggregated away.",
+        "Source rows sit left; three bucket arrays (region, quarter, region×quarter) and a grand-total pill sit right.",
+        "Each row fans into all three arrays and the grand-total pill simultaneously. The source scan bar shows it runs exactly once.",
+        "Viewport contains region totals, quarter totals, detail rows, and the grand total. The GROUPING() column marks which dimension was rolled up.",
       ],
     },
     {
@@ -760,20 +760,20 @@ GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dim
       rows: [
         ["Warm-up [1303]", "Find the Team Size", "Basic GROUP BY producing per-key totals (warmup for marginal sums)."],
         ["Drill [1393]", "Capital Gain/Loss", "Multi-dimensional aggregation across two pivots."],
-        ["Challenge [1another / 1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
+        ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NULL in the data vs NULL produced by GROUPING SETS",
-      body: "A NULL in the `region` column of an output row could mean (a) the source data had a NULL region, or (b) `region` was aggregated away in this grouping set. Always read `GROUPING(region) = 1` to know it was rolled up; otherwise you'll double-count a real NULL region as a subtotal.",
+      title: "Logic Trap — rollup NULLs vs data NULLs",
+      body: "A NULL region can mean the source row had no region OR that region was rolled up. Read GROUPING(region) = 1 to distinguish — without it you double-count real NULLs as subtotals.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
-      body: "PostgreSQL implements GROUPING SETS as a MixedAggregate or GroupAggregate over a sorted input — typically one heap scan plus one sort, vs N scans for an equivalent UNION ALL of N grouped queries. Memory peaks at the largest grouping set; if it spills, partial aggregates are written to disk in batches.",
+      title: "One scan vs N scans",
+      body: "PostgreSQL implements GROUPING SETS as a single heap scan plus one sort — vs N scans for equivalent UNION ALL queries. Memory peaks at the largest grouping set; spills write partial aggregates to disk in batches.",
     },
     {
       kind: "takeaways",
@@ -863,19 +863,19 @@ WHERE  o.customer_id IS NULL;                   -- /* customers who never ordere
       rows: [
         ["Warm-up [175]", "Combine Two Tables", "Pure LEFT JOIN syntactic validation."],
         ["Drill [197]", "Rising Temperature", "INNER JOIN with a predicate on the join condition."],
-        ["Challenge [1views / 178]", "Rank Scores", "Outer join fused with window-style ranking aggregation."],
+        ["Challenge [178]", "Rank Scores", "Outer join fused with window-style ranking aggregation."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — predicate in WHERE silently converts LEFT into INNER",
+      title: "Logic Trap — predicate in WHERE silently converts LEFT into INNER",
       body: "`LEFT JOIN orders o ON o.customer_id = c.id WHERE o.status = 'paid'` drops every customer with no paid order — `o.status` is NULL for unmatched rows and `NULL = 'paid'` is UNKNOWN. Move the predicate onto the ON clause (`AND o.status='paid'`) to preserve the outer semantic.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — index the join key",
       body: "Without statistics the planner assumes a Cartesian-style worst case and may choose a Nested Loop Join with O(M×N) cost — disastrous on million-row tables. Make sure the join key has an index on at least the inner side; ANALYZE after bulk loads so the planner picks Hash or Sort-Merge instead.",
     },
     {
@@ -970,13 +970,13 @@ JOIN   people p2
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — forgetting the asymmetry predicate",
+      title: "Logic Trap — missing the asymmetry predicate",
       body: "A pair-finding self join without `a.id < b.id` returns both `(a,b)` and `(b,a)` and also self-pairs `(a,a)`, inflating cardinality 2× plus N. Always include an ordering predicate to make the relation strictly antisymmetric.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — shared_buffers and recursive CTEs",
       body: "Self joins read the same heap twice — make sure shared_buffers can hold the table, otherwise the second alias re-fetches pages from disk. For deep hierarchical walks (N levels), a recursive CTE (`WITH RECURSIVE`) outperforms N chained self joins because it traverses the tree once instead of N×.",
     },
     {
@@ -1068,19 +1068,19 @@ WHERE  c.id IN (SELECT customer_id FROM orders);`,
       rows: [
         ["Warm-up [183]", "Customers Who Never Order", "Pure anti-join syntactic validation."],
         ["Drill [1378]", "Replace Employee ID With The Unique Identifier", "Semi-join style filtering with LEFT JOIN."],
-        ["Challenge [1another / 1series]", "Customer Placing the Largest Number of Orders", "Anti / semi join fused with aggregation and TOP-N filtering."],
+        ["Challenge [586]", "Customer Placing the Largest Number of Orders", "Anti / semi join fused with aggregation and TOP-N filtering."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL annihilates the result",
+      title: "Logic Trap — NOT IN with a NULL annihilates the result",
       body: "If the inner SELECT can ever return a NULL, `WHERE x NOT IN (subquery)` returns zero rows — UNKNOWN poisons the predicate. Always switch to `NOT EXISTS`, which compares row-by-row and is NULL-safe.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — Hash Semi/Anti Join",
       body: "Modern planners (PostgreSQL ≥ 9.0) rewrite EXISTS and IN to Hash Semi Join / Hash Anti Join — a single hash build over the inner relation, then a probe-and-stop on the outer. INNER JOIN + DISTINCT does the same logical work but pays for an additional sort or hash dedupe pass; EXPLAIN ANALYZE makes the cost difference obvious.",
     },
     {
@@ -1163,20 +1163,20 @@ RESET enable_hashjoin;              -- /* always reset session knobs */`,
       headers: ["Tier", "Problem", "Focus"],
       rows: [
         ["Warm-up [197]", "Rising Temperature", "Two-row join with index opportunity — observe plan."],
-        ["Drill [1granklin / 1132]", "Reported Posts II", "Join with aggregation — Hash Join in the plan."],
+        ["Drill [1132]", "Reported Posts II", "Join with aggregation — Hash Join in the plan."],
         ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-join + aggregation — full plan-reading exercise."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — stale statistics cause the planner to pick Nested Loop on a billion rows",
+      title: "Logic Trap — stale statistics force Nested Loop on large tables",
       body: "After a bulk load (COPY, INSERT…SELECT) without `ANALYZE`, the planner still believes the table is empty and chooses Nested Loop — turning a 5-second hash join into hours of CPU-bound torture. Always `ANALYZE` after large mutations.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — spill-to-disk signals",
       body: "Hash Join spills to disk when build side > work_mem — visible as 'Disk Hash Batches: > 1' in EXPLAIN ANALYZE. Sort-Merge spills via tape-merge when input > work_mem (look for 'external merge'). Bumping work_mem session-locally or rewriting the query to shrink the inner relation is almost always cheaper than tuning shared memory.",
     },
     {
@@ -1268,13 +1268,13 @@ FROM   orders;                                       -- /* single-value lookup *
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — runtime cardinality error",
+      title: "Logic Trap — runtime cardinality error",
       body: "If a scalar subquery returns more than one row, PostgreSQL raises `more than one row returned by a subquery used as an expression`. Always guard with `LIMIT 1` and an explicit `ORDER BY`, or change the call site to an `IN` / `EXISTS` semi-join.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — InitPlan vs SubPlan",
       body: "An uncorrelated scalar subquery is evaluated exactly once and cached as an InitPlan node — effectively free at the outer level. The planner can even fold it into a constant. The performance trap is forgetting that a syntactically scalar subquery referencing the outer row turns into a correlated subquery (next lesson) and runs once per row.",
     },
     {
@@ -1363,13 +1363,13 @@ WHERE salary > dept_avg;             -- /* one pass, no per-row re-execution */`
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — silently quadratic",
+      title: "Logic Trap — silently quadratic",
       body: "A correlated subquery against a 1M-row outer table fires the inner 1M times — even when the inner is cheap, the per-row overhead and cache thrashing dominate. Always check EXPLAIN ANALYZE: if the inner plan node shows `loops = 1000000`, rewrite as a window function or a JOIN against a pre-aggregated derived table.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — when decorrelation fails",
       body: "Modern PostgreSQL can sometimes 'decorrelate' simple SubPlans into a single Hash Join — but only for restricted shapes. Any inner aggregate, LIMIT, or DISTINCT defeats decorrelation. Rule of thumb: if the inner depends on the outer AND involves an aggregate, refactor to a window function or a LATERAL join up front.",
     },
     {
@@ -1456,20 +1456,20 @@ WHERE  c.id NOT IN (
       headers: ["Tier", "Problem", "Focus"],
       rows: [
         ["Warm-up [183]", "Customers Who Never Order", "Pure NOT EXISTS / LEFT JOIN syntactic validation."],
-        ["Drill [1another / 1series]", "Customers Who Bought All Products", "EXISTS-style universal quantifier."],
-        ["Challenge [1another / 1series2]", "Active Businesses", "EXISTS fused with aggregation and threshold logic."],
+        ["Drill [1045]", "Customers Who Bought All Products", "EXISTS-style universal quantifier."],
+        ["Challenge [1565]", "Unique Orders and Customers Per Month", "EXISTS fused with aggregation and threshold logic."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — NOT IN with a NULL silently empties the result",
+      title: "Logic Trap — NOT IN with a NULL silently empties the result",
       body: "If any value returned by the inner query of `NOT IN` is NULL, the entire predicate becomes UNKNOWN and every outer row is dropped. This is the single most cited SQL anti-pattern in code review — convert to `NOT EXISTS` reflexively.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — Semi/Anti Join planner rewrites",
       body: "PostgreSQL ≥ 9.0 rewrites both `IN (subquery)` and `EXISTS (subquery)` into Hash Semi Join when the inner is uncorrelated. NOT IN is harder to rewrite because of the NULL semantic — the planner cannot transform it into a clean Anti Join unless it can prove the inner column is NOT NULL (via constraint or explicit filter).",
     },
     {
@@ -1557,21 +1557,21 @@ LIMIT  100;`,
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [1series / 1series2]", "Combine Two Tables variants", "Basic UNION ALL vs UNION syntactic validation."],
-        ["Drill [1series / 1another]", "Friend Requests II", "INTERSECT / UNION fused with aggregation."],
-        ["Challenge [1series / 1series3]", "Active Users", "Multi-set composition combined with date windows."],
+        ["Warm-up [1795]", "Rearrange Products Table", "Basic UNION ALL vs UNION syntactic validation."],
+        ["Drill [602]", "Friend Requests II: Who Has the Most Friends", "UNION fused with aggregation and de-duplication."],
+        ["Challenge [1412]", "Find the Quiet Students in All Exams", "Multi-set composition combined with ranking and filtering."],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "5a. Logic Trap — type & column-count mismatches are runtime errors",
+      title: "Logic Trap — column count or type mismatch is a runtime error",
       body: "Both queries must project the exact same number of columns with implicitly-castable types. Output column names always come from the first SELECT. Casting `INT` to `BIGINT` across the boundary is silent, but `INT` vs `TEXT` raises `each UNION query must have the same number of columns` at runtime.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "5b. Performance & Execution Engine Impact",
+      title: "Performance — UNION ALL vs UNION cost cliff",
       body: "UNION executes both children, then runs a HashAggregate or Sort + Unique node to dedupe — typically the dominant cost. UNION ALL is a cheap Append. INTERSECT/EXCEPT also require dedupe via SetOp node and may spill to disk on large inputs. If you know duplicates cannot exist, ALWAYS use UNION ALL — the difference is often 2-10× wall-clock.",
     },
     {
