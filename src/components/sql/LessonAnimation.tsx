@@ -9,7 +9,11 @@ export type AnimationVariant =
   | "table-build"
   | "foreign-key"
   | "null-truth"
-  | "type-sizes";
+  | "type-sizes"
+  | "where-filter"
+  | "group-by-agg"
+  | "join-types"
+  | "set-ops";
 
 export function LessonAnimation({
   variant,
