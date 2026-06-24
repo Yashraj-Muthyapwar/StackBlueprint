@@ -320,8 +320,8 @@ N : M     students >──< courses
 
 const normalization: LessonContent = {
   slug: "normalization",
-  title: "Normalization Basics",
-  subtitle: "1NF → 3NF in plain English: kill duplicates, kill update anomalies.",
+  title: "Normalization — 1NF → 5NF → Denormalize",
+  subtitle: "Walk every normal form against the same table, then see when to undo it.",
   sections: [
     {
       kind: "prose",
@@ -332,46 +332,26 @@ const normalization: LessonContent = {
       ],
     },
     {
-      kind: "table",
-      caption: "Denormalized — the smell",
-      headers: ["order_id", "customer", "customer_email", "items"],
-      rows: [
-        ["101", "Ada", "ada@ex.com", "Pen, Notebook, Pen"],
-        ["102", "Ada", "ada@x.com", "Notebook"],
-        ["103", "Linus", "linus@ex.com", "Keyboard"],
-      ],
+      kind: "animation",
+      variant: "normalization",
+      caption: "Same data, decomposed step by step: Unnormalized → 1NF → 2NF → 3NF → BCNF → 4NF → 5NF → Denormalize",
     },
     {
       kind: "prose",
+      heading: "The forms in plain English",
       body: [
-        "Spot the bugs: Ada's email is inconsistent across rows (update anomaly), 'items' is a comma-separated list inside a single cell (not atomic), and there's no clean way to ask 'how many notebooks did we sell?'.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "1NF — atomic values, one fact per cell",
-      body: [
-        "Every column holds a single, atomic value. No comma-separated lists, no JSON blobs standing in for relationships. Each row is uniquely identified.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "2NF — no partial dependencies on a composite key",
-      body: [
-        "If your primary key is composite (a, b), every non-key column must depend on the WHOLE key, not just part of it. If 'customer_email' depends only on customer_id, it doesn't belong in order_items — it belongs in customers.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "3NF — no transitive dependencies",
-      body: [
-        "Non-key columns depend only on the key, not on other non-key columns. If 'city' depends on 'zip_code', and 'zip_code' is a non-key column, then 'city' is transitively dependent — pull it into its own table.",
+        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row uniquely identifiable.",
+        "2NF — applies when the primary key is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one half.",
+        "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
+        "BCNF — a stricter 3NF: for EVERY functional dependency X → Y, X must be a superkey. Rare to need beyond 3NF, but fixes some edge cases 3NF doesn't.",
+        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes (a teacher's subjects AND classrooms), put them in separate tables.",
+        "5NF (PJNF) — the final form. Decompose until ONLY the natural join can losslessly rebuild the original. Theoretical bar; you rarely write SQL with 5NF in mind.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Normalized to 3NF",
+      caption: "A canonical 3NF shape — what most teams ship",
       code: `CREATE TABLE customers (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -397,11 +377,20 @@ CREATE TABLE order_items (
       body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document why every time. Premature denormalization is the #1 source of data drift in young codebases.",
     },
     {
+      kind: "prose",
+      heading: "When (and how) to denormalize",
+      body: [
+        "Denormalization repeats data so reads avoid expensive joins. Typical examples: store `customer_name` on `orders` so a list view doesn't join 5 tables; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
+        "The cost is consistency: every change to the canonical source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes — and accept that some staleness will appear under load.",
+      ],
+    },
+    {
       kind: "takeaways",
       items: [
         "1NF: atomic cells, no lists.",
         "2NF: full dependency on the whole composite key.",
         "3NF: no transitive dependencies between non-key columns.",
+        "BCNF / 4NF / 5NF: stricter forms — useful theory, rarely needed past 3NF.",
         "Normalize by default; denormalize with intent and measurement.",
       ],
     },
