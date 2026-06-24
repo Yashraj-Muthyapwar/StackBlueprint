@@ -65,6 +65,7 @@ type Topic = {
   icon: LucideIcon;
   modules: string[];
   unlocked?: boolean;
+  routeBase?: "foundations" | "querying";
   to?: string;
 };
 
@@ -73,6 +74,7 @@ type Section = {
   groupBlurb: string;
   topics: Topic[];
 };
+
 
 const sections: Section[] = [
   {
