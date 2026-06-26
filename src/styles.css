@@ -53,6 +53,49 @@
 :root {
   --radius: 0.625rem;
 
+  /* LIGHT PALETTE */
+  --background: oklch(0.98 0.005 250);
+  --foreground: oklch(0.15 0.01 250);
+  --surface: oklch(1 0 0);
+  --surface-2: oklch(0.96 0.01 250);
+  --hairline: oklch(0.90 0.015 250);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.01 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.01 250);
+
+  --primary: oklch(0.55 0.14 175);          /* darker mint for contrast on light */
+  --primary-foreground: oklch(0.98 0.02 200);
+  --secondary: oklch(0.94 0.014 260);
+  --secondary-foreground: oklch(0.15 0.01 250);
+  --muted: oklch(0.94 0.014 260);
+  --muted-foreground: oklch(0.40 0.015 260);
+  --accent: oklch(0.92 0.018 260);
+  --accent-foreground: oklch(0.15 0.01 250);
+  --destructive: oklch(0.60 0.20 22);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --border: oklch(0.88 0.015 260);
+  --input: oklch(0.88 0.015 260);
+  --ring: oklch(0.55 0.14 175);
+
+  /* Semantic accents (pointers) - slightly darker for light mode */
+  --mint:   oklch(0.65 0.14 175);    
+  --amber:  oklch(0.65 0.15 70);     
+  --violet: oklch(0.60 0.16 295);    
+  --rose:   oklch(0.60 0.18 15);     
+
+  --sidebar: oklch(0.98 0.005 250);
+  --sidebar-foreground: oklch(0.15 0.01 250);
+  --sidebar-primary: oklch(0.55 0.14 175);
+  --sidebar-primary-foreground: oklch(0.98 0.02 200);
+  --sidebar-accent: oklch(0.94 0.014 260);
+  --sidebar-accent-foreground: oklch(0.15 0.01 250);
+  --sidebar-border: oklch(0.90 0.015 260);
+  --sidebar-ring: oklch(0.55 0.14 175);
+}
+
+.dark {
   /* Debugger Exhibit — dark ink palette */
   --background: oklch(0.16 0.012 260);
   --foreground: oklch(0.96 0.005 250);
