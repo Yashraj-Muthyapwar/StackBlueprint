@@ -1,64 +1,67 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
+import clientServerImg from "@/images/client-server-architecture.png";
+
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language: "sql" | "text"; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: string[][] }
   | {
-      kind: "callout";
-      tone: "info" | "warn" | "success";
-      title: string;
-      body: string;
-    }
+    kind: "callout";
+    tone: "info" | "warn" | "success";
+    title: string;
+    body: string;
+  }
   | { kind: "diagram"; ascii: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string }
   | {
-      kind: "animation";
-      variant:
-        | "pipeline"
-        | "select-projection"
-        | "table-build"
-        | "foreign-key"
-        | "null-truth"
-        | "type-sizes"
-        | "where-filter"
-        | "group-by-agg"
-        | "join-types"
-        | "set-ops"
-        | "table-anatomy"
-        | "pk-anatomy"
-        | "fk-deep"
-        | "normalization"
-        | "intro-what-is-db"
-        | "intro-db-types"
-        | "intro-how-db-works"
-        | "intro-querying"
-        | "intro-storage"
-        | "commands-map"
-        | "query-structure"
-        | "select-distinct"
-        | "offset-pagination"
-        | "sql-comments"
-        | "sql-operators"
-        | "q-bool"
-        | "q-range"
-        | "q-like"
-        | "q-null3vl"
-        | "q-aggr"
-        | "q-grpby"
-        | "q-having"
-        | "q-cube"
-        | "q-venn"
-        | "q-self"
-        | "q-semianti"
-        | "q-algos"
-        | "q-scalar"
-        | "q-corr"
-        | "q-existsin"
-        | "q-setops"
-        | "intro-sql-client-server";
-      caption?: string;
-    }
+    kind: "animation";
+    variant:
+    | "pipeline"
+    | "select-projection"
+    | "table-build"
+    | "foreign-key"
+    | "null-truth"
+    | "type-sizes"
+    | "where-filter"
+    | "group-by-agg"
+    | "join-types"
+    | "set-ops"
+    | "table-anatomy"
+    | "pk-anatomy"
+    | "fk-deep"
+    | "normalization"
+    | "intro-what-is-db"
+    | "intro-db-types"
+    | "intro-how-db-works"
+    | "intro-querying"
+    | "intro-storage"
+    | "commands-map"
+    | "query-structure"
+    | "select-distinct"
+    | "offset-pagination"
+    | "sql-comments"
+    | "sql-operators"
+    | "q-bool"
+    | "q-range"
+    | "q-like"
+    | "q-null3vl"
+    | "q-aggr"
+    | "q-grpby"
+    | "q-having"
+    | "q-cube"
+    | "q-venn"
+    | "q-self"
+    | "q-semianti"
+    | "q-algos"
+    | "q-scalar"
+    | "q-corr"
+    | "q-existsin"
+    | "q-setops"
+    | "intro-sql-client-server";
+    caption?: string;
+  }
   | { kind: "takeaways"; items: string[] };
 
 export type LessonContent = {
@@ -723,20 +726,10 @@ const sqlIntro: LessonContent = {
       ],
     },
     {
-      kind: "diagram",
+      kind: "image",
+      src: clientServerImg,
+      alt: "Database Server and Clients",
       caption: "Database Server and Clients",
-      ascii: `     ┌───────────────────────────────────┐
-     │       Database Server             │
-     │   ┌───────────────────────────┐   │
-     │   │ 🛢️ Database                 │   │
-     │   └─────────────┬─────────────┘   │
-     └─────────────────┼─────────────────┘
-                       │
-         ┌─────────────┼─────────────┐
-         ↓             ↓             ↓
-    ┌─────────┐   ┌─────────┐   ┌─────────┐
-    │ 💻 Client│   │ 💻 Client│   │ 💻 Client│
-    └─────────┘   └─────────┘   └─────────┘`,
     },
     {
       kind: "prose",
