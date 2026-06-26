@@ -52,26 +52,25 @@ export function ThemeToggle() {
     <>
       <style>{`
         @keyframes swing {
-          0% { transform: rotate(0deg); }
-          20% { transform: rotate(15deg); }
-          40% { transform: rotate(-10deg); }
-          60% { transform: rotate(5deg); }
-          80% { transform: rotate(-3deg); }
+          0% { transform: rotate(0deg); animation-timing-function: ease-out; }
+          15% { transform: rotate(25deg); animation-timing-function: ease-in-out; }
+          35% { transform: rotate(-20deg); animation-timing-function: ease-in-out; }
+          55% { transform: rotate(12deg); animation-timing-function: ease-in-out; }
+          75% { transform: rotate(-6deg); animation-timing-function: ease-in-out; }
+          90% { transform: rotate(2deg); animation-timing-function: ease-in-out; }
           100% { transform: rotate(0deg); }
         }
         .animate-swing {
           transform-origin: top center;
-          animation: swing 1s ease-in-out;
+          animation: swing 1.2s both;
         }
       `}</style>
       
-      <div className="group relative flex flex-col items-center mt-6">
-        {/* The Bulb */}
+      <div className="group relative flex flex-col items-center">
+        {/* The Bulb (Steady) */}
         <button
           onClick={toggleTheme}
-          className={`relative z-10 flex items-center justify-center transition-all duration-300 ${
-            isPulling ? "translate-y-1" : ""
-          } ${isSwinging ? "animate-swing" : ""}`}
+          className="relative z-10 flex items-center justify-center"
           aria-label="Toggle theme"
         >
           <div className={`text-[1.5rem] transition-colors duration-300 ${!isDark ? "text-amber drop-shadow-[0_0_8px_rgba(245,165,36,0.6)]" : "text-muted-foreground"}`}>
@@ -84,16 +83,20 @@ export function ThemeToggle() {
           </div>
         </button>
 
-        {/* The Pull String */}
+        {/* The Pull String (Animated) */}
         <div 
           onClick={toggleTheme}
-          className={`cursor-pointer flex flex-col items-center transition-all duration-300 ${
+          className={`cursor-pointer absolute top-full flex flex-col items-center transition-transform duration-150 ${
             isPulling ? "translate-y-3" : "translate-y-0"
-          } ${isSwinging ? "animate-swing" : ""} -mt-0.5 group-hover:translate-y-1`}
-          style={{ transformOrigin: "top center" }}
+          } group-hover:translate-y-1`}
         >
-          <div className="h-6 w-[1.5px] bg-muted-foreground/40" />
-          <div className="size-2 rounded-full bg-muted-foreground shadow-sm" />
+          <div 
+            className={`flex flex-col items-center ${isSwinging ? "animate-swing" : ""}`}
+            style={{ transformOrigin: "top center" }}
+          >
+            <div className="h-6 w-[1.5px] bg-muted-foreground/60" />
+            <div className="size-2 rounded-full bg-muted-foreground shadow-sm" />
+          </div>
         </div>
       </div>
     </>
