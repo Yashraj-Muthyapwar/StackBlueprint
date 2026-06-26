@@ -35,14 +35,14 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="relative flex items-center justify-center p-2 rounded-full transition-colors duration-300 hover:bg-muted/50"
+      className="flex items-center justify-center p-2 rounded-full"
       aria-label="Toggle theme"
     >
       <div 
-        className={`text-[1.35rem] transition-all duration-500 ${
+        className={`text-[1.35rem] ${
           !isDark 
-            ? "text-amber drop-shadow-[0_0_12px_rgba(245,165,36,0.8)] scale-110" 
-            : "text-muted-foreground scale-100"
+            ? "text-[#d97706]" // bold amber-600 color for strong glowing effect
+            : "text-muted-foreground"
         }`}
       >
         <Lightbulb 
