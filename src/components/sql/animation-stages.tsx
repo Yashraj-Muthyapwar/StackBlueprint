@@ -2179,8 +2179,8 @@ const toneRing: Record<Tone, string> = {
 };
 
 const CommandsMap = ({ active }: { active: string | null }) => (
-  <div className="rounded-lg border border-hairline bg-surface-2/30 p-4">
-    <div className="mx-auto mb-3 w-fit rounded-md border border-mint/40 bg-mint/10 px-3 py-1 text-center font-mono text-[12px] text-mint">
+  <div className="rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/30 p-4 shadow-sm">
+    <div className="mx-auto mb-3 w-fit rounded-md border border-mint/40 bg-mint/10 px-3 py-1 text-center font-mono text-[12px] text-mint shadow-sm">
       SQL Commands
     </div>
     <div className="grid grid-cols-5 gap-2">
@@ -2189,7 +2189,7 @@ const CommandsMap = ({ active }: { active: string | null }) => (
         const dim = active && active !== "all" && active !== f.key;
         return (
           <div key={f.key} className={`transition-opacity ${dim ? "opacity-30" : "opacity-100"}`}>
-            <div className={`rounded-md border px-2 py-1 text-center font-mono text-[11px] ${isActive ? toneRing[f.tone] : "border-hairline bg-surface text-muted-foreground"}`}>
+            <div className={`rounded-md border px-2 py-1 text-center font-mono text-[11px] shadow-sm ${isActive ? toneRing[f.tone] : "border-hairline bg-white dark:bg-surface text-muted-foreground"}`}>
               {f.key}
             </div>
             <div className="mt-2 flex flex-col gap-1.5">
