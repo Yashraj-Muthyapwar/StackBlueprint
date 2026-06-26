@@ -42,7 +42,7 @@ function LessonPage() {
 
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-3xl lg:max-w-4xl xl:max-w-5xl">
         <Link
           to="/sql/foundations/$topic"
           params={{ topic: t.slug }}
