@@ -55,7 +55,8 @@ export type Section =
         | "q-scalar"
         | "q-corr"
         | "q-existsin"
-        | "q-setops";
+        | "q-setops"
+        | "intro-sql-client-server";
       caption?: string;
     }
   | { kind: "takeaways"; items: string[] };
@@ -679,6 +680,87 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
         "Use IS NULL / IS NOT NULL — never = NULL.",
         "COALESCE picks the first non-NULL.",
         "Default columns to NOT NULL; allow NULL only when 'unknown' is meaningful.",
+      ],
+    },
+  ],
+};
+
+const sqlIntro: LessonContent = {
+  slug: "sql-intro",
+  title: "SQL Intro & Architecture",
+  subtitle: "What is SQL and how do clients connect to a database server?",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is SQL?",
+      body: [
+        "SQL (Structured Query Language) is the standard language for interacting with relational databases. It allows you to create tables, insert data, and write queries to ask complex questions about your data.",
+        "Unlike general-purpose languages like Python or JavaScript, SQL is declarative. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Why do we use SQL?",
+      body: [
+        "• **Universal Standard**: Almost every major database system (PostgreSQL, MySQL, SQLite, SQL Server) uses SQL.",
+        "• **Data Integrity**: It enforces strict rules (schemas) so your data remains consistent and reliable.",
+        "• **Performance**: SQL databases are highly optimized to search through millions of rows in milliseconds."
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What is a Relational Database?",
+      body: [
+        "A relational database organizes data into tables (like spreadsheets) which can be linked—or related—to each other based on common data. For example, linking a 'Customers' table to an 'Orders' table using a Customer ID."
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Client-Server Architecture",
+      body: [
+        "Database servers store and manage databases, while database clients connect to servers and send queries.",
+        "Multiple users can connect simultaneously to the same database server through various types of clients including web applications and desktop software.",
+      ],
+    },
+    {
+      kind: "diagram",
+      caption: "Database Server and Clients",
+      ascii: `     ┌───────────────────────────────────┐
+     │       Database Server             │
+     │   ┌───────────────────────────┐   │
+     │   │ 🛢️ Database                 │   │
+     │   └─────────────┬─────────────┘   │
+     └─────────────────┼─────────────────┘
+                       │
+         ┌─────────────┼─────────────┐
+         ↓             ↓             ↓
+    ┌─────────┐   ┌─────────┐   ┌─────────┐
+    │ 💻 Client│   │ 💻 Client│   │ 💻 Client│
+    └─────────┘   └─────────┘   └─────────┘`,
+    },
+    {
+      kind: "prose",
+      heading: "Connection Details",
+      body: [
+        "To connect to a database, you typically need four pieces of information:",
+        "• Server address: Where the database lives (URL or IP address)",
+        "• Username: Your account name",
+        "• Password: Your account password",
+        "• Database name: Which specific database to use",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-sql-client-server",
+      caption: "Clients connecting to a central database server",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SQL is the standard language for relational databases.",
+        "Databases use a Client-Server architecture.",
+        "Multiple clients can connect to one server simultaneously.",
+        "You need a server address, username, password, and database name to connect.",
       ],
     },
   ],
@@ -1724,6 +1806,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
+    lessons: [sqlIntro, sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };
