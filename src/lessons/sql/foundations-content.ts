@@ -698,7 +698,7 @@ const sqlIntro: LessonContent = {
       heading: "What is SQL?",
       body: [
         "SQL (Structured Query Language) is the standard language for interacting with relational databases. It allows you to create tables, insert data, and write queries to ask complex questions about your data.",
-        "Unlike general-purpose languages like *Python* or *JavaScript*, **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
+        "Unlike general-purpose languages like 'Python' or 'JavaScript', **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
       ],
     },
     {
