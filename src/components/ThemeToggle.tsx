@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Lightbulb } from "@theme-toggles/react";
-import "@theme-toggles/react/css/Lightbulb.css";
+import "@theme-toggles/react/styles/lightbulb.css";
 
 export function ThemeToggle() {
   const [isDark, setIsDark] = useState(true);
