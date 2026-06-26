@@ -698,15 +698,15 @@ const sqlIntro: LessonContent = {
       heading: "What is SQL?",
       body: [
         "SQL (Structured Query Language) is the standard language for interacting with relational databases. It allows you to create tables, insert data, and write queries to ask complex questions about your data.",
-        "Unlike general-purpose languages like Python or JavaScript, SQL is declarative. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
+        "Unlike general-purpose languages like *Python* or *JavaScript*, **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
       ],
     },
     {
       kind: "prose",
       heading: "Why do we use SQL?",
       body: [
-        "• **Universal Standard**: Almost every major database system (PostgreSQL, MySQL, SQLite, SQL Server) uses SQL.",
-        "• **Data Integrity**: It enforces strict rules (schemas) so your data remains consistent and reliable.",
+        "• **Universal Standard**: Almost every major database system (*PostgreSQL, MySQL, SQLite, SQL Server*) uses **SQL**.",
+        "• **Data Integrity**: It enforces **strict rules** (*schemas*) so your data remains consistent and reliable.",
         "• **Performance**: SQL databases are highly optimized to search through millions of rows in milliseconds."
       ],
     },
@@ -714,7 +714,7 @@ const sqlIntro: LessonContent = {
       kind: "prose",
       heading: "What is a Relational Database?",
       body: [
-        "A relational database organizes data into tables (like spreadsheets) which can be linked—or related—to each other based on common data. For example, linking a 'Customers' table to an 'Orders' table using a Customer ID."
+        "A relational database organizes data into **tables** (like spreadsheets) which can be linked or related to each other based on common data. For example, linking a '*Customers*' table to an '*Orders*' table using a **Customer ID**."
       ],
     },
     {
@@ -736,10 +736,10 @@ const sqlIntro: LessonContent = {
       heading: "Connection Details",
       body: [
         "To connect to a database, you typically need four pieces of information:",
-        "• Server address: Where the database lives (URL or IP address)",
-        "• Username: Your account name",
-        "• Password: Your account password",
-        "• Database name: Which specific database to use",
+        "• **Server address**: Where the database lives (*URL* or *IP address*)",
+        "• **Username**: Your account name",
+        "• **Password**: Your account password",
+        "• **Database name**: Which specific database to use",
       ],
     },
     {
