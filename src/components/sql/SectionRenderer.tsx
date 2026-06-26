@@ -74,6 +74,22 @@ function highlightSql(line: string) {
   return nodes;
 }
 
+function parseInlineMarkdown(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <em key={i} className="italic text-foreground">{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} className="rounded bg-muted/30 px-1 py-0.5 font-mono text-[0.85em] text-foreground">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+}
+
 export function SectionRenderer({ section }: { section: Section }) {
   switch (section.kind) {
     case "prose":
@@ -85,8 +101,8 @@ export function SectionRenderer({ section }: { section: Section }) {
             </h2>
           ) : null}
           {section.body.map((p, i) => (
-            <p key={i} className="leading-relaxed text-muted-foreground">
-              {p}
+            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+              {parseInlineMarkdown(p)}
             </p>
           ))}
         </section>
