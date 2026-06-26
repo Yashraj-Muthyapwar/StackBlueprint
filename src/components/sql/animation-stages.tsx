@@ -2816,6 +2816,33 @@ const joinTypesStages = vennStages;
 const foundationsSetOpsStages = setopsStages;
 
 // ============================================================
+const introSqlClientServer: Stage[] = [
+  {
+    name: "Client-Server Architecture",
+    blurb: "Clients connect over the network to send queries to the Database Server",
+    sql: [
+      "-- From a terminal client:",
+      "psql -h pg.example.com -U ada -d app_db",
+      "",
+      "-- Behind the scenes, the server registers the connection:",
+      "SELECT pid, usename, client_addr FROM pg_stat_activity;"
+    ],
+    table: {
+      name: "pg_stat_activity (active connections)",
+      cols: ["pid", "usename", "client_addr"],
+      rows: [
+        r(1, 101, "ada", "192.168.1.10"),
+        r(2, 102, "linus", "192.168.1.11"),
+      ]
+    },
+    steps: [
+      st([1], "kept", "Client provides the Server Address (-h), Username (-U), and Database Name (-d) to connect.", { highlightCols: [1] }),
+      st([4], "kept", "The database server handles multiple concurrent connections. Each connected client gets a session (pid).", { highlightCols: [0, 1, 2] }),
+    ]
+  }
+];
+
+// ============================================================
 // REGISTRY
 // ============================================================
 
@@ -2844,6 +2871,7 @@ export const STAGES_REGISTRY = {
   "foreign-key":       fkStages,
   "null-truth":        nullTruthStages,
   "type-sizes":        typeStages,
+
   "where-filter":      whereFilterStages,
   "group-by-agg":      groupByAggStages,
   "join-types":        joinTypesStages,
@@ -2859,6 +2887,7 @@ export const STAGES_REGISTRY = {
   "intro-how-db-works": introHow,
   "intro-querying":     introQuerying,
   "intro-storage":      introStorage,
+  "intro-sql-client-server": introSqlClientServer,
   // SELECT Fundamentals deep dives
   "commands-map":       commandsMapStages,
   "query-structure":    queryStructureStages,
