@@ -111,13 +111,13 @@ export function SectionRenderer({ section }: { section: Section }) {
     case "code": {
       const lines = section.code.split("\n");
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           {section.caption ? (
             <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {section.caption}
             </figcaption>
           ) : null}
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed">
+          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code>
               {lines.map((line, i) => (
                 <div key={i} className="flex">
@@ -135,7 +135,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "table":
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           {section.caption ? (
             <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {section.caption}
@@ -217,7 +217,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "diagram":
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
             {section.ascii}
           </pre>
@@ -231,7 +231,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "image":
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="w-full flex justify-center bg-surface-2/30 py-4">
             <img src={section.src} alt={section.alt} className="w-full h-auto max-w-full lg:max-w-4xl object-contain px-4" />
           </div>
