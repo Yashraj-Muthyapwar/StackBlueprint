@@ -16,10 +16,11 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 function NotFoundComponent() {
   return (
-    <div className="dark flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="font-mono text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
@@ -47,7 +48,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   }, [error]);
 
   return (
-    <div className="dark flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
           This page didn't load
@@ -126,18 +127,21 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <SidebarProvider>
-        <div className="dark flex min-h-screen w-full bg-background text-foreground">
+        <div className="flex min-h-screen w-full bg-background text-foreground">
           <AppSidebar />
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-30 flex h-12 items-center gap-2 border-b border-hairline bg-background/80 px-3 backdrop-blur">
-              <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-              <div className="ml-1 h-4 w-px bg-hairline" />
-              <Link
-                to="/"
-                className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                datavizcore
-              </Link>
+            <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-hairline bg-background/80 px-3 backdrop-blur">
+              <div className="flex items-center gap-2">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+                <div className="ml-1 h-4 w-px bg-hairline" />
+                <Link
+                  to="/"
+                  className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  datavizcore
+                </Link>
+              </div>
+              <ThemeToggle />
             </header>
             <main className="min-w-0 flex-1">
               <Outlet />
