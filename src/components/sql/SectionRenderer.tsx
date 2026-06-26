@@ -85,7 +85,7 @@ export function SectionRenderer({ section }: { section: Section }) {
             </h2>
           ) : null}
           {section.body.map((p, i) => (
-            <p key={i} className="text-balance leading-relaxed text-muted-foreground">
+            <p key={i} className="leading-relaxed text-muted-foreground">
               {p}
             </p>
           ))}
@@ -205,6 +205,20 @@ export function SectionRenderer({ section }: { section: Section }) {
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
             {section.ascii}
           </pre>
+          {section.caption ? (
+            <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              {section.caption}
+            </figcaption>
+          ) : null}
+        </figure>
+      );
+
+    case "image":
+      return (
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+          <div className="w-full flex justify-center bg-surface-2/30 py-4">
+            <img src={section.src} alt={section.alt} className="w-full h-auto max-w-full lg:max-w-4xl object-contain px-4" />
+          </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {section.caption}
