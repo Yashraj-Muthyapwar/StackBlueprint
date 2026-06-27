@@ -1,7 +1,7 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/client-server-architecture.png";
+import clientServerImg from "@/images/client-server-architecture1.png";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
