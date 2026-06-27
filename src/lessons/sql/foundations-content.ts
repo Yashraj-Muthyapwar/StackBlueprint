@@ -2,6 +2,7 @@
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
 import clientServerImg from "@/images/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/relational_database.png";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -716,6 +717,12 @@ const sqlIntro: LessonContent = {
       body: [
         "A relational database organizes data into **tables** (like spreadsheets) which can be linked or related to each other based on common data. For example, linking a '*Customers*' table to an '*Orders*' table using a **Customer ID**."
       ],
+    },
+    {
+      kind: "image",
+      src: relationaldatabaseImg,
+      alt: "Relational Database",
+      caption: "Relational Database",
     },
     {
       kind: "prose",
