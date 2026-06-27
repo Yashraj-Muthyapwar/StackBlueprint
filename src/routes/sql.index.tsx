@@ -416,19 +416,21 @@ function SqlIndex() {
       {/* Hero */}
       <section className="border-b border-hairline px-8 py-14 lg:px-16 lg:py-20">
         <div className="mx-auto max-w-6xl">
-          <Link
-            to="/"
-            className="mb-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="size-3" />
-            Back to roadmap
-          </Link>
+          <div className="mb-6 flex flex-wrap items-center gap-4">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ArrowLeft className="size-3" />
+              Back to roadmap
+            </Link>
 
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-4 py-1.5 backdrop-blur">
-            <Sparkles className="size-3.5 text-mint" />
-            <span className="font-mono text-[11px] uppercase leading-relaxed tracking-[0.2em] text-muted-foreground">
-              SQL Mastery <span className="mx-1 text-muted-foreground/50">·</span> {unlockedTopics} of {totalTopics} topics unlocked
-            </span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-4 py-1.5 backdrop-blur">
+              <Sparkles className="size-3.5 text-mint" />
+              <span className="font-mono text-[11px] uppercase leading-relaxed tracking-[0.2em] text-muted-foreground">
+                SQL Mastery <span className="mx-1 text-muted-foreground/50">·</span> {unlockedTopics} of {totalTopics} topics unlocked
+              </span>
+            </div>
           </div>
 
           <h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-5xl">
