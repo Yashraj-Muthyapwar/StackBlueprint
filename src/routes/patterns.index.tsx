@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import {
+  ArrowLeft,
   ArrowRight,
   Binary,
   Boxes,
