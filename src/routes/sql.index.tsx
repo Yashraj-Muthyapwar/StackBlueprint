@@ -467,10 +467,10 @@ function SqlIndex() {
                 {s.topics.map((t) => {
                   const card = (
                     <div
-                      className={`group relative h-full overflow-hidden rounded-2xl border p-5 transition-colors ${
+                      className={`group relative h-full overflow-hidden rounded-2xl border p-5 transition-all duration-300 ${
                         t.unlocked
-                          ? "border-hairline bg-surface hover:border-mint/40"
-                          : "border-hairline/60 bg-surface/40 hover:border-foreground/20"
+                          ? "border-hairline bg-surface hover:border-mint/50 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)] hover:-translate-y-1"
+                          : "border-hairline/60 bg-surface/40 hover:border-foreground/20 hover:shadow-lg hover:-translate-y-1"
                       }`}
                     >
                       <div className="mb-3 flex items-center justify-between">
