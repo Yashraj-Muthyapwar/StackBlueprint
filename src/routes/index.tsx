@@ -26,8 +26,10 @@ export const Route = createFileRoute("/")({
 function Landing() {
   const unlockedCategories = roadmap.filter((c) => !c.locked).length;
   return (
-    <div className="relative">
-      <div className="grid-bg absolute inset-0 -z-10 opacity-50" />
+    <div className="relative overflow-hidden">
+      <div className="absolute top-[-10%] left-[-10%] size-[500px] rounded-full bg-mint/20 opacity-50 blur-[100px] animate-orb-1 -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="absolute top-[20%] right-[-10%] size-[400px] rounded-full bg-violet/20 opacity-50 blur-[100px] animate-orb-2 -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
+      <div className="grid-bg absolute inset-0 -z-10 opacity-50 pointer-events-none" />
 
       {/* Hero */}
       <section className="border-b border-hairline px-8 py-20 lg:px-16 lg:py-28">
@@ -40,7 +42,7 @@ function Landing() {
           </div>
           <h1 className="text-balance text-5xl font-semibold tracking-tight text-foreground lg:text-7xl">
             Your roadmap to{" "}
-            <span className="text-mint">engineering mastery.</span>
+            <span className="text-gradient">engineering mastery.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-balance text-lg text-muted-foreground">
             DataVizCore is a visual, interactive playbook for the things engineers actually get asked
@@ -81,10 +83,10 @@ function Landing() {
               const hasContent = isUnlocked || isSql;
               const card = (
                 <div
-                  className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-colors ${
+                  className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
                     hasContent
-                      ? "border-hairline bg-surface hover:border-mint/40"
-                      : "border-hairline/60 bg-surface/40 hover:border-foreground/20"
+                      ? "border-hairline bg-surface hover:border-mint/50 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)] hover:-translate-y-1"
+                      : "border-hairline/60 bg-surface/40 hover:border-foreground/20 hover:shadow-lg hover:-translate-y-1"
                   }`}
                 >
                   <div className="mb-4 flex items-center justify-between">
