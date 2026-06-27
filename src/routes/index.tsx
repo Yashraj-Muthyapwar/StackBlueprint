@@ -40,9 +40,9 @@ function Landing() {
               DataVizCore · Patterns track live
             </span>
           </div>
-          <h1 className="text-balance text-5xl font-semibold tracking-tight text-foreground lg:text-7xl">
-            Your roadmap to{" "}
-            <span className="text-gradient">engineering mastery.</span>
+          <h1 className="text-5xl font-semibold tracking-tight text-foreground lg:text-7xl">
+            Your roadmap to <br className="hidden lg:block" />
+            <span className="text-mint">engineering mastery.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-balance text-lg text-muted-foreground">
             DataVizCore is a visual, interactive playbook for the things engineers actually get asked
