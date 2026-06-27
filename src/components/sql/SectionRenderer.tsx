@@ -112,11 +112,16 @@ export function SectionRenderer({ section }: { section: Section }) {
       const lines = section.code.split("\n");
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
-          {section.caption ? (
-            <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {section.caption}
-            </figcaption>
-          ) : null}
+          <div className="flex items-center gap-1.5 border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5">
+            <div className="size-2.5 rounded-full bg-rose-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-amber-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-emerald-500/80 shadow-sm" />
+            {section.caption ? (
+              <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {section.caption}
+              </span>
+            ) : null}
+          </div>
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code>
               {lines.map((line, i) => (
