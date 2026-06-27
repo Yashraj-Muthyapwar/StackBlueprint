@@ -3,14 +3,14 @@ import { Lightbulb } from "@theme-toggles/react";
 import "@theme-toggles/react/styles/lightbulb.css";
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Check initial theme from localStorage or default to dark
+    // Check initial theme from localStorage or default to light
     const storedTheme = localStorage.getItem("theme");
     
-    // We default to dark if no preference is found
-    const initialDark = storedTheme ? storedTheme === "dark" : true;
+    // We default to light if no preference is found
+    const initialDark = storedTheme === "dark";
     
     setIsDark(initialDark);
     if (initialDark) {
