@@ -6,6 +6,7 @@ import relationaldatabaseImg from "@/images/relational_database.png";
 import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
 import databasecomponentsImg from "@/images/database-components.png";
 import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
+import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -66,7 +67,8 @@ export type Section =
     | "intro-sql-client-server";
     caption?: string;
   }
-  | { kind: "takeaways"; items: string[] };
+  | { kind: "takeaways"; items: string[] }
+  | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type LessonContent = {
   slug: string;
@@ -767,6 +769,129 @@ const dbWhatIs: LessonContent = {
         "Relational (SQL) databases use rigid tables and schemas, while Non-Relational (NoSQL) databases offer flexible data structures.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "What is the primary purpose of a database compared to a simple spreadsheet?",
+          options: [
+            "To store data in a single file on a local computer.",
+            "To handle massive amounts of data, ensure integrity, and allow concurrent access safely.",
+            "To provide a colorful UI for data entry.",
+            "To prevent any user from deleting data."
+          ],
+          correctIndex: 1,
+          explanation: "Unlike spreadsheets, databases are built for scale, concurrency, and maintaining strict data integrity."
+        },
+        {
+          id: "q2",
+          question: "Which of the following is NOT a core component of a database ecosystem?",
+          options: [
+            "The Hardware (RAM/Disk)",
+            "The Database Management System (DBMS)",
+            "The Web Browser",
+            "The Query Language (like SQL)"
+          ],
+          correctIndex: 2,
+          explanation: "A web browser is a client application, not a core component of the database ecosystem itself."
+        },
+        {
+          id: "q3",
+          question: "What does 'DBMS' stand for?",
+          options: [
+            "Database Management System",
+            "Data Backup and Migration System",
+            "Database Memory Storage",
+            "Data Business Management Software"
+          ],
+          correctIndex: 0,
+          explanation: "DBMS stands for Database Management System, the software engine that interfaces with the data."
+        },
+        {
+          id: "q4",
+          question: "Which type of database relies on rigid, structured tables with strict schemas?",
+          options: [
+            "Relational (SQL) Databases",
+            "Document Databases",
+            "Graph Databases",
+            "Key-Value Stores"
+          ],
+          correctIndex: 0,
+          explanation: "Relational (SQL) databases use rigid tables (rows and columns) and strict schemas to ensure data integrity."
+        },
+        {
+          id: "q5",
+          question: "Which of the following is an example of a Non-Relational (NoSQL) database?",
+          options: [
+            "PostgreSQL",
+            "MySQL",
+            "MongoDB",
+            "Oracle"
+          ],
+          correctIndex: 2,
+          explanation: "MongoDB is a document-based NoSQL database, while the others are Relational (SQL) databases."
+        },
+        {
+          id: "q6",
+          question: "Why can't a simple file or spreadsheet replace a database for a large web application?",
+          options: [
+            "Spreadsheets cost too much.",
+            "Files cannot be read by programming languages.",
+            "Files lack built-in mechanisms for safe concurrent writes and structured querying.",
+            "Spreadsheets cannot store text data."
+          ],
+          correctIndex: 2,
+          explanation: "Databases use complex concurrency control (like locks and transactions) to ensure multiple users can write simultaneously without corrupting the data."
+        },
+        {
+          id: "q7",
+          question: "What is a 'Database Schema'?",
+          options: [
+            "The physical server where data is stored.",
+            "The password used to access the database.",
+            "The structural blueprint of how data is organized, including tables and relationships.",
+            "A backup file of the database."
+          ],
+          correctIndex: 2,
+          explanation: "The schema is the blueprint defining the structure of the database (tables, columns, types, and constraints)."
+        },
+        {
+          id: "q8",
+          question: "If your application requires highly complex transactions (like banking transfers), which database type is typically best?",
+          options: [
+            "Non-Relational (NoSQL)",
+            "Relational (SQL)",
+            "In-memory cache only",
+            "A flat text file"
+          ],
+          correctIndex: 1,
+          explanation: "Relational databases are heavily optimized for complex, multi-step transactions (ACID properties) that guarantee absolute accuracy."
+        },
+        {
+          id: "q9",
+          question: "Which component of the DBMS actually translates your commands into physical disk reads?",
+          options: [
+            "The Storage Engine",
+            "The Query Language",
+            "The Database Schema",
+            "The Hardware"
+          ],
+          correctIndex: 0,
+          explanation: "The storage engine (part of the DBMS) handles the actual I/O operations to physical disk and memory."
+        },
+        {
+          id: "q10",
+          question: "True or False: A single database server can only host one database.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A single database server or DBMS instance can host and manage multiple distinct databases simultaneously."
+        }
+      ]
+    }
   ],
 };
 
