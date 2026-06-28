@@ -2860,7 +2860,7 @@ const introSqlClientServer: Stage[] = [
     },
     steps: [
       st([1], "kept", "The client sends raw text (the SQL query) over the network.", { highlightCols: [0] }),
-      st([4], "kept", "The server receives the text, parses it, checks permissions, and logs the execution.", { noteTone: "info" }),
+      st([4], "kept", "The server receives the text, parses it, checks permissions, and logs the execution.", { noteTone: "violet" }),
     ]
   },
   {
@@ -2885,7 +2885,7 @@ const introSqlClientServer: Stage[] = [
     },
     steps: [
       st([1], pass(r => r.key === 1), "The server engine scans the tables or indexes, filtering out the rows that don't match.", { highlightCols: [0, 1, 2] }),
-      st([4, 5, 6], pass(r => r.key === 1), "The matching row is serialized (turned into bytes) and sent back over the network to Ada's client.", { noteTone: "success", highlightCols: [0, 1, 2] }),
+      st([4, 5, 6], pass(r => r.key === 1), "The matching row is serialized (turned into bytes) and sent back over the network to Ada's client.", { noteTone: "mint", highlightCols: [0, 1, 2] }),
     ]
   }
 ];
