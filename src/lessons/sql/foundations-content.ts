@@ -688,6 +688,122 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
     },
   ],
 };
+const dbWhatIs: LessonContent = {
+  slug: "what-is-database",
+  title: "What is a Database?",
+  subtitle: "Data storage, core components, and how databases scale beyond simple spreadsheets.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is a Database?",
+      body: [
+        "At its simplest, a database is an organized collection of structured information, or data, stored electronically in a computer system.",
+        "Unlike a simple Excel spreadsheet—which is great for a single user entering flat data—a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-what-is-db",
+      caption: "A central database serving many users and applications concurrently",
+    },
+    {
+      kind: "prose",
+      heading: "The Core Components",
+      body: [
+        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
+        "• **The Data**: The actual raw information being stored (text, numbers, files, dates).",
+        "• **The Hardware**: The physical servers, hard drives (SSDs/HDDs), and memory (RAM) where the data lives.",
+        "• **The Database Management System (DBMS)**: This is the software engine that acts as the interface between the database and its users or applications. When you want to store or fetch data, you talk to the DBMS. Examples include MySQL, PostgreSQL, and MongoDB.",
+        "• **The Query Language**: The specific language used to command the DBMS. The most famous is SQL (Structured Query Language).",
+        "• **Database Schema**: The structural blueprint or design of how the data is organized (e.g., tables, columns, relationships).",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Main Types of Databases",
+      body: [
+        "Databases generally fall into two major categories based on how they model data: Relational (SQL) and Non-Relational (NoSQL).",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Relational vs Non-Relational Databases",
+      headers: ["Type", "Structure", "Examples", "Best for"],
+      rows: [
+        ["Relational (SQL)", "Rigid, structured tables (rows & columns) with Strict Schemas and relationships", "PostgreSQL, MySQL, Oracle, SQLite", "High accuracy, complex transactions (banking, e-commerce)"],
+        ["Non-Relational (NoSQL)", "Flexible, unstructured data (Documents, Key-Value, Graphs)", "MongoDB, Redis, Neo4j", "Unstructured data, massive scale-out, real-time data"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-db-types",
+      caption: "Comparing Relational and Non-Relational structures",
+    },
+  ],
+};
+
+const dbUnderTheHood: LessonContent = {
+  slug: "db-under-the-hood",
+  title: "How Databases Work Under the Hood",
+  subtitle: "From memory vs disk tradeoffs to how the engine parses, optimizes, and fetches data.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "How Data is Stored",
+      body: [
+        "When an application saves data, it doesn't just instantly vanish into a hard drive. It follows a highly optimized path to balance speed and safety.",
+        "**RAM (Memory)** is extremely fast but volatile (loses data if the power goes out). **Disk (SSD/HDD)** is slower but persistent.",
+        "Because writing directly to a physical disk is slow, databases use a trick called a **Write-Ahead Log (WAL)** or transaction log.",
+        "When new data comes in, the DBMS first writes it to a sequential log file on the disk (WAL). Writing sequentially is incredibly fast. Simultaneously, the data is updated in the server's RAM cache so applications can read it instantly.",
+        "Later, in the background, a process called *checkpointing* flushes the data from the RAM and permanently organizes it into the main disk storage pages. If the server suddenly loses power, the database reads the WAL upon reboot to recover anything that hadn't made it to the permanent disk yet.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-how-db-works",
+      caption: "Memory, Disk, and the Write-Ahead Log in action",
+    },
+    {
+      kind: "prose",
+      heading: "How Data is Accessed (The Retrieval Engine)",
+      body: [
+        "When you ask a database for information (e.g., `SELECT * FROM users WHERE email = 'test@example.com'`), the DBMS triggers a multi-step pipeline:",
+      ],
+    },
+    {
+      kind: "diagram",
+      ascii: "[Your Query] ──> [Parser] ──> [Optimizer] ──> [Storage Engine] ──> [Data Returned]",
+      caption: "The query execution pipeline",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**1. Parsing and Compilation**\nThe DBMS checks your query syntax to make sure it's valid code, ensures you actually have permission to access that data, and translates it into a machine-readable format.",
+        "**2. The Query Optimizer**\nThis is the 'brain' of the database. There are often dozens of different physical ways to find your data. The optimizer analyzes the statistics of your data and calculates the most efficient execution plan (e.g., whether to scan the whole database or use a shortcut).",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-querying",
+      caption: "Parsing, optimizing, and executing a query",
+    },
+    {
+      kind: "prose",
+      heading: "The Power of Indexes",
+      body: [
+        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan**—meaning it reads all 10 million rows one by one. This is incredibly slow.",
+        "To fix this, we create indexes on frequently searched columns (like an ID or email). An index is typically structured as a **B-Tree** (Balanced Tree).",
+        "Instead of scanning sequentially, a B-Tree allows the database to perform binary-style searches, cutting down the search steps from 10,000,000 operations to just a tiny handful (usually less than 20 disk reads).",
+        "Once the storage engine locates the specific block on the disk using the index, it pulls the data into RAM and hands it back to your application.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-storage",
+      caption: "Using a B-Tree index to bypass a full table scan",
+    },
+  ],
+};
 
 const sqlIntro: LessonContent = {
   slug: "sql-intro",
@@ -1798,7 +1914,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+    lessons: [dbWhatIs, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "select-fundamentals": {
     slug: "select-fundamentals",
