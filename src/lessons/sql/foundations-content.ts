@@ -1888,25 +1888,6 @@ const introHowStorage: LessonContent = {
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
-  "intro": {
-    slug: "intro",
-    title: "Intro to Databases",
-    category: "Foundations",
-    iconKey: "database",
-    blurb:
-      "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
-    lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
-  },
-
-  "data-types": {
-    slug: "data-types",
-    title: "Data Types & Schemas",
-    category: "Foundations",
-    iconKey: "database",
-    blurb:
-      "The right type is half the schema — pick precisely and your queries get faster, smaller, and safer.",
-    lessons: [numericText, datesTimestamps, jsonJsonb, nullSemantics],
-  },
   "database-fundamentals": {
     slug: "database-fundamentals",
     title: "Database Fundamentals",
@@ -1915,6 +1896,15 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
     lessons: [dbWhatIs, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+  },
+  "data-types": {
+    slug: "data-types",
+    title: "Data Types & Schemas",
+    category: "Foundations",
+    iconKey: "database",
+    blurb:
+      "The right type is half the schema — pick precisely and your queries get faster, smaller, and safer.",
+    lessons: [numericText, datesTimestamps, jsonJsonb, nullSemantics],
   },
   "select-fundamentals": {
     slug: "select-fundamentals",
