@@ -3,7 +3,7 @@
 
 import clientServerImg from "@/images/client-server-architecture.png";
 import relationaldatabaseImg from "@/images/relational_database.png";
-import relationalvsnonrelationalImg from "@/images/relationa-vs-non-relation.png";
+import relationalvsnonrelationalImg from "@/images/relational-vs-non-relation.png";
 import databasecomponentsImg from "@/images/database-components.png";
 import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
 
