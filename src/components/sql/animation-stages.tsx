@@ -1860,7 +1860,10 @@ const introWhatIs: Stage[] = [
   {
     name: "What is a database?",
     blurb: "A long-lived, queryable container for facts",
-    sql: ["-- A database = structured storage + a query engine + concurrency control"],
+    sql: [
+      "-- A database = structured storage + a query engine",
+      "--              + concurrency control"
+    ],
     table: { name: "users", cols: ["id","email","balance"], rows: [
       r(1,1,"ada@ex.com",250), r(2,2,"linus@ex.com",90), r(3,3,"grace@ex.com",410),
     ]},
@@ -1885,7 +1888,10 @@ const introWhatIs: Stage[] = [
   },
   {
     name: "Why not just a spreadsheet?",
-    sql: ["-- 1 million rows + 50 concurrent writers + crash safety + audit"],
+    sql: [
+      "-- 1 million rows + 50 concurrent writers",
+      "-- + crash safety + audit"
+    ],
     table: { name: "users", cols: ["id","email","balance"], rows: [
       r(1,1,"ada@ex.com",250), r(2,2,"linus@ex.com",90),
     ]},
@@ -1954,7 +1960,10 @@ const introTypes: Stage[] = [
   },
   {
     name: "Graph — relationships are first-class",
-    sql: ["// Neo4j, Memgraph; or graph extensions in Postgres / SQL Server"],
+    sql: [
+      "// Neo4j, Memgraph; or graph extensions",
+      "// in Postgres / SQL Server"
+    ],
     table: { name: "edges", cols: ["from","rel","to"], rows: [
       r(1,"Ada","FOLLOWS","Linus"), r(2,"Linus","FOLLOWS","Grace"), r(3,"Ada","LIKES","Post#7"),
     ]},
@@ -2098,7 +2107,10 @@ const introQuerying: Stage[] = [
 const introStorage: Stage[] = [
   {
     name: "Rows live inside fixed-size PAGES",
-    sql: ["-- A table = an ordered file of 8 KB pages (Postgres default)", "-- Each page packs many rows + a small header"],
+    sql: [
+      "-- A table = an ordered file of 8 KB pages (Postgres)",
+      "-- Each page packs many rows + a small header"
+    ],
     table: { name: "page 42  (8 KB)", cols: ["slot","row"], rows: [
       r(1,"#1","(1, ada@ex.com)"),
       r(2,"#2","(2, linus@ex.com)"),
