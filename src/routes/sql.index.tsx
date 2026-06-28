@@ -90,14 +90,7 @@ const sections: Section[] = [
         modules: ["What is a database?", "Types of databases", "How a database works", "How querying works", "How data is stored"],
         unlocked: true,
       },
-      {
-        slug: "relational-model",
-        title: "Relational Model",
-        blurb: "Tables, rows, columns, primary & foreign keys, and why the relational model wins.",
-        icon: Table,
-        modules: ["Tables & rows", "Primary keys", "Foreign keys", "Normalization basics"],
-        unlocked: true,
-      },
+
       {
         slug: "data-types",
         title: "Data Types & Schemas",
@@ -109,9 +102,9 @@ const sections: Section[] = [
       {
         slug: "database-fundamentals",
         title: "Database Fundamentals",
-        blurb: "What is SQL, client-server architecture, and the five families of SQL commands.",
+        blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
         icon: Terminal,
-        modules: ["What is SQL?", "Client-Server", "Types of SQL commands", "DDL vs DML"],
+        modules: ["What is SQL?", "Client-Server", "DDL vs DML", "Primary & Foreign keys", "Normalization"],
         unlocked: true,
       },
       {
