@@ -32,7 +32,9 @@ function FoundationTopicPage() {
             Data Warehouses
           </Link>
           <ChevronRight className="size-3" />
-          <span className="text-foreground">Foundations</span>
+          <Link to="/data-warehouses" className="hover:text-foreground">
+            Foundations
+          </Link>
           <ChevronRight className="size-3" />
           <span className="text-foreground">{t.title}</span>
         </nav>
