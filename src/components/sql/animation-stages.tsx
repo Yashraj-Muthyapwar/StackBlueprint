@@ -1952,7 +1952,14 @@ const introWhatIs: Stage[] = [
         { highlightCols: [2], noteTone: "rose" }),
       st([3], (row) => Number(row.cells[2]) > 100 ? "kept" : "dropped",
         "Finally, it orders the remaining rows. The result is returned instantly, even if filtering millions of records.",
-        { highlightCols: [2], noteTone: "mint" }),
+        { 
+          highlightCols: [2], 
+          noteTone: "mint",
+          rowsOverride: [
+            r(3, 3, "grace@ex.com", 410),
+            r(1, 1, "ada@ex.com", 250),
+          ]
+        }),
     ],
   },
 ];
