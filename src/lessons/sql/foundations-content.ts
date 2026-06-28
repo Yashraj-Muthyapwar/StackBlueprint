@@ -390,7 +390,7 @@ const foreignKeys: LessonContent = {
       heading: "What a foreign key actually does",
       body: [
         "A foreign key is a column whose value must match a primary key in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
-        "Foreign keys also control what happens when the parent record is deleted. You can choose to cascade the deletion to all children, set the link to null, or restrict the deletion entirely to protect the data.",
+        "Foreign keys also give you control over what happens when a parent record is deleted, ensuring you never end up with 'orphan' records scattered throughout your database.",
       ],
     },
     {
@@ -403,6 +403,38 @@ const foreignKeys: LessonContent = {
       kind: "animation",
       variant: "fk-deep",
       caption: "Parent to child, orphan rejection, CASCADE, SET NULL, RESTRICT",
+    },
+    {
+      kind: "prose",
+      heading: "One-to-One (1:1) Relationships",
+      body: [
+        "A one-to-one relationship means one row in a table is linked to exactly one row in another. For example, a user might have exactly one profile.",
+        "To enforce this in SQL, you add a foreign key and also apply a UNIQUE constraint to it. This guarantees that no two profiles can ever point to the same user.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "1:1 requires a UNIQUE foreign key",
+      code: `CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE user_profiles (
+  id BIGSERIAL PRIMARY KEY,
+  -- The UNIQUE constraint makes this 1:1 instead of 1:N
+  user_id BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  bio TEXT
+);`
+    },
+    {
+      kind: "prose",
+      heading: "One-to-Many (1:N) Relationships",
+      body: [
+        "This is the most common relationship. One customer can place many orders, but each order belongs to exactly one customer.",
+        "To create a 1:N relationship, you simply place a foreign key on the 'many' side (the orders table) pointing to the 'one' side (the customers table), without a UNIQUE constraint.",
+      ],
     },
     {
       kind: "code",
@@ -422,6 +454,7 @@ CREATE TABLE orders (
   placed_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- ALWAYS index the child side of a foreign key!
 CREATE INDEX idx_orders_customer ON orders(customer_id);`,
     },
     {
@@ -439,9 +472,10 @@ N : M     students >──< courses
     },
     {
       kind: "prose",
-      heading: "Many-to-many needs a join table",
+      heading: "Many-to-many (N:M) needs a join table",
       body: [
-        "There is no such thing as a many-to-many foreign key column. To model an N:M relationship, you must create a third table, usually called a join or link table. Its primary key is simply the combination of the two foreign keys it connects.",
+        "There is no such thing as a many-to-many foreign key column. To model an N:M relationship (like students and courses), you must create a third table, usually called a join or link table.",
+        "The primary key of this join table is simply the combination of the two foreign keys it connects. This ensures a student cannot enroll in the exact same course twice.",
       ],
     },
     {
@@ -456,6 +490,16 @@ N : M     students >──< courses
 );`,
     },
     {
+      kind: "prose",
+      heading: "Handling Deletions (ON DELETE)",
+      body: [
+        "When a parent row is deleted, what happens to the children? You must explicitly choose:",
+        "• RESTRICT (default): The database blocks the deletion and throws an error if children exist.",
+        "• CASCADE: The database automatically deletes all linked child rows (great for users and their profiles).",
+        "• SET NULL: The parent is deleted, and the child's foreign key column is updated to NULL (great for keeping historical orders when a user is deleted)."
+      ]
+    },
+    {
       kind: "callout",
       tone: "warn",
       title: "Always index your foreign keys",
@@ -465,8 +509,9 @@ N : M     students >──< courses
       kind: "takeaways",
       items: [
         "Foreign keys enforce referential integrity directly at the database engine level.",
-        "You must deliberately choose an ON DELETE behavior like CASCADE, SET NULL, or RESTRICT.",
+        "Add a UNIQUE constraint to a foreign key to create a 1:1 relationship.",
         "Many-to-many relationships are always modeled with a join table.",
+        "You must deliberately choose an ON DELETE behavior (CASCADE, SET NULL, or RESTRICT).",
         "You must always manually add an index on the child-side foreign key column.",
       ],
     },
@@ -475,7 +520,7 @@ N : M     students >──< courses
       questions: [
         {
           id: "fk1",
-          question: "What is the main purpose of a foreign key?",
+          question: "[Easy] What is the main purpose of a foreign key?",
           options: [
             "To encrypt data between two tables.",
             "To ensure that a value in one table matches a primary key in another, maintaining strict referential integrity.",
@@ -487,31 +532,7 @@ N : M     students >──< courses
         },
         {
           id: "fk2",
-          question: "What happens by default (RESTRICT) if you try to delete a customer who has orders, and the orders have a foreign key to the customer?",
-          options: [
-            "The customer is deleted, and the orders are left untouched.",
-            "The customer and all their orders are deleted.",
-            "The database blocks the deletion and throws an error.",
-            "The customer's orders are reassigned to a different customer."
-          ],
-          correctIndex: 2,
-          explanation: "By default, the database restricts you from deleting a parent record if child records still depend on it, preventing broken links."
-        },
-        {
-          id: "fk3",
-          question: "Which ON DELETE behavior automatically deletes all linked child rows when the parent is deleted?",
-          options: [
-            "ON DELETE RESTRICT",
-            "ON DELETE CASCADE",
-            "ON DELETE SET NULL",
-            "ON DELETE DROP"
-          ],
-          correctIndex: 1,
-          explanation: "ON DELETE CASCADE is a powerful tool that automatically cleans up dependent records when the parent is removed."
-        },
-        {
-          id: "fk4",
-          question: "If a user can only have one profile, and a profile belongs to exactly one user, what kind of relationship is this?",
+          question: "[Easy] If a user can only have one profile, and a profile belongs to exactly one user, what kind of relationship is this?",
           options: [
             "1:1 (One-to-One)",
             "1:N (One-to-Many)",
@@ -522,8 +543,44 @@ N : M     students >──< courses
           explanation: "A 1:1 relationship means exactly one record on each side is linked directly to the other."
         },
         {
+          id: "fk3",
+          question: "[Medium] How do you enforce a One-to-One (1:1) relationship in SQL?",
+          options: [
+            "By naming the columns exactly the same in both tables.",
+            "By adding a UNIQUE constraint to the foreign key column on the child table.",
+            "By not using a foreign key at all.",
+            "By creating a third join table."
+          ],
+          correctIndex: 1,
+          explanation: "Adding a UNIQUE constraint to the foreign key guarantees that no two child rows can ever point to the same parent row, enforcing a strict 1:1 mapping."
+        },
+        {
+          id: "fk4",
+          question: "[Medium] What happens by default (RESTRICT) if you try to delete a customer who has orders, and the orders have a foreign key to the customer?",
+          options: [
+            "The customer is deleted, and the orders are left untouched.",
+            "The customer and all their orders are deleted.",
+            "The database blocks the deletion and throws an error.",
+            "The customer's orders are reassigned to a different customer."
+          ],
+          correctIndex: 2,
+          explanation: "By default, the database restricts you from deleting a parent record if child records still depend on it, preventing broken links."
+        },
+        {
           id: "fk5",
-          question: "How do you model a Many-to-Many (N:M) relationship in a relational database?",
+          question: "[Medium] Which ON DELETE behavior automatically deletes all linked child rows when the parent is deleted?",
+          options: [
+            "ON DELETE RESTRICT",
+            "ON DELETE CASCADE",
+            "ON DELETE SET NULL",
+            "ON DELETE DROP"
+          ],
+          correctIndex: 1,
+          explanation: "ON DELETE CASCADE is a powerful tool that automatically cleans up dependent records when the parent is removed."
+        },
+        {
+          id: "fk6",
+          question: "[Medium] How do you model a Many-to-Many (N:M) relationship in a relational database?",
           options: [
             "You put a foreign key on both tables.",
             "You save an array of IDs in a single text column.",
@@ -534,8 +591,8 @@ N : M     students >──< courses
           explanation: "Relational databases require a third 'join' table to resolve many-to-many relationships properly and maintain integrity."
         },
         {
-          id: "fk6",
-          question: "True or False: PostgreSQL automatically creates an index for every foreign key you define.",
+          id: "fk7",
+          question: "[Hard] True or False: PostgreSQL automatically creates an index for every foreign key you define.",
           options: [
             "True",
             "False"
@@ -544,8 +601,8 @@ N : M     students >──< courses
           explanation: "False! PostgreSQL does NOT index foreign keys automatically. You must manually add an index to prevent massive performance issues when joining or deleting."
         },
         {
-          id: "fk7",
-          question: "Why is it important to index the foreign key column on the child table?",
+          id: "fk8",
+          question: "[Hard] Why is it critically important to manually index the foreign key column on the child table?",
           options: [
             "Because without an index, deleting the parent row requires a slow, full table scan of the child table.",
             "Because you cannot insert data without an index.",
@@ -556,8 +613,8 @@ N : M     students >──< courses
           explanation: "Without an index on the child table's foreign key, the database has to check every single row in the child table whenever a parent is deleted to ensure no orphans are left behind."
         },
         {
-          id: "fk8",
-          question: "What does the ON DELETE SET NULL behavior do?",
+          id: "fk9",
+          question: "[Medium] What does the ON DELETE SET NULL behavior do?",
           options: [
             "It deletes the parent but leaves the child row, setting the foreign key column to NULL.",
             "It deletes both the parent and the child.",
@@ -565,11 +622,11 @@ N : M     students >──< courses
             "It sets the parent's primary key to NULL."
           ],
           correctIndex: 0,
-          explanation: "SET NULL keeps the child record alive but safely breaks the link to the deleted parent."
+          explanation: "SET NULL keeps the child record alive but safely breaks the link to the deleted parent. This is useful for keeping historical data (like orders) even if the user is deleted."
         },
         {
-          id: "fk9",
-          question: "What is typically used as the Primary Key for a join table (e.g., enrollments linking students to courses)?",
+          id: "fk10",
+          question: "[Hard] What is typically used as the Primary Key for a join table (e.g., enrollments linking students to courses)?",
           options: [
             "A single auto-incrementing integer (BIGSERIAL).",
             "A combination of the two foreign keys (e.g., student_id AND course_id) as a composite primary key.",
@@ -578,18 +635,6 @@ N : M     students >──< courses
           ],
           correctIndex: 1,
           explanation: "The combination of the two foreign keys inherently creates a unique identity for the relationship, ensuring a student cannot enroll in the exact same course twice."
-        },
-        {
-          id: "fk10",
-          question: "If a customer places many orders, but each order belongs to exactly one customer, what kind of relationship is this?",
-          options: [
-            "1:1",
-            "1:N (One-to-Many)",
-            "N:M (Many-to-Many)",
-            "It is not a relationship."
-          ],
-          correctIndex: 1,
-          explanation: "This is a classic One-to-Many (1:N) relationship, modeled by placing a customer_id foreign key directly on the orders table."
         }
       ]
     }
