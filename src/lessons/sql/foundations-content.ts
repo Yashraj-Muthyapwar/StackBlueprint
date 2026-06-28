@@ -1781,15 +1781,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
     lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
   },
-  "relational-model": {
-    slug: "relational-model",
-    title: "Relational Model",
-    category: "Foundations",
-    iconKey: "table",
-    blurb:
-      "The mental model behind every database — tables, tuples, keys, and the relationships that turn data into meaning.",
-    lessons: [tablesAndRows, primaryKeys, foreignKeys, normalization],
-  },
+
   "data-types": {
     slug: "data-types",
     title: "Data Types & Schemas",
@@ -1805,8 +1797,8 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Foundations",
     iconKey: "terminal",
     blurb:
-      "What is SQL, client-server architecture, and the five families of SQL commands.",
-    lessons: [sqlIntro, sqlCommands],
+      "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
+    lessons: [sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "select-fundamentals": {
     slug: "select-fundamentals",
