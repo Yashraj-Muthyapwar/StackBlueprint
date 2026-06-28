@@ -1799,6 +1799,15 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       "The right type is half the schema — pick precisely and your queries get faster, smaller, and safer.",
     lessons: [numericText, datesTimestamps, jsonJsonb, nullSemantics],
   },
+  "database-fundamentals": {
+    slug: "database-fundamentals",
+    title: "Database Fundamentals",
+    category: "Foundations",
+    iconKey: "terminal",
+    blurb:
+      "What is SQL, client-server architecture, and the five families of SQL commands.",
+    lessons: [sqlIntro, sqlCommands],
+  },
   "select-fundamentals": {
     slug: "select-fundamentals",
     title: "SELECT Fundamentals",
@@ -1806,6 +1815,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlIntro, sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
+    lessons: [selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };
