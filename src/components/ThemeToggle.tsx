@@ -53,12 +53,18 @@ export function ThemeToggle() {
             : "text-muted-foreground"
         }`}
       >
-        <Lightbulb 
-          toggled={!isDark}
-          toggle={setIsDark}
-          forceSelected={!isDark}
-          className="pointer-events-none" 
-        />
+        {(() => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const AnyLightbulb = Lightbulb as any;
+          return (
+            <AnyLightbulb
+              toggled={!isDark}
+              toggle={setIsDark}
+              forceSelected={!isDark}
+              className="pointer-events-none" 
+            />
+          );
+        })()}
       </div>
     </div>
   );
