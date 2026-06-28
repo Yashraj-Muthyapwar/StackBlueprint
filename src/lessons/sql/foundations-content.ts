@@ -710,6 +710,12 @@ const dbWhatIs: LessonContent = {
       caption: "A central database serving many users and applications concurrently",
     },
     {
+      kind: "image",
+      src: databasecomponentsImg,
+      alt: "Database Components",
+      caption: "Database Components",
+    },
+    {
       kind: "prose",
       heading: "The Core Components",
       body: [
@@ -727,6 +733,12 @@ const dbWhatIs: LessonContent = {
       body: [
         "Databases generally fall into two major categories based on how they model data: Relational (SQL) and Non-Relational (NoSQL).",
       ],
+    },
+    {
+      kind: "image",
+      src: relationalvsnonrelationalImg,
+      alt: "Relational vs Non-Relational",
+      caption: "Relational vs Non-Relational",
     },
     {
       kind: "table",
