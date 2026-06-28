@@ -710,6 +710,13 @@ const dbWhatIs: LessonContent = {
       caption: "A central database serving many users and applications concurrently",
     },
     {
+      kind: "prose",
+      heading: "The Core Components",
+      body: [
+        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
+      ],
+    },
+    {
       kind: "image",
       src: databasecomponentsImg,
       alt: "Database Components",
@@ -717,9 +724,7 @@ const dbWhatIs: LessonContent = {
     },
     {
       kind: "prose",
-      heading: "The Core Components",
       body: [
-        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
         "• **The Data**: The actual raw information being stored (text, numbers, files, dates).",
         "• **The Hardware**: The physical servers, hard drives (SSDs/HDDs), and memory (RAM) where the data lives.",
         "• **The Database Management System (DBMS)**: This is the software engine that acts as the interface between the database and its users or applications. When you want to store or fetch data, you talk to the DBMS. Examples include MySQL, PostgreSQL, and MongoDB.",
@@ -771,6 +776,13 @@ const dbUnderTheHood: LessonContent = {
   subtitle: "From memory vs disk tradeoffs to how the engine parses, optimizes, and fetches data.",
   sections: [
     {
+      kind: "prose",
+      heading: "How Data is Stored",
+      body: [
+        "When an application saves data, it doesn't just instantly vanish into a hard drive. It follows a highly optimized path to balance speed and safety.",
+      ],
+    },
+    {
       kind: "image",
       src: datastoredandreadImg,
       alt: "How Data is Stored",
@@ -778,9 +790,7 @@ const dbUnderTheHood: LessonContent = {
     },
     {
       kind: "prose",
-      heading: "How Data is Stored",
       body: [
-        "When an application saves data, it doesn't just instantly vanish into a hard drive. It follows a highly optimized path to balance speed and safety.",
         "**RAM (Memory)** is extremely fast but volatile (loses data if the power goes out). **Disk (SSD/HDD)** is slower but persistent.",
         "Because writing directly to a physical disk is slow, databases use a trick called a **Write-Ahead Log (WAL)** or transaction log.",
         "When new data comes in, the DBMS first writes it to a sequential log file on the disk (WAL). Writing sequentially is incredibly fast. Simultaneously, the data is updated in the server's RAM cache so applications can read it instantly.",
