@@ -83,28 +83,19 @@ const sections: Section[] = [
       "The mental model before the syntax — tables, rows, types, and how a query actually runs.",
     topics: [
       {
-        slug: "intro",
-        title: "Intro to Databases",
-        blurb: "What a database is, the families, how an engine answers a query, and how bytes live on disk.",
-        icon: Database,
-        modules: ["What is a database?", "Types of databases", "How a database works", "How querying works", "How data is stored"],
+        slug: "database-fundamentals",
+        title: "Database Fundamentals",
+        blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
+        icon: Terminal,
+        modules: ["What is a database?", "How databases work", "SQL & Client-Server", "DDL vs DML", "Keys & Normalization"],
         unlocked: true,
       },
-
       {
         slug: "data-types",
         title: "Data Types & Schemas",
         blurb: "Numbers, strings, dates, JSON, NULLs — and designing schemas that stay clean.",
         icon: Database,
         modules: ["Numeric & text", "Dates & timestamps", "JSON / JSONB", "NULL semantics"],
-        unlocked: true,
-      },
-      {
-        slug: "database-fundamentals",
-        title: "Database Fundamentals",
-        blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
-        icon: Terminal,
-        modules: ["What is a database?", "How databases work", "SQL & Client-Server", "DDL vs DML", "Keys & Normalization"],
         unlocked: true,
       },
       {
