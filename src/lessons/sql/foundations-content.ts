@@ -8,6 +8,8 @@ import databasecomponentsImg from "@/images/sql/foundations/database-components.
 import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
 import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
+import primaryKeysImg from "@/images/sql/foundations/primary_keys.png";
+import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
@@ -174,16 +176,22 @@ const primaryKeys: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "Identity is everything",
+      heading: "Identity is Everything",
       body: [
-        "A primary key uniquely identifies each row. No two rows can share the same PK value, and PK columns can never be NULL. It's how the database — and your application — refers to a specific record over its entire lifetime.",
-        "Without a primary key you can't safely UPDATE or DELETE a single row, or join tables without ambiguity. 'Every table has a primary key' is one of the few rules in databases with no real exceptions.",
+        "A primary key uniquely identifies each row in a table. No two rows can share the same primary key value, and primary key columns can never be NULL. This is how the database and your application refer to a specific record over its entire lifetime.",
+        "Without a primary key, you cannot safely update or delete a single row, or join tables without ambiguity. The idea that every table must have a primary key is one of the few strict rules in databases with almost no exceptions.",
       ],
+    },
+    {
+      kind: "image",
+      src: primaryKeysImg,
+      alt: "Primary Keys",
+      caption: "Primary keys ensure every row has a unique identity",
     },
     {
       kind: "animation",
       variant: "pk-anatomy",
-      caption: "Declare → insert → reject NULL → reject duplicate → composite → surrogate",
+      caption: "Declare, insert, reject NULL, reject duplicate, composite, surrogate",
     },
     {
       kind: "code",
@@ -206,17 +214,17 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "warn",
-      title: "What goes wrong without a PK",
-      body: "A NULL in a PK column raises 'null value violates not-null constraint'. A duplicate raises 'duplicate key value violates unique constraint'. Both errors are good — they catch logic bugs at write time, not after the fact.",
+      title: "What goes wrong without a primary key",
+      body: "Trying to insert a NULL into a primary key column raises a not-null constraint error. Trying to insert a duplicate raises a unique constraint error. Both of these errors are actually great features because they catch logic bugs right when you try to save data, instead of causing silent problems later on.",
     },
     {
       kind: "table",
-      caption: "Natural vs surrogate keys",
+      caption: "Natural vs Surrogate keys",
       headers: ["", "Natural key", "Surrogate key"],
       rows: [
         ["What is it?", "A real-world value (email, ISBN, SSN)", "An invented value (BIGSERIAL, UUID)"],
-        ["Meaning", "Carries business meaning", "Meaningless outside the DB"],
-        ["Stability", "Can change (people rename, ISBNs reissue)", "Never changes"],
+        ["Meaning", "Carries business meaning", "Meaningless outside the database"],
+        ["Stability", "Can change (people change names, ISBNs get reissued)", "Never changes"],
         ["Size", "Often large (TEXT)", "Small (8 bytes)"],
         ["Best for", "Lookup tables, true unique identifiers", "Almost everything else"],
       ],
@@ -224,27 +232,150 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "info",
-      title: "Default to surrogate",
-      body: "Use a BIGSERIAL or UUID as the primary key, then add a UNIQUE constraint on the natural key (email, sku, etc.). You get a stable identifier for foreign keys and integrity on the business value.",
+      title: "Default to surrogate keys",
+      body: "Use a simple auto-incrementing number (BIGSERIAL) or a UUID as your primary key, and then add a UNIQUE constraint on the natural key like an email or SKU. This gives you a stable, non-changing identifier for linking tables while keeping your business rules strict.",
     },
     {
       kind: "prose",
-      heading: "Composite keys",
+      heading: "Composite Keys",
       body: [
-        "Sometimes identity spans multiple columns — a row in order_items is identified by (order_id, product_id) together. That's a composite primary key.",
-        "Composite keys are correct but verbose: every foreign key referencing this table must also be composite. Many teams add a surrogate `id BIGSERIAL PRIMARY KEY` and keep (order_id, product_id) as a UNIQUE constraint — cleaner FKs, same integrity.",
+        "Sometimes a unique identity requires multiple columns. For example, a row in an order_items table is identified by the combination of an order_id and a product_id together. This is called a composite primary key.",
+        "Composite keys are perfectly valid but can be annoying to type out because every other table that links to this one must also use both columns. Because of this, many teams prefer to just add a simple 'id' surrogate key to the table and keep the multiple columns as a UNIQUE constraint instead.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "Primary key = unique + not null + immutable identity.",
-        "NULL in a PK column is rejected; duplicates are rejected.",
-        "Prefer a surrogate (BIGSERIAL / UUID) plus a UNIQUE on the natural value.",
-        "Composite keys are fine, but they make foreign keys verbose.",
-        "Never reuse a deleted primary key value.",
+        "A primary key guarantees that a row is unique, not null, and has an immutable identity.",
+        "The database will automatically reject NULLs and duplicates in a primary key column.",
+        "It is usually best to prefer a surrogate key like BIGSERIAL or UUID, plus a UNIQUE constraint on natural values.",
+        "Composite keys are fine, but they can make linking tables more verbose.",
+        "You should never reuse a primary key value that has been deleted.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "pk1",
+          question: "Which of the following must be true for a primary key?",
+          options: [
+            "It must be a number.",
+            "It must be unique and cannot be NULL.",
+            "It must contain a string of at least 8 characters.",
+            "It can have duplicate values as long as they are not NULL."
+          ],
+          correctIndex: 1,
+          explanation: "Primary keys are strictly enforced to be both unique and non-null to guarantee a specific row's identity."
+        },
+        {
+          id: "pk2",
+          question: "What happens if you try to insert a duplicate primary key value into a table?",
+          options: [
+            "The database automatically generates a new, unique value.",
+            "The old row is overwritten by the new row.",
+            "The database throws a unique constraint error and rejects the insert.",
+            "The database accepts it but marks it with a warning."
+          ],
+          correctIndex: 2,
+          explanation: "The database will reject any insert that violates the uniqueness of a primary key, preventing data corruption."
+        },
+        {
+          id: "pk3",
+          question: "What is a 'surrogate key'?",
+          options: [
+            "A key made from a real-world value like an email or Social Security Number.",
+            "A backup key used only if the primary key fails.",
+            "A meaningless, database-generated value (like an auto-incrementing ID or UUID) used purely for identification.",
+            "A key that consists of multiple columns."
+          ],
+          correctIndex: 2,
+          explanation: "Surrogate keys have no business meaning and exist solely to give a stable, unchanging identity to a row."
+        },
+        {
+          id: "pk4",
+          question: "What is a 'natural key'?",
+          options: [
+            "A key generated randomly by the database.",
+            "An auto-incrementing integer.",
+            "A real-world attribute that uniquely identifies a row, like an ISBN or email address.",
+            "A key used for connecting to the database."
+          ],
+          correctIndex: 2,
+          explanation: "Natural keys use existing, real-world data (like an email) to identify a row."
+        },
+        {
+          id: "pk5",
+          question: "Why might you prefer a surrogate key over a natural key?",
+          options: [
+            "Natural keys take up less space on disk.",
+            "Surrogate keys are faster to type.",
+            "Natural keys can sometimes change in the real world (e.g., someone changes their email), which breaks links between tables.",
+            "Surrogate keys allow for duplicate values."
+          ],
+          correctIndex: 2,
+          explanation: "If a natural key changes, you have to update every other table that references it. Surrogate keys never change, making relationships stable."
+        },
+        {
+          id: "pk6",
+          question: "What is a 'composite key'?",
+          options: [
+            "A key made out of a mix of numbers and letters.",
+            "A primary key that spans across multiple columns (e.g., order_id AND product_id).",
+            "A key that is used in more than one database.",
+            "A key that is encrypted for security."
+          ],
+          correctIndex: 1,
+          explanation: "A composite key uses two or more columns together to form a unique identity."
+        },
+        {
+          id: "pk7",
+          question: "True or False: A table can have multiple primary keys.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A table can only have one primary key (though that one key can be a composite made of multiple columns)."
+        },
+        {
+          id: "pk8",
+          question: "What does BIGSERIAL do in PostgreSQL?",
+          options: [
+            "It creates a massive text field.",
+            "It automatically generates an incrementing number for each new row.",
+            "It encrypts the column data.",
+            "It allows the column to store an array of values."
+          ],
+          correctIndex: 1,
+          explanation: "BIGSERIAL is a convenient way to create an auto-incrementing integer, which is perfect for surrogate primary keys."
+        },
+        {
+          id: "pk9",
+          question: "If you decide to use a surrogate ID as your primary key, how should you handle your natural key (like a user's email)?",
+          options: [
+            "Ignore it and don't store it.",
+            "Store it normally, as duplicates don't matter.",
+            "Add a UNIQUE constraint to the natural key column to ensure no two users sign up with the same email.",
+            "Make it a second primary key."
+          ],
+          correctIndex: 2,
+          explanation: "Adding a UNIQUE constraint to the email gives you the best of both worlds: a stable surrogate primary key, and strict business rules on the natural data."
+        },
+        {
+          id: "pk10",
+          question: "Why is it important to never reuse a deleted primary key value?",
+          options: [
+            "Because the database will crash.",
+            "To prevent old, disconnected records (like historical backups or logs) from accidentally linking to the new row.",
+            "Because primary keys must always be alphabetical.",
+            "Because you are legally required not to."
+          ],
+          correctIndex: 1,
+          explanation: "Reusing an ID can cause catastrophic data mix-ups if old data (like an old invoice in a backup) suddenly points to a brand new customer who happens to get the reused ID."
+        }
+      ]
+    }
   ],
 };
 
@@ -252,20 +383,26 @@ const foreignKeys: LessonContent = {
   slug: "foreign-keys",
   title: "Foreign Keys & Relationships",
   subtitle:
-    "1:1, 1:N, N:M — how to model entity relationships without losing referential integrity.",
+    "1:1, 1:N, N:M: how to model entity relationships without losing referential integrity.",
   sections: [
     {
       kind: "prose",
       heading: "What a foreign key actually does",
       body: [
-        "A foreign key is a column whose value must match a primary key in another table. It's the engine's way of saying 'this order must belong to a customer that actually exists' — any INSERT or UPDATE pointing to a missing parent row is rejected.",
-        "FKs also control what happens when the parent is deleted: ON DELETE CASCADE removes children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (default) blocks the delete entirely.",
+        "A foreign key is a column whose value must match a primary key in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
+        "Foreign keys also control what happens when the parent record is deleted. You can choose to cascade the deletion to all children, set the link to null, or restrict the deletion entirely to protect the data.",
       ],
+    },
+    {
+      kind: "image",
+      src: foreignKeysImg,
+      alt: "Foreign Keys",
+      caption: "Foreign keys enforce strict relationships between tables",
     },
     {
       kind: "animation",
       variant: "fk-deep",
-      caption: "Parent → child → orphan rejection → CASCADE → SET NULL → RESTRICT",
+      caption: "Parent to child, orphan rejection, CASCADE, SET NULL, RESTRICT",
     },
     {
       kind: "code",
@@ -304,7 +441,7 @@ N : M     students >──< courses
       kind: "prose",
       heading: "Many-to-many needs a join table",
       body: [
-        "There is no 'many-to-many foreign key'. Model N:M with a third table — a join, link, or junction table — whose primary key is the composite of the two foreign keys.",
+        "There is no such thing as a many-to-many foreign key column. To model an N:M relationship, you must create a third table, usually called a join or link table. Its primary key is simply the combination of the two foreign keys it connects.",
       ],
     },
     {
@@ -322,17 +459,140 @@ N : M     students >──< courses
       kind: "callout",
       tone: "warn",
       title: "Always index your foreign keys",
-      body: "PostgreSQL does NOT auto-index the child side of a FK. Without an index, deleting a parent row scans the entire child table. A 200 ms delete becomes 30 seconds on real data.",
+      body: "PostgreSQL does not automatically create indexes for foreign keys on the child table. Without an index, deleting a single parent row requires scanning the entire child table to check for linked records. This can turn a fast 200ms delete into a 30-second query on real data.",
     },
     {
       kind: "takeaways",
       items: [
-        "Foreign keys = referential integrity enforced by the engine.",
-        "Choose ON DELETE behavior deliberately: CASCADE, SET NULL, or RESTRICT.",
-        "N:M is always modeled with a join table whose PK is the composite FK pair.",
-        "Always add an index on the child-side foreign key column.",
+        "Foreign keys enforce referential integrity directly at the database engine level.",
+        "You must deliberately choose an ON DELETE behavior like CASCADE, SET NULL, or RESTRICT.",
+        "Many-to-many relationships are always modeled with a join table.",
+        "You must always manually add an index on the child-side foreign key column.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "fk1",
+          question: "What is the main purpose of a foreign key?",
+          options: [
+            "To encrypt data between two tables.",
+            "To ensure that a value in one table matches a primary key in another, maintaining strict referential integrity.",
+            "To automatically create backups of linked tables.",
+            "To combine two tables into one large table automatically."
+          ],
+          correctIndex: 1,
+          explanation: "Foreign keys enforce referential integrity, making sure relationships between tables are valid and preventing 'orphan' records."
+        },
+        {
+          id: "fk2",
+          question: "What happens by default (RESTRICT) if you try to delete a customer who has orders, and the orders have a foreign key to the customer?",
+          options: [
+            "The customer is deleted, and the orders are left untouched.",
+            "The customer and all their orders are deleted.",
+            "The database blocks the deletion and throws an error.",
+            "The customer's orders are reassigned to a different customer."
+          ],
+          correctIndex: 2,
+          explanation: "By default, the database restricts you from deleting a parent record if child records still depend on it, preventing broken links."
+        },
+        {
+          id: "fk3",
+          question: "Which ON DELETE behavior automatically deletes all linked child rows when the parent is deleted?",
+          options: [
+            "ON DELETE RESTRICT",
+            "ON DELETE CASCADE",
+            "ON DELETE SET NULL",
+            "ON DELETE DROP"
+          ],
+          correctIndex: 1,
+          explanation: "ON DELETE CASCADE is a powerful tool that automatically cleans up dependent records when the parent is removed."
+        },
+        {
+          id: "fk4",
+          question: "If a user can only have one profile, and a profile belongs to exactly one user, what kind of relationship is this?",
+          options: [
+            "1:1 (One-to-One)",
+            "1:N (One-to-Many)",
+            "N:M (Many-to-Many)",
+            "N:1 (Many-to-One)"
+          ],
+          correctIndex: 0,
+          explanation: "A 1:1 relationship means exactly one record on each side is linked directly to the other."
+        },
+        {
+          id: "fk5",
+          question: "How do you model a Many-to-Many (N:M) relationship in a relational database?",
+          options: [
+            "You put a foreign key on both tables.",
+            "You save an array of IDs in a single text column.",
+            "You create a third 'join table' that contains foreign keys pointing to both of the main tables.",
+            "You merge both tables into one giant table."
+          ],
+          correctIndex: 2,
+          explanation: "Relational databases require a third 'join' table to resolve many-to-many relationships properly and maintain integrity."
+        },
+        {
+          id: "fk6",
+          question: "True or False: PostgreSQL automatically creates an index for every foreign key you define.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False! PostgreSQL does NOT index foreign keys automatically. You must manually add an index to prevent massive performance issues when joining or deleting."
+        },
+        {
+          id: "fk7",
+          question: "Why is it important to index the foreign key column on the child table?",
+          options: [
+            "Because without an index, deleting the parent row requires a slow, full table scan of the child table.",
+            "Because you cannot insert data without an index.",
+            "Because it encrypts the relationship.",
+            "Because it allows you to store larger numbers."
+          ],
+          correctIndex: 0,
+          explanation: "Without an index on the child table's foreign key, the database has to check every single row in the child table whenever a parent is deleted to ensure no orphans are left behind."
+        },
+        {
+          id: "fk8",
+          question: "What does the ON DELETE SET NULL behavior do?",
+          options: [
+            "It deletes the parent but leaves the child row, setting the foreign key column to NULL.",
+            "It deletes both the parent and the child.",
+            "It prevents the parent from being deleted.",
+            "It sets the parent's primary key to NULL."
+          ],
+          correctIndex: 0,
+          explanation: "SET NULL keeps the child record alive but safely breaks the link to the deleted parent."
+        },
+        {
+          id: "fk9",
+          question: "What is typically used as the Primary Key for a join table (e.g., enrollments linking students to courses)?",
+          options: [
+            "A single auto-incrementing integer (BIGSERIAL).",
+            "A combination of the two foreign keys (e.g., student_id AND course_id) as a composite primary key.",
+            "The student's name.",
+            "A completely random text string."
+          ],
+          correctIndex: 1,
+          explanation: "The combination of the two foreign keys inherently creates a unique identity for the relationship, ensuring a student cannot enroll in the exact same course twice."
+        },
+        {
+          id: "fk10",
+          question: "If a customer places many orders, but each order belongs to exactly one customer, what kind of relationship is this?",
+          options: [
+            "1:1",
+            "1:N (One-to-Many)",
+            "N:M (Many-to-Many)",
+            "It is not a relationship."
+          ],
+          correctIndex: 1,
+          explanation: "This is a classic One-to-Many (1:N) relationship, modeled by placing a customer_id foreign key directly on the orders table."
+        }
+      ]
+    }
   ],
 };
 
