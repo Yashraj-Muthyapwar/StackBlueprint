@@ -180,8 +180,8 @@ const primaryKeys: LessonContent = {
       kind: "prose",
       heading: "Identity is Everything",
       body: [
-        "A primary key uniquely identifies each row in a table. No two rows can share the same primary key value, and primary key columns can never be NULL. This is how the database and your application refer to a specific record over its entire lifetime.",
-        "Without a primary key, you cannot safely update or delete a single row, or join tables without ambiguity. The idea that every table must have a primary key is one of the few strict rules in databases with almost no exceptions.",
+        "A **primary key** uniquely identifies each row in a table. No two rows can share the same primary key value, and primary key columns **can never be NULL**. This is how the database and your application refer to a specific record over its entire lifetime.",
+        "Without a primary key, you cannot safely update or delete a single row, or join tables without ambiguity. The idea that **every table must have a primary key** is one of the few strict rules in databases with almost no exceptions.",
       ],
     },
     {
@@ -241,18 +241,18 @@ CREATE TABLE order_items (
       kind: "prose",
       heading: "Composite Keys",
       body: [
-        "Sometimes a unique identity requires multiple columns. For example, a row in an order_items table is identified by the combination of an order_id and a product_id together. This is called a composite primary key.",
-        "Composite keys are perfectly valid but can be annoying to type out because every other table that links to this one must also use both columns. Because of this, many teams prefer to just add a simple 'id' surrogate key to the table and keep the multiple columns as a UNIQUE constraint instead.",
+        "Sometimes a unique identity requires multiple columns. For example, a row in an order_items table is identified by the **combination** of an order_id and a product_id together. This is called a **composite primary key**.",
+        "Composite keys are perfectly valid but can be annoying to type out because every other table that links to this one must also use both columns. Because of this, many teams prefer to just add a simple 'id' surrogate key to the table and keep the multiple columns as a **UNIQUE constraint** instead.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "A primary key guarantees that a row is unique, not null, and has an immutable identity.",
-        "The database will automatically reject NULLs and duplicates in a primary key column.",
-        "It is usually best to prefer a surrogate key like BIGSERIAL or UUID, plus a UNIQUE constraint on natural values.",
-        "Composite keys are fine, but they can make linking tables more verbose.",
-        "You should never reuse a primary key value that has been deleted.",
+        "A **primary key** guarantees that a row is unique, not null, and has an immutable identity.",
+        "The database will **automatically reject** NULLs and duplicates in a primary key column.",
+        "It is usually best to prefer a **surrogate key** like BIGSERIAL or UUID, plus a UNIQUE constraint on natural values.",
+        "**Composite keys** are fine, but they can make linking tables more verbose.",
+        "You should **never reuse** a primary key value that has been deleted.",
       ],
     },
     {
@@ -391,8 +391,8 @@ const foreignKeys: LessonContent = {
       kind: "prose",
       heading: "What a foreign key actually does",
       body: [
-        "A foreign key is a column whose value must match a primary key in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
-        "Foreign keys also give you control over what happens when a parent record is deleted, ensuring you never end up with 'orphan' records scattered throughout your database.",
+        "A **foreign key** is a column whose value must match a **primary key** in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
+        "Foreign keys also give you control over what happens when a **parent record is deleted**, ensuring you never end up with **'orphan' records** scattered throughout your database.",
       ],
     },
     {
@@ -410,8 +410,8 @@ const foreignKeys: LessonContent = {
       kind: "prose",
       heading: "One-to-One (1:1) Relationships",
       body: [
-        "A one-to-one relationship means one row in a table is linked to exactly one row in another. For example, a user might have exactly one profile.",
-        "To enforce this in SQL, you add a foreign key and also apply a UNIQUE constraint to it. This guarantees that no two profiles can ever point to the same user.",
+        "A **one-to-one relationship** means one row in a table is linked to **exactly one row** in another. For example, a user might have exactly one profile.",
+        "To enforce this in SQL, you add a foreign key and also apply a **UNIQUE constraint** to it. This guarantees that no two profiles can ever point to the same user.",
       ],
     },
     {
@@ -434,8 +434,8 @@ CREATE TABLE user_profiles (
       kind: "prose",
       heading: "One-to-Many (1:N) Relationships",
       body: [
-        "This is the most common relationship. One customer can place many orders, but each order belongs to exactly one customer.",
-        "To create a 1:N relationship, you simply place a foreign key on the 'many' side (the orders table) pointing to the 'one' side (the customers table), without a UNIQUE constraint.",
+        "This is the **most common relationship**. One customer can place many orders, but each order belongs to **exactly one customer**.",
+        "To create a **1:N relationship**, you simply place a foreign key on the 'many' side (the orders table) pointing to the 'one' side (the customers table), **without a UNIQUE constraint**.",
       ],
     },
     {
@@ -476,8 +476,8 @@ N : M     students >──< courses
       kind: "prose",
       heading: "Many-to-many (N:M) needs a join table",
       body: [
-        "There is no such thing as a many-to-many foreign key column. To model an N:M relationship (like students and courses), you must create a third table, usually called a join or link table.",
-        "The primary key of this join table is simply the combination of the two foreign keys it connects. This ensures a student cannot enroll in the exact same course twice.",
+        "There is no such thing as a **many-to-many foreign key column**. To model an **N:M relationship** (like students and courses), you must create a third table, usually called a **join or link table**.",
+        "The primary key of this join table is simply the **combination of the two foreign keys** it connects. This ensures a student cannot enroll in the exact same course twice.",
       ],
     },
     {
@@ -496,9 +496,9 @@ N : M     students >──< courses
       heading: "Handling Deletions (ON DELETE)",
       body: [
         "When a parent row is deleted, what happens to the children? You must explicitly choose:",
-        "• RESTRICT (default): The database blocks the deletion and throws an error if children exist.",
-        "• CASCADE: The database automatically deletes all linked child rows (great for users and their profiles).",
-        "• SET NULL: The parent is deleted, and the child's foreign key column is updated to NULL (great for keeping historical orders when a user is deleted)."
+        "• **RESTRICT (default):** The database blocks the deletion and throws an error if children exist.",
+        "• **CASCADE:** The database automatically deletes all linked child rows (great for users and their profiles).",
+        "• **SET NULL:** The parent is deleted, and the child's foreign key column is updated to NULL (great for keeping historical orders when a user is deleted)."
       ]
     },
     {
@@ -510,11 +510,11 @@ N : M     students >──< courses
     {
       kind: "takeaways",
       items: [
-        "Foreign keys enforce referential integrity directly at the database engine level.",
-        "Add a UNIQUE constraint to a foreign key to create a 1:1 relationship.",
-        "Many-to-many relationships are always modeled with a join table.",
-        "You must deliberately choose an ON DELETE behavior (CASCADE, SET NULL, or RESTRICT).",
-        "You must always manually add an index on the child-side foreign key column.",
+        "**Foreign keys** enforce referential integrity directly at the database engine level.",
+        "Add a **UNIQUE constraint** to a foreign key to create a **1:1 relationship**.",
+        "**Many-to-many relationships** are always modeled with a **join table**.",
+        "You must deliberately choose an **ON DELETE behavior** (CASCADE, SET NULL, or RESTRICT).",
+        "You must **always manually add an index** on the child-side foreign key column.",
       ],
     },
     {
@@ -652,8 +652,8 @@ const normalization: LessonContent = {
       kind: "prose",
       heading: "Why normalize?",
       body: [
-        "Normalization means every fact lives in exactly one place. When an address changes, you update one row instead of every copy. That is the core payoff.",
-        "Skipping it creates three classic problems: update anomalies (you change one copy but leave others stale), insert anomalies (you cannot add a course unless a student enrolls), and delete anomalies (if you delete a student, you might accidentally lose the course data).",
+        "**Normalization** means every fact lives in **exactly one place**. When an address changes, you update one row instead of every copy. That is the core payoff.",
+        "Skipping it creates three classic problems: **update anomalies** (you change one copy but leave others stale), **insert anomalies** (you cannot add a course unless a student enrolls), and **delete anomalies** (if you delete a student, you might accidentally lose the course data).",
       ],
     },
     {
@@ -671,10 +671,10 @@ const normalization: LessonContent = {
       kind: "prose",
       heading: "The forms in plain English",
       body: [
-        "1NF (First Normal Form): Every cell is atomic. No comma-separated lists, and no JSON pretending to be a relation. Each row is uniquely identifiable.",
-        "2NF (Second Normal Form): Applies when the primary key is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
-        "3NF (Third Normal Form): No transitive dependencies. If column A depends on column B, and B is not the key, move A and B into their own table referenced by an ID.",
-        "BCNF (Boyce-Codd Normal Form): A slightly stricter version of 3NF. For every functional dependency X determines Y, X must be a superkey. This is rarely needed beyond 3NF, but it closes some edge cases.",
+        "**1NF (First Normal Form):** Every cell is **atomic**. No comma-separated lists, and no JSON pretending to be a relation. Each row is uniquely identifiable.",
+        "**2NF (Second Normal Form):** Applies when the primary key is composite. Every non-key column must depend on the **WHOLE key**, not just part of it. Split out anything that depends on only one side.",
+        "**3NF (Third Normal Form):** No **transitive dependencies**. If column A depends on column B, and B is not the key, move A and B into their own table referenced by an ID.",
+        "**BCNF (Boyce-Codd Normal Form):** A slightly stricter version of 3NF. For every functional dependency X determines Y, X must be a **superkey**. This is rarely needed beyond 3NF, but it closes some edge cases.",
       ],
     },
     {
@@ -715,18 +715,18 @@ CREATE TABLE order_items (
       kind: "prose",
       heading: "When and how to denormalize",
       body: [
-        "Denormalization deliberately repeats data so reads can skip expensive joins. Common examples include copying a customer name onto the orders table for list views, pre-aggregating daily totals into a metrics table, or materializing a view.",
-        "The cost is consistency: every change to the source data must fan out to every copy. You will need to use triggers, application-layer fan-out, or scheduled refreshes, and accept some staleness under heavy load.",
+        "**Denormalization** deliberately repeats data so reads can **skip expensive joins**. Common examples include copying a customer name onto the orders table for list views, pre-aggregating daily totals into a metrics table, or materializing a view.",
+        "The cost is **consistency**: every change to the source data must fan out to every copy. You will need to use triggers, application-layer fan-out, or scheduled refreshes, and accept some **staleness** under heavy load.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "1NF: Atomic cells, no lists.",
-        "2NF: Full dependency on the whole composite key.",
-        "3NF: No transitive dependencies between non-key columns.",
-        "BCNF: Stricter 3NF to close edge cases.",
-        "Normalize by default; denormalize with clear intent and measurement.",
+        "**1NF:** Atomic cells, no lists.",
+        "**2NF:** Full dependency on the whole composite key.",
+        "**3NF:** No transitive dependencies between non-key columns.",
+        "**BCNF:** Stricter 3NF to close edge cases.",
+        "**Normalize by default;** denormalize with clear intent and measurement.",
       ],
     },
     {
