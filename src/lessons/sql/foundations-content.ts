@@ -698,7 +698,7 @@ const dbWhatIs: LessonContent = {
       heading: "What is a Database?",
       body: [
         "At its simplest, a database is an organized collection of structured information, or data, stored electronically in a computer system.",
-        "Unlike a simple Excel spreadsheet—which is great for a single user entering flat data—a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
+        "Unlike a simple Excel spreadsheet which is great for a single user entering flat data, a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
       ],
     },
     {
@@ -738,6 +738,14 @@ const dbWhatIs: LessonContent = {
       kind: "animation",
       variant: "intro-db-types",
       caption: "Comparing Relational and Non-Relational structures",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database is an organized collection of structured data designed for scale and concurrent users.",
+        "The DBMS acts as the software engine managing storage and retrieval.",
+        "Relational (SQL) databases use rigid tables and schemas, while Non-Relational (NoSQL) databases offer flexible data structures.",
+      ],
     },
   ],
 };
@@ -801,6 +809,14 @@ const dbUnderTheHood: LessonContent = {
       kind: "animation",
       variant: "intro-storage",
       caption: "Using a B-Tree index to bypass a full table scan",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A Write-Ahead Log (WAL) ensures data durability while keeping writes extremely fast.",
+        "Query execution involves a parser for syntax/permissions and an optimizer that plans the fastest retrieval route.",
+        "B-Tree indexes drastically reduce disk reads, bypassing slow full table scans.",
+      ],
     },
   ],
 };
