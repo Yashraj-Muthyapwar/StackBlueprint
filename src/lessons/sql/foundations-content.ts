@@ -1,12 +1,14 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/client-server-architecture.png";
-import relationaldatabaseImg from "@/images/relational_database.png";
-import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
-import databasecomponentsImg from "@/images/database-components.png";
-import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
+import clientServerImg from "@/images/sql/foundations/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/sql/foundations/relational_database.png";
+import relationalvsnonrelationalImg from "@/images/sql/foundations/relational-vs-non-relational.png";
+import databasecomponentsImg from "@/images/sql/foundations/database-components.png";
+import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
+import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
+src/images/sql/foundations
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -935,9 +937,10 @@ const dbUnderTheHood: LessonContent = {
       ],
     },
     {
-      kind: "diagram",
-      ascii: "[Your Query] ──> [Parser] ──> [Optimizer] ──> [Storage Engine] ──> [Data Returned]",
-      caption: "The query execution pipeline",
+      kind: "image",
+      src: datareadImg,
+      alt: "How Data is Accessed",
+      caption: "How Data is Accessed",
     },
     {
       kind: "prose",
