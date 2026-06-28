@@ -1,64 +1,74 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
+import clientServerImg from "@/images/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/relational_database.png";
+import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
+import databasecomponentsImg from "@/images/database-components.png";
+import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
+import { type QuizQuestion } from "@/components/sql/Quiz";
+
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language: "sql" | "text"; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: string[][] }
   | {
-      kind: "callout";
-      tone: "info" | "warn" | "success";
-      title: string;
-      body: string;
-    }
+    kind: "callout";
+    tone: "info" | "warn" | "success";
+    title: string;
+    body: string;
+  }
   | { kind: "diagram"; ascii: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string }
   | {
-      kind: "animation";
-      variant:
-        | "pipeline"
-        | "select-projection"
-        | "table-build"
-        | "foreign-key"
-        | "null-truth"
-        | "type-sizes"
-        | "where-filter"
-        | "group-by-agg"
-        | "join-types"
-        | "set-ops"
-        | "table-anatomy"
-        | "pk-anatomy"
-        | "fk-deep"
-        | "normalization"
-        | "intro-what-is-db"
-        | "intro-db-types"
-        | "intro-how-db-works"
-        | "intro-querying"
-        | "intro-storage"
-        | "commands-map"
-        | "query-structure"
-        | "select-distinct"
-        | "offset-pagination"
-        | "sql-comments"
-        | "sql-operators"
-        | "q-bool"
-        | "q-range"
-        | "q-like"
-        | "q-null3vl"
-        | "q-aggr"
-        | "q-grpby"
-        | "q-having"
-        | "q-cube"
-        | "q-venn"
-        | "q-self"
-        | "q-semianti"
-        | "q-algos"
-        | "q-scalar"
-        | "q-corr"
-        | "q-existsin"
-        | "q-setops";
-      caption?: string;
-    }
-  | { kind: "takeaways"; items: string[] };
+    kind: "animation";
+    variant:
+    | "pipeline"
+    | "select-projection"
+    | "table-build"
+    | "foreign-key"
+    | "null-truth"
+    | "type-sizes"
+    | "where-filter"
+    | "group-by-agg"
+    | "join-types"
+    | "set-ops"
+    | "table-anatomy"
+    | "pk-anatomy"
+    | "fk-deep"
+    | "normalization"
+    | "intro-what-is-db"
+    | "intro-db-types"
+    | "intro-how-db-works"
+    | "intro-querying"
+    | "intro-storage"
+    | "commands-map"
+    | "query-structure"
+    | "select-distinct"
+    | "offset-pagination"
+    | "sql-comments"
+    | "sql-operators"
+    | "q-bool"
+    | "q-range"
+    | "q-like"
+    | "q-null3vl"
+    | "q-aggr"
+    | "q-grpby"
+    | "q-having"
+    | "q-cube"
+    | "q-venn"
+    | "q-self"
+    | "q-semianti"
+    | "q-algos"
+    | "q-scalar"
+    | "q-corr"
+    | "q-existsin"
+    | "q-setops"
+    | "intro-sql-client-server";
+    caption?: string;
+  }
+  | { kind: "takeaways"; items: string[] }
+  | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type LessonContent = {
   slug: string;
@@ -679,6 +689,366 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
         "Use IS NULL / IS NOT NULL — never = NULL.",
         "COALESCE picks the first non-NULL.",
         "Default columns to NOT NULL; allow NULL only when 'unknown' is meaningful.",
+      ],
+    },
+  ],
+};
+const dbWhatIs: LessonContent = {
+  slug: "what-is-database",
+  title: "What is a Database?",
+  subtitle: "Data storage, core components, and how databases scale beyond simple spreadsheets.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is a Database?",
+      body: [
+        "At its simplest, a database is an organized collection of structured information, or data, stored electronically in a computer system.",
+        "Unlike a simple Excel spreadsheet which is great for a single user entering flat data, a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-what-is-db",
+      caption: "A central database serving many users and applications concurrently",
+    },
+    {
+      kind: "prose",
+      heading: "The Core Components",
+      body: [
+        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
+      ],
+    },
+    {
+      kind: "image",
+      src: databasecomponentsImg,
+      alt: "Database Components",
+      caption: "Database Components",
+    },
+    {
+      kind: "prose",
+      body: [
+        "• **The Data**: The actual raw information being stored (text, numbers, files, dates).",
+        "• **The Hardware**: The physical servers, hard drives (SSDs/HDDs), and memory (RAM) where the data lives.",
+        "• **The Database Management System (DBMS)**: This is the software engine that acts as the interface between the database and its users or applications. When you want to store or fetch data, you talk to the DBMS. Examples include MySQL, PostgreSQL, and MongoDB.",
+        "• **The Query Language**: The specific language used to command the DBMS. The most famous is SQL (Structured Query Language).",
+        "• **Database Schema**: The structural blueprint or design of how the data is organized (e.g., tables, columns, relationships).",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Main Types of Databases",
+      body: [
+        "Databases generally fall into two major categories based on how they model data: Relational (SQL) and Non-Relational (NoSQL).",
+      ],
+    },
+    {
+      kind: "image",
+      src: relationalvsnonrelationalImg,
+      alt: "Relational vs Non-Relational",
+      caption: "Relational vs Non-Relational",
+    },
+    {
+      kind: "table",
+      caption: "Relational vs Non-Relational Databases",
+      headers: ["Type", "Structure", "Examples", "Best for"],
+      rows: [
+        ["Relational (SQL)", "Rigid, structured tables (rows & columns) with Strict Schemas and relationships", "PostgreSQL, MySQL, Oracle, SQLite", "High accuracy, complex transactions (banking, e-commerce)"],
+        ["Non-Relational (NoSQL)", "Flexible, unstructured data (Documents, Key-Value, Graphs)", "MongoDB, Redis, Neo4j", "Unstructured data, massive scale-out, real-time data"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-db-types",
+      caption: "Comparing Relational and Non-Relational structures",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database is an organized collection of structured data designed for scale and concurrent users.",
+        "The DBMS acts as the software engine managing storage and retrieval.",
+        "Relational (SQL) databases use rigid tables and schemas, while Non-Relational (NoSQL) databases offer flexible data structures.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "What is the primary purpose of a database compared to a simple spreadsheet?",
+          options: [
+            "To store data in a single file on a local computer.",
+            "To handle massive amounts of data, ensure integrity, and allow concurrent access safely.",
+            "To provide a colorful UI for data entry.",
+            "To prevent any user from deleting data."
+          ],
+          correctIndex: 1,
+          explanation: "Unlike spreadsheets, databases are built for scale, concurrency, and maintaining strict data integrity."
+        },
+        {
+          id: "q2",
+          question: "Which of the following is NOT a core component of a database ecosystem?",
+          options: [
+            "The Hardware (RAM/Disk)",
+            "The Database Management System (DBMS)",
+            "The Web Browser",
+            "The Query Language (like SQL)"
+          ],
+          correctIndex: 2,
+          explanation: "A web browser is a client application, not a core component of the database ecosystem itself."
+        },
+        {
+          id: "q3",
+          question: "What does 'DBMS' stand for?",
+          options: [
+            "Database Management System",
+            "Data Backup and Migration System",
+            "Database Memory Storage",
+            "Data Business Management Software"
+          ],
+          correctIndex: 0,
+          explanation: "DBMS stands for Database Management System, the software engine that interfaces with the data."
+        },
+        {
+          id: "q4",
+          question: "Which type of database relies on rigid, structured tables with strict schemas?",
+          options: [
+            "Relational (SQL) Databases",
+            "Document Databases",
+            "Graph Databases",
+            "Key-Value Stores"
+          ],
+          correctIndex: 0,
+          explanation: "Relational (SQL) databases use rigid tables (rows and columns) and strict schemas to ensure data integrity."
+        },
+        {
+          id: "q5",
+          question: "Which of the following is an example of a Non-Relational (NoSQL) database?",
+          options: [
+            "PostgreSQL",
+            "MySQL",
+            "MongoDB",
+            "Oracle"
+          ],
+          correctIndex: 2,
+          explanation: "MongoDB is a document-based NoSQL database, while the others are Relational (SQL) databases."
+        },
+        {
+          id: "q6",
+          question: "Why can't a simple file or spreadsheet replace a database for a large web application?",
+          options: [
+            "Spreadsheets cost too much.",
+            "Files cannot be read by programming languages.",
+            "Files lack built-in mechanisms for safe concurrent writes and structured querying.",
+            "Spreadsheets cannot store text data."
+          ],
+          correctIndex: 2,
+          explanation: "Databases use complex concurrency control (like locks and transactions) to ensure multiple users can write simultaneously without corrupting the data."
+        },
+        {
+          id: "q7",
+          question: "What is a 'Database Schema'?",
+          options: [
+            "The physical server where data is stored.",
+            "The password used to access the database.",
+            "The structural blueprint of how data is organized, including tables and relationships.",
+            "A backup file of the database."
+          ],
+          correctIndex: 2,
+          explanation: "The schema is the blueprint defining the structure of the database (tables, columns, types, and constraints)."
+        },
+        {
+          id: "q8",
+          question: "If your application requires highly complex transactions (like banking transfers), which database type is typically best?",
+          options: [
+            "Non-Relational (NoSQL)",
+            "Relational (SQL)",
+            "In-memory cache only",
+            "A flat text file"
+          ],
+          correctIndex: 1,
+          explanation: "Relational databases are heavily optimized for complex, multi-step transactions (ACID properties) that guarantee absolute accuracy."
+        },
+        {
+          id: "q9",
+          question: "Which component of the DBMS actually translates your commands into physical disk reads?",
+          options: [
+            "The Storage Engine",
+            "The Query Language",
+            "The Database Schema",
+            "The Hardware"
+          ],
+          correctIndex: 0,
+          explanation: "The storage engine (part of the DBMS) handles the actual I/O operations to physical disk and memory."
+        },
+        {
+          id: "q10",
+          question: "True or False: A single database server can only host one database.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A single database server or DBMS instance can host and manage multiple distinct databases simultaneously."
+        }
+      ]
+    }
+  ],
+};
+
+const dbUnderTheHood: LessonContent = {
+  slug: "db-under-the-hood",
+  title: "How Databases Work Under the Hood",
+  subtitle: "From memory vs disk tradeoffs to how the engine parses, optimizes, and fetches data.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "How Data is Stored",
+      body: [
+        "When an application saves data, it doesn't just instantly vanish into a hard drive. It follows a highly optimized path to balance speed and safety.",
+      ],
+    },
+    {
+      kind: "image",
+      src: datastoredandreadImg,
+      alt: "How Data is Stored",
+      caption: "How Data is Stored",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**RAM (Memory)** is extremely fast but volatile (loses data if the power goes out). **Disk (SSD/HDD)** is slower but persistent.",
+        "Because writing directly to a physical disk is slow, databases use a trick called a **Write-Ahead Log (WAL)** or transaction log.",
+        "When new data comes in, the DBMS first writes it to a sequential log file on the disk (WAL). Writing sequentially is incredibly fast. Simultaneously, the data is updated in the server's RAM cache so applications can read it instantly.",
+        "Later, in the background, a process called *checkpointing* flushes the data from the RAM and permanently organizes it into the main disk storage pages. If the server suddenly loses power, the database reads the WAL upon reboot to recover anything that hadn't made it to the permanent disk yet.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-how-db-works",
+      caption: "Memory, Disk, and the Write-Ahead Log in action",
+    },
+    {
+      kind: "prose",
+      heading: "How Data is Accessed (The Retrieval Engine)",
+      body: [
+        "When you ask a database for information (e.g., `SELECT * FROM users WHERE email = 'test@example.com'`), the DBMS triggers a multi-step pipeline:",
+      ],
+    },
+    {
+      kind: "diagram",
+      ascii: "[Your Query] ──> [Parser] ──> [Optimizer] ──> [Storage Engine] ──> [Data Returned]",
+      caption: "The query execution pipeline",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**1. Parsing and Compilation**\nThe DBMS checks your query syntax to make sure it's valid code, ensures you actually have permission to access that data, and translates it into a machine-readable format.",
+        "**2. The Query Optimizer**\nThis is the 'brain' of the database. There are often dozens of different physical ways to find your data. The optimizer analyzes the statistics of your data and calculates the most efficient execution plan (e.g., whether to scan the whole database or use a shortcut).",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-querying",
+      caption: "Parsing, optimizing, and executing a query",
+    },
+    {
+      kind: "prose",
+      heading: "The Power of Indexes",
+      body: [
+        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan**—meaning it reads all 10 million rows one by one. This is incredibly slow.",
+        "To fix this, we create indexes on frequently searched columns (like an ID or email). An index is typically structured as a **B-Tree** (Balanced Tree).",
+        "Instead of scanning sequentially, a B-Tree allows the database to perform binary-style searches, cutting down the search steps from 10,000,000 operations to just a tiny handful (usually less than 20 disk reads).",
+        "Once the storage engine locates the specific block on the disk using the index, it pulls the data into RAM and hands it back to your application.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-storage",
+      caption: "Using a B-Tree index to bypass a full table scan",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A Write-Ahead Log (WAL) ensures data durability while keeping writes extremely fast.",
+        "Query execution involves a parser for syntax/permissions and an optimizer that plans the fastest retrieval route.",
+        "B-Tree indexes drastically reduce disk reads, bypassing slow full table scans.",
+      ],
+    },
+  ],
+};
+
+const sqlIntro: LessonContent = {
+  slug: "sql-intro",
+  title: "SQL Intro & Architecture",
+  subtitle: "What is SQL and how do clients connect to a database server?",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is SQL?",
+      body: [
+        "SQL (Structured Query Language) is the standard language for interacting with relational databases. It allows you to create tables, insert data, and write queries to ask complex questions about your data.",
+        "Unlike general-purpose languages like 'Python' or 'JavaScript', **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Why do we use SQL?",
+      body: [
+        "• **Universal Standard**: Almost every major database system (*PostgreSQL, MySQL, SQLite, SQL Server*) uses **SQL**.",
+        "• **Data Integrity**: It enforces **strict rules** (*schemas*) so your data remains consistent and reliable.",
+        "• **Performance**: SQL databases are highly optimized to search through millions of rows in milliseconds."
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What is a Relational Database?",
+      body: [
+        "A relational database organizes data into **tables** (like spreadsheets) which can be linked or related to each other based on common data. For example, linking a '*Customers*' table to an '*Orders*' table using a **Customer ID**."
+      ],
+    },
+    {
+      kind: "image",
+      src: relationaldatabaseImg,
+      alt: "Relational Database",
+      caption: "Relational Database",
+    },
+    {
+      kind: "prose",
+      heading: "Client-Server Architecture",
+      body: [
+        "Database servers store and manage databases, while database clients connect to servers and send queries.",
+        "Multiple users can connect simultaneously to the same database server through various types of clients including web applications and desktop software.",
+      ],
+    },
+    {
+      kind: "image",
+      src: clientServerImg,
+      alt: "Database Server and Clients",
+      caption: "Database Server and Clients",
+    },
+    {
+      kind: "prose",
+      heading: "Connection Details",
+      body: [
+        "To connect to a database, you typically need four pieces of information:",
+        "• **Server address**: Where the database lives (*URL* or *IP address*)",
+        "• **Username**: Your account name",
+        "• **Password**: Your account password",
+        "• **Database name**: Which specific database to use",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-sql-client-server",
+      caption: "Clients connecting to a central database server",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SQL is the standard language for relational databases.",
+        "Databases use a Client-Server architecture.",
+        "Multiple clients can connect to one server simultaneously.",
+        "You need a server address, username, password, and database name to connect.",
       ],
     },
   ],
@@ -1464,249 +1834,17 @@ LIMIT   10;`,
   ],
 };
 
-// ---------- INTRO ----------
-
-const introWhatIsDb: LessonContent = {
-  slug: "what-is-a-database",
-  title: "What is a Database?",
-  subtitle: "Before SQL — the thing SQL talks to.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "A database is structured, persistent, shared state",
-      body: [
-        "A database is a long-lived, structured store of facts that many programs and people can read and write concurrently — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus concurrency, integrity, and a query language.",
-        "The software that wraps the data is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-what-is-db",
-      caption: "From flat files to a real database",
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "Why not just a spreadsheet or a JSON file?",
-      body: "Spreadsheets and JSON break the moment you need concurrent writers, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to all of those at once.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "A database = structured + persistent + concurrent + queryable.",
-        "A DBMS is the program that enforces those properties.",
-        "SQL is the language you use to talk to it.",
-      ],
-    },
-  ],
-};
-
-const introDbTypes: LessonContent = {
-  slug: "types-of-databases",
-  title: "Types of Databases",
-  subtitle: "Relational, document, key-value, graph, columnar — and when each one wins.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "There is no single 'database' — there are families",
-      body: [
-        "Different data shapes and access patterns gave rise to different database families. Picking the right family is the highest-leverage architectural decision on a system. Picking the wrong one usually means rewriting in 18 months.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-db-types",
-      caption: "Five families — relational, document, key-value, graph, columnar",
-    },
-    {
-      kind: "table",
-      caption: "When to reach for each family",
-      headers: ["Family", "Best for", "Examples"],
-      rows: [
-        ["Relational (SQL)", "Transactions, integrity, joins, reports", "PostgreSQL, MySQL, SQL Server"],
-        ["Document", "Shape-varying records, rapid iteration", "MongoDB, CouchDB, DynamoDB"],
-        ["Key-value", "Hot lookups, sessions, caches", "Redis, Memcached, etcd"],
-        ["Graph", "Many-to-many traversal (social, fraud)", "Neo4j, Memgraph"],
-        ["Columnar / OLAP", "Aggregations over billions of rows", "ClickHouse, DuckDB, BigQuery, Snowflake"],
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "success",
-      title: "Default to relational",
-      body: "Without a strong reason to choose otherwise, start with a relational database. It gives you the broadest guarantees, the most tooling, and a clean path to add caches or analytics later.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Pick the family that matches the access pattern, not the data shape alone.",
-        "Relational is the default; the others solve specific problems.",
-        "Real systems often combine families (Postgres + Redis + ClickHouse).",
-      ],
-    },
-  ],
-};
-
-const introHowDbWorks: LessonContent = {
-  slug: "how-databases-work",
-  title: "How a Database Works",
-  subtitle: "Client → parser → planner → executor → result, in five steps.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "Every query takes the same path",
-      body: [
-        "When you run a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'step N made an expensive choice'.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-how-db-works",
-      caption: "Watch one query travel through the engine",
-    },
-    {
-      kind: "prose",
-      heading: "The five stages",
-      body: [
-        "1. CONNECTION — your client opens an authenticated TCP/TLS session. The SQL text travels over the wire.",
-        "2. PARSER — the engine tokenises the SQL and builds an Abstract Syntax Tree. Syntax errors die here.",
-        "3. PLANNER / OPTIMISER — the engine considers many execution strategies (sequential scan vs index scan, different join orders), estimates cost using statistics, and picks the cheapest.",
-        "4. EXECUTOR — the chosen plan runs: reads pages from disk (or the buffer cache), applies filters, joins, aggregates, sorts.",
-        "5. RESULT — matching rows are serialised and streamed back to the client.",
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "EXPLAIN shows you the plan",
-      body: "`EXPLAIN ANALYZE <query>` reveals which strategy the planner chose and how long each step actually took. It's the most useful debugging tool in databases.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Parser → Planner → Executor is the spine of every DBMS.",
-        "The planner uses table statistics to pick a plan.",
-        "EXPLAIN ANALYZE is your X-ray of any query.",
-      ],
-    },
-  ],
-};
-
-const introHowQueryingWorks: LessonContent = {
-  slug: "how-querying-works",
-  title: "How Querying Works",
-  subtitle: "SQL is declarative — describe WHAT you want, the engine works out HOW.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "Declarative vs imperative",
-      body: [
-        "In application code, you tell the computer the steps: open the file, read each line, check the condition, push to an array, sort, print. That is imperative.",
-        "In SQL, you describe the result — which rows, which columns, in what order. The engine plans the steps. As data grows from 100 rows to 100 million, the same SQL keeps working; the engine picks a different plan under the hood.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-querying",
-      caption: "Filter → project → sort → limit → aggregate",
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "The shape of every SELECT",
-      code: `SELECT  email, balance           -- 5. project the columns
-FROM    users                    -- 1. choose the source
-WHERE   balance > 100            -- 2. filter rows
-GROUP   BY email                 -- 3. (optional) collapse into groups
-HAVING  COUNT(*) >= 1            -- 4. filter groups
-ORDER   BY balance DESC          -- 6. sort the survivors
-LIMIT   10;                      -- 7. cap the output`,
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "Written vs executed order",
-      body: "You write SELECT first, but the engine runs it almost last. The logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "SQL is declarative — describe the result, not the steps.",
-        "Filter → project → group → sort → limit is the universal shape.",
-        "Aggregates collapse N rows into 1 per group — the bridge from raw events to reports.",
-      ],
-    },
-  ],
-};
-
-const introHowStorage: LessonContent = {
-  slug: "how-data-is-stored",
-  title: "How Databases Store Data",
-  subtitle: "Pages, heap files, indexes, buffer cache, and the write-ahead log.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "From row to disk",
-      body: [
-        "A table is not stored as a list of rows. It is an ordered file of fixed-size pages — 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads one row from disk; it reads a whole page and picks rows out of it. Narrow rows mean more rows per page, fewer page reads, faster queries.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-storage",
-      caption: "Pages → heap → index → buffer cache + WAL",
-    },
-    {
-      kind: "prose",
-      heading: "Why indexes matter",
-      body: [
-        "Without an index, finding `id = 3` requires scanning every page — a sequential scan, O(N). An index is a separate sorted structure (typically a B-Tree) that maps keys to row addresses, making lookup O(log N). The trade-off: indexes consume disk space, slow INSERT/UPDATE/DELETE slightly, and must be maintained.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "Speed AND durability — the WAL trick",
-      body: [
-        "If every write landed on disk synchronously, performance would collapse. Databases use two tricks: a BUFFER CACHE keeps hot pages in RAM, and a WRITE-AHEAD LOG (WAL) records every change as a sequential append before the page is updated. On COMMIT, only the WAL needs fsync — random heap writes happen in the background. On crash, the WAL is replayed to recover.",
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "success",
-      title: "The whole storage story in one sentence",
-      body: "Rows live in pages, pages live in heap files, indexes are sorted shortcuts to pages, hot pages stay in RAM, and the WAL makes commits both fast and crash-safe.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Tables are stored as fixed-size pages, not individual rows.",
-        "Indexes turn O(N) scans into O(log N) lookups — at the cost of write speed.",
-        "Buffer cache + WAL give you fast COMMITs and crash safety simultaneously.",
-      ],
-    },
-  ],
-};
-
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
-  "intro": {
-    slug: "intro",
-    title: "Intro to Databases",
+  "database-fundamentals": {
+    slug: "database-fundamentals",
+    title: "Database Fundamentals",
     category: "Foundations",
-    iconKey: "database",
+    iconKey: "terminal",
     blurb:
-      "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
-    lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
-  },
-  "relational-model": {
-    slug: "relational-model",
-    title: "Relational Model",
-    category: "Foundations",
-    iconKey: "table",
-    blurb:
-      "The mental model behind every database — tables, tuples, keys, and the relationships that turn data into meaning.",
-    lessons: [tablesAndRows, primaryKeys, foreignKeys, normalization],
+      "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
+    lessons: [dbWhatIs, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
@@ -1724,6 +1862,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
+    lessons: [selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };
