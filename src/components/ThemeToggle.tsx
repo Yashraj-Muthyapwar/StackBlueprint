@@ -33,10 +33,18 @@ export function ThemeToggle() {
   };
 
   return (
-    <button
+    <div
       onClick={toggleTheme}
-      className="flex items-center justify-center p-2 rounded-full"
+      className="flex items-center justify-center p-2 rounded-full cursor-pointer"
       aria-label="Toggle theme"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggleTheme();
+        }
+      }}
     >
       <div 
         className={`text-[1.35rem] ${
@@ -52,6 +60,6 @@ export function ThemeToggle() {
           className="pointer-events-none" 
         />
       </div>
-    </button>
+    </div>
   );
 }
