@@ -1,6 +1,7 @@
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
+import { Quiz } from "@/components/sql/Quiz";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -74,6 +75,22 @@ function highlightSql(line: string) {
   return nodes;
 }
 
+function parseInlineMarkdown(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <em key={i} className="italic text-foreground">{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={i} className="rounded bg-muted/30 px-1 py-0.5 font-mono text-[0.85em] text-foreground">{part.slice(1, -1)}</code>;
+    }
+    return part;
+  });
+}
+
 export function SectionRenderer({ section }: { section: Section }) {
   switch (section.kind) {
     case "prose":
@@ -85,8 +102,8 @@ export function SectionRenderer({ section }: { section: Section }) {
             </h2>
           ) : null}
           {section.body.map((p, i) => (
-            <p key={i} className="text-balance leading-relaxed text-muted-foreground">
-              {p}
+            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+              {parseInlineMarkdown(p)}
             </p>
           ))}
         </section>
@@ -95,13 +112,18 @@ export function SectionRenderer({ section }: { section: Section }) {
     case "code": {
       const lines = section.code.split("\n");
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
-          {section.caption ? (
-            <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {section.caption}
-            </figcaption>
-          ) : null}
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
+          <div className="flex items-center gap-1.5 border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5">
+            <div className="size-2.5 rounded-full bg-rose-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-amber-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-emerald-500/80 shadow-sm" />
+            {section.caption ? (
+              <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {section.caption}
+              </span>
+            ) : null}
+          </div>
+          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code>
               {lines.map((line, i) => (
                 <div key={i} className="flex">
@@ -119,7 +141,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "table":
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           {section.caption ? (
             <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {section.caption}
@@ -201,10 +223,24 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "diagram":
       return (
-        <figure className="overflow-hidden rounded-xl border border-hairline bg-surface">
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
             {section.ascii}
           </pre>
+          {section.caption ? (
+            <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+              {section.caption}
+            </figcaption>
+          ) : null}
+        </figure>
+      );
+
+    case "image":
+      return (
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
+          <div className="w-full flex justify-center bg-surface-2/30 py-4">
+            <img src={section.src} alt={section.alt} className="w-full h-auto max-w-full lg:max-w-4xl object-contain px-4" />
+          </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               {section.caption}
@@ -235,5 +271,8 @@ export function SectionRenderer({ section }: { section: Section }) {
           </ul>
         </section>
       );
+      
+    case "quiz":
+      return <Quiz data={{ questions: section.questions }} />;
   }
 }
