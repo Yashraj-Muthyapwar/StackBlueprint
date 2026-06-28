@@ -275,9 +275,16 @@ export const roadmap: RoadmapCategory[] = [
     title: "Data Warehouses",
     slug: "data-warehouses",
     icon: Cloud,
-    locked: true,
+    locked: false,
+    overviewPath: "/data-warehouses",
     blurb: "Cloud warehouses, modeling, and the cost/perf knobs that matter.",
     patterns: [
+      {
+        title: "Data Ecosystems",
+        slug: "data-ecosystems",
+        blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
+        lessons: [], // Populated by foundations-content.ts in actual routes
+      },
       lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
       lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
       lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
