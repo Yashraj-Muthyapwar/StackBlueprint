@@ -104,7 +104,7 @@ const sections: Section[] = [
         title: "Database Fundamentals",
         blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
         icon: Terminal,
-        modules: ["What is SQL?", "Client-Server", "DDL vs DML", "Primary & Foreign keys", "Normalization"],
+        modules: ["What is a database?", "How databases work", "SQL & Client-Server", "DDL vs DML", "Keys & Normalization"],
         unlocked: true,
       },
       {
