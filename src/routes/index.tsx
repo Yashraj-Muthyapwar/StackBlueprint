@@ -143,16 +143,23 @@ function Landing() {
                 </div>
               );
 
-              if (isUnlocked) {
+              if (cat.overviewPath === "/patterns") {
                 return (
                   <Link key={cat.slug} to="/patterns" className="block">
                     {card}
                   </Link>
                 );
               }
-              if (isSql) {
+              if (cat.overviewPath === "/sql") {
                 return (
                   <Link key={cat.slug} to="/sql" className="block">
+                    {card}
+                  </Link>
+                );
+              }
+              if (cat.overviewPath === "/data-warehouses") {
+                return (
+                  <Link key={cat.slug} to="/data-warehouses" className="block">
                     {card}
                   </Link>
                 );
