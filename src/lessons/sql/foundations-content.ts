@@ -8,7 +8,6 @@ import databasecomponentsImg from "@/images/sql/foundations/database-components.
 import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
 import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
-src/images/sql/foundations
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
