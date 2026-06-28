@@ -36,7 +36,9 @@ function FoundationTopicPage() {
             SQL Mastery
           </Link>
           <ChevronRight className="size-3" />
-          <span className="text-foreground">{t.category}</span>
+          <Link to="/sql" className="hover:text-foreground">
+            {t.category}
+          </Link>
           <ChevronRight className="size-3" />
           <span className="text-foreground">{t.title}</span>
         </nav>
