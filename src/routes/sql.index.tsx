@@ -107,6 +107,14 @@ const sections: Section[] = [
         unlocked: true,
       },
       {
+        slug: "database-fundamentals",
+        title: "Database Fundamentals",
+        blurb: "What is SQL, client-server architecture, and the five families of SQL commands.",
+        icon: Terminal,
+        modules: ["What is SQL?", "Client-Server", "Types of SQL commands", "DDL vs DML"],
+        unlocked: true,
+      },
+      {
         slug: "select-fundamentals",
         title: "SELECT Fundamentals",
         blurb: "SELECT, FROM, WHERE, ORDER BY, LIMIT — and the logical order SQL evaluates them.",
