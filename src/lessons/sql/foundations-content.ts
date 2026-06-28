@@ -7,6 +7,7 @@ import relationalvsnonrelationalImg from "@/images/sql/foundations/relational-vs
 import databasecomponentsImg from "@/images/sql/foundations/database-components.png";
 import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
 import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
+import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
@@ -1306,43 +1307,49 @@ const sqlCommands: LessonContent = {
   slug: "sql-commands",
   title: "Types of SQL Commands (DDL, DML, DCL, DQL, TCL)",
   subtitle:
-    "Five families every SQL statement belongs to — and why knowing them changes how you think about permissions.",
+    "Five families every SQL statement belongs to and why knowing them changes how you think about permissions.",
   sections: [
     {
       kind: "prose",
       heading: "Five families, one language",
       body: [
-        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each has different safety properties, rollback rules, and — in production — different roles allowed to run it.",
+        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each family has different safety rules and decides who is allowed to run them in a production database.",
       ],
+    },
+    {
+      kind: "image",
+      src: sqlCommandsImg,
+      alt: "SQL Commands Families",
+      caption: "The five SQL command families",
     },
     {
       kind: "animation",
       variant: "commands-map",
-      caption: "The SQL command family tree — DDL · DML · DQL · DCL · TCL",
+      caption: "The SQL command family tree: DDL, DML, DQL, DCL, TCL",
     },
     {
       kind: "table",
       caption: "The five families at a glance",
       headers: ["Family", "Stands for", "Verbs", "What it changes"],
       rows: [
-        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Schema / structure"],
-        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows in tables"],
-        ["DQL", "Data Query Language", "SELECT (+ WITH, FROM, WHERE, …)", "Nothing — read only"],
-        ["DCL", "Data Control Language", "GRANT, REVOKE", "Permissions"],
-        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction boundaries"],
+        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Database structure"],
+        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows of data"],
+        ["DQL", "Data Query Language", "SELECT", "Nothing (read only)"],
+        ["DCL", "Data Control Language", "GRANT, REVOKE", "User permissions"],
+        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction safety rules"],
       ],
     },
     {
       kind: "prose",
-      heading: "DDL — shape of the world",
+      heading: "DDL: Shape of the World",
       body: [
-        "DDL changes the schema: creates tables, alters columns, drops indexes. Most engines auto-commit DDL — DROP TABLE is final the instant it returns. PostgreSQL is the rare exception: DDL is transactional, so you can BEGIN, DROP TABLE x, then ROLLBACK and the table is still there.",
+        "DDL changes the structure of your database. You use it to create tables, alter columns, and drop indexes. In most databases, DDL commands are final the moment you run them. PostgreSQL is a rare exception where DDL commands can be rolled back if you make a mistake.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DDL — structural changes",
+      caption: "DDL for structural changes",
       code: `CREATE TABLE products (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -1352,20 +1359,20 @@ const sqlCommands: LessonContent = {
 ALTER TABLE products ADD COLUMN sku TEXT UNIQUE;
 ALTER TABLE products DROP COLUMN price;
 
-TRUNCATE products;   -- removes all rows, can't be rolled back in most engines
+TRUNCATE products;   -- removes all rows and usually cannot be undone
 DROP   TABLE products;`,
     },
     {
       kind: "prose",
-      heading: "DML — change the rows",
+      heading: "DML: Change the Rows",
       body: [
-        "DML adds, modifies, or removes rows. Unlike DDL, DML is always transactional — wrap it in a transaction, inspect the effect, and ROLLBACK if wrong. This is the family you spend the most time with in application code.",
+        "DML adds, modifies, or removes the actual rows of data. Unlike DDL, you can wrap DML commands in a transaction to test them safely, and then roll them back if something looks wrong. This is the family of commands you will spend the most time using in your application code.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DML — moving data",
+      caption: "DML for moving data",
       code: `INSERT INTO products (name, price) VALUES ('Pen', 2.50);
 
 UPDATE products
@@ -1374,7 +1381,7 @@ WHERE  name = 'Pen';
 
 DELETE FROM products WHERE price > 1000;
 
--- MERGE (upsert) — INSERT if missing, UPDATE if present
+-- MERGE inserts new rows or updates existing ones
 MERGE INTO inventory AS i
 USING incoming AS x ON i.sku = x.sku
 WHEN MATCHED     THEN UPDATE SET qty = i.qty + x.qty
@@ -1382,15 +1389,15 @@ WHEN NOT MATCHED THEN INSERT (sku, qty) VALUES (x.sku, x.qty);`,
     },
     {
       kind: "prose",
-      heading: "DQL — pure reads",
+      heading: "DQL: Pure Reads",
       body: [
-        "DQL is SELECT and its supporting cast: WITH, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. It never changes data. Treating DQL as its own family is useful — read-only access is the safest permission you can grant.",
+        "DQL is mainly just the SELECT statement and its helpers like WHERE and ORDER BY. It never changes data. Treating DQL as its own family is very useful because giving someone read only access is the safest permission you can grant.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DQL — pure read, no side effects",
+      caption: "DQL for pure reads with no side effects",
       code: `SELECT name, price
 FROM   products
 WHERE  price < 10
@@ -1399,30 +1406,30 @@ LIMIT  20;`,
     },
     {
       kind: "prose",
-      heading: "DCL — who is allowed to do what",
+      heading: "DCL: Who is Allowed to Do What",
       body: [
-        "DCL controls permissions. In a healthy system, the app connects as a role with narrow DML/DQL privileges; only migrations run as a role with DDL; only humans (and audited tools) run GRANT.",
+        "DCL controls user permissions. In a healthy database system, your application connects using a role with narrow privileges. Only special roles are allowed to run structural DDL commands, and only trusted administrators should run DCL commands like GRANT.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DCL — granting and revoking",
+      caption: "DCL for granting and revoking access",
       code: `GRANT SELECT, INSERT ON products TO app_user;
 GRANT ALL  PRIVILEGES   ON SCHEMA public TO migration_role;
 REVOKE DELETE ON products FROM app_user;`,
     },
     {
       kind: "prose",
-      heading: "TCL — atomic units of work",
+      heading: "TCL: Safe Units of Work",
       body: [
-        "TCL defines transaction boundaries — a group of statements that either all succeed or all fail. SAVEPOINTs are nested checkpoints inside a transaction you can selectively roll back to.",
+        "TCL defines transaction boundaries. A transaction is a group of statements that either all succeed together or all fail together. You can also use SAVEPOINT commands to create checkpoints inside a transaction to roll back to.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "TCL — transaction control",
+      caption: "TCL for transaction control",
       code: `BEGIN;
   UPDATE accounts SET balance = balance - 100 WHERE id = 1;
   SAVEPOINT after_debit;
@@ -1438,18 +1445,141 @@ COMMIT;`,
       kind: "callout",
       tone: "success",
       title: "Why the taxonomy matters",
-      body: "Production permissioning maps directly to these families. The app role gets DML+DQL, the migration role gets DDL, and DCL stays with humans. Knowing the family tells you immediately who should be able to run a given statement.",
+      body: "Production permissions map directly to these five families. Your app role gets DML and DQL. The migration role gets DDL. DCL stays with human administrators. Knowing the family tells you immediately who should be allowed to run a given statement.",
     },
     {
       kind: "takeaways",
       items: [
-        "DDL changes structure (CREATE/ALTER/DROP).",
-        "DML changes rows (INSERT/UPDATE/DELETE/MERGE).",
-        "DQL reads rows (SELECT).",
-        "DCL changes permissions (GRANT/REVOKE).",
-        "TCL controls transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT).",
+        "DDL changes structure with CREATE, ALTER, and DROP.",
+        "DML changes rows with INSERT, UPDATE, DELETE, and MERGE.",
+        "DQL reads rows using SELECT.",
+        "DCL changes permissions with GRANT and REVOKE.",
+        "TCL controls transactions with BEGIN, COMMIT, and ROLLBACK.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sc1",
+          question: "Which SQL command family is responsible for changing the structure of the database, such as creating or dropping tables?",
+          options: [
+            "DML (Data Manipulation Language)",
+            "DQL (Data Query Language)",
+            "DDL (Data Definition Language)",
+            "TCL (Transaction Control Language)"
+          ],
+          correctIndex: 2,
+          explanation: "DDL handles structural changes like CREATE, ALTER, and DROP."
+        },
+        {
+          id: "sc2",
+          question: "Which of the following commands belongs to the DML (Data Manipulation Language) family?",
+          options: [
+            "CREATE TABLE",
+            "UPDATE",
+            "GRANT",
+            "COMMIT"
+          ],
+          correctIndex: 1,
+          explanation: "UPDATE modifies the actual data rows in a table, making it a DML command."
+        },
+        {
+          id: "sc3",
+          question: "What is the only command in the DQL (Data Query Language) family?",
+          options: [
+            "INSERT",
+            "SELECT",
+            "MERGE",
+            "TRUNCATE"
+          ],
+          correctIndex: 1,
+          explanation: "SELECT is used strictly to read data without making any changes to it."
+        },
+        {
+          id: "sc4",
+          question: "If you want to give a new user permission to read data from a table, which command family would you use?",
+          options: [
+            "DCL (Data Control Language)",
+            "DDL (Data Definition Language)",
+            "DQL (Data Query Language)",
+            "DML (Data Manipulation Language)"
+          ],
+          correctIndex: 0,
+          explanation: "You would use a GRANT command, which belongs to DCL (Data Control Language)."
+        },
+        {
+          id: "sc5",
+          question: "Why is it important to group commands into a transaction using TCL (Transaction Control Language)?",
+          options: [
+            "To make the queries run faster.",
+            "To ensure that a group of related changes either all succeed together or all fail together safely.",
+            "To hide the data from unauthorized users.",
+            "To automatically create backups of the tables."
+          ],
+          correctIndex: 1,
+          explanation: "Transactions guarantee atomicity, meaning partial failures won't leave your database in an inconsistent state."
+        },
+        {
+          id: "sc6",
+          question: "Which TCL command is used to save all changes made during the current transaction permanently?",
+          options: [
+            "BEGIN",
+            "ROLLBACK",
+            "SAVEPOINT",
+            "COMMIT"
+          ],
+          correctIndex: 3,
+          explanation: "COMMIT finalizes the transaction, writing all the changes to the database permanently."
+        },
+        {
+          id: "sc7",
+          question: "True or False: In most database systems, if you run a DROP TABLE command (DDL), you can easily ROLLBACK the transaction to get your table back.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. In most databases, DDL commands auto-commit immediately and cannot be rolled back. PostgreSQL is a rare exception where this is possible."
+        },
+        {
+          id: "sc8",
+          question: "In a production environment, which family of commands does the main application server typically need?",
+          options: [
+            "Only DDL and DCL",
+            "Only TCL and DCL",
+            "Only DML and DQL",
+            "All five families"
+          ],
+          correctIndex: 2,
+          explanation: "Applications typically only need to read (DQL) and modify rows (DML). Structural changes (DDL) and permissions (DCL) should be restricted to administrators or deployment scripts."
+        },
+        {
+          id: "sc9",
+          question: "What does the TRUNCATE command do, and which family does it belong to?",
+          options: [
+            "It deletes a single row (DML).",
+            "It quickly removes all rows from a table and cannot usually be rolled back (DDL).",
+            "It drops the entire table structure (DCL).",
+            "It undoes the last transaction (TCL)."
+          ],
+          correctIndex: 1,
+          explanation: "TRUNCATE is a DDL command that instantly empties a table. Because it doesn't log individual row deletions like DELETE does, it is much faster but often irreversible."
+        },
+        {
+          id: "sc10",
+          question: "What is the purpose of the SAVEPOINT command in SQL?",
+          options: [
+            "To save a backup of the entire database to disk.",
+            "To create a safe checkpoint inside a large transaction so you can partially roll back if a specific step fails.",
+            "To permanently grant a user access to a specific table.",
+            "To automatically save a query's results to a file."
+          ],
+          correctIndex: 1,
+          explanation: "SAVEPOINT allows you to rollback to a specific point inside a transaction without abandoning the entire transaction."
+        }
+      ]
+    }
   ],
 };
 
