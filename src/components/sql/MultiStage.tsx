@@ -350,7 +350,7 @@ function SinglePanel({
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        key={`${stageIdx}-${local}-${step.rowsOverride ? "o" : "b"}`}
+        key={`${stageIdx}-${step.rowsOverride ? "o" : "b"}`}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
