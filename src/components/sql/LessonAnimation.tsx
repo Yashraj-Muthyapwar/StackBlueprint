@@ -43,6 +43,12 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
     return () => window.clearTimeout(id);
   }, [playing, step, total]);
 
+  useEffect(() => {
+    const handleQuizStart = () => setPlaying(false);
+    window.addEventListener("quiz-started", handleQuizStart);
+    return () => window.removeEventListener("quiz-started", handleQuizStart);
+  }, []);
+
   const go = useCallback(
     (delta: number) => {
       setPlaying(false);
