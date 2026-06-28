@@ -1,6 +1,7 @@
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
+import { Quiz } from "@/components/sql/Quiz";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -270,5 +271,8 @@ export function SectionRenderer({ section }: { section: Section }) {
           </ul>
         </section>
       );
+      
+    case "quiz":
+      return <Quiz data={{ questions: section.questions }} />;
   }
 }
