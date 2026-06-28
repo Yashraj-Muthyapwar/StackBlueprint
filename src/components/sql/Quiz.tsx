@@ -32,6 +32,9 @@ export function Quiz({ data }: { data: QuizData }) {
     setIsFinished(false);
     setSelectedOption(null);
     setIsAnswered(false);
+    
+    // Dispatch a custom event so other components (like animations) know the quiz started
+    window.dispatchEvent(new CustomEvent("quiz-started"));
   };
 
   const handleSelectOption = (index: number) => {
