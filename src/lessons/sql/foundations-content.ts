@@ -10,6 +10,8 @@ import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
 import primaryKeysImg from "@/images/sql/foundations/primary_keys.png";
 import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.png";
+import normalizationImg from "@/images/sql/foundations/database_normalization.png";
+import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
@@ -643,38 +645,42 @@ N : M     students >──< courses
 
 const normalization: LessonContent = {
   slug: "normalization",
-  title: "Normalization — 1NF → 5NF → Denormalize",
+  title: "Normalization & Denormalization",
   subtitle: "Walk every normal form against the same table, then see when to undo it.",
   sections: [
     {
       kind: "prose",
       heading: "Why normalize?",
       body: [
-        "Normalization means every fact lives in exactly one place. When an address changes, you update one row — not every copy. That's the payoff.",
-        "Skipping it creates three classic problems: update anomalies (change one copy, leave others stale), insert anomalies (can't add a course unless a student enrolls), and delete anomalies (delete a student and lose the course).",
+        "Normalization means every fact lives in exactly one place. When an address changes, you update one row instead of every copy. That is the core payoff.",
+        "Skipping it creates three classic problems: update anomalies (you change one copy but leave others stale), insert anomalies (you cannot add a course unless a student enrolls), and delete anomalies (if you delete a student, you might accidentally lose the course data).",
       ],
+    },
+    {
+      kind: "image",
+      src: normalizationImg,
+      alt: "Database Normalization",
+      caption: "Step by step: organizing data to remove redundancy"
     },
     {
       kind: "animation",
       variant: "normalization",
-      caption: "Same data, decomposed step by step: Unnormalized → 1NF → 2NF → 3NF → BCNF → 4NF → 5NF → Denormalize",
+      caption: "Same data, decomposed step by step: Unnormalized to 1NF, 2NF, 3NF, BCNF, then Denormalize",
     },
     {
       kind: "prose",
       heading: "The forms in plain English",
       body: [
-        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row is uniquely identifiable.",
-        "2NF — applies when the PK is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
-        "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
-        "BCNF — a stricter 3NF: for every functional dependency X → Y, X must be a superkey. Rarely needed beyond 3NF, but it closes some edge cases.",
-        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes, put them in separate tables.",
-        "5NF (PJNF) — decompose until only a natural join can losslessly rebuild the original. Theoretical bar; rarely applied directly.",
+        "1NF (First Normal Form): Every cell is atomic. No comma-separated lists, and no JSON pretending to be a relation. Each row is uniquely identifiable.",
+        "2NF (Second Normal Form): Applies when the primary key is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
+        "3NF (Third Normal Form): No transitive dependencies. If column A depends on column B, and B is not the key, move A and B into their own table referenced by an ID.",
+        "BCNF (Boyce-Codd Normal Form): A slightly stricter version of 3NF. For every functional dependency X determines Y, X must be a superkey. This is rarely needed beyond 3NF, but it closes some edge cases.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "A canonical 3NF shape — what most teams ship",
+      caption: "A canonical 3NF shape: what most teams ship",
       code: `CREATE TABLE customers (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -694,29 +700,160 @@ CREATE TABLE order_items (
 );`,
     },
     {
+      kind: "image",
+      src: denormalizationImg,
+      alt: "Database Denormalization",
+      caption: "Combining tables to optimize read performance"
+    },
+    {
       kind: "callout",
       tone: "success",
       title: "Normalize first, denormalize when measured",
-      body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document the reason every time. Premature denormalization is the #1 source of data drift in young codebases.",
+      body: "Start in 3NF. Denormalize only when a measured read pattern cannot be satisfied with indexes, and document the reason every time. Premature denormalization is the leading source of data drift in young codebases.",
     },
     {
       kind: "prose",
-      heading: "When (and how) to denormalize",
+      heading: "When and how to denormalize",
       body: [
-        "Denormalization deliberately repeats data so reads skip expensive joins. Common examples: copy `customer_name` onto `orders` for list views; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
-        "The cost is consistency — every change to the source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes, and accept some staleness under load.",
+        "Denormalization deliberately repeats data so reads can skip expensive joins. Common examples include copying a customer name onto the orders table for list views, pre-aggregating daily totals into a metrics table, or materializing a view.",
+        "The cost is consistency: every change to the source data must fan out to every copy. You will need to use triggers, application-layer fan-out, or scheduled refreshes, and accept some staleness under heavy load.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "1NF: atomic cells, no lists.",
-        "2NF: full dependency on the whole composite key.",
-        "3NF: no transitive dependencies between non-key columns.",
-        "BCNF / 4NF / 5NF: stricter forms — useful theory, rarely needed past 3NF.",
-        "Normalize by default; denormalize with intent and measurement.",
+        "1NF: Atomic cells, no lists.",
+        "2NF: Full dependency on the whole composite key.",
+        "3NF: No transitive dependencies between non-key columns.",
+        "BCNF: Stricter 3NF to close edge cases.",
+        "Normalize by default; denormalize with clear intent and measurement.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "norm1",
+          question: "[Easy] What is the primary goal of database normalization?",
+          options: [
+            "To encrypt the data.",
+            "To ensure every fact lives in exactly one place, reducing redundancy and anomalies.",
+            "To combine all tables into one giant table.",
+            "To automatically generate primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Normalization organizes data to reduce duplication, ensuring that updates, inserts, and deletes affect only one place in the database."
+        },
+        {
+          id: "norm2",
+          question: "[Easy] What is an 'update anomaly'?",
+          options: [
+            "When the database crashes during an update.",
+            "When you update a piece of duplicated data in one row but forget to update it in others, causing inconsistencies.",
+            "When you try to insert data without a primary key.",
+            "When you delete a row and it cascades to too many children."
+          ],
+          correctIndex: 1,
+          explanation: "Update anomalies occur when redundant data gets out of sync because you didn't update every single copy of it."
+        },
+        {
+          id: "norm3",
+          question: "[Medium] What rule defines First Normal Form (1NF)?",
+          options: [
+            "No transitive dependencies.",
+            "Every column must be an integer.",
+            "Every cell is atomic (indivisible) and there are no repeating groups or lists in a single column.",
+            "There must be at least three tables in the database."
+          ],
+          correctIndex: 2,
+          explanation: "1NF requires that all data is atomic, meaning you shouldn't store comma-separated lists or JSON arrays where a related table should be."
+        },
+        {
+          id: "norm4",
+          question: "[Medium] When does Second Normal Form (2NF) apply?",
+          options: [
+            "It applies to every single table.",
+            "It only applies when a table has no primary key.",
+            "It specifically applies when a table has a composite primary key (a key made of multiple columns).",
+            "It only applies to tables holding user passwords."
+          ],
+          correctIndex: 2,
+          explanation: "2NF requires that all non-key columns depend on the entire composite primary key, not just a part of it."
+        },
+        {
+          id: "norm5",
+          question: "[Medium] What defines Third Normal Form (3NF)?",
+          options: [
+            "Every table must have a foreign key.",
+            "No transitive dependencies (if column A depends on B, and B is not the primary key, they should be in a separate table).",
+            "All numbers must be floating points.",
+            "Every row must have a unique identifier."
+          ],
+          correctIndex: 1,
+          explanation: "3NF removes transitive dependencies. For example, a customer's 'city' depends on their 'zip_code', not directly on the customer's ID, so zip codes and cities should technically be their own table."
+        },
+        {
+          id: "norm6",
+          question: "[Hard] What is Boyce-Codd Normal Form (BCNF)?",
+          options: [
+            "It is the exact same thing as 1NF.",
+            "It is a stricter version of 3NF that handles complex edge cases where multiple overlapping candidate keys exist.",
+            "It is a rule for creating indexes.",
+            "It dictates how to write JOIN queries."
+          ],
+          correctIndex: 1,
+          explanation: "BCNF strengthens 3NF by stating that for every non-trivial functional dependency X -> Y, X must be a superkey."
+        },
+        {
+          id: "norm7",
+          question: "[Easy] What is Denormalization?",
+          options: [
+            "Deleting tables from the database.",
+            "Deliberately repeating data in multiple places to speed up read queries by avoiding expensive joins.",
+            "Scrambling data for security.",
+            "Removing primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Denormalization trades storage space and write complexity for faster read performance by keeping related data together."
+        },
+        {
+          id: "norm8",
+          question: "[Medium] What is the major downside or cost of Denormalization?",
+          options: [
+            "Read queries become much slower.",
+            "You cannot use foreign keys anymore.",
+            "Maintaining consistency becomes difficult: every time the source data changes, you have to manually update all the duplicated copies.",
+            "It requires you to buy more RAM."
+          ],
+          correctIndex: 2,
+          explanation: "Because data is duplicated, an update requires fanning out the change to multiple places, which introduces the risk of data getting out of sync (anomalies)."
+        },
+        {
+          id: "norm9",
+          question: "[Hard] When is the BEST time to denormalize your database?",
+          options: [
+            "Right at the beginning, before you even write any queries.",
+            "Only when a measured read pattern cannot be satisfied with standard indexing, and you have proven it is a bottleneck.",
+            "Whenever you have more than 5 tables.",
+            "Never. Denormalization is always bad."
+          ],
+          correctIndex: 1,
+          explanation: "Premature denormalization leads to buggy, drift-heavy databases. You should always start normalized (3NF) and only denormalize when metrics prove you have a specific read performance issue."
+        },
+        {
+          id: "norm10",
+          question: "[Medium] Which normal form is generally considered the 'sweet spot' that most teams aim for when designing a standard application database?",
+          options: [
+            "1NF",
+            "2NF",
+            "3NF",
+            "BCNF"
+          ],
+          correctIndex: 2,
+          explanation: "3NF is the standard goal for relational modeling. It eliminates the vast majority of redundancy without overly complicating the schema design."
+        }
+      ]
+    }
   ],
 };
 
