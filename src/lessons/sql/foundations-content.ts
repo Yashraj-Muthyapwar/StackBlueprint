@@ -957,7 +957,7 @@ const dbUnderTheHood: LessonContent = {
       kind: "prose",
       heading: "The Power of Indexes",
       body: [
-        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan**—meaning it reads all 10 million rows one by one. This is incredibly slow.",
+        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan** meaning it reads all 10 million rows one by one. This is incredibly slow.",
         "To fix this, we create indexes on frequently searched columns (like an ID or email). An index is typically structured as a **B-Tree** (Balanced Tree).",
         "Instead of scanning sequentially, a B-Tree allows the database to perform binary-style searches, cutting down the search steps from 10,000,000 operations to just a tiny handful (usually less than 20 disk reads).",
         "Once the storage engine locates the specific block on the disk using the index, it pulls the data into RAM and hands it back to your application.",
