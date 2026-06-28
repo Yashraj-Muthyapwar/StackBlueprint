@@ -251,6 +251,7 @@ export const roadmap: RoadmapCategory[] = [
     slug: "sql-mastery",
     icon: Database,
     locked: true,
+    overviewPath: "/sql",
     blurb: "From joins to query plans — write SQL that scales with your data.",
     patterns: [
       lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
