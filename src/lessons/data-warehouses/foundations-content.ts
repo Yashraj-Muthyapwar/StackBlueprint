@@ -254,6 +254,58 @@ const databaseEngines: LessonContent = {
   ],
 };
 
+const dataWarehouses: LessonContent = {
+  slug: "data-warehouses",
+  title: "Data Warehouses",
+  subtitle: "Understanding Data Warehouses.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const csvJson: LessonContent = {
+  slug: "human-readable",
+  title: "Human-Readable Formats",
+  subtitle: "CSV & JSON.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const parquetOrc: LessonContent = {
+  slug: "columnar-formats",
+  title: "Row vs. Columnar",
+  subtitle: "Avro, Parquet & ORC.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const openTable: LessonContent = {
+  slug: "open-table-formats",
+  title: "Open Table Formats",
+  subtitle: "Iceberg, Delta Lake & Hudi.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
 export const FOUNDATION_TOPICS: Record<
   string,
   { title: string; blurb: string; slug: string; lessons: LessonContent[] }
@@ -262,6 +314,12 @@ export const FOUNDATION_TOPICS: Record<
     title: "Data Ecosystems",
     slug: "data-ecosystems",
     blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
-    lessons: [dataJourney, oltpVsOlap, analyticalStorage, organizingData, databaseEngines],
+    lessons: [dataJourney, oltpVsOlap, analyticalStorage, organizingData, databaseEngines, dataWarehouses],
+  },
+  "data-formats": {
+    title: "Data Formats & Storage",
+    slug: "data-formats",
+    blurb: "Understanding how data is stored, compressed, and managed at scale.",
+    lessons: [csvJson, parquetOrc, openTable],
   },
 };
