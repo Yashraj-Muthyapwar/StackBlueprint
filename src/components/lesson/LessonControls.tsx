@@ -55,7 +55,7 @@ export function LessonControls({
   onRun,
 }: {
   builder: LessonBuilder;
-  onRun: (inputs: Record<string, unknown>, warnings: string[]) => void;
+  onRun: (inputs: Record<string, unknown>, warnings: string[], autoPlay?: boolean) => void;
 }) {
   const [raw, setRaw] = useState<RawValues>(() => defaultsToRaw(builder));
   const [parseError, setParseError] = useState<string | null>(null);
@@ -70,7 +70,7 @@ export function LessonControls({
     setParseError(null);
     const w = builder.validate ? builder.validate(inputs) : [];
     setWarnings(w);
-    onRun(inputs, w);
+    onRun(inputs, w, true);
   };
 
   const reset = () => {
@@ -78,7 +78,7 @@ export function LessonControls({
     setParseError(null);
     const w = builder.validate ? builder.validate(builder.defaultInputs as Record<string, unknown>) : [];
     setWarnings(w);
-    onRun(builder.defaultInputs as Record<string, unknown>, w);
+    onRun(builder.defaultInputs as Record<string, unknown>, w, false);
   };
 
   return (
