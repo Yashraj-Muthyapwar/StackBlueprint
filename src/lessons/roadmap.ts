@@ -286,6 +286,12 @@ export const roadmap: RoadmapCategory[] = [
         blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
         lessons: [], // Populated by foundations-content.ts in actual routes
       },
+      {
+        title: "Data Formats & Storage",
+        slug: "data-formats",
+        blurb: "Understanding how data is stored, compressed, and managed at scale.",
+        lessons: [], // Populated by foundations-content.ts in actual routes
+      },
       lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
       lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
       lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
