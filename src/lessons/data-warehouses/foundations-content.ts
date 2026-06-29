@@ -262,14 +262,193 @@ const databaseEngines: LessonContent = {
 
 const dataWarehouses: LessonContent = {
   slug: "data-warehouses",
-  title: "Data Warehouses",
-  subtitle: "Understanding Data Warehouses.",
+  title: "Modern Data Warehouses",
+  subtitle: "Deep Dive into Modern Warehouse Architectures.",
   sections: [
     {
       kind: "prose",
-      heading: "Coming Soon",
-      body: ["Content for this lesson will be added soon!"],
+      heading: "Why Do We Need a Data Warehouse?",
+      body: [
+        "As we learned earlier, running massive analytical queries (like 'total sales per region over 5 years') on your operational database (OLTP) is dangerous. It locks tables, slows down transactions, and can crash the system that runs your business.",
+        "A **Data Warehouse** is a specialized OLAP database designed specifically to handle these massive, complex read queries without impacting daily operations. It aggregates data from multiple sources (CRM, marketing, billing) into a single, centralized source of truth."
+      ],
     },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The Single Source of Truth",
+      body: "By pulling data from disparate systems into one warehouse, you eliminate the classic problem of 'Marketing says we have 100 new users, but Finance says we only have 80'. The warehouse acts as the final, agreed-upon record."
+    },
+    {
+      kind: "prose",
+      heading: "The Big Shift: Separating Compute from Storage",
+      body: [
+        "In the old days (on-premise servers), processing power (compute) and hard drives (storage) were physically tied together. If you needed more storage, you also had to buy more compute, which was incredibly expensive.",
+        "Modern cloud data warehouses introduced a revolutionary architecture: **Separation of Compute and Storage**. Storage is incredibly cheap (usually object storage like AWS S3), while Compute (the servers running the queries) is expensive. By separating them, you can scale storage infinitely without paying for expensive compute you aren't using."
+      ],
+    },
+    {
+      kind: "diagram",
+      caption: "Separation of Storage and Compute",
+      ascii: `
+  [ Compute Cluster A (Finance) ]     [ Compute Cluster B (Marketing) ]
+                   \\                       /
+                    \\                     /
+                [ Centralized Cloud Storage (S3/GCS) ]
+                (Infinitely scalable, cheap, shared)
+      `
+    },
+    {
+      kind: "prose",
+      heading: "Major Cloud Data Warehouses",
+      body: [
+        "There are three major players in the cloud data warehouse space, each with unique architectural philosophies:"
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Comparing the Big Three",
+      headers: ["Warehouse", "Architecture", "Best For"],
+      rows: [
+        ["Snowflake", "Decoupled storage/compute, multi-cloud", "Ease of use, concurrency, cross-cloud strategy"],
+        ["BigQuery", "Serverless, pay-per-query, Google Cloud", "Massive scale without managing infrastructure"],
+        ["Redshift", "Tightly integrated AWS ecosystem", "Companies already heavily invested in AWS"]
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Data Warehouses protect your operational systems from heavy analytical workloads.",
+        "They provide a **Single Source of Truth** across the entire organization.",
+        "Modern cloud warehouses **separate compute from storage**, drastically lowering costs.",
+        "Snowflake, BigQuery, and Redshift are the dominant modern cloud platforms."
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "dw-1",
+          question: "[Easy] What is the primary purpose of a Data Warehouse?",
+          options: [
+            "To process millions of real-time e-commerce purchases.",
+            "To act as a centralized, specialized system for analytical queries.",
+            "To store raw video files and unstructured images.",
+            "To replace all operational databases."
+          ],
+          correctIndex: 1,
+          explanation: "Data Warehouses are built for OLAP workloads—complex analytical queries spanning large datasets."
+        },
+        {
+          id: "dw-2",
+          question: "[Easy] Why is running analytics on an operational (OLTP) database a bad idea?",
+          options: [
+            "It is too expensive.",
+            "It will cause heavy resource contention and potentially crash the live business application.",
+            "OLTP databases don't support SQL.",
+            "Operational databases cannot store numbers."
+          ],
+          correctIndex: 1,
+          explanation: "Heavy analytical queries can lock tables and consume CPU, starving the fast, small queries needed to run the business."
+        },
+        {
+          id: "dw-3",
+          question: "[Easy] What does 'Single Source of Truth' mean in data warehousing?",
+          options: [
+            "Data is only stored on one physical hard drive.",
+            "Only one person is allowed to write queries.",
+            "All departments use the warehouse as the centralized, agreed-upon record of data.",
+            "The data can never be deleted."
+          ],
+          correctIndex: 2,
+          explanation: "It eliminates discrepancies between departments by providing one unified view of the business data."
+        },
+        {
+          id: "dw-4",
+          question: "[Medium] What was the biggest architectural revolution in modern cloud data warehouses?",
+          options: [
+            "The invention of the SQL language.",
+            "Separating Compute from Storage.",
+            "Forcing users to buy on-premise hardware.",
+            "Switching from rows to columns."
+          ],
+          correctIndex: 1,
+          explanation: "Separating compute from storage allowed companies to scale storage infinitely and cheaply without buying expensive compute resources they didn't need."
+        },
+        {
+          id: "dw-5",
+          question: "[Medium] In a decoupled architecture, where is the data typically stored?",
+          options: [
+            "In the RAM of the compute clusters.",
+            "In cheap, centralized cloud object storage (like AWS S3).",
+            "On local hard drives inside the compute nodes.",
+            "In external USB drives."
+          ],
+          correctIndex: 1,
+          explanation: "Data is stored in highly scalable object storage, and compute nodes pull data from there when running queries."
+        },
+        {
+          id: "dw-6",
+          question: "[Medium] Which data warehouse is famously known for its 'Serverless' architecture where you don't manage any compute instances?",
+          options: [
+            "Amazon Redshift",
+            "Google BigQuery",
+            "PostgreSQL",
+            "MongoDB"
+          ],
+          correctIndex: 1,
+          explanation: "BigQuery handles all compute provisioning automatically behind the scenes (Dremel engine)."
+        },
+        {
+          id: "dw-7",
+          question: "[Medium] Which feature allows Snowflake to let the Marketing team and Finance team query the exact same data without slowing each other down?",
+          options: [
+            "Multi-cloud deployment.",
+            "Zero-copy cloning.",
+            "Separation of compute and storage.",
+            "Time travel."
+          ],
+          correctIndex: 2,
+          explanation: "Because storage is centralized and decoupled, multiple independent compute clusters can read the same storage simultaneously without resource contention."
+        },
+        {
+          id: "dw-8",
+          question: "[Hard] Before separation of storage and compute, what happened if a traditional warehouse ran out of storage space?",
+          options: [
+            "You had to delete old data.",
+            "You had to purchase new nodes that included both storage AND expensive CPU, even if you didn't need more CPU.",
+            "You simply attached an S3 bucket.",
+            "The database automatically scaled."
+          ],
+          correctIndex: 1,
+          explanation: "Traditional tightly-coupled architectures forced you to scale storage and compute symmetrically, leading to massive wasted costs."
+        },
+        {
+          id: "dw-9",
+          question: "[Hard] If a company is already entirely heavily invested in the AWS ecosystem and relies deeply on tight integration with AWS tools, which warehouse is historically the most native choice?",
+          options: [
+            "Snowflake",
+            "Google BigQuery",
+            "Amazon Redshift",
+            "Azure Synapse"
+          ],
+          correctIndex: 2,
+          explanation: "While Snowflake runs on AWS, Redshift is AWS's native data warehouse offering, providing deep integrations with other AWS services."
+        },
+        {
+          id: "dw-10",
+          question: "[Hard] Why is a Data Warehouse often described using a 'Schema-on-Write' model?",
+          options: [
+            "You don't need a schema.",
+            "Data must be structured and transformed to fit a predefined schema BEFORE it is loaded into the warehouse.",
+            "The schema is generated automatically when you run a query.",
+            "You can only write to the warehouse once."
+          ],
+          correctIndex: 1,
+          explanation: "Warehouses require data to be clean and structured (Schema-on-Write) before it can be analyzed efficiently."
+        }
+      ]
+    }
   ],
 };
 
