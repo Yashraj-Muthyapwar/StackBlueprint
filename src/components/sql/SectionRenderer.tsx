@@ -214,7 +214,7 @@ export function SectionRenderer({ section }: { section: Section }) {
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
             <p className="mt-1 text-sm leading-relaxed text-foreground/85">
-              {section.body}
+              {parseInlineMarkdown(section.body)}
             </p>
           </div>
         </aside>
@@ -265,7 +265,7 @@ export function SectionRenderer({ section }: { section: Section }) {
                 className="flex gap-2.5 text-sm leading-relaxed text-foreground/90"
               >
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
-                <span>{it}</span>
+                <span>{parseInlineMarkdown(it)}</span>
               </li>
             ))}
           </ul>
