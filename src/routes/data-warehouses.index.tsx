@@ -170,7 +170,7 @@ function DataWarehousesIndex() {
                           {t.blurb}
                         </p>
 
-                        <div className="mt-6 flex flex-wrap gap-2">
+                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
                           {t.modules.map((m) => (
                             <span
                               key={m}
