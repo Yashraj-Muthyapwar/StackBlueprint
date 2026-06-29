@@ -288,15 +288,9 @@ const dataWarehouses: LessonContent = {
       ],
     },
     {
-      kind: "diagram",
+      kind: "animation",
+      variant: "dw-storage-compute-separation",
       caption: "Separation of Storage and Compute",
-      ascii: `
-  [ Compute Cluster A (Finance) ]     [ Compute Cluster B (Marketing) ]
-                   \\                       /
-                    \\                     /
-                [ Centralized Cloud Storage (S3/GCS) ]
-                (Infinitely scalable, cheap, shared)
-      `
     },
     {
       kind: "prose",
