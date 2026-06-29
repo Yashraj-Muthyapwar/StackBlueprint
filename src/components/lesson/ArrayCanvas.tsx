@@ -94,7 +94,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
         </div>
       )}
 
-      <div className="grid h-full place-items-center px-6">
+      <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="relative origin-center"
           style={{
