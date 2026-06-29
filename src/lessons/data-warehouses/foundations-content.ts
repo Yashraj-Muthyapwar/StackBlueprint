@@ -27,6 +27,7 @@ const dataJourney: LessonContent = {
       kind: "image",
       src: gadgetGroveIntroImg,
       alt: "Gadget Grove Introduction",
+      caption: "An example e-commerce company's data sources",
     },
     {
       kind: "animation",
@@ -69,6 +70,7 @@ const oltpVsOlap: LessonContent = {
       kind: "image",
       src: olapVsOltpImg,
       alt: "OLTP vs OLAP",
+      caption: "The flow from operational systems to analytical systems",
     },
     {
       kind: "animation",
@@ -180,6 +182,7 @@ const organizingData: LessonContent = {
       kind: "image",
       src: dataMartImg,
       alt: "Data Mart",
+      caption: "A Data Mart focuses on a specific business line",
     },
     {
       kind: "prose",
@@ -193,6 +196,7 @@ const organizingData: LessonContent = {
       kind: "image",
       src: dataMeshImg,
       alt: "Data Mesh",
+      caption: "Data Mesh distributes ownership to domain teams",
     },
     {
       kind: "prose",
@@ -206,6 +210,7 @@ const organizingData: LessonContent = {
       kind: "image",
       src: dataFabricImg,
       alt: "Data Fabric",
+      caption: "Data Fabric provides a unified access layer across silos",
     },
   ],
 };
@@ -227,6 +232,7 @@ const databaseEngines: LessonContent = {
       kind: "image",
       src: underTheHoodImg,
       alt: "Under the Hood: Database Engines",
+      caption: "Relational (SQL) vs non-relational (NoSQL) database families",
     },
     {
       kind: "animation",
