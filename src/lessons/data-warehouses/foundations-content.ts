@@ -9,7 +9,7 @@ import dataMartImg from "@/images/datawarehouse/foundations/data-mart.png";
 import dataMeshImg from "@/images/datawarehouse/foundations/data-mesh.png";
 import dataFabricImg from "@/images/datawarehouse/foundations/data-fabric.png";
 import underTheHoodImg from "@/images/datawarehouse/foundations/under_the_hood.png";
-import datawarehouseImg from "/images/datawarehouse/foundations/data-warehouse.png";
+import datawarehouseImg from "@/images/datawarehouse/foundations/data-warehouse.png";
 
 const dataJourney: LessonContent = {
   slug: "data-journey",
