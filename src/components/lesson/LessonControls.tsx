@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, Play, RotateCcw } from "lucide-react";
+import { AlertTriangle, Pause, Play, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,9 +53,13 @@ function parseRaw(builder: LessonBuilder, raw: RawValues): { inputs?: Record<str
 export function LessonControls({
   builder,
   onRun,
+  playing,
+  onPlayToggle,
 }: {
   builder: LessonBuilder;
   onRun: (inputs: Record<string, unknown>, warnings: string[], autoPlay?: boolean) => void;
+  playing: boolean;
+  onPlayToggle: () => void;
 }) {
   const [raw, setRaw] = useState<RawValues>(() => defaultsToRaw(builder));
   const [parseError, setParseError] = useState<string | null>(null);
@@ -94,9 +98,15 @@ export function LessonControls({
           <Button size="sm" variant="ghost" onClick={reset} title="Reset to default">
             <RotateCcw className="mr-1 size-3.5" /> Default
           </Button>
-          <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
-            <Play className="mr-1 size-3.5" /> Run
-          </Button>
+          {playing ? (
+            <Button size="sm" onClick={onPlayToggle} className="bg-amber text-primary-foreground hover:bg-amber/90">
+              <Pause className="mr-1 size-3.5" /> Pause
+            </Button>
+          ) : (
+            <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
+              <Play className="mr-1 size-3.5" /> Run
+            </Button>
+          )}
         </div>
       </div>
 
