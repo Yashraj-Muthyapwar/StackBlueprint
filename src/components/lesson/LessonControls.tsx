@@ -62,6 +62,7 @@ export function LessonControls({
   onPlayToggle: () => void;
 }) {
   const [raw, setRaw] = useState<RawValues>(() => defaultsToRaw(builder));
+  const [isDirty, setIsDirty] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
 
@@ -74,6 +75,7 @@ export function LessonControls({
     setParseError(null);
     const w = builder.validate ? builder.validate(inputs) : [];
     setWarnings(w);
+    setIsDirty(false);
     onRun(inputs, w, true);
   };
 
@@ -82,6 +84,7 @@ export function LessonControls({
     setParseError(null);
     const w = builder.validate ? builder.validate(builder.defaultInputs as Record<string, unknown>) : [];
     setWarnings(w);
+    setIsDirty(false);
     onRun(builder.defaultInputs as Record<string, unknown>, w, false);
   };
 
@@ -98,13 +101,17 @@ export function LessonControls({
           <Button size="sm" variant="ghost" onClick={reset} title="Reset to default">
             <RotateCcw className="mr-1 size-3.5" /> Default
           </Button>
-          {playing ? (
+          {isDirty ? (
+            <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
+              <Play className="mr-1 size-3.5" /> Run
+            </Button>
+          ) : playing ? (
             <Button size="sm" onClick={onPlayToggle} className="bg-amber text-primary-foreground hover:bg-amber/90">
               <Pause className="mr-1 size-3.5" /> Pause
             </Button>
           ) : (
-            <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
-              <Play className="mr-1 size-3.5" /> Run
+            <Button size="sm" onClick={onPlayToggle} className="bg-mint text-primary-foreground hover:bg-mint/90">
+              <Play className="mr-1 size-3.5" /> Play
             </Button>
           )}
         </div>
@@ -112,7 +119,15 @@ export function LessonControls({
 
       <div className="grid grid-cols-1 gap-3 px-4 py-3 md:grid-cols-2">
         {builder.inputs.map((f) => (
-          <FieldEditor key={f.key} field={f} value={raw[f.key] ?? ""} onChange={(v) => setRaw((r) => ({ ...r, [f.key]: v }))} />
+          <FieldEditor
+            key={f.key}
+            field={f}
+            value={raw[f.key] ?? ""}
+            onChange={(v) => {
+              setRaw((r) => ({ ...r, [f.key]: v }));
+              setIsDirty(true);
+            }}
+          />
         ))}
       </div>
 
