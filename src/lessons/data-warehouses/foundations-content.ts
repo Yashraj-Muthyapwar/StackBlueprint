@@ -9,6 +9,7 @@ import dataMartImg from "@/images/datawarehouse/foundations/data-mart.png";
 import dataMeshImg from "@/images/datawarehouse/foundations/data-mesh.png";
 import dataFabricImg from "@/images/datawarehouse/foundations/data-fabric.png";
 import underTheHoodImg from "@/images/datawarehouse/foundations/under_the_hood.png";
+import datawarehouseImg from "/images/datawarehouse/foundations/data-warehouse.png";
 
 const dataJourney: LessonContent = {
   slug: "data-journey",
@@ -272,6 +273,12 @@ const dataWarehouses: LessonContent = {
         "As we learned earlier, running massive analytical queries (like 'total sales per region over 5 years') on your operational database (OLTP) is dangerous. It locks tables, slows down transactions, and can crash the system that runs your business.",
         "A **Data Warehouse** is a specialized OLAP database designed specifically to handle these massive, complex read queries without impacting daily operations. It aggregates data from multiple sources (CRM, marketing, billing) into a single, centralized source of truth."
       ],
+    },
+    {
+      kind: "image",
+      src: datawarehouseImg,
+      alt: "Data Warehouse",
+      caption: "Data Warehouse",
     },
     {
       kind: "callout",
