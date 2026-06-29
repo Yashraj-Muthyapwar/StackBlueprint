@@ -92,7 +92,12 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <LessonControls builder={builder} onRun={handleRun} />
+      <LessonControls
+        builder={builder}
+        onRun={handleRun}
+        playing={playing}
+        onPlayToggle={() => setPlaying((p) => !p)}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr_1fr]">
         <div className="relative grid-bg min-h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface">
