@@ -63,6 +63,15 @@ const sections: Section[] = [
         unlocked: true,
         routeBase: "foundations",
       },
+      {
+        slug: "data-formats",
+        title: "Data Formats & Storage",
+        blurb: "Understanding how data is stored, compressed, and managed at scale.",
+        icon: Boxes,
+        modules: ["CSV & JSON", "Row vs. Columnar", "Open Table Formats"],
+        unlocked: true,
+        routeBase: "foundations",
+      },
     ],
   },
   {
