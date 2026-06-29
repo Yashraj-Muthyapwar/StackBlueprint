@@ -294,6 +294,37 @@ const dataWarehouses: LessonContent = {
     },
     {
       kind: "prose",
+      heading: "ETL vs. ELT: The Paradigm Shift",
+      body: [
+        "Historically, warehouses were expensive and had limited compute. Therefore, data had to be completely transformed and cleaned *before* it was loaded into the warehouse. This was **ETL** (Extract, Transform, Load).",
+        "Because modern cloud warehouses have massive, cheap storage and scalable compute, the industry shifted to **ELT** (Extract, Load, Transform). Now, we load raw data directly into the warehouse, and use the warehouse's own massive compute power to transform it inside the database."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Dimensional Modeling: The Star Schema",
+      body: [
+        "Data in an OLTP database is highly normalized (spread across many tables) to prevent duplicate data. But for analytics, joining 15 tables together is too slow.",
+        "Data warehouses use **Dimensional Modeling**, often forming a **Star Schema**. In a Star Schema, you have a central **Fact Table** (e.g., Sales, Clicks) surrounded by **Dimension Tables** (e.g., Date, Product, Customer).",
+        "Fact tables contain measurable metrics (revenue, quantity) and foreign keys. Dimension tables contain descriptive attributes (product name, customer city, year)."
+      ]
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A simple Star Schema query",
+      code: `SELECT 
+  d.year, 
+  c.region, 
+  SUM(f.revenue) as total_revenue
+FROM fact_sales f
+JOIN dim_date d ON f.date_id = d.id
+JOIN dim_customer c ON f.customer_id = c.id
+GROUP BY d.year, c.region
+ORDER BY total_revenue DESC;`
+    },
+    {
+      kind: "prose",
       heading: "Major Cloud Data Warehouses",
       body: [
         "There are three major players in the cloud data warehouse space, each with unique architectural philosophies:"
@@ -440,6 +471,30 @@ const dataWarehouses: LessonContent = {
           ],
           correctIndex: 1,
           explanation: "Warehouses require data to be clean and structured (Schema-on-Write) before it can be analyzed efficiently."
+        },
+        {
+          id: "dw-11",
+          question: "[Easy] What is a Star Schema?",
+          options: [
+            "A database architecture where every table connects to every other table.",
+            "A modeling technique with a central Fact table surrounded by descriptive Dimension tables.",
+            "A rating system for data quality.",
+            "A NoSQL graph database."
+          ],
+          correctIndex: 1,
+          explanation: "A Star Schema centralizes metrics in a Fact table and links out to Dimension tables for descriptive attributes like time, location, or product."
+        },
+        {
+          id: "dw-12",
+          question: "[Medium] Why did the industry shift from ETL to ELT?",
+          options: [
+            "Because transforming data became illegal in some countries.",
+            "Because modern cloud warehouses have cheap storage and massive compute, allowing data to be transformed directly inside the warehouse.",
+            "Because ELT requires fewer engineers.",
+            "Because ELT is a requirement for using SQL."
+          ],
+          correctIndex: 1,
+          explanation: "With the rise of Snowflake and BigQuery, it became cheaper and faster to load raw data into the warehouse and use its scalable compute to transform it (ELT), rather than processing it in an external server beforehand (ETL)."
         }
       ]
     }
