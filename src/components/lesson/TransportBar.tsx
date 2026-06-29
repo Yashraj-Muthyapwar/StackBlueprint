@@ -25,7 +25,7 @@ export function TransportBar({
   onSpeed: (n: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-hairline bg-surface px-4 py-2.5">
+    <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-hairline bg-surface px-4 py-2.5">
       <div className="flex items-center gap-1">
         <Button size="icon" variant="ghost" onClick={onReset} title="Reset (R)">
           <RotateCcw className="size-4" />
