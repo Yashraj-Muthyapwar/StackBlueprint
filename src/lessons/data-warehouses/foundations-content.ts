@@ -1,5 +1,15 @@
 import { type LessonContent } from "@/lessons/types";
 
+import gadgetGroveIntroImg from "@/images/datawarehouse/foundations/gadget-grove-intro.png";
+import gadgetGroveImg from "@/images/datawarehouse/foundations/gadget-grove.png";
+import journeyOfDataImg from "@/images/datawarehouse/foundations/journey-of-data.png";
+import olapVsOltpImg from "@/images/datawarehouse/foundations/olap_vs_oltp.png";
+import threeWaysToStoreImg from "@/images/datawarehouse/foundations/three-ways-to-store-data.png";
+import dataMartImg from "@/images/datawarehouse/foundations/data-mart.png";
+import dataMeshImg from "@/images/datawarehouse/foundations/data-mesh.png";
+import dataFabricImg from "@/images/datawarehouse/foundations/data-fabric.png";
+import underTheHoodImg from "@/images/datawarehouse/foundations/under_the_hood.png";
+
 const dataJourney: LessonContent = {
   slug: "data-journey",
   title: "The Journey of Data",
@@ -12,6 +22,11 @@ const dataJourney: LessonContent = {
         "We live in a world of immense data, generated every second from countless sources: Mobile & Web Apps, Smart Devices (tracking steps), IoT Sensors (temperature in a warehouse), and Social Media.",
         "To understand how businesses manage this, consider a fictional e-commerce company: Gadget Grove.",
       ],
+    },
+    {
+      kind: "image",
+      src: gadgetGroveIntroImg,
+      alt: "Gadget Grove Introduction",
     },
     {
       kind: "animation",
@@ -29,6 +44,12 @@ const dataJourney: LessonContent = {
         "**5. Analyse & Consume**: Data is used to power dashboards, run SQL queries, generate reports, or train machine learning models.",
       ],
     },
+    {
+      kind: "image",
+      src: journeyOfDataImg,
+      alt: "The Journey of Data",
+      caption: "The 5 Stages of the Data Pipeline"
+    },
   ],
 };
 
@@ -43,6 +64,11 @@ const oltpVsOlap: LessonContent = {
       body: [
         "Modern businesses rely on two distinct types of data systems: **OLTP** handles real-time, day-to-day operations, while **OLAP** is used for in-depth analysis and strategic decision-making.",
       ],
+    },
+    {
+      kind: "image",
+      src: olapVsOltpImg,
+      alt: "OLTP vs OLAP",
     },
     {
       kind: "animation",
@@ -87,6 +113,12 @@ const analyticalStorage: LessonContent = {
       body: [
         "To analyze data without slowing down operations, data is moved into specialized analytical storage systems. There are three main architectures.",
       ],
+    },
+    {
+      kind: "image",
+      src: threeWaysToStoreImg,
+      alt: "Three ways to store data",
+      caption: "Data Warehouses, Data Lakes, and Lakehouses",
     },
     {
       kind: "animation",
@@ -145,6 +177,11 @@ const organizingData: LessonContent = {
       ],
     },
     {
+      kind: "image",
+      src: dataMartImg,
+      alt: "Data Mart",
+    },
+    {
       kind: "prose",
       heading: "Data Mesh: Decentralized Ownership",
       body: [
@@ -153,12 +190,22 @@ const organizingData: LessonContent = {
       ],
     },
     {
+      kind: "image",
+      src: dataMeshImg,
+      alt: "Data Mesh",
+    },
+    {
       kind: "prose",
       heading: "Data Fabric: A Universal Library Card",
       body: [
         "A loosely coupled architecture that connects all of an organization's data across different silos and locations.",
         "It's an Architecture and Technology Layer: It uses data virtualization to let analysts find and access data without needing to know where it's stored physically.",
       ],
+    },
+    {
+      kind: "image",
+      src: dataFabricImg,
+      alt: "Data Fabric",
     },
   ],
 };
@@ -175,6 +222,11 @@ const databaseEngines: LessonContent = {
         "**Relational Databases (SQL)** are like an organized spreadsheet. Data must fit predefined columns and rows. Uses rigid schemas and guarantees strong consistency (ACID). Best for financial transactions.",
         "**NoSQL Databases** are like flexible digital folders holding different types of information. Optimized for specific data models, scale, and rapid iteration.",
       ],
+    },
+    {
+      kind: "image",
+      src: underTheHoodImg,
+      alt: "Under the Hood: Database Engines",
     },
     {
       kind: "animation",
