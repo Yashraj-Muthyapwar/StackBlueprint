@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
 import { SectionRenderer } from "@/components/sql/SectionRenderer";
 
@@ -43,14 +43,30 @@ function LessonPage() {
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-3xl">
-        <Link
-          to="/sql/querying/$topic"
-          params={{ topic: t.slug }}
-          className="mb-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
         >
-          <ArrowLeft className="size-3" />
-          Back to {t.title}
-        </Link>
+          <Link to="/sql" className="hover:text-foreground">
+            SQL Mastery
+          </Link>
+          <ChevronRight className="size-3" />
+          <Link to="/sql" className="hover:text-foreground">
+            {t.category}
+          </Link>
+          <ChevronRight className="size-3" />
+          <Link
+            to="/sql/querying/$topic"
+            params={{ topic: t.slug }}
+            className="hover:text-foreground"
+          >
+            {t.title}
+          </Link>
+          <ChevronRight className="size-3" />
+          <span className="text-foreground">
+            {String(idx + 1).padStart(2, "0")} / {String(t.lessons.length).padStart(2, "0")}
+          </span>
+        </nav>
 
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           {t.category} · {t.title} · Lesson {idx + 1} of {t.lessons.length}

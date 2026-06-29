@@ -1,7 +1,6 @@
-import type { Section } from "@/lessons/sql/foundations-content";
+import type { Section } from "@/lessons/data-warehouses/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
-import { LessonAnimation } from "@/components/sql/LessonAnimation";
-import { Quiz } from "@/components/sql/Quiz";
+import { LessonAnimation } from "@/components/data-warehouses/LessonAnimation";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -214,7 +213,7 @@ export function SectionRenderer({ section }: { section: Section }) {
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
             <p className="mt-1 text-sm leading-relaxed text-foreground/85">
-              {parseInlineMarkdown(section.body)}
+              {section.body}
             </p>
           </div>
         </aside>
@@ -265,14 +264,11 @@ export function SectionRenderer({ section }: { section: Section }) {
                 className="flex gap-2.5 text-sm leading-relaxed text-foreground/90"
               >
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
-                <span>{parseInlineMarkdown(it)}</span>
+                <span>{it}</span>
               </li>
             ))}
           </ul>
         </section>
       );
-      
-    case "quiz":
-      return <Quiz data={{ questions: section.questions }} />;
   }
 }

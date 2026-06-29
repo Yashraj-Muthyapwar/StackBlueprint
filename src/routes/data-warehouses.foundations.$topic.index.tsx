@@ -1,29 +1,25 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Database, Table, Terminal } from "lucide-react";
-import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
+import { ArrowRight, ChevronRight, Cloud } from "lucide-react";
+import { FOUNDATION_TOPICS } from "@/lessons/data-warehouses/foundations-content";
 
-const ICONS = { table: Table, database: Database, terminal: Terminal } as const;
-
-export const Route = createFileRoute("/sql/querying/$topic/")({
-  component: QueryingTopicPage,
+export const Route = createFileRoute("/data-warehouses/foundations/$topic/")({
+  component: FoundationTopicPage,
 });
 
-function QueryingTopicPage() {
+function FoundationTopicPage() {
   const { topic } = Route.useParams();
-  const t = QUERYING_TOPICS[topic];
+  const t = FOUNDATION_TOPICS[topic];
 
   if (!t) {
     return (
       <div className="px-6 py-16 text-center text-muted-foreground">
         Topic not found.{" "}
-        <Link to="/sql" className="text-mint underline-offset-4 hover:underline">
-          Back to SQL Mastery
+        <Link to="/data-warehouses" className="text-mint underline-offset-4 hover:underline">
+          Back to Data Warehouses
         </Link>
       </div>
     );
   }
-
-  const Icon = ICONS[t.iconKey];
 
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
@@ -32,12 +28,12 @@ function QueryingTopicPage() {
           aria-label="Breadcrumb"
           className="mb-6 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
         >
-          <Link to="/sql" className="hover:text-foreground">
-            SQL Mastery
+          <Link to="/data-warehouses" className="hover:text-foreground">
+            Data Warehouses
           </Link>
           <ChevronRight className="size-3" />
-          <Link to="/sql" className="hover:text-foreground">
-            {t.category}
+          <Link to="/data-warehouses" className="hover:text-foreground">
+            Foundations
           </Link>
           <ChevronRight className="size-3" />
           <span className="text-foreground">{t.title}</span>
@@ -45,11 +41,11 @@ function QueryingTopicPage() {
 
         <div className="flex items-center gap-3">
           <div className="grid size-12 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
-            <Icon className="size-6" />
+            <Cloud className="size-6" />
           </div>
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {t.category} · Topic
+              Foundations · Topic
             </p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight lg:text-4xl">
               {t.title}
@@ -64,7 +60,7 @@ function QueryingTopicPage() {
           {t.lessons.map((les, i) => (
             <Link
               key={les.slug}
-              to="/sql/querying/$topic/$lesson"
+              to="/data-warehouses/foundations/$topic/$lesson"
               params={{ topic: t.slug, lesson: les.slug }}
               className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70"
             >

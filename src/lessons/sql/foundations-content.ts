@@ -1,7 +1,18 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/client-server-architecture.png";
+import clientServerImg from "@/images/sql/foundations/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/sql/foundations/relational_database.png";
+import relationalvsnonrelationalImg from "@/images/sql/foundations/relational-vs-non-relational.png";
+import databasecomponentsImg from "@/images/sql/foundations/database-components.png";
+import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
+import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
+import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
+import primaryKeysImg from "@/images/sql/foundations/primary_keys.png";
+import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.png";
+import normalizationImg from "@/images/sql/foundations/database_normalization.png";
+import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
+import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -62,7 +73,8 @@ export type Section =
     | "intro-sql-client-server";
     caption?: string;
   }
-  | { kind: "takeaways"; items: string[] };
+  | { kind: "takeaways"; items: string[] }
+  | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type LessonContent = {
   slug: string;
@@ -166,16 +178,22 @@ const primaryKeys: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "Identity is everything",
+      heading: "Identity is Everything",
       body: [
-        "A primary key uniquely identifies each row. No two rows can share the same PK value, and PK columns can never be NULL. It's how the database — and your application — refers to a specific record over its entire lifetime.",
-        "Without a primary key you can't safely UPDATE or DELETE a single row, or join tables without ambiguity. 'Every table has a primary key' is one of the few rules in databases with no real exceptions.",
+        "A **primary key** uniquely identifies each row in a table. No two rows can share the same primary key value, and primary key columns **can never be NULL**. This is how the database and your application refer to a specific record over its entire lifetime.",
+        "Without a primary key, you cannot safely update or delete a single row, or join tables without ambiguity. The idea that **every table must have a primary key** is one of the few strict rules in databases with almost no exceptions.",
       ],
+    },
+    {
+      kind: "image",
+      src: primaryKeysImg,
+      alt: "Primary Keys",
+      caption: "Primary keys ensure every row has a unique identity",
     },
     {
       kind: "animation",
       variant: "pk-anatomy",
-      caption: "Declare → insert → reject NULL → reject duplicate → composite → surrogate",
+      caption: "Declare, insert, reject NULL, reject duplicate, composite, surrogate",
     },
     {
       kind: "code",
@@ -198,17 +216,17 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "warn",
-      title: "What goes wrong without a PK",
-      body: "A NULL in a PK column raises 'null value violates not-null constraint'. A duplicate raises 'duplicate key value violates unique constraint'. Both errors are good — they catch logic bugs at write time, not after the fact.",
+      title: "What goes wrong without a primary key",
+      body: "Trying to insert a NULL into a primary key column raises a not-null constraint error. Trying to insert a duplicate raises a unique constraint error. Both of these errors are actually great features because they catch logic bugs right when you try to save data, instead of causing silent problems later on.",
     },
     {
       kind: "table",
-      caption: "Natural vs surrogate keys",
+      caption: "Natural vs Surrogate keys",
       headers: ["", "Natural key", "Surrogate key"],
       rows: [
         ["What is it?", "A real-world value (email, ISBN, SSN)", "An invented value (BIGSERIAL, UUID)"],
-        ["Meaning", "Carries business meaning", "Meaningless outside the DB"],
-        ["Stability", "Can change (people rename, ISBNs reissue)", "Never changes"],
+        ["Meaning", "Carries business meaning", "Meaningless outside the database"],
+        ["Stability", "Can change (people change names, ISBNs get reissued)", "Never changes"],
         ["Size", "Often large (TEXT)", "Small (8 bytes)"],
         ["Best for", "Lookup tables, true unique identifiers", "Almost everything else"],
       ],
@@ -216,27 +234,150 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "info",
-      title: "Default to surrogate",
-      body: "Use a BIGSERIAL or UUID as the primary key, then add a UNIQUE constraint on the natural key (email, sku, etc.). You get a stable identifier for foreign keys and integrity on the business value.",
+      title: "Default to surrogate keys",
+      body: "Use a simple auto-incrementing number (BIGSERIAL) or a UUID as your primary key, and then add a UNIQUE constraint on the natural key like an email or SKU. This gives you a stable, non-changing identifier for linking tables while keeping your business rules strict.",
     },
     {
       kind: "prose",
-      heading: "Composite keys",
+      heading: "Composite Keys",
       body: [
-        "Sometimes identity spans multiple columns — a row in order_items is identified by (order_id, product_id) together. That's a composite primary key.",
-        "Composite keys are correct but verbose: every foreign key referencing this table must also be composite. Many teams add a surrogate `id BIGSERIAL PRIMARY KEY` and keep (order_id, product_id) as a UNIQUE constraint — cleaner FKs, same integrity.",
+        "Sometimes a unique identity requires multiple columns. For example, a row in an order_items table is identified by the **combination** of an order_id and a product_id together. This is called a **composite primary key**.",
+        "Composite keys are perfectly valid but can be annoying to type out because every other table that links to this one must also use both columns. Because of this, many teams prefer to just add a simple 'id' surrogate key to the table and keep the multiple columns as a **UNIQUE constraint** instead.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "Primary key = unique + not null + immutable identity.",
-        "NULL in a PK column is rejected; duplicates are rejected.",
-        "Prefer a surrogate (BIGSERIAL / UUID) plus a UNIQUE on the natural value.",
-        "Composite keys are fine, but they make foreign keys verbose.",
-        "Never reuse a deleted primary key value.",
+        "A **primary key** guarantees that a row is unique, not null, and has an immutable identity.",
+        "The database will **automatically reject** NULLs and duplicates in a primary key column.",
+        "It is usually best to prefer a **surrogate key** like BIGSERIAL or UUID, plus a UNIQUE constraint on natural values.",
+        "**Composite keys** are fine, but they can make linking tables more verbose.",
+        "You should **never reuse** a primary key value that has been deleted.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "pk1",
+          question: "Which of the following must be true for a primary key?",
+          options: [
+            "It must be a number.",
+            "It must be unique and cannot be NULL.",
+            "It must contain a string of at least 8 characters.",
+            "It can have duplicate values as long as they are not NULL."
+          ],
+          correctIndex: 1,
+          explanation: "Primary keys are strictly enforced to be both unique and non-null to guarantee a specific row's identity."
+        },
+        {
+          id: "pk2",
+          question: "What happens if you try to insert a duplicate primary key value into a table?",
+          options: [
+            "The database automatically generates a new, unique value.",
+            "The old row is overwritten by the new row.",
+            "The database throws a unique constraint error and rejects the insert.",
+            "The database accepts it but marks it with a warning."
+          ],
+          correctIndex: 2,
+          explanation: "The database will reject any insert that violates the uniqueness of a primary key, preventing data corruption."
+        },
+        {
+          id: "pk3",
+          question: "What is a 'surrogate key'?",
+          options: [
+            "A key made from a real-world value like an email or Social Security Number.",
+            "A backup key used only if the primary key fails.",
+            "A meaningless, database-generated value (like an auto-incrementing ID or UUID) used purely for identification.",
+            "A key that consists of multiple columns."
+          ],
+          correctIndex: 2,
+          explanation: "Surrogate keys have no business meaning and exist solely to give a stable, unchanging identity to a row."
+        },
+        {
+          id: "pk4",
+          question: "What is a 'natural key'?",
+          options: [
+            "A key generated randomly by the database.",
+            "An auto-incrementing integer.",
+            "A real-world attribute that uniquely identifies a row, like an ISBN or email address.",
+            "A key used for connecting to the database."
+          ],
+          correctIndex: 2,
+          explanation: "Natural keys use existing, real-world data (like an email) to identify a row."
+        },
+        {
+          id: "pk5",
+          question: "Why might you prefer a surrogate key over a natural key?",
+          options: [
+            "Natural keys take up less space on disk.",
+            "Surrogate keys are faster to type.",
+            "Natural keys can sometimes change in the real world (e.g., someone changes their email), which breaks links between tables.",
+            "Surrogate keys allow for duplicate values."
+          ],
+          correctIndex: 2,
+          explanation: "If a natural key changes, you have to update every other table that references it. Surrogate keys never change, making relationships stable."
+        },
+        {
+          id: "pk6",
+          question: "What is a 'composite key'?",
+          options: [
+            "A key made out of a mix of numbers and letters.",
+            "A primary key that spans across multiple columns (e.g., order_id AND product_id).",
+            "A key that is used in more than one database.",
+            "A key that is encrypted for security."
+          ],
+          correctIndex: 1,
+          explanation: "A composite key uses two or more columns together to form a unique identity."
+        },
+        {
+          id: "pk7",
+          question: "True or False: A table can have multiple primary keys.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A table can only have one primary key (though that one key can be a composite made of multiple columns)."
+        },
+        {
+          id: "pk8",
+          question: "What does BIGSERIAL do in PostgreSQL?",
+          options: [
+            "It creates a massive text field.",
+            "It automatically generates an incrementing number for each new row.",
+            "It encrypts the column data.",
+            "It allows the column to store an array of values."
+          ],
+          correctIndex: 1,
+          explanation: "BIGSERIAL is a convenient way to create an auto-incrementing integer, which is perfect for surrogate primary keys."
+        },
+        {
+          id: "pk9",
+          question: "If you decide to use a surrogate ID as your primary key, how should you handle your natural key (like a user's email)?",
+          options: [
+            "Ignore it and don't store it.",
+            "Store it normally, as duplicates don't matter.",
+            "Add a UNIQUE constraint to the natural key column to ensure no two users sign up with the same email.",
+            "Make it a second primary key."
+          ],
+          correctIndex: 2,
+          explanation: "Adding a UNIQUE constraint to the email gives you the best of both worlds: a stable surrogate primary key, and strict business rules on the natural data."
+        },
+        {
+          id: "pk10",
+          question: "Why is it important to never reuse a deleted primary key value?",
+          options: [
+            "Because the database will crash.",
+            "To prevent old, disconnected records (like historical backups or logs) from accidentally linking to the new row.",
+            "Because primary keys must always be alphabetical.",
+            "Because you are legally required not to."
+          ],
+          correctIndex: 1,
+          explanation: "Reusing an ID can cause catastrophic data mix-ups if old data (like an old invoice in a backup) suddenly points to a brand new customer who happens to get the reused ID."
+        }
+      ]
+    }
   ],
 };
 
@@ -244,20 +385,58 @@ const foreignKeys: LessonContent = {
   slug: "foreign-keys",
   title: "Foreign Keys & Relationships",
   subtitle:
-    "1:1, 1:N, N:M — how to model entity relationships without losing referential integrity.",
+    "1:1, 1:N, N:M: how to model entity relationships without losing referential integrity.",
   sections: [
     {
       kind: "prose",
       heading: "What a foreign key actually does",
       body: [
-        "A foreign key is a column whose value must match a primary key in another table. It's the engine's way of saying 'this order must belong to a customer that actually exists' — any INSERT or UPDATE pointing to a missing parent row is rejected.",
-        "FKs also control what happens when the parent is deleted: ON DELETE CASCADE removes children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (default) blocks the delete entirely.",
+        "A **foreign key** is a column whose value must match a **primary key** in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
+        "Foreign keys also give you control over what happens when a **parent record is deleted**, ensuring you never end up with **'orphan' records** scattered throughout your database.",
       ],
+    },
+    {
+      kind: "image",
+      src: foreignKeysImg,
+      alt: "Foreign Keys",
+      caption: "Foreign keys enforce strict relationships between tables",
     },
     {
       kind: "animation",
       variant: "fk-deep",
-      caption: "Parent → child → orphan rejection → CASCADE → SET NULL → RESTRICT",
+      caption: "Parent to child, orphan rejection, CASCADE, SET NULL, RESTRICT",
+    },
+    {
+      kind: "prose",
+      heading: "One-to-One (1:1) Relationships",
+      body: [
+        "A **one-to-one relationship** means one row in a table is linked to **exactly one row** in another. For example, a user might have exactly one profile.",
+        "To enforce this in SQL, you add a foreign key and also apply a **UNIQUE constraint** to it. This guarantees that no two profiles can ever point to the same user.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "1:1 requires a UNIQUE foreign key",
+      code: `CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE user_profiles (
+  id BIGSERIAL PRIMARY KEY,
+  -- The UNIQUE constraint makes this 1:1 instead of 1:N
+  user_id BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  bio TEXT
+);`
+    },
+    {
+      kind: "prose",
+      heading: "One-to-Many (1:N) Relationships",
+      body: [
+        "This is the **most common relationship**. One customer can place many orders, but each order belongs to **exactly one customer**.",
+        "To create a **1:N relationship**, you simply place a foreign key on the 'many' side (the orders table) pointing to the 'one' side (the customers table), **without a UNIQUE constraint**.",
+      ],
     },
     {
       kind: "code",
@@ -277,6 +456,7 @@ CREATE TABLE orders (
   placed_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- ALWAYS index the child side of a foreign key!
 CREATE INDEX idx_orders_customer ON orders(customer_id);`,
     },
     {
@@ -294,9 +474,10 @@ N : M     students >──< courses
     },
     {
       kind: "prose",
-      heading: "Many-to-many needs a join table",
+      heading: "Many-to-many (N:M) needs a join table",
       body: [
-        "There is no 'many-to-many foreign key'. Model N:M with a third table — a join, link, or junction table — whose primary key is the composite of the two foreign keys.",
+        "There is no such thing as a **many-to-many foreign key column**. To model an **N:M relationship** (like students and courses), you must create a third table, usually called a **join or link table**.",
+        "The primary key of this join table is simply the **combination of the two foreign keys** it connects. This ensures a student cannot enroll in the exact same course twice.",
       ],
     },
     {
@@ -311,57 +492,195 @@ N : M     students >──< courses
 );`,
     },
     {
+      kind: "prose",
+      heading: "Handling Deletions (ON DELETE)",
+      body: [
+        "When a parent row is deleted, what happens to the children? You must explicitly choose:",
+        "• **RESTRICT (default):** The database blocks the deletion and throws an error if children exist.",
+        "• **CASCADE:** The database automatically deletes all linked child rows (great for users and their profiles).",
+        "• **SET NULL:** The parent is deleted, and the child's foreign key column is updated to NULL (great for keeping historical orders when a user is deleted)."
+      ]
+    },
+    {
       kind: "callout",
       tone: "warn",
       title: "Always index your foreign keys",
-      body: "PostgreSQL does NOT auto-index the child side of a FK. Without an index, deleting a parent row scans the entire child table. A 200 ms delete becomes 30 seconds on real data.",
+      body: "PostgreSQL does not automatically create indexes for foreign keys on the child table. Without an index, deleting a single parent row requires scanning the entire child table to check for linked records. This can turn a fast 200ms delete into a 30-second query on real data.",
     },
     {
       kind: "takeaways",
       items: [
-        "Foreign keys = referential integrity enforced by the engine.",
-        "Choose ON DELETE behavior deliberately: CASCADE, SET NULL, or RESTRICT.",
-        "N:M is always modeled with a join table whose PK is the composite FK pair.",
-        "Always add an index on the child-side foreign key column.",
+        "**Foreign keys** enforce referential integrity directly at the database engine level.",
+        "Add a **UNIQUE constraint** to a foreign key to create a **1:1 relationship**.",
+        "**Many-to-many relationships** are always modeled with a **join table**.",
+        "You must deliberately choose an **ON DELETE behavior** (CASCADE, SET NULL, or RESTRICT).",
+        "You must **always manually add an index** on the child-side foreign key column.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "fk1",
+          question: "[Easy] What is the main purpose of a foreign key?",
+          options: [
+            "To encrypt data between two tables.",
+            "To ensure that a value in one table matches a primary key in another, maintaining strict referential integrity.",
+            "To automatically create backups of linked tables.",
+            "To combine two tables into one large table automatically."
+          ],
+          correctIndex: 1,
+          explanation: "Foreign keys enforce referential integrity, making sure relationships between tables are valid and preventing 'orphan' records."
+        },
+        {
+          id: "fk2",
+          question: "[Easy] If a user can only have one profile, and a profile belongs to exactly one user, what kind of relationship is this?",
+          options: [
+            "1:1 (One-to-One)",
+            "1:N (One-to-Many)",
+            "N:M (Many-to-Many)",
+            "N:1 (Many-to-One)"
+          ],
+          correctIndex: 0,
+          explanation: "A 1:1 relationship means exactly one record on each side is linked directly to the other."
+        },
+        {
+          id: "fk3",
+          question: "[Medium] How do you enforce a One-to-One (1:1) relationship in SQL?",
+          options: [
+            "By naming the columns exactly the same in both tables.",
+            "By adding a UNIQUE constraint to the foreign key column on the child table.",
+            "By not using a foreign key at all.",
+            "By creating a third join table."
+          ],
+          correctIndex: 1,
+          explanation: "Adding a UNIQUE constraint to the foreign key guarantees that no two child rows can ever point to the same parent row, enforcing a strict 1:1 mapping."
+        },
+        {
+          id: "fk4",
+          question: "[Medium] What happens by default (RESTRICT) if you try to delete a customer who has orders, and the orders have a foreign key to the customer?",
+          options: [
+            "The customer is deleted, and the orders are left untouched.",
+            "The customer and all their orders are deleted.",
+            "The database blocks the deletion and throws an error.",
+            "The customer's orders are reassigned to a different customer."
+          ],
+          correctIndex: 2,
+          explanation: "By default, the database restricts you from deleting a parent record if child records still depend on it, preventing broken links."
+        },
+        {
+          id: "fk5",
+          question: "[Medium] Which ON DELETE behavior automatically deletes all linked child rows when the parent is deleted?",
+          options: [
+            "ON DELETE RESTRICT",
+            "ON DELETE CASCADE",
+            "ON DELETE SET NULL",
+            "ON DELETE DROP"
+          ],
+          correctIndex: 1,
+          explanation: "ON DELETE CASCADE is a powerful tool that automatically cleans up dependent records when the parent is removed."
+        },
+        {
+          id: "fk6",
+          question: "[Medium] How do you model a Many-to-Many (N:M) relationship in a relational database?",
+          options: [
+            "You put a foreign key on both tables.",
+            "You save an array of IDs in a single text column.",
+            "You create a third 'join table' that contains foreign keys pointing to both of the main tables.",
+            "You merge both tables into one giant table."
+          ],
+          correctIndex: 2,
+          explanation: "Relational databases require a third 'join' table to resolve many-to-many relationships properly and maintain integrity."
+        },
+        {
+          id: "fk7",
+          question: "[Hard] True or False: PostgreSQL automatically creates an index for every foreign key you define.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False! PostgreSQL does NOT index foreign keys automatically. You must manually add an index to prevent massive performance issues when joining or deleting."
+        },
+        {
+          id: "fk8",
+          question: "[Hard] Why is it critically important to manually index the foreign key column on the child table?",
+          options: [
+            "Because without an index, deleting the parent row requires a slow, full table scan of the child table.",
+            "Because you cannot insert data without an index.",
+            "Because it encrypts the relationship.",
+            "Because it allows you to store larger numbers."
+          ],
+          correctIndex: 0,
+          explanation: "Without an index on the child table's foreign key, the database has to check every single row in the child table whenever a parent is deleted to ensure no orphans are left behind."
+        },
+        {
+          id: "fk9",
+          question: "[Medium] What does the ON DELETE SET NULL behavior do?",
+          options: [
+            "It deletes the parent but leaves the child row, setting the foreign key column to NULL.",
+            "It deletes both the parent and the child.",
+            "It prevents the parent from being deleted.",
+            "It sets the parent's primary key to NULL."
+          ],
+          correctIndex: 0,
+          explanation: "SET NULL keeps the child record alive but safely breaks the link to the deleted parent. This is useful for keeping historical data (like orders) even if the user is deleted."
+        },
+        {
+          id: "fk10",
+          question: "[Hard] What is typically used as the Primary Key for a join table (e.g., enrollments linking students to courses)?",
+          options: [
+            "A single auto-incrementing integer (BIGSERIAL).",
+            "A combination of the two foreign keys (e.g., student_id AND course_id) as a composite primary key.",
+            "The student's name.",
+            "A completely random text string."
+          ],
+          correctIndex: 1,
+          explanation: "The combination of the two foreign keys inherently creates a unique identity for the relationship, ensuring a student cannot enroll in the exact same course twice."
+        }
+      ]
+    }
   ],
 };
 
 const normalization: LessonContent = {
   slug: "normalization",
-  title: "Normalization — 1NF → 5NF → Denormalize",
+  title: "Normalization & Denormalization",
   subtitle: "Walk every normal form against the same table, then see when to undo it.",
   sections: [
     {
       kind: "prose",
       heading: "Why normalize?",
       body: [
-        "Normalization means every fact lives in exactly one place. When an address changes, you update one row — not every copy. That's the payoff.",
-        "Skipping it creates three classic problems: update anomalies (change one copy, leave others stale), insert anomalies (can't add a course unless a student enrolls), and delete anomalies (delete a student and lose the course).",
+        "**Normalization** means every fact lives in **exactly one place**. When an address changes, you update one row instead of every copy. That is the core payoff.",
+        "Skipping it creates three classic problems: **update anomalies** (you change one copy but leave others stale), **insert anomalies** (you cannot add a course unless a student enrolls), and **delete anomalies** (if you delete a student, you might accidentally lose the course data).",
       ],
+    },
+    {
+      kind: "image",
+      src: normalizationImg,
+      alt: "Database Normalization",
+      caption: "Step by step: organizing data to remove redundancy"
     },
     {
       kind: "animation",
       variant: "normalization",
-      caption: "Same data, decomposed step by step: Unnormalized → 1NF → 2NF → 3NF → BCNF → 4NF → 5NF → Denormalize",
+      caption: "Same data, decomposed step by step: Unnormalized to 1NF, 2NF, 3NF, BCNF, then Denormalize",
     },
     {
       kind: "prose",
       heading: "The forms in plain English",
       body: [
-        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row is uniquely identifiable.",
-        "2NF — applies when the PK is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
-        "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
-        "BCNF — a stricter 3NF: for every functional dependency X → Y, X must be a superkey. Rarely needed beyond 3NF, but it closes some edge cases.",
-        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes, put them in separate tables.",
-        "5NF (PJNF) — decompose until only a natural join can losslessly rebuild the original. Theoretical bar; rarely applied directly.",
+        "**1NF (First Normal Form):** Every cell is **atomic**. No comma-separated lists, and no JSON pretending to be a relation. Each row is uniquely identifiable.",
+        "**2NF (Second Normal Form):** Applies when the primary key is composite. Every non-key column must depend on the **WHOLE key**, not just part of it. Split out anything that depends on only one side.",
+        "**3NF (Third Normal Form):** No **transitive dependencies**. If column A depends on column B, and B is not the key, move A and B into their own table referenced by an ID.",
+        "**BCNF (Boyce-Codd Normal Form):** A slightly stricter version of 3NF. For every functional dependency X determines Y, X must be a **superkey**. This is rarely needed beyond 3NF, but it closes some edge cases.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "A canonical 3NF shape — what most teams ship",
+      caption: "A canonical 3NF shape: what most teams ship",
       code: `CREATE TABLE customers (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -381,29 +700,160 @@ CREATE TABLE order_items (
 );`,
     },
     {
+      kind: "image",
+      src: denormalizationImg,
+      alt: "Database Denormalization",
+      caption: "Combining tables to optimize read performance"
+    },
+    {
       kind: "callout",
       tone: "success",
       title: "Normalize first, denormalize when measured",
-      body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document the reason every time. Premature denormalization is the #1 source of data drift in young codebases.",
+      body: "Start in 3NF. Denormalize only when a measured read pattern cannot be satisfied with indexes, and document the reason every time. Premature denormalization is the leading source of data drift in young codebases.",
     },
     {
       kind: "prose",
-      heading: "When (and how) to denormalize",
+      heading: "When and how to denormalize",
       body: [
-        "Denormalization deliberately repeats data so reads skip expensive joins. Common examples: copy `customer_name` onto `orders` for list views; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
-        "The cost is consistency — every change to the source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes, and accept some staleness under load.",
+        "**Denormalization** deliberately repeats data so reads can **skip expensive joins**. Common examples include copying a customer name onto the orders table for list views, pre-aggregating daily totals into a metrics table, or materializing a view.",
+        "The cost is **consistency**: every change to the source data must fan out to every copy. You will need to use triggers, application-layer fan-out, or scheduled refreshes, and accept some **staleness** under heavy load.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "1NF: atomic cells, no lists.",
-        "2NF: full dependency on the whole composite key.",
-        "3NF: no transitive dependencies between non-key columns.",
-        "BCNF / 4NF / 5NF: stricter forms — useful theory, rarely needed past 3NF.",
-        "Normalize by default; denormalize with intent and measurement.",
+        "**1NF:** Atomic cells, no lists.",
+        "**2NF:** Full dependency on the whole composite key.",
+        "**3NF:** No transitive dependencies between non-key columns.",
+        "**BCNF:** Stricter 3NF to close edge cases.",
+        "**Normalize by default;** denormalize with clear intent and measurement.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "norm1",
+          question: "[Easy] What is the primary goal of database normalization?",
+          options: [
+            "To encrypt the data.",
+            "To ensure every fact lives in exactly one place, reducing redundancy and anomalies.",
+            "To combine all tables into one giant table.",
+            "To automatically generate primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Normalization organizes data to reduce duplication, ensuring that updates, inserts, and deletes affect only one place in the database."
+        },
+        {
+          id: "norm2",
+          question: "[Easy] What is an 'update anomaly'?",
+          options: [
+            "When the database crashes during an update.",
+            "When you update a piece of duplicated data in one row but forget to update it in others, causing inconsistencies.",
+            "When you try to insert data without a primary key.",
+            "When you delete a row and it cascades to too many children."
+          ],
+          correctIndex: 1,
+          explanation: "Update anomalies occur when redundant data gets out of sync because you didn't update every single copy of it."
+        },
+        {
+          id: "norm3",
+          question: "[Medium] What rule defines First Normal Form (1NF)?",
+          options: [
+            "No transitive dependencies.",
+            "Every column must be an integer.",
+            "Every cell is atomic (indivisible) and there are no repeating groups or lists in a single column.",
+            "There must be at least three tables in the database."
+          ],
+          correctIndex: 2,
+          explanation: "1NF requires that all data is atomic, meaning you shouldn't store comma-separated lists or JSON arrays where a related table should be."
+        },
+        {
+          id: "norm4",
+          question: "[Medium] When does Second Normal Form (2NF) apply?",
+          options: [
+            "It applies to every single table.",
+            "It only applies when a table has no primary key.",
+            "It specifically applies when a table has a composite primary key (a key made of multiple columns).",
+            "It only applies to tables holding user passwords."
+          ],
+          correctIndex: 2,
+          explanation: "2NF requires that all non-key columns depend on the entire composite primary key, not just a part of it."
+        },
+        {
+          id: "norm5",
+          question: "[Medium] What defines Third Normal Form (3NF)?",
+          options: [
+            "Every table must have a foreign key.",
+            "No transitive dependencies (if column A depends on B, and B is not the primary key, they should be in a separate table).",
+            "All numbers must be floating points.",
+            "Every row must have a unique identifier."
+          ],
+          correctIndex: 1,
+          explanation: "3NF removes transitive dependencies. For example, a customer's 'city' depends on their 'zip_code', not directly on the customer's ID, so zip codes and cities should technically be their own table."
+        },
+        {
+          id: "norm6",
+          question: "[Hard] What is Boyce-Codd Normal Form (BCNF)?",
+          options: [
+            "It is the exact same thing as 1NF.",
+            "It is a stricter version of 3NF that handles complex edge cases where multiple overlapping candidate keys exist.",
+            "It is a rule for creating indexes.",
+            "It dictates how to write JOIN queries."
+          ],
+          correctIndex: 1,
+          explanation: "BCNF strengthens 3NF by stating that for every non-trivial functional dependency X -> Y, X must be a superkey."
+        },
+        {
+          id: "norm7",
+          question: "[Easy] What is Denormalization?",
+          options: [
+            "Deleting tables from the database.",
+            "Deliberately repeating data in multiple places to speed up read queries by avoiding expensive joins.",
+            "Scrambling data for security.",
+            "Removing primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Denormalization trades storage space and write complexity for faster read performance by keeping related data together."
+        },
+        {
+          id: "norm8",
+          question: "[Medium] What is the major downside or cost of Denormalization?",
+          options: [
+            "Read queries become much slower.",
+            "You cannot use foreign keys anymore.",
+            "Maintaining consistency becomes difficult: every time the source data changes, you have to manually update all the duplicated copies.",
+            "It requires you to buy more RAM."
+          ],
+          correctIndex: 2,
+          explanation: "Because data is duplicated, an update requires fanning out the change to multiple places, which introduces the risk of data getting out of sync (anomalies)."
+        },
+        {
+          id: "norm9",
+          question: "[Hard] When is the BEST time to denormalize your database?",
+          options: [
+            "Right at the beginning, before you even write any queries.",
+            "Only when a measured read pattern cannot be satisfied with standard indexing, and you have proven it is a bottleneck.",
+            "Whenever you have more than 5 tables.",
+            "Never. Denormalization is always bad."
+          ],
+          correctIndex: 1,
+          explanation: "Premature denormalization leads to buggy, drift-heavy databases. You should always start normalized (3NF) and only denormalize when metrics prove you have a specific read performance issue."
+        },
+        {
+          id: "norm10",
+          question: "[Medium] Which normal form is generally considered the 'sweet spot' that most teams aim for when designing a standard application database?",
+          options: [
+            "1NF",
+            "2NF",
+            "3NF",
+            "BCNF"
+          ],
+          correctIndex: 2,
+          explanation: "3NF is the standard goal for relational modeling. It eliminates the vast majority of redundancy without overly complicating the schema design."
+        }
+      ]
+    }
   ],
 };
 
@@ -687,6 +1137,413 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
     },
   ],
 };
+const dbWhatIs: LessonContent = {
+  slug: "what-is-database",
+  title: "What is a Database?",
+  subtitle: "Data storage, core components, and how databases scale beyond simple spreadsheets.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is a Database?",
+      body: [
+        "At its simplest, a database is an organized collection of structured information, or data, stored electronically in a computer system.",
+        "Unlike a simple Excel spreadsheet which is great for a single user entering flat data, a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-what-is-db",
+      caption: "A central database serving many users and applications concurrently",
+    },
+    {
+      kind: "prose",
+      heading: "The Core Components",
+      body: [
+        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
+      ],
+    },
+    {
+      kind: "image",
+      src: databasecomponentsImg,
+      alt: "Database Components",
+      caption: "Database Components",
+    },
+    {
+      kind: "prose",
+      body: [
+        "• **The Data**: The actual raw information being stored (text, numbers, files, dates).",
+        "• **The Hardware**: The physical servers, hard drives (SSDs/HDDs), and memory (RAM) where the data lives.",
+        "• **The Database Management System (DBMS)**: This is the software engine that acts as the interface between the database and its users or applications. When you want to store or fetch data, you talk to the DBMS. Examples include MySQL, PostgreSQL, and MongoDB.",
+        "• **The Query Language**: The specific language used to command the DBMS. The most famous is SQL (Structured Query Language).",
+        "• **Database Schema**: The structural blueprint or design of how the data is organized (e.g., tables, columns, relationships).",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Main Types of Databases",
+      body: [
+        "Databases generally fall into two major categories based on how they model data: Relational (SQL) and Non-Relational (NoSQL).",
+      ],
+    },
+    {
+      kind: "image",
+      src: relationalvsnonrelationalImg,
+      alt: "Relational vs Non-Relational",
+      caption: "Relational vs Non-Relational",
+    },
+    {
+      kind: "table",
+      caption: "Relational vs Non-Relational Databases",
+      headers: ["Type", "Structure", "Examples", "Best for"],
+      rows: [
+        ["Relational (SQL)", "Rigid, structured tables (rows & columns) with Strict Schemas and relationships", "PostgreSQL, MySQL, Oracle, SQLite", "High accuracy, complex transactions (banking, e-commerce)"],
+        ["Non-Relational (NoSQL)", "Flexible, unstructured data (Documents, Key-Value, Graphs)", "MongoDB, Redis, Neo4j", "Unstructured data, massive scale-out, real-time data"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-db-types",
+      caption: "Comparing Relational and Non-Relational structures",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database is an organized collection of structured data designed for scale and concurrent users.",
+        "The DBMS acts as the software engine managing storage and retrieval.",
+        "Relational (SQL) databases use rigid tables and schemas, while Non-Relational (NoSQL) databases offer flexible data structures.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "What is the primary purpose of a database compared to a simple spreadsheet?",
+          options: [
+            "To store data in a single file on a local computer.",
+            "To handle massive amounts of data, ensure integrity, and allow concurrent access safely.",
+            "To provide a colorful UI for data entry.",
+            "To prevent any user from deleting data."
+          ],
+          correctIndex: 1,
+          explanation: "Unlike spreadsheets, databases are built for scale, concurrency, and maintaining strict data integrity."
+        },
+        {
+          id: "q2",
+          question: "Which of the following is NOT a core component of a database ecosystem?",
+          options: [
+            "The Hardware (RAM/Disk)",
+            "The Database Management System (DBMS)",
+            "The Web Browser",
+            "The Query Language (like SQL)"
+          ],
+          correctIndex: 2,
+          explanation: "A web browser is a client application, not a core component of the database ecosystem itself."
+        },
+        {
+          id: "q3",
+          question: "What does 'DBMS' stand for?",
+          options: [
+            "Database Management System",
+            "Data Backup and Migration System",
+            "Database Memory Storage",
+            "Data Business Management Software"
+          ],
+          correctIndex: 0,
+          explanation: "DBMS stands for Database Management System, the software engine that interfaces with the data."
+        },
+        {
+          id: "q4",
+          question: "Which type of database relies on rigid, structured tables with strict schemas?",
+          options: [
+            "Relational (SQL) Databases",
+            "Document Databases",
+            "Graph Databases",
+            "Key-Value Stores"
+          ],
+          correctIndex: 0,
+          explanation: "Relational (SQL) databases use rigid tables (rows and columns) and strict schemas to ensure data integrity."
+        },
+        {
+          id: "q5",
+          question: "Which of the following is an example of a Non-Relational (NoSQL) database?",
+          options: [
+            "PostgreSQL",
+            "MySQL",
+            "MongoDB",
+            "Oracle"
+          ],
+          correctIndex: 2,
+          explanation: "MongoDB is a document-based NoSQL database, while the others are Relational (SQL) databases."
+        },
+        {
+          id: "q6",
+          question: "Why can't a simple file or spreadsheet replace a database for a large web application?",
+          options: [
+            "Spreadsheets cost too much.",
+            "Files cannot be read by programming languages.",
+            "Files lack built-in mechanisms for safe concurrent writes and structured querying.",
+            "Spreadsheets cannot store text data."
+          ],
+          correctIndex: 2,
+          explanation: "Databases use complex concurrency control (like locks and transactions) to ensure multiple users can write simultaneously without corrupting the data."
+        },
+        {
+          id: "q7",
+          question: "What is a 'Database Schema'?",
+          options: [
+            "The physical server where data is stored.",
+            "The password used to access the database.",
+            "The structural blueprint of how data is organized, including tables and relationships.",
+            "A backup file of the database."
+          ],
+          correctIndex: 2,
+          explanation: "The schema is the blueprint defining the structure of the database (tables, columns, types, and constraints)."
+        },
+        {
+          id: "q8",
+          question: "If your application requires highly complex transactions (like banking transfers), which database type is typically best?",
+          options: [
+            "Non-Relational (NoSQL)",
+            "Relational (SQL)",
+            "In-memory cache only",
+            "A flat text file"
+          ],
+          correctIndex: 1,
+          explanation: "Relational databases are heavily optimized for complex, multi-step transactions (ACID properties) that guarantee absolute accuracy."
+        },
+        {
+          id: "q9",
+          question: "Which component of the DBMS actually translates your commands into physical disk reads?",
+          options: [
+            "The Storage Engine",
+            "The Query Language",
+            "The Database Schema",
+            "The Hardware"
+          ],
+          correctIndex: 0,
+          explanation: "The storage engine (part of the DBMS) handles the actual I/O operations to physical disk and memory."
+        },
+        {
+          id: "q10",
+          question: "True or False: A single database server can only host one database.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A single database server or DBMS instance can host and manage multiple distinct databases simultaneously."
+        }
+      ]
+    }
+  ],
+};
+
+const dbUnderTheHood: LessonContent = {
+  slug: "db-under-the-hood",
+  title: "How Databases Work Under the Hood",
+  subtitle: "From memory vs disk tradeoffs to how the engine parses, optimizes, and fetches data.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "How Data is Stored",
+      body: [
+        "When an application saves data, it doesn't just instantly vanish into a hard drive. It follows a highly optimized path to balance speed and safety.",
+      ],
+    },
+    {
+      kind: "image",
+      src: datastoredandreadImg,
+      alt: "How Data is Stored",
+      caption: "How Data is Stored",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**RAM (Memory)** is extremely fast but volatile (loses data if the power goes out). **Disk (SSD/HDD)** is slower but persistent.",
+        "Because writing directly to a physical disk is slow, databases use a trick called a **Write-Ahead Log (WAL)** or transaction log.",
+        "When new data comes in, the DBMS first writes it to a sequential log file on the disk (WAL). Writing sequentially is incredibly fast. Simultaneously, the data is updated in the server's RAM cache so applications can read it instantly.",
+        "Later, in the background, a process called *checkpointing* flushes the data from the RAM and permanently organizes it into the main disk storage pages. If the server suddenly loses power, the database reads the WAL upon reboot to recover anything that hadn't made it to the permanent disk yet.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-how-db-works",
+      caption: "Memory, Disk, and the Write-Ahead Log in action",
+    },
+    {
+      kind: "prose",
+      heading: "How Data is Accessed (The Retrieval Engine)",
+      body: [
+        "When you ask a database for information (e.g., `SELECT * FROM users WHERE email = 'test@example.com'`), the DBMS triggers a multi-step pipeline:",
+      ],
+    },
+    {
+      kind: "image",
+      src: datareadImg,
+      alt: "How Data is Accessed",
+      caption: "How Data is Accessed",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**1. Parsing and Compilation**\nThe DBMS checks your query syntax to make sure it's valid code, ensures you actually have permission to access that data, and translates it into a machine-readable format.",
+        "**2. The Query Optimizer**\nThis is the 'brain' of the database. There are often dozens of different physical ways to find your data. The optimizer analyzes the statistics of your data and calculates the most efficient execution plan (e.g., whether to scan the whole database or use a shortcut).",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-querying",
+      caption: "Parsing, optimizing, and executing a query",
+    },
+    {
+      kind: "prose",
+      heading: "The Power of Indexes",
+      body: [
+        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan** meaning it reads all 10 million rows one by one. This is incredibly slow.",
+        "To fix this, we create indexes on frequently searched columns (like an ID or email). An index is typically structured as a **B-Tree** (Balanced Tree).",
+        "Instead of scanning sequentially, a B-Tree allows the database to perform binary-style searches, cutting down the search steps from 10,000,000 operations to just a tiny handful (usually less than 20 disk reads).",
+        "Once the storage engine locates the specific block on the disk using the index, it pulls the data into RAM and hands it back to your application.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "intro-storage",
+      caption: "Using a B-Tree index to bypass a full table scan",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A Write-Ahead Log (WAL) ensures data durability while keeping writes extremely fast.",
+        "Query execution involves a parser for syntax/permissions and an optimizer that plans the fastest retrieval route.",
+        "B-Tree indexes drastically reduce disk reads, bypassing slow full table scans.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "uh1",
+          question: "Why don't databases simply write data directly to the physical disk files the moment a user saves?",
+          options: [
+            "Because writing directly to permanent data pages randomly on disk is extremely slow.",
+            "Because the data must first be encrypted by the CPU.",
+            "Because physical disks cannot hold text data.",
+            "Because it requires manual approval from an administrator."
+          ],
+          correctIndex: 0,
+          explanation: "Random disk writes are slow. Databases use memory and sequential WAL writes to speed up the immediate response, flushing to the main disk files later."
+        },
+        {
+          id: "uh2",
+          question: "What is the primary purpose of the Write-Ahead Log (WAL)?",
+          options: [
+            "To track user passwords securely.",
+            "To quickly write a sequential log of changes so data can be recovered if the server crashes before writing to permanent storage.",
+            "To log every IP address that visits the database.",
+            "To store indexes for faster querying."
+          ],
+          correctIndex: 1,
+          explanation: "The WAL acts as a safety net. It allows extremely fast sequential writes while guaranteeing that no data is lost if power fails before the slower background process updates the permanent data files."
+        },
+        {
+          id: "uh3",
+          question: "Which type of memory is volatile (loses data on power loss) but extremely fast?",
+          options: [
+            "Hard Disk Drive (HDD)",
+            "Solid State Drive (SSD)",
+            "RAM (Memory)",
+            "USB Flash Drive"
+          ],
+          correctIndex: 2,
+          explanation: "RAM is incredibly fast but volatile. This is why databases must use disk (like the WAL) to ensure data durability."
+        },
+        {
+          id: "uh4",
+          question: "What happens during 'checkpointing' in a database?",
+          options: [
+            "The database checks for unauthorized access attempts.",
+            "Data is flushed from RAM and permanently organized into the main disk storage pages.",
+            "The query optimizer calculates the best execution route.",
+            "The database connects to the internet to update its software."
+          ],
+          correctIndex: 1,
+          explanation: "Checkpointing is the background process where modified data in RAM is permanently written to the actual data files on the disk."
+        },
+        {
+          id: "uh5",
+          question: "Which part of the query execution pipeline checks your syntax and permissions?",
+          options: [
+            "The Parser",
+            "The Optimizer",
+            "The Executor",
+            "The Storage Engine"
+          ],
+          correctIndex: 0,
+          explanation: "The Parser reads the SQL string, validates the syntax, checks permissions, and translates it into a machine-readable format."
+        },
+        {
+          id: "uh6",
+          question: "What is the role of the Query Optimizer?",
+          options: [
+            "To format the final output into JSON.",
+            "To analyze data statistics and calculate the most efficient physical path to find the requested data.",
+            "To compress the database files on the disk.",
+            "To translate SQL into a NoSQL format."
+          ],
+          correctIndex: 1,
+          explanation: "The Optimizer is the 'brain' that decides HOW to execute your declarative query efficiently, such as deciding whether to use an index or perform a scan."
+        },
+        {
+          id: "uh7",
+          question: "What is a 'Full Table Scan'?",
+          options: [
+            "When the database uses an index to jump straight to the data.",
+            "When the database reads every single row in a table one by one to find the answer.",
+            "When a virus scanner checks the database for malware.",
+            "When the table is backed up to an external server."
+          ],
+          correctIndex: 1,
+          explanation: "A full table scan occurs when no index is available (or the optimizer decides against using one), forcing the database to read the entire table sequentially."
+        },
+        {
+          id: "uh8",
+          question: "How does a B-Tree index speed up database queries?",
+          options: [
+            "By duplicating the entire database onto faster hardware.",
+            "By caching all queries in memory permanently.",
+            "By organizing data in a balanced tree structure, allowing binary-style searches that drastically reduce disk reads.",
+            "By skipping the parsing step."
+          ],
+          correctIndex: 2,
+          explanation: "A B-Tree (Balanced Tree) allows the engine to navigate through nodes logically, reducing millions of potential operations down to a small handful of disk reads."
+        },
+        {
+          id: "uh9",
+          question: "If a database crashes right after a transaction is committed but before checkpointing occurs, how is the data saved?",
+          options: [
+            "The data is lost forever.",
+            "The database reads the Write-Ahead Log (WAL) upon reboot to replay and recover the missing data.",
+            "The client application automatically resends the query.",
+            "The data was saved in RAM, which survives crashes."
+          ],
+          correctIndex: 1,
+          explanation: "Upon rebooting, the DBMS detects that the WAL contains committed transactions that haven't been applied to the permanent data pages, and re-applies them automatically."
+        },
+        {
+          id: "uh10",
+          question: "True or False: The Storage Engine is the component that actually interacts with the physical files on the disk.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 0,
+          explanation: "True. The Storage Engine sits at the bottom of the pipeline, managing how pages of data are physically read from and written to the underlying storage hardware."
+        }
+      ]
+    }
+  ],
+};
 
 const sqlIntro: LessonContent = {
   slug: "sql-intro",
@@ -716,6 +1573,12 @@ const sqlIntro: LessonContent = {
       body: [
         "A relational database organizes data into **tables** (like spreadsheets) which can be linked or related to each other based on common data. For example, linking a '*Customers*' table to an '*Orders*' table using a **Customer ID**."
       ],
+    },
+    {
+      kind: "image",
+      src: relationaldatabaseImg,
+      alt: "Relational Database",
+      caption: "Relational Database",
     },
     {
       kind: "prose",
@@ -756,6 +1619,127 @@ const sqlIntro: LessonContent = {
         "You need a server address, username, password, and database name to connect.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sa1",
+          question: "What does SQL stand for?",
+          options: [
+            "Structured Query Language",
+            "Sequential Query Language",
+            "Simple Question Language",
+            "Standard Query Logic"
+          ],
+          correctIndex: 0,
+          explanation: "SQL stands for Structured Query Language. It is the standardized language used to communicate with relational databases."
+        },
+        {
+          id: "sa2",
+          question: "Which of the following best describes a database server?",
+          options: [
+            "A web browser running on the user's laptop.",
+            "A centralized application that manages data storage, retrieval, and concurrency.",
+            "A text file stored on a USB drive.",
+            "A programming language used for styling websites."
+          ],
+          correctIndex: 1,
+          explanation: "The database server is the central process (like PostgreSQL) that actively listens for requests, manages the disk files, and ensures data integrity."
+        },
+        {
+          id: "sa3",
+          question: "In the client-server database model, which of the following is considered a 'client'?",
+          options: [
+            "The Write-Ahead Log (WAL).",
+            "The Storage Engine.",
+            "A web backend (like Node.js) querying the database for user data.",
+            "The physical hard drive storing the data."
+          ],
+          correctIndex: 2,
+          explanation: "Any application, script, or tool (like a Node.js backend or a GUI tool like DBeaver) that connects to the database server is considered a client."
+        },
+        {
+          id: "sa4",
+          question: "Which of the following is NOT typically required to establish a connection to a database server?",
+          options: [
+            "Server Address (Host/IP)",
+            "Username & Password",
+            "Database Name",
+            "The physical MAC address of the server's router"
+          ],
+          correctIndex: 3,
+          explanation: "To connect, you typically need the Host/IP, Port, Username, Password, and the specific Database Name. MAC addresses are handled by the lower-level network, not the database connection string."
+        },
+        {
+          id: "sa5",
+          question: "True or False: SQL code written for PostgreSQL will always work exactly the same in MySQL without any changes.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. While SQL is a standard, different database engines (PostgreSQL, MySQL, Oracle) have their own specific dialects and custom features that don't always translate 1:1."
+        },
+        {
+          id: "sa6",
+          question: "Why do databases use a Client-Server architecture instead of just running inside the user's web browser?",
+          options: [
+            "Because browsers cannot read files.",
+            "Because browsers are too slow for SQL.",
+            "To allow a single, centralized source of truth that multiple users can access and update simultaneously without conflicts.",
+            "To make the application more expensive."
+          ],
+          correctIndex: 2,
+          explanation: "Client-Server architecture centralizes the data, ensuring that all users see the same 'truth' and the database can manage concurrent updates safely."
+        },
+        {
+          id: "sa7",
+          question: "If a database server is running on your own computer, what is its host address typically called?",
+          options: [
+            "localhost (or 127.0.0.1)",
+            "remotehost",
+            "server.local",
+            "192.168.1.1"
+          ],
+          correctIndex: 0,
+          explanation: "When running the database locally on your own machine, you connect to it using the 'localhost' address, which resolves to the IP 127.0.0.1."
+        },
+        {
+          id: "sa8",
+          question: "What is a 'connection string'?",
+          options: [
+            "A string of characters used as a password.",
+            "A single text string containing all the necessary details (host, user, password, dbname) to connect to the database.",
+            "A wire connecting the server to the internet.",
+            "A SQL command used to join two tables."
+          ],
+          correctIndex: 1,
+          explanation: "A connection string (or database URL) is a compact way to pass all the required connection credentials and settings to the database driver at once (e.g., postgresql://user:pass@localhost:5432/mydb)."
+        },
+        {
+          id: "sa9",
+          question: "True or False: A single database server process can manage multiple distinct databases.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 0,
+          explanation: "True. One database server instance (e.g., a PostgreSQL server) can host dozens of completely isolated databases (e.g., one for sales, one for HR, one for marketing)."
+        },
+        {
+          id: "sa10",
+          question: "Which of the following best describes SQL?",
+          options: [
+            "A procedural language where you define every loop and variable manually.",
+            "A declarative language where you describe the result you want, and the database engine figures out how to get it.",
+            "A markup language for styling user interfaces.",
+            "A compiled language used to build operating systems."
+          ],
+          correctIndex: 1,
+          explanation: "SQL is declarative. You write WHAT you want (e.g., SELECT * FROM users), and the database optimizer figures out the fastest WAY to retrieve it."
+        }
+      ]
+    }
   ],
 };
 
@@ -765,43 +1749,49 @@ const sqlCommands: LessonContent = {
   slug: "sql-commands",
   title: "Types of SQL Commands (DDL, DML, DCL, DQL, TCL)",
   subtitle:
-    "Five families every SQL statement belongs to — and why knowing them changes how you think about permissions.",
+    "Five families every SQL statement belongs to and why knowing them changes how you think about permissions.",
   sections: [
     {
       kind: "prose",
       heading: "Five families, one language",
       body: [
-        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each has different safety properties, rollback rules, and — in production — different roles allowed to run it.",
+        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each family has different safety rules and decides who is allowed to run them in a production database.",
       ],
+    },
+    {
+      kind: "image",
+      src: sqlCommandsImg,
+      alt: "SQL Commands Families",
+      caption: "The five SQL command families",
     },
     {
       kind: "animation",
       variant: "commands-map",
-      caption: "The SQL command family tree — DDL · DML · DQL · DCL · TCL",
+      caption: "The SQL command family tree: DDL, DML, DQL, DCL, TCL",
     },
     {
       kind: "table",
       caption: "The five families at a glance",
       headers: ["Family", "Stands for", "Verbs", "What it changes"],
       rows: [
-        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Schema / structure"],
-        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows in tables"],
-        ["DQL", "Data Query Language", "SELECT (+ WITH, FROM, WHERE, …)", "Nothing — read only"],
-        ["DCL", "Data Control Language", "GRANT, REVOKE", "Permissions"],
-        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction boundaries"],
+        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Database structure"],
+        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows of data"],
+        ["DQL", "Data Query Language", "SELECT", "Nothing (read only)"],
+        ["DCL", "Data Control Language", "GRANT, REVOKE", "User permissions"],
+        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction safety rules"],
       ],
     },
     {
       kind: "prose",
-      heading: "DDL — shape of the world",
+      heading: "DDL: Shape of the World",
       body: [
-        "DDL changes the schema: creates tables, alters columns, drops indexes. Most engines auto-commit DDL — DROP TABLE is final the instant it returns. PostgreSQL is the rare exception: DDL is transactional, so you can BEGIN, DROP TABLE x, then ROLLBACK and the table is still there.",
+        "DDL changes the structure of your database. You use it to create tables, alter columns, and drop indexes. In most databases, DDL commands are final the moment you run them. PostgreSQL is a rare exception where DDL commands can be rolled back if you make a mistake.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DDL — structural changes",
+      caption: "DDL for structural changes",
       code: `CREATE TABLE products (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -811,20 +1801,20 @@ const sqlCommands: LessonContent = {
 ALTER TABLE products ADD COLUMN sku TEXT UNIQUE;
 ALTER TABLE products DROP COLUMN price;
 
-TRUNCATE products;   -- removes all rows, can't be rolled back in most engines
+TRUNCATE products;   -- removes all rows and usually cannot be undone
 DROP   TABLE products;`,
     },
     {
       kind: "prose",
-      heading: "DML — change the rows",
+      heading: "DML: Change the Rows",
       body: [
-        "DML adds, modifies, or removes rows. Unlike DDL, DML is always transactional — wrap it in a transaction, inspect the effect, and ROLLBACK if wrong. This is the family you spend the most time with in application code.",
+        "DML adds, modifies, or removes the actual rows of data. Unlike DDL, you can wrap DML commands in a transaction to test them safely, and then roll them back if something looks wrong. This is the family of commands you will spend the most time using in your application code.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DML — moving data",
+      caption: "DML for moving data",
       code: `INSERT INTO products (name, price) VALUES ('Pen', 2.50);
 
 UPDATE products
@@ -833,7 +1823,7 @@ WHERE  name = 'Pen';
 
 DELETE FROM products WHERE price > 1000;
 
--- MERGE (upsert) — INSERT if missing, UPDATE if present
+-- MERGE inserts new rows or updates existing ones
 MERGE INTO inventory AS i
 USING incoming AS x ON i.sku = x.sku
 WHEN MATCHED     THEN UPDATE SET qty = i.qty + x.qty
@@ -841,15 +1831,15 @@ WHEN NOT MATCHED THEN INSERT (sku, qty) VALUES (x.sku, x.qty);`,
     },
     {
       kind: "prose",
-      heading: "DQL — pure reads",
+      heading: "DQL: Pure Reads",
       body: [
-        "DQL is SELECT and its supporting cast: WITH, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. It never changes data. Treating DQL as its own family is useful — read-only access is the safest permission you can grant.",
+        "DQL is mainly just the SELECT statement and its helpers like WHERE and ORDER BY. It never changes data. Treating DQL as its own family is very useful because giving someone read only access is the safest permission you can grant.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DQL — pure read, no side effects",
+      caption: "DQL for pure reads with no side effects",
       code: `SELECT name, price
 FROM   products
 WHERE  price < 10
@@ -858,30 +1848,30 @@ LIMIT  20;`,
     },
     {
       kind: "prose",
-      heading: "DCL — who is allowed to do what",
+      heading: "DCL: Who is Allowed to Do What",
       body: [
-        "DCL controls permissions. In a healthy system, the app connects as a role with narrow DML/DQL privileges; only migrations run as a role with DDL; only humans (and audited tools) run GRANT.",
+        "DCL controls user permissions. In a healthy database system, your application connects using a role with narrow privileges. Only special roles are allowed to run structural DDL commands, and only trusted administrators should run DCL commands like GRANT.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DCL — granting and revoking",
+      caption: "DCL for granting and revoking access",
       code: `GRANT SELECT, INSERT ON products TO app_user;
 GRANT ALL  PRIVILEGES   ON SCHEMA public TO migration_role;
 REVOKE DELETE ON products FROM app_user;`,
     },
     {
       kind: "prose",
-      heading: "TCL — atomic units of work",
+      heading: "TCL: Safe Units of Work",
       body: [
-        "TCL defines transaction boundaries — a group of statements that either all succeed or all fail. SAVEPOINTs are nested checkpoints inside a transaction you can selectively roll back to.",
+        "TCL defines transaction boundaries. A transaction is a group of statements that either all succeed together or all fail together. You can also use SAVEPOINT commands to create checkpoints inside a transaction to roll back to.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "TCL — transaction control",
+      caption: "TCL for transaction control",
       code: `BEGIN;
   UPDATE accounts SET balance = balance - 100 WHERE id = 1;
   SAVEPOINT after_debit;
@@ -897,18 +1887,141 @@ COMMIT;`,
       kind: "callout",
       tone: "success",
       title: "Why the taxonomy matters",
-      body: "Production permissioning maps directly to these families. The app role gets DML+DQL, the migration role gets DDL, and DCL stays with humans. Knowing the family tells you immediately who should be able to run a given statement.",
+      body: "Production permissions map directly to these five families. Your app role gets DML and DQL. The migration role gets DDL. DCL stays with human administrators. Knowing the family tells you immediately who should be allowed to run a given statement.",
     },
     {
       kind: "takeaways",
       items: [
-        "DDL changes structure (CREATE/ALTER/DROP).",
-        "DML changes rows (INSERT/UPDATE/DELETE/MERGE).",
-        "DQL reads rows (SELECT).",
-        "DCL changes permissions (GRANT/REVOKE).",
-        "TCL controls transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT).",
+        "DDL changes structure with CREATE, ALTER, and DROP.",
+        "DML changes rows with INSERT, UPDATE, DELETE, and MERGE.",
+        "DQL reads rows using SELECT.",
+        "DCL changes permissions with GRANT and REVOKE.",
+        "TCL controls transactions with BEGIN, COMMIT, and ROLLBACK.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sc1",
+          question: "Which SQL command family is responsible for changing the structure of the database, such as creating or dropping tables?",
+          options: [
+            "DML (Data Manipulation Language)",
+            "DQL (Data Query Language)",
+            "DDL (Data Definition Language)",
+            "TCL (Transaction Control Language)"
+          ],
+          correctIndex: 2,
+          explanation: "DDL handles structural changes like CREATE, ALTER, and DROP."
+        },
+        {
+          id: "sc2",
+          question: "Which of the following commands belongs to the DML (Data Manipulation Language) family?",
+          options: [
+            "CREATE TABLE",
+            "UPDATE",
+            "GRANT",
+            "COMMIT"
+          ],
+          correctIndex: 1,
+          explanation: "UPDATE modifies the actual data rows in a table, making it a DML command."
+        },
+        {
+          id: "sc3",
+          question: "What is the only command in the DQL (Data Query Language) family?",
+          options: [
+            "INSERT",
+            "SELECT",
+            "MERGE",
+            "TRUNCATE"
+          ],
+          correctIndex: 1,
+          explanation: "SELECT is used strictly to read data without making any changes to it."
+        },
+        {
+          id: "sc4",
+          question: "If you want to give a new user permission to read data from a table, which command family would you use?",
+          options: [
+            "DCL (Data Control Language)",
+            "DDL (Data Definition Language)",
+            "DQL (Data Query Language)",
+            "DML (Data Manipulation Language)"
+          ],
+          correctIndex: 0,
+          explanation: "You would use a GRANT command, which belongs to DCL (Data Control Language)."
+        },
+        {
+          id: "sc5",
+          question: "Why is it important to group commands into a transaction using TCL (Transaction Control Language)?",
+          options: [
+            "To make the queries run faster.",
+            "To ensure that a group of related changes either all succeed together or all fail together safely.",
+            "To hide the data from unauthorized users.",
+            "To automatically create backups of the tables."
+          ],
+          correctIndex: 1,
+          explanation: "Transactions guarantee atomicity, meaning partial failures won't leave your database in an inconsistent state."
+        },
+        {
+          id: "sc6",
+          question: "Which TCL command is used to save all changes made during the current transaction permanently?",
+          options: [
+            "BEGIN",
+            "ROLLBACK",
+            "SAVEPOINT",
+            "COMMIT"
+          ],
+          correctIndex: 3,
+          explanation: "COMMIT finalizes the transaction, writing all the changes to the database permanently."
+        },
+        {
+          id: "sc7",
+          question: "True or False: In most database systems, if you run a DROP TABLE command (DDL), you can easily ROLLBACK the transaction to get your table back.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. In most databases, DDL commands auto-commit immediately and cannot be rolled back. PostgreSQL is a rare exception where this is possible."
+        },
+        {
+          id: "sc8",
+          question: "In a production environment, which family of commands does the main application server typically need?",
+          options: [
+            "Only DDL and DCL",
+            "Only TCL and DCL",
+            "Only DML and DQL",
+            "All five families"
+          ],
+          correctIndex: 2,
+          explanation: "Applications typically only need to read (DQL) and modify rows (DML). Structural changes (DDL) and permissions (DCL) should be restricted to administrators or deployment scripts."
+        },
+        {
+          id: "sc9",
+          question: "What does the TRUNCATE command do, and which family does it belong to?",
+          options: [
+            "It deletes a single row (DML).",
+            "It quickly removes all rows from a table and cannot usually be rolled back (DDL).",
+            "It drops the entire table structure (DCL).",
+            "It undoes the last transaction (TCL)."
+          ],
+          correctIndex: 1,
+          explanation: "TRUNCATE is a DDL command that instantly empties a table. Because it doesn't log individual row deletions like DELETE does, it is much faster but often irreversible."
+        },
+        {
+          id: "sc10",
+          question: "What is the purpose of the SAVEPOINT command in SQL?",
+          options: [
+            "To save a backup of the entire database to disk.",
+            "To create a safe checkpoint inside a large transaction so you can partially roll back if a specific step fails.",
+            "To permanently grant a user access to a specific table.",
+            "To automatically save a query's results to a file."
+          ],
+          correctIndex: 1,
+          explanation: "SAVEPOINT allows you to rollback to a specific point inside a transaction without abandoning the entire transaction."
+        }
+      ]
+    }
   ],
 };
 
@@ -1539,249 +2652,17 @@ LIMIT   10;`,
   ],
 };
 
-// ---------- INTRO ----------
-
-const introWhatIsDb: LessonContent = {
-  slug: "what-is-a-database",
-  title: "What is a Database?",
-  subtitle: "Before SQL — the thing SQL talks to.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "A database is structured, persistent, shared state",
-      body: [
-        "A database is a long-lived, structured store of facts that many programs and people can read and write concurrently — safely, and at high speed. The two words that matter most are 'structured' and 'shared'. A text file is persistent but not structured. A JavaScript array is structured but not persistent. A database is both, plus concurrency, integrity, and a query language.",
-        "The software that wraps the data is called a DBMS — Database Management System. PostgreSQL, MySQL, SQL Server, Oracle, SQLite are DBMSes. When developers say 'the database', they almost always mean 'the DBMS plus the data it manages'.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-what-is-db",
-      caption: "From flat files to a real database",
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "Why not just a spreadsheet or a JSON file?",
-      body: "Spreadsheets and JSON break the moment you need concurrent writers, crash safety, integrity rules, sub-second lookups on millions of rows, or audit trails. A database is the engineering answer to all of those at once.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "A database = structured + persistent + concurrent + queryable.",
-        "A DBMS is the program that enforces those properties.",
-        "SQL is the language you use to talk to it.",
-      ],
-    },
-  ],
-};
-
-const introDbTypes: LessonContent = {
-  slug: "types-of-databases",
-  title: "Types of Databases",
-  subtitle: "Relational, document, key-value, graph, columnar — and when each one wins.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "There is no single 'database' — there are families",
-      body: [
-        "Different data shapes and access patterns gave rise to different database families. Picking the right family is the highest-leverage architectural decision on a system. Picking the wrong one usually means rewriting in 18 months.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-db-types",
-      caption: "Five families — relational, document, key-value, graph, columnar",
-    },
-    {
-      kind: "table",
-      caption: "When to reach for each family",
-      headers: ["Family", "Best for", "Examples"],
-      rows: [
-        ["Relational (SQL)", "Transactions, integrity, joins, reports", "PostgreSQL, MySQL, SQL Server"],
-        ["Document", "Shape-varying records, rapid iteration", "MongoDB, CouchDB, DynamoDB"],
-        ["Key-value", "Hot lookups, sessions, caches", "Redis, Memcached, etcd"],
-        ["Graph", "Many-to-many traversal (social, fraud)", "Neo4j, Memgraph"],
-        ["Columnar / OLAP", "Aggregations over billions of rows", "ClickHouse, DuckDB, BigQuery, Snowflake"],
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "success",
-      title: "Default to relational",
-      body: "Without a strong reason to choose otherwise, start with a relational database. It gives you the broadest guarantees, the most tooling, and a clean path to add caches or analytics later.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Pick the family that matches the access pattern, not the data shape alone.",
-        "Relational is the default; the others solve specific problems.",
-        "Real systems often combine families (Postgres + Redis + ClickHouse).",
-      ],
-    },
-  ],
-};
-
-const introHowDbWorks: LessonContent = {
-  slug: "how-databases-work",
-  title: "How a Database Works",
-  subtitle: "Client → parser → planner → executor → result, in five steps.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "Every query takes the same path",
-      body: [
-        "When you run a SQL statement, the DBMS runs a small pipeline. Understanding the steps demystifies almost every 'why is this slow?' question — the answer is always 'step N made an expensive choice'.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-how-db-works",
-      caption: "Watch one query travel through the engine",
-    },
-    {
-      kind: "prose",
-      heading: "The five stages",
-      body: [
-        "1. CONNECTION — your client opens an authenticated TCP/TLS session. The SQL text travels over the wire.",
-        "2. PARSER — the engine tokenises the SQL and builds an Abstract Syntax Tree. Syntax errors die here.",
-        "3. PLANNER / OPTIMISER — the engine considers many execution strategies (sequential scan vs index scan, different join orders), estimates cost using statistics, and picks the cheapest.",
-        "4. EXECUTOR — the chosen plan runs: reads pages from disk (or the buffer cache), applies filters, joins, aggregates, sorts.",
-        "5. RESULT — matching rows are serialised and streamed back to the client.",
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "EXPLAIN shows you the plan",
-      body: "`EXPLAIN ANALYZE <query>` reveals which strategy the planner chose and how long each step actually took. It's the most useful debugging tool in databases.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Parser → Planner → Executor is the spine of every DBMS.",
-        "The planner uses table statistics to pick a plan.",
-        "EXPLAIN ANALYZE is your X-ray of any query.",
-      ],
-    },
-  ],
-};
-
-const introHowQueryingWorks: LessonContent = {
-  slug: "how-querying-works",
-  title: "How Querying Works",
-  subtitle: "SQL is declarative — describe WHAT you want, the engine works out HOW.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "Declarative vs imperative",
-      body: [
-        "In application code, you tell the computer the steps: open the file, read each line, check the condition, push to an array, sort, print. That is imperative.",
-        "In SQL, you describe the result — which rows, which columns, in what order. The engine plans the steps. As data grows from 100 rows to 100 million, the same SQL keeps working; the engine picks a different plan under the hood.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-querying",
-      caption: "Filter → project → sort → limit → aggregate",
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "The shape of every SELECT",
-      code: `SELECT  email, balance           -- 5. project the columns
-FROM    users                    -- 1. choose the source
-WHERE   balance > 100            -- 2. filter rows
-GROUP   BY email                 -- 3. (optional) collapse into groups
-HAVING  COUNT(*) >= 1            -- 4. filter groups
-ORDER   BY balance DESC          -- 6. sort the survivors
-LIMIT   10;                      -- 7. cap the output`,
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "Written vs executed order",
-      body: "You write SELECT first, but the engine runs it almost last. The logical execution order (covered in the SELECT Fundamentals topic) explains every 'why can't I use my alias here?' question.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "SQL is declarative — describe the result, not the steps.",
-        "Filter → project → group → sort → limit is the universal shape.",
-        "Aggregates collapse N rows into 1 per group — the bridge from raw events to reports.",
-      ],
-    },
-  ],
-};
-
-const introHowStorage: LessonContent = {
-  slug: "how-data-is-stored",
-  title: "How Databases Store Data",
-  subtitle: "Pages, heap files, indexes, buffer cache, and the write-ahead log.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "From row to disk",
-      body: [
-        "A table is not stored as a list of rows. It is an ordered file of fixed-size pages — 8 KB each in PostgreSQL. Every page packs many rows plus a small header. The engine never reads one row from disk; it reads a whole page and picks rows out of it. Narrow rows mean more rows per page, fewer page reads, faster queries.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-storage",
-      caption: "Pages → heap → index → buffer cache + WAL",
-    },
-    {
-      kind: "prose",
-      heading: "Why indexes matter",
-      body: [
-        "Without an index, finding `id = 3` requires scanning every page — a sequential scan, O(N). An index is a separate sorted structure (typically a B-Tree) that maps keys to row addresses, making lookup O(log N). The trade-off: indexes consume disk space, slow INSERT/UPDATE/DELETE slightly, and must be maintained.",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "Speed AND durability — the WAL trick",
-      body: [
-        "If every write landed on disk synchronously, performance would collapse. Databases use two tricks: a BUFFER CACHE keeps hot pages in RAM, and a WRITE-AHEAD LOG (WAL) records every change as a sequential append before the page is updated. On COMMIT, only the WAL needs fsync — random heap writes happen in the background. On crash, the WAL is replayed to recover.",
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "success",
-      title: "The whole storage story in one sentence",
-      body: "Rows live in pages, pages live in heap files, indexes are sorted shortcuts to pages, hot pages stay in RAM, and the WAL makes commits both fast and crash-safe.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Tables are stored as fixed-size pages, not individual rows.",
-        "Indexes turn O(N) scans into O(log N) lookups — at the cost of write speed.",
-        "Buffer cache + WAL give you fast COMMITs and crash safety simultaneously.",
-      ],
-    },
-  ],
-};
-
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
-  "intro": {
-    slug: "intro",
-    title: "Intro to Databases",
+  "database-fundamentals": {
+    slug: "database-fundamentals",
+    title: "Database Fundamentals",
     category: "Foundations",
-    iconKey: "database",
+    iconKey: "terminal",
     blurb:
-      "Zero to one — what a database is, the families that exist, how an engine answers a query, and how the bytes actually live on disk.",
-    lessons: [introWhatIsDb, introDbTypes, introHowDbWorks, introHowQueryingWorks, introHowStorage],
-  },
-  "relational-model": {
-    slug: "relational-model",
-    title: "Relational Model",
-    category: "Foundations",
-    iconKey: "table",
-    blurb:
-      "The mental model behind every database — tables, tuples, keys, and the relationships that turn data into meaning.",
-    lessons: [tablesAndRows, primaryKeys, foreignKeys, normalization],
+      "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
+    lessons: [dbWhatIs, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
@@ -1799,6 +2680,6 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-    lessons: [sqlIntro, sqlCommands, selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
+    lessons: [selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
   },
 };

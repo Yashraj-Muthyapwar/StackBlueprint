@@ -139,7 +139,7 @@ function hl(line: string): React.ReactNode[] {
 
 export function QueryBlock({ lines, activeLines = [] }: { lines: string[]; activeLines?: number[] }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-hairline bg-surface-2/50">
+    <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/50 shadow-sm">
       <div className="border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
         query
       </div>
@@ -179,7 +179,7 @@ export function MiniTable({
   highlightCols?: number[];
 }) {
   return (
-    <div className="overflow-hidden rounded-lg border border-hairline">
+    <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-transparent shadow-sm">
       {title ? (
         <div className="flex items-center justify-between border-b border-hairline bg-surface-2/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
           <span>{title}</span>
@@ -254,7 +254,7 @@ export function Note({ tone = "mint", children }: { tone?: Tone; children: React
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.25 }}
-      className={`rounded-md border px-3 py-2 text-[12.5px] ${cls}`}
+      className={`rounded-md border px-3 py-2 text-[12.5px] shadow-sm ${cls}`}
     >
       {children}
     </motion.div>
@@ -274,7 +274,7 @@ function StageBanner({
 }) {
   const s = stages[stageIdx];
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-hairline bg-surface-2/40 px-3 py-2">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/40 px-3 py-2 shadow-sm">
       <div className="flex items-center gap-2">
         <span className="rounded-md bg-violet/15 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-violet">
           Concept {stageIdx + 1} / {stages.length}
@@ -350,7 +350,7 @@ function SinglePanel({
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
-        key={`${stageIdx}-${local}-${step.rowsOverride ? "o" : "b"}`}
+        key={`${stageIdx}-${step.rowsOverride ? "o" : "b"}`}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}

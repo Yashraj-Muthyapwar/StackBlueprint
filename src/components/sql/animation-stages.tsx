@@ -1858,58 +1858,108 @@ const normStages: Stage[] = [
 
 const introWhatIs: Stage[] = [
   {
-    name: "What is a database?",
-    blurb: "A long-lived, queryable container for facts",
-    sql: ["-- A database = structured storage + a query engine + concurrency control"],
-    table: { name: "users", cols: ["id","email","balance"], rows: [
-      r(1,1,"ada@ex.com",250), r(2,2,"linus@ex.com",90), r(3,3,"grace@ex.com",410),
+    name: "1. The Relational Core",
+    blurb: "A database stores information across interconnected tables",
+    sql: [
+      "-- Real applications don't store everything in one massive file",
+      "-- They split data logically and connect it with keys",
+      "SELECT users.email, orders.item",
+      "FROM users JOIN orders ON users.id = orders.user_id;"
+    ],
+    table: { 
+      name: "users & orders (joined)", 
+      cols: ["id", "email", "order_item", "amount"], 
+      rows: [
+        r(1, 1, "ada@ex.com", "Laptop", 1200), 
+        r(2, 1, "ada@ex.com", "Mouse", 25), 
+        r(3, 2, "linus@ex.com", "Keyboard", 150),
+      ]
+    },
+    steps: [
+      st([0, 1, 2, 3], "kept",
+        "A DATABASE structures your data relationally. Instead of flat spreadsheets, you have tables (like 'users' and 'orders') that reference each other, preventing data duplication.",
+        { side: sidePanel("Key Traits", ["• Persistent", "• Structured", "• Relational", "• Highly Scalable"], "mint") }),
+    ],
+  },
+  {
+    name: "2. The DBMS Engine",
+    blurb: "The software sitting between you and the disk",
+    sql: [
+      "Client  ──SQL──▶  DBMS Engine  ──▶  Disk Storage",
+      "",
+      "1. Parser: Checks syntax & permissions",
+      "2. Planner: Finds the fastest retrieval route",
+      "3. Executor: Runs the plan & fetches data"
+    ],
+    table: { 
+      name: "Disk Layout (Pages)", 
+      cols: ["page_id", "tuple_count", "free_space"], 
+      rows: [
+        r(1, 101, 45, "12%"),
+        r(2, 102, 38, "25%"),
+      ]
+    },
+    steps: [
+      st([0, 2], "kept",
+        "The DBMS (like PostgreSQL or MySQL) takes your raw SQL text, parses it, and creates an execution plan. It is the intelligent engine managing the underlying files.",
+        { noteTone: "violet", highlightCols: [0] }),
+      st([3, 4], "kept",
+        "Then, the Executor fetches only the necessary data blocks (Pages) from the physical disk, returning the exact answer back to the client.",
+        { noteTone: "mint", highlightCols: [1, 2] }),
+    ],
+  },
+  {
+    name: "3. Safe Concurrency",
+    blurb: "Why not just a spreadsheet?",
+    sql: [
+      "-- Imagine 50 users buying the same item simultaneously",
+      "BEGIN TRANSACTION;",
+      "UPDATE inventory SET stock = stock - 1 WHERE id = 42;",
+      "COMMIT;"
+    ],
+    table: { name: "inventory (active lock)", cols: ["id", "item", "stock"], rows: [
+      r(1, 42, "Mechanical Keyboard", 15),
     ]},
     steps: [
       st([0], "kept",
-        "A DATABASE stores data so many users can READ and WRITE it concurrently, safely, and ask QUESTIONS over it in a high-level language. Files alone can't do that.",
-        { side: sidePanel("Properties", ["• Persistent","• Concurrent","• Queryable","• Consistent"], "mint") }),
+        "Spreadsheets corrupt or lock entirely if multiple people edit the same cell. Databases use TRANSACTIONS and LOCKS to ensure concurrent edits are safe.",
+        { noteTone: "amber" }),
+      st([1, 2, 3], (row) => row.cells[2] === 15 ? "kept" : "dropped",
+        "The DBMS guarantees ACID compliance (Atomicity, Consistency, Isolation, Durability) so that partial failures never corrupt your data.",
+        { noteTone: "mint", highlightCols: [2] }),
     ],
   },
   {
-    name: "DBMS — the software around the data",
-    sql: [
-      "Client  ──SQL──▶  Database Engine  ──▶  Disk",
-      "                  • Parser  • Planner  • Executor  • Storage",
-    ],
-    table: { name: "users", cols: ["id","email","balance"], rows: [r(1,1,"ada@ex.com",250)]},
-    steps: [
-      st([0,1], "kept",
-        "A DBMS (Database Management System — PostgreSQL, MySQL, SQL Server…) turns SQL into actual file reads/writes and guarantees ACID, concurrency, and security.",
-        { noteTone: "violet" }),
-    ],
-  },
-  {
-    name: "Why not just a spreadsheet?",
-    sql: ["-- 1 million rows + 50 concurrent writers + crash safety + audit"],
-    table: { name: "users", cols: ["id","email","balance"], rows: [
-      r(1,1,"ada@ex.com",250), r(2,2,"linus@ex.com",90),
-    ]},
-    steps: [
-      st([0], () => "dropped",
-        "Spreadsheets break at scale: no concurrent writes, no integrity rules, no transactions, no indexes, no SQL. A real database solves ALL of those at once.",
-        { noteTone: "rose" }),
-    ],
-  },
-  {
-    name: "Ask questions in SQL",
+    name: "4. Ask Questions in SQL",
+    blurb: "Declarative power over massive datasets",
     sql: [
       "SELECT email, balance",
       "FROM   users",
       "WHERE  balance > 100",
       "ORDER  BY balance DESC;",
     ],
-    table: { name: "users", cols: ["id","email","balance"], rows: [
-      r(1,1,"ada@ex.com",250), r(2,2,"linus@ex.com",90), r(3,3,"grace@ex.com",410),
+    table: { name: "users", cols: ["id", "email", "balance"], rows: [
+      r(1, 1, "ada@ex.com", 250), 
+      r(2, 2, "linus@ex.com", 90), 
+      r(3, 3, "grace@ex.com", 410),
     ]},
     steps: [
-      st([0,1,2,3], (row) => Number(row.cells[2]) > 100 ? "kept" : "dropped",
-        "SQL is DECLARATIVE — describe WHAT you want, the engine figures out HOW. Here: 2 of 3 rows pass the filter, sorted by balance.",
-        { highlightCols: [2], noteTone: "mint" }),
+      st([0, 1], "kept",
+        "SQL is DECLARATIVE. You describe WHAT data you want, not HOW to get it. The DBMS handles the loops and filtering.",
+        { highlightCols: [0, 1] }),
+      st([2], (row) => Number(row.cells[2]) > 100 ? "kept" : "dropped",
+        "The engine applies the WHERE filter. Linus (90) is dropped.",
+        { highlightCols: [2], noteTone: "rose" }),
+      st([3], (row) => Number(row.cells[2]) > 100 ? "kept" : "dropped",
+        "Finally, it orders the remaining rows. The result is returned instantly, even if filtering millions of records.",
+        { 
+          highlightCols: [2], 
+          noteTone: "mint",
+          rowsOverride: [
+            r(3, 3, "grace@ex.com", 410),
+            r(1, 1, "ada@ex.com", 250),
+          ]
+        }),
     ],
   },
 ];
@@ -1954,7 +2004,10 @@ const introTypes: Stage[] = [
   },
   {
     name: "Graph — relationships are first-class",
-    sql: ["// Neo4j, Memgraph; or graph extensions in Postgres / SQL Server"],
+    sql: [
+      "// Neo4j, Memgraph; or graph extensions",
+      "// in Postgres / SQL Server"
+    ],
     table: { name: "edges", cols: ["from","rel","to"], rows: [
       r(1,"Ada","FOLLOWS","Linus"), r(2,"Linus","FOLLOWS","Grace"), r(3,"Ada","LIKES","Post#7"),
     ]},
@@ -2098,7 +2151,10 @@ const introQuerying: Stage[] = [
 const introStorage: Stage[] = [
   {
     name: "Rows live inside fixed-size PAGES",
-    sql: ["-- A table = an ordered file of 8 KB pages (Postgres default)", "-- Each page packs many rows + a small header"],
+    sql: [
+      "-- A table = an ordered file of 8 KB pages (Postgres)",
+      "-- Each page packs many rows + a small header"
+    ],
     table: { name: "page 42  (8 KB)", cols: ["slot","row"], rows: [
       r(1,"#1","(1, ada@ex.com)"),
       r(2,"#2","(2, linus@ex.com)"),
@@ -2179,8 +2235,8 @@ const toneRing: Record<Tone, string> = {
 };
 
 const CommandsMap = ({ active }: { active: string | null }) => (
-  <div className="rounded-lg border border-hairline bg-surface-2/30 p-4">
-    <div className="mx-auto mb-3 w-fit rounded-md border border-mint/40 bg-mint/10 px-3 py-1 text-center font-mono text-[12px] text-mint">
+  <div className="rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/30 p-4 shadow-sm">
+    <div className="mx-auto mb-3 w-fit rounded-md border border-mint/40 bg-mint/10 px-3 py-1 text-center font-mono text-[12px] text-mint shadow-sm">
       SQL Commands
     </div>
     <div className="grid grid-cols-5 gap-2">
@@ -2189,7 +2245,7 @@ const CommandsMap = ({ active }: { active: string | null }) => (
         const dim = active && active !== "all" && active !== f.key;
         return (
           <div key={f.key} className={`transition-opacity ${dim ? "opacity-30" : "opacity-100"}`}>
-            <div className={`rounded-md border px-2 py-1 text-center font-mono text-[11px] ${isActive ? toneRing[f.tone] : "border-hairline bg-surface text-muted-foreground"}`}>
+            <div className={`rounded-md border px-2 py-1 text-center font-mono text-[11px] shadow-sm ${isActive ? toneRing[f.tone] : "border-hairline bg-white dark:bg-surface text-muted-foreground"}`}>
               {f.key}
             </div>
             <div className="mt-2 flex flex-col gap-1.5">
@@ -2860,7 +2916,7 @@ const introSqlClientServer: Stage[] = [
     },
     steps: [
       st([1], "kept", "The client sends raw text (the SQL query) over the network.", { highlightCols: [0] }),
-      st([4], "kept", "The server receives the text, parses it, checks permissions, and logs the execution.", { noteTone: "info" }),
+      st([4], "kept", "The server receives the text, parses it, checks permissions, and logs the execution.", { noteTone: "violet" }),
     ]
   },
   {
@@ -2885,7 +2941,7 @@ const introSqlClientServer: Stage[] = [
     },
     steps: [
       st([1], pass(r => r.key === 1), "The server engine scans the tables or indexes, filtering out the rows that don't match.", { highlightCols: [0, 1, 2] }),
-      st([4, 5, 6], pass(r => r.key === 1), "The matching row is serialized (turned into bytes) and sent back over the network to Ada's client.", { noteTone: "success", highlightCols: [0, 1, 2] }),
+      st([4, 5, 6], pass(r => r.key === 1), "The matching row is serialized (turned into bytes) and sent back over the network to Ada's client.", { noteTone: "mint", highlightCols: [0, 1, 2] }),
     ]
   }
 ];
