@@ -84,11 +84,11 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go, reset]);
 
-  const handleRun = (next: Record<string, unknown>) => {
+  const handleRun = useCallback((next: Record<string, unknown>, warnings: string[], autoPlay: boolean = true) => {
     setInputs(next);
     setStepIndex(0);
-    setPlaying(false);
-  };
+    setPlaying(autoPlay);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
