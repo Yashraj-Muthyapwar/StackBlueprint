@@ -168,10 +168,55 @@ const dwDatabaseFamilies: Stage[] = [
   },
 ];
 
+const dwStorageComputeSeparation: Stage[] = [
+  {
+    name: "1. Traditional (Coupled)",
+    sql: ["-- On-premise architecture: Compute + Storage tied together", "SELECT * FROM sales;"],
+    table: { name: "Server Node", cols: ["CPU", "Storage"], rows: [
+      r(1, "90%", "Full"),
+    ]},
+    steps: [
+      st([0, 1], "kept", "If you need more storage, you must buy more CPU too.", { sidePanel: sidePanel("Monolith", ["Hard to scale", "Expensive", "Resource contention"]) }),
+    ],
+  },
+  {
+    name: "2. Cloud Storage (Decoupled)",
+    sql: ["-- Infinite, cheap cloud object storage (e.g. AWS S3)", "-- Data is centralized here"],
+    table: { name: "Cloud Storage", cols: ["Bucket", "Data Size"], rows: [
+      r(1, "s3://warehouse", "Petabytes"),
+    ]},
+    steps: [
+      st([0, 1], "kept", "Storage is isolated and scales infinitely at low cost.", { sidePanel: sidePanel("Storage Layer", ["Cheap", "Infinite scale", "Single source of truth"]) }),
+    ],
+  },
+  {
+    name: "3. Cloud Compute (Decoupled)",
+    sql: ["-- Virtual Warehouses spun up on-demand to query the storage", "CREATE WAREHOUSE marketing_wh;"],
+    table: { name: "Compute Cluster", cols: ["Status", "Cost"], rows: [
+      r(1, "Running", "$/hour"),
+    ]},
+    steps: [
+      st([0, 1], "kept", "Compute is only paid for when running.", { sidePanel: sidePanel("Compute Layer", ["Elastic", "Pay per use", "No contention"]) }),
+    ],
+  },
+  {
+    name: "4. Multi-Cluster",
+    sql: ["-- Multiple teams query the exact same storage simultaneously", "USE WAREHOUSE finance_wh; SELECT * FROM s3_data;"],
+    table: { name: "Active Clusters", cols: ["Team", "Query"], rows: [
+      r(1, "Finance", "SELECT..."),
+      r(2, "Marketing", "SELECT..."),
+    ]},
+    steps: [
+      st([0, 1], "kept", "No resource contention between teams.", { sidePanel: sidePanel("Multi-Cluster", ["Isolated workloads", "Same data", "High concurrency"], "success", Layers) }),
+    ],
+  },
+];
+
 export const STAGES_REGISTRY: Record<string, Stage[]> = {
   "dw-data-journey": dwDataJourney,
   "dw-oltp-vs-olap": dwOltpVsOlap,
   "dw-storage-types": dwStorageTypes,
   "dw-organizing-data": dwOrganizingData,
   "dw-database-families": dwDatabaseFamilies,
+  "dw-storage-compute-separation": dwStorageComputeSeparation,
 };
