@@ -45,6 +45,7 @@ function parseRaw(builder: LessonBuilder, raw: RawValues): { inputs?: Record<str
       else if (f.kind === "intMatrix") out[f.key] = parseIntMatrix(r);
       else if (f.kind === "intPairs") out[f.key] = parseIntPairs(r);
       else if (f.kind === "string") out[f.key] = r;
+      else if (f.kind === "select") out[f.key] = r;
       else if (f.kind === "int") {
         const n = Number(r);
         if (!Number.isFinite(n)) throw new Error(`${f.label} must be a number`);
