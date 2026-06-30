@@ -281,6 +281,7 @@ function HeapCard({
           {obj.truncated && <span className="text-muted-foreground">…</span>}
           <span className="text-muted-foreground">{close}</span>
         </div>
+        {aliasBar}
       </div>
     );
   }
