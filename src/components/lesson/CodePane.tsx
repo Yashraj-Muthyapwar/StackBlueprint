@@ -9,7 +9,19 @@ import { Check, Copy } from "lucide-react";
  */
 export function CodePane({ code, activeLine }: { code: string; activeLine: number }) {
   const lines = useMemo(() => code.split("\n"), [code]);
+  const [copied, setCopied] = useState(false);
   const LINE_H = 26; // px per line
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* ignore */
+    }
+  };
+
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface">
