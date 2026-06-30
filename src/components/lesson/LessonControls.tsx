@@ -4,6 +4,13 @@ import { AlertTriangle, Pause, Play, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { InputField, LessonBuilder } from "@/lessons/types";
 import {
   parseIntArray,
@@ -38,6 +45,7 @@ function parseRaw(builder: LessonBuilder, raw: RawValues): { inputs?: Record<str
       else if (f.kind === "intMatrix") out[f.key] = parseIntMatrix(r);
       else if (f.kind === "intPairs") out[f.key] = parseIntPairs(r);
       else if (f.kind === "string") out[f.key] = r;
+      else if (f.kind === "select") out[f.key] = r;
       else if (f.kind === "int") {
         const n = Number(r);
         if (!Number.isFinite(n)) throw new Error(`${f.label} must be a number`);
@@ -172,13 +180,27 @@ function FieldEditor({
   onChange: (v: string) => void;
 }) {
   const isLarge = field.kind === "intMatrix";
+  const isSelect = field.kind === "select";
   return (
     <label className="block">
       <div className="mb-1 flex items-baseline justify-between">
         <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{field.label}</span>
         {field.help && <span className="text-[10px] text-muted-foreground/60">{field.help}</span>}
       </div>
-      {isLarge ? (
+      {isSelect ? (
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger className="h-9 font-mono text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value} className="font-mono text-xs">
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : isLarge ? (
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}

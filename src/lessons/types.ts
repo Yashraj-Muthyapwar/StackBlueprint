@@ -62,7 +62,8 @@ export type InputField =
   | { key: string; label: string; kind: "int"; min?: number; max?: number; help?: string }
   | { key: string; label: string; kind: "intMatrix"; help?: string }
   | { key: string; label: string; kind: "intPairs"; help?: string }
-  | { key: string; label: string; kind: "string"; help?: string };
+  | { key: string; label: string; kind: "string"; help?: string }
+  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[]; help?: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LessonBuilder<TInputs extends Record<string, any> = any> = {
@@ -78,6 +79,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   variant: string;
   view: View;
   code: string;
+  /** Optional per-input override; falls back to `code` when absent. */
+  codeFor?: (inputs: Record<string, unknown>) => string;
   defaultInputs: TInputs;
   inputs: InputField[];
   validate?: (inputs: TInputs) => string[];
