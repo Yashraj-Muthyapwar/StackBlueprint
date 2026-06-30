@@ -49,7 +49,7 @@ function LessonPage() {
             <ChevronRight className="size-3" />
             <Link
               to="/patterns/category/$category"
-              params={{ category: p.category.toLowerCase() === "arrays" ? "arrays" : "strings" }}
+              params={{ category: p.category.toLowerCase() === "arrays" ? "arrays" : p.category.toLowerCase() === "strings" ? "strings" : "hash-map" }}
               className="hover:text-foreground"
             >
               {p.category}
