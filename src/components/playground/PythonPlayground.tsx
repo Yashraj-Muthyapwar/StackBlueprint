@@ -546,6 +546,62 @@ export function PythonPlayground() {
   const stdout = snap?.stdout ?? "";
   const heapEntries = useMemo(() => (snap ? Object.entries(snap.heap) : []), [snap]);
 
+  // Aliases: for each heap id, collect "frame.var" labels pointing to it (across all frames).
+  // Live set: heap ids referenced (directly or transitively) by the top frame.
+  const { aliasesById, liveIds } = useMemo(() => {
+    const aliases = new Map<string, string[]>();
+    const live = new Set<string>();
+    if (!snap) return { aliasesById: aliases, liveIds: live };
+    snap.frames.forEach((f, fi) => {
+      const isTop = fi === snap.frames.length - 1;
+      Object.entries(f.locals).forEach(([k, v]) => {
+        if (v.kind !== "ref") return;
+        const tag = fi === 0 ? k : `${f.name}.${k}`;
+        const list = aliases.get(v.id) ?? [];
+        list.push(tag);
+        aliases.set(v.id, list);
+        if (isTop) live.add(v.id);
+      });
+    });
+    // Transitive closure: items referenced from live containers are also live.
+    let added = true;
+    while (added) {
+      added = false;
+      live.forEach((id) => {
+        const o = snap.heap[id];
+        if (!o) return;
+        if ("items" in o) {
+          o.items.forEach((it) => {
+            const v = Array.isArray(it) ? (it[1] as Value) : (it as Value);
+            if (v && v.kind === "ref" && !live.has(v.id)) {
+              live.add(v.id);
+              added = true;
+            }
+          });
+        }
+      });
+    }
+    return { aliasesById: aliases, liveIds: live };
+  }, [snap]);
+
+  const narration = useMemo(
+    () => (snap ? narrate(snap, prevSnap) : "Press Run to trace your program step by step."),
+    [snap, prevSnap],
+  );
+
+  // Per-step event colors for the timeline.
+  const stepColors = useMemo(
+    () =>
+      snapshots.map((s) =>
+        s.event === "call"
+          ? "var(--violet)"
+          : s.event === "return"
+            ? "var(--mint)"
+            : "var(--hairline)",
+      ),
+    [snapshots],
+  );
+
   // Event ribbon content
   const eventBadge = useMemo(() => {
     if (!snap) return null;
