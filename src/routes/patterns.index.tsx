@@ -6,6 +6,7 @@ import {
   Boxes,
   Braces,
   GitBranch,
+  Hash,
   Layers,
   Link2,
   Lock,
@@ -22,6 +23,7 @@ import { patterns } from "@/lessons/roadmap";
 
 const arrayPatternTitles = patterns.filter((p) => p.category === "Arrays").map((p) => p.title);
 const stringPatternTitles = patterns.filter((p) => p.category === "Strings").map((p) => p.title);
+const hashMapPatternTitles = patterns.filter((p) => p.category === "Hash Map").map((p) => p.title);
 
 export const Route = createFileRoute("/patterns/")({
   head: () => ({
