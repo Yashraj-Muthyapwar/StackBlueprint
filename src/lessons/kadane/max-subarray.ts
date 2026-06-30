@@ -86,7 +86,7 @@ function build({ arr }: Inputs): Step[] {
     }
   }
   steps.push({
-    line: 11,
+    line: 10,
     array: [...arr],
     partitions: winBest(),
     status: `return ${bestSum}`,
