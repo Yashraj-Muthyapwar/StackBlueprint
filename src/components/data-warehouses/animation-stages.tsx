@@ -220,3 +220,5 @@ export const STAGES_REGISTRY: Record<string, Stage[]> = {
   "dw-database-families": dwDatabaseFamilies,
   "dw-storage-compute-separation": dwStorageComputeSeparation,
 };
+
+export type AnyVariant = keyof typeof STAGES_REGISTRY;
