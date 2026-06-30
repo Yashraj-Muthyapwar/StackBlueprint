@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Lock, Layers } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Layers, Terminal } from "lucide-react";
 import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
@@ -52,6 +52,29 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent className="px-1 py-3">
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+            Tools
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/playground"}
+                  tooltip="Python Playground"
+                >
+                  <Link to="/playground" onClick={closeMobile}>
+                    <Terminal className="size-3.5" />
+                    <span>Python Playground</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+
         {roadmap.map((cat) => (
           <SidebarGroup key={cat.slug}>
             <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
