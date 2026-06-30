@@ -19,6 +19,13 @@ import {
 import { getPyodide } from "@/lib/pyodide-loader";
 import { TRACER_PY } from "@/lib/python-tracer";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ---------------- Types matching tracer output ----------------
 
@@ -346,6 +353,7 @@ const SPEEDS = [
 ];
 
 export function PythonPlayground() {
+  const [sampleLabel, setSampleLabel] = useState(SAMPLES[0].label);
   const [code, setCode] = useState(SAMPLES[0].code);
   const [status, setStatus] = useState<string>("Idle. Press Run to start.");
   const [loading, setLoading] = useState(false);
@@ -589,18 +597,6 @@ export function PythonPlayground() {
     [snap, prevSnap],
   );
 
-  // Per-step event colors for the timeline.
-  const stepColors = useMemo(
-    () =>
-      snapshots.map((s) =>
-        s.event === "call"
-          ? "var(--violet)"
-          : s.event === "return"
-            ? "var(--mint)"
-            : "var(--hairline)",
-      ),
-    [snapshots],
-  );
 
   // Event ribbon content
   const eventBadge = useMemo(() => {
@@ -636,34 +632,31 @@ export function PythonPlayground() {
           Run & Trace
         </Button>
 
-        <div className="relative">
-          <select
-            aria-label="Load sample"
-            className="h-8 cursor-pointer appearance-none rounded-md border border-hairline bg-surface px-2 pr-7 font-mono text-[11px] text-foreground/80 hover:bg-background"
-            onChange={(e) => {
-              const s = SAMPLES.find((x) => x.label === e.target.value);
-              if (s) {
-                setCode(s.code);
-                setSnapshots([]);
-                setIdx(0);
-                setError(null);
-                setStatus("Sample loaded. Press Run.");
-              }
-              e.currentTarget.selectedIndex = 0;
-            }}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Load sample…
-            </option>
+        <Select
+          value={sampleLabel}
+          onValueChange={(label) => {
+            const s = SAMPLES.find((x) => x.label === label);
+            if (!s) return;
+            setSampleLabel(label);
+            setCode(s.code);
+            setSnapshots([]);
+            setIdx(0);
+            setError(null);
+            setStatus("Sample loaded. Press Run.");
+          }}
+        >
+          <SelectTrigger className="h-8 w-[230px] gap-2 border-hairline bg-surface font-mono text-[11px] text-foreground/80 hover:bg-background">
+            <Sparkles className="size-3 text-muted-foreground" />
+            <SelectValue placeholder="Load sample…" />
+          </SelectTrigger>
+          <SelectContent>
             {SAMPLES.map((s) => (
-              <option key={s.label} value={s.label}>
+              <SelectItem key={s.label} value={s.label} className="font-mono text-[11px]">
                 {s.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
-          <Sparkles className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
-        </div>
+          </SelectContent>
+        </Select>
 
         <div className="mx-1 h-5 w-px bg-hairline" />
 
@@ -734,18 +727,15 @@ export function PythonPlayground() {
             onChange={(e) => setIdx(Number(e.target.value))}
             className="relative z-10 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-mint disabled:opacity-40"
           />
-          {/* Colored event ticks underneath the slider */}
-          {snapshots.length > 1 && (
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 flex h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
-              {stepColors.map((c, i) => (
-                <div
-                  key={i}
-                  style={{ background: c, opacity: i <= idx ? 0.9 : 0.35 }}
-                  className="h-full flex-1"
-                />
-              ))}
-            </div>
-          )}
+          {/* Plain progress fill */}
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
+            <div
+              className="h-full bg-mint/60 transition-all"
+              style={{
+                width: snapshots.length > 1 ? `${(idx / (snapshots.length - 1)) * 100}%` : "0%",
+              }}
+            />
+          </div>
         </div>
         {eventBadge && (
           <span
@@ -839,22 +829,11 @@ export function PythonPlayground() {
                 </marker>
               </defs>
               {arrows.map((a, i) => {
-                // Orthogonal "step" routing — like Python Tutor.
-                // Source: exit horizontally to the right.
-                // Target: enter horizontally from the left.
-                const exit = a.x1 + 14;
-                const entry = a.x2 - 10;
-                let d: string;
-                if (entry > exit + 4) {
-                  // Target is to the right of source — simple H/V/H step.
-                  const midX = (exit + entry) / 2;
-                  d = `M ${a.x1} ${a.y1} H ${midX} V ${a.y2} H ${a.x2}`;
-                } else {
-                  // Target is left of / overlapping source — loop out to the right margin
-                  // then back to target's left edge. Avoids cutting through cards.
-                  const loopX = Math.max(a.x1, a.x2) + 28;
-                  d = `M ${a.x1} ${a.y1} H ${loopX} V ${a.y2} H ${a.x2}`;
-                }
+                // Smooth bezier — exits source to the right, enters target from the left.
+                const dx = Math.max(40, Math.abs(a.x2 - a.x1) * 0.5);
+                const c1x = a.x1 + dx;
+                const c2x = a.x2 - dx;
+                const d = `M ${a.x1} ${a.y1} C ${c1x} ${a.y1}, ${c2x} ${a.y2}, ${a.x2} ${a.y2}`;
                 return (
                   <path
                     key={i}
@@ -862,9 +841,8 @@ export function PythonPlayground() {
                     fill="none"
                     stroke={a.active ? "var(--amber)" : "var(--violet)"}
                     strokeWidth={a.active ? 1.75 : 1.25}
-                    strokeOpacity={a.active ? 0.95 : 0.7}
+                    strokeOpacity={a.active ? 0.95 : 0.65}
                     strokeLinecap="round"
-                    strokeLinejoin="round"
                     markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                   />
                 );
