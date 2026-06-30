@@ -1,17 +1,11 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/sql/foundations/client-server-architecture.png";
-import relationaldatabaseImg from "@/images/sql/foundations/relational_database.png";
-import relationalvsnonrelationalImg from "@/images/sql/foundations/relational-vs-non-relational.png";
-import databasecomponentsImg from "@/images/sql/foundations/database-components.png";
-import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
-import datareadImg from "@/images/sql/foundations/data-read-from-database.png";
-import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
-import primaryKeysImg from "@/images/sql/foundations/primary_keys.png";
-import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.png";
-import normalizationImg from "@/images/sql/foundations/database_normalization.png";
-import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
+import clientServerImg from "@/images/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/relational_database.png";
+import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
+import databasecomponentsImg from "@/images/database-components.png";
+import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =
@@ -1379,10 +1373,9 @@ const dbUnderTheHood: LessonContent = {
       ],
     },
     {
-      kind: "image",
-      src: datareadImg,
-      alt: "How Data is Accessed",
-      caption: "How Data is Accessed",
+      kind: "diagram",
+      ascii: "[Your Query] ──> [Parser] ──> [Optimizer] ──> [Storage Engine] ──> [Data Returned]",
+      caption: "The query execution pipeline",
     },
     {
       kind: "prose",
@@ -1400,7 +1393,7 @@ const dbUnderTheHood: LessonContent = {
       kind: "prose",
       heading: "The Power of Indexes",
       body: [
-        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan** meaning it reads all 10 million rows one by one. This is incredibly slow.",
+        "If you search for a user in a database with 10 million rows without an Index, the database has to perform a **Full Table Scan**—meaning it reads all 10 million rows one by one. This is incredibly slow.",
         "To fix this, we create indexes on frequently searched columns (like an ID or email). An index is typically structured as a **B-Tree** (Balanced Tree).",
         "Instead of scanning sequentially, a B-Tree allows the database to perform binary-style searches, cutting down the search steps from 10,000,000 operations to just a tiny handful (usually less than 20 disk reads).",
         "Once the storage engine locates the specific block on the disk using the index, it pulls the data into RAM and hands it back to your application.",
@@ -1419,129 +1412,6 @@ const dbUnderTheHood: LessonContent = {
         "B-Tree indexes drastically reduce disk reads, bypassing slow full table scans.",
       ],
     },
-    {
-      kind: "quiz",
-      questions: [
-        {
-          id: "uh1",
-          question: "Why don't databases simply write data directly to the physical disk files the moment a user saves?",
-          options: [
-            "Because writing directly to permanent data pages randomly on disk is extremely slow.",
-            "Because the data must first be encrypted by the CPU.",
-            "Because physical disks cannot hold text data.",
-            "Because it requires manual approval from an administrator."
-          ],
-          correctIndex: 0,
-          explanation: "Random disk writes are slow. Databases use memory and sequential WAL writes to speed up the immediate response, flushing to the main disk files later."
-        },
-        {
-          id: "uh2",
-          question: "What is the primary purpose of the Write-Ahead Log (WAL)?",
-          options: [
-            "To track user passwords securely.",
-            "To quickly write a sequential log of changes so data can be recovered if the server crashes before writing to permanent storage.",
-            "To log every IP address that visits the database.",
-            "To store indexes for faster querying."
-          ],
-          correctIndex: 1,
-          explanation: "The WAL acts as a safety net. It allows extremely fast sequential writes while guaranteeing that no data is lost if power fails before the slower background process updates the permanent data files."
-        },
-        {
-          id: "uh3",
-          question: "Which type of memory is volatile (loses data on power loss) but extremely fast?",
-          options: [
-            "Hard Disk Drive (HDD)",
-            "Solid State Drive (SSD)",
-            "RAM (Memory)",
-            "USB Flash Drive"
-          ],
-          correctIndex: 2,
-          explanation: "RAM is incredibly fast but volatile. This is why databases must use disk (like the WAL) to ensure data durability."
-        },
-        {
-          id: "uh4",
-          question: "What happens during 'checkpointing' in a database?",
-          options: [
-            "The database checks for unauthorized access attempts.",
-            "Data is flushed from RAM and permanently organized into the main disk storage pages.",
-            "The query optimizer calculates the best execution route.",
-            "The database connects to the internet to update its software."
-          ],
-          correctIndex: 1,
-          explanation: "Checkpointing is the background process where modified data in RAM is permanently written to the actual data files on the disk."
-        },
-        {
-          id: "uh5",
-          question: "Which part of the query execution pipeline checks your syntax and permissions?",
-          options: [
-            "The Parser",
-            "The Optimizer",
-            "The Executor",
-            "The Storage Engine"
-          ],
-          correctIndex: 0,
-          explanation: "The Parser reads the SQL string, validates the syntax, checks permissions, and translates it into a machine-readable format."
-        },
-        {
-          id: "uh6",
-          question: "What is the role of the Query Optimizer?",
-          options: [
-            "To format the final output into JSON.",
-            "To analyze data statistics and calculate the most efficient physical path to find the requested data.",
-            "To compress the database files on the disk.",
-            "To translate SQL into a NoSQL format."
-          ],
-          correctIndex: 1,
-          explanation: "The Optimizer is the 'brain' that decides HOW to execute your declarative query efficiently, such as deciding whether to use an index or perform a scan."
-        },
-        {
-          id: "uh7",
-          question: "What is a 'Full Table Scan'?",
-          options: [
-            "When the database uses an index to jump straight to the data.",
-            "When the database reads every single row in a table one by one to find the answer.",
-            "When a virus scanner checks the database for malware.",
-            "When the table is backed up to an external server."
-          ],
-          correctIndex: 1,
-          explanation: "A full table scan occurs when no index is available (or the optimizer decides against using one), forcing the database to read the entire table sequentially."
-        },
-        {
-          id: "uh8",
-          question: "How does a B-Tree index speed up database queries?",
-          options: [
-            "By duplicating the entire database onto faster hardware.",
-            "By caching all queries in memory permanently.",
-            "By organizing data in a balanced tree structure, allowing binary-style searches that drastically reduce disk reads.",
-            "By skipping the parsing step."
-          ],
-          correctIndex: 2,
-          explanation: "A B-Tree (Balanced Tree) allows the engine to navigate through nodes logically, reducing millions of potential operations down to a small handful of disk reads."
-        },
-        {
-          id: "uh9",
-          question: "If a database crashes right after a transaction is committed but before checkpointing occurs, how is the data saved?",
-          options: [
-            "The data is lost forever.",
-            "The database reads the Write-Ahead Log (WAL) upon reboot to replay and recover the missing data.",
-            "The client application automatically resends the query.",
-            "The data was saved in RAM, which survives crashes."
-          ],
-          correctIndex: 1,
-          explanation: "Upon rebooting, the DBMS detects that the WAL contains committed transactions that haven't been applied to the permanent data pages, and re-applies them automatically."
-        },
-        {
-          id: "uh10",
-          question: "True or False: The Storage Engine is the component that actually interacts with the physical files on the disk.",
-          options: [
-            "True",
-            "False"
-          ],
-          correctIndex: 0,
-          explanation: "True. The Storage Engine sits at the bottom of the pipeline, managing how pages of data are physically read from and written to the underlying storage hardware."
-        }
-      ]
-    }
   ],
 };
 
@@ -1619,127 +1489,6 @@ const sqlIntro: LessonContent = {
         "You need a server address, username, password, and database name to connect.",
       ],
     },
-    {
-      kind: "quiz",
-      questions: [
-        {
-          id: "sa1",
-          question: "What does SQL stand for?",
-          options: [
-            "Structured Query Language",
-            "Sequential Query Language",
-            "Simple Question Language",
-            "Standard Query Logic"
-          ],
-          correctIndex: 0,
-          explanation: "SQL stands for Structured Query Language. It is the standardized language used to communicate with relational databases."
-        },
-        {
-          id: "sa2",
-          question: "Which of the following best describes a database server?",
-          options: [
-            "A web browser running on the user's laptop.",
-            "A centralized application that manages data storage, retrieval, and concurrency.",
-            "A text file stored on a USB drive.",
-            "A programming language used for styling websites."
-          ],
-          correctIndex: 1,
-          explanation: "The database server is the central process (like PostgreSQL) that actively listens for requests, manages the disk files, and ensures data integrity."
-        },
-        {
-          id: "sa3",
-          question: "In the client-server database model, which of the following is considered a 'client'?",
-          options: [
-            "The Write-Ahead Log (WAL).",
-            "The Storage Engine.",
-            "A web backend (like Node.js) querying the database for user data.",
-            "The physical hard drive storing the data."
-          ],
-          correctIndex: 2,
-          explanation: "Any application, script, or tool (like a Node.js backend or a GUI tool like DBeaver) that connects to the database server is considered a client."
-        },
-        {
-          id: "sa4",
-          question: "Which of the following is NOT typically required to establish a connection to a database server?",
-          options: [
-            "Server Address (Host/IP)",
-            "Username & Password",
-            "Database Name",
-            "The physical MAC address of the server's router"
-          ],
-          correctIndex: 3,
-          explanation: "To connect, you typically need the Host/IP, Port, Username, Password, and the specific Database Name. MAC addresses are handled by the lower-level network, not the database connection string."
-        },
-        {
-          id: "sa5",
-          question: "True or False: SQL code written for PostgreSQL will always work exactly the same in MySQL without any changes.",
-          options: [
-            "True",
-            "False"
-          ],
-          correctIndex: 1,
-          explanation: "False. While SQL is a standard, different database engines (PostgreSQL, MySQL, Oracle) have their own specific dialects and custom features that don't always translate 1:1."
-        },
-        {
-          id: "sa6",
-          question: "Why do databases use a Client-Server architecture instead of just running inside the user's web browser?",
-          options: [
-            "Because browsers cannot read files.",
-            "Because browsers are too slow for SQL.",
-            "To allow a single, centralized source of truth that multiple users can access and update simultaneously without conflicts.",
-            "To make the application more expensive."
-          ],
-          correctIndex: 2,
-          explanation: "Client-Server architecture centralizes the data, ensuring that all users see the same 'truth' and the database can manage concurrent updates safely."
-        },
-        {
-          id: "sa7",
-          question: "If a database server is running on your own computer, what is its host address typically called?",
-          options: [
-            "localhost (or 127.0.0.1)",
-            "remotehost",
-            "server.local",
-            "192.168.1.1"
-          ],
-          correctIndex: 0,
-          explanation: "When running the database locally on your own machine, you connect to it using the 'localhost' address, which resolves to the IP 127.0.0.1."
-        },
-        {
-          id: "sa8",
-          question: "What is a 'connection string'?",
-          options: [
-            "A string of characters used as a password.",
-            "A single text string containing all the necessary details (host, user, password, dbname) to connect to the database.",
-            "A wire connecting the server to the internet.",
-            "A SQL command used to join two tables."
-          ],
-          correctIndex: 1,
-          explanation: "A connection string (or database URL) is a compact way to pass all the required connection credentials and settings to the database driver at once (e.g., postgresql://user:pass@localhost:5432/mydb)."
-        },
-        {
-          id: "sa9",
-          question: "True or False: A single database server process can manage multiple distinct databases.",
-          options: [
-            "True",
-            "False"
-          ],
-          correctIndex: 0,
-          explanation: "True. One database server instance (e.g., a PostgreSQL server) can host dozens of completely isolated databases (e.g., one for sales, one for HR, one for marketing)."
-        },
-        {
-          id: "sa10",
-          question: "Which of the following best describes SQL?",
-          options: [
-            "A procedural language where you define every loop and variable manually.",
-            "A declarative language where you describe the result you want, and the database engine figures out how to get it.",
-            "A markup language for styling user interfaces.",
-            "A compiled language used to build operating systems."
-          ],
-          correctIndex: 1,
-          explanation: "SQL is declarative. You write WHAT you want (e.g., SELECT * FROM users), and the database optimizer figures out the fastest WAY to retrieve it."
-        }
-      ]
-    }
   ],
 };
 
