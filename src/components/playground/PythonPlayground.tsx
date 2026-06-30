@@ -644,34 +644,31 @@ export function PythonPlayground() {
           Run & Trace
         </Button>
 
-        <div className="relative">
-          <select
-            aria-label="Load sample"
-            className="h-8 cursor-pointer appearance-none rounded-md border border-hairline bg-surface px-2 pr-7 font-mono text-[11px] text-foreground/80 hover:bg-background"
-            onChange={(e) => {
-              const s = SAMPLES.find((x) => x.label === e.target.value);
-              if (s) {
-                setCode(s.code);
-                setSnapshots([]);
-                setIdx(0);
-                setError(null);
-                setStatus("Sample loaded. Press Run.");
-              }
-              e.currentTarget.selectedIndex = 0;
-            }}
-            defaultValue=""
-          >
-            <option value="" disabled>
-              Load sample…
-            </option>
+        <Select
+          value={sampleLabel}
+          onValueChange={(label) => {
+            const s = SAMPLES.find((x) => x.label === label);
+            if (!s) return;
+            setSampleLabel(label);
+            setCode(s.code);
+            setSnapshots([]);
+            setIdx(0);
+            setError(null);
+            setStatus("Sample loaded. Press Run.");
+          }}
+        >
+          <SelectTrigger className="h-8 w-[230px] gap-2 border-hairline bg-surface font-mono text-[11px] text-foreground/80 hover:bg-background">
+            <Sparkles className="size-3 text-muted-foreground" />
+            <SelectValue placeholder="Load sample…" />
+          </SelectTrigger>
+          <SelectContent>
             {SAMPLES.map((s) => (
-              <option key={s.label} value={s.label}>
+              <SelectItem key={s.label} value={s.label} className="font-mono text-[11px]">
                 {s.label}
-              </option>
+              </SelectItem>
             ))}
-          </select>
-          <Sparkles className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
-        </div>
+          </SelectContent>
+        </Select>
 
         <div className="mx-1 h-5 w-px bg-hairline" />
 
