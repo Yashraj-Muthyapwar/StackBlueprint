@@ -14,6 +14,7 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   Sparkles,
+  Link2,
 } from "lucide-react";
 
 import { getPyodide } from "@/lib/pyodide-loader";
