@@ -307,8 +307,9 @@ export const roadmap: RoadmapCategory[] = [
     sections: [
       { title: "Arrays / Matrix", patterns: arrayPatterns },
       { title: "Strings", patterns: stringPatterns },
+      { title: "Hash Map", patterns: hashMapPatterns },
     ],
-    patterns: [...arrayPatterns, ...stringPatterns],
+    patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
   },
   {
     title: "SQL Mastery",
