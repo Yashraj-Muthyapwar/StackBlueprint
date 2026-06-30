@@ -4,16 +4,13 @@ type Inputs = { arr: number[] };
 
 const code = `def kadane(arr):
     best_sum = current_sum = arr[0]
-    start = end = best_l = best_r = 0
     for i in range(1, len(arr)):
         if current_sum + arr[i] < arr[i]:
             current_sum = arr[i]
-            start = i
         else:
             current_sum = current_sum + arr[i]
         if current_sum > best_sum:
             best_sum = current_sum
-            best_l, best_r = start, i
     return best_sum`;
 
 function build({ arr }: Inputs): Step[] {
@@ -89,7 +86,7 @@ function build({ arr }: Inputs): Step[] {
     }
   }
   steps.push({
-    line: 11,
+    line: 10,
     array: [...arr],
     partitions: winBest(),
     status: `return ${bestSum}`,
