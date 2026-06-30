@@ -23,7 +23,8 @@ function PatternIndex() {
   const { pattern } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
   if (!p) return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
-  const categorySlug = p.category.toLowerCase() === "arrays" ? "arrays" : "strings";
+  const cat = p.category.toLowerCase();
+  const categorySlug = cat === "arrays" ? "arrays" : cat === "strings" ? "strings" : "hash-map";
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">

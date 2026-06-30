@@ -57,6 +57,17 @@ import { kmp } from "./strings/kmp";
 import { rabinKarp } from "./strings/rabin-karp";
 import { zAlgorithm } from "./strings/z-algorithm";
 
+import { frequencyCounting } from "./hash-map/frequency-counting";
+import { topKFrequent } from "./hash-map/top-k-frequent";
+import { twoSum } from "./hash-map/two-sum";
+import { subarraySumK } from "./hash-map/subarray-sum-k";
+import { arrayIntersection } from "./hash-map/array-intersection";
+import { happyNumber } from "./hash-map/happy-number";
+import { containsDuplicateK } from "./hash-map/contains-duplicate-k";
+import { firstUniqueChar } from "./hash-map/first-unique-char";
+import { groupAnagrams } from "./hash-map/group-anagrams";
+import { groupShiftedStrings } from "./hash-map/group-shifted-strings";
+
 export type PatternEntry = {
   slug: string;
   title: string;
@@ -165,6 +176,56 @@ export const patterns: PatternEntry[] = [
       { builder: zAlgorithm, icon: Target },
     ],
   },
+  {
+    slug: "hash-frequency",
+    title: "Frequency Based",
+    category: "Hash Map",
+    blurb: "Count occurrences in O(n), then mine the counts for modes, top-K, and majorities.",
+    lessons: [
+      { builder: frequencyCounting, icon: Sigma },
+      { builder: topKFrequent, icon: TrendingUp },
+    ],
+  },
+  {
+    slug: "hash-lookup",
+    title: "Lookup Based",
+    category: "Hash Map",
+    blurb: "Trade an O(n²) pair scan for one pass: hash what you've seen, look up the complement.",
+    lessons: [
+      { builder: twoSum, icon: Target },
+      { builder: subarraySumK, icon: Sigma },
+    ],
+  },
+  {
+    slug: "hash-set",
+    title: "Set Based",
+    category: "Hash Map",
+    blurb: "Membership in O(1) — intersections, dedup, and cycle detection over visited states.",
+    lessons: [
+      { builder: arrayIntersection, icon: Layers },
+      { builder: happyNumber, icon: Repeat },
+    ],
+  },
+  {
+    slug: "hash-index",
+    title: "Index Mapping",
+    category: "Hash Map",
+    blurb: "Store the *index* a value last appeared at — enables window jumps and uniqueness checks.",
+    lessons: [
+      { builder: containsDuplicateK, icon: Search },
+      { builder: firstUniqueChar, icon: Hash },
+    ],
+  },
+  {
+    slug: "hash-grouping",
+    title: "Grouping Pattern",
+    category: "Hash Map",
+    blurb: "Normalize each item to a canonical key; equal keys partition the input into buckets.",
+    lessons: [
+      { builder: groupAnagrams, icon: Layers },
+      { builder: groupShiftedStrings, icon: SquareStack },
+    ],
+  },
 ];
 
 export const PATTERN_BY_SLUG: Record<string, PatternEntry> = Object.fromEntries(
@@ -224,6 +285,9 @@ const arrayPatterns: RoadmapPattern[] = patterns
 const stringPatterns: RoadmapPattern[] = patterns
   .filter((p) => p.category === "Strings")
   .map(toRoadmapPattern);
+const hashMapPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Hash Map")
+  .map(toRoadmapPattern);
 
 const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
   title,
@@ -243,8 +307,9 @@ export const roadmap: RoadmapCategory[] = [
     sections: [
       { title: "Arrays / Matrix", patterns: arrayPatterns },
       { title: "Strings", patterns: stringPatterns },
+      { title: "Hash Map", patterns: hashMapPatterns },
     ],
-    patterns: [...arrayPatterns, ...stringPatterns],
+    patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
   },
   {
     title: "SQL Mastery",
