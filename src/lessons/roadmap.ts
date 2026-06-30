@@ -251,6 +251,7 @@ export const roadmap: RoadmapCategory[] = [
     slug: "sql-mastery",
     icon: Database,
     locked: true,
+    overviewPath: "/sql",
     blurb: "From joins to query plans — write SQL that scales with your data.",
     patterns: [
       lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
@@ -275,9 +276,22 @@ export const roadmap: RoadmapCategory[] = [
     title: "Data Warehouses",
     slug: "data-warehouses",
     icon: Cloud,
-    locked: true,
+    locked: false,
+    overviewPath: "/data-warehouses",
     blurb: "Cloud warehouses, modeling, and the cost/perf knobs that matter.",
     patterns: [
+      {
+        title: "Data Ecosystems",
+        slug: "data-ecosystems",
+        blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
+        lessons: [], // Populated by foundations-content.ts in actual routes
+      },
+      {
+        title: "Data Formats & Storage",
+        slug: "data-formats",
+        blurb: "Understanding how data is stored, compressed, and managed at scale.",
+        lessons: [], // Populated by foundations-content.ts in actual routes
+      },
       lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
       lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
       lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),

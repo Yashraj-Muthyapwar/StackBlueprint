@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { LinkedListShape, LinkedListStep, Pointer } from "@/lessons/types";
 
@@ -24,6 +25,17 @@ export function LinkedListCanvas({
   step: LinkedListStep;
   shape: LinkedListShape;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
   const n = shape.nodes;
   const labels = shape.labels ?? Array.from({ length: n }, (_, i) => String(i));
   const { NODE, GAP_X } = sizing(n);
@@ -39,8 +51,15 @@ export function LinkedListCanvas({
     (p.placement === "below" ? below : above)[p.index].push(p);
   }
 
+  const padding = 48; // px-6 is 24px each side
+  const desiredWidth = totalWidth + 40;
+  const scale =
+    containerWidth > 0 && desiredWidth > containerWidth - padding
+      ? (containerWidth - padding) / desiredWidth
+      : 1;
+
   return (
-    <div className="relative h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       {step.status && (
         <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
           <motion.div
@@ -54,10 +73,10 @@ export function LinkedListCanvas({
         </div>
       )}
 
-      <div className="grid h-full place-items-center px-6">
-        <div className="relative" style={{ width: totalWidth + 40, height: 260 }}>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative origin-center" style={{ width: desiredWidth, height: 260, transform: `scale(${scale})` }}>
           <svg
-            width={totalWidth + 40}
+            width={desiredWidth}
             height={260}
             className="absolute inset-0"
             style={{ overflow: "visible" }}

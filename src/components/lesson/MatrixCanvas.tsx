@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { CellPointer, CellTone, Step, PointerColor } from "@/lessons/types";
 
@@ -31,6 +32,18 @@ function sizing(rows: number, cols: number) {
 }
 
 export function MatrixCanvas({ step }: { step: Step }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const matrix = step.matrix ?? [];
   const rows = matrix.length;
   const cols = matrix[0]?.length ?? 0;
@@ -52,8 +65,14 @@ export function MatrixCanvas({ step }: { step: Step }) {
   const rect = step.matrixRect;
   const rectTone = rect?.tone ?? "violet";
 
+  const padding = 48; // px-6 is 24px each side
+  const scale =
+    containerWidth > 0 && width > containerWidth - padding
+      ? (containerWidth - padding) / width
+      : 1;
+
   return (
-    <div className="relative h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       {step.status && (
         <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
           <motion.div
@@ -66,8 +85,8 @@ export function MatrixCanvas({ step }: { step: Step }) {
           </motion.div>
         </div>
       )}
-      <div className="grid h-full place-items-center px-6">
-        <div className="relative" style={{ width, height }}>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="relative origin-center" style={{ width, height, transform: `scale(${scale})` }}>
           {/* rect overlay */}
           {rect && (
             <motion.div

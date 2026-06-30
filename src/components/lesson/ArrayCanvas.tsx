@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import type { ArrayStep, Pointer } from "@/lessons/types";
@@ -33,12 +34,30 @@ function sizing(n: number) {
 }
 
 export function ArrayCanvas({ step }: { step: ArrayStep }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      setContainerWidth(entries[0].contentRect.width);
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const array = step.array ?? [];
   const pointers = step.pointers ?? [];
   const partitions = step.partitions ?? [];
   const highlight = step.highlight;
   const n = array.length;
   const { CELL, GAP } = sizing(Math.max(1, n));
+  const desiredWidth = n * CELL + (n - 1) * GAP;
+  const padding = 48; // px-6 is 24px each side
+  const scale =
+    containerWidth > 0 && desiredWidth > containerWidth - padding
+      ? (containerWidth - padding) / desiredWidth
+      : 1;
 
   const aboveSlots: Pointer[] = [];
   const belowSlots: Pointer[] = [];
@@ -60,7 +79,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
   const belowByIdx = groupBy(belowSlots);
 
   return (
-    <div className="relative h-full w-full">
+    <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       {/* Status pill */}
       {step.status && (
         <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
@@ -75,12 +94,13 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
         </div>
       )}
 
-      <div className="grid h-full place-items-center px-6">
+      <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className="relative"
+          className="relative origin-center"
           style={{
-            width: n * CELL + (n - 1) * GAP,
+            width: desiredWidth,
             minHeight: 220,
+            transform: `scale(${scale})`,
           }}
         >
           {/* partition bands */}

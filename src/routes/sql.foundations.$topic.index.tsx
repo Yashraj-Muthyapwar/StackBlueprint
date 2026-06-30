@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Database, Table, Terminal } from "lucide-react";
+import { ArrowRight, ChevronRight, Database, Table, Terminal } from "lucide-react";
 import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
 
 const ICONS = { table: Table, database: Database, terminal: Terminal } as const;
@@ -28,13 +28,20 @@ function FoundationTopicPage() {
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
-        <Link
-          to="/sql"
-          className="mb-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
         >
-          <ArrowLeft className="size-3" />
-          Back to SQL Mastery
-        </Link>
+          <Link to="/sql" className="hover:text-foreground">
+            SQL Mastery
+          </Link>
+          <ChevronRight className="size-3" />
+          <Link to="/sql" className="hover:text-foreground">
+            {t.category}
+          </Link>
+          <ChevronRight className="size-3" />
+          <span className="text-foreground">{t.title}</span>
+        </nav>
 
         <div className="flex items-center gap-3">
           <div className="grid size-12 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">

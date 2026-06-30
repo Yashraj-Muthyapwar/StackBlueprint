@@ -64,6 +64,22 @@ export function AppSidebar() {
                 >
                   {cat.title}
                 </Link>
+              ) : cat.overviewPath === "/sql" ? (
+                <Link
+                  to="/sql"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
+              ) : cat.overviewPath === "/data-warehouses" ? (
+                <Link
+                  to="/data-warehouses"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
               ) : (
                 <span>{cat.title}</span>
               )}

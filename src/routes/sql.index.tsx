@@ -83,19 +83,11 @@ const sections: Section[] = [
       "The mental model before the syntax — tables, rows, types, and how a query actually runs.",
     topics: [
       {
-        slug: "intro",
-        title: "Intro to Databases",
-        blurb: "What a database is, the families, how an engine answers a query, and how bytes live on disk.",
-        icon: Database,
-        modules: ["What is a database?", "Types of databases", "How a database works", "How querying works", "How data is stored"],
-        unlocked: true,
-      },
-      {
-        slug: "relational-model",
-        title: "Relational Model",
-        blurb: "Tables, rows, columns, primary & foreign keys, and why the relational model wins.",
-        icon: Table,
-        modules: ["Tables & rows", "Primary keys", "Foreign keys", "Normalization basics"],
+        slug: "database-fundamentals",
+        title: "Database Fundamentals",
+        blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
+        icon: Terminal,
+        modules: ["What is a database?", "How databases work", "SQL & Client-Server", "DDL vs DML", "Keys & Normalization"],
         unlocked: true,
       },
       {
@@ -403,186 +395,111 @@ const sections: Section[] = [
 ];
 
 function SqlIndex() {
-  const totalTopics = sections.reduce((n, s) => n + s.topics.length, 0);
-  const unlockedTopics = sections.reduce(
-    (n, s) => n + s.topics.filter((t) => t.unlocked).length,
-    0,
-  );
-
   return (
-    <div className="relative">
-      <div className="grid-bg absolute inset-0 -z-10 opacity-40" />
-
-      {/* Hero */}
-      <section className="border-b border-hairline px-8 py-14 lg:px-16 lg:py-20">
-        <div className="mx-auto max-w-6xl">
-          <Link
-            to="/"
-            className="mb-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="size-3" />
-            Back to roadmap
-          </Link>
-
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-4 py-1.5 backdrop-blur">
-            <Sparkles className="size-3.5 text-mint" />
-            <span className="font-mono text-[11px] uppercase leading-relaxed tracking-[0.2em] text-muted-foreground">
-              SQL Mastery <span className="mx-1 text-muted-foreground/50">·</span> {unlockedTopics} of {totalTopics} topics unlocked
-            </span>
+    <div className="flex w-full flex-col font-sans">
+      <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto mb-6 grid size-16 place-items-center rounded-2xl bg-mint/10 text-mint ring-1 ring-mint/20 lg:size-20">
+            <Database className="size-8 lg:size-10" />
           </div>
-
-          <h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-5xl">
-            SQL & databases, from{" "}
-            <span className="text-mint">SELECT to query plans.</span>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
+            SQL Mastery
           </h1>
-          <p className="mt-3 max-w-2xl text-balance text-muted-foreground lg:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
             A visual, end-to-end roadmap for SQL — from the relational model to procedures,
             triggers, isolation levels, EXPLAIN plans, and the trade-offs behind every fast query.
-            Start with Foundations; the rest lands progressively.
           </p>
         </div>
-      </section>
+      </div>
 
-      {/* Sections */}
-      <section className="px-8 py-12 lg:px-16">
-        <div className="mx-auto max-w-6xl space-y-14">
-          {sections.map((s, idx) => (
-            <div key={s.group}>
-              <div className="mb-5 flex items-baseline justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {String(idx + 1).padStart(2, "0")}
-                    </span>
-                    <h2 className="text-xl font-semibold tracking-tight">{s.group}</h2>
+      <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-12 lg:py-20">
+        <div className="flex flex-col gap-24">
+          {sections.map((sec, i) => (
+            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
+              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
+                    {i + 1}
                   </div>
-                  <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{s.groupBlurb}</p>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">
+                    {sec.group}
+                  </h2>
                 </div>
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  {s.topics.length} topics
-                </span>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {sec.groupBlurb}
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {s.topics.map((t) => {
+              <div className="flex w-full flex-col gap-4">
+                {sec.topics.map((t) => {
+                  const Icon = t.icon;
+                  const isLocked = !t.unlocked;
+
                   const card = (
                     <div
-                      className={`group relative h-full overflow-hidden rounded-2xl border p-5 transition-colors ${
-                        t.unlocked
-                          ? "border-hairline bg-surface hover:border-mint/40"
-                          : "border-hairline/60 bg-surface/40 hover:border-foreground/20"
+                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
+                        isLocked
+                          ? "bg-card/20 opacity-80 grayscale"
+                          : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
                       }`}
                     >
-                      <div className="mb-3 flex items-center justify-between">
-                        <div
-                          className={`grid size-10 place-items-center rounded-md ${
-                            t.unlocked
-                              ? "bg-mint/15 text-mint ring-1 ring-mint/30"
-                              : "bg-surface-2 text-muted-foreground/80 ring-1 ring-hairline"
-                          }`}
-                        >
-                          <t.icon className="size-5" />
+                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
+                        <Icon
+                          className={`size-10 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
+                          strokeWidth={1.5}
+                        />
+                      </div>
+
+                      <div className="flex flex-1 flex-col p-6 sm:p-8">
+                        <div className="flex items-center justify-between gap-4">
+                          <h3 className="text-xl font-semibold tracking-tight text-foreground">
+                            {t.title}
+                          </h3>
+                          {isLocked && <LockKeyhole className="size-5 text-muted-foreground" />}
                         </div>
-                        {t.unlocked ? (
-                          <span className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
-                            Active
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
-                            <Lock className="size-3" />
-                            Coming soon
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-base font-medium tracking-tight">{t.title}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{t.blurb}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {t.blurb}
+                        </p>
 
-                      <div className="mt-4 flex flex-wrap gap-1.5">
-                        {t.modules.map((m) => (
-                          <span
-                            key={m}
-                            className={
-                              t.unlocked
-                                ? "rounded-full border border-mint/30 bg-mint/10 px-2 py-0.5 text-[10px] text-mint"
-                                : "rounded-full border border-hairline px-2 py-0.5 text-[10px] text-muted-foreground/80"
-                            }
-                          >
-                            {m}
-                          </span>
-                        ))}
+                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
+                          {t.modules.map((m) => (
+                            <span
+                              key={m}
+                              className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
+                            >
+                              {m}
+                            </span>
+                          ))}
+                        </div>
                       </div>
 
-                      <div className="mt-5 inline-flex items-center gap-1.5 text-sm">
-                        {t.unlocked ? (
-                          <span className="text-mint">
-                            Open topic <ArrowRight className="ml-1 inline size-4" />
-                          </span>
-                        ) : (
-                          <span className="text-muted-foreground">
-                            Preview syllabus <ArrowRight className="ml-1 inline size-4" />
-                          </span>
-                        )}
-                      </div>
+                      {!isLocked && (
+                        <div className="absolute bottom-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-sm:hidden">
+                          <div className="grid size-8 place-items-center rounded-full bg-mint/10 text-mint">
+                            <ArrowRight className="size-4" />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   );
 
-                  if (t.unlocked) {
-                    const base = t.routeBase ?? "foundations";
-                    return base === "querying" ? (
-                      <Link
-                        key={t.title}
-                        to="/sql/querying/$topic"
-                        params={{ topic: t.slug }}
-                        className="block"
-                      >
-                        {card}
-                      </Link>
-                    ) : (
-                      <Link
-                        key={t.title}
-                        to="/sql/foundations/$topic"
-                        params={{ topic: t.slug }}
-                        className="block"
-                      >
-                        {card}
-                      </Link>
-                    );
+                  if (isLocked) {
+                    return <div key={t.slug}>{card}</div>;
                   }
 
+                  const toPath = t.to || `/sql/${t.routeBase || "foundations"}/${t.slug}`;
                   return (
-                    <div key={t.title} aria-disabled className="block cursor-not-allowed">
+                    <Link key={t.slug} to={toPath} className="block w-full outline-none">
                       {card}
-                    </div>
+                    </Link>
                   );
                 })}
               </div>
             </div>
           ))}
-
-          {/* In the meantime */}
-          <div className="rounded-2xl border border-mint/30 bg-mint/5 p-6">
-            <div className="flex items-start gap-3">
-              <Sparkles className="mt-0.5 size-4 text-mint" />
-              <div>
-                <h3 className="text-sm font-medium text-foreground">
-                  In the meantime — explore Patterns (DSA)
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  The Arrays / Matrix track is fully unlocked with interactive, step-by-step
-                  visualizations.
-                </p>
-                <Link
-                  to="/patterns"
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-mint px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
-                >
-                  Open Patterns (DSA)
-                  <ArrowRight className="size-4" />
-                </Link>
-              </div>
-            </div>
-          </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }
+

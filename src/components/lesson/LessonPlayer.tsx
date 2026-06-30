@@ -84,15 +84,20 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go, reset]);
 
-  const handleRun = (next: Record<string, unknown>) => {
+  const handleRun = useCallback((next: Record<string, unknown>, warnings: string[], autoPlay: boolean = true) => {
     setInputs(next);
     setStepIndex(0);
-    setPlaying(false);
-  };
+    setPlaying(autoPlay);
+  }, []);
 
   return (
     <div className="flex flex-col gap-4">
-      <LessonControls builder={builder} onRun={handleRun} />
+      <LessonControls
+        builder={builder}
+        onRun={handleRun}
+        playing={playing}
+        onPlayToggle={() => setPlaying((p) => !p)}
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr_1fr]">
         <div className="relative grid-bg min-h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface">

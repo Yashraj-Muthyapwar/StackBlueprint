@@ -1,13 +1,13 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
-import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
-import { SectionRenderer } from "@/components/sql/SectionRenderer";
+import { FOUNDATION_TOPICS } from "@/lessons/data-warehouses/foundations-content";
+import { SectionRenderer } from "@/components/data-warehouses/SectionRenderer";
 
-export const Route = createFileRoute("/sql/foundations/$topic/$lesson")({
+export const Route = createFileRoute("/data-warehouses/foundations/$topic/$lesson")({
   head: ({ params }) => {
     const t = FOUNDATION_TOPICS[params.topic];
     const l = t?.lessons.find((x) => x.slug === params.lesson);
-    if (!t || !l) return { meta: [{ title: "Lesson — SQL Mastery" }] };
+    if (!t || !l) return { meta: [{ title: "Lesson — Data Warehouses" }] };
     return {
       meta: [
         { title: `${l.title} — ${t.title}` },
@@ -30,8 +30,8 @@ function LessonPage() {
     return (
       <div className="px-6 py-16 text-center text-muted-foreground">
         Lesson not found.{" "}
-        <Link to="/sql" className="text-mint underline-offset-4 hover:underline">
-          Back to SQL Mastery
+        <Link to="/data-warehouses" className="text-mint underline-offset-4 hover:underline">
+          Back to Data Warehouses
         </Link>
       </div>
     );
@@ -47,16 +47,16 @@ function LessonPage() {
           aria-label="Breadcrumb"
           className="mb-4 flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
         >
-          <Link to="/sql" className="hover:text-foreground">
-            SQL Mastery
+          <Link to="/data-warehouses" className="hover:text-foreground">
+            Data Warehouses
           </Link>
           <ChevronRight className="size-3" />
-          <Link to="/sql" className="hover:text-foreground">
-            {t.category}
+          <Link to="/data-warehouses" className="hover:text-foreground">
+            Foundations
           </Link>
           <ChevronRight className="size-3" />
           <Link
-            to="/sql/foundations/$topic"
+            to="/data-warehouses/foundations/$topic"
             params={{ topic: t.slug }}
             className="hover:text-foreground"
           >
@@ -69,7 +69,7 @@ function LessonPage() {
         </nav>
 
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          {t.category} · {t.title} · Lesson {idx + 1} of {t.lessons.length}
+          Foundations · {t.title} · Lesson {idx + 1} of {t.lessons.length}
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight lg:text-4xl">
           {l.title}
@@ -87,7 +87,7 @@ function LessonPage() {
         <nav className="mt-14 flex flex-col gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
           {prev ? (
             <Link
-              to="/sql/foundations/$topic/$lesson"
+              to="/data-warehouses/foundations/$topic/$lesson"
               params={{ topic: t.slug, lesson: prev.slug }}
               className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 transition-colors hover:border-mint/40 hover:bg-surface/60"
             >
@@ -104,7 +104,7 @@ function LessonPage() {
           )}
           {next ? (
             <Link
-              to="/sql/foundations/$topic/$lesson"
+              to="/data-warehouses/foundations/$topic/$lesson"
               params={{ topic: t.slug, lesson: next.slug }}
               className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 text-right transition-colors hover:border-mint/40 hover:bg-surface/60"
             >

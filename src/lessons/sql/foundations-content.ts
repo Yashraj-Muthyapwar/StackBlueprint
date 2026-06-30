@@ -172,16 +172,22 @@ const primaryKeys: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "Identity is everything",
+      heading: "Identity is Everything",
       body: [
-        "A primary key uniquely identifies each row. No two rows can share the same PK value, and PK columns can never be NULL. It's how the database — and your application — refers to a specific record over its entire lifetime.",
-        "Without a primary key you can't safely UPDATE or DELETE a single row, or join tables without ambiguity. 'Every table has a primary key' is one of the few rules in databases with no real exceptions.",
+        "A **primary key** uniquely identifies each row in a table. No two rows can share the same primary key value, and primary key columns **can never be NULL**. This is how the database and your application refer to a specific record over its entire lifetime.",
+        "Without a primary key, you cannot safely update or delete a single row, or join tables without ambiguity. The idea that **every table must have a primary key** is one of the few strict rules in databases with almost no exceptions.",
       ],
+    },
+    {
+      kind: "image",
+      src: primaryKeysImg,
+      alt: "Primary Keys",
+      caption: "Primary keys ensure every row has a unique identity",
     },
     {
       kind: "animation",
       variant: "pk-anatomy",
-      caption: "Declare → insert → reject NULL → reject duplicate → composite → surrogate",
+      caption: "Declare, insert, reject NULL, reject duplicate, composite, surrogate",
     },
     {
       kind: "code",
@@ -204,17 +210,17 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "warn",
-      title: "What goes wrong without a PK",
-      body: "A NULL in a PK column raises 'null value violates not-null constraint'. A duplicate raises 'duplicate key value violates unique constraint'. Both errors are good — they catch logic bugs at write time, not after the fact.",
+      title: "What goes wrong without a primary key",
+      body: "Trying to insert a NULL into a primary key column raises a not-null constraint error. Trying to insert a duplicate raises a unique constraint error. Both of these errors are actually great features because they catch logic bugs right when you try to save data, instead of causing silent problems later on.",
     },
     {
       kind: "table",
-      caption: "Natural vs surrogate keys",
+      caption: "Natural vs Surrogate keys",
       headers: ["", "Natural key", "Surrogate key"],
       rows: [
         ["What is it?", "A real-world value (email, ISBN, SSN)", "An invented value (BIGSERIAL, UUID)"],
-        ["Meaning", "Carries business meaning", "Meaningless outside the DB"],
-        ["Stability", "Can change (people rename, ISBNs reissue)", "Never changes"],
+        ["Meaning", "Carries business meaning", "Meaningless outside the database"],
+        ["Stability", "Can change (people change names, ISBNs get reissued)", "Never changes"],
         ["Size", "Often large (TEXT)", "Small (8 bytes)"],
         ["Best for", "Lookup tables, true unique identifiers", "Almost everything else"],
       ],
@@ -222,27 +228,150 @@ CREATE TABLE order_items (
     {
       kind: "callout",
       tone: "info",
-      title: "Default to surrogate",
-      body: "Use a BIGSERIAL or UUID as the primary key, then add a UNIQUE constraint on the natural key (email, sku, etc.). You get a stable identifier for foreign keys and integrity on the business value.",
+      title: "Default to surrogate keys",
+      body: "Use a simple auto-incrementing number (BIGSERIAL) or a UUID as your primary key, and then add a UNIQUE constraint on the natural key like an email or SKU. This gives you a stable, non-changing identifier for linking tables while keeping your business rules strict.",
     },
     {
       kind: "prose",
-      heading: "Composite keys",
+      heading: "Composite Keys",
       body: [
-        "Sometimes identity spans multiple columns — a row in order_items is identified by (order_id, product_id) together. That's a composite primary key.",
-        "Composite keys are correct but verbose: every foreign key referencing this table must also be composite. Many teams add a surrogate `id BIGSERIAL PRIMARY KEY` and keep (order_id, product_id) as a UNIQUE constraint — cleaner FKs, same integrity.",
+        "Sometimes a unique identity requires multiple columns. For example, a row in an order_items table is identified by the **combination** of an order_id and a product_id together. This is called a **composite primary key**.",
+        "Composite keys are perfectly valid but can be annoying to type out because every other table that links to this one must also use both columns. Because of this, many teams prefer to just add a simple 'id' surrogate key to the table and keep the multiple columns as a **UNIQUE constraint** instead.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "Primary key = unique + not null + immutable identity.",
-        "NULL in a PK column is rejected; duplicates are rejected.",
-        "Prefer a surrogate (BIGSERIAL / UUID) plus a UNIQUE on the natural value.",
-        "Composite keys are fine, but they make foreign keys verbose.",
-        "Never reuse a deleted primary key value.",
+        "A **primary key** guarantees that a row is unique, not null, and has an immutable identity.",
+        "The database will **automatically reject** NULLs and duplicates in a primary key column.",
+        "It is usually best to prefer a **surrogate key** like BIGSERIAL or UUID, plus a UNIQUE constraint on natural values.",
+        "**Composite keys** are fine, but they can make linking tables more verbose.",
+        "You should **never reuse** a primary key value that has been deleted.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "pk1",
+          question: "Which of the following must be true for a primary key?",
+          options: [
+            "It must be a number.",
+            "It must be unique and cannot be NULL.",
+            "It must contain a string of at least 8 characters.",
+            "It can have duplicate values as long as they are not NULL."
+          ],
+          correctIndex: 1,
+          explanation: "Primary keys are strictly enforced to be both unique and non-null to guarantee a specific row's identity."
+        },
+        {
+          id: "pk2",
+          question: "What happens if you try to insert a duplicate primary key value into a table?",
+          options: [
+            "The database automatically generates a new, unique value.",
+            "The old row is overwritten by the new row.",
+            "The database throws a unique constraint error and rejects the insert.",
+            "The database accepts it but marks it with a warning."
+          ],
+          correctIndex: 2,
+          explanation: "The database will reject any insert that violates the uniqueness of a primary key, preventing data corruption."
+        },
+        {
+          id: "pk3",
+          question: "What is a 'surrogate key'?",
+          options: [
+            "A key made from a real-world value like an email or Social Security Number.",
+            "A backup key used only if the primary key fails.",
+            "A meaningless, database-generated value (like an auto-incrementing ID or UUID) used purely for identification.",
+            "A key that consists of multiple columns."
+          ],
+          correctIndex: 2,
+          explanation: "Surrogate keys have no business meaning and exist solely to give a stable, unchanging identity to a row."
+        },
+        {
+          id: "pk4",
+          question: "What is a 'natural key'?",
+          options: [
+            "A key generated randomly by the database.",
+            "An auto-incrementing integer.",
+            "A real-world attribute that uniquely identifies a row, like an ISBN or email address.",
+            "A key used for connecting to the database."
+          ],
+          correctIndex: 2,
+          explanation: "Natural keys use existing, real-world data (like an email) to identify a row."
+        },
+        {
+          id: "pk5",
+          question: "Why might you prefer a surrogate key over a natural key?",
+          options: [
+            "Natural keys take up less space on disk.",
+            "Surrogate keys are faster to type.",
+            "Natural keys can sometimes change in the real world (e.g., someone changes their email), which breaks links between tables.",
+            "Surrogate keys allow for duplicate values."
+          ],
+          correctIndex: 2,
+          explanation: "If a natural key changes, you have to update every other table that references it. Surrogate keys never change, making relationships stable."
+        },
+        {
+          id: "pk6",
+          question: "What is a 'composite key'?",
+          options: [
+            "A key made out of a mix of numbers and letters.",
+            "A primary key that spans across multiple columns (e.g., order_id AND product_id).",
+            "A key that is used in more than one database.",
+            "A key that is encrypted for security."
+          ],
+          correctIndex: 1,
+          explanation: "A composite key uses two or more columns together to form a unique identity."
+        },
+        {
+          id: "pk7",
+          question: "True or False: A table can have multiple primary keys.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. A table can only have one primary key (though that one key can be a composite made of multiple columns)."
+        },
+        {
+          id: "pk8",
+          question: "What does BIGSERIAL do in PostgreSQL?",
+          options: [
+            "It creates a massive text field.",
+            "It automatically generates an incrementing number for each new row.",
+            "It encrypts the column data.",
+            "It allows the column to store an array of values."
+          ],
+          correctIndex: 1,
+          explanation: "BIGSERIAL is a convenient way to create an auto-incrementing integer, which is perfect for surrogate primary keys."
+        },
+        {
+          id: "pk9",
+          question: "If you decide to use a surrogate ID as your primary key, how should you handle your natural key (like a user's email)?",
+          options: [
+            "Ignore it and don't store it.",
+            "Store it normally, as duplicates don't matter.",
+            "Add a UNIQUE constraint to the natural key column to ensure no two users sign up with the same email.",
+            "Make it a second primary key."
+          ],
+          correctIndex: 2,
+          explanation: "Adding a UNIQUE constraint to the email gives you the best of both worlds: a stable surrogate primary key, and strict business rules on the natural data."
+        },
+        {
+          id: "pk10",
+          question: "Why is it important to never reuse a deleted primary key value?",
+          options: [
+            "Because the database will crash.",
+            "To prevent old, disconnected records (like historical backups or logs) from accidentally linking to the new row.",
+            "Because primary keys must always be alphabetical.",
+            "Because you are legally required not to."
+          ],
+          correctIndex: 1,
+          explanation: "Reusing an ID can cause catastrophic data mix-ups if old data (like an old invoice in a backup) suddenly points to a brand new customer who happens to get the reused ID."
+        }
+      ]
+    }
   ],
 };
 
@@ -250,20 +379,58 @@ const foreignKeys: LessonContent = {
   slug: "foreign-keys",
   title: "Foreign Keys & Relationships",
   subtitle:
-    "1:1, 1:N, N:M — how to model entity relationships without losing referential integrity.",
+    "1:1, 1:N, N:M: how to model entity relationships without losing referential integrity.",
   sections: [
     {
       kind: "prose",
       heading: "What a foreign key actually does",
       body: [
-        "A foreign key is a column whose value must match a primary key in another table. It's the engine's way of saying 'this order must belong to a customer that actually exists' — any INSERT or UPDATE pointing to a missing parent row is rejected.",
-        "FKs also control what happens when the parent is deleted: ON DELETE CASCADE removes children, ON DELETE SET NULL nulls the link, ON DELETE RESTRICT (default) blocks the delete entirely.",
+        "A **foreign key** is a column whose value must match a **primary key** in another table. It is the database's way of strictly enforcing that a relationship is valid. For example, any attempt to insert an order pointing to a customer that does not exist will be rejected instantly.",
+        "Foreign keys also give you control over what happens when a **parent record is deleted**, ensuring you never end up with **'orphan' records** scattered throughout your database.",
       ],
+    },
+    {
+      kind: "image",
+      src: foreignKeysImg,
+      alt: "Foreign Keys",
+      caption: "Foreign keys enforce strict relationships between tables",
     },
     {
       kind: "animation",
       variant: "fk-deep",
-      caption: "Parent → child → orphan rejection → CASCADE → SET NULL → RESTRICT",
+      caption: "Parent to child, orphan rejection, CASCADE, SET NULL, RESTRICT",
+    },
+    {
+      kind: "prose",
+      heading: "One-to-One (1:1) Relationships",
+      body: [
+        "A **one-to-one relationship** means one row in a table is linked to **exactly one row** in another. For example, a user might have exactly one profile.",
+        "To enforce this in SQL, you add a foreign key and also apply a **UNIQUE constraint** to it. This guarantees that no two profiles can ever point to the same user.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "1:1 requires a UNIQUE foreign key",
+      code: `CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE
+);
+
+CREATE TABLE user_profiles (
+  id BIGSERIAL PRIMARY KEY,
+  -- The UNIQUE constraint makes this 1:1 instead of 1:N
+  user_id BIGINT NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+  bio TEXT
+);`
+    },
+    {
+      kind: "prose",
+      heading: "One-to-Many (1:N) Relationships",
+      body: [
+        "This is the **most common relationship**. One customer can place many orders, but each order belongs to **exactly one customer**.",
+        "To create a **1:N relationship**, you simply place a foreign key on the 'many' side (the orders table) pointing to the 'one' side (the customers table), **without a UNIQUE constraint**.",
+      ],
     },
     {
       kind: "code",
@@ -283,6 +450,7 @@ CREATE TABLE orders (
   placed_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- ALWAYS index the child side of a foreign key!
 CREATE INDEX idx_orders_customer ON orders(customer_id);`,
     },
     {
@@ -300,9 +468,10 @@ N : M     students >──< courses
     },
     {
       kind: "prose",
-      heading: "Many-to-many needs a join table",
+      heading: "Many-to-many (N:M) needs a join table",
       body: [
-        "There is no 'many-to-many foreign key'. Model N:M with a third table — a join, link, or junction table — whose primary key is the composite of the two foreign keys.",
+        "There is no such thing as a **many-to-many foreign key column**. To model an **N:M relationship** (like students and courses), you must create a third table, usually called a **join or link table**.",
+        "The primary key of this join table is simply the **combination of the two foreign keys** it connects. This ensures a student cannot enroll in the exact same course twice.",
       ],
     },
     {
@@ -317,57 +486,195 @@ N : M     students >──< courses
 );`,
     },
     {
+      kind: "prose",
+      heading: "Handling Deletions (ON DELETE)",
+      body: [
+        "When a parent row is deleted, what happens to the children? You must explicitly choose:",
+        "• **RESTRICT (default):** The database blocks the deletion and throws an error if children exist.",
+        "• **CASCADE:** The database automatically deletes all linked child rows (great for users and their profiles).",
+        "• **SET NULL:** The parent is deleted, and the child's foreign key column is updated to NULL (great for keeping historical orders when a user is deleted)."
+      ]
+    },
+    {
       kind: "callout",
       tone: "warn",
       title: "Always index your foreign keys",
-      body: "PostgreSQL does NOT auto-index the child side of a FK. Without an index, deleting a parent row scans the entire child table. A 200 ms delete becomes 30 seconds on real data.",
+      body: "PostgreSQL does not automatically create indexes for foreign keys on the child table. Without an index, deleting a single parent row requires scanning the entire child table to check for linked records. This can turn a fast 200ms delete into a 30-second query on real data.",
     },
     {
       kind: "takeaways",
       items: [
-        "Foreign keys = referential integrity enforced by the engine.",
-        "Choose ON DELETE behavior deliberately: CASCADE, SET NULL, or RESTRICT.",
-        "N:M is always modeled with a join table whose PK is the composite FK pair.",
-        "Always add an index on the child-side foreign key column.",
+        "**Foreign keys** enforce referential integrity directly at the database engine level.",
+        "Add a **UNIQUE constraint** to a foreign key to create a **1:1 relationship**.",
+        "**Many-to-many relationships** are always modeled with a **join table**.",
+        "You must deliberately choose an **ON DELETE behavior** (CASCADE, SET NULL, or RESTRICT).",
+        "You must **always manually add an index** on the child-side foreign key column.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "fk1",
+          question: "[Easy] What is the main purpose of a foreign key?",
+          options: [
+            "To encrypt data between two tables.",
+            "To ensure that a value in one table matches a primary key in another, maintaining strict referential integrity.",
+            "To automatically create backups of linked tables.",
+            "To combine two tables into one large table automatically."
+          ],
+          correctIndex: 1,
+          explanation: "Foreign keys enforce referential integrity, making sure relationships between tables are valid and preventing 'orphan' records."
+        },
+        {
+          id: "fk2",
+          question: "[Easy] If a user can only have one profile, and a profile belongs to exactly one user, what kind of relationship is this?",
+          options: [
+            "1:1 (One-to-One)",
+            "1:N (One-to-Many)",
+            "N:M (Many-to-Many)",
+            "N:1 (Many-to-One)"
+          ],
+          correctIndex: 0,
+          explanation: "A 1:1 relationship means exactly one record on each side is linked directly to the other."
+        },
+        {
+          id: "fk3",
+          question: "[Medium] How do you enforce a One-to-One (1:1) relationship in SQL?",
+          options: [
+            "By naming the columns exactly the same in both tables.",
+            "By adding a UNIQUE constraint to the foreign key column on the child table.",
+            "By not using a foreign key at all.",
+            "By creating a third join table."
+          ],
+          correctIndex: 1,
+          explanation: "Adding a UNIQUE constraint to the foreign key guarantees that no two child rows can ever point to the same parent row, enforcing a strict 1:1 mapping."
+        },
+        {
+          id: "fk4",
+          question: "[Medium] What happens by default (RESTRICT) if you try to delete a customer who has orders, and the orders have a foreign key to the customer?",
+          options: [
+            "The customer is deleted, and the orders are left untouched.",
+            "The customer and all their orders are deleted.",
+            "The database blocks the deletion and throws an error.",
+            "The customer's orders are reassigned to a different customer."
+          ],
+          correctIndex: 2,
+          explanation: "By default, the database restricts you from deleting a parent record if child records still depend on it, preventing broken links."
+        },
+        {
+          id: "fk5",
+          question: "[Medium] Which ON DELETE behavior automatically deletes all linked child rows when the parent is deleted?",
+          options: [
+            "ON DELETE RESTRICT",
+            "ON DELETE CASCADE",
+            "ON DELETE SET NULL",
+            "ON DELETE DROP"
+          ],
+          correctIndex: 1,
+          explanation: "ON DELETE CASCADE is a powerful tool that automatically cleans up dependent records when the parent is removed."
+        },
+        {
+          id: "fk6",
+          question: "[Medium] How do you model a Many-to-Many (N:M) relationship in a relational database?",
+          options: [
+            "You put a foreign key on both tables.",
+            "You save an array of IDs in a single text column.",
+            "You create a third 'join table' that contains foreign keys pointing to both of the main tables.",
+            "You merge both tables into one giant table."
+          ],
+          correctIndex: 2,
+          explanation: "Relational databases require a third 'join' table to resolve many-to-many relationships properly and maintain integrity."
+        },
+        {
+          id: "fk7",
+          question: "[Hard] True or False: PostgreSQL automatically creates an index for every foreign key you define.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False! PostgreSQL does NOT index foreign keys automatically. You must manually add an index to prevent massive performance issues when joining or deleting."
+        },
+        {
+          id: "fk8",
+          question: "[Hard] Why is it critically important to manually index the foreign key column on the child table?",
+          options: [
+            "Because without an index, deleting the parent row requires a slow, full table scan of the child table.",
+            "Because you cannot insert data without an index.",
+            "Because it encrypts the relationship.",
+            "Because it allows you to store larger numbers."
+          ],
+          correctIndex: 0,
+          explanation: "Without an index on the child table's foreign key, the database has to check every single row in the child table whenever a parent is deleted to ensure no orphans are left behind."
+        },
+        {
+          id: "fk9",
+          question: "[Medium] What does the ON DELETE SET NULL behavior do?",
+          options: [
+            "It deletes the parent but leaves the child row, setting the foreign key column to NULL.",
+            "It deletes both the parent and the child.",
+            "It prevents the parent from being deleted.",
+            "It sets the parent's primary key to NULL."
+          ],
+          correctIndex: 0,
+          explanation: "SET NULL keeps the child record alive but safely breaks the link to the deleted parent. This is useful for keeping historical data (like orders) even if the user is deleted."
+        },
+        {
+          id: "fk10",
+          question: "[Hard] What is typically used as the Primary Key for a join table (e.g., enrollments linking students to courses)?",
+          options: [
+            "A single auto-incrementing integer (BIGSERIAL).",
+            "A combination of the two foreign keys (e.g., student_id AND course_id) as a composite primary key.",
+            "The student's name.",
+            "A completely random text string."
+          ],
+          correctIndex: 1,
+          explanation: "The combination of the two foreign keys inherently creates a unique identity for the relationship, ensuring a student cannot enroll in the exact same course twice."
+        }
+      ]
+    }
   ],
 };
 
 const normalization: LessonContent = {
   slug: "normalization",
-  title: "Normalization — 1NF → 5NF → Denormalize",
+  title: "Normalization & Denormalization",
   subtitle: "Walk every normal form against the same table, then see when to undo it.",
   sections: [
     {
       kind: "prose",
       heading: "Why normalize?",
       body: [
-        "Normalization means every fact lives in exactly one place. When an address changes, you update one row — not every copy. That's the payoff.",
-        "Skipping it creates three classic problems: update anomalies (change one copy, leave others stale), insert anomalies (can't add a course unless a student enrolls), and delete anomalies (delete a student and lose the course).",
+        "**Normalization** means every fact lives in **exactly one place**. When an address changes, you update one row instead of every copy. That is the core payoff.",
+        "Skipping it creates three classic problems: **update anomalies** (you change one copy but leave others stale), **insert anomalies** (you cannot add a course unless a student enrolls), and **delete anomalies** (if you delete a student, you might accidentally lose the course data).",
       ],
+    },
+    {
+      kind: "image",
+      src: normalizationImg,
+      alt: "Database Normalization",
+      caption: "Step by step: organizing data to remove redundancy"
     },
     {
       kind: "animation",
       variant: "normalization",
-      caption: "Same data, decomposed step by step: Unnormalized → 1NF → 2NF → 3NF → BCNF → 4NF → 5NF → Denormalize",
+      caption: "Same data, decomposed step by step: Unnormalized to 1NF, 2NF, 3NF, BCNF, then Denormalize",
     },
     {
       kind: "prose",
       heading: "The forms in plain English",
       body: [
-        "1NF — every cell is atomic. No comma-separated lists, no JSON pretending to be a relation. Each row is uniquely identifiable.",
-        "2NF — applies when the PK is composite. Every non-key column must depend on the WHOLE key, not just part of it. Split out anything that depends on only one side.",
-        "3NF — no transitive dependencies. If column A depends on column B and B is not the key, move A and B into their own table referenced by id.",
-        "BCNF — a stricter 3NF: for every functional dependency X → Y, X must be a superkey. Rarely needed beyond 3NF, but it closes some edge cases.",
-        "4NF — no multi-valued dependencies. If a key independently determines two multi-valued attributes, put them in separate tables.",
-        "5NF (PJNF) — decompose until only a natural join can losslessly rebuild the original. Theoretical bar; rarely applied directly.",
+        "**1NF (First Normal Form):** Every cell is **atomic**. No comma-separated lists, and no JSON pretending to be a relation. Each row is uniquely identifiable.",
+        "**2NF (Second Normal Form):** Applies when the primary key is composite. Every non-key column must depend on the **WHOLE key**, not just part of it. Split out anything that depends on only one side.",
+        "**3NF (Third Normal Form):** No **transitive dependencies**. If column A depends on column B, and B is not the key, move A and B into their own table referenced by an ID.",
+        "**BCNF (Boyce-Codd Normal Form):** A slightly stricter version of 3NF. For every functional dependency X determines Y, X must be a **superkey**. This is rarely needed beyond 3NF, but it closes some edge cases.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "A canonical 3NF shape — what most teams ship",
+      caption: "A canonical 3NF shape: what most teams ship",
       code: `CREATE TABLE customers (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -387,29 +694,160 @@ CREATE TABLE order_items (
 );`,
     },
     {
+      kind: "image",
+      src: denormalizationImg,
+      alt: "Database Denormalization",
+      caption: "Combining tables to optimize read performance"
+    },
+    {
       kind: "callout",
       tone: "success",
       title: "Normalize first, denormalize when measured",
-      body: "Start in 3NF. Denormalize only when a measured read pattern can't be satisfied with indexes — and document the reason every time. Premature denormalization is the #1 source of data drift in young codebases.",
+      body: "Start in 3NF. Denormalize only when a measured read pattern cannot be satisfied with indexes, and document the reason every time. Premature denormalization is the leading source of data drift in young codebases.",
     },
     {
       kind: "prose",
-      heading: "When (and how) to denormalize",
+      heading: "When and how to denormalize",
       body: [
-        "Denormalization deliberately repeats data so reads skip expensive joins. Common examples: copy `customer_name` onto `orders` for list views; pre-aggregate daily totals into a `metrics_daily` table; materialize a view.",
-        "The cost is consistency — every change to the source must fan out to every copy. Use triggers, app-layer fan-out, or scheduled refreshes, and accept some staleness under load.",
+        "**Denormalization** deliberately repeats data so reads can **skip expensive joins**. Common examples include copying a customer name onto the orders table for list views, pre-aggregating daily totals into a metrics table, or materializing a view.",
+        "The cost is **consistency**: every change to the source data must fan out to every copy. You will need to use triggers, application-layer fan-out, or scheduled refreshes, and accept some **staleness** under heavy load.",
       ],
     },
     {
       kind: "takeaways",
       items: [
-        "1NF: atomic cells, no lists.",
-        "2NF: full dependency on the whole composite key.",
-        "3NF: no transitive dependencies between non-key columns.",
-        "BCNF / 4NF / 5NF: stricter forms — useful theory, rarely needed past 3NF.",
-        "Normalize by default; denormalize with intent and measurement.",
+        "**1NF:** Atomic cells, no lists.",
+        "**2NF:** Full dependency on the whole composite key.",
+        "**3NF:** No transitive dependencies between non-key columns.",
+        "**BCNF:** Stricter 3NF to close edge cases.",
+        "**Normalize by default;** denormalize with clear intent and measurement.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "norm1",
+          question: "[Easy] What is the primary goal of database normalization?",
+          options: [
+            "To encrypt the data.",
+            "To ensure every fact lives in exactly one place, reducing redundancy and anomalies.",
+            "To combine all tables into one giant table.",
+            "To automatically generate primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Normalization organizes data to reduce duplication, ensuring that updates, inserts, and deletes affect only one place in the database."
+        },
+        {
+          id: "norm2",
+          question: "[Easy] What is an 'update anomaly'?",
+          options: [
+            "When the database crashes during an update.",
+            "When you update a piece of duplicated data in one row but forget to update it in others, causing inconsistencies.",
+            "When you try to insert data without a primary key.",
+            "When you delete a row and it cascades to too many children."
+          ],
+          correctIndex: 1,
+          explanation: "Update anomalies occur when redundant data gets out of sync because you didn't update every single copy of it."
+        },
+        {
+          id: "norm3",
+          question: "[Medium] What rule defines First Normal Form (1NF)?",
+          options: [
+            "No transitive dependencies.",
+            "Every column must be an integer.",
+            "Every cell is atomic (indivisible) and there are no repeating groups or lists in a single column.",
+            "There must be at least three tables in the database."
+          ],
+          correctIndex: 2,
+          explanation: "1NF requires that all data is atomic, meaning you shouldn't store comma-separated lists or JSON arrays where a related table should be."
+        },
+        {
+          id: "norm4",
+          question: "[Medium] When does Second Normal Form (2NF) apply?",
+          options: [
+            "It applies to every single table.",
+            "It only applies when a table has no primary key.",
+            "It specifically applies when a table has a composite primary key (a key made of multiple columns).",
+            "It only applies to tables holding user passwords."
+          ],
+          correctIndex: 2,
+          explanation: "2NF requires that all non-key columns depend on the entire composite primary key, not just a part of it."
+        },
+        {
+          id: "norm5",
+          question: "[Medium] What defines Third Normal Form (3NF)?",
+          options: [
+            "Every table must have a foreign key.",
+            "No transitive dependencies (if column A depends on B, and B is not the primary key, they should be in a separate table).",
+            "All numbers must be floating points.",
+            "Every row must have a unique identifier."
+          ],
+          correctIndex: 1,
+          explanation: "3NF removes transitive dependencies. For example, a customer's 'city' depends on their 'zip_code', not directly on the customer's ID, so zip codes and cities should technically be their own table."
+        },
+        {
+          id: "norm6",
+          question: "[Hard] What is Boyce-Codd Normal Form (BCNF)?",
+          options: [
+            "It is the exact same thing as 1NF.",
+            "It is a stricter version of 3NF that handles complex edge cases where multiple overlapping candidate keys exist.",
+            "It is a rule for creating indexes.",
+            "It dictates how to write JOIN queries."
+          ],
+          correctIndex: 1,
+          explanation: "BCNF strengthens 3NF by stating that for every non-trivial functional dependency X -> Y, X must be a superkey."
+        },
+        {
+          id: "norm7",
+          question: "[Easy] What is Denormalization?",
+          options: [
+            "Deleting tables from the database.",
+            "Deliberately repeating data in multiple places to speed up read queries by avoiding expensive joins.",
+            "Scrambling data for security.",
+            "Removing primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Denormalization trades storage space and write complexity for faster read performance by keeping related data together."
+        },
+        {
+          id: "norm8",
+          question: "[Medium] What is the major downside or cost of Denormalization?",
+          options: [
+            "Read queries become much slower.",
+            "You cannot use foreign keys anymore.",
+            "Maintaining consistency becomes difficult: every time the source data changes, you have to manually update all the duplicated copies.",
+            "It requires you to buy more RAM."
+          ],
+          correctIndex: 2,
+          explanation: "Because data is duplicated, an update requires fanning out the change to multiple places, which introduces the risk of data getting out of sync (anomalies)."
+        },
+        {
+          id: "norm9",
+          question: "[Hard] When is the BEST time to denormalize your database?",
+          options: [
+            "Right at the beginning, before you even write any queries.",
+            "Only when a measured read pattern cannot be satisfied with standard indexing, and you have proven it is a bottleneck.",
+            "Whenever you have more than 5 tables.",
+            "Never. Denormalization is always bad."
+          ],
+          correctIndex: 1,
+          explanation: "Premature denormalization leads to buggy, drift-heavy databases. You should always start normalized (3NF) and only denormalize when metrics prove you have a specific read performance issue."
+        },
+        {
+          id: "norm10",
+          question: "[Medium] Which normal form is generally considered the 'sweet spot' that most teams aim for when designing a standard application database?",
+          options: [
+            "1NF",
+            "2NF",
+            "3NF",
+            "BCNF"
+          ],
+          correctIndex: 2,
+          explanation: "3NF is the standard goal for relational modeling. It eliminates the vast majority of redundancy without overly complicating the schema design."
+        }
+      ]
+    }
   ],
 };
 
@@ -1060,43 +1498,49 @@ const sqlCommands: LessonContent = {
   slug: "sql-commands",
   title: "Types of SQL Commands (DDL, DML, DCL, DQL, TCL)",
   subtitle:
-    "Five families every SQL statement belongs to — and why knowing them changes how you think about permissions.",
+    "Five families every SQL statement belongs to and why knowing them changes how you think about permissions.",
   sections: [
     {
       kind: "prose",
       heading: "Five families, one language",
       body: [
-        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each has different safety properties, rollback rules, and — in production — different roles allowed to run it.",
+        "Every SQL statement belongs to one of five families: DDL (structure), DML (data), DQL (reading), DCL (permissions), and TCL (transactions). Each family has different safety rules and decides who is allowed to run them in a production database.",
       ],
+    },
+    {
+      kind: "image",
+      src: sqlCommandsImg,
+      alt: "SQL Commands Families",
+      caption: "The five SQL command families",
     },
     {
       kind: "animation",
       variant: "commands-map",
-      caption: "The SQL command family tree — DDL · DML · DQL · DCL · TCL",
+      caption: "The SQL command family tree: DDL, DML, DQL, DCL, TCL",
     },
     {
       kind: "table",
       caption: "The five families at a glance",
       headers: ["Family", "Stands for", "Verbs", "What it changes"],
       rows: [
-        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Schema / structure"],
-        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows in tables"],
-        ["DQL", "Data Query Language", "SELECT (+ WITH, FROM, WHERE, …)", "Nothing — read only"],
-        ["DCL", "Data Control Language", "GRANT, REVOKE", "Permissions"],
-        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction boundaries"],
+        ["DDL", "Data Definition Language", "CREATE, ALTER, DROP, TRUNCATE, RENAME", "Database structure"],
+        ["DML", "Data Manipulation Language", "INSERT, UPDATE, DELETE, MERGE", "Rows of data"],
+        ["DQL", "Data Query Language", "SELECT", "Nothing (read only)"],
+        ["DCL", "Data Control Language", "GRANT, REVOKE", "User permissions"],
+        ["TCL", "Transaction Control Language", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT", "Transaction safety rules"],
       ],
     },
     {
       kind: "prose",
-      heading: "DDL — shape of the world",
+      heading: "DDL: Shape of the World",
       body: [
-        "DDL changes the schema: creates tables, alters columns, drops indexes. Most engines auto-commit DDL — DROP TABLE is final the instant it returns. PostgreSQL is the rare exception: DDL is transactional, so you can BEGIN, DROP TABLE x, then ROLLBACK and the table is still there.",
+        "DDL changes the structure of your database. You use it to create tables, alter columns, and drop indexes. In most databases, DDL commands are final the moment you run them. PostgreSQL is a rare exception where DDL commands can be rolled back if you make a mistake.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DDL — structural changes",
+      caption: "DDL for structural changes",
       code: `CREATE TABLE products (
   id    BIGSERIAL PRIMARY KEY,
   name  TEXT NOT NULL,
@@ -1106,20 +1550,20 @@ const sqlCommands: LessonContent = {
 ALTER TABLE products ADD COLUMN sku TEXT UNIQUE;
 ALTER TABLE products DROP COLUMN price;
 
-TRUNCATE products;   -- removes all rows, can't be rolled back in most engines
+TRUNCATE products;   -- removes all rows and usually cannot be undone
 DROP   TABLE products;`,
     },
     {
       kind: "prose",
-      heading: "DML — change the rows",
+      heading: "DML: Change the Rows",
       body: [
-        "DML adds, modifies, or removes rows. Unlike DDL, DML is always transactional — wrap it in a transaction, inspect the effect, and ROLLBACK if wrong. This is the family you spend the most time with in application code.",
+        "DML adds, modifies, or removes the actual rows of data. Unlike DDL, you can wrap DML commands in a transaction to test them safely, and then roll them back if something looks wrong. This is the family of commands you will spend the most time using in your application code.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DML — moving data",
+      caption: "DML for moving data",
       code: `INSERT INTO products (name, price) VALUES ('Pen', 2.50);
 
 UPDATE products
@@ -1128,7 +1572,7 @@ WHERE  name = 'Pen';
 
 DELETE FROM products WHERE price > 1000;
 
--- MERGE (upsert) — INSERT if missing, UPDATE if present
+-- MERGE inserts new rows or updates existing ones
 MERGE INTO inventory AS i
 USING incoming AS x ON i.sku = x.sku
 WHEN MATCHED     THEN UPDATE SET qty = i.qty + x.qty
@@ -1136,15 +1580,15 @@ WHEN NOT MATCHED THEN INSERT (sku, qty) VALUES (x.sku, x.qty);`,
     },
     {
       kind: "prose",
-      heading: "DQL — pure reads",
+      heading: "DQL: Pure Reads",
       body: [
-        "DQL is SELECT and its supporting cast: WITH, FROM, JOIN, WHERE, GROUP BY, HAVING, ORDER BY, LIMIT. It never changes data. Treating DQL as its own family is useful — read-only access is the safest permission you can grant.",
+        "DQL is mainly just the SELECT statement and its helpers like WHERE and ORDER BY. It never changes data. Treating DQL as its own family is very useful because giving someone read only access is the safest permission you can grant.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DQL — pure read, no side effects",
+      caption: "DQL for pure reads with no side effects",
       code: `SELECT name, price
 FROM   products
 WHERE  price < 10
@@ -1153,30 +1597,30 @@ LIMIT  20;`,
     },
     {
       kind: "prose",
-      heading: "DCL — who is allowed to do what",
+      heading: "DCL: Who is Allowed to Do What",
       body: [
-        "DCL controls permissions. In a healthy system, the app connects as a role with narrow DML/DQL privileges; only migrations run as a role with DDL; only humans (and audited tools) run GRANT.",
+        "DCL controls user permissions. In a healthy database system, your application connects using a role with narrow privileges. Only special roles are allowed to run structural DDL commands, and only trusted administrators should run DCL commands like GRANT.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "DCL — granting and revoking",
+      caption: "DCL for granting and revoking access",
       code: `GRANT SELECT, INSERT ON products TO app_user;
 GRANT ALL  PRIVILEGES   ON SCHEMA public TO migration_role;
 REVOKE DELETE ON products FROM app_user;`,
     },
     {
       kind: "prose",
-      heading: "TCL — atomic units of work",
+      heading: "TCL: Safe Units of Work",
       body: [
-        "TCL defines transaction boundaries — a group of statements that either all succeed or all fail. SAVEPOINTs are nested checkpoints inside a transaction you can selectively roll back to.",
+        "TCL defines transaction boundaries. A transaction is a group of statements that either all succeed together or all fail together. You can also use SAVEPOINT commands to create checkpoints inside a transaction to roll back to.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "TCL — transaction control",
+      caption: "TCL for transaction control",
       code: `BEGIN;
   UPDATE accounts SET balance = balance - 100 WHERE id = 1;
   SAVEPOINT after_debit;
@@ -1192,18 +1636,141 @@ COMMIT;`,
       kind: "callout",
       tone: "success",
       title: "Why the taxonomy matters",
-      body: "Production permissioning maps directly to these families. The app role gets DML+DQL, the migration role gets DDL, and DCL stays with humans. Knowing the family tells you immediately who should be able to run a given statement.",
+      body: "Production permissions map directly to these five families. Your app role gets DML and DQL. The migration role gets DDL. DCL stays with human administrators. Knowing the family tells you immediately who should be allowed to run a given statement.",
     },
     {
       kind: "takeaways",
       items: [
-        "DDL changes structure (CREATE/ALTER/DROP).",
-        "DML changes rows (INSERT/UPDATE/DELETE/MERGE).",
-        "DQL reads rows (SELECT).",
-        "DCL changes permissions (GRANT/REVOKE).",
-        "TCL controls transactions (BEGIN/COMMIT/ROLLBACK/SAVEPOINT).",
+        "DDL changes structure with CREATE, ALTER, and DROP.",
+        "DML changes rows with INSERT, UPDATE, DELETE, and MERGE.",
+        "DQL reads rows using SELECT.",
+        "DCL changes permissions with GRANT and REVOKE.",
+        "TCL controls transactions with BEGIN, COMMIT, and ROLLBACK.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sc1",
+          question: "Which SQL command family is responsible for changing the structure of the database, such as creating or dropping tables?",
+          options: [
+            "DML (Data Manipulation Language)",
+            "DQL (Data Query Language)",
+            "DDL (Data Definition Language)",
+            "TCL (Transaction Control Language)"
+          ],
+          correctIndex: 2,
+          explanation: "DDL handles structural changes like CREATE, ALTER, and DROP."
+        },
+        {
+          id: "sc2",
+          question: "Which of the following commands belongs to the DML (Data Manipulation Language) family?",
+          options: [
+            "CREATE TABLE",
+            "UPDATE",
+            "GRANT",
+            "COMMIT"
+          ],
+          correctIndex: 1,
+          explanation: "UPDATE modifies the actual data rows in a table, making it a DML command."
+        },
+        {
+          id: "sc3",
+          question: "What is the only command in the DQL (Data Query Language) family?",
+          options: [
+            "INSERT",
+            "SELECT",
+            "MERGE",
+            "TRUNCATE"
+          ],
+          correctIndex: 1,
+          explanation: "SELECT is used strictly to read data without making any changes to it."
+        },
+        {
+          id: "sc4",
+          question: "If you want to give a new user permission to read data from a table, which command family would you use?",
+          options: [
+            "DCL (Data Control Language)",
+            "DDL (Data Definition Language)",
+            "DQL (Data Query Language)",
+            "DML (Data Manipulation Language)"
+          ],
+          correctIndex: 0,
+          explanation: "You would use a GRANT command, which belongs to DCL (Data Control Language)."
+        },
+        {
+          id: "sc5",
+          question: "Why is it important to group commands into a transaction using TCL (Transaction Control Language)?",
+          options: [
+            "To make the queries run faster.",
+            "To ensure that a group of related changes either all succeed together or all fail together safely.",
+            "To hide the data from unauthorized users.",
+            "To automatically create backups of the tables."
+          ],
+          correctIndex: 1,
+          explanation: "Transactions guarantee atomicity, meaning partial failures won't leave your database in an inconsistent state."
+        },
+        {
+          id: "sc6",
+          question: "Which TCL command is used to save all changes made during the current transaction permanently?",
+          options: [
+            "BEGIN",
+            "ROLLBACK",
+            "SAVEPOINT",
+            "COMMIT"
+          ],
+          correctIndex: 3,
+          explanation: "COMMIT finalizes the transaction, writing all the changes to the database permanently."
+        },
+        {
+          id: "sc7",
+          question: "True or False: In most database systems, if you run a DROP TABLE command (DDL), you can easily ROLLBACK the transaction to get your table back.",
+          options: [
+            "True",
+            "False"
+          ],
+          correctIndex: 1,
+          explanation: "False. In most databases, DDL commands auto-commit immediately and cannot be rolled back. PostgreSQL is a rare exception where this is possible."
+        },
+        {
+          id: "sc8",
+          question: "In a production environment, which family of commands does the main application server typically need?",
+          options: [
+            "Only DDL and DCL",
+            "Only TCL and DCL",
+            "Only DML and DQL",
+            "All five families"
+          ],
+          correctIndex: 2,
+          explanation: "Applications typically only need to read (DQL) and modify rows (DML). Structural changes (DDL) and permissions (DCL) should be restricted to administrators or deployment scripts."
+        },
+        {
+          id: "sc9",
+          question: "What does the TRUNCATE command do, and which family does it belong to?",
+          options: [
+            "It deletes a single row (DML).",
+            "It quickly removes all rows from a table and cannot usually be rolled back (DDL).",
+            "It drops the entire table structure (DCL).",
+            "It undoes the last transaction (TCL)."
+          ],
+          correctIndex: 1,
+          explanation: "TRUNCATE is a DDL command that instantly empties a table. Because it doesn't log individual row deletions like DELETE does, it is much faster but often irreversible."
+        },
+        {
+          id: "sc10",
+          question: "What is the purpose of the SAVEPOINT command in SQL?",
+          options: [
+            "To save a backup of the entire database to disk.",
+            "To create a safe checkpoint inside a large transaction so you can partially roll back if a specific step fails.",
+            "To permanently grant a user access to a specific table.",
+            "To automatically save a query's results to a file."
+          ],
+          correctIndex: 1,
+          explanation: "SAVEPOINT allows you to rollback to a specific point inside a transaction without abandoning the entire transaction."
+        }
+      ]
+    }
   ],
 };
 
