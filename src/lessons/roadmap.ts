@@ -285,6 +285,9 @@ const arrayPatterns: RoadmapPattern[] = patterns
 const stringPatterns: RoadmapPattern[] = patterns
   .filter((p) => p.category === "Strings")
   .map(toRoadmapPattern);
+const hashMapPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Hash Map")
+  .map(toRoadmapPattern);
 
 const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
   title,
