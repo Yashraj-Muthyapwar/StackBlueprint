@@ -164,6 +164,14 @@ function valueLabel(v: Value): string {
   return `→ #${v.id.slice(-4)}`;
 }
 
+function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
+  if (v.kind === "prim") return String(v.value);
+  const o = heap?.[v.id];
+  if (!o) return `object #${v.id.slice(-4)}`;
+  if ("items" in o) return `${o.type}(len=${o.size})`;
+  return o.type;
+}
+
 function valueClass(v: Value): string {
   if (v.kind === "ref") return "text-violet";
   if (v.type === "str") return "text-mint";
@@ -176,6 +184,36 @@ function valueKey(v: Value): string {
   return v.kind === "prim" ? `p:${v.type}:${v.value}` : `r:${v.id}`;
 }
 
+// Build a plain-English narration of what changed at this step.
+function narrate(snap: Snapshot, prev?: Snapshot): string {
+  if (snap.event === "call") {
+    const f = snap.frames.at(-1);
+    if (!f) return `entering ${snap.callName ?? "function"}`;
+    const args = Object.entries(f.locals)
+      .map(([k, v]) => `${k}=${valuePlain(v, snap.heap)}`)
+      .join(", ");
+    return `Calling ${f.name}(${args}) — a new frame is pushed onto the stack.`;
+  }
+  if (snap.event === "return") {
+    const f = snap.frames.at(-1);
+    const rv = snap.returnValue ? valuePlain(snap.returnValue, snap.heap) : "None";
+    return `${f?.name ?? "function"} returns ${rv}. Its frame is popped; control goes back to the caller.`;
+  }
+  // line event: describe locals diff in top frame
+  const top = snap.frames.at(-1);
+  const prevTop = prev?.frames[snap.frames.length - 1];
+  if (!top) return `Executing line ${snap.line}.`;
+  const changes: string[] = [];
+  Object.entries(top.locals).forEach(([k, v]) => {
+    const pv = prevTop?.locals[k];
+    if (!pv) changes.push(`${k} = ${valuePlain(v, snap.heap)} (new)`);
+    else if (valueKey(pv) !== valueKey(v))
+      changes.push(`${k} → ${valuePlain(v, snap.heap)}`);
+  });
+  if (!changes.length) return `Running line ${snap.line} in ${top.name}.`;
+  return `Line ${snap.line}: ${changes.join(", ")}.`;
+}
+
 // ---------------- Heap rendering ----------------
 
 function HeapCard({
@@ -184,15 +222,34 @@ function HeapCard({
   registerRef,
   isNew,
   changedItems,
+  aliases,
+  live,
 }: {
   id: string;
   obj: HeapObj;
   registerRef: (key: string, el: HTMLElement | null) => void;
   isNew: boolean;
   changedItems: Set<number>;
+  aliases: string[];
+  live: boolean;
 }) {
   const shortId = id.slice(-4);
-  const ringClass = isNew ? "ring-2 ring-mint/60" : "";
+  const ringClass = isNew
+    ? "ring-2 ring-mint/60"
+    : live
+      ? "ring-2 ring-violet/50"
+      : "";
+  const aliasBar =
+    aliases.length > 0 ? (
+      <div className="mt-1.5 flex flex-wrap items-center gap-1 border-t border-hairline pt-1.5 font-mono text-[10px] text-muted-foreground">
+        <span className="uppercase tracking-wider">aliased by</span>
+        {aliases.map((a) => (
+          <span key={a} className="rounded bg-violet/10 px-1 py-px text-violet">
+            {a}
+          </span>
+        ))}
+      </div>
+    ) : null;
 
   if ("items" in obj && (obj.type === "list" || obj.type === "tuple" || obj.type === "set")) {
     const open = obj.type === "tuple" ? "(" : obj.type === "set" ? "{" : "[";
@@ -224,6 +281,7 @@ function HeapCard({
           {obj.truncated && <span className="text-muted-foreground">…</span>}
           <span className="text-muted-foreground">{close}</span>
         </div>
+        {aliasBar}
       </div>
     );
   }
@@ -257,6 +315,7 @@ function HeapCard({
           ))}
           {obj.truncated && <div className="col-span-3 text-muted-foreground">…</div>}
         </div>
+        {aliasBar}
       </div>
     );
   }
@@ -272,6 +331,7 @@ function HeapCard({
       <div className="font-mono text-[12px] text-foreground/80">
         {"repr" in obj ? obj.repr : ""}
       </div>
+      {aliasBar}
     </div>
   );
 }
@@ -486,6 +546,62 @@ export function PythonPlayground() {
   const stdout = snap?.stdout ?? "";
   const heapEntries = useMemo(() => (snap ? Object.entries(snap.heap) : []), [snap]);
 
+  // Aliases: for each heap id, collect "frame.var" labels pointing to it (across all frames).
+  // Live set: heap ids referenced (directly or transitively) by the top frame.
+  const { aliasesById, liveIds } = useMemo(() => {
+    const aliases = new Map<string, string[]>();
+    const live = new Set<string>();
+    if (!snap) return { aliasesById: aliases, liveIds: live };
+    snap.frames.forEach((f, fi) => {
+      const isTop = fi === snap.frames.length - 1;
+      Object.entries(f.locals).forEach(([k, v]) => {
+        if (v.kind !== "ref") return;
+        const tag = fi === 0 ? k : `${f.name}.${k}`;
+        const list = aliases.get(v.id) ?? [];
+        list.push(tag);
+        aliases.set(v.id, list);
+        if (isTop) live.add(v.id);
+      });
+    });
+    // Transitive closure: items referenced from live containers are also live.
+    let added = true;
+    while (added) {
+      added = false;
+      live.forEach((id) => {
+        const o = snap.heap[id];
+        if (!o) return;
+        if ("items" in o) {
+          o.items.forEach((it) => {
+            const v = Array.isArray(it) ? (it[1] as Value) : (it as Value);
+            if (v && v.kind === "ref" && !live.has(v.id)) {
+              live.add(v.id);
+              added = true;
+            }
+          });
+        }
+      });
+    }
+    return { aliasesById: aliases, liveIds: live };
+  }, [snap]);
+
+  const narration = useMemo(
+    () => (snap ? narrate(snap, prevSnap) : "Press Run to trace your program step by step."),
+    [snap, prevSnap],
+  );
+
+  // Per-step event colors for the timeline.
+  const stepColors = useMemo(
+    () =>
+      snapshots.map((s) =>
+        s.event === "call"
+          ? "var(--violet)"
+          : s.event === "return"
+            ? "var(--mint)"
+            : "var(--hairline)",
+      ),
+    [snapshots],
+  );
+
   // Event ribbon content
   const eventBadge = useMemo(() => {
     if (!snap) return null;
@@ -608,15 +724,29 @@ export function PythonPlayground() {
 
       {/* Scrubber + event ribbon */}
       <div className="flex items-center gap-3">
-        <input
-          type="range"
-          min={0}
-          max={Math.max(0, snapshots.length - 1)}
-          value={idx}
-          disabled={!snapshots.length}
-          onChange={(e) => setIdx(Number(e.target.value))}
-          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-hairline accent-mint disabled:opacity-40"
-        />
+        <div className="relative flex-1">
+          <input
+            type="range"
+            min={0}
+            max={Math.max(0, snapshots.length - 1)}
+            value={idx}
+            disabled={!snapshots.length}
+            onChange={(e) => setIdx(Number(e.target.value))}
+            className="relative z-10 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-mint disabled:opacity-40"
+          />
+          {/* Colored event ticks underneath the slider */}
+          {snapshots.length > 1 && (
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 flex h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
+              {stepColors.map((c, i) => (
+                <div
+                  key={i}
+                  style={{ background: c, opacity: i <= idx ? 0.9 : 0.35 }}
+                  className="h-full flex-1"
+                />
+              ))}
+            </div>
+          )}
+        </div>
         {eventBadge && (
           <span
             className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] ${eventBadge.cls}`}
@@ -625,6 +755,15 @@ export function PythonPlayground() {
             {eventBadge.label}
           </span>
         )}
+      </div>
+
+      {/* Plain-English narration of the current step */}
+      <div className="rounded-lg border border-hairline bg-surface px-3 py-2">
+        <div className="mb-0.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-mint shadow-[0_0_8px_var(--mint)]" />
+          what's happening
+        </div>
+        <p className="text-[13px] leading-relaxed text-foreground/90">{narration}</p>
       </div>
 
       {/* Main split */}
@@ -807,6 +946,8 @@ export function PythonPlayground() {
                       registerRef={registerRef}
                       isNew={diff.newHeapIds.has(id)}
                       changedItems={diff.changedHeapItems.get(id) ?? new Set()}
+                      aliases={aliasesById.get(id) ?? []}
+                      live={liveIds.has(id)}
                     />
                   ))
                 ) : (
