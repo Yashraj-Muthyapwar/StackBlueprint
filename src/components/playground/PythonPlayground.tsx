@@ -739,18 +739,15 @@ export function PythonPlayground() {
             onChange={(e) => setIdx(Number(e.target.value))}
             className="relative z-10 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-mint disabled:opacity-40"
           />
-          {/* Colored event ticks underneath the slider */}
-          {snapshots.length > 1 && (
-            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 flex h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
-              {stepColors.map((c, i) => (
-                <div
-                  key={i}
-                  style={{ background: c, opacity: i <= idx ? 0.9 : 0.35 }}
-                  className="h-full flex-1"
-                />
-              ))}
-            </div>
-          )}
+          {/* Plain progress fill */}
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
+            <div
+              className="h-full bg-mint/60 transition-all"
+              style={{
+                width: snapshots.length > 1 ? `${(idx / (snapshots.length - 1)) * 100}%` : "0%",
+              }}
+            />
+          </div>
         </div>
         {eventBadge && (
           <span
