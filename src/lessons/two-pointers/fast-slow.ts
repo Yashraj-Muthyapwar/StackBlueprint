@@ -143,6 +143,15 @@ function buildFindDuplicate(arr: number[]): Step[] {
     return steps;
   }
 
+  steps.push({
+    line: 1,
+    array: [...arr],
+    pointers: ptrs(0, 0, n),
+    highlight: { kind: "compare", indices: [0] },
+    status: "start at index 0",
+    narration:
+      "Think of each value as a 'next index' pointer. Both slow and fast start at index 0.",
+  });
   let slow = arr[0];
   let fast = arr[0];
   steps.push({
@@ -150,9 +159,10 @@ function buildFindDuplicate(arr: number[]): Step[] {
     array: [...arr],
     pointers: ptrs(slow, fast, n),
     highlight: { kind: "compare", indices: [slow] },
-    status: `slow = fast = nums[0] = ${slow}`,
-    narration: "Treat each value as a 'next index'. Both pointers start at nums[0].",
+    status: `slow = fast = nums[0] = ${slow}  → jump to index ${slow}`,
+    narration: `nums[0] = ${slow}, so both pointers jump to index ${slow}.`,
   });
+
 
   // Phase 1: detect meeting point inside the cycle.
   for (let i = 0; i < n * 2; i++) {
