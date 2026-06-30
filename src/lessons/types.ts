@@ -79,6 +79,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   variant: string;
   view: View;
   code: string;
+  /** Optional per-input override; falls back to `code` when absent. */
+  codeFor?: (inputs: Record<string, unknown>) => string;
   defaultInputs: TInputs;
   inputs: InputField[];
   validate?: (inputs: TInputs) => string[];
