@@ -2,16 +2,16 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { p: string };
 
-const code = `def failure(p):
-    pi = [0] * len(p)
-    k = 0
-    for i in range(1, len(p)):
-        while k > 0 and p[k] != p[i]:
-            k = pi[k - 1]
-        if p[k] == p[i]:
-            k += 1
-        pi[i] = k
-    return pi`;
+const code = `def failure(pattern):
+    lps = [0] * len(pattern)
+    matched = 0
+    for i in range(1, len(pattern)):
+        while matched > 0 and pattern[matched] != pattern[i]:
+            matched = lps[matched - 1]
+        if pattern[matched] == pattern[i]:
+            matched += 1
+        lps[i] = matched
+    return lps`;
 
 function build({ p }: Inputs): Step[] {
   const steps: Step[] = [];
@@ -22,10 +22,10 @@ function build({ p }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Empty pattern.", array: arr, pointers: [] });
     return steps;
   }
-  const pi = new Array<number>(n).fill(0);
-  const piView = () => ({ label: "pi (failure function)", array: pi.slice() });
-  const ptrs = (k: number, i: number) => [
-    { name: "k", index: k, color: "mint" as const },
+  const lps = new Array<number>(n).fill(0);
+  const lpsView = () => ({ label: "lps (failure function)", array: lps.slice() });
+  const ptrs = (matched: number, i: number) => [
+    { name: "matched", index: matched, color: "mint" as const },
     { name: "i", index: i, color: "amber" as const, placement: "below" as const },
   ];
 
@@ -33,50 +33,50 @@ function build({ p }: Inputs): Step[] {
     line: 1,
     array: arr,
     pointers: [],
-    secondary: piView(),
-    narration: `Build failure function: pi[i] = length of longest proper prefix of p[0..i] that is also a suffix.`,
+    secondary: lpsView(),
+    narration: `Build failure function: lps[i] = length of longest proper prefix of pattern[0..i] that is also a suffix.`,
   });
 
-  let k = 0;
+  let matched = 0;
   for (let i = 1; i < n; i++) {
     steps.push({
       line: 4,
       array: arr,
-      pointers: ptrs(k, i),
-      secondary: piView(),
-      narration: `i=${i}, k=${k}. Try to extend the current matched prefix.`,
+      pointers: ptrs(matched, i),
+      secondary: lpsView(),
+      narration: `i=${i}, matched=${matched}. Try to extend the current matched prefix.`,
     });
-    while (k > 0 && chars[k] !== chars[i]) {
+    while (matched > 0 && chars[matched] !== chars[i]) {
       steps.push({
         line: 5,
         array: arr,
-        pointers: ptrs(k, i),
-        highlight: { kind: "swap", indices: [k, i] },
-        secondary: piView(),
+        pointers: ptrs(matched, i),
+        highlight: { kind: "swap", indices: [matched, i] },
+        secondary: lpsView(),
         status: `mismatch, fall back`,
-        narration: `p[k=${k}]='${chars[k]}' ≠ p[i=${i}]='${chars[i]}'. Fall back: k = pi[${k - 1}] = ${pi[k - 1]}.`,
+        narration: `pattern[matched=${matched}]='${chars[matched]}' ≠ pattern[i=${i}]='${chars[i]}'. Fall back: matched = lps[${matched - 1}] = ${lps[matched - 1]}.`,
       });
-      k = pi[k - 1];
+      matched = lps[matched - 1];
     }
-    if (chars[k] === chars[i]) {
+    if (chars[matched] === chars[i]) {
       steps.push({
         line: 7,
         array: arr,
-        pointers: ptrs(k, i),
-        highlight: { kind: "match", indices: [k, i] },
-        secondary: piView(),
-        narration: `Match: extend prefix → k = ${k + 1}.`,
+        pointers: ptrs(matched, i),
+        highlight: { kind: "match", indices: [matched, i] },
+        secondary: lpsView(),
+        narration: `Match: extend prefix → matched = ${matched + 1}.`,
       });
-      k += 1;
+      matched += 1;
     }
-    pi[i] = k;
+    lps[i] = matched;
     steps.push({
       line: 8,
       array: arr,
-      pointers: ptrs(Math.max(0, k - 1), i),
-      secondary: piView(),
-      status: `pi[${i}] = ${k}`,
-      narration: `pi[${i}] = ${k}.`,
+      pointers: ptrs(Math.max(0, matched - 1), i),
+      secondary: lpsView(),
+      status: `lps[${i}] = ${matched}`,
+      narration: `lps[${i}] = ${matched}.`,
     });
   }
 
@@ -84,9 +84,9 @@ function build({ p }: Inputs): Step[] {
     line: 9,
     array: arr,
     pointers: [],
-    secondary: piView(),
-    status: `pi = [${pi.join(", ")}]`,
-    narration: `Done. Use pi to skip work in the main search loop.`,
+    secondary: lpsView(),
+    status: `lps = [${lps.join(", ")}]`,
+    narration: `Done. Use lps to skip work in the main search loop.`,
   });
   return steps;
 }
@@ -95,7 +95,7 @@ export const kmp: LessonBuilder<Inputs> = {
   slug: "kmp",
   title: "Pattern Matching — KMP Failure Function",
   subtitle: "Precompute the longest proper prefix == suffix at every position so search never re-checks matched chars.",
-  problem: "Build the KMP failure array pi for a pattern p, where pi[i] is the length of the longest proper prefix of p[0..i] that is also a suffix.",
+  problem: "Build the KMP failure array lps for a pattern, where lps[i] is the length of the longest proper prefix of pattern[0..i] that is also a suffix.",
   spotIt: [
     "Exact substring search where pattern reuse matters (many queries, one pattern).",
     "You need worst-case O(n+m) substring matching — no expected-time hashing.",

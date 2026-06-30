@@ -3,76 +3,76 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { arr: number[]; target: number };
 
 const code = `def longest_subarray_at_most(arr, target):
-    l = 0
-    s = 0
+    left = 0
+    window_sum = 0
     best = 0
-    for r in range(len(arr)):
-        s += arr[r]
-        while s > target:
-            s -= arr[l]
-            l += 1
-        best = max(best, r - l + 1)
+    for right in range(len(arr)):
+        window_sum += arr[right]
+        while window_sum > target:
+            window_sum -= arr[left]
+            left += 1
+        best = max(best, right - left + 1)
     return best`;
 
 function build({ arr, target }: Inputs): Step[] {
   const steps: Step[] = [];
   const n = arr.length;
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (l: number, r: number) =>
-    r >= l ? [{ from: l, to: r, tone: "mid" as const, label: `window (sum)` }] : [];
+  const win = (left: number, right: number) =>
+    right >= left ? [{ from: left, to: right, tone: "mid" as const, label: `window (sum)` }] : [];
 
   if (n === 0) {
     steps.push({ line: 1, narration: "Empty array.", pointers: [] });
     return steps;
   }
-  let l = 0,
-    s = 0,
+  let left = 0,
+    window_sum = 0,
     best = 0;
   steps.push({ line: 1, array: [...arr], pointers: ptrs(0, 0), narration: `Goal: longest contiguous subarray with sum ≤ ${target}.` });
 
-  for (let r = 0; r < n; r++) {
-    s += arr[r];
+  for (let right = 0; right < n; right++) {
+    window_sum += arr[right];
     steps.push({
       line: 5,
       array: [...arr],
-      pointers: ptrs(l, r),
-      partitions: win(l, r),
-      highlight: { kind: "compare", indices: [r] },
-      status: `s=${s}`,
-      narration: `Expand: include arr[${r}]=${arr[r]}, sum=${s}.`,
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
+      highlight: { kind: "compare", indices: [right] },
+      status: `window_sum=${window_sum}`,
+      narration: `Expand: include arr[${right}]=${arr[right]}, sum=${window_sum}.`,
     });
-    while (s > target) {
+    while (window_sum > target) {
       steps.push({
         line: 6,
         array: [...arr],
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        status: `s=${s} > ${target}`,
-        narration: `Shrink: sum ${s} exceeds ${target}.`,
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        status: `window_sum=${window_sum} > ${target}`,
+        narration: `Shrink: sum ${window_sum} exceeds ${target}.`,
       });
-      s -= arr[l];
-      l += 1;
+      window_sum -= arr[left];
+      left += 1;
       steps.push({
         line: 7,
         array: [...arr],
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        status: `s=${s}`,
-        narration: `Drop arr[${l - 1}]=${arr[l - 1]}, l→${l}.`,
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        status: `window_sum=${window_sum}`,
+        narration: `Drop arr[${left - 1}]=${arr[left - 1]}, left→${left}.`,
       });
     }
-    const len = r - l + 1;
+    const len = right - left + 1;
     if (len > best) {
       best = len;
       steps.push({
         line: 9,
         array: [...arr],
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        highlight: { kind: "match", indices: Array.from({ length: len }, (_, i) => l + i) },
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        highlight: { kind: "match", indices: Array.from({ length: len }, (_, i) => left + i) },
         status: `best=${best}`,
         narration: `New best length ${best}.`,
       });
@@ -90,12 +90,12 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
   spotIt: [
     "'Longest / shortest substring or subarray satisfying a condition' on a contiguous range.",
     "Condition can be checked incrementally as you add or remove one element.",
-    "Constraint hints: distinct characters, sum \u2264 S, at most K of something.",
+    "Constraint hints: distinct characters, sum ≤ S, at most K of something.",
   ],
   avoidWhen: [
-    "The valid range is non-monotonic \u2014 shrinking from the left can skip valid answers.",
-    "You need all subarrays, not just the optimal one \u2014 use prefix sums or hashing.",
-    "Elements are not contiguous (subsequences / subsets) \u2014 sliding window doesn't apply.",
+    "The valid range is non-monotonic — shrinking from the left can skip valid answers.",
+    "You need all subarrays, not just the optimal one — use prefix sums or hashing.",
+    "Elements are not contiguous (subsequences / subsets) — sliding window doesn't apply.",
   ],
   variant: "variable-expand-shrink",
   view: "array",

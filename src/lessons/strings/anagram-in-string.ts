@@ -2,17 +2,17 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { s1: string; s2: string };
 
-const code = `def check_inclusion(s1, s2):
-    if len(s1) > len(s2): return False
+const code = `def check_inclusion(pattern, text):
+    if len(pattern) > len(text): return False
     need = [0] * 26
     have = [0] * 26
-    for c in s1:
-        need[ord(c) - 97] += 1
-    k = len(s1)
-    for i in range(len(s2)):
-        have[ord(s2[i]) - 97] += 1
+    for char in pattern:
+        need[ord(char) - 97] += 1
+    k = len(pattern)
+    for i in range(len(text)):
+        have[ord(text[i]) - 97] += 1
         if i >= k:
-            have[ord(s2[i - k]) - 97] -= 1
+            have[ord(text[i - k]) - 97] -= 1
         if i >= k - 1 and have == need:
             return True
     return False`;
@@ -25,7 +25,7 @@ function build({ s1, s2 }: Inputs): Step[] {
   const k = s1.length;
 
   if (k === 0 || k > n) {
-    steps.push({ line: 2, narration: "s1 longer than s2 (or empty) — return False.", array: arr, pointers: [] });
+    steps.push({ line: 2, narration: "pattern longer than text (or empty) — return False.", array: arr, pointers: [] });
     return steps;
   }
 
@@ -39,31 +39,31 @@ function build({ s1, s2 }: Inputs): Step[] {
       .filter(Boolean) as string[];
 
   const secondaryHave = () => ({ label: "have (window counts)", array: fmtCounts(have) });
-  const secondaryNeed = { label: `need (s1="${s1}")`, array: fmtCounts(need) };
+  const secondaryNeed = { label: `need (pattern="${s1}")`, array: fmtCounts(need) };
 
   steps.push({
     line: 5,
     array: arr,
     pointers: [],
     secondary: secondaryNeed,
-    narration: `Build need from s1="${s1}". Window size k=${k}.`,
+    narration: `Build need from pattern="${s1}". Window size k=${k}.`,
   });
 
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (l: number, r: number) => [{ from: l, to: r, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) => [{ from: left, to: right, tone: "mid" as const, label: "window" }];
 
   for (let i = 0; i < n; i++) {
     const cIn = chars[i];
     have[cIn.charCodeAt(0) - 97] += 1;
-    const l = Math.max(0, i - k + 1);
+    const left = Math.max(0, i - k + 1);
     steps.push({
       line: 9,
       array: arr,
-      pointers: ptrs(l, i),
-      partitions: win(l, i),
+      pointers: ptrs(left, i),
+      partitions: win(left, i),
       highlight: { kind: "compare", indices: [i] },
       secondary: secondaryHave(),
       narration: `i=${i}, include '${cIn}'.`,
@@ -74,8 +74,8 @@ function build({ s1, s2 }: Inputs): Step[] {
       steps.push({
         line: 11,
         array: arr,
-        pointers: ptrs(l, i),
-        partitions: win(l, i),
+        pointers: ptrs(left, i),
+        partitions: win(left, i),
         highlight: { kind: "swap", indices: [i - k] },
         secondary: secondaryHave(),
         narration: `Drop '${out}' (left of window).`,
@@ -87,12 +87,12 @@ function build({ s1, s2 }: Inputs): Step[] {
         steps.push({
           line: 12,
           array: arr,
-          pointers: ptrs(l, i),
-          partitions: win(l, i),
-          highlight: { kind: "match", indices: Array.from({ length: k }, (_, j) => l + j) },
+          pointers: ptrs(left, i),
+          partitions: win(left, i),
+          highlight: { kind: "match", indices: Array.from({ length: k }, (_, j) => left + j) },
           secondary: secondaryHave(),
-          status: `match at l=${l}`,
-          narration: `Window "${chars.slice(l, i + 1).join("")}" matches need — return True.`,
+          status: `match at left=${left}`,
+          narration: `Window "${chars.slice(left, i + 1).join("")}" matches need — return True.`,
         });
         return steps;
       }
@@ -112,8 +112,8 @@ function build({ s1, s2 }: Inputs): Step[] {
 export const anagramInString: LessonBuilder<Inputs> = {
   slug: "anagram-in-string",
   title: "Sliding Window — Permutation In String",
-  subtitle: "Slide a fixed window of size |s1| across s2 and compare character counts.",
-  problem: "Given two strings s1 and s2, return True iff some permutation of s1 appears as a substring of s2.",
+  subtitle: "Slide a fixed window of size |pattern| across text and compare character counts.",
+  problem: "Given two strings pattern and text, return True iff some permutation of pattern appears as a substring of text.",
   spotIt: [
     "Asks 'does any permutation / anagram of P appear in T?'",
     "Constraint is an equal-multiset condition over a fixed-length window.",

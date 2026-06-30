@@ -4,9 +4,9 @@ type Inputs = { words: string };
 
 const code = `def group_anagrams(words):
     groups = {}
-    for w in words:
-        key = ''.join(sorted(w))   # canonical form
-        groups.setdefault(key, []).append(w)
+    for word in words:
+        key = ''.join(sorted(word))   # canonical form
+        groups.setdefault(key, []).append(word)
     return list(groups.values())`;
 
 function fmtGroups(g: Map<string, string[]>) {
@@ -30,11 +30,11 @@ function build({ words }: Inputs): Step[] {
     narration: "Canonical key = sorted letters. Two anagrams share the same key.",
   });
   for (let i = 0; i < list.length; i++) {
-    const w = list[i];
-    const key = w.split("").sort().join("");
+    const word = list[i];
+    const key = word.split("").sort().join("");
     const had = groups.has(key);
     if (!had) groups.set(key, []);
-    (groups.get(key) as string[]).push(w);
+    (groups.get(key) as string[]).push(word);
     steps.push({
       line: 4,
       array: arr,
@@ -43,8 +43,8 @@ function build({ words }: Inputs): Step[] {
       secondary: { label: `groups { ${groups.size} keys }`, array: fmtGroups(groups) },
       status: `key='${key}'`,
       narration: had
-        ? `'${w}' canonical='${key}' — append to existing bucket.`
-        : `'${w}' canonical='${key}' — create a new bucket.`,
+        ? `'${word}' canonical='${key}' — append to existing bucket.`
+        : `'${word}' canonical='${key}' — create a new bucket.`,
     });
   }
   steps.push({

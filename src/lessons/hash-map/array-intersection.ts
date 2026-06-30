@@ -3,12 +3,12 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { a: number[]; b: number[] };
 
 const code = `def intersection(a, b):
-    if len(a) > len(b): a, b = b, a    # hash the smaller
-    seen = set(a)
+    smaller, larger = (a, b) if len(a) <= len(b) else (b, a)
+    seen = set(smaller)
     out = set()
-    for x in b:
-        if x in seen:
-            out.add(x)
+    for num in larger:
+        if num in seen:
+            out.add(num)
     return list(out)`;
 
 function build({ a, b }: Inputs): Step[] {
@@ -21,16 +21,16 @@ function build({ a, b }: Inputs): Step[] {
     line: 3,
     array: arr,
     pointers: [],
-    secondary: { label: `set(small=${a === small ? "A" : "B"})`, array: [...seen].map(String) },
+    secondary: { label: `set(smaller=${a === small ? "A" : "B"})`, array: [...seen].map(String) },
     narration: `Hash the smaller array (${small.length} elements). Probe the larger.`,
   });
   const out = new Set<number>();
   const matchIdx: number[] = [];
   for (let i = 0; i < big.length; i++) {
-    const x = big[i];
-    const hit = seen.has(x);
+    const num = big[i];
+    const hit = seen.has(num);
     if (hit) {
-      out.add(x);
+      out.add(num);
       matchIdx.push(i);
     }
     steps.push({
@@ -39,14 +39,14 @@ function build({ a, b }: Inputs): Step[] {
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: hit ? { kind: "match", indices: [i] } : { kind: "compare", indices: [i] },
       secondary: { label: `out { ${out.size} }`, array: [...out].map(String) },
-      status: hit ? `hit ${x}` : `miss`,
+      status: hit ? `hit ${num}` : `miss`,
       narration: hit
-        ? `${x} is in the set — add to result.`
-        : `${x} not in set — skip.`,
+        ? `${num} is in the set — add to result.`
+        : `${num} not in set — skip.`,
     });
   }
   steps.push({
-    line: 7,
+    line: 8,
     array: arr,
     pointers: [],
     highlight: { kind: "match", indices: matchIdx },

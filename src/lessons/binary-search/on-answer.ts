@@ -4,15 +4,15 @@ type Inputs = { x: number };
 
 const code = `def isqrt(x):
     # largest k where k*k <= x
-    lo, hi = 0, x
+    low, high = 0, x
     ans = 0
-    while lo <= hi:
-        mid = (lo + hi) // 2
+    while low <= high:
+        mid = (low + high) // 2
         if mid * mid <= x:
             ans = mid
-            lo = mid + 1
+            low = mid + 1
         else:
-            hi = mid - 1
+            high = mid - 1
     return ans`;
 
 function build({ x }: Inputs): Step[] {
@@ -23,23 +23,23 @@ function build({ x }: Inputs): Step[] {
   }
   // Visualize search space [0..x] as an array of indices
   const space = Array.from({ length: x + 1 }, (_, i) => i);
-  let lo = 0,
-    hi = x,
+  let low = 0,
+    high = x,
     ans = 0;
   const ptrs = (mid?: number): import("../types").Pointer[] => {
     const out: import("../types").Pointer[] = [
-      { name: "lo", index: lo, color: "mint", placement: "above" },
-      { name: "hi", index: hi, color: "amber", placement: "above" },
+      { name: "low", index: low, color: "mint", placement: "above" },
+      { name: "high", index: high, color: "amber", placement: "above" },
     ];
     if (mid !== undefined) out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
     return out;
   };
-  const partFor = (): Step["partitions"] => (lo <= hi ? [{ from: lo, to: hi, tone: "mid", label: "feasible?" }] : []);
+  const partFor = (): Step["partitions"] => (low <= high ? [{ from: low, to: high, tone: "mid", label: "feasible?" }] : []);
 
   steps.push({ line: 3, array: [...space], pointers: ptrs(), partitions: partFor(), narration: `Search the answer space [0, ${x}].` });
   let safety = 0;
-  while (lo <= hi && safety++ < 64) {
-    const mid = (lo + hi) >> 1;
+  while (low <= high && safety++ < 64) {
+    const mid = (low + high) >> 1;
     const sq = mid * mid;
     const ok = sq <= x;
     steps.push({
@@ -53,11 +53,11 @@ function build({ x }: Inputs): Step[] {
     });
     if (ok) {
       ans = mid;
-      lo = mid + 1;
-      steps.push({ line: 7, array: [...space], pointers: ptrs(), partitions: partFor(), status: `ans=${ans}`, narration: `Feasible — record ans=${ans} and push lo to ${lo}.` });
+      low = mid + 1;
+      steps.push({ line: 7, array: [...space], pointers: ptrs(), partitions: partFor(), status: `ans=${ans}`, narration: `Feasible — record ans=${ans} and push low to ${low}.` });
     } else {
-      hi = mid - 1;
-      steps.push({ line: 9, array: [...space], pointers: ptrs(), partitions: partFor(), narration: `Infeasible — pull hi to ${hi}.` });
+      high = mid - 1;
+      steps.push({ line: 9, array: [...space], pointers: ptrs(), partitions: partFor(), narration: `Infeasible — pull high to ${high}.` });
     }
   }
   steps.push({

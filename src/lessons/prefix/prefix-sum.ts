@@ -2,75 +2,75 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { arr: number[]; queries: [number, number][] };
 
-const code = `def build_prefix(arr):
-    pre = [0] * (len(arr) + 1)
+const code = `def build_prefix_sum(arr):
+    prefix_sum = [0] * (len(arr) + 1)
     for i, v in enumerate(arr):
-        pre[i + 1] = pre[i] + v
-    return pre
+        prefix_sum[i + 1] = prefix_sum[i] + v
+    return prefix_sum
 
-def range_sum(pre, l, r):  # inclusive
-    return pre[r + 1] - pre[l]`;
+def range_sum(prefix_sum, left, right):  # inclusive
+    return prefix_sum[right + 1] - prefix_sum[left]`;
 
 function build({ arr, queries }: Inputs): Step[] {
   const steps: Step[] = [];
   const n = arr.length;
-  const pre = new Array<number>(n + 1).fill(0);
+  const prefix_sum = new Array<number>(n + 1).fill(0);
   steps.push({
     line: 1,
     array: [...arr],
-    secondary: { label: "prefix (length n+1, zero-initialized)", array: [...pre] },
+    secondary: { label: "prefix_sum (length n+1, zero-initialized)", array: [...prefix_sum] },
     pointers: [],
-    narration: "Allocate prefix array of length n+1.",
+    narration: "Allocate prefix sum array of length n+1.",
   });
   for (let i = 0; i < n; i++) {
-    pre[i + 1] = pre[i] + arr[i];
+    prefix_sum[i + 1] = prefix_sum[i] + arr[i];
     steps.push({
       line: 3,
       array: [...arr],
       pointers: [{ name: "i", index: i, color: "mint" }],
       highlight: { kind: "compare", indices: [i] },
       secondary: {
-        label: "prefix",
-        array: [...pre],
+        label: "prefix_sum",
+        array: [...prefix_sum],
         highlight: { kind: "match", indices: [i + 1] },
         pointers: [{ name: "i+1", index: i + 1, color: "mint" }],
       },
-      status: `pre[${i + 1}] = pre[${i}] + ${arr[i]} = ${pre[i + 1]}`,
-      narration: `pre[${i + 1}] ← pre[${i}] + arr[${i}] = ${pre[i + 1]}.`,
+      status: `prefix_sum[${i + 1}] = prefix_sum[${i}] + ${arr[i]} = ${prefix_sum[i + 1]}`,
+      narration: `prefix_sum[${i + 1}] ← prefix_sum[${i}] + arr[${i}] = ${prefix_sum[i + 1]}.`,
     });
   }
-  for (const [l, r] of queries) {
-    if (l < 0 || r >= n || l > r) {
+  for (const [left, right] of queries) {
+    if (left < 0 || right >= n || left > right) {
       steps.push({
         line: 6,
         array: [...arr],
-        secondary: { label: "prefix", array: [...pre] },
-        status: `invalid range [${l}, ${r}]`,
-        narration: `Skip invalid query [${l}, ${r}].`,
+        secondary: { label: "prefix_sum", array: [...prefix_sum] },
+        status: `invalid range [${left}, ${right}]`,
+        narration: `Skip invalid query [${left}, ${right}].`,
         pointers: [],
       });
       continue;
     }
-    const ans = pre[r + 1] - pre[l];
+    const ans = prefix_sum[right + 1] - prefix_sum[left];
     steps.push({
       line: 6,
       array: [...arr],
       pointers: [
-        { name: "l", index: l, color: "mint" },
-        { name: "r", index: r, color: "amber" },
+        { name: "left", index: left, color: "mint" },
+        { name: "right", index: right, color: "amber" },
       ],
-      partitions: [{ from: l, to: r, tone: "mid", label: `sum=${ans}` }],
+      partitions: [{ from: left, to: right, tone: "mid", label: `sum=${ans}` }],
       secondary: {
-        label: "prefix",
-        array: [...pre],
-        highlight: { kind: "compare", indices: [l, r + 1] },
+        label: "prefix_sum",
+        array: [...prefix_sum],
+        highlight: { kind: "compare", indices: [left, right + 1] },
         pointers: [
-          { name: "l", index: l, color: "mint" },
-          { name: "r+1", index: r + 1, color: "amber" },
+          { name: "left", index: left, color: "mint" },
+          { name: "right+1", index: right + 1, color: "amber" },
         ],
       },
-      status: `pre[${r + 1}] - pre[${l}] = ${pre[r + 1]} - ${pre[l]} = ${ans}`,
-      narration: `Range sum arr[${l}..${r}] = ${ans} in O(1).`,
+      status: `prefix_sum[${right + 1}] - prefix_sum[${left}] = ${prefix_sum[right + 1]} - ${prefix_sum[left]} = ${ans}`,
+      narration: `Range sum arr[${left}..${right}] = ${ans} in O(1).`,
     });
   }
   return steps;
@@ -80,15 +80,15 @@ export const prefixSum: LessonBuilder<Inputs> = {
   slug: "prefix-sum",
   title: "Prefix Sum",
   subtitle: "Precompute running totals; any range sum becomes a single subtraction.",
-  problem: "Given an array, preprocess it so that the sum of any range [l, r] can be answered in O(1) per query.",
+  problem: "Given an array, preprocess it so that the sum of any range [left, right] can be answered in O(1) per query.",
   spotIt: [
     "Many range-sum queries on a static array.",
     "Problems like 'subarray sum equals K' or 'number of subarrays with sum divisible by K' (prefix + hash map).",
     "Editorial mentions O(1) per query after O(n) preprocessing.",
   ],
   avoidWhen: [
-    "The array is frequently updated \u2014 use a Fenwick tree / segment tree.",
-    "You need range min / max / gcd, not sum \u2014 prefix sums don't apply.",
+    "The array is frequently updated — use a Fenwick tree / segment tree.",
+    "You need range min / max / gcd, not sum — prefix sums don't apply.",
     "Only a single query: just iterate, skip preprocessing.",
   ],
   variant: "prefix-sum",
@@ -97,13 +97,13 @@ export const prefixSum: LessonBuilder<Inputs> = {
   defaultInputs: { arr: [3, 1, 4, 1, 5, 9, 2, 6], queries: [[1, 4], [0, 7], [3, 5]] },
   inputs: [
     { key: "arr", label: "Array", kind: "intArray" },
-    { key: "queries", label: "Queries (l,r pairs)", kind: "intPairs", help: "inclusive · `0,3; 1,4`" },
+    { key: "queries", label: "Queries (left,right pairs)", kind: "intPairs", help: "inclusive · `0,3; 1,4`" },
   ],
   validate: ({ arr, queries }) => {
     const w: string[] = [];
-    for (const [l, r] of queries) {
-      if (l < 0 || r >= arr.length || l > r) {
-        w.push(`Query [${l}, ${r}] is out of bounds for length ${arr.length}.`);
+    for (const [left, right] of queries) {
+      if (left < 0 || right >= arr.length || left > right) {
+        w.push(`Query [${left}, ${right}] is out of bounds for length ${arr.length}.`);
       }
     }
     return w;

@@ -4,11 +4,11 @@ type Inputs = { nums: number[]; target: number };
 
 const code = `def two_sum(nums, target):
     seen = {}
-    for i, x in enumerate(nums):
-        need = target - x
-        if need in seen:
-            return [seen[need], i]
-        seen[x] = i
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
     return []`;
 
 function fmt(m: Map<number, number>) {
@@ -27,19 +27,19 @@ function build({ nums, target }: Inputs): Step[] {
     narration: `Find two indices whose values sum to ${target}.`,
   });
   for (let i = 0; i < nums.length; i++) {
-    const x = nums[i];
-    const need = target - x;
+    const num = nums[i];
+    const complement = target - num;
     steps.push({
       line: 4,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: "compare", indices: [i] },
       secondary: { label: `seen { ${seen.size} }`, array: fmt(seen) },
-      status: `need = ${target} - ${x} = ${need}`,
-      narration: `At i=${i}, x=${x}. Look up complement ${need}.`,
+      status: `complement = ${target} - ${num} = ${complement}`,
+      narration: `At i=${i}, num=${num}. Look up complement ${complement}.`,
     });
-    if (seen.has(need)) {
-      const j = seen.get(need) as number;
+    if (seen.has(complement)) {
+      const j = seen.get(complement) as number;
       steps.push({
         line: 5,
         array: arr,
@@ -50,17 +50,17 @@ function build({ nums, target }: Inputs): Step[] {
         highlight: { kind: "match", indices: [j, i] },
         secondary: { label: `seen { ${seen.size} }`, array: fmt(seen) },
         status: `found [${j}, ${i}]`,
-        narration: `${nums[j]} + ${x} = ${target}. Return [${j}, ${i}].`,
+        narration: `${nums[j]} + ${num} = ${target}. Return [${j}, ${i}].`,
       });
       return steps;
     }
-    seen.set(x, i);
+    seen.set(num, i);
     steps.push({
       line: 7,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       secondary: { label: `seen { ${seen.size} }`, array: fmt(seen) },
-      narration: `Not found yet — record seen[${x}] = ${i}.`,
+      narration: `Not found yet — record seen[${num}] = ${i}.`,
     });
   }
   steps.push({

@@ -3,15 +3,15 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { words: string };
 
 const code = `def group_shifted(words):
-    def key(s):
+    def get_key(word):
         diffs = []
-        for i in range(1, len(s)):
-            d = (ord(s[i]) - ord(s[i-1])) % 26
+        for i in range(1, len(word)):
+            d = (ord(word[i]) - ord(word[i-1])) % 26
             diffs.append(d)
         return tuple(diffs)
     groups = {}
-    for w in words:
-        groups.setdefault(key(w), []).append(w)
+    for word in words:
+        groups.setdefault(get_key(word), []).append(word)
     return list(groups.values())`;
 
 function shiftKey(s: string): string {
@@ -37,32 +37,32 @@ function build({ words }: Inputs): Step[] {
   const arr = list as (number | string)[];
   const groups = new Map<string, string[]>();
   steps.push({
-    line: 7,
+    line: 8,
     array: arr,
     pointers: [],
     secondary: { label: "groups {}", array: [] },
     narration: "Key = tuple of consecutive letter differences mod 26 — shift-invariant.",
   });
   for (let i = 0; i < list.length; i++) {
-    const w = list[i];
-    const key = shiftKey(w);
+    const word = list[i];
+    const key = shiftKey(word);
     const had = groups.has(key);
     if (!had) groups.set(key, []);
-    (groups.get(key) as string[]).push(w);
+    (groups.get(key) as string[]).push(word);
     steps.push({
-      line: 9,
+      line: 10,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: had ? "match" : "compare", indices: [i] },
       secondary: { label: `groups { ${groups.size} }`, array: fmtGroups(groups) },
       status: `key=(${key})`,
       narration: had
-        ? `'${w}' shares shift signature (${key}) — joins existing bucket.`
-        : `'${w}' has new shift signature (${key}).`,
+        ? `'${word}' shares shift signature (${key}) — joins existing bucket.`
+        : `'${word}' has new shift signature (${key}).`,
     });
   }
   steps.push({
-    line: 10,
+    line: 11,
     array: arr,
     pointers: [],
     secondary: { label: `groups { ${groups.size} }`, array: fmtGroups(groups) },

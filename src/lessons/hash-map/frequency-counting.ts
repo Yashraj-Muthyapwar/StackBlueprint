@@ -4,8 +4,8 @@ type Inputs = { nums: number[] };
 
 const code = `def frequency(nums):
     freq = {}
-    for x in nums:
-        freq[x] = freq.get(x, 0) + 1
+    for num in nums:
+        freq[num] = freq.get(num, 0) + 1
     return freq`;
 
 function fmt(m: Map<number, number>): string[] {
@@ -24,26 +24,26 @@ function build({ nums }: Inputs): Step[] {
     narration: "Initialize an empty frequency map.",
   });
   for (let i = 0; i < nums.length; i++) {
-    const x = nums[i];
-    const prev = freq.get(x) ?? 0;
-    freq.set(x, prev + 1);
+    const num = nums[i];
+    const prev = freq.get(num) ?? 0;
+    freq.set(num, prev + 1);
     steps.push({
       line: 3,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: "compare", indices: [i] },
       secondary: { label: `freq { ${freq.size} keys }`, array: fmt(freq) },
-      status: `freq[${x}] = ${prev + 1}`,
-      narration: `nums[${i}]=${x}. Bump count to ${prev + 1}.`,
+      status: `freq[${num}] = ${prev + 1}`,
+      narration: `nums[${i}]=${num}. Bump count to ${prev + 1}.`,
     });
   }
   let bestK = nums[0];
   let bestV = -1;
   for (const [k, v] of freq) if (v > bestV) { bestK = k; bestV = v; }
   const matchIdx: number[] = [];
-  nums.forEach((x, i) => { if (x === bestK) matchIdx.push(i); });
+  nums.forEach((num, i) => { if (num === bestK) matchIdx.push(i); });
   steps.push({
-    line: 4,
+    line: 5,
     array: arr,
     pointers: [],
     secondary: { label: `freq { ${freq.size} keys }`, array: fmt(freq) },

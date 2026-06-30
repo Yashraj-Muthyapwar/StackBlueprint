@@ -2,18 +2,18 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { s: string };
 
-const code = `def z_function(s):
-    n = len(s)
-    z = [0] * n
-    l = r = 0
+const code = `def z_function(string):
+    n = len(string)
+    z_array = [0] * n
+    left = right = 0
     for i in range(1, n):
-        if i < r:
-            z[i] = min(r - i, z[i - l])
-        while i + z[i] < n and s[z[i]] == s[i + z[i]]:
-            z[i] += 1
-        if i + z[i] > r:
-            l, r = i, i + z[i]
-    return z`;
+        if i < right:
+            z_array[i] = min(right - i, z_array[i - left])
+        while i + z_array[i] < n and string[z_array[i]] == string[i + z_array[i]]:
+            z_array[i] += 1
+        if i + z_array[i] > right:
+            left, right = i, i + z_array[i]
+    return z_array`;
 
 function build({ s }: Inputs): Step[] {
   const steps: Step[] = [];
@@ -24,63 +24,63 @@ function build({ s }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Empty input.", array: arr, pointers: [] });
     return steps;
   }
-  const z = new Array<number>(n).fill(0);
-  const zView = () => ({ label: "z[]", array: z.slice() });
-  const ptrs = (i: number, l: number, r: number) => {
+  const z_array = new Array<number>(n).fill(0);
+  const zView = () => ({ label: "z_array[]", array: z_array.slice() });
+  const ptrs = (i: number, left: number, right: number) => {
     const out: import("../types").Pointer[] = [{ name: "i", index: i, color: "amber" }];
-    if (r > l) {
-      out.push({ name: "l", index: l, color: "mint", placement: "below" });
-      out.push({ name: "r", index: r - 1, color: "violet", placement: "below" });
+    if (right > left) {
+      out.push({ name: "left", index: left, color: "mint", placement: "below" });
+      out.push({ name: "right", index: right - 1, color: "violet", placement: "below" });
     }
     return out;
   };
 
-  let l = 0;
-  let r = 0;
+  let left = 0;
+  let right = 0;
   steps.push({
     line: 1,
     array: arr,
     pointers: [],
     secondary: zView(),
-    narration: `Z[i] = length of the longest substring starting at i that matches a prefix of s. Maintain a Z-box [l, r).`,
+    narration: `z_array[i] = length of the longest substring starting at i that matches a prefix of string. Maintain a Z-box [left, right).`,
   });
 
   for (let i = 1; i < n; i++) {
-    if (i < r) {
-      z[i] = Math.min(r - i, z[i - l]);
+    if (i < right) {
+      z_array[i] = Math.min(right - i, z_array[i - left]);
       steps.push({
         line: 7,
         array: arr,
-        pointers: ptrs(i, l, r),
-        partitions: r > l ? [{ from: l, to: r - 1, tone: "mid", label: "Z-box" }] : [],
-        highlight: { kind: "compare", indices: [i, i - l] },
+        pointers: ptrs(i, left, right),
+        partitions: right > left ? [{ from: left, to: right - 1, tone: "mid", label: "Z-box" }] : [],
+        highlight: { kind: "compare", indices: [i, i - left] },
         secondary: zView(),
-        status: `seed z[${i}]=${z[i]}`,
-        narration: `Inside Z-box: copy z[${i - l}]=${z[i - l]} (capped at ${r - i}).`,
+        status: `seed z_array[${i}]=${z_array[i]}`,
+        narration: `Inside Z-box: copy z_array[${i - left}]=${z_array[i - left]} (capped at ${right - i}).`,
       });
     }
-    while (i + z[i] < n && chars[z[i]] === chars[i + z[i]]) {
-      z[i] += 1;
+    while (i + z_array[i] < n && chars[z_array[i]] === chars[i + z_array[i]]) {
+      z_array[i] += 1;
       steps.push({
         line: 8,
         array: arr,
-        pointers: ptrs(i, l, r),
-        highlight: { kind: "match", indices: [z[i] - 1, i + z[i] - 1] },
+        pointers: ptrs(i, left, right),
+        highlight: { kind: "match", indices: [z_array[i] - 1, i + z_array[i] - 1] },
         secondary: zView(),
-        narration: `Extend: s[${z[i] - 1}]='${chars[z[i] - 1]}' = s[${i + z[i] - 1}]='${chars[i + z[i] - 1]}', z[${i}] = ${z[i]}.`,
+        narration: `Extend: string[${z_array[i] - 1}]='${chars[z_array[i] - 1]}' = string[${i + z_array[i] - 1}]='${chars[i + z_array[i] - 1]}', z_array[${i}] = ${z_array[i]}.`,
       });
     }
-    if (i + z[i] > r) {
-      l = i;
-      r = i + z[i];
+    if (i + z_array[i] > right) {
+      left = i;
+      right = i + z_array[i];
       steps.push({
         line: 10,
         array: arr,
-        pointers: ptrs(i, l, r),
-        partitions: r > l ? [{ from: l, to: r - 1, tone: "high", label: "new Z-box" }] : [],
+        pointers: ptrs(i, left, right),
+        partitions: right > left ? [{ from: left, to: right - 1, tone: "high", label: "new Z-box" }] : [],
         secondary: zView(),
-        status: `Z-box [${l}, ${r})`,
-        narration: `New Z-box: l=${l}, r=${r}.`,
+        status: `Z-box [${left}, ${right})`,
+        narration: `New Z-box: left=${left}, right=${right}.`,
       });
     }
   }
@@ -90,8 +90,8 @@ function build({ s }: Inputs): Step[] {
     array: arr,
     pointers: [],
     secondary: zView(),
-    status: `z = [${z.join(", ")}]`,
-    narration: "Done. Pattern search: build z over P + '$' + T and scan for z[i] == |P|.",
+    status: `z_array = [${z_array.join(", ")}]`,
+    narration: "Done. Pattern search: build z_array over P + '$' + T and scan for z_array[i] == |P|.",
   });
   return steps;
 }
@@ -99,8 +99,8 @@ function build({ s }: Inputs): Step[] {
 export const zAlgorithm: LessonBuilder<Inputs> = {
   slug: "z-algorithm",
   title: "Pattern Matching — Z-Algorithm",
-  subtitle: "Compute Z[i] in linear time by reusing the rightmost match box [l, r).",
-  problem: "Given a string s, compute the Z-array where Z[i] is the length of the longest substring starting at i that matches a prefix of s.",
+  subtitle: "Compute z_array[i] in linear time by reusing the rightmost match box [left, right).",
+  problem: "Given a string, compute the Z-array where z_array[i] is the length of the longest substring starting at i that matches a prefix of string.",
   spotIt: [
     "You need every prefix-match length in linear time (substring search, period detection).",
     "Problem mentions 'longest prefix that is also a suffix at position i' or 'period of a string'.",

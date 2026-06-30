@@ -6,24 +6,24 @@ const code = `def compress(chars):
     write = 0
     i = 0
     while i < len(chars):
-        j = i
-        while j < len(chars) and chars[j] == chars[i]:
-            j += 1
+        right = i
+        while right < len(chars) and chars[right] == chars[i]:
+            right += 1
         chars[write] = chars[i]
         write += 1
-        run = j - i
+        run = right - i
         if run > 1:
-            for d in str(run):
-                chars[write] = d
+            for digit in str(run):
+                chars[write] = digit
                 write += 1
-        i = j
+        i = right
     return write`;
 
 function build({ s }: Inputs): Step[] {
   const steps: Step[] = [];
-  const a = s.split("");
-  const n = a.length;
-  const snap = (): (number | string)[] => [...a] as unknown as (number | string)[];
+  const chars = s.split("");
+  const n = chars.length;
+  const snap = (): (number | string)[] => [...chars] as unknown as (number | string)[];
 
   if (n === 0) {
     steps.push({ line: 1, narration: "Empty input — return 0.", array: snap(), pointers: [] });
@@ -32,12 +32,12 @@ function build({ s }: Inputs): Step[] {
 
   let write = 0;
   let i = 0;
-  const ptrs = (w: number, i: number, j?: number) => {
+  const ptrs = (w: number, i: number, right?: number) => {
     const out: import("../types").Pointer[] = [
-      { name: "w", index: w, color: "mint" },
+      { name: "write", index: w, color: "mint" },
       { name: "i", index: i, color: "amber", placement: "below" },
     ];
-    if (j !== undefined && j < n) out.push({ name: "j", index: j, color: "violet", placement: "below" });
+    if (right !== undefined && right < n) out.push({ name: "right", index: right, color: "violet", placement: "below" });
     return out;
   };
 
@@ -45,45 +45,45 @@ function build({ s }: Inputs): Step[] {
     line: 2,
     array: snap(),
     pointers: ptrs(write, i),
-    narration: "Two write/read cursors: `w` writes the compressed prefix, `i` reads runs.",
+    narration: "Two write/read cursors: `write` writes the compressed prefix, `i` reads runs.",
   });
 
   while (i < n) {
-    let j = i;
-    while (j < n && a[j] === a[i]) j += 1;
+    let right = i;
+    while (right < n && chars[right] === chars[i]) right += 1;
     steps.push({
       line: 5,
       array: snap(),
-      pointers: ptrs(write, i, j),
-      partitions: [{ from: i, to: j - 1, tone: "mid", label: `run '${a[i]}'×${j - i}` }],
-      narration: `Run of '${a[i]}' spans [${i}..${j - 1}], length ${j - i}.`,
+      pointers: ptrs(write, i, right),
+      partitions: [{ from: i, to: right - 1, tone: "mid", label: `run '${chars[i]}'×${right - i}` }],
+      narration: `Run of '${chars[i]}' spans [${i}..${right - 1}], length ${right - i}.`,
     });
-    a[write] = a[i];
+    chars[write] = chars[i];
     steps.push({
       line: 7,
       array: snap(),
-      pointers: ptrs(write + 1, i, j),
+      pointers: ptrs(write + 1, i, right),
       partitions: [{ from: 0, to: write, tone: "low", label: "compressed" }],
       highlight: { kind: "match", indices: [write] },
-      narration: `Write '${a[i]}' at w=${write}.`,
+      narration: `Write '${chars[i]}' at write=${write}.`,
     });
     write += 1;
-    const run = j - i;
+    const run = right - i;
     if (run > 1) {
-      for (const d of String(run)) {
-        a[write] = d;
+      for (const digit of String(run)) {
+        chars[write] = digit;
         steps.push({
           line: 11,
           array: snap(),
-          pointers: ptrs(write + 1, i, j),
+          pointers: ptrs(write + 1, i, right),
           partitions: [{ from: 0, to: write, tone: "low", label: "compressed" }],
           highlight: { kind: "match", indices: [write] },
-          narration: `Write count digit '${d}' at w=${write}.`,
+          narration: `Write count digit '${digit}' at write=${write}.`,
         });
         write += 1;
       }
     }
-    i = j;
+    i = right;
     steps.push({
       line: 13,
       array: snap(),
@@ -96,10 +96,10 @@ function build({ s }: Inputs): Step[] {
   steps.push({
     line: 14,
     array: snap(),
-    pointers: [{ name: "w", index: write, color: "mint" as const }],
+    pointers: [{ name: "write", index: write, color: "mint" as const }],
     partitions: [{ from: 0, to: write - 1, tone: "low", label: "result" }],
     status: `length ${write}`,
-    narration: `Compressed length = ${write}. Prefix: "${a.slice(0, write).join("")}".`,
+    narration: `Compressed length = ${write}. Prefix: "${chars.slice(0, write).join("")}".`,
   });
   return steps;
 }
@@ -107,7 +107,7 @@ function build({ s }: Inputs): Step[] {
 export const stringCompression: LessonBuilder<Inputs> = {
   slug: "string-compression",
   title: "Two Pointers — Run-Length Compression",
-  subtitle: "Read with i/j, write with w — O(n) time, O(1) extra space in-place compression.",
+  subtitle: "Read with i/right, write with write — O(n) time, O(1) extra space in-place compression.",
   problem: "Given a mutable char array, compress runs of repeated characters in place to '<char><count>' (omit count when run length is 1) and return the new length.",
   spotIt: [
     "In-place transformation where output is shorter than (or equal to) the input.",

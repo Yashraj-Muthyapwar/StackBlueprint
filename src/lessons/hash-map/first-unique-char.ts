@@ -4,10 +4,10 @@ type Inputs = { s: string };
 
 const code = `def first_uniq_char(s):
     freq = {}
-    for c in s:
-        freq[c] = freq.get(c, 0) + 1
-    for i, c in enumerate(s):
-        if freq[c] == 1:
+    for char in s:
+        freq[char] = freq.get(char, 0) + 1
+    for i, char in enumerate(s):
+        if freq[char] == 1:
             return i
     return -1`;
 
@@ -28,20 +28,20 @@ function build({ s }: Inputs): Step[] {
     narration: "Two passes: count, then scan for the first count-1.",
   });
   for (let i = 0; i < chars.length; i++) {
-    const c = chars[i];
-    freq.set(c, (freq.get(c) ?? 0) + 1);
+    const char = chars[i];
+    freq.set(char, (freq.get(char) ?? 0) + 1);
     steps.push({
       line: 3,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: "compare", indices: [i] },
       secondary: { label: `freq { ${freq.size} }`, array: fmt(freq) },
-      narration: `Pass 1 — count '${c}' = ${freq.get(c)}.`,
+      narration: `Pass 1 — count '${char}' = ${freq.get(char)}.`,
     });
   }
   for (let i = 0; i < chars.length; i++) {
-    const c = chars[i];
-    const count = freq.get(c) as number;
+    const char = chars[i];
+    const count = freq.get(char) as number;
     if (count === 1) {
       steps.push({
         line: 5,
@@ -49,8 +49,8 @@ function build({ s }: Inputs): Step[] {
         pointers: [{ name: "i", index: i, color: "mint" }],
         highlight: { kind: "match", indices: [i] },
         secondary: { label: `freq`, array: fmt(freq) },
-        status: `first unique = '${c}' @ ${i}`,
-        narration: `'${c}' has count 1 — return ${i}.`,
+        status: `first unique = '${char}' @ ${i}`,
+        narration: `'${char}' has count 1 — return ${i}.`,
       });
       return steps;
     }
@@ -60,11 +60,11 @@ function build({ s }: Inputs): Step[] {
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: "swap", indices: [i] },
       secondary: { label: `freq`, array: fmt(freq) },
-      narration: `'${c}' count=${count} — skip.`,
+      narration: `'${char}' count=${count} — skip.`,
     });
   }
   steps.push({
-    line: 7,
+    line: 8,
     array: arr,
     pointers: [],
     secondary: { label: `freq`, array: fmt(freq) },

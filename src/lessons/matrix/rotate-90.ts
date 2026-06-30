@@ -2,16 +2,16 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { matrix: number[][] };
 
-const code = `def rotate(mat):
-    n = len(mat)
+const code = `def rotate(matrix):
+    n = len(matrix)
     # 1) transpose
-    for r in range(n):
-        for c in range(r + 1, n):
-            mat[r][c], mat[c][r] = mat[c][r], mat[r][c]
+    for row in range(n):
+        for col in range(row + 1, n):
+            matrix[row][col], matrix[col][row] = matrix[col][row], matrix[row][col]
     # 2) reverse each row
-    for r in range(n):
-        mat[r].reverse()
-    return mat`;
+    for row in range(n):
+        matrix[row].reverse()
+    return matrix`;
 
 function clone(m: number[][]): number[][] {
   return m.map((r) => [...r]);
@@ -27,29 +27,29 @@ function build({ matrix }: Inputs): Step[] {
   }
   steps.push({ line: 1, matrix: clone(m), narration: `Rotate ${n}×${n} matrix 90° clockwise via transpose + row-reverse.` });
 
-  for (let r = 0; r < n; r++) {
-    for (let c = r + 1; c < n; c++) {
+  for (let row = 0; row < n; row++) {
+    for (let col = row + 1; col < n; col++) {
       steps.push({
         line: 4,
         matrix: clone(m),
         cellHighlights: [
-          { r, c, tone: "swap" },
-          { r: c, c: r, tone: "swap" },
+          { r: row, c: col, tone: "swap" },
+          { r: col, c: row, tone: "swap" },
         ],
-        narration: `Transpose: swap (${r},${c}) ↔ (${c},${r}).`,
+        narration: `Transpose: swap (${row},${col}) ↔ (${col},${row}).`,
       });
-      [m[r][c], m[c][r]] = [m[c][r], m[r][c]];
+      [m[row][col], m[col][row]] = [m[col][row], m[row][col]];
     }
   }
   steps.push({ line: 6, matrix: clone(m), narration: "Transposed. Now reverse each row." });
 
-  for (let r = 0; r < n; r++) {
-    m[r].reverse();
+  for (let row = 0; row < n; row++) {
+    m[row].reverse();
     steps.push({
       line: 8,
       matrix: clone(m),
-      cellHighlights: m[r].map((_, c) => ({ r, c, tone: "visit" as const })),
-      narration: `Reversed row ${r}.`,
+      cellHighlights: m[row].map((_, col) => ({ r: row, c: col, tone: "visit" as const })),
+      narration: `Reversed row ${row}.`,
     });
   }
   steps.push({ line: 9, matrix: clone(m), narration: "Rotation complete." });
@@ -62,14 +62,14 @@ export const rotate90: LessonBuilder<Inputs> = {
   subtitle: "Transpose, then reverse each row — an in-place 90° rotation.",
   problem: "Rotate an n×n matrix by 90° clockwise, in place, without allocating a second matrix.",
   spotIt: [
-    "'Rotate an n\u00d7n matrix in place by 90\u00b0.'",
+    "'Rotate an n×n matrix in place by 90°.'",
     "Constraints forbid allocating a second matrix.",
-    "Variations: rotate 180\u00b0 / 270\u00b0, rotate image clockwise / counter-clockwise.",
+    "Variations: rotate 180° / 270°, rotate image clockwise / counter-clockwise.",
   ],
   avoidWhen: [
-    "Matrix is not square \u2014 use a transpose + dimension swap into a new matrix.",
-    "Extra memory is fine \u2014 a straight index-mapping copy is simpler.",
-    "You need to rotate by an arbitrary angle, not a multiple of 90\u00b0.",
+    "Matrix is not square — use a transpose + dimension swap into a new matrix.",
+    "Extra memory is fine — a straight index-mapping copy is simpler.",
+    "You need to rotate by an arbitrary angle, not a multiple of 90°.",
   ],
   variant: "rotate-90",
   view: "matrix",

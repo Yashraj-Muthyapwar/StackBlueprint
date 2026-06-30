@@ -3,16 +3,16 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { arr: number[]; k: number };
 
 const code = `def max_sliding_window(arr, k):
-    dq = deque()  # stores indices, values decreasing
+    window_dq = deque()  # stores indices, values decreasing
     out = []
-    for r in range(len(arr)):
-        while dq and arr[dq[-1]] < arr[r]:
-            dq.pop()
-        dq.append(r)
-        if dq[0] <= r - k:
-            dq.popleft()
-        if r >= k - 1:
-            out.append(arr[dq[0]])
+    for right in range(len(arr)):
+        while window_dq and arr[window_dq[-1]] < arr[right]:
+            window_dq.pop()
+        window_dq.append(right)
+        if window_dq[0] <= right - k:
+            window_dq.popleft()
+        if right >= k - 1:
+            out.append(arr[window_dq[0]])
     return out`;
 
 function build({ arr, k }: Inputs): Step[] {
@@ -22,73 +22,73 @@ function build({ arr, k }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Invalid k.", array: [...arr], pointers: [] });
     return steps;
   }
-  const dq: number[] = [];
+  const window_dq: number[] = [];
   const out: number[] = [];
-  const win = (r: number) => {
-    const l = Math.max(0, r - k + 1);
-    return [{ from: l, to: r, tone: "mid" as const, label: "window" }];
+  const win = (right: number) => {
+    const left = Math.max(0, right - k + 1);
+    return [{ from: left, to: right, tone: "mid" as const, label: "window" }];
   };
   const secondary = () => ({
     label: `deque (indices, values decreasing)  ·  output`,
-    array: dq.map((i) => `${i}:${arr[i]}`),
-    pointers: dq.length
-      ? [{ name: "front", index: 0, color: "mint" as const }, { name: "back", index: dq.length - 1, color: "amber" as const }]
+    array: window_dq.map((i) => `${i}:${arr[i]}`),
+    pointers: window_dq.length
+      ? [{ name: "front", index: 0, color: "mint" as const }, { name: "back", index: window_dq.length - 1, color: "amber" as const }]
       : [],
   });
 
-  for (let r = 0; r < n; r++) {
+  for (let right = 0; right < n; right++) {
     steps.push({
       line: 3,
       array: [...arr],
-      pointers: [{ name: "r", index: r, color: "amber" }],
-      partitions: win(r),
-      highlight: { kind: "compare", indices: [r] },
+      pointers: [{ name: "right", index: right, color: "amber" }],
+      partitions: win(right),
+      highlight: { kind: "compare", indices: [right] },
       secondary: secondary(),
-      narration: `r=${r}, value=${arr[r]}.`,
+      narration: `right=${right}, value=${arr[right]}.`,
     });
-    while (dq.length && arr[dq[dq.length - 1]] < arr[r]) {
-      const popped = dq.pop()!;
+    while (window_dq.length && arr[window_dq[window_dq.length - 1]] < arr[right]) {
+      const popped = window_dq.pop()!;
       steps.push({
         line: 4,
         array: [...arr],
-        pointers: [{ name: "r", index: r, color: "amber" }],
-        partitions: win(r),
+        pointers: [{ name: "right", index: right, color: "amber" }],
+        partitions: win(right),
         secondary: secondary(),
-        status: `pop ${popped}:${arr[popped]} < ${arr[r]}`,
-        narration: `Pop ${popped} from back — its value ${arr[popped]} can never beat ${arr[r]}.`,
+        status: `pop ${popped}:${arr[popped]} < ${arr[right]}`,
+        narration: `Pop ${popped} from back — its value ${arr[popped]} can never beat ${arr[right]}.`,
       });
     }
-    dq.push(r);
+    window_dq.push(right);
     steps.push({
       line: 5,
       array: [...arr],
-      pointers: [{ name: "r", index: r, color: "amber" }],
-      partitions: win(r),
+      pointers: [{ name: "right", index: right, color: "amber" }],
+      partitions: win(right),
       secondary: secondary(),
-      narration: `Push ${r} to back.`,
+      narration: `Push ${right} to back.`,
     });
-    if (dq[0] <= r - k) {
-      const out0 = dq.shift()!;
+    if (window_dq[0] <= right - k) {
+      const out0 = window_dq.shift()!;
       steps.push({
         line: 6,
         array: [...arr],
-        pointers: [{ name: "r", index: r, color: "amber" }],
-        partitions: win(r),
+        pointers: [{ name: "right", index: right, color: "amber" }],
+        partitions: win(right),
         secondary: secondary(),
         narration: `Front index ${out0} fell out of the window — popleft.`,
       });
     }
-    if (r >= k - 1) {
-      out.push(arr[dq[0]]);
+    if (right >= k - 1) {
+      out.push(arr[window_dq[0]]);
       steps.push({
         line: 8,
         array: [...arr],
-        pointers: [{ name: "r", index: r, color: "amber" }],
-        partitions: win(r),
+        pointers: [{ name: "right", index: right, color: "amber" }],
+        partitions: win(right),
         secondary: { label: `output`, array: [...out] },
-        highlight: { kind: "match", indices: [dq[0]] },
-        status: `max=${arr[dq[0]]}`,
-        narration: `Window max = arr[${dq[0]}] = ${arr[dq[0]]}.`,
+        highlight: { kind: "match", indices: [window_dq[0]] },
+        status: `max=${arr[window_dq[0]]}`,
+        narration: `Window max = arr[${window_dq[0]}] = ${arr[window_dq[0]]}.`,
       });
     }
   }

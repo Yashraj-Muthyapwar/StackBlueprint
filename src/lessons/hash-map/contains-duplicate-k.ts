@@ -3,11 +3,11 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { nums: number[]; k: number };
 
 const code = `def contains_nearby_dup(nums, k):
-    last = {}                  # value -> most recent index
-    for i, x in enumerate(nums):
-        if x in last and i - last[x] <= k:
+    last_seen = {}                  # value -> most recent index
+    for i, num in enumerate(nums):
+        if num in last_seen and i - last_seen[num] <= k:
             return True
-        last[x] = i
+        last_seen[num] = i
     return False`;
 
 function fmt(m: Map<number, number>) {
@@ -17,18 +17,18 @@ function fmt(m: Map<number, number>) {
 function build({ nums, k }: Inputs): Step[] {
   const steps: Step[] = [];
   const arr = nums as (number | string)[];
-  const last = new Map<number, number>();
+  const lastSeen = new Map<number, number>();
   steps.push({
     line: 2,
     array: arr,
     pointers: [],
-    secondary: { label: "last { value: index }", array: [] },
+    secondary: { label: "last_seen { value: index }", array: [] },
     narration: `Find a duplicate within k=${k} positions.`,
   });
   for (let i = 0; i < nums.length; i++) {
-    const x = nums[i];
-    if (last.has(x)) {
-      const j = last.get(x) as number;
+    const num = nums[i];
+    if (lastSeen.has(num)) {
+      const j = lastSeen.get(num) as number;
       const gap = i - j;
       if (gap <= k) {
         steps.push({
@@ -39,9 +39,9 @@ function build({ nums, k }: Inputs): Step[] {
             { name: "i", index: i, color: "amber" },
           ],
           highlight: { kind: "match", indices: [j, i] },
-          secondary: { label: `last { ${last.size} }`, array: fmt(last) },
+          secondary: { label: `last_seen { ${lastSeen.size} }`, array: fmt(lastSeen) },
           status: `gap=${gap} ≤ ${k} → True`,
-          narration: `Saw ${x} at ${j}; now at ${i}. Gap ${gap} ≤ k. Return True.`,
+          narration: `Saw ${num} at ${j}; now at ${i}. Gap ${gap} ≤ k. Return True.`,
         });
         return steps;
       }
@@ -53,25 +53,25 @@ function build({ nums, k }: Inputs): Step[] {
           { name: "i", index: i, color: "amber" },
         ],
         highlight: { kind: "swap", indices: [j, i] },
-        secondary: { label: `last { ${last.size} }`, array: fmt(last) },
+        secondary: { label: `last_seen { ${lastSeen.size} }`, array: fmt(lastSeen) },
         status: `gap=${gap} > ${k}`,
         narration: `Same value but gap ${gap} > k=${k}. Overwrite index.`,
       });
     }
-    last.set(x, i);
+    lastSeen.set(num, i);
     steps.push({
       line: 6,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
-      secondary: { label: `last { ${last.size} }`, array: fmt(last) },
-      narration: `last[${x}] = ${i}.`,
+      secondary: { label: `last_seen { ${lastSeen.size} }`, array: fmt(lastSeen) },
+      narration: `last_seen[${num}] = ${i}.`,
     });
   }
   steps.push({
     line: 7,
     array: arr,
     pointers: [],
-    secondary: { label: `last { ${last.size} }`, array: fmt(last) },
+    secondary: { label: `last_seen { ${lastSeen.size} }`, array: fmt(lastSeen) },
     status: "False",
     narration: "No near-duplicate found.",
   });
