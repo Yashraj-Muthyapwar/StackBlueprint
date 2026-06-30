@@ -19,6 +19,13 @@ import {
 import { getPyodide } from "@/lib/pyodide-loader";
 import { TRACER_PY } from "@/lib/python-tracer";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ---------------- Types matching tracer output ----------------
 
