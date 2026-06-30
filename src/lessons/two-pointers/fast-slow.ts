@@ -58,12 +58,22 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
 
   let slow = 0;
   steps.push({
+    line: 3,
+    array: [...data],
+    pointers: ptrs(0, 0, n),
+    highlight: { kind: "compare", indices: [0] },
+    status: "slow = 0, fast = 0  (both start at index 0)",
+    narration: "Both pointers start at index 0. slow will mark the end of the unique prefix.",
+  });
+  steps.push({
     line: 4,
     array: [...data],
-    pointers: ptrs(slow, 1, n),
+    pointers: ptrs(slow, Math.min(1, n - 1), n),
     partitions: win(slow),
-    narration: "slow marks the last unique element; start at index 0.",
+    status: "fast → 1",
+    narration: "fast advances to index 1 to scan ahead; slow stays at 0.",
   });
+
 
   for (let fast = 1; fast < n; fast++) {
     const same = data[fast] === data[slow];
