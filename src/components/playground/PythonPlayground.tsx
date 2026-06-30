@@ -164,6 +164,14 @@ function valueLabel(v: Value): string {
   return `→ #${v.id.slice(-4)}`;
 }
 
+function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
+  if (v.kind === "prim") return String(v.value);
+  const o = heap?.[v.id];
+  if (!o) return `object #${v.id.slice(-4)}`;
+  if ("items" in o) return `${o.type}(len=${o.size})`;
+  return o.type;
+}
+
 function valueClass(v: Value): string {
   if (v.kind === "ref") return "text-violet";
   if (v.type === "str") return "text-mint";
@@ -174,6 +182,36 @@ function valueClass(v: Value): string {
 
 function valueKey(v: Value): string {
   return v.kind === "prim" ? `p:${v.type}:${v.value}` : `r:${v.id}`;
+}
+
+// Build a plain-English narration of what changed at this step.
+function narrate(snap: Snapshot, prev?: Snapshot): string {
+  if (snap.event === "call") {
+    const f = snap.frames.at(-1);
+    if (!f) return `entering ${snap.callName ?? "function"}`;
+    const args = Object.entries(f.locals)
+      .map(([k, v]) => `${k}=${valuePlain(v, snap.heap)}`)
+      .join(", ");
+    return `Calling ${f.name}(${args}) — a new frame is pushed onto the stack.`;
+  }
+  if (snap.event === "return") {
+    const f = snap.frames.at(-1);
+    const rv = snap.returnValue ? valuePlain(snap.returnValue, snap.heap) : "None";
+    return `${f?.name ?? "function"} returns ${rv}. Its frame is popped; control goes back to the caller.`;
+  }
+  // line event: describe locals diff in top frame
+  const top = snap.frames.at(-1);
+  const prevTop = prev?.frames[snap.frames.length - 1];
+  if (!top) return `Executing line ${snap.line}.`;
+  const changes: string[] = [];
+  Object.entries(top.locals).forEach(([k, v]) => {
+    const pv = prevTop?.locals[k];
+    if (!pv) changes.push(`${k} = ${valuePlain(v, snap.heap)} (new)`);
+    else if (valueKey(pv) !== valueKey(v))
+      changes.push(`${k} → ${valuePlain(v, snap.heap)}`);
+  });
+  if (!changes.length) return `Running line ${snap.line} in ${top.name}.`;
+  return `Line ${snap.line}: ${changes.join(", ")}.`;
 }
 
 // ---------------- Heap rendering ----------------
