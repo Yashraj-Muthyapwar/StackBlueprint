@@ -1,7 +1,7 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/client-server-architecture.png";
+import clientServerImg from "@/images/sql/foundations/client-server-architecture.png";
 import relationaldatabaseImg from "@/images/relational_database.png";
 import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
 import databasecomponentsImg from "@/images/database-components.png";
