@@ -1,5 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Boxes, Type } from "lucide-react";
+import { ArrowRight, ChevronRight, Boxes, Hash, Type } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 import { patterns } from "@/lessons/roadmap";
@@ -25,6 +25,13 @@ const CATEGORIES: Record<string, CategoryMeta> = {
       "Sliding window on characters, two-pointer scans, and exact matching with KMP, Rabin–Karp, and Z.",
     icon: Type,
     filter: "Strings",
+  },
+  "hash-map": {
+    label: "Hash Map",
+    blurb:
+      "Frequency, lookup, set, index-mapping, and grouping patterns — O(1) average operations that unlock O(n) solutions.",
+    icon: Hash,
+    filter: "Hash Map",
   },
 };
 
