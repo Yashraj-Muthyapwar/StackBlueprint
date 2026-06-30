@@ -199,6 +199,8 @@ export const fastSlow: LessonBuilder<Inputs> = {
   variant: "fast-slow",
   view: "array",
   code: codeRemoveDuplicates,
+  codeFor: (inputs) =>
+    (inputs.mode as Mode) === "find-duplicate" ? codeFindDuplicate : codeRemoveDuplicates,
   defaultInputs: { mode: "remove-duplicates", arr: DEFAULTS["remove-duplicates"] },
   inputs: [
     {
