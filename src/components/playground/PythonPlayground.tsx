@@ -353,6 +353,7 @@ const SPEEDS = [
 ];
 
 export function PythonPlayground() {
+  const [sampleLabel, setSampleLabel] = useState(SAMPLES[0].label);
   const [code, setCode] = useState(SAMPLES[0].code);
   const [status, setStatus] = useState<string>("Idle. Press Run to start.");
   const [loading, setLoading] = useState(false);
