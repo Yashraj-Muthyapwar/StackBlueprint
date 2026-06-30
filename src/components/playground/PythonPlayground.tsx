@@ -724,15 +724,29 @@ export function PythonPlayground() {
 
       {/* Scrubber + event ribbon */}
       <div className="flex items-center gap-3">
-        <input
-          type="range"
-          min={0}
-          max={Math.max(0, snapshots.length - 1)}
-          value={idx}
-          disabled={!snapshots.length}
-          onChange={(e) => setIdx(Number(e.target.value))}
-          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-hairline accent-mint disabled:opacity-40"
-        />
+        <div className="relative flex-1">
+          <input
+            type="range"
+            min={0}
+            max={Math.max(0, snapshots.length - 1)}
+            value={idx}
+            disabled={!snapshots.length}
+            onChange={(e) => setIdx(Number(e.target.value))}
+            className="relative z-10 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-mint disabled:opacity-40"
+          />
+          {/* Colored event ticks underneath the slider */}
+          {snapshots.length > 1 && (
+            <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 flex h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
+              {stepColors.map((c, i) => (
+                <div
+                  key={i}
+                  style={{ background: c, opacity: i <= idx ? 0.9 : 0.35 }}
+                  className="h-full flex-1"
+                />
+              ))}
+            </div>
+          )}
+        </div>
         {eventBadge && (
           <span
             className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] ${eventBadge.cls}`}
@@ -741,6 +755,15 @@ export function PythonPlayground() {
             {eventBadge.label}
           </span>
         )}
+      </div>
+
+      {/* Plain-English narration of the current step */}
+      <div className="rounded-lg border border-hairline bg-surface px-3 py-2">
+        <div className="mb-0.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="size-1.5 rounded-full bg-mint shadow-[0_0_8px_var(--mint)]" />
+          what's happening
+        </div>
+        <p className="text-[13px] leading-relaxed text-foreground/90">{narration}</p>
       </div>
 
       {/* Main split */}
