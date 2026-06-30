@@ -95,32 +95,40 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
       )}
 
       <div className="absolute inset-0 flex items-center justify-center">
+        {(() => {
+          // Vertical layout (pre-scale):
+          //   0..14   index ruler
+          //   18..50  above-caret zone (label + downward triangle)
+          //   54..54+CELL   cells row
+          //   58+CELL..    below-caret zone (upward triangle + label)
+          const RULER_H = 14;
+          const ABOVE_ZONE = 36;
+          const CELLS_TOP = RULER_H + 4 + ABOVE_ZONE; // 54
+          const BELOW_ZONE = 36;
+          const totalHeight = CELLS_TOP + CELL + 4 + BELOW_ZONE;
+          return (
         <div
           className="relative origin-center"
           style={{
             width: desiredWidth,
-            minHeight: 220,
+            height: totalHeight,
             transform: `scale(${scale})`,
           }}
         >
-          {/* partition bands */}
+          {/* partition bands — aligned to the cells row */}
           {partitions.map((p, i) => {
             if (p.to < p.from) return null;
-            const left = p.from * (CELL + GAP) - 6;
-            const width = (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 12;
+            const left = p.from * (CELL + GAP) - 4;
+            const width = (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8;
             return (
-              <motion.div
+              <div
                 key={`${p.tone}-${i}`}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ type: "spring", stiffness: 260, damping: 30 }}
                 className="absolute rounded-xl"
                 style={{
                   left,
                   width,
-                  top: 32,
-                  height: 88,
+                  top: CELLS_TOP - 4,
+                  height: CELL + 8,
                   background: PARTITION_BG[p.tone],
                   border: `1px dashed ${PARTITION_BORDER[p.tone]}`,
                 }}
@@ -133,7 +141,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                     {p.label}
                   </span>
                 )}
-              </motion.div>
+              </div>
             );
           })}
 
@@ -153,7 +161,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
           </div>
 
           {/* cells */}
-          <div className="flex" style={{ gap: GAP, marginTop: 18 }}>
+          <div className="absolute left-0 flex" style={{ gap: GAP, top: CELLS_TOP }}>
             {array.map((v, i) => {
               const isCompare = highlight?.kind === "compare" && highlight.indices.includes(i);
               const isSwap = highlight?.kind === "swap" && highlight.indices.includes(i);
@@ -168,7 +176,6 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
               return (
                 <motion.div
                   key={i}
-                  layout
                   className={cn(
                     "relative grid place-items-center rounded-xl bg-surface-2 font-mono text-xl font-medium text-foreground",
                   )}
@@ -177,9 +184,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                     height: CELL,
                     boxShadow: `inset 0 0 0 1px var(--hairline), 0 0 0 2px ${ringColor}`,
                   }}
-                  animate={{
-                    scale: isMatch ? 1.06 : isSwap ? 1.04 : 1,
-                  }}
+                  animate={{ scale: isMatch ? 1.06 : isSwap ? 1.04 : 1 }}
                   transition={{ type: "spring", stiffness: 300, damping: 22 }}
                 >
                   <motion.span
@@ -203,27 +208,29 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
             })}
           </div>
 
-          {/* above pointers */}
+          {/* above pointers — sit ABOVE the cells, triangle pointing DOWN */}
           {[...aboveByIdx.entries()].map(([idx, ps]) => (
             <PointerCaret
               key={`above-${idx}`}
               ps={ps}
               x={idx * (CELL + GAP) + CELL / 2}
-              top={CELL + 18 + 8}
-              direction="up"
+              anchorY={CELLS_TOP - 2}
+              direction="above"
             />
           ))}
-          {/* below pointers */}
+          {/* below pointers — sit BELOW the cells, triangle pointing UP */}
           {[...belowByIdx.entries()].map(([idx, ps]) => (
             <PointerCaret
               key={`below-${idx}`}
               ps={ps}
               x={idx * (CELL + GAP) + CELL / 2}
-              top={18 - 18}
-              direction="down"
+              anchorY={CELLS_TOP + CELL + 2}
+              direction="below"
             />
           ))}
         </div>
+          );
+        })()}
       </div>
     </div>
   );
@@ -232,52 +239,62 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
 function PointerCaret({
   ps,
   x,
-  top,
+  anchorY,
   direction,
 }: {
   ps: Pointer[];
   x: number;
-  top: number;
-  direction: "up" | "down";
+  /** y-coordinate the triangle tip points to */
+  anchorY: number;
+  /** "above" = caret above the cell (triangle ↓); "below" = caret below the cell (triangle ↑) */
+  direction: "above" | "below";
 }) {
-  // Stack labels vertically
+  // Outer wrapper handles absolute positioning so motion's transforms don't
+  // override the horizontal centering. The inner motion.div animates entry.
   return (
-    <motion.div
-      layoutId={`caret-${ps.map((p) => p.name).join("|")}-${direction}`}
-      className="absolute flex flex-col items-center"
+    <div
+      className="pointer-events-none absolute"
       style={{
         left: x,
-        top: direction === "up" ? top : undefined,
-        bottom: direction === "down" ? 220 - top : undefined,
-        transform: "translateX(-50%)",
+        top: direction === "above" ? undefined : anchorY,
+        bottom: direction === "above" ? undefined : undefined,
+        // For "above" we anchor the BOTTOM of the wrapper to anchorY.
+        ...(direction === "above" ? { top: anchorY, transform: "translate(-50%, -100%)" } : { transform: "translateX(-50%)" }),
       }}
-      transition={{ type: "spring", stiffness: 320, damping: 28 }}
     >
-      {direction === "up" && (
-        <svg width="14" height="10" viewBox="0 0 14 10" className="-mb-px">
-          <path d="M7 0 L13 10 L1 10 Z" fill={COLOR_MAP[ps[0].color]} />
-        </svg>
-      )}
-      <div className="flex flex-col items-center gap-0.5">
-        {ps.map((p) => (
-          <span
-            key={p.name}
-            className="rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider"
-            style={{
-              color: COLOR_MAP[p.color],
-              background: `color-mix(in oklab, ${COLOR_MAP[p.color]} 14%, transparent)`,
-              border: `1px solid color-mix(in oklab, ${COLOR_MAP[p.color]} 45%, transparent)`,
-            }}
-          >
-            {p.name}
-          </span>
-        ))}
-      </div>
-      {direction === "down" && (
-        <svg width="14" height="10" viewBox="0 0 14 10" className="-mt-px">
-          <path d="M7 10 L13 0 L1 0 Z" fill={COLOR_MAP[ps[0].color]} />
-        </svg>
-      )}
-    </motion.div>
+      <motion.div
+        key={`${direction}-${ps.map((p) => p.name).join("|")}`}
+        initial={{ opacity: 0, y: direction === "above" ? -4 : 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 320, damping: 28 }}
+        className="flex flex-col items-center"
+      >
+        {direction === "below" && (
+          <svg width="14" height="10" viewBox="0 0 14 10" className="-mb-px">
+            <path d="M7 0 L13 10 L1 10 Z" fill={COLOR_MAP[ps[0].color]} />
+          </svg>
+        )}
+        <div className="flex flex-col items-center gap-0.5">
+          {ps.map((p) => (
+            <span
+              key={p.name}
+              className="rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider"
+              style={{
+                color: COLOR_MAP[p.color],
+                background: `color-mix(in oklab, ${COLOR_MAP[p.color]} 14%, transparent)`,
+                border: `1px solid color-mix(in oklab, ${COLOR_MAP[p.color]} 45%, transparent)`,
+              }}
+            >
+              {p.name}
+            </span>
+          ))}
+        </div>
+        {direction === "above" && (
+          <svg width="14" height="10" viewBox="0 0 14 10" className="-mt-px">
+            <path d="M7 10 L13 0 L1 0 Z" fill={COLOR_MAP[ps[0].color]} />
+          </svg>
+        )}
+      </motion.div>
+    </div>
   );
 }
