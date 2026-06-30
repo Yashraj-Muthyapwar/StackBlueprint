@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SqlIndexRouteImport } from './routes/sql.index'
 import { Route as PatternsIndexRouteImport } from './routes/patterns.index'
@@ -28,6 +29,11 @@ import { Route as SqlQueryingTopicLessonRouteImport } from './routes/sql.queryin
 import { Route as SqlFoundationsTopicLessonRouteImport } from './routes/sql.foundations.$topic.$lesson'
 import { Route as DataWarehousesFoundationsTopicLessonRouteImport } from './routes/data-warehouses.foundations.$topic.$lesson'
 
+const PlaygroundRoute = PlaygroundRouteImport.update({
+  id: '/playground',
+  path: '/playground',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -127,6 +133,7 @@ const DataWarehousesFoundationsTopicLessonRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses': typeof DataWarehousesIndexRoute
   '/patterns': typeof PatternsIndexRoute
@@ -164,6 +172,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/playground': typeof PlaygroundRoute
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/playground'
     | '/patterns/$pattern'
     | '/tracks/$track'
     | '/data-warehouses/'
@@ -206,6 +216,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/playground'
     | '/tracks/$track'
     | '/data-warehouses'
     | '/patterns'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/playground'
     | '/patterns/$pattern'
     | '/tracks/$track'
     | '/data-warehouses/'
@@ -243,6 +255,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PlaygroundRoute: typeof PlaygroundRoute
   PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
   TracksTrackRoute: typeof TracksTrackRoute
   DataWarehousesIndexRoute: typeof DataWarehousesIndexRoute
@@ -256,6 +269,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/playground': {
+      id: '/playground'
+      path: '/playground'
+      fullPath: '/playground'
+      preLoaderRoute: typeof PlaygroundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -445,6 +465,7 @@ const SqlQueryingTopicRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PlaygroundRoute: PlaygroundRoute,
   PatternsPatternRoute: PatternsPatternRouteWithChildren,
   TracksTrackRoute: TracksTrackRoute,
   DataWarehousesIndexRoute: DataWarehousesIndexRoute,
@@ -459,13 +480,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
