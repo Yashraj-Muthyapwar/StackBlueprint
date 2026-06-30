@@ -2,26 +2,26 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { s: string; t: string };
 
-const code = `def min_window(s, t):
-    need = Counter(t)
+const code = `def min_window(text, pattern):
+    need = Counter(pattern)
     have = {}
     required = len(need)
     formed = 0
-    l = 0
+    left = 0
     best = (inf, 0, 0)
-    for r in range(len(s)):
-        c = s[r]
-        have[c] = have.get(c, 0) + 1
-        if c in need and have[c] == need[c]:
+    for right in range(len(text)):
+        char = text[right]
+        have[char] = have.get(char, 0) + 1
+        if char in need and have[char] == need[char]:
             formed += 1
         while formed == required:
-            if r - l + 1 < best[0]:
-                best = (r - l + 1, l, r)
-            have[s[l]] -= 1
-            if s[l] in need and have[s[l]] < need[s[l]]:
+            if right - left + 1 < best[0]:
+                best = (right - left + 1, left, right)
+            have[text[left]] -= 1
+            if text[left] in need and have[text[left]] < need[text[left]]:
                 formed -= 1
-            l += 1
-    return s[best[1]:best[2]+1] if best[0] < inf else ""`;
+            left += 1
+    return text[best[1]:best[2]+1] if best[0] < inf else ""`;
 
 function counter(str: string): Map<string, number> {
   const m = new Map<string, number>();
@@ -38,16 +38,16 @@ function build({ s, t }: Inputs): Step[] {
   const have = new Map<string, number>();
   const required = need.size;
   let formed = 0;
-  let l = 0;
+  let left = 0;
   let bestLen = Infinity;
   let bestRange: [number, number] = [0, -1];
 
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (l: number, r: number) =>
-    [{ from: l, to: r, tone: "mid" as const, label: `formed ${formed}/${required}` }];
+  const win = (left: number, right: number) =>
+    [{ from: left, to: right, tone: "mid" as const, label: `formed ${formed}/${required}` }];
   const secondary = () => ({
     label: `need vs have`,
     array: [...need.keys()].map((k) => `${k}:${have.get(k) ?? 0}/${need.get(k)}`),
@@ -66,46 +66,46 @@ function build({ s, t }: Inputs): Step[] {
     narration: `Need: ${[...need.entries()].map(([k, v]) => `${k}×${v}`).join(", ")}.`,
   });
 
-  for (let r = 0; r < n; r++) {
-    const c = chars[r];
+  for (let right = 0; right < n; right++) {
+    const c = chars[right];
     have.set(c, (have.get(c) ?? 0) + 1);
     if (need.has(c) && have.get(c) === need.get(c)) formed += 1;
     steps.push({
       line: 11,
       array: arr,
-      pointers: ptrs(l, r),
-      partitions: win(l, r),
-      highlight: { kind: "compare", indices: [r] },
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
+      highlight: { kind: "compare", indices: [right] },
       secondary: secondary(),
       status: `formed ${formed}/${required}`,
-      narration: `r=${r}, add '${c}'. formed=${formed}/${required}.`,
+      narration: `right=${right}, add '${c}'. formed=${formed}/${required}.`,
     });
     while (formed === required) {
-      if (r - l + 1 < bestLen) {
-        bestLen = r - l + 1;
-        bestRange = [l, r];
+      if (right - left + 1 < bestLen) {
+        bestLen = right - left + 1;
+        bestRange = [left, right];
         steps.push({
           line: 14,
           array: arr,
-          pointers: ptrs(l, r),
-          partitions: win(l, r),
-          highlight: { kind: "match", indices: Array.from({ length: bestLen }, (_, i) => l + i) },
+          pointers: ptrs(left, right),
+          partitions: win(left, right),
+          highlight: { kind: "match", indices: Array.from({ length: bestLen }, (_, i) => left + i) },
           secondary: secondary(),
           status: `best ${bestLen}`,
-          narration: `Valid window "${chars.slice(l, r + 1).join("")}" — new best (${bestLen}).`,
+          narration: `Valid window "${chars.slice(left, right + 1).join("")}" — new best (${bestLen}).`,
         });
       }
-      const lc = chars[l];
+      const lc = chars[left];
       have.set(lc, (have.get(lc) ?? 0) - 1);
       if (need.has(lc) && (have.get(lc) as number) < (need.get(lc) as number)) formed -= 1;
-      l += 1;
+      left += 1;
       steps.push({
         line: 18,
         array: arr,
-        pointers: ptrs(l, r),
-        partitions: l <= r ? win(l, r) : [],
+        pointers: ptrs(left, right),
+        partitions: left <= right ? win(left, right) : [],
         secondary: secondary(),
-        narration: `Shrink: drop '${lc}', l=${l}. formed=${formed}/${required}.`,
+        narration: `Shrink: drop '${lc}', left=${left}. formed=${formed}/${required}.`,
       });
     }
   }
@@ -131,8 +131,8 @@ function build({ s, t }: Inputs): Step[] {
 export const minWindowSubstring: LessonBuilder<Inputs> = {
   slug: "min-window-substring",
   title: "Sliding Window — Minimum Window Substring",
-  subtitle: "Grow r until the window covers t, then shrink l while the cover survives — track the smallest cover seen.",
-  problem: "Given strings s and t, return the smallest substring of s that contains every character of t (with multiplicity), or '' if no such window exists.",
+  subtitle: "Grow right until the window covers pattern, then shrink left while the cover survives — track the smallest cover seen.",
+  problem: "Given strings text and pattern, return the smallest substring of text that contains every character of pattern (with multiplicity), or '' if no such window exists.",
   spotIt: [
     "Find the smallest / shortest window that 'contains' another string or multiset.",
     "Constraint is a coverage condition (have ≥ need for every key).",

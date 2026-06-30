@@ -4,16 +4,16 @@ type Inputs = { nums: number[]; k: number };
 
 const code = `def top_k(nums, k):
     freq = {}
-    for x in nums:
-        freq[x] = freq.get(x, 0) + 1
+    for num in nums:
+        freq[num] = freq.get(num, 0) + 1
     # bucket by count
     buckets = [[] for _ in range(len(nums) + 1)]
-    for x, c in freq.items():
-        buckets[c].append(x)
+    for num, count in freq.items():
+        buckets[count].append(num)
     out = []
-    for c in range(len(buckets) - 1, 0, -1):
-        for x in buckets[c]:
-            out.append(x)
+    for count in range(len(buckets) - 1, 0, -1):
+        for num in buckets[count]:
+            out.append(num)
             if len(out) == k: return out`;
 
 function fmtMap(m: Map<number, number>) {
@@ -32,49 +32,49 @@ function build({ nums, k }: Inputs): Step[] {
     narration: `Count occurrences, then bucket by frequency. k=${k}.`,
   });
   for (let i = 0; i < nums.length; i++) {
-    const x = nums[i];
-    freq.set(x, (freq.get(x) ?? 0) + 1);
+    const num = nums[i];
+    freq.set(num, (freq.get(num) ?? 0) + 1);
     steps.push({
       line: 3,
       array: arr,
       pointers: [{ name: "i", index: i, color: "amber" }],
       highlight: { kind: "compare", indices: [i] },
       secondary: { label: `freq { ${freq.size} keys }`, array: fmtMap(freq) },
-      narration: `Count ${x} → ${freq.get(x)}.`,
+      narration: `Count ${num} → ${freq.get(num)}.`,
     });
   }
   const buckets: number[][] = Array.from({ length: nums.length + 1 }, () => []);
-  for (const [x, c] of freq) buckets[c].push(x);
+  for (const [num, count] of freq) buckets[count].push(num);
   steps.push({
     line: 7,
     array: arr,
     pointers: [],
     secondary: {
-      label: "buckets[c] (count → values)",
+      label: "buckets[count] (count → values)",
       array: buckets.map((b, c) => (b.length ? `${c}:[${b.join(",")}]` : null)).filter(Boolean) as string[],
     },
     narration: "Each bucket holds the values that appeared that many times.",
   });
   const out: number[] = [];
-  for (let c = buckets.length - 1; c > 0 && out.length < k; c--) {
-    for (const x of buckets[c]) {
-      out.push(x);
+  for (let count = buckets.length - 1; count > 0 && out.length < k; count--) {
+    for (const num of buckets[count]) {
+      out.push(num);
       const matchIdx: number[] = [];
       nums.forEach((v, i) => { if (out.includes(v)) matchIdx.push(i); });
       steps.push({
-        line: 11,
+        line: 12,
         array: arr,
         pointers: [],
         highlight: { kind: "match", indices: matchIdx },
         secondary: { label: `top-k so far`, array: out.map(String) },
-        status: `picked ${x} (count ${c})`,
-        narration: `Drain bucket ${c}: take ${x}. ${out.length}/${k} chosen.`,
+        status: `picked ${num} (count ${count})`,
+        narration: `Drain bucket ${count}: take ${num}. ${out.length}/${k} chosen.`,
       });
       if (out.length === k) break;
     }
   }
   steps.push({
-    line: 12,
+    line: 13,
     array: arr,
     pointers: [],
     secondary: { label: "return", array: out.map(String) },

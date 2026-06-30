@@ -4,22 +4,22 @@ import { isSortedAsc } from "../util";
 type Inputs = { arr: number[]; target: number };
 
 const code = `def two_sum(arr, target):
-    l, r = 0, len(arr) - 1
-    while l < r:
-        s = arr[l] + arr[r]
-        if s == target:
-            return (l, r)
-        if s < target:
-            l += 1
+    left, right = 0, len(arr) - 1
+    while left < right:
+        total = arr[left] + arr[right]
+        if total == target:
+            return (left, right)
+        if total < target:
+            left += 1
         else:
-            r -= 1
+            right -= 1
     return None`;
 
 function build({ arr, target }: Inputs): Step[] {
   const steps: Step[] = [];
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
   const push = (s: Omit<Step, "array"> & { array?: number[] }) =>
     steps.push({ ...s, array: s.array ?? [...arr] });
@@ -31,42 +31,42 @@ function build({ arr, target }: Inputs): Step[] {
 
   push({ line: 1, pointers: [], narration: `Find two indices whose values sum to ${target}.` });
 
-  let l = 0,
-    r = arr.length - 1;
-  push({ line: 2, pointers: ptrs(l, r), narration: "Place l at the start and r at the end." });
+  let left = 0,
+    right = arr.length - 1;
+  push({ line: 2, pointers: ptrs(left, right), narration: "Place left at the start and right at the end." });
 
   let safety = 0;
-  while (l < r && safety++ < 200) {
-    push({ line: 3, pointers: ptrs(l, r), narration: `Guard: l (${l}) < r (${r}).` });
-    const s = arr[l] + arr[r];
+  while (left < right && safety++ < 200) {
+    push({ line: 3, pointers: ptrs(left, right), narration: `Guard: left (${left}) < right (${right}).` });
+    const total = arr[left] + arr[right];
     push({
       line: 4,
-      pointers: ptrs(l, r),
-      highlight: { kind: "compare", indices: [l, r] },
-      status: `${arr[l]} + ${arr[r]} = ${s}`,
-      narration: `Sum at pointers: ${arr[l]} + ${arr[r]} = ${s}.`,
+      pointers: ptrs(left, right),
+      highlight: { kind: "compare", indices: [left, right] },
+      status: `${arr[left]} + ${arr[right]} = ${total}`,
+      narration: `Sum at pointers: ${arr[left]} + ${arr[right]} = ${total}.`,
     });
-    if (s === target) {
+    if (total === target) {
       push({
         line: 5,
-        pointers: ptrs(l, r),
-        highlight: { kind: "match", indices: [l, r] },
-        status: `return (${l}, ${r})`,
-        narration: `${s} equals target — return (${l}, ${r}).`,
+        pointers: ptrs(left, right),
+        highlight: { kind: "match", indices: [left, right] },
+        status: `return (${left}, ${right})`,
+        narration: `${total} equals target — return (${left}, ${right}).`,
       });
       return steps;
     }
-    if (s < target) {
-      push({ line: 7, pointers: ptrs(l, r), narration: `${s} < ${target} — need larger sum, l += 1.` });
-      l += 1;
-      push({ line: 8, pointers: ptrs(l, r), narration: `l → ${l}.` });
+    if (total < target) {
+      push({ line: 7, pointers: ptrs(left, right), narration: `${total} < ${target} — need larger sum, left += 1.` });
+      left += 1;
+      push({ line: 8, pointers: ptrs(left, right), narration: `left → ${left}.` });
     } else {
-      push({ line: 9, pointers: ptrs(l, r), narration: `${s} > ${target} — need smaller sum, r -= 1.` });
-      r -= 1;
-      push({ line: 10, pointers: ptrs(l, r), narration: `r → ${r}.` });
+      push({ line: 9, pointers: ptrs(left, right), narration: `${total} > ${target} — need smaller sum, right -= 1.` });
+      right -= 1;
+      push({ line: 10, pointers: ptrs(left, right), narration: `right → ${right}.` });
     }
   }
-  push({ line: 11, pointers: ptrs(l, r), narration: "Pointers crossed — no pair found, return None." });
+  push({ line: 11, pointers: ptrs(left, right), narration: "Pointers crossed — no pair found, return None." });
   return steps;
 }
 

@@ -2,13 +2,13 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { s: string };
 
-const code = `def is_palindrome(s):
-    l, r = 0, len(s) - 1
-    while l < r:
-        if s[l] != s[r]:
+const code = `def is_palindrome(string):
+    left, right = 0, len(string) - 1
+    while left < right:
+        if string[left] != string[right]:
             return False
-        l += 1
-        r -= 1
+        left += 1
+        right -= 1
     return True`;
 
 function build({ s }: Inputs): Step[] {
@@ -16,9 +16,9 @@ function build({ s }: Inputs): Step[] {
   const chars = s.split("");
   const arr = chars as unknown as (number | string)[];
   const n = chars.length;
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
 
   if (n < 2) {
@@ -26,25 +26,25 @@ function build({ s }: Inputs): Step[] {
     return steps;
   }
 
-  let l = 0;
-  let r = n - 1;
-  steps.push({ line: 2, array: arr, pointers: ptrs(l, r), narration: "Place l at the start, r at the end." });
+  let left = 0;
+  let right = n - 1;
+  steps.push({ line: 2, array: arr, pointers: ptrs(left, right), narration: "Place left at the start, right at the end." });
 
-  while (l < r) {
+  while (left < right) {
     steps.push({
       line: 3,
       array: arr,
-      pointers: ptrs(l, r),
-      highlight: { kind: "compare", indices: [l, r] },
-      status: `'${chars[l]}' vs '${chars[r]}'`,
-      narration: `Compare s[${l}]='${chars[l]}' with s[${r}]='${chars[r]}'.`,
+      pointers: ptrs(left, right),
+      highlight: { kind: "compare", indices: [left, right] },
+      status: `'${chars[left]}' vs '${chars[right]}'`,
+      narration: `Compare string[${left}]='${chars[left]}' with string[${right}]='${chars[right]}'.`,
     });
-    if (chars[l] !== chars[r]) {
+    if (chars[left] !== chars[right]) {
       steps.push({
         line: 4,
         array: arr,
-        pointers: ptrs(l, r),
-        highlight: { kind: "swap", indices: [l, r] },
+        pointers: ptrs(left, right),
+        highlight: { kind: "swap", indices: [left, right] },
         status: "False",
         narration: `Mismatch — not a palindrome, return False.`,
       });
@@ -53,18 +53,18 @@ function build({ s }: Inputs): Step[] {
     steps.push({
       line: 5,
       array: arr,
-      pointers: ptrs(l, r),
-      highlight: { kind: "match", indices: [l, r] },
+      pointers: ptrs(left, right),
+      highlight: { kind: "match", indices: [left, right] },
       narration: `Match. Move inward.`,
     });
-    l += 1;
-    r -= 1;
+    left += 1;
+    right -= 1;
   }
 
   steps.push({
     line: 7,
     array: arr,
-    pointers: l === r ? [{ name: "mid", index: l, color: "violet" as const }] : [],
+    pointers: left === right ? [{ name: "mid", index: left, color: "violet" as const }] : [],
     highlight: { kind: "match", indices: Array.from({ length: n }, (_, i) => i) },
     status: "True",
     narration: "Pointers crossed — palindrome, return True.",
@@ -76,7 +76,7 @@ export const palindromeCheck: LessonBuilder<Inputs> = {
   slug: "palindrome-check",
   title: "Two Pointers — Palindrome Check",
   subtitle: "Walk indices in from both ends, comparing mirrored characters.",
-  problem: "Given a string s, return True iff s reads the same forward and backward.",
+  problem: "Given a string, return True iff string reads the same forward and backward.",
   spotIt: [
     "Question is about symmetry / mirroring of a sequence.",
     "Phrases: 'is palindrome', 'valid palindrome', 'longest palindromic substring' (variant).",

@@ -4,10 +4,11 @@ type Inputs = { n: number };
 
 const code = `def is_happy(n):
     seen = set()
-    while n != 1 and n not in seen:
-        seen.add(n)
-        n = sum(int(d) ** 2 for d in str(n))
-    return n == 1`;
+    current = n
+    while current != 1 and current not in seen:
+        seen.add(current)
+        current = sum(int(d) ** 2 for d in str(current))
+    return current == 1`;
 
 function sumSquares(n: number): number {
   let s = 0;
@@ -19,7 +20,7 @@ function build({ n }: Inputs): Step[] {
   const steps: Step[] = [];
   const seen = new Set<number>();
   const trail: number[] = [n];
-  let cur = n;
+  let currentValue = n;
   steps.push({
     line: 1,
     array: trail as (number | string)[],
@@ -28,24 +29,24 @@ function build({ n }: Inputs): Step[] {
     narration: `Track each state in a set; stop when we hit 1 or repeat.`,
   });
   let guard = 0;
-  while (cur !== 1 && !seen.has(cur) && guard++ < 40) {
-    seen.add(cur);
-    const nxt = sumSquares(cur);
-    trail.push(nxt);
+  while (currentValue !== 1 && !seen.has(currentValue) && guard++ < 40) {
+    seen.add(currentValue);
+    const nextValue = sumSquares(currentValue);
+    trail.push(nextValue);
     steps.push({
-      line: 4,
+      line: 5,
       array: trail as (number | string)[],
-      pointers: [{ name: "n", index: trail.length - 1, color: "amber" }],
+      pointers: [{ name: "current", index: trail.length - 1, color: "amber" }],
       highlight: { kind: "compare", indices: [trail.length - 1] },
       secondary: { label: `seen { ${seen.size} }`, array: [...seen].map(String) },
-      status: `${cur} → ${nxt}`,
-      narration: `Square-sum digits of ${cur} → ${nxt}.`,
+      status: `${currentValue} → ${nextValue}`,
+      narration: `Square-sum digits of ${currentValue} → ${nextValue}.`,
     });
-    cur = nxt;
+    currentValue = nextValue;
   }
-  const happy = cur === 1;
+  const happy = currentValue === 1;
   steps.push({
-    line: 5,
+    line: 6,
     array: trail as (number | string)[],
     pointers: [],
     highlight: { kind: happy ? "match" : "swap", indices: [trail.length - 1] },

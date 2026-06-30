@@ -3,12 +3,12 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { arr: number[]; k: number };
 
 const code = `def max_window_sum(arr, k):
-    s = sum(arr[:k])
-    best = s
-    for r in range(k, len(arr)):
-        s += arr[r] - arr[r - k]
-        if s > best:
-            best = s
+    window_sum = sum(arr[:k])
+    best = window_sum
+    for right in range(k, len(arr)):
+        window_sum += arr[right] - arr[right - k]
+        if window_sum > best:
+            best = window_sum
     return best`;
 
 function build({ arr, k }: Inputs): Step[] {
@@ -18,23 +18,23 @@ function build({ arr, k }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Invalid k for the array.", array: [...arr], pointers: [] });
     return steps;
   }
-  const win = (l: number, r: number) =>
-    [{ from: l, to: r, tone: "mid" as const, label: "window" }];
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const win = (left: number, right: number) =>
+    [{ from: left, to: right, tone: "mid" as const, label: "window" }];
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
-  let s = 0;
-  for (let i = 0; i < k; i++) s += arr[i];
+  let window_sum = 0;
+  for (let i = 0; i < k; i++) window_sum += arr[i];
   steps.push({
     line: 1,
     array: [...arr],
     pointers: ptrs(0, k - 1),
     partitions: win(0, k - 1),
-    status: `s = ${s}`,
-    narration: `Initial window [0..${k - 1}] sum = ${s}.`,
+    status: `window_sum = ${window_sum}`,
+    narration: `Initial window [0..${k - 1}] sum = ${window_sum}.`,
   });
-  let best = s;
+  let best = window_sum;
   steps.push({
     line: 2,
     array: [...arr],
@@ -43,33 +43,33 @@ function build({ arr, k }: Inputs): Step[] {
     status: `best = ${best}`,
     narration: `best = ${best}.`,
   });
-  for (let r = k; r < n; r++) {
-    const l = r - k + 1;
+  for (let right = k; right < n; right++) {
+    const left = right - k + 1;
     steps.push({
       line: 3,
       array: [...arr],
-      pointers: ptrs(l - 1, r),
-      partitions: win(l - 1, r),
-      highlight: { kind: "compare", indices: [r, l - 1] },
-      narration: `Slide: include arr[${r}]=${arr[r]}, drop arr[${l - 1}]=${arr[l - 1]}.`,
+      pointers: ptrs(left - 1, right),
+      partitions: win(left - 1, right),
+      highlight: { kind: "compare", indices: [right, left - 1] },
+      narration: `Slide: include arr[${right}]=${arr[right]}, drop arr[${left - 1}]=${arr[left - 1]}.`,
     });
-    s += arr[r] - arr[l - 1];
+    window_sum += arr[right] - arr[left - 1];
     steps.push({
       line: 4,
       array: [...arr],
-      pointers: ptrs(l, r),
-      partitions: win(l, r),
-      status: `s = ${s}`,
-      narration: `Window sum updated: ${s}.`,
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
+      status: `window_sum = ${window_sum}`,
+      narration: `Window sum updated: ${window_sum}.`,
     });
-    if (s > best) {
-      best = s;
+    if (window_sum > best) {
+      best = window_sum;
       steps.push({
         line: 5,
         array: [...arr],
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        highlight: { kind: "match", indices: Array.from({ length: k }, (_, i) => l + i) },
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        highlight: { kind: "match", indices: Array.from({ length: k }, (_, i) => left + i) },
         status: `best = ${best}`,
         narration: `New best = ${best}.`,
       });

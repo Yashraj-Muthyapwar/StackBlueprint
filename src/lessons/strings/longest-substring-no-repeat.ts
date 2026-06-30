@@ -2,16 +2,16 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { s: string };
 
-const code = `def length_of_longest(s):
+const code = `def length_of_longest(string):
     seen = {}
-    l = 0
+    left = 0
     best = 0
-    for r in range(len(s)):
-        if s[r] in seen and seen[s[r]] >= l:
-            l = seen[s[r]] + 1
-        seen[s[r]] = r
-        if r - l + 1 > best:
-            best = r - l + 1
+    for right in range(len(string)):
+        if string[right] in seen and seen[string[right]] >= left:
+            left = seen[string[right]] + 1
+        seen[string[right]] = right
+        if right - left + 1 > best:
+            best = right - left + 1
     return best`;
 
 function build({ s }: Inputs): Step[] {
@@ -23,12 +23,12 @@ function build({ s }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Empty string — return 0.", array: arr, pointers: [] });
     return steps;
   }
-  const ptrs = (l: number, r: number) => [
-    { name: "l", index: l, color: "mint" as const },
-    { name: "r", index: r, color: "amber" as const },
+  const ptrs = (left: number, right: number) => [
+    { name: "left", index: left, color: "mint" as const },
+    { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (l: number, r: number) =>
-    [{ from: l, to: r, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) =>
+    [{ from: left, to: right, tone: "mid" as const, label: "window" }];
   const secondaryFrom = (m: Map<string, number>) => {
     const keys = [...m.keys()];
     return {
@@ -38,7 +38,7 @@ function build({ s }: Inputs): Step[] {
   };
 
   const seen = new Map<string, number>();
-  let l = 0;
+  let left = 0;
   let best = 0;
   let bestRange: [number, number] = [0, -1];
 
@@ -49,53 +49,53 @@ function build({ s }: Inputs): Step[] {
     narration: "Track last index of each character in `seen`.",
   });
 
-  for (let r = 0; r < n; r++) {
-    const c = chars[r];
+  for (let right = 0; right < n; right++) {
+    const c = chars[right];
     steps.push({
       line: 5,
       array: arr,
-      pointers: ptrs(l, r),
-      partitions: win(l, r),
-      highlight: { kind: "compare", indices: [r] },
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
+      highlight: { kind: "compare", indices: [right] },
       secondary: secondaryFrom(seen),
-      narration: `r=${r}, char '${c}'. Check if seen and inside window.`,
+      narration: `right=${right}, char '${c}'. Check if seen and inside window.`,
     });
-    if (seen.has(c) && (seen.get(c) as number) >= l) {
+    if (seen.has(c) && (seen.get(c) as number) >= left) {
       const prev = seen.get(c) as number;
       steps.push({
         line: 6,
         array: arr,
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        highlight: { kind: "swap", indices: [prev, r] },
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        highlight: { kind: "swap", indices: [prev, right] },
         secondary: secondaryFrom(seen),
         status: `dup '${c}' at ${prev}`,
-        narration: `'${c}' was at index ${prev} (≥ l=${l}). Shrink: l = ${prev + 1}.`,
+        narration: `'${c}' was at index ${prev} (≥ left=${left}). Shrink: left = ${prev + 1}.`,
       });
-      l = prev + 1;
+      left = prev + 1;
     }
-    seen.set(c, r);
+    seen.set(c, right);
     steps.push({
       line: 7,
       array: arr,
-      pointers: ptrs(l, r),
-      partitions: win(l, r),
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
       secondary: secondaryFrom(seen),
-      narration: `seen['${c}'] = ${r}.`,
+      narration: `seen['${c}'] = ${right}.`,
     });
-    const len = r - l + 1;
+    const len = right - left + 1;
     if (len > best) {
       best = len;
-      bestRange = [l, r];
+      bestRange = [left, right];
       steps.push({
         line: 9,
         array: arr,
-        pointers: ptrs(l, r),
-        partitions: win(l, r),
-        highlight: { kind: "match", indices: Array.from({ length: len }, (_, i) => l + i) },
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        highlight: { kind: "match", indices: Array.from({ length: len }, (_, i) => left + i) },
         secondary: secondaryFrom(seen),
         status: `best = ${best}`,
-        narration: `New best window length ${best}: "${chars.slice(l, r + 1).join("")}".`,
+        narration: `New best window length ${best}: "${chars.slice(left, right + 1).join("")}".`,
       });
     }
   }
@@ -121,8 +121,8 @@ function build({ s }: Inputs): Step[] {
 export const longestSubstringNoRepeat: LessonBuilder<Inputs> = {
   slug: "longest-substring-no-repeat",
   title: "Sliding Window — Longest Substring Without Repeat",
-  subtitle: "Expand r; on a duplicate inside the window, jump l past the previous occurrence.",
-  problem: "Given a string s, return the length of the longest substring of s that contains no repeated characters.",
+  subtitle: "Expand right; on a duplicate inside the window, jump left past the previous occurrence.",
+  problem: "Given a string, return the length of the longest substring of string that contains no repeated characters.",
   spotIt: [
     "Asks for the longest / shortest substring with a constraint on distinct characters.",
     "Brute force is O(n²) and the interviewer wants O(n).",

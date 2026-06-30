@@ -2,23 +2,23 @@ import type { LessonBuilder, Step } from "../types";
 
 type Inputs = { matrix: number[][] };
 
-const code = `def diagonal_order(mat):
-    R, C = len(mat), len(mat[0])
-    out = []
-    for d in range(R + C - 1):
+const code = `def diagonal_order(matrix):
+    rows, cols = len(matrix), len(matrix[0])
+    result = []
+    for d in range(rows + cols - 1):
         if d % 2 == 0:  # up-right
-            r = min(d, R - 1)
-            c = d - r
-            while r >= 0 and c < C:
-                out.append(mat[r][c])
-                r -= 1; c += 1
+            row = min(d, rows - 1)
+            col = d - row
+            while row >= 0 and col < cols:
+                result.append(matrix[row][col])
+                row -= 1; col += 1
         else:           # down-left
-            c = min(d, C - 1)
-            r = d - c
-            while c >= 0 and r < R:
-                out.append(mat[r][c])
-                r += 1; c -= 1
-    return out`;
+            col = min(d, cols - 1)
+            row = d - col
+            while col >= 0 and row < rows:
+                result.append(matrix[row][col])
+                row += 1; col -= 1
+    return result`;
 
 function build({ matrix }: Inputs): Step[] {
   const steps: Step[] = [];
@@ -26,39 +26,39 @@ function build({ matrix }: Inputs): Step[] {
     steps.push({ line: 1, matrix, narration: "Empty matrix." });
     return steps;
   }
-  const R = matrix.length,
-    C = matrix[0].length;
-  const out: number[] = [];
+  const rows = matrix.length,
+    cols = matrix[0].length;
+  const result: number[] = [];
   const visited: Array<{ r: number; c: number; tone: "visit" }> = [];
 
-  steps.push({ line: 4, matrix, narration: `Walk ${R + C - 1} anti-diagonals, alternating direction.` });
+  steps.push({ line: 4, matrix, narration: `Walk ${rows + cols - 1} anti-diagonals, alternating direction.` });
 
   const visit = (line: number, r: number, c: number, narr: string) => {
-    out.push(matrix[r][c]);
+    result.push(matrix[r][c]);
     visited.push({ r, c, tone: "visit" });
     steps.push({
       line,
       matrix,
       cellHighlights: [...visited.slice(0, -1), { r, c, tone: "match" as const }],
-      cellPointers: [{ name: "p", r, c, color: "mint" }],
-      secondary: { label: "output", array: [...out] },
+      cellPointers: [{ name: "pos", r, c, color: "mint" }],
+      secondary: { label: "output", array: [...result] },
       narration: narr,
     });
   };
 
-  for (let d = 0; d < R + C - 1; d++) {
+  for (let d = 0; d < rows + cols - 1; d++) {
     if (d % 2 === 0) {
-      let r = Math.min(d, R - 1);
+      let r = Math.min(d, rows - 1);
       let c = d - r;
-      while (r >= 0 && c < C) {
+      while (r >= 0 && c < cols) {
         visit(8, r, c, `↗ d=${d} (${r},${c}) = ${matrix[r][c]}`);
         r--;
         c++;
       }
     } else {
-      let c = Math.min(d, C - 1);
+      let c = Math.min(d, cols - 1);
       let r = d - c;
-      while (c >= 0 && r < R) {
+      while (c >= 0 && r < rows) {
         visit(13, r, c, `↙ d=${d} (${r},${c}) = ${matrix[r][c]}`);
         r++;
         c--;
@@ -69,7 +69,7 @@ function build({ matrix }: Inputs): Step[] {
     line: 16,
     matrix,
     cellHighlights: visited,
-    secondary: { label: "output", array: [...out] },
+    secondary: { label: "output", array: [...result] },
     narration: "All diagonals traversed.",
   });
   return steps;
@@ -86,9 +86,9 @@ export const diagonal: LessonBuilder<Inputs> = {
     "Variants: diagonal sort, zigzag conversion.",
   ],
   avoidWhen: [
-    "Order doesn't matter \u2014 use row-major and skip the bookkeeping.",
-    "You only care about one specific diagonal \u2014 index it directly.",
-    "The grid is jagged / non-rectangular \u2014 diagonals aren't well defined.",
+    "Order doesn't matter — use row-major and skip the bookkeeping.",
+    "You only care about one specific diagonal — index it directly.",
+    "The grid is jagged / non-rectangular — diagonals aren't well defined.",
   ],
   variant: "diagonal",
   view: "matrix",

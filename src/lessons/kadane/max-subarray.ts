@@ -3,18 +3,18 @@ import type { LessonBuilder, Step } from "../types";
 type Inputs = { arr: number[] };
 
 const code = `def kadane(arr):
-    best = cur = arr[0]
+    best_sum = current_sum = arr[0]
     start = end = best_l = best_r = 0
     for i in range(1, len(arr)):
-        if cur + arr[i] < arr[i]:
-            cur = arr[i]
+        if current_sum + arr[i] < arr[i]:
+            current_sum = arr[i]
             start = i
         else:
-            cur = cur + arr[i]
-        if cur > best:
-            best = cur
+            current_sum = current_sum + arr[i]
+        if current_sum > best_sum:
+            best_sum = current_sum
             best_l, best_r = start, i
-    return best`;
+    return best_sum`;
 
 function build({ arr }: Inputs): Step[] {
   const steps: Step[] = [];
@@ -23,25 +23,25 @@ function build({ arr }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Empty array.", pointers: [] });
     return steps;
   }
-  let best = arr[0],
-    cur = arr[0],
+  let bestSum = arr[0],
+    currentSum = arr[0],
     start = 0,
     bestL = 0,
     bestR = 0;
   const ptrs = (i: number) => [{ name: "i", index: i, color: "amber" as const }];
-  const winBest = () => [{ from: bestL, to: bestR, tone: "mid" as const, label: `best ${best}` }];
+  const winBest = () => [{ from: bestL, to: bestR, tone: "mid" as const, label: `best ${bestSum}` }];
 
   steps.push({
     line: 1,
     array: [...arr],
     pointers: ptrs(0),
     partitions: winBest(),
-    status: `cur=${cur}, best=${best}`,
+    status: `current_sum=${currentSum}, best_sum=${bestSum}`,
     narration: "Start with the first element.",
   });
 
   for (let i = 1; i < n; i++) {
-    const extend = cur + arr[i];
+    const extend = currentSum + arr[i];
     steps.push({
       line: 4,
       array: [...arr],
@@ -49,32 +49,32 @@ function build({ arr }: Inputs): Step[] {
       partitions: winBest(),
       highlight: { kind: "compare", indices: [i] },
       status: `extend=${extend} vs fresh=${arr[i]}`,
-      narration: `Extend current sum ${cur} → ${extend}, or start fresh at ${arr[i]}?`,
+      narration: `Extend current sum ${currentSum} → ${extend}, or start fresh at ${arr[i]}?`,
     });
-    if (cur + arr[i] < arr[i]) {
-      cur = arr[i];
+    if (currentSum + arr[i] < arr[i]) {
+      currentSum = arr[i];
       start = i;
       steps.push({
         line: 5,
         array: [...arr],
         pointers: ptrs(i),
         partitions: winBest(),
-        status: `cur=${cur} (restart)`,
-        narration: `Restart subarray at i=${i}, cur=${cur}.`,
+        status: `current_sum=${currentSum} (restart)`,
+        narration: `Restart subarray at i=${i}, current_sum=${currentSum}.`,
       });
     } else {
-      cur = cur + arr[i];
+      currentSum = currentSum + arr[i];
       steps.push({
         line: 7,
         array: [...arr],
         pointers: ptrs(i),
         partitions: winBest(),
-        status: `cur=${cur} (extend)`,
-        narration: `Extend, cur=${cur}.`,
+        status: `current_sum=${currentSum} (extend)`,
+        narration: `Extend, current_sum=${currentSum}.`,
       });
     }
-    if (cur > best) {
-      best = cur;
+    if (currentSum > bestSum) {
+      bestSum = currentSum;
       bestL = start;
       bestR = i;
       steps.push({
@@ -83,8 +83,8 @@ function build({ arr }: Inputs): Step[] {
         pointers: ptrs(i),
         partitions: winBest(),
         highlight: { kind: "match", indices: Array.from({ length: bestR - bestL + 1 }, (_, k) => bestL + k) },
-        status: `best=${best}`,
-        narration: `New best ${best} on [${bestL}..${bestR}].`,
+        status: `best_sum=${bestSum}`,
+        narration: `New best ${bestSum} on [${bestL}..${bestR}].`,
       });
     }
   }
@@ -92,8 +92,8 @@ function build({ arr }: Inputs): Step[] {
     line: 11,
     array: [...arr],
     partitions: winBest(),
-    status: `return ${best}`,
-    narration: `Maximum subarray sum = ${best}.`,
+    status: `return ${bestSum}`,
+    narration: `Maximum subarray sum = ${bestSum}.`,
     pointers: [],
   });
   return steps;
@@ -106,13 +106,13 @@ export const kadane: LessonBuilder<Inputs> = {
   problem: "Given an integer array, return the largest sum achievable by any contiguous non-empty subarray.",
   spotIt: [
     "'Maximum sum contiguous subarray' or any variant ('circular', 'with one deletion').",
-    "Array contains negatives \u2014 otherwise the answer is just the total sum.",
+    "Array contains negatives — otherwise the answer is just the total sum.",
     "Interviewer asks for O(n) and O(1) space.",
   ],
   avoidWhen: [
-    "You need the actual indices and the problem disallows extra state \u2014 be careful with bookkeeping.",
-    "Subarrays don't have to be contiguous \u2014 switch to DP on subsets or greedy.",
-    "Aggregation is product, not sum \u2014 use the product-subarray variant.",
+    "You need the actual indices and the problem disallows extra state — be careful with bookkeeping.",
+    "Subarrays don't have to be contiguous — switch to DP on subsets or greedy.",
+    "Aggregation is product, not sum — use the product-subarray variant.",
   ],
   variant: "kadane",
   view: "array",
