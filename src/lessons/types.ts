@@ -92,3 +92,31 @@ export type LinkedListStep = Pick<
   Step,
   "line" | "narration" | "status" | "pointers" | "highlight"
 > & { pointers: Pointer[] };
+
+// ============= Lesson content sections (SQL / Data Warehouses) =============
+
+export type QuizQuestion = {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+};
+
+export type Section =
+  | { kind: "prose"; heading?: string; body: string[] }
+  | { kind: "code"; language?: string; caption?: string; code: string }
+  | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
+  | { kind: "callout"; tone: "info" | "warn" | "success"; title: string; body: string }
+  | { kind: "diagram"; ascii: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "animation"; variant: string; caption?: string }
+  | { kind: "takeaways"; items: string[] }
+  | { kind: "quiz"; questions: QuizQuestion[] };
+
+export type LessonContent = {
+  slug: string;
+  title: string;
+  subtitle: string;
+  sections: Section[];
+};

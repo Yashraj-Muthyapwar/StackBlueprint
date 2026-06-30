@@ -176,7 +176,7 @@ const dwStorageComputeSeparation: Stage[] = [
       r(1, "90%", "Full"),
     ]},
     steps: [
-      st([0, 1], "kept", "If you need more storage, you must buy more CPU too.", { sidePanel: sidePanel("Monolith", ["Hard to scale", "Expensive", "Resource contention"]) }),
+      st([0, 1], "kept", "If you need more storage, you must buy more CPU too."),
     ],
   },
   {
@@ -186,7 +186,7 @@ const dwStorageComputeSeparation: Stage[] = [
       r(1, "s3://warehouse", "Petabytes"),
     ]},
     steps: [
-      st([0, 1], "kept", "Storage is isolated and scales infinitely at low cost.", { sidePanel: sidePanel("Storage Layer", ["Cheap", "Infinite scale", "Single source of truth"]) }),
+      st([0, 1], "kept", "Storage is isolated and scales infinitely at low cost."),
     ],
   },
   {
@@ -196,7 +196,7 @@ const dwStorageComputeSeparation: Stage[] = [
       r(1, "Running", "$/hour"),
     ]},
     steps: [
-      st([0, 1], "kept", "Compute is only paid for when running.", { sidePanel: sidePanel("Compute Layer", ["Elastic", "Pay per use", "No contention"]) }),
+      st([0, 1], "kept", "Compute is only paid for when running."),
     ],
   },
   {
@@ -207,7 +207,7 @@ const dwStorageComputeSeparation: Stage[] = [
       r(2, "Marketing", "SELECT..."),
     ]},
     steps: [
-      st([0, 1], "kept", "No resource contention between teams.", { sidePanel: sidePanel("Multi-Cluster", ["Isolated workloads", "Same data", "High concurrency"], "success", Layers) }),
+      st([0, 1], "kept", "No resource contention between teams."),
     ],
   },
 ];
@@ -220,3 +220,5 @@ export const STAGES_REGISTRY: Record<string, Stage[]> = {
   "dw-database-families": dwDatabaseFamilies,
   "dw-storage-compute-separation": dwStorageComputeSeparation,
 };
+
+export type AnyVariant = keyof typeof STAGES_REGISTRY;
