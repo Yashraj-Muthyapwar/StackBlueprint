@@ -132,7 +132,11 @@ export function LessonControls({
             field={f}
             value={raw[f.key] ?? ""}
             onChange={(v) => {
-              setRaw((r) => ({ ...r, [f.key]: v }));
+              setRaw((r) => {
+                const next = { ...r, [f.key]: v };
+                const overrides = builder.onInputChange?.(f.key, v, next);
+                return overrides ? { ...next, ...overrides } : next;
+              });
               setIsDirty(true);
             }}
           />

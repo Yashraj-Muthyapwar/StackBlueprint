@@ -1,4 +1,5 @@
 import type { LessonBuilder, Step } from "../types";
+import { stringifyIntArray } from "../util";
 
 type Mode = "remove-duplicates" | "find-duplicate";
 type Inputs = { mode: Mode; arr: number[] };
@@ -31,71 +32,82 @@ const DEFAULTS: Record<Mode, number[]> = {
   "find-duplicate": [1, 3, 4, 2, 2],
 };
 
+function ptrs(slow: number, fast: number, n: number) {
+  // Clamp to valid indices so the canvas never points off-array.
+  const cs = Math.max(0, Math.min(n - 1, slow));
+  const cf = Math.max(0, Math.min(n - 1, fast));
+  return [
+    { name: "slow", index: cs, color: "mint" as const, placement: "below" as const },
+    { name: "fast", index: cf, color: "amber" as const, placement: "above" as const },
+  ];
+}
+
 function buildRemoveDuplicates(arr: number[]): Step[] {
   const steps: Step[] = [];
   const data = [...arr];
-  const ptrs = (slow: number, fast: number) => [
-    { name: "slow", index: slow, color: "mint" as const, placement: "below" as const },
-    { name: "fast", index: fast, color: "amber" as const, placement: "above" as const },
-  ];
-  const win = (slow: number) =>
-    slow >= 0
-      ? [{ from: 0, to: slow, tone: "mid" as const, label: `unique [0..${slow}]` }]
-      : [];
+  const n = data.length;
 
-  if (data.length === 0) {
+  if (n === 0) {
     steps.push({ line: 3, array: [], pointers: [], narration: "Empty array — return 0." });
     return steps;
   }
+
+  const win = (slow: number) => [
+    { from: 0, to: slow, tone: "mid" as const, label: `unique [0..${slow}]` },
+  ];
 
   let slow = 0;
   steps.push({
     line: 4,
     array: [...data],
-    pointers: ptrs(slow, slow),
+    pointers: ptrs(slow, 1, n),
     partitions: win(slow),
-    narration: "slow marks the last unique element. Start at index 0.",
+    narration: "slow marks the last unique element; start at index 0.",
   });
 
-  for (let fast = 1; fast < data.length; fast++) {
-    steps.push({
-      line: 5,
-      array: [...data],
-      pointers: ptrs(slow, fast),
-      partitions: win(slow),
-      highlight: { kind: "compare", indices: [slow, fast] },
-      status: `arr[slow]=${data[slow]}, arr[fast]=${data[fast]}`,
-      narration: `Compare arr[slow]=${data[slow]} with arr[fast]=${data[fast]}.`,
-    });
-    if (data[fast] !== data[slow]) {
+  for (let fast = 1; fast < n; fast++) {
+    const same = data[fast] === data[slow];
+    if (same) {
+      steps.push({
+        line: 6,
+        array: [...data],
+        pointers: ptrs(slow, fast, n),
+        partitions: win(slow),
+        highlight: { kind: "compare", indices: [slow, fast] },
+        status: `arr[${fast}]=${data[fast]} == arr[${slow}]=${data[slow]} → skip`,
+        narration: `arr[fast]=${data[fast]} equals arr[slow]=${data[slow]}. Duplicate — skip.`,
+      });
+    } else {
+      steps.push({
+        line: 6,
+        array: [...data],
+        pointers: ptrs(slow, fast, n),
+        partitions: win(slow),
+        highlight: { kind: "compare", indices: [slow, fast] },
+        status: `arr[${fast}]=${data[fast]} ≠ arr[${slow}]=${data[slow]}`,
+        narration: `New value found at fast=${fast}.`,
+      });
       slow += 1;
       data[slow] = data[fast];
       steps.push({
         line: 8,
         array: [...data],
-        pointers: ptrs(slow, fast),
+        pointers: ptrs(slow, fast, n),
         partitions: win(slow),
         highlight: { kind: "swap", indices: [slow] },
-        status: `new unique → arr[${slow}] = ${data[slow]}`,
-        narration: `Different. Advance slow → ${slow} and copy value ${data[fast]} there.`,
-      });
-    } else {
-      steps.push({
-        line: 5,
-        array: [...data],
-        pointers: ptrs(slow, fast),
-        partitions: win(slow),
-        narration: `Same value — skip; slow stays at ${slow}.`,
+        status: `slow→${slow}; arr[${slow}] = ${data[slow]}`,
+        narration: `Advance slow to ${slow} and copy ${data[fast]} there.`,
       });
     }
   }
+
   steps.push({
     line: 9,
     array: [...data],
-    pointers: ptrs(slow, data.length - 1),
+    pointers: ptrs(slow, n - 1, n),
     partitions: win(slow),
     status: `return ${slow + 1}`,
-    narration: `Length of unique prefix = ${slow + 1}.`,
+    narration: `Unique prefix length = ${slow + 1}. Values [0..${slow}] are the answer.`,
   });
   return steps;
 }
@@ -103,71 +115,93 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
 function buildFindDuplicate(arr: number[]): Step[] {
   const steps: Step[] = [];
   const n = arr.length;
+
   if (n < 2) {
     steps.push({ line: 1, array: [...arr], pointers: [], narration: "Need at least 2 elements." });
     return steps;
   }
-  const ptrs = (slow: number, fast: number) => [
-    { name: "slow", index: slow, color: "mint" as const, placement: "below" as const },
-    { name: "fast", index: fast, color: "amber" as const, placement: "above" as const },
-  ];
+  // Guard: values must be valid indices (0..n-1). If not, bail with a message.
+  const bad = arr.some((v) => !Number.isInteger(v) || v < 0 || v >= n);
+  if (bad) {
+    steps.push({
+      line: 1,
+      array: [...arr],
+      pointers: [],
+      narration:
+        "Values must be in [1..n] so each value maps to a valid index. Adjust the array and run again.",
+    });
+    return steps;
+  }
 
   let slow = arr[0];
   let fast = arr[0];
   steps.push({
     line: 2,
     array: [...arr],
-    pointers: ptrs(slow, fast),
-    narration: "Treat each value as a 'next index'. slow & fast start at nums[0].",
+    pointers: ptrs(slow, fast, n),
+    highlight: { kind: "compare", indices: [slow] },
+    status: `slow = fast = nums[0] = ${slow}`,
+    narration: "Treat each value as a 'next index'. Both pointers start at nums[0].",
   });
 
-  // Phase 1 — find meeting point inside the cycle
-  let guard = 0;
-  while (guard++ < n * 3) {
-    slow = arr[slow];
-    fast = arr[arr[fast]];
+  // Phase 1: detect meeting point inside the cycle.
+  for (let i = 0; i < n * 2; i++) {
+    const ns = arr[slow];
+    const nf = arr[arr[fast]];
     steps.push({
       line: 4,
       array: [...arr],
-      pointers: ptrs(slow, fast),
-      highlight: slow === fast ? { kind: "match", indices: [slow] } : { kind: "compare", indices: [slow, fast] },
-      status: `slow=${slow}, fast=${fast}`,
+      pointers: ptrs(ns, nf, n),
+      highlight:
+        ns === nf
+          ? { kind: "match", indices: [ns] }
+          : { kind: "compare", indices: [ns, nf] },
+      status: `slow: ${slow}→${ns}   fast: ${fast}→${nf}`,
       narration:
-        slow === fast
-          ? `Phase 1 done — they meet at index ${slow} (somewhere inside the cycle).`
-          : `slow jumps 1, fast jumps 2. slow=${slow}, fast=${fast}.`,
+        ns === nf
+          ? `They meet at index ${ns}. Phase 1 done — meeting point found inside the cycle.`
+          : `slow jumps 1 (nums[${slow}]=${ns}); fast jumps 2 (nums[nums[${fast}]]=${nf}).`,
     });
+    slow = ns;
+    fast = nf;
     if (slow === fast) break;
   }
 
-  // Phase 2 — find cycle entry (= duplicate value)
+  // Phase 2: reset slow, walk both one step at a time to the cycle entry.
   slow = arr[0];
   steps.push({
     line: 7,
     array: [...arr],
-    pointers: ptrs(slow, fast),
-    narration: "Phase 2 — reset slow to nums[0]. Now both advance one step at a time.",
+    pointers: ptrs(slow, fast, n),
+    status: `reset slow = nums[0] = ${slow}`,
+    narration: "Phase 2 — reset slow to nums[0]. Now both move one step at a time.",
   });
-  guard = 0;
-  while (slow !== fast && guard++ < n * 3) {
-    slow = arr[slow];
-    fast = arr[fast];
+
+  for (let i = 0; i < n * 2 && slow !== fast; i++) {
+    const ns = arr[slow];
+    const nf = arr[fast];
     steps.push({
       line: 9,
       array: [...arr],
-      pointers: ptrs(slow, fast),
-      highlight: slow === fast ? { kind: "match", indices: [slow] } : { kind: "compare", indices: [slow, fast] },
-      status: `slow=${slow}, fast=${fast}`,
+      pointers: ptrs(ns, nf, n),
+      highlight:
+        ns === nf
+          ? { kind: "match", indices: [ns] }
+          : { kind: "compare", indices: [ns, nf] },
+      status: `slow: ${slow}→${ns}   fast: ${fast}→${nf}`,
       narration:
-        slow === fast
-          ? `They meet at ${slow} — that's the cycle entry, i.e. the duplicate value.`
-          : `Step both. slow=${slow}, fast=${fast}.`,
+        ns === nf
+          ? `They meet at ${ns} — that's the cycle entry, i.e. the duplicate value.`
+          : `Step both by one.`,
     });
+    slow = ns;
+    fast = nf;
   }
+
   steps.push({
     line: 11,
     array: [...arr],
-    pointers: ptrs(slow, fast),
+    pointers: ptrs(slow, fast, n),
     highlight: { kind: "match", indices: [slow] },
     status: `return ${slow}`,
     narration: `Duplicate value = ${slow}.`,
@@ -215,6 +249,13 @@ export const fastSlow: LessonBuilder<Inputs> = {
     },
     { key: "arr", label: "Array", kind: "intArray" },
   ],
+  // When the mode changes, swap the array to that mode's sensible default
+  // so the input is always valid for the active algorithm.
+  onInputChange: (key, value) => {
+    if (key !== "mode") return null;
+    const next = (value as Mode) in DEFAULTS ? (value as Mode) : "remove-duplicates";
+    return { arr: stringifyIntArray(DEFAULTS[next]) };
+  },
   validate: ({ mode, arr }) => {
     const w: string[] = [];
     if (arr.length === 0) w.push("Array is empty.");
