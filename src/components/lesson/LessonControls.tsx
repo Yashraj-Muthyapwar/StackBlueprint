@@ -180,13 +180,27 @@ function FieldEditor({
   onChange: (v: string) => void;
 }) {
   const isLarge = field.kind === "intMatrix";
+  const isSelect = field.kind === "select";
   return (
     <label className="block">
       <div className="mb-1 flex items-baseline justify-between">
         <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{field.label}</span>
         {field.help && <span className="text-[10px] text-muted-foreground/60">{field.help}</span>}
       </div>
-      {isLarge ? (
+      {isSelect ? (
+        <Select value={value} onValueChange={onChange}>
+          <SelectTrigger className="h-9 font-mono text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {field.options.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value} className="font-mono text-xs">
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      ) : isLarge ? (
         <Textarea
           value={value}
           onChange={(e) => onChange(e.target.value)}
