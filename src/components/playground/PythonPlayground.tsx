@@ -161,7 +161,7 @@ print([fib(i) for i in range(8)])
 
 function valueLabel(v: Value): string {
   if (v.kind === "prim") return String(v.value);
-  return `→ #${v.id.slice(-4)}`;
+  return `#${v.id.slice(-4)}`;
 }
 
 function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
