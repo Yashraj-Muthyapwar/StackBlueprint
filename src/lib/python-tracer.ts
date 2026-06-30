@@ -58,7 +58,7 @@ def _run_traced(src):
             heap[oid] = {"type": type(v).__name__, "repr": "<unrepr: %s>" % e}
         return {"kind":"ref","id":oid}
 
-    def snapshot(event, frame):
+    def snapshot(event, frame, arg=None):
         if len(snapshots) >= MAX_STEPS:
             raise RuntimeError("Step limit reached (%d). Simplify the program." % MAX_STEPS)
         heap = {}
@@ -79,20 +79,30 @@ def _run_traced(src):
             })
             f = f.f_back
         frames.reverse()
-        snapshots.append({
+        snap = {
             "event": event,
             "line": frame.f_lineno,
             "frames": frames,
             "heap": heap,
             "stdout": stdout_buf.getvalue(),
-        })
+        }
+        if event == "return":
+            try:
+                snap["returnValue"] = ser(arg, heap)
+            except Exception:
+                snap["returnValue"] = {"kind":"prim","type":"?","value":"<unser>"}
+        elif event == "call":
+            # Annotate the call with the function name of the new frame
+            snap["callName"] = "<module>" if frame.f_code.co_name == "<module>" else frame.f_code.co_name
+        snapshots.append(snap)
 
     def tracer(frame, event, arg):
         if frame.f_code.co_filename != "<user>":
             return None
         if event in ("line", "call", "return"):
-            snapshot(event, frame)
+            snapshot(event, frame, arg)
         return tracer
+
 
     err = None
     real_stdout = sys.stdout
