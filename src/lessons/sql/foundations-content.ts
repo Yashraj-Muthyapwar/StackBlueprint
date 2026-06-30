@@ -1,11 +1,16 @@
 // Rich lesson content for SQL Foundations. Each lesson is composed of
 // typed sections rendered by src/routes/sql.foundations.$topic.$lesson.tsx.
 
-import clientServerImg from "@/images/client-server-architecture.png";
-import relationaldatabaseImg from "@/images/relational_database.png";
-import relationalvsnonrelationalImg from "@/images/relational-vs-non-relational.png";
-import databasecomponentsImg from "@/images/database-components.png";
-import datastoredandreadImg from "@/images/data-stored-and-read-disk.png";
+import clientServerImg from "@/images/sql/foundations/client-server-architecture.png";
+import relationaldatabaseImg from "@/images/sql/foundations/relational_database.png";
+import relationalvsnonrelationalImg from "@/images/sql/foundations/relational-vs-non-relational.png";
+import databasecomponentsImg from "@/images/sql/foundations/database-components.png";
+import datastoredandreadImg from "@/images/sql/foundations/data-stored-and-read-disk.png";
+import primaryKeysImg from "@/images/sql/foundations/primary_keys.png";
+import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.png";
+import normalizationImg from "@/images/sql/foundations/database_normalization.png";
+import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
+import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
 import { type QuizQuestion } from "@/components/sql/Quiz";
 
 export type Section =

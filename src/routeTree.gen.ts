@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SqlIndexRouteImport } from './routes/sql.index'
 import { Route as PatternsIndexRouteImport } from './routes/patterns.index'
+import { Route as DataWarehousesIndexRouteImport } from './routes/data-warehouses.index'
 import { Route as TracksTrackRouteImport } from './routes/tracks.$track'
 import { Route as PatternsPatternRouteImport } from './routes/patterns.$pattern'
 import { Route as PatternsPatternIndexRouteImport } from './routes/patterns.$pattern.index'
@@ -19,10 +20,13 @@ import { Route as SqlQueryingTopicRouteImport } from './routes/sql.querying.$top
 import { Route as SqlFoundationsTopicRouteImport } from './routes/sql.foundations.$topic'
 import { Route as PatternsCategoryCategoryRouteImport } from './routes/patterns.category.$category'
 import { Route as PatternsPatternLessonRouteImport } from './routes/patterns.$pattern.$lesson'
+import { Route as DataWarehousesFoundationsTopicRouteImport } from './routes/data-warehouses.foundations.$topic'
 import { Route as SqlQueryingTopicIndexRouteImport } from './routes/sql.querying.$topic.index'
 import { Route as SqlFoundationsTopicIndexRouteImport } from './routes/sql.foundations.$topic.index'
+import { Route as DataWarehousesFoundationsTopicIndexRouteImport } from './routes/data-warehouses.foundations.$topic.index'
 import { Route as SqlQueryingTopicLessonRouteImport } from './routes/sql.querying.$topic.$lesson'
 import { Route as SqlFoundationsTopicLessonRouteImport } from './routes/sql.foundations.$topic.$lesson'
+import { Route as DataWarehousesFoundationsTopicLessonRouteImport } from './routes/data-warehouses.foundations.$topic.$lesson'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -37,6 +41,11 @@ const SqlIndexRoute = SqlIndexRouteImport.update({
 const PatternsIndexRoute = PatternsIndexRouteImport.update({
   id: '/patterns/',
   path: '/patterns/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataWarehousesIndexRoute = DataWarehousesIndexRouteImport.update({
+  id: '/data-warehouses/',
+  path: '/data-warehouses/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TracksTrackRoute = TracksTrackRouteImport.update({
@@ -75,6 +84,12 @@ const PatternsPatternLessonRoute = PatternsPatternLessonRouteImport.update({
   path: '/$lesson',
   getParentRoute: () => PatternsPatternRoute,
 } as any)
+const DataWarehousesFoundationsTopicRoute =
+  DataWarehousesFoundationsTopicRouteImport.update({
+    id: '/data-warehouses/foundations/$topic',
+    path: '/data-warehouses/foundations/$topic',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SqlQueryingTopicIndexRoute = SqlQueryingTopicIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -85,6 +100,12 @@ const SqlFoundationsTopicIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => SqlFoundationsTopicRoute,
+  } as any)
+const DataWarehousesFoundationsTopicIndexRoute =
+  DataWarehousesFoundationsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DataWarehousesFoundationsTopicRoute,
   } as any)
 const SqlQueryingTopicLessonRoute = SqlQueryingTopicLessonRouteImport.update({
   id: '/$lesson',
@@ -97,33 +118,46 @@ const SqlFoundationsTopicLessonRoute =
     path: '/$lesson',
     getParentRoute: () => SqlFoundationsTopicRoute,
   } as any)
+const DataWarehousesFoundationsTopicLessonRoute =
+  DataWarehousesFoundationsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => DataWarehousesFoundationsTopicRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
+  '/data-warehouses/': typeof DataWarehousesIndexRoute
   '/patterns/': typeof PatternsIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
+  '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/data-warehouses/foundations/$topic/': typeof DataWarehousesFoundationsTopicIndexRoute
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/tracks/$track': typeof TracksTrackRoute
+  '/data-warehouses': typeof DataWarehousesIndexRoute
   '/patterns': typeof PatternsIndexRoute
   '/sql': typeof SqlIndexRoute
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/patterns/$pattern': typeof PatternsPatternIndexRoute
+  '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicIndexRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic': typeof SqlQueryingTopicIndexRoute
 }
@@ -132,15 +166,19 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
+  '/data-warehouses/': typeof DataWarehousesIndexRoute
   '/patterns/': typeof PatternsIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
+  '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/data-warehouses/foundations/$topic/': typeof DataWarehousesFoundationsTopicIndexRoute
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
 }
@@ -150,28 +188,35 @@ export interface FileRouteTypes {
     | '/'
     | '/patterns/$pattern'
     | '/tracks/$track'
+    | '/data-warehouses/'
     | '/patterns/'
     | '/sql/'
+    | '/data-warehouses/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
     | '/patterns/$pattern/'
+    | '/data-warehouses/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/data-warehouses/foundations/$topic/'
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/tracks/$track'
+    | '/data-warehouses'
     | '/patterns'
     | '/sql'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/patterns/$pattern'
+    | '/data-warehouses/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/data-warehouses/foundations/$topic'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
   id:
@@ -179,15 +224,19 @@ export interface FileRouteTypes {
     | '/'
     | '/patterns/$pattern'
     | '/tracks/$track'
+    | '/data-warehouses/'
     | '/patterns/'
     | '/sql/'
+    | '/data-warehouses/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
     | '/patterns/$pattern/'
+    | '/data-warehouses/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/data-warehouses/foundations/$topic/'
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
   fileRoutesById: FileRoutesById
@@ -196,8 +245,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
   TracksTrackRoute: typeof TracksTrackRoute
+  DataWarehousesIndexRoute: typeof DataWarehousesIndexRoute
   PatternsIndexRoute: typeof PatternsIndexRoute
   SqlIndexRoute: typeof SqlIndexRoute
+  DataWarehousesFoundationsTopicRoute: typeof DataWarehousesFoundationsTopicRouteWithChildren
   PatternsCategoryCategoryRoute: typeof PatternsCategoryCategoryRoute
   SqlFoundationsTopicRoute: typeof SqlFoundationsTopicRouteWithChildren
   SqlQueryingTopicRoute: typeof SqlQueryingTopicRouteWithChildren
@@ -224,6 +275,13 @@ declare module '@tanstack/react-router' {
       path: '/patterns'
       fullPath: '/patterns/'
       preLoaderRoute: typeof PatternsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-warehouses/': {
+      id: '/data-warehouses/'
+      path: '/data-warehouses'
+      fullPath: '/data-warehouses/'
+      preLoaderRoute: typeof DataWarehousesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tracks/$track': {
@@ -275,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatternsPatternLessonRouteImport
       parentRoute: typeof PatternsPatternRoute
     }
+    '/data-warehouses/foundations/$topic': {
+      id: '/data-warehouses/foundations/$topic'
+      path: '/data-warehouses/foundations/$topic'
+      fullPath: '/data-warehouses/foundations/$topic'
+      preLoaderRoute: typeof DataWarehousesFoundationsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sql/querying/$topic/': {
       id: '/sql/querying/$topic/'
       path: '/'
@@ -289,6 +354,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SqlFoundationsTopicIndexRouteImport
       parentRoute: typeof SqlFoundationsTopicRoute
     }
+    '/data-warehouses/foundations/$topic/': {
+      id: '/data-warehouses/foundations/$topic/'
+      path: '/'
+      fullPath: '/data-warehouses/foundations/$topic/'
+      preLoaderRoute: typeof DataWarehousesFoundationsTopicIndexRouteImport
+      parentRoute: typeof DataWarehousesFoundationsTopicRoute
+    }
     '/sql/querying/$topic/$lesson': {
       id: '/sql/querying/$topic/$lesson'
       path: '/$lesson'
@@ -302,6 +374,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sql/foundations/$topic/$lesson'
       preLoaderRoute: typeof SqlFoundationsTopicLessonRouteImport
       parentRoute: typeof SqlFoundationsTopicRoute
+    }
+    '/data-warehouses/foundations/$topic/$lesson': {
+      id: '/data-warehouses/foundations/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/data-warehouses/foundations/$topic/$lesson'
+      preLoaderRoute: typeof DataWarehousesFoundationsTopicLessonRouteImport
+      parentRoute: typeof DataWarehousesFoundationsTopicRoute
     }
   }
 }
@@ -319,6 +398,24 @@ const PatternsPatternRouteChildren: PatternsPatternRouteChildren = {
 const PatternsPatternRouteWithChildren = PatternsPatternRoute._addFileChildren(
   PatternsPatternRouteChildren,
 )
+
+interface DataWarehousesFoundationsTopicRouteChildren {
+  DataWarehousesFoundationsTopicLessonRoute: typeof DataWarehousesFoundationsTopicLessonRoute
+  DataWarehousesFoundationsTopicIndexRoute: typeof DataWarehousesFoundationsTopicIndexRoute
+}
+
+const DataWarehousesFoundationsTopicRouteChildren: DataWarehousesFoundationsTopicRouteChildren =
+  {
+    DataWarehousesFoundationsTopicLessonRoute:
+      DataWarehousesFoundationsTopicLessonRoute,
+    DataWarehousesFoundationsTopicIndexRoute:
+      DataWarehousesFoundationsTopicIndexRoute,
+  }
+
+const DataWarehousesFoundationsTopicRouteWithChildren =
+  DataWarehousesFoundationsTopicRoute._addFileChildren(
+    DataWarehousesFoundationsTopicRouteChildren,
+  )
 
 interface SqlFoundationsTopicRouteChildren {
   SqlFoundationsTopicLessonRoute: typeof SqlFoundationsTopicLessonRoute
@@ -350,8 +447,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PatternsPatternRoute: PatternsPatternRouteWithChildren,
   TracksTrackRoute: TracksTrackRoute,
+  DataWarehousesIndexRoute: DataWarehousesIndexRoute,
   PatternsIndexRoute: PatternsIndexRoute,
   SqlIndexRoute: SqlIndexRoute,
+  DataWarehousesFoundationsTopicRoute:
+    DataWarehousesFoundationsTopicRouteWithChildren,
   PatternsCategoryCategoryRoute: PatternsCategoryCategoryRoute,
   SqlFoundationsTopicRoute: SqlFoundationsTopicRouteWithChildren,
   SqlQueryingTopicRoute: SqlQueryingTopicRouteWithChildren,
