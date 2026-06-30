@@ -331,6 +331,7 @@ function HeapCard({
       <div className="font-mono text-[12px] text-foreground/80">
         {"repr" in obj ? obj.repr : ""}
       </div>
+      {aliasBar}
     </div>
   );
 }
