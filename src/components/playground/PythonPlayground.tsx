@@ -829,22 +829,11 @@ export function PythonPlayground() {
                 </marker>
               </defs>
               {arrows.map((a, i) => {
-                // Orthogonal "step" routing — like Python Tutor.
-                // Source: exit horizontally to the right.
-                // Target: enter horizontally from the left.
-                const exit = a.x1 + 14;
-                const entry = a.x2 - 10;
-                let d: string;
-                if (entry > exit + 4) {
-                  // Target is to the right of source — simple H/V/H step.
-                  const midX = (exit + entry) / 2;
-                  d = `M ${a.x1} ${a.y1} H ${midX} V ${a.y2} H ${a.x2}`;
-                } else {
-                  // Target is left of / overlapping source — loop out to the right margin
-                  // then back to target's left edge. Avoids cutting through cards.
-                  const loopX = Math.max(a.x1, a.x2) + 28;
-                  d = `M ${a.x1} ${a.y1} H ${loopX} V ${a.y2} H ${a.x2}`;
-                }
+                // Smooth bezier — exits source to the right, enters target from the left.
+                const dx = Math.max(40, Math.abs(a.x2 - a.x1) * 0.5);
+                const c1x = a.x1 + dx;
+                const c2x = a.x2 - dx;
+                const d = `M ${a.x1} ${a.y1} C ${c1x} ${a.y1}, ${c2x} ${a.y2}, ${a.x2} ${a.y2}`;
                 return (
                   <path
                     key={i}
@@ -852,9 +841,8 @@ export function PythonPlayground() {
                     fill="none"
                     stroke={a.active ? "var(--amber)" : "var(--violet)"}
                     strokeWidth={a.active ? 1.75 : 1.25}
-                    strokeOpacity={a.active ? 0.95 : 0.7}
+                    strokeOpacity={a.active ? 0.95 : 0.65}
                     strokeLinecap="round"
-                    strokeLinejoin="round"
                     markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                   />
                 );
