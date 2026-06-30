@@ -6,7 +6,7 @@ const code = `def count_subarrays_xor(arr, k):
     prefix = 0
     seen = {0: 1}
     count = 0
-    for i, v in enumerate(arr):
+    for v in arr:
         prefix ^= v
         need = prefix ^ k
         count += seen.get(need, 0)
