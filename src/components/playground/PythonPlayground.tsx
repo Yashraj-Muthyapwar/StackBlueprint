@@ -4,7 +4,17 @@ import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Decoration, EditorView, lineNumbers } from "@codemirror/view";
 import { StateField, StateEffect, type Extension } from "@codemirror/state";
-import { Play, RotateCcw, ChevronLeft, ChevronRight, Loader2, Square } from "lucide-react";
+import {
+  Play,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Square,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  Sparkles,
+} from "lucide-react";
 
 import { getPyodide } from "@/lib/pyodide-loader";
 import { TRACER_PY } from "@/lib/python-tracer";
@@ -28,6 +38,8 @@ type Snapshot = {
   frames: Frame[];
   heap: Record<string, HeapObj>;
   stdout: string;
+  returnValue?: Value;
+  callName?: string;
 };
 
 type TraceResult = { snapshots: Snapshot[]; error: string | null; stdout: string };
@@ -50,7 +62,7 @@ const highlightField = StateField.define({
           const line = doc.line(ln);
           v = Decoration.set([
             Decoration.line({
-              attributes: { style: "background: rgba(110, 231, 183, 0.18);" },
+              attributes: { style: "background: rgba(110, 231, 183, 0.22);" },
             }).range(line.from),
           ]);
         }
@@ -72,9 +84,12 @@ const editorExtensions: Extension[] = [
   }),
 ];
 
-// ---------------- Default snippet ----------------
+// ---------------- Sample snippets ----------------
 
-const DEFAULT_CODE = `def factorial(n):
+const SAMPLES: { label: string; code: string }[] = [
+  {
+    label: "Recursion · factorial",
+    code: `def factorial(n):
     if n <= 1:
         return 1
     return n * factorial(n - 1)
@@ -85,13 +100,68 @@ for x in nums:
     results[x] = factorial(x)
 
 print(results)
-`;
+`,
+  },
+  {
+    label: "List mutation · references",
+    code: `a = [1, 2, 3]
+b = a            # same list, two names
+c = a[:]         # shallow copy
+a.append(4)
+b.append(5)
+c.append(99)
+print("a =", a)
+print("b =", b)
+print("c =", c)
+`,
+  },
+  {
+    label: "Dict · word frequency",
+    code: `words = "the quick brown fox jumps over the lazy fox".split()
+freq = {}
+for w in words:
+    freq[w] = freq.get(w, 0) + 1
+print(freq)
+`,
+  },
+  {
+    label: "Closure · counter factory",
+    code: `def make_counter(start=0):
+    count = start
+    def step():
+        nonlocal count
+        count += 1
+        return count
+    return step
+
+c1 = make_counter()
+c2 = make_counter(10)
+print(c1(), c1(), c1())
+print(c2(), c2())
+`,
+  },
+  {
+    label: "Fibonacci · memoized",
+    code: `cache = {}
+
+def fib(n):
+    if n in cache:
+        return cache[n]
+    if n < 2:
+        return n
+    cache[n] = fib(n - 1) + fib(n - 2)
+    return cache[n]
+
+print([fib(i) for i in range(8)])
+`,
+  },
+];
 
 // ---------------- Helpers ----------------
 
 function valueLabel(v: Value): string {
   if (v.kind === "prim") return String(v.value);
-  return `→ ${v.id.slice(-4)}`;
+  return `→ #${v.id.slice(-4)}`;
 }
 
 function valueClass(v: Value): string {
@@ -102,18 +172,27 @@ function valueClass(v: Value): string {
   return "text-amber";
 }
 
+function valueKey(v: Value): string {
+  return v.kind === "prim" ? `p:${v.type}:${v.value}` : `r:${v.id}`;
+}
+
 // ---------------- Heap rendering ----------------
 
 function HeapCard({
   id,
   obj,
   registerRef,
+  isNew,
+  changedItems,
 }: {
   id: string;
   obj: HeapObj;
   registerRef: (key: string, el: HTMLElement | null) => void;
+  isNew: boolean;
+  changedItems: Set<number>;
 }) {
   const shortId = id.slice(-4);
+  const ringClass = isNew ? "ring-2 ring-mint/60" : "";
 
   if ("items" in obj && (obj.type === "list" || obj.type === "tuple" || obj.type === "set")) {
     const open = obj.type === "tuple" ? "(" : obj.type === "set" ? "{" : "[";
@@ -121,7 +200,7 @@ function HeapCard({
     return (
       <div
         ref={(el) => registerRef(`heap:${id}`, el)}
-        className="rounded-lg border border-hairline bg-surface p-2 shadow-sm"
+        className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm transition ${ringClass}`}
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           <span>{obj.type}</span>
@@ -133,7 +212,11 @@ function HeapCard({
             <span
               key={i}
               ref={(el) => registerRef(`heap:${id}:${i}`, el)}
-              className={`rounded border border-hairline bg-background px-1.5 py-0.5 ${valueClass(v)}`}
+              className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                changedItems.has(i)
+                  ? "border-amber/70 bg-amber/10"
+                  : "border-hairline bg-background"
+              }`}
             >
               {valueLabel(v)}
             </span>
@@ -149,7 +232,7 @@ function HeapCard({
     return (
       <div
         ref={(el) => registerRef(`heap:${id}`, el)}
-        className="rounded-lg border border-hairline bg-surface p-2 shadow-sm"
+        className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm transition ${ringClass}`}
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           <span>dict</span>
@@ -162,7 +245,11 @@ function HeapCard({
               <span className="text-muted-foreground">→</span>
               <span
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
-                className={`justify-self-start rounded border border-hairline bg-background px-1.5 py-0.5 ${valueClass(v)}`}
+                className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                  changedItems.has(i)
+                    ? "border-amber/70 bg-amber/10"
+                    : "border-hairline bg-background"
+                }`}
               >
                 {valueLabel(v)}
               </span>
@@ -177,7 +264,7 @@ function HeapCard({
   return (
     <div
       ref={(el) => registerRef(`heap:${id}`, el)}
-      className="rounded-lg border border-hairline bg-surface p-2 shadow-sm"
+      className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm ${ringClass}`}
     >
       <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {obj.type} · #{shortId}
@@ -191,22 +278,82 @@ function HeapCard({
 
 // ---------------- Main playground ----------------
 
+const SPEEDS = [
+  { label: "0.5×", ms: 1100 },
+  { label: "1×", ms: 550 },
+  { label: "2×", ms: 250 },
+  { label: "4×", ms: 100 },
+];
+
 export function PythonPlayground() {
-  const [code, setCode] = useState(DEFAULT_CODE);
+  const [code, setCode] = useState(SAMPLES[0].code);
   const [status, setStatus] = useState<string>("Idle. Press Run to start.");
   const [loading, setLoading] = useState(false);
-  const [running, setRunning] = useState(false);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [speedIdx, setSpeedIdx] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
   const editorRef = useRef<{ view?: EditorView }>({});
   const refMap = useRef<Map<string, HTMLElement>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
-  const [arrows, setArrows] = useState<Array<{ x1: number; y1: number; x2: number; y2: number }>>([]);
+  const [arrows, setArrows] = useState<
+    Array<{ x1: number; y1: number; x2: number; y2: number; active: boolean }>
+  >([]);
 
   const snap = snapshots[idx];
+  const prevSnap = idx > 0 ? snapshots[idx - 1] : undefined;
+
+  // Diffing: which locals (per frame) changed, which heap ids are new, which heap items changed.
+  const diff = useMemo(() => {
+    const changedLocals = new Map<number, Set<string>>(); // frame index -> var names
+    const newHeapIds = new Set<string>();
+    const changedHeapItems = new Map<string, Set<number>>(); // heap id -> indices
+    if (!snap) return { changedLocals, newHeapIds, changedHeapItems };
+
+    snap.frames.forEach((f, fi) => {
+      const set = new Set<string>();
+      const prevFrame = prevSnap?.frames[fi];
+      Object.entries(f.locals).forEach(([k, v]) => {
+        const prevV = prevFrame?.locals[k];
+        if (!prevV || valueKey(prevV) !== valueKey(v)) set.add(k);
+      });
+      if (set.size) changedLocals.set(fi, set);
+    });
+
+    Object.keys(snap.heap).forEach((id) => {
+      if (!prevSnap || !(id in prevSnap.heap)) {
+        newHeapIds.add(id);
+        return;
+      }
+      const cur = snap.heap[id];
+      const prev = prevSnap.heap[id];
+      const items = new Set<number>();
+      if ("items" in cur && "items" in prev) {
+        const cArr = cur.items as unknown as Value[];
+        const pArr = prev.items as unknown as Value[];
+        const len = Math.max(cArr.length, pArr.length);
+        for (let i = 0; i < len; i++) {
+          const a = cArr[i];
+          const b = pArr[i];
+          if (!a || !b) {
+            items.add(i);
+            continue;
+          }
+          // dict items are tuples; treat as pair
+          if (Array.isArray(a) && Array.isArray(b)) {
+            if (valueKey(a[1] as Value) !== valueKey(b[1] as Value)) items.add(i);
+          } else {
+            if (valueKey(a as Value) !== valueKey(b as Value)) items.add(i);
+          }
+        }
+      }
+      if (items.size) changedHeapItems.set(id, items);
+    });
+
+    return { changedLocals, newHeapIds, changedHeapItems };
+  }, [snap, prevSnap]);
 
   // Apply highlight to editor whenever snapshot changes
   useEffect(() => {
@@ -222,9 +369,34 @@ export function PythonPlayground() {
       setPlaying(false);
       return;
     }
-    const t = setTimeout(() => setIdx((i) => Math.min(snapshots.length - 1, i + 1)), 550);
+    const t = setTimeout(
+      () => setIdx((i) => Math.min(snapshots.length - 1, i + 1)),
+      SPEEDS[speedIdx].ms,
+    );
     return () => clearTimeout(t);
-  }, [playing, idx, snapshots.length]);
+  }, [playing, idx, snapshots.length, speedIdx]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable)
+        return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        setIdx((i) => Math.min(snapshots.length - 1, i + 1));
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setIdx((i) => Math.max(0, i - 1));
+      } else if (e.key === " ") {
+        if (!snapshots.length) return;
+        e.preventDefault();
+        setPlaying((p) => !p);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [snapshots.length]);
 
   const registerRef = useCallback((key: string, el: HTMLElement | null) => {
     if (el) refMap.current.set(key, el);
@@ -238,9 +410,9 @@ export function PythonPlayground() {
       return;
     }
     const box = containerRef.current.getBoundingClientRect();
-    const next: Array<{ x1: number; y1: number; x2: number; y2: number }> = [];
+    const next: Array<{ x1: number; y1: number; x2: number; y2: number; active: boolean }> = [];
 
-    const addArrow = (fromKey: string, toId: string) => {
+    const addArrow = (fromKey: string, toId: string, active: boolean) => {
       const from = refMap.current.get(fromKey);
       const to = refMap.current.get(`heap:${toId}`);
       if (!from || !to) return;
@@ -251,32 +423,33 @@ export function PythonPlayground() {
         y1: a.top + a.height / 2 - box.top,
         x2: b.left - box.left,
         y2: b.top + b.height / 2 - box.top,
+        active,
       });
     };
 
     snap.frames.forEach((f, fi) => {
+      const changed = diff.changedLocals.get(fi);
       Object.entries(f.locals).forEach(([k, v]) => {
-        if (v.kind === "ref") addArrow(`var:${fi}:${k}`, v.id);
+        if (v.kind === "ref") addArrow(`var:${fi}:${k}`, v.id, !!changed?.has(k));
       });
     });
     Object.entries(snap.heap).forEach(([id, obj]) => {
       if ("items" in obj && (obj.type === "list" || obj.type === "tuple" || obj.type === "set")) {
         obj.items.forEach((v, i) => {
-          if (v.kind === "ref") addArrow(`heap:${id}:${i}`, v.id);
+          if (v.kind === "ref") addArrow(`heap:${id}:${i}`, v.id, false);
         });
       } else if (obj.type === "dict" && "items" in obj) {
         obj.items.forEach(([, v], i) => {
-          if (v.kind === "ref") addArrow(`heap:${id}:${i}`, v.id);
+          if (v.kind === "ref") addArrow(`heap:${id}:${i}`, v.id, false);
         });
       }
     });
 
     setArrows(next);
-  }, [snap]);
+  }, [snap, diff]);
 
   const run = useCallback(async () => {
     setLoading(true);
-    setRunning(true);
     setError(null);
     setSnapshots([]);
     setIdx(0);
@@ -285,7 +458,6 @@ export function PythonPlayground() {
       setStatus("Loading Python runtime…");
       const py = await getPyodide((m) => setStatus(m));
       setStatus("Executing…");
-      // Load tracer module
       await py.runPythonAsync(TRACER_PY);
       py.globals.set("__user_src", code);
       const raw: string = await py.runPythonAsync("_run_traced(__user_src)");
@@ -296,14 +468,13 @@ export function PythonPlayground() {
       setStatus(
         result.error
           ? `Error after ${result.snapshots.length} steps`
-          : `Captured ${result.snapshots.length} steps`,
+          : `Captured ${result.snapshots.length} steps · ← → to scrub, space to play`,
       );
     } catch (e) {
       setError((e as Error).message);
       setStatus("Failed");
     } finally {
       setLoading(false);
-      setRunning(false);
     }
   }, [code]);
 
@@ -315,6 +486,31 @@ export function PythonPlayground() {
   const stdout = snap?.stdout ?? "";
   const heapEntries = useMemo(() => (snap ? Object.entries(snap.heap) : []), [snap]);
 
+  // Event ribbon content
+  const eventBadge = useMemo(() => {
+    if (!snap) return null;
+    if (snap.event === "call") {
+      return {
+        icon: <ArrowDownToLine className="size-3" />,
+        label: `call ${snap.callName ?? snap.frames.at(-1)?.name ?? ""}()`,
+        cls: "bg-violet/15 text-violet border-violet/30",
+      };
+    }
+    if (snap.event === "return") {
+      const rv = snap.returnValue ? valueLabel(snap.returnValue) : "None";
+      return {
+        icon: <ArrowUpFromLine className="size-3" />,
+        label: `return ${rv}  from ${snap.frames.at(-1)?.name ?? ""}()`,
+        cls: "bg-mint/15 text-mint border-mint/40",
+      };
+    }
+    return {
+      icon: null,
+      label: `line ${snap.line}`,
+      cls: "bg-background text-muted-foreground border-hairline",
+    };
+  }, [snap]);
+
   return (
     <div className="flex h-[calc(100vh-3rem)] flex-col gap-3 p-4">
       {/* Toolbar */}
@@ -323,7 +519,38 @@ export function PythonPlayground() {
           {loading ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
           Run & Trace
         </Button>
-        <div className="mx-2 h-5 w-px bg-hairline" />
+
+        <div className="relative">
+          <select
+            aria-label="Load sample"
+            className="h-8 cursor-pointer appearance-none rounded-md border border-hairline bg-surface px-2 pr-7 font-mono text-[11px] text-foreground/80 hover:bg-background"
+            onChange={(e) => {
+              const s = SAMPLES.find((x) => x.label === e.target.value);
+              if (s) {
+                setCode(s.code);
+                setSnapshots([]);
+                setIdx(0);
+                setError(null);
+                setStatus("Sample loaded. Press Run.");
+              }
+              e.currentTarget.selectedIndex = 0;
+            }}
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Load sample…
+            </option>
+            {SAMPLES.map((s) => (
+              <option key={s.label} value={s.label}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+          <Sparkles className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 text-muted-foreground" />
+        </div>
+
+        <div className="mx-1 h-5 w-px bg-hairline" />
+
         <Button
           variant="outline"
           size="sm"
@@ -359,10 +586,45 @@ export function PythonPlayground() {
         >
           <RotateCcw className="size-3.5" />
         </Button>
+
+        <select
+          aria-label="Playback speed"
+          value={speedIdx}
+          onChange={(e) => setSpeedIdx(Number(e.target.value))}
+          className="h-8 cursor-pointer rounded-md border border-hairline bg-surface px-2 font-mono text-[11px] text-foreground/80 hover:bg-background"
+        >
+          {SPEEDS.map((s, i) => (
+            <option key={s.label} value={i}>
+              {s.label}
+            </option>
+          ))}
+        </select>
+
         <span className="font-mono text-[11px] text-muted-foreground">
           {snapshots.length ? `step ${idx + 1} / ${snapshots.length}` : "no trace yet"}
         </span>
         <span className="ml-auto font-mono text-[11px] text-muted-foreground">{status}</span>
+      </div>
+
+      {/* Scrubber + event ribbon */}
+      <div className="flex items-center gap-3">
+        <input
+          type="range"
+          min={0}
+          max={Math.max(0, snapshots.length - 1)}
+          value={idx}
+          disabled={!snapshots.length}
+          onChange={(e) => setIdx(Number(e.target.value))}
+          className="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-hairline accent-mint disabled:opacity-40"
+        />
+        {eventBadge && (
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] ${eventBadge.cls}`}
+          >
+            {eventBadge.icon}
+            {eventBadge.label}
+          </span>
+        )}
       </div>
 
       {/* Main split */}
@@ -425,6 +687,17 @@ export function PythonPlayground() {
                 >
                   <path d="M0,0 L10,5 L0,10 z" fill="var(--violet)" />
                 </marker>
+                <marker
+                  id="arrowhead-active"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto"
+                >
+                  <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)" />
+                </marker>
               </defs>
               {arrows.map((a, i) => {
                 const dx = a.x2 - a.x1;
@@ -435,10 +708,10 @@ export function PythonPlayground() {
                     key={i}
                     d={`M ${a.x1} ${a.y1} C ${cx1} ${a.y1} ${cx2} ${a.y2} ${a.x2} ${a.y2}`}
                     fill="none"
-                    stroke="var(--violet)"
-                    strokeWidth="1.4"
-                    strokeOpacity="0.7"
-                    markerEnd="url(#arrowhead)"
+                    stroke={a.active ? "var(--amber)" : "var(--violet)"}
+                    strokeWidth={a.active ? 2 : 1.4}
+                    strokeOpacity={a.active ? 0.95 : 0.65}
+                    markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                   />
                 );
               })}
@@ -453,10 +726,11 @@ export function PythonPlayground() {
                 {snap?.frames.length ? (
                   snap.frames.map((f, fi) => {
                     const isTop = fi === snap.frames.length - 1;
+                    const changed = diff.changedLocals.get(fi);
                     return (
                       <div
                         key={fi}
-                        className={`rounded-lg border p-2 ${
+                        className={`rounded-lg border p-2 transition ${
                           isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
                         }`}
                       >
@@ -472,17 +746,30 @@ export function PythonPlayground() {
                           </div>
                         ) : (
                           <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px]">
-                            {Object.entries(f.locals).map(([k, v]) => (
-                              <div key={k} className="contents">
-                                <span className="text-muted-foreground">{k}</span>
-                                <span
-                                  ref={(el) => registerRef(`var:${fi}:${k}`, el)}
-                                  className={`justify-self-start rounded border border-hairline bg-surface px-1.5 py-0.5 ${valueClass(v)}`}
-                                >
-                                  {valueLabel(v)}
-                                </span>
-                              </div>
-                            ))}
+                            {Object.entries(f.locals).map(([k, v]) => {
+                              const isChanged = changed?.has(k);
+                              return (
+                                <div key={k} className="contents">
+                                  <span
+                                    className={
+                                      isChanged ? "text-amber" : "text-muted-foreground"
+                                    }
+                                  >
+                                    {k}
+                                  </span>
+                                  <span
+                                    ref={(el) => registerRef(`var:${fi}:${k}`, el)}
+                                    className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                                      isChanged
+                                        ? "border-amber/70 bg-amber/10"
+                                        : "border-hairline bg-surface"
+                                    }`}
+                                  >
+                                    {valueLabel(v)}
+                                  </span>
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
@@ -491,6 +778,17 @@ export function PythonPlayground() {
                 ) : (
                   <div className="font-mono text-[11px] text-muted-foreground/70">
                     Run the code to see frames.
+                  </div>
+                )}
+
+                {snap?.event === "return" && snap.returnValue && (
+                  <div className="rounded-lg border border-mint/40 bg-mint/5 p-2 font-mono text-[12px]">
+                    <div className="mb-1 text-[10px] uppercase tracking-wider text-mint">
+                      returns
+                    </div>
+                    <span className={`rounded border border-mint/40 bg-background px-1.5 py-0.5 ${valueClass(snap.returnValue)}`}>
+                      {valueLabel(snap.returnValue)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -502,7 +800,14 @@ export function PythonPlayground() {
                 </div>
                 {heapEntries.length ? (
                   heapEntries.map(([id, obj]) => (
-                    <HeapCard key={id} id={id} obj={obj} registerRef={registerRef} />
+                    <HeapCard
+                      key={id}
+                      id={id}
+                      obj={obj}
+                      registerRef={registerRef}
+                      isNew={diff.newHeapIds.has(id)}
+                      changedItems={diff.changedHeapItems.get(id) ?? new Set()}
+                    />
                   ))
                 ) : (
                   <div className="font-mono text-[11px] text-muted-foreground/70">
@@ -534,8 +839,6 @@ export function PythonPlayground() {
           </pre>
         </div>
       </div>
-
-      {running && null}
     </div>
   );
 }
