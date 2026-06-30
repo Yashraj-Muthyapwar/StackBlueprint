@@ -249,10 +249,13 @@ function HeapCard({
       : "";
   const aliasBar =
     aliases.length > 0 ? (
-      <div className="mt-1.5 flex flex-wrap items-center gap-1 font-mono text-[10px] text-muted-foreground/80">
-        <span>↩</span>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+        <Link2 className="size-3 text-muted-foreground/70" />
         {aliases.map((a) => (
-          <span key={a} className="text-foreground/70">
+          <span
+            key={a}
+            className="rounded-full border border-violet/25 bg-violet/10 px-1.5 py-0.5 font-mono text-[10px] text-violet"
+          >
             {a}
           </span>
         ))}
