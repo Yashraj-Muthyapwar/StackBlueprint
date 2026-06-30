@@ -235,9 +235,9 @@ function HeapCard({
 }) {
   const shortId = id.slice(-4);
   const ringClass = isNew
-    ? "ring-2 ring-mint/60"
+    ? "ring-1 ring-mint/50"
     : live
-      ? "ring-2 ring-violet/50"
+      ? "ring-1 ring-violet/30"
       : "";
   const aliasBar =
     aliases.length > 0 ? (
