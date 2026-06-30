@@ -73,6 +73,15 @@ const topics: Topic[] = [
     patternsList: stringPatternTitles,
   },
   {
+    title: "Hash Map",
+    blurb:
+      "Frequency, lookup, set, index mapping, and grouping — O(1) ops that unlock O(n) solutions.",
+    icon: Hash,
+    locked: false,
+    to: "/patterns/category/hash-map",
+    patternsList: hashMapPatternTitles,
+  },
+  {
     title: "Linked List",
     blurb: "Reversal, cycle detection, merging, and in-place rewiring.",
     icon: Link2,
