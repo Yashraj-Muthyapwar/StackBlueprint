@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Check, Copy } from "lucide-react";
+
 
 /**
  * Renders Python code with line numbers and a sliding highlight bar
@@ -7,7 +9,19 @@ import { useMemo } from "react";
  */
 export function CodePane({ code, activeLine }: { code: string; activeLine: number }) {
   const lines = useMemo(() => code.split("\n"), [code]);
+  const [copied, setCopied] = useState(false);
   const LINE_H = 26; // px per line
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* ignore */
+    }
+  };
+
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface">
@@ -20,9 +34,21 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
           </div>
           <span className="ml-2 font-mono text-[11px] text-muted-foreground">solution.py</span>
         </div>
-        <span className="rounded border border-hairline px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-          python
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={copy}
+            className="flex items-center gap-1 rounded border border-hairline px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition hover:border-mint/60 hover:text-mint"
+            aria-label="Copy code"
+          >
+            {copied ? <Check size={11} /> : <Copy size={11} />}
+            {copied ? "copied" : "copy"}
+          </button>
+          <span className="rounded border border-hairline px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            python
+          </span>
+        </div>
+
       </div>
 
       <div className="relative flex-1 overflow-auto">
