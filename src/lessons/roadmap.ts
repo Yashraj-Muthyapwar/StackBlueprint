@@ -57,6 +57,17 @@ import { kmp } from "./strings/kmp";
 import { rabinKarp } from "./strings/rabin-karp";
 import { zAlgorithm } from "./strings/z-algorithm";
 
+import { frequencyCounting } from "./hash-map/frequency-counting";
+import { topKFrequent } from "./hash-map/top-k-frequent";
+import { twoSum } from "./hash-map/two-sum";
+import { subarraySumK } from "./hash-map/subarray-sum-k";
+import { arrayIntersection } from "./hash-map/array-intersection";
+import { happyNumber } from "./hash-map/happy-number";
+import { containsDuplicateK } from "./hash-map/contains-duplicate-k";
+import { firstUniqueChar } from "./hash-map/first-unique-char";
+import { groupAnagrams } from "./hash-map/group-anagrams";
+import { groupShiftedStrings } from "./hash-map/group-shifted-strings";
+
 export type PatternEntry = {
   slug: string;
   title: string;
