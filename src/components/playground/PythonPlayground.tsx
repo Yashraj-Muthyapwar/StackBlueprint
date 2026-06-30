@@ -274,23 +274,29 @@ function HeapCard({
           <span>{obj.type}</span>
           <span>#{shortId} · len={obj.size}</span>
         </div>
-        <div className="flex flex-wrap items-center gap-1 font-mono text-[12px]">
-          <span className="text-muted-foreground">{open}</span>
+        <div className="flex flex-wrap items-end gap-1 font-mono text-[12px]">
+          <span className="self-center text-muted-foreground">{open}</span>
           {obj.items.map((v, i) => (
-            <span
-              key={i}
-              ref={(el) => registerRef(`heap:${id}:${i}`, el)}
-              className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
-                changedItems.has(i)
-                  ? "border-amber/70 bg-amber/10"
-                  : "border-hairline bg-background"
-              }`}
-            >
-              {valueLabel(v)}
-            </span>
+            <div key={i} className="flex flex-col items-center gap-0.5">
+              {obj.type !== "set" && (
+                <span className="text-[9px] font-medium tabular-nums text-muted-foreground/70">
+                  {i}
+                </span>
+              )}
+              <span
+                ref={(el) => registerRef(`heap:${id}:${i}`, el)}
+                className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                  changedItems.has(i)
+                    ? "border-amber/70 bg-amber/10"
+                    : "border-hairline bg-background"
+                }`}
+              >
+                {valueLabel(v)}
+              </span>
+            </div>
           ))}
-          {obj.truncated && <span className="text-muted-foreground">…</span>}
-          <span className="text-muted-foreground">{close}</span>
+          {obj.truncated && <span className="self-center text-muted-foreground">…</span>}
+          <span className="self-center text-muted-foreground">{close}</span>
         </div>
         {aliasBar}
       </div>
