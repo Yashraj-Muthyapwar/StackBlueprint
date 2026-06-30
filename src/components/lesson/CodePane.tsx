@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Check, Copy } from "lucide-react";
+
 
 /**
  * Renders Python code with line numbers and a sliding highlight bar
