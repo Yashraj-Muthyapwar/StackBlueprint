@@ -86,6 +86,13 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   validate?: (inputs: TInputs) => string[];
   build: (inputs: TInputs) => Step[];
   shape?: (inputs: TInputs) => LinkedListShape;
+  /** Optional reaction to a single field change: returns raw-string overrides
+   *  for any other fields (e.g. swap default array when a mode select changes). */
+  onInputChange?: (
+    changedKey: string,
+    newValue: string,
+    currentRaw: Record<string, string>,
+  ) => Record<string, string> | null;
 };
 
 
