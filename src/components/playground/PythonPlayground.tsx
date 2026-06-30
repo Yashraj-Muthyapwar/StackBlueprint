@@ -173,7 +173,7 @@ function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
 }
 
 function valueClass(v: Value): string {
-  if (v.kind === "ref") return "text-violet";
+  if (v.kind === "ref") return "text-violet/80";
   if (v.type === "str") return "text-mint";
   if (v.type === "NoneType") return "text-muted-foreground";
   if (v.type === "bool") return "text-amber";
