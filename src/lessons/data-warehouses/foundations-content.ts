@@ -1,4 +1,5 @@
-import { type LessonContent } from "@/lessons/types";
+import { type LessonContent, type Section } from "@/lessons/types";
+export type { Section };
 
 import gadgetGroveIntroImg from "@/images/datawarehouse/foundations/gadget-grove-intro.png";
 import gadgetGroveImg from "@/images/datawarehouse/foundations/gadget-grove.png";
