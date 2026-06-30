@@ -222,15 +222,34 @@ function HeapCard({
   registerRef,
   isNew,
   changedItems,
+  aliases,
+  live,
 }: {
   id: string;
   obj: HeapObj;
   registerRef: (key: string, el: HTMLElement | null) => void;
   isNew: boolean;
   changedItems: Set<number>;
+  aliases: string[];
+  live: boolean;
 }) {
   const shortId = id.slice(-4);
-  const ringClass = isNew ? "ring-2 ring-mint/60" : "";
+  const ringClass = isNew
+    ? "ring-2 ring-mint/60"
+    : live
+      ? "ring-2 ring-violet/50"
+      : "";
+  const aliasBar =
+    aliases.length > 0 ? (
+      <div className="mt-1.5 flex flex-wrap items-center gap-1 border-t border-hairline pt-1.5 font-mono text-[10px] text-muted-foreground">
+        <span className="uppercase tracking-wider">aliased by</span>
+        {aliases.map((a) => (
+          <span key={a} className="rounded bg-violet/10 px-1 py-px text-violet">
+            {a}
+          </span>
+        ))}
+      </div>
+    ) : null;
 
   if ("items" in obj && (obj.type === "list" || obj.type === "tuple" || obj.type === "set")) {
     const open = obj.type === "tuple" ? "(" : obj.type === "set" ? "{" : "[";
