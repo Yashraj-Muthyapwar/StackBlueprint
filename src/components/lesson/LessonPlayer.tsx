@@ -115,7 +115,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
           </div>
         </div>
         <div className="min-h-[380px]">
-          <CodePane code={builder.code} activeLine={step.line} />
+          <CodePane code={builder.codeFor ? builder.codeFor(inputs) : builder.code} activeLine={step.line} />
         </div>
       </div>
 
