@@ -597,18 +597,6 @@ export function PythonPlayground() {
     [snap, prevSnap],
   );
 
-  // Per-step event colors for the timeline.
-  const stepColors = useMemo(
-    () =>
-      snapshots.map((s) =>
-        s.event === "call"
-          ? "var(--violet)"
-          : s.event === "return"
-            ? "var(--mint)"
-            : "var(--hairline)",
-      ),
-    [snapshots],
-  );
 
   // Event ribbon content
   const eventBadge = useMemo(() => {
