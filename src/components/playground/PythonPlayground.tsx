@@ -161,7 +161,7 @@ print([fib(i) for i in range(8)])
 
 function valueLabel(v: Value): string {
   if (v.kind === "prim") return String(v.value);
-  return `→ #${v.id.slice(-4)}`;
+  return `#${v.id.slice(-4)}`;
 }
 
 function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
@@ -173,7 +173,7 @@ function valuePlain(v: Value, heap?: Record<string, HeapObj>): string {
 }
 
 function valueClass(v: Value): string {
-  if (v.kind === "ref") return "text-violet";
+  if (v.kind === "ref") return "text-violet/80";
   if (v.type === "str") return "text-mint";
   if (v.type === "NoneType") return "text-muted-foreground";
   if (v.type === "bool") return "text-amber";
@@ -235,16 +235,16 @@ function HeapCard({
 }) {
   const shortId = id.slice(-4);
   const ringClass = isNew
-    ? "ring-2 ring-mint/60"
+    ? "ring-1 ring-mint/50"
     : live
-      ? "ring-2 ring-violet/50"
+      ? "ring-1 ring-violet/30"
       : "";
   const aliasBar =
     aliases.length > 0 ? (
-      <div className="mt-1.5 flex flex-wrap items-center gap-1 border-t border-hairline pt-1.5 font-mono text-[10px] text-muted-foreground">
-        <span className="uppercase tracking-wider">aliased by</span>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1 font-mono text-[10px] text-muted-foreground/80">
+        <span>↩</span>
         {aliases.map((a) => (
-          <span key={a} className="rounded bg-violet/10 px-1 py-px text-violet">
+          <span key={a} className="text-foreground/70">
             {a}
           </span>
         ))}
@@ -839,17 +839,32 @@ export function PythonPlayground() {
                 </marker>
               </defs>
               {arrows.map((a, i) => {
-                const dx = a.x2 - a.x1;
-                const cx1 = a.x1 + Math.max(30, dx * 0.4);
-                const cx2 = a.x2 - Math.max(30, dx * 0.4);
+                // Orthogonal "step" routing — like Python Tutor.
+                // Source: exit horizontally to the right.
+                // Target: enter horizontally from the left.
+                const exit = a.x1 + 14;
+                const entry = a.x2 - 10;
+                let d: string;
+                if (entry > exit + 4) {
+                  // Target is to the right of source — simple H/V/H step.
+                  const midX = (exit + entry) / 2;
+                  d = `M ${a.x1} ${a.y1} H ${midX} V ${a.y2} H ${a.x2}`;
+                } else {
+                  // Target is left of / overlapping source — loop out to the right margin
+                  // then back to target's left edge. Avoids cutting through cards.
+                  const loopX = Math.max(a.x1, a.x2) + 28;
+                  d = `M ${a.x1} ${a.y1} H ${loopX} V ${a.y2} H ${a.x2}`;
+                }
                 return (
                   <path
                     key={i}
-                    d={`M ${a.x1} ${a.y1} C ${cx1} ${a.y1} ${cx2} ${a.y2} ${a.x2} ${a.y2}`}
+                    d={d}
                     fill="none"
                     stroke={a.active ? "var(--amber)" : "var(--violet)"}
-                    strokeWidth={a.active ? 2 : 1.4}
-                    strokeOpacity={a.active ? 0.95 : 0.65}
+                    strokeWidth={a.active ? 1.75 : 1.25}
+                    strokeOpacity={a.active ? 0.95 : 0.7}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                   />
                 );
