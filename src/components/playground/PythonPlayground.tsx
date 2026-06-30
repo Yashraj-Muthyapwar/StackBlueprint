@@ -923,6 +923,8 @@ export function PythonPlayground() {
                       registerRef={registerRef}
                       isNew={diff.newHeapIds.has(id)}
                       changedItems={diff.changedHeapItems.get(id) ?? new Set()}
+                      aliases={aliasesById.get(id) ?? []}
+                      live={liveIds.has(id)}
                     />
                   ))
                 ) : (
