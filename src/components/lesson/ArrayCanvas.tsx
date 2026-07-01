@@ -17,7 +17,7 @@ const PARTITION_BG: Record<"low" | "mid" | "high", string> = {
 };
 const PARTITION_BORDER: Record<"low" | "mid" | "high", string> = {
   low: "color-mix(in oklab, var(--mint) 50%, transparent)",
-  mid: "color-mix(in oklab, var(--violet) 50%, transparent)",
+  mid: "color-mix(in oklab, var(--violet) 75%, transparent)",
   high: "color-mix(in oklab, var(--amber) 55%, transparent)",
 };
 const PARTITION_LABEL: Record<"low" | "mid" | "high", string> = {
