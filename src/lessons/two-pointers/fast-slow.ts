@@ -252,7 +252,9 @@ export const fastSlow: LessonBuilder<Inputs> = {
   subtitle:
     "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead — pick a problem and watch it unfold.",
   problem:
-    "Two classic same-direction problems. (1) Remove duplicates from a sorted array in place and return the length of the unique prefix. (2) Find the one repeated number in an array of length n+1 with values in [1..n], without modifying the array and in O(1) extra space.",
+    "Same-direction two pointers, two problems — pick one from the dropdown.\n\n" +
+    "① Remove Duplicates from Sorted Array. Given a sorted array, remove duplicates IN PLACE so each value appears once. Return k, the length of the unique prefix; arr[0..k-1] must hold the unique values in order. Extra space must be O(1). Example: [0,0,1,1,1,2,2,3,3,4] → k=5, arr starts with [0,1,2,3,4].\n\n" +
+    "② Find the Duplicate Number. You are given nums of length n+1 where every value is in [1..n]. Exactly one value repeats (possibly many times). Return that repeated value WITHOUT modifying nums and using only O(1) extra memory. Example: nums=[1,3,4,2,2] → 2. Trick: treat each value as a pointer to the next index (i → nums[i]). Duplicates create a cycle, and Floyd's tortoise-and-hare finds the cycle entry — that entry is the duplicate.",
   spotIt: [
     "Array is sorted and you need an in-place dedup or compaction.",
     "Cycle detection where each value implies the next index (functional graph).",
