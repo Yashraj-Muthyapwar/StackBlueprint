@@ -108,7 +108,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
           const totalHeight = CELLS_TOP + CELL + 4 + BELOW_ZONE;
           return (
         <div
-          className="relative origin-center"
+          className="relative origin-center shrink-0"
           style={{
             width: desiredWidth,
             height: totalHeight,
