@@ -12,7 +12,7 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
 
 const PARTITION_BG: Record<"low" | "mid" | "high", string> = {
   low: "color-mix(in oklab, var(--mint) 14%, transparent)",
-  mid: "color-mix(in oklab, var(--violet) 14%, transparent)",
+  mid: "color-mix(in oklab, var(--violet) 28%, transparent)",
   high: "color-mix(in oklab, var(--amber) 14%, transparent)",
 };
 const PARTITION_BORDER: Record<"low" | "mid" | "high", string> = {
