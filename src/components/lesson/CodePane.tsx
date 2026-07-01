@@ -86,6 +86,7 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
                   className={`whitespace-pre pr-4 ${
                     isActive ? "text-foreground" : "text-foreground/70"
                   }`}
+                  style={{ fontVariantLigatures: "none" }}
                 >
                   {highlight(line)}
                 </pre>
