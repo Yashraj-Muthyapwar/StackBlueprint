@@ -86,6 +86,7 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
                   className={`whitespace-pre pr-4 ${
                     isActive ? "text-foreground" : "text-foreground/70"
                   }`}
+                  style={{ fontVariantLigatures: "none" }}
                 >
                   {highlight(line)}
                 </pre>
@@ -125,7 +126,9 @@ function highlight(line: string): React.ReactNode {
   const codePart = commentIdx >= 0 ? line.slice(0, commentIdx) : line;
   const comment = commentIdx >= 0 ? line.slice(commentIdx) : "";
 
-  const re = /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|[^\s\w])/g;
+  // Group multi-char operators (!=, ==, <=, >=, +=, -=, *=, /=, //, **, ->) so
+  // font ligatures never fuse `!=` into a ≠ glyph across adjacent single-char spans.
+  const re = /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|!=|==|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|->|[^\s\w])/g;
   let m: RegExpExecArray | null;
   let k = 0;
   while ((m = re.exec(codePart)) !== null) {
