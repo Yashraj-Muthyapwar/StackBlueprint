@@ -27,60 +27,75 @@ function build({ arr, k }: Inputs): Step[] {
   let window_sum = 0;
   for (let i = 0; i < k; i++) window_sum += arr[i];
   steps.push({
-    line: 1,
-    array: [...arr],
-    pointers: ptrs(0, k - 1),
-    partitions: win(0, k - 1),
-    status: `window_sum = ${window_sum}`,
-    narration: `Initial window [0..${k - 1}] sum = ${window_sum}.`,
-  });
-  let best = window_sum;
-  steps.push({
     line: 2,
     array: [...arr],
     pointers: ptrs(0, k - 1),
     partitions: win(0, k - 1),
+    status: `window_sum = ${window_sum}`,
+    narration: `Calculate sum of the first ${k} elements: ${window_sum}.`,
+  });
+  let best = window_sum;
+  steps.push({
+    line: 3,
+    array: [...arr],
+    pointers: ptrs(0, k - 1),
+    partitions: win(0, k - 1),
     status: `best = ${best}`,
-    narration: `best = ${best}.`,
+    narration: `Set initial best sum to ${best}.`,
   });
   for (let right = k; right < n; right++) {
     const left = right - k + 1;
     steps.push({
-      line: 3,
+      line: 4,
       array: [...arr],
       pointers: ptrs(left - 1, right),
-      partitions: win(left - 1, right),
+      partitions: win(left - 1, right - 1),
+      narration: `Move right pointer to index ${right}.`,
+    });
+    steps.push({
+      line: 5,
+      array: [...arr],
+      pointers: ptrs(left, right),
+      partitions: win(left, right),
       highlight: { kind: "compare", indices: [right, left - 1] },
-      narration: `Slide: include arr[${right}]=${arr[right]}, drop arr[${left - 1}]=${arr[left - 1]}.`,
+      narration: `Slide window: add arr[${right}]=${arr[right]}, subtract arr[${left - 1}]=${arr[left - 1]}.`,
     });
     window_sum += arr[right] - arr[left - 1];
     steps.push({
-      line: 4,
+      line: 6,
       array: [...arr],
       pointers: ptrs(left, right),
       partitions: win(left, right),
       status: `window_sum = ${window_sum}`,
-      narration: `Window sum updated: ${window_sum}.`,
+      narration: `Is new window_sum (${window_sum}) > best (${best})?`,
     });
     if (window_sum > best) {
       best = window_sum;
       steps.push({
-        line: 5,
+        line: 7,
         array: [...arr],
         pointers: ptrs(left, right),
         partitions: win(left, right),
         highlight: { kind: "match", indices: Array.from({ length: k }, (_, i) => left + i) },
         status: `best = ${best}`,
-        narration: `New best = ${best}.`,
+        narration: `Yes, update best = ${best}.`,
+      });
+    } else {
+      steps.push({
+        line: 6,
+        array: [...arr],
+        pointers: ptrs(left, right),
+        partitions: win(left, right),
+        narration: `No, keep best = ${best}.`,
       });
     }
   }
   steps.push({
-    line: 7,
+    line: 8,
     array: [...arr],
     pointers: [],
     status: `return ${best}`,
-    narration: `Return ${best}.`,
+    narration: `Return the best sum: ${best}.`,
   });
   return steps;
 }
