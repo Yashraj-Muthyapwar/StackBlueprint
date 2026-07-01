@@ -130,7 +130,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
     steps.push({ line: 1, array: [...arr], pointers: [], narration: "Need at least 2 elements." });
     return steps;
   }
-  // Guard: values must be valid indices (0..n-1). If not, bail with a message.
   const bad = arr.some((v) => !Number.isInteger(v) || v < 0 || v >= n);
   if (bad) {
     steps.push({
@@ -143,58 +142,72 @@ function buildFindDuplicate(arr: number[]): Step[] {
     return steps;
   }
 
-  steps.push({
-    line: 1,
-    array: [...arr],
-    pointers: ptrs(0, 0, n),
-    highlight: { kind: "compare", indices: [0] },
-    status: "start at index 0",
-    narration:
-      "Think of each value as a 'next index' pointer. Both slow and fast start at index 0.",
-  });
-  let slow = arr[0];
-  let fast = arr[0];
+  // Step 0 — read nums[0] once so both pointers start at the same index.
+  const start = arr[0];
   steps.push({
     line: 2,
     array: [...arr],
-    pointers: ptrs(slow, fast, n),
-    highlight: { kind: "compare", indices: [slow] },
-    status: `slow = fast = nums[0] = ${slow}  → jump to index ${slow}`,
-    narration: `nums[0] = ${slow}, so both pointers jump to index ${slow}.`,
+    pointers: ptrs(start, start, n),
+    highlight: { kind: "compare", indices: [start] },
+    status: `slow = fast = nums[0] = ${start}`,
+    narration: `Read nums[0] = ${start}. Both pointers begin at index ${start}. Each value tells us the next index to jump to.`,
   });
 
+  let slow = start;
+  let fast = start;
 
-  // Phase 1: detect meeting point inside the cycle.
-  for (let i = 0; i < n * 2; i++) {
+  // Phase 1 — detect meeting point. Show slow's single jump AND fast's two jumps separately.
+  for (let i = 0; i < n * 3; i++) {
     const ns = arr[slow];
-    const nf = arr[arr[fast]];
+    // slow moves 1
     steps.push({
       line: 4,
       array: [...arr],
-      pointers: ptrs(ns, nf, n),
+      pointers: ptrs(ns, fast, n),
+      highlight: { kind: "compare", indices: [ns, fast] },
+      status: `slow: ${slow} → nums[${slow}] = ${ns}`,
+      narration: `slow takes one step: nums[${slow}] = ${ns}.`,
+    });
+    // fast moves 2 — first hop
+    const f1 = arr[fast];
+    steps.push({
+      line: 5,
+      array: [...arr],
+      pointers: ptrs(ns, f1, n),
+      highlight: { kind: "compare", indices: [ns, f1] },
+      status: `fast hop 1/2: ${fast} → nums[${fast}] = ${f1}`,
+      narration: `fast starts a double hop. First: nums[${fast}] = ${f1}.`,
+    });
+    // fast moves 2 — second hop
+    const f2 = arr[f1];
+    steps.push({
+      line: 5,
+      array: [...arr],
+      pointers: ptrs(ns, f2, n),
       highlight:
-        ns === nf
+        ns === f2
           ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, nf] },
-      status: `slow: ${slow}→${ns}   fast: ${fast}→${nf}`,
+          : { kind: "compare", indices: [ns, f2] },
+      status: `fast hop 2/2: ${f1} → nums[${f1}] = ${f2}`,
       narration:
-        ns === nf
-          ? `They meet at index ${ns}. Phase 1 done — meeting point found inside the cycle.`
-          : `slow jumps 1 (nums[${slow}]=${ns}); fast jumps 2 (nums[nums[${fast}]]=${nf}).`,
+        ns === f2
+          ? `Second hop: nums[${f1}] = ${f2}. slow and fast meet at index ${ns} — a point inside the cycle.`
+          : `Second hop: nums[${f1}] = ${f2}. Not equal yet — keep walking.`,
     });
     slow = ns;
-    fast = nf;
+    fast = f2;
     if (slow === fast) break;
   }
 
-  // Phase 2: reset slow, walk both one step at a time to the cycle entry.
+  // Phase 2 — reset slow to nums[0], step both by one until they meet at the cycle entry.
   slow = arr[0];
   steps.push({
     line: 7,
     array: [...arr],
     pointers: ptrs(slow, fast, n),
     status: `reset slow = nums[0] = ${slow}`,
-    narration: "Phase 2 — reset slow to nums[0]. Now both move one step at a time.",
+    narration:
+      "Phase 2 — reset slow to nums[0]. Now advance both by one step. Where they meet is the cycle entrance = the duplicate value.",
   });
 
   for (let i = 0; i < n * 2 && slow !== fast; i++) {
