@@ -48,6 +48,7 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
   const n = data.length;
 
   if (n === 0) {
+    steps.push({ line: 2, array: [], pointers: [], narration: "Check if array is empty." });
     steps.push({ line: 3, array: [], pointers: [], narration: "Empty array - return 0." });
     return steps;
   }
@@ -57,6 +58,13 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
   ];
 
   let slow = 0;
+  steps.push({
+    line: 2,
+    array: [...data],
+    pointers: ptrs(0, 0, n),
+    narration: "Check if array is empty."
+  });
+  
   steps.push({
     line: 4,
     array: [...data],
@@ -71,12 +79,23 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     pointers: ptrs(slow, Math.min(1, n - 1), n),
     partitions: win(slow),
     status: "fast → 1",
-    narration: "fast advances to index 1 to scan ahead; slow stays at 0.",
+    narration: "for loop: fast advances to index 1 to scan ahead; slow stays at 0.",
   });
 
 
   for (let fast = 1; fast < n; fast++) {
     const same = data[fast] === data[slow];
+    if (fast > 1) {
+      steps.push({
+        line: 5,
+        array: [...data],
+        pointers: ptrs(slow, fast, n),
+        partitions: win(slow),
+        status: `fast = ${fast}`,
+        narration: `for loop: fast moves to index ${fast}.`
+      });
+    }
+    
     if (same) {
       steps.push({
         line: 6,
@@ -120,6 +139,15 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
   }
 
   steps.push({
+    line: 5,
+    array: [...data],
+    pointers: ptrs(slow, n - 1, n),
+    partitions: win(slow),
+    status: `fast loop done`,
+    narration: `fast has reached the end of the array.`,
+  });
+
+  steps.push({
     line: 9,
     array: [...data],
     pointers: ptrs(slow, n - 1, n),
@@ -150,8 +178,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
     return steps;
   }
 
-  // Step 0 — visually anchor both pointers at index 0 so learners see we're
-  // reading nums[0] first.
   const start = arr[0];
   steps.push({
     line: 2,
@@ -161,7 +187,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
     status: `read nums[0] = ${start}`,
     narration: `Both pointers begin at index 0 so we can read nums[0] = ${start}. Each value tells us the next index to jump to.`,
   });
-  // Step 1 — jump both to nums[0]. This is the actual starting state of Floyd's algorithm.
   steps.push({
     line: 2,
     array: [...arr],
@@ -174,10 +199,15 @@ function buildFindDuplicate(arr: number[]): Step[] {
   let slow = start;
   let fast = start;
 
-  // Phase 1 — detect meeting point. Show slow's single jump AND fast's two jumps separately.
   for (let i = 0; i < n * 3; i++) {
+    steps.push({
+      line: 3,
+      array: [...arr],
+      pointers: ptrs(slow, fast, n),
+      narration: "while True: start next iteration."
+    });
+    
     const ns = arr[slow];
-    // slow moves 1
     steps.push({
       line: 4,
       array: [...arr],
@@ -186,7 +216,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
       status: `slow: ${slow} → nums[${slow}] = ${ns}`,
       narration: `slow takes one step: nums[${slow}] = ${ns}.`,
     });
-    // fast moves 2 — first hop
     const f1 = arr[fast];
     steps.push({
       line: 5,
@@ -196,7 +225,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
       status: `fast hop 1/2: ${fast} → nums[${fast}] = ${f1}`,
       narration: `fast starts a double hop. First: nums[${fast}] = ${f1}.`,
     });
-    // fast moves 2 — second hop
     const f2 = arr[f1];
     steps.push({
       line: 5,
@@ -212,7 +240,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
           ? `Second hop: nums[${f1}] = ${f2}. slow and fast meet at index ${ns} — a point inside the cycle.`
           : `Second hop: nums[${f1}] = ${f2}. Not equal yet — keep walking.`,
     });
-    // if slow == fast: break
     steps.push({
       line: 6,
       array: [...arr],
@@ -232,11 +259,17 @@ function buildFindDuplicate(arr: number[]): Step[] {
     });
     slow = ns;
     fast = f2;
-    if (slow === fast) break;
+    if (slow === fast) {
+      steps.push({
+        line: 7,
+        array: [...arr],
+        pointers: ptrs(slow, fast, n),
+        narration: `break: slow equals fast, cycle detected.`
+      });
+      break;
+    }
   }
 
-
-  // Phase 2 — reset slow to nums[0], step both by one until they meet at the cycle entry.
   slow = arr[0];
   steps.push({
     line: 8,
@@ -248,8 +281,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
   });
 
   for (let i = 0; i < n * 2 && slow !== fast; i++) {
-    const ns = arr[slow];
-    // check condition
     steps.push({
       line: 9,
       array: [...arr],
@@ -258,7 +289,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
       status: `check: slow (${slow}) != fast (${fast}) → continue`,
       narration: `slow=${slow}, fast=${fast}. Not equal — take one step each.`,
     });
-    // slow = nums[slow]
+    const ns = arr[slow];
     steps.push({
       line: 10,
       array: [...arr],
@@ -268,7 +299,6 @@ function buildFindDuplicate(arr: number[]): Step[] {
       narration: `slow steps to nums[${slow}] = ${ns}.`,
     });
     const nf = arr[fast];
-    // fast = nums[fast]
     steps.push({
       line: 11,
       array: [...arr],
@@ -286,6 +316,15 @@ function buildFindDuplicate(arr: number[]): Step[] {
     slow = ns;
     fast = nf;
   }
+  
+  steps.push({
+    line: 9,
+    array: [...arr],
+    pointers: ptrs(slow, fast, n),
+    highlight: { kind: "match", indices: [slow] },
+    status: `check: slow (${slow}) == fast (${fast}) → stop`,
+    narration: `slow=${slow}, fast=${fast}. Equal! We found the duplicate.`,
+  });
 
   steps.push({
     line: 12,
