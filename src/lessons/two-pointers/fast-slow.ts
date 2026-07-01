@@ -345,7 +345,7 @@ export const fastSlow: LessonBuilder<Inputs> = {
   slug: "fast-slow",
   title: "Same Direction - Slow & Fast",
   subtitle:
-    "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead - pick a problem and watch it unfold.",
+    "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead. Pick a problem and watch it unfold.",
   problem:
     "There are two common problems you can solve with same-direction two pointers. Pick one from the dropdown above to see how it works.\n\n" +
     "1. Remove Duplicates: Given a sorted array, remove duplicates in-place so each value appears only once. Return the length of the unique prefix. You can't use extra memory.\n\n" +
