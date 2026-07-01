@@ -132,12 +132,24 @@ export function LessonControls({
             field={f}
             value={raw[f.key] ?? ""}
             onChange={(v) => {
-              setRaw((r) => {
-                const next = { ...r, [f.key]: v };
-                const overrides = builder.onInputChange?.(f.key, v, next);
-                return overrides ? { ...next, ...overrides } : next;
-              });
+              const next = { ...raw, [f.key]: v };
+              const overrides = builder.onInputChange?.(f.key, v, next);
+              const finalRaw = overrides ? { ...next, ...overrides } : next;
+              setRaw(finalRaw);
               setIsDirty(true);
+
+              if (f.kind === "select") {
+                const { inputs, error } = parseRaw(builder, finalRaw);
+                if (!error && inputs) {
+                  setParseError(null);
+                  const w = builder.validate ? builder.validate(inputs) : [];
+                  setWarnings(w);
+                  setIsDirty(false);
+                  onRun(inputs, w, true);
+                } else {
+                  setParseError(error ?? "Invalid input");
+                }
+              }
             }}
           />
         ))}
