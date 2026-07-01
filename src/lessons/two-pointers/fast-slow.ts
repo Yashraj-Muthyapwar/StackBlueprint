@@ -204,10 +204,29 @@ function buildFindDuplicate(arr: number[]): Step[] {
           ? `Second hop: nums[${f1}] = ${f2}. slow and fast meet at index ${ns} — a point inside the cycle.`
           : `Second hop: nums[${f1}] = ${f2}. Not equal yet — keep walking.`,
     });
+    // if slow == fast: break
+    steps.push({
+      line: 6,
+      array: [...arr],
+      pointers: ptrs(ns, f2, n),
+      highlight:
+        ns === f2
+          ? { kind: "match", indices: [ns] }
+          : { kind: "compare", indices: [ns, f2] },
+      status:
+        ns === f2
+          ? `slow (${ns}) == fast (${f2}) → break`
+          : `slow (${ns}) != fast (${f2}) → keep going`,
+      narration:
+        ns === f2
+          ? `Check: slow == fast. Break out of phase 1.`
+          : `Check: slow != fast. Continue the loop.`,
+    });
     slow = ns;
     fast = f2;
     if (slow === fast) break;
   }
+
 
   // Phase 2 — reset slow to nums[0], step both by one until they meet at the cycle entry.
   slow = arr[0];
