@@ -36,68 +36,111 @@ function build({ arr, k }: Inputs): Step[] {
       : [],
   });
 
+  steps.push({
+    line: 2,
+    array: [...arr],
+    pointers: [],
+    secondary: secondary(),
+    narration: `Initialize empty deque and output array.`,
+  });
+
   for (let right = 0; right < n; right++) {
     steps.push({
-      line: 3,
+      line: 4,
       array: [...arr],
       pointers: [{ name: "right", index: right, color: "amber" }],
-      partitions: win(right),
-      highlight: { kind: "compare", indices: [right] },
+      partitions: win(Math.max(0, right - 1)),
       secondary: secondary(),
-      narration: `right=${right}, value=${arr[right]}.`,
+      narration: `Advance right pointer to index ${right}.`,
     });
-    while (window_dq.length && arr[window_dq[window_dq.length - 1]] < arr[right]) {
-      const popped = window_dq.pop()!;
-      steps.push({
-        line: 4,
-        array: [...arr],
-        pointers: [{ name: "right", index: right, color: "amber" }],
-        partitions: win(right),
-        secondary: secondary(),
-        status: `pop ${popped}:${arr[popped]} < ${arr[right]}`,
-        narration: `Pop ${popped} from back — its value ${arr[popped]} can never beat ${arr[right]}.`,
-      });
-    }
-    window_dq.push(right);
     steps.push({
       line: 5,
       array: [...arr],
       pointers: [{ name: "right", index: right, color: "amber" }],
       partitions: win(right),
+      highlight: { kind: "compare", indices: [right] },
       secondary: secondary(),
-      narration: `Push ${right} to back.`,
+      narration: `Check if deque back value is less than arr[${right}] = ${arr[right]}.`,
     });
-    if (window_dq[0] <= right - k) {
-      const out0 = window_dq.shift()!;
+    while (window_dq.length && arr[window_dq[window_dq.length - 1]] < arr[right]) {
+      const popped = window_dq.pop()!;
       steps.push({
         line: 6,
         array: [...arr],
         pointers: [{ name: "right", index: right, color: "amber" }],
         partitions: win(right),
         secondary: secondary(),
-        narration: `Front index ${out0} fell out of the window — popleft.`,
+        status: `pop ${popped}:${arr[popped]} < ${arr[right]}`,
+        narration: `Pop ${popped} from back because ${arr[popped]} < ${arr[right]}.`,
+      });
+      steps.push({
+        line: 5,
+        array: [...arr],
+        pointers: [{ name: "right", index: right, color: "amber" }],
+        partitions: win(right),
+        highlight: { kind: "compare", indices: [right] },
+        secondary: secondary(),
+        narration: `Check if new deque back value is less than ${arr[right]}.`,
       });
     }
+    window_dq.push(right);
+    steps.push({
+      line: 7,
+      array: [...arr],
+      pointers: [{ name: "right", index: right, color: "amber" }],
+      partitions: win(right),
+      secondary: secondary(),
+      narration: `Push index ${right} to the back of the deque.`,
+    });
+    
+    steps.push({
+      line: 8,
+      array: [...arr],
+      pointers: [{ name: "right", index: right, color: "amber" }],
+      partitions: win(right),
+      secondary: secondary(),
+      narration: `Check if front of deque (index ${window_dq[0]}) is outside the window.`,
+    });
+    if (window_dq[0] <= right - k) {
+      const out0 = window_dq.shift()!;
+      steps.push({
+        line: 9,
+        array: [...arr],
+        pointers: [{ name: "right", index: right, color: "amber" }],
+        partitions: win(right),
+        secondary: secondary(),
+        narration: `Index ${out0} fell out of the window. Pop it from the front.`,
+      });
+    }
+    
+    steps.push({
+      line: 10,
+      array: [...arr],
+      pointers: [{ name: "right", index: right, color: "amber" }],
+      partitions: win(right),
+      secondary: secondary(),
+      narration: `Check if window has reached size ${k} (right >= ${k - 1}).`,
+    });
     if (right >= k - 1) {
       out.push(arr[window_dq[0]]);
       steps.push({
-        line: 8,
+        line: 11,
         array: [...arr],
         pointers: [{ name: "right", index: right, color: "amber" }],
         partitions: win(right),
         secondary: { label: `output`, array: [...out] },
         highlight: { kind: "match", indices: [window_dq[0]] },
         status: `max=${arr[window_dq[0]]}`,
-        narration: `Window max = arr[${window_dq[0]}] = ${arr[window_dq[0]]}.`,
+        narration: `Append max value arr[${window_dq[0]}] = ${arr[window_dq[0]]} to output.`,
       });
     }
   }
   steps.push({
-    line: 9,
+    line: 12,
     array: [...arr],
     secondary: { label: `output`, array: [...out] },
     status: `return ${JSON.stringify(out)}`,
-    narration: `Done. Output ${JSON.stringify(out)}.`,
+    narration: `Done. Return ${JSON.stringify(out)}.`,
     pointers: [],
   });
   return steps;
