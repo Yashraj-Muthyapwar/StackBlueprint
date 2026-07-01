@@ -71,7 +71,7 @@ function LessonPage() {
             {p.category} · {p.title} · {String(idx + 1).padStart(2, "0")} / {String(p.lessons.length).padStart(2, "0")}
           </p>
           <h1 className="mt-1.5 text-2xl font-semibold tracking-tight lg:text-3xl">{entry.builder.title}</h1>
-          <p className="mt-2 max-w-3xl text-balance text-[15px] text-muted-foreground">{entry.builder.subtitle}</p>
+          <p className="mt-2 max-w-3xl text-pretty text-[15px] text-muted-foreground">{entry.builder.subtitle}</p>
           {entry.builder.problem && (
             <div className="mt-6 rounded-2xl border border-hairline bg-surface">
               <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
