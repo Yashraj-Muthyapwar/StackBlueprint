@@ -80,7 +80,7 @@ function LessonPage() {
                   problem
                 </span>
               </div>
-              <p className="text-[14px] leading-relaxed text-foreground/90">{entry.builder.problem}</p>
+              <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-foreground/90">{entry.builder.problem}</p>
             </div>
           )}
         </div>
