@@ -48,7 +48,7 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
   const n = data.length;
 
   if (n === 0) {
-    steps.push({ line: 3, array: [], pointers: [], narration: "Empty array — return 0." });
+    steps.push({ line: 3, array: [], pointers: [], narration: "Empty array - return 0." });
     return steps;
   }
 
@@ -58,7 +58,7 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
 
   let slow = 0;
   steps.push({
-    line: 3,
+    line: 4,
     array: [...data],
     pointers: ptrs(0, 0, n),
     highlight: { kind: "compare", indices: [0] },
@@ -66,7 +66,7 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     narration: "Both pointers start at index 0. slow will mark the end of the unique prefix.",
   });
   steps.push({
-    line: 4,
+    line: 5,
     array: [...data],
     pointers: ptrs(slow, Math.min(1, n - 1), n),
     partitions: win(slow),
@@ -85,7 +85,7 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
         partitions: win(slow),
         highlight: { kind: "compare", indices: [slow, fast] },
         status: `arr[${fast}]=${data[fast]} == arr[${slow}]=${data[slow]} → skip`,
-        narration: `arr[fast]=${data[fast]} equals arr[slow]=${data[slow]}. Duplicate — skip.`,
+        narration: `arr[fast]=${data[fast]} equals arr[slow]=${data[slow]}. Duplicate - skip.`,
       });
     } else {
       steps.push({
@@ -98,6 +98,14 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
         narration: `New value found at fast=${fast}.`,
       });
       slow += 1;
+      steps.push({
+        line: 7,
+        array: [...data],
+        pointers: ptrs(slow, fast, n),
+        partitions: win(slow - 1),
+        status: `slow += 1 → ${slow}`,
+        narration: `Advance slow to ${slow}.`,
+      });
       data[slow] = data[fast];
       steps.push({
         line: 8,
@@ -105,8 +113,8 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
         pointers: ptrs(slow, fast, n),
         partitions: win(slow),
         highlight: { kind: "swap", indices: [slow] },
-        status: `slow→${slow}; arr[${slow}] = ${data[slow]}`,
-        narration: `Advance slow to ${slow} and copy ${data[fast]} there.`,
+        status: `arr[${slow}] = ${data[slow]}`,
+        narration: `Copy ${data[fast]} to index ${slow}.`,
       });
     }
   }
@@ -296,13 +304,13 @@ function build({ mode, arr }: Inputs): Step[] {
 
 export const fastSlow: LessonBuilder<Inputs> = {
   slug: "fast-slow",
-  title: "Same Direction — Slow & Fast",
+  title: "Same Direction - Slow & Fast",
   subtitle:
-    "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead — pick a problem and watch it unfold.",
+    "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead - pick a problem and watch it unfold.",
   problem:
-    "Same-direction two pointers, two problems — pick one from the dropdown.\n\n" +
-    "① Remove Duplicates from Sorted Array. Given a sorted array, remove duplicates IN PLACE so each value appears once. Return k, the length of the unique prefix; arr[0..k-1] must hold the unique values in order. Extra space must be O(1). Example: [0,0,1,1,1,2,2,3,3,4] → k=5, arr starts with [0,1,2,3,4].\n\n" +
-    "② Find the Duplicate Number. You are given nums of length n+1 where every value is in [1..n]. Exactly one value repeats (possibly many times). Return that repeated value WITHOUT modifying nums and using only O(1) extra memory. Example: nums=[1,3,4,2,2] → 2. Trick: treat each value as a pointer to the next index (i → nums[i]). Duplicates create a cycle, and Floyd's tortoise-and-hare finds the cycle entry — that entry is the duplicate.",
+    "There are two common problems you can solve with same-direction two pointers. Pick one from the dropdown above to see how it works.\n\n" +
+    "1. Remove Duplicates: Given a sorted array, remove duplicates in-place so each value appears only once. Return the length of the unique prefix. You can't use extra memory.\n\n" +
+    "2. Find the Duplicate Number: You have an array where every value points to a valid index. Exactly one value repeats. Find it without modifying the array or using extra memory. The trick is to treat the array like a linked list, where duplicates create a cycle.",
   spotIt: [
     "Array is sorted and you need an in-place dedup or compaction.",
     "Cycle detection where each value implies the next index (functional graph).",
