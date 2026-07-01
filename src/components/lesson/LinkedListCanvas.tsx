@@ -74,7 +74,7 @@ export function LinkedListCanvas({
       )}
 
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative origin-center" style={{ width: desiredWidth, height: 260, transform: `scale(${scale})` }}>
+        <div className="relative origin-center shrink-0" style={{ width: desiredWidth, height: 260, transform: `scale(${scale})` }}>
           <svg
             width={desiredWidth}
             height={260}
