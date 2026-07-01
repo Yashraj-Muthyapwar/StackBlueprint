@@ -212,7 +212,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
   // Phase 2 — reset slow to nums[0], step both by one until they meet at the cycle entry.
   slow = arr[0];
   steps.push({
-    line: 7,
+    line: 8,
     array: [...arr],
     pointers: ptrs(slow, fast, n),
     status: `reset slow = nums[0] = ${slow}`,
@@ -222,27 +222,46 @@ function buildFindDuplicate(arr: number[]): Step[] {
 
   for (let i = 0; i < n * 2 && slow !== fast; i++) {
     const ns = arr[slow];
-    const nf = arr[fast];
+    // check condition
     steps.push({
       line: 9,
+      array: [...arr],
+      pointers: ptrs(slow, fast, n),
+      highlight: { kind: "compare", indices: [slow, fast] },
+      status: `check: slow (${slow}) != fast (${fast}) → continue`,
+      narration: `slow=${slow}, fast=${fast}. Not equal — take one step each.`,
+    });
+    // slow = nums[slow]
+    steps.push({
+      line: 10,
+      array: [...arr],
+      pointers: ptrs(ns, fast, n),
+      highlight: { kind: "compare", indices: [ns, fast] },
+      status: `slow: ${slow} → nums[${slow}] = ${ns}`,
+      narration: `slow steps to nums[${slow}] = ${ns}.`,
+    });
+    const nf = arr[fast];
+    // fast = nums[fast]
+    steps.push({
+      line: 11,
       array: [...arr],
       pointers: ptrs(ns, nf, n),
       highlight:
         ns === nf
           ? { kind: "match", indices: [ns] }
           : { kind: "compare", indices: [ns, nf] },
-      status: `slow: ${slow}→${ns}   fast: ${fast}→${nf}`,
+      status: `fast: ${fast} → nums[${fast}] = ${nf}`,
       narration:
         ns === nf
-          ? `They meet at ${ns} — that's the cycle entry, i.e. the duplicate value.`
-          : `Step both by one.`,
+          ? `fast steps to nums[${fast}] = ${nf}. slow and fast meet at ${ns} — that's the cycle entry, i.e. the duplicate.`
+          : `fast steps to nums[${fast}] = ${nf}.`,
     });
     slow = ns;
     fast = nf;
   }
 
   steps.push({
-    line: 11,
+    line: 12,
     array: [...arr],
     pointers: ptrs(slow, fast, n),
     highlight: { kind: "match", indices: [slow] },
