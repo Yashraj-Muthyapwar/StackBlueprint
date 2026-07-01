@@ -142,15 +142,25 @@ function buildFindDuplicate(arr: number[]): Step[] {
     return steps;
   }
 
-  // Step 0 — read nums[0] once so both pointers start at the same index.
+  // Step 0 — visually anchor both pointers at index 0 so learners see we're
+  // reading nums[0] first.
   const start = arr[0];
+  steps.push({
+    line: 2,
+    array: [...arr],
+    pointers: ptrs(0, 0, n),
+    highlight: { kind: "compare", indices: [0] },
+    status: `read nums[0] = ${start}`,
+    narration: `Both pointers begin at index 0 so we can read nums[0] = ${start}. Each value tells us the next index to jump to.`,
+  });
+  // Step 1 — jump both to nums[0]. This is the actual starting state of Floyd's algorithm.
   steps.push({
     line: 2,
     array: [...arr],
     pointers: ptrs(start, start, n),
     highlight: { kind: "compare", indices: [start] },
-    status: `slow = fast = nums[0] = ${start}`,
-    narration: `Read nums[0] = ${start}. Both pointers begin at index ${start}. Each value tells us the next index to jump to.`,
+    status: `slow = fast = nums[0] = ${start}  → index ${start}`,
+    narration: `slow and fast both jump to index ${start} (= nums[0]). Now Floyd's tortoise-and-hare begins.`,
   });
 
   let slow = start;
