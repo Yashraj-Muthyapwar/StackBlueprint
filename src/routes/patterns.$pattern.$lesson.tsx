@@ -73,14 +73,16 @@ function LessonPage() {
           <h1 className="mt-1.5 text-2xl font-semibold tracking-tight lg:text-3xl">{entry.builder.title}</h1>
           <p className="mt-2 max-w-3xl text-balance text-[15px] text-muted-foreground">{entry.builder.subtitle}</p>
           {entry.builder.problem && (
-            <div className="mt-4 max-w-3xl rounded-xl border border-hairline bg-surface/60 px-4 py-3">
-              <div className="mb-1 flex items-center gap-2">
+            <div className="mt-6 rounded-2xl border border-hairline bg-surface">
+              <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
                 <div className="size-1.5 rounded-full bg-violet shadow-[0_0_10px_var(--violet)]" />
                 <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
                   problem
                 </span>
               </div>
-              <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-foreground/90">{entry.builder.problem}</p>
+              <div className="px-4 py-3 text-[14px] leading-relaxed text-foreground/90">
+                <p className="whitespace-pre-wrap">{entry.builder.problem}</p>
+              </div>
             </div>
           )}
         </div>
