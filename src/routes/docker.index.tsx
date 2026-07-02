@@ -16,13 +16,13 @@ import type { LucideIcon } from "lucide-react";
 export const Route = createFileRoute("/docker/")({
   head: () => ({
     meta: [
-      { title: "Docker — DataVizCore" },
+      { title: "Docker — StackBlueprint" },
       {
         name: "description",
         content:
           "From container foundations to advanced multi-container orchestration.",
       },
-      { property: "og:title", content: "Docker — DataVizCore" },
+      { property: "og:title", content: "Docker — StackBlueprint" },
       {
         property: "og:description",
         content:
