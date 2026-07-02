@@ -362,6 +362,30 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
     ],
   },
+  {
+    title: "Docker",
+    slug: "docker",
+    icon: Server, // Use Server or Box icon (lucide-react)
+    locked: false,
+    overviewPath: "/docker",
+    blurb: "From container foundations to advanced multi-container orchestration.",
+    patterns: [
+      {
+        title: "Foundations",
+        slug: "foundations",
+        blurb: "What are containers, images, and the Docker daemon? The core mental model.",
+        lessons: [], 
+      },
+      {
+        title: "Networking & Storage",
+        slug: "networking-storage",
+        blurb: "Connecting containers and persisting data with volumes and bind mounts.",
+        lessons: [],
+      },
+      lockedPattern("Docker Compose", "compose", "Declarative multi-container applications and local dev environments."),
+      lockedPattern("Advanced Docker", "advanced", "Multi-stage builds, security, and registry management."),
+    ],
+  },
 ];
 
 export const CATEGORY_BY_SLUG: Record<string, RoadmapCategory> = Object.fromEntries(
