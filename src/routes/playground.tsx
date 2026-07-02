@@ -6,13 +6,13 @@ import { PythonPlayground } from "@/components/playground/PythonPlayground";
 export const Route = createFileRoute("/playground")({
   head: () => ({
     meta: [
-      { title: "Python Playground — DataVizCore" },
+      { title: "Python Playground — StackBlueprint" },
       {
         name: "description",
         content:
           "Interactive Python playground: write code on the left, watch the call stack, heap, and stdout update step by step on the right. Powered by Pyodide.",
       },
-      { property: "og:title", content: "Python Playground — DataVizCore" },
+      { property: "og:title", content: "Python Playground — StackBlueprint" },
       {
         property: "og:description",
         content: "Step through real CPython execution in your browser.",
