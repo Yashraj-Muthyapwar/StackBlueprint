@@ -164,6 +164,13 @@ function Landing() {
                   </Link>
                 );
               }
+              if (cat.overviewPath === "/docker") {
+                return (
+                  <Link key={cat.slug} to="/docker" className="block">
+                    {card}
+                  </Link>
+                );
+              }
               return (
                 <Link
                   key={cat.slug}
