@@ -11,6 +11,9 @@ import dataMeshImg from "@/images/datawarehouse/foundations/data-mesh.png";
 import dataFabricImg from "@/images/datawarehouse/foundations/data-fabric.png";
 import underTheHoodImg from "@/images/datawarehouse/foundations/under_the_hood.png";
 import datawarehouseImg from "@/images/datawarehouse/foundations/data-warehouse.png";
+import etlVsEltImg from "@/images/datawarehouse/foundations/ETL-ELT.png";
+import starSchemaImg from "@/images/datawarehouse/foundations/star-schema.png";
+import dimensionalModelingImg from "@/images/datawarehouse/foundations/dimensinonal-modeling-star.png";
 
 const dataJourney: LessonContent = {
   slug: "data-journey",
@@ -309,6 +312,12 @@ const dataWarehouses: LessonContent = {
       ]
     },
     {
+      kind: "image",
+      src: etlVsEltImg,
+      alt: "ETL vs ELT",
+      caption: "The shift from Extract-Transform-Load to Extract-Load-Transform"
+    },
+    {
       kind: "prose",
       heading: "Dimensional Modeling: The Star Schema",
       body: [
@@ -316,6 +325,18 @@ const dataWarehouses: LessonContent = {
         "Data warehouses use **Dimensional Modeling**, often forming a **Star Schema**. In a Star Schema, you have a central **Fact Table** (e.g., Sales, Clicks) surrounded by **Dimension Tables** (e.g., Date, Product, Customer).",
         "Fact tables contain measurable metrics (revenue, quantity) and foreign keys. Dimension tables contain descriptive attributes (product name, customer city, year)."
       ]
+    },
+    {
+      kind: "image",
+      src: dimensionalModelingImg,
+      alt: "Dimensional Modeling",
+      caption: "Organizing data for analytical queries"
+    },
+    {
+      kind: "image",
+      src: starSchemaImg,
+      alt: "Star Schema",
+      caption: "A central Fact table surrounded by Dimension tables"
     },
     {
       kind: "code",
