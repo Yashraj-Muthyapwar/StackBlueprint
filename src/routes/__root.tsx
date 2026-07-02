@@ -83,14 +83,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DataVizCore — Your roadmap to engineering mastery" },
+      { title: "StackBlueprint — Your roadmap to engineering mastery" },
       {
         name: "description",
         content:
-          "DataVizCore — a visual roadmap to engineering mastery across DSA patterns, SQL, system design, and data warehouses.",
+          "StackBlueprint — a visual roadmap to engineering mastery across DSA patterns, SQL, system design, and data warehouses.",
       },
-      { name: "author", content: "DataVizCore" },
-      { property: "og:title", content: "DataVizCore — Your roadmap to engineering mastery" },
+      { name: "author", content: "StackBlueprint" },
+      { property: "og:title", content: "StackBlueprint — Your roadmap to engineering mastery" },
       {
         property: "og:description",
         content:
@@ -151,7 +151,7 @@ function RootComponent() {
                   to="/"
                   className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  datavizcore
+                  stackblueprint
                 </Link>
               </div>
               <ThemeToggle />
