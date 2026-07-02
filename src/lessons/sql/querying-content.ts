@@ -1,4 +1,4 @@
-// Rich lesson content for SQL "Querying Data" — DataVizCore curriculum.
+// Rich lesson content for SQL "Querying Data" — StackBlueprint curriculum.
 // Each lesson follows the 5-section protocol:
 //   1. The 'Why' (Conceptual Anchor)
 //   2. Visual Logic (Animation Blueprint)
