@@ -43,7 +43,7 @@ export function AppSidebar() {
             <Layers className="size-4" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-sm font-semibold tracking-tight">DataVizCore</span>
+            <span className="text-sm font-semibold tracking-tight">StackBlueprint</span>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               Roadmap to mastery
             </span>
