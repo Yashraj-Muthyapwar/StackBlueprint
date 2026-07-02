@@ -103,6 +103,14 @@ export function AppSidebar() {
                 >
                   {cat.title}
                 </Link>
+              ) : cat.overviewPath === "/docker" ? (
+                <Link
+                  to="/docker"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
               ) : (
                 <span>{cat.title}</span>
               )}
