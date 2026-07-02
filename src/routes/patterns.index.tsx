@@ -28,13 +28,13 @@ const hashMapPatternTitles = patterns.filter((p) => p.category === "Hash Map").m
 export const Route = createFileRoute("/patterns/")({
   head: () => ({
     meta: [
-      { title: "Patterns (DSA) — DataVizCore" },
+      { title: "Patterns (DSA) — StackBlueprint" },
       {
         name: "description",
         content:
           "Interview-grade DSA patterns visualized step-by-step. Arrays / Matrix track is live; more topics coming soon.",
       },
-      { property: "og:title", content: "Patterns (DSA) — DataVizCore" },
+      { property: "og:title", content: "Patterns (DSA) — StackBlueprint" },
       {
         property: "og:description",
         content: "Visual, animated DSA pattern lessons. Arrays / Matrix unlocked.",
