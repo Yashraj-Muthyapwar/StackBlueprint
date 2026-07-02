@@ -6,13 +6,13 @@ import { roadmap } from "@/lessons/roadmap";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "DataVizCore — Your roadmap to engineering mastery" },
+      { title: "StackBlueprint — Your roadmap to engineering mastery" },
       {
         name: "description",
         content:
-          "DataVizCore — interactive, animated learning paths for DSA patterns, SQL, system design, and data warehouses.",
+          "StackBlueprint — interactive, animated learning paths for DSA patterns, SQL, system design, and data warehouses.",
       },
-      { property: "og:title", content: "DataVizCore — Your roadmap to engineering mastery" },
+      { property: "og:title", content: "StackBlueprint — Your roadmap to engineering mastery" },
       {
         property: "og:description",
         content:
@@ -37,7 +37,7 @@ function Landing() {
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/60 px-3 py-1 backdrop-blur">
             <Sparkles className="size-3.5 text-mint" />
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              DataVizCore · Patterns track live
+              StackBlueprint · Patterns track live
             </span>
           </div>
           <h1 className="text-5xl font-semibold tracking-tight text-foreground lg:text-7xl">
@@ -45,7 +45,7 @@ function Landing() {
             <span className="text-mint">engineering mastery.</span>
           </h1>
           <p className="mt-6 max-w-2xl text-balance text-lg text-muted-foreground">
-            DataVizCore is a visual, interactive playbook for the things engineers actually get asked
+            StackBlueprint is a visual, interactive playbook for the things engineers actually get asked
             about — DSA patterns, SQL, system design, and the data warehouses they all run on.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
