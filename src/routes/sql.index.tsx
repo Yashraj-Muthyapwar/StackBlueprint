@@ -41,13 +41,13 @@ import type { LucideIcon } from "lucide-react";
 export const Route = createFileRoute("/sql/")({
   head: () => ({
     meta: [
-      { title: "SQL Mastery — DataVizCore" },
+      { title: "SQL Mastery — StackBlueprint" },
       {
         name: "description",
         content:
           "From SELECT to query plans — a 0→1 visual SQL & databases roadmap. Foundations, joins, window functions, CTEs, procedures, triggers, transactions, indexing, and performance tuning.",
       },
-      { property: "og:title", content: "SQL Mastery — DataVizCore" },
+      { property: "og:title", content: "SQL Mastery — StackBlueprint" },
       {
         property: "og:description",
         content:
