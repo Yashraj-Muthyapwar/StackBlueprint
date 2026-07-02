@@ -14,13 +14,13 @@ import type { LucideIcon } from "lucide-react";
 export const Route = createFileRoute("/data-warehouses/")({
   head: () => ({
     meta: [
-      { title: "Data Warehouses — DataVizCore" },
+      { title: "Data Warehouses — StackBlueprint" },
       {
         name: "description",
         content:
           "From OLTP vs OLAP to modern Lakehouses and Data Mesh. A visual roadmap to mastering analytical data systems.",
       },
-      { property: "og:title", content: "Data Warehouses — DataVizCore" },
+      { property: "og:title", content: "Data Warehouses — StackBlueprint" },
       {
         property: "og:description",
         content:
