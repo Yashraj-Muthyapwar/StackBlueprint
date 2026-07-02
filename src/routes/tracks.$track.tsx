@@ -9,7 +9,7 @@ export const Route = createFileRoute("/tracks/$track")({
     const title = c ? `${c.title} — Coming soon` : "Coming soon";
     return {
       meta: [
-        { title: `${title} · DataVizCore` },
+        { title: `${title} · StackBlueprint` },
         { name: "description", content: c?.blurb ?? "Preview syllabus for an upcoming track." },
       ],
     };
