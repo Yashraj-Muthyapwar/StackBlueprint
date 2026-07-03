@@ -2,13 +2,13 @@ import { type LessonContent, type Section } from "@/lessons/types";
 
 export type { Section };
 
-import containerPackageImg from "@/images/docker/foundations/container-package.png";
-import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.png";
-import containerRevolutionImg from "@/images/docker/foundations/container-revolution.png";
-import vmVsContainerHotelImg from "@/images/docker/foundations/vm-vs-container-hotel.png";
-import clientServerArchImg from "@/images/docker/foundations/client-server-architecture.png";
-import dockerMacWindowsImg from "@/images/docker/foundations/docker-mac-windows-architecture.png";
-import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.png";
+import containerPackageImg from "@/images/docker/foundations/container-package.jpg";
+import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.jpg";
+import containerRevolutionImg from "@/images/docker/foundations/container-revolution.jpg";
+import vmVsContainerHotelImg from "@/images/docker/foundations/vm-vs-container-hotel.jpg";
+import clientServerArchImg from "@/images/docker/foundations/client-server-architecture.jpg";
+import dockerMacWindowsImg from "@/images/docker/foundations/docker-mac-windows-architecture.jpg";
+import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
