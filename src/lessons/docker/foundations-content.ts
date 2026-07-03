@@ -132,7 +132,7 @@ const containersVsVms: LessonContent = {
       kind: "prose",
       heading: "Virtual machines",
       body: [
-        "A VM emulates an entire computer. It runs a full guest operating system, Ubuntu, CentOS, or Windows, on top of a **hypervisor** like VMware, VirtualBox, or Hyper-V, which itself sits on your host OS. Each VM gets its own kernel, its own filesystem, its own memory allocation.",
+        "A VM emulates an entire computer. It runs a full guest operating system (like Ubuntu, CentOS, or Windows) on top of a **hypervisor** like VMware, VirtualBox, or Hyper-V, which itself sits on your host OS. Each VM gets its own kernel, its own filesystem, its own memory allocation.",
       ],
     },
     {
@@ -216,7 +216,7 @@ const containersVsVms: LessonContent = {
       kind: "callout",
       tone: "warn",
       title: "When to still reach for VMs",
-      body: "If you need to run a completely different operating system, Windows on a Linux host, for instance, or you need the strongest possible isolation for security-critical multi-tenant workloads, VMs are still the right answer. But for most application deployment scenarios, containers win.",
+      body: "If you need to run a completely different operating system (Windows on a Linux host, for instance) or you need the strongest possible isolation for security-critical multi-tenant workloads, VMs are still the right answer. But for most application deployment scenarios, containers win.",
     },
     {
       kind: "takeaways",
@@ -301,7 +301,7 @@ docker logs my-container`,
       kind: "prose",
       body: [
         "**Docker Daemon** (`dockerd`) is the background service that does the real work. It manages images, containers, networks, and volumes, and executes whatever the client asks. On Linux it runs as a systemd service. On Mac and Windows it runs inside a lightweight Linux VM managed by Docker Desktop, because containers need a Linux kernel.",
-        "**Docker Registry** is a storage and distribution system for images. Docker Hub is the default public registry, essentially GitHub for container images. Run `docker pull nginx` and the daemon fetches that image from Docker Hub. Private registries, Amazon ECR, Google Artifact Registry, Azure Container Registry, or a self-hosted option, all work the same way.",
+        "**Docker Registry** is a storage and distribution system for images. Docker Hub is the default public registry, essentially GitHub for container images. Run `docker pull nginx` and the daemon fetches that image from Docker Hub. Private registries (like Amazon ECR, Google Artifact Registry, Azure Container Registry, or a self-hosted option) all work the same way.",
       ],
     },
     {
@@ -315,16 +315,16 @@ docker logs my-container`,
       kind: "code",
       language: "text",
       caption: "From keystroke to running process",
-      code: `1. Docker Client parses your command
-2. Client sends a REST API request to Docker Daemon
-3. Daemon checks if the "nginx" image exists locally
-4. If not found locally, Daemon pulls it from Docker Hub
-5. Daemon creates a new container from the image
-6. Daemon allocates a read-write filesystem layer
-7. Daemon creates a network interface and assigns an IP
-8. Daemon maps port 8080 on host to port 80 in container
-9. Daemon starts the container process (nginx, in this case)
-10. Daemon returns the container ID to the Client`,
+      code: `Docker Client parses your command
+Client sends a REST API request to Docker Daemon
+Daemon checks if the "nginx" image exists locally
+If not found locally, Daemon pulls it from Docker Hub
+Daemon creates a new container from the image
+Daemon allocates a read-write filesystem layer
+Daemon creates a network interface and assigns an IP
+Daemon maps port 8080 on host to port 80 in container
+Daemon starts the container process (nginx, in this case)
+Daemon returns the container ID to the Client`,
     },
     {
       kind: "animation",
@@ -341,7 +341,7 @@ docker logs my-container`,
       kind: "takeaways",
       items: [
         "Docker is a client-server system: the client sends commands, the daemon does the work.",
-        "The daemon (dockerd) manages every Docker object: images, containers, networks, volumes.",
+        "The daemon (dockerd) manages every Docker object: images, containers, networks, and volumes.",
         "Registries like Docker Hub store and distribute images. `docker pull` fetches from one.",
         "A single `docker run` triggers a ten-step round trip from client to daemon to registry to running process.",
       ],
@@ -373,7 +373,7 @@ docker logs my-container`,
           ],
           correctIndex: 1,
           explanation:
-            "Docker Hub is a registry, a place images live. `docker pull` and `docker push` talk to a registry like Docker Hub or a private one.",
+            "Docker Hub is a registry (a place where images live). `docker pull` and `docker push` talk to a registry like Docker Hub or a private one.",
         },
       ],
     },
@@ -427,7 +427,7 @@ docker run hello-world
       kind: "prose",
       heading: "Linux (Ubuntu / Debian)",
       body: [
-        "On Linux you install Docker Engine directly, no VM required, since the host already runs a Linux kernel.",
+        "On Linux you install Docker Engine directly (no VM required) since the host already runs a Linux kernel.",
       ],
     },
     {
@@ -662,7 +662,7 @@ docker container prune`,
       kind: "callout",
       tone: "success",
       title: "You just ran your first containers",
-      body: "One command downloaded an image, created an isolated process, and ran it, no manual dependency installation required. That is the entire pitch of Docker in one terminal session.",
+      body: "One command downloaded an image, created an isolated process, and ran it (no manual dependency installation required). That is the entire pitch of Docker in one terminal session.",
     },
     {
       kind: "takeaways",
