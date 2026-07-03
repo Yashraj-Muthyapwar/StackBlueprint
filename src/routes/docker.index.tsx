@@ -59,9 +59,15 @@ const sections: Section[] = [
       {
         slug: "what-is-docker",
         title: "Docker & Containers",
-        blurb: "The core concept: OS-level virtualization, namespaces, and cgroups.",
+        blurb: "Why Docker exists, how it beats VMs, and how to run your first container.",
         icon: Container,
-        modules: ["VMs vs Containers", "Docker Daemon", "Namespaces & Cgroups"],
+        modules: [
+          "Why Docker Exists",
+          "Containers vs VMs",
+          "Docker Architecture",
+          "Installing Docker",
+          "Your First Container",
+        ],
         unlocked: true,
         routeBase: "foundations",
       },
