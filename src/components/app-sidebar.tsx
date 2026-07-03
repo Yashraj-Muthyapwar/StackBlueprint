@@ -246,11 +246,7 @@ function NestedPatternItem({
               return (
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
-                    <Link
-                      to="/patterns/$pattern/$lesson"
-                      params={{ pattern: pat.slug, lesson: les.slug }}
-                      onClick={onNavigate}
-                    >
+                    <Link to={les.path} onClick={onNavigate}>
                       <les.icon className="size-3.5" />
                       <span>{les.title}</span>
                     </Link>
@@ -318,11 +314,7 @@ function PatternItem({
               return (
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
-                    <Link
-                      to="/patterns/$pattern/$lesson"
-                      params={{ pattern: pat.slug, lesson: les.slug }}
-                      onClick={onNavigate}
-                    >
+                    <Link to={les.path} onClick={onNavigate}>
                       <les.icon className="size-3.5" />
                       <span>{les.title}</span>
                     </Link>
