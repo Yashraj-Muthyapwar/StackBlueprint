@@ -45,6 +45,34 @@ const whyDockerExists: LessonContent = {
       alt: "Layers of a container package: application code, runtime, libraries, and config",
       caption: "Code, runtime, libraries, and config, sealed into one standardized unit",
     },
+        {
+      kind: "prose",
+      heading: "What exactly are we talking about?",
+      body: [
+        "Before diving deeper, we need to clarify three terms that get thrown around interchangeably but mean very different things: Docker, Images, and Containers.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What is Docker?",
+      body: [
+        "**Docker** is the platform itself. It is the set of tools (the engine, the command-line interface, the background services) that allows you to build, run, and manage containerized applications. When someone says 'I use Docker', they mean they use this platform to run their software.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What is an Image?",
+      body: [
+        "An **Image** is a read-only template. It contains everything your application needs to run: the source code, the runtime (like Node.js or Python), the libraries, the environment variables, and the configuration files. It is the blueprint. Once you build an image, it never changes.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What is a Container?",
+      body: [
+        "A **Container** is a running instance of an image. If an image is the class definition in programming, the container is the instantiated object. If an image is a recipe, the container is the cake you baked from it. You can start, stop, delete, and run multiple containers from a single image.",
+      ],
+    },
     {
       kind: "prose",
       heading: "The analogy: shipping containers",
@@ -544,14 +572,35 @@ const yourFirstContainer: LessonContent = {
     {
       kind: "prose",
       heading: "Running a single command",
-      body: ["Time to stop reading and start running things."],
+      body: ["Time to stop reading and start running things. The classic first step is the `hello-world` image."],
     },
     {
-      kind: "code",
-      language: "text",
-      caption: "Your first container",
-      code: `docker run ubuntu echo "Hello from inside a container"`,
+      kind: "terminal-animation",
+      command: "docker run hello-world",
+      output: `Unable to find image 'hello-world:latest' locally
+              latest: Pulling from library/hello-world
+              c1ec31eb5944: Pull complete 
+              Digest: sha256:4bd78111b6914a99dbc560e6a20eab57ff6655aea4a80c50b0c5491968cbc2e6
+              Status: Downloaded newer image for hello-world:latest
+              
+              Hello from Docker!
+              This message shows that your installation appears to be working correctly.
+              
+              To generate this message, Docker took the following steps:
+               1. The Docker client contacted the Docker daemon.
+               2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+               3. The Docker daemon created a new container from that image which runs the executable that produces the output you are currently reading.
+               4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.`,
+                    buttonLabel: "Run Command",
+                    caption: "Your first container",
     },
+    {
+      kind: "prose",
+      body: [
+        "Here is what just happened: Docker pulled the \`hello-world\` image from Docker Hub because it was not already cached locally. It then created a new container from that image, ran the executable inside it, printed the output, and stopped the container once the process finished.",
+      ],
+    },
+
     {
       kind: "prose",
       body: [
