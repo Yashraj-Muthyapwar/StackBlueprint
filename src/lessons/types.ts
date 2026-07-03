@@ -121,6 +121,7 @@ export type Section =
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
   | { kind: "animation"; variant: string; caption?: string }
+  | { kind: "terminal-animation"; command: string; output: string; buttonLabel?: string; caption?: string }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
