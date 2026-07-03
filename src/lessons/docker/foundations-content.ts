@@ -1,5 +1,4 @@
 import { type LessonContent, type Section } from "@/lessons/types";
-
 export type { Section };
 
 import containerPackageImg from "@/images/docker/foundations/container-package.png";
