@@ -19,6 +19,10 @@ import {
   Compass,
   Cloud,
   Hash,
+  Container,
+  Lightbulb,
+  Download,
+  PlayCircle,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -373,8 +377,40 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "Foundations",
         slug: "foundations",
-        blurb: "What are containers, images, and the Docker daemon? The core mental model.",
-        lessons: [], 
+        path: "/docker/foundations/what-is-docker",
+        blurb: "Why Docker exists, how it stacks up against VMs, and how to run your first container.",
+        lessons: [
+          {
+            title: "Why Docker Exists",
+            slug: "why-docker-exists",
+            path: "/docker/foundations/what-is-docker/why-docker-exists",
+            icon: Lightbulb,
+          },
+          {
+            title: "Containers vs Virtual Machines",
+            slug: "containers-vs-vms",
+            path: "/docker/foundations/what-is-docker/containers-vs-vms",
+            icon: Container,
+          },
+          {
+            title: "Docker Architecture",
+            slug: "docker-architecture",
+            path: "/docker/foundations/what-is-docker/docker-architecture",
+            icon: Server,
+          },
+          {
+            title: "Installing Docker",
+            slug: "installing-docker",
+            path: "/docker/foundations/what-is-docker/installing-docker",
+            icon: Download,
+          },
+          {
+            title: "Your First Container",
+            slug: "your-first-container",
+            path: "/docker/foundations/what-is-docker/your-first-container",
+            icon: PlayCircle,
+          },
+        ],
       },
       {
         title: "Networking & Storage",
