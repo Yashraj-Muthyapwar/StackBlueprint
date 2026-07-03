@@ -1,9 +1,10 @@
 import type { Section } from "@/lessons/docker/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { LessonAnimation } from "@/components/docker/LessonAnimation";
+import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
 import { Quiz } from "@/components/sql/Quiz";
 
-function highlightShell(line: string) {
+export function highlightShell(line: string) {
   const KEYWORDS = new Set([
     "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
     "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
@@ -276,6 +277,9 @@ export function SectionRenderer({ section }: { section: Section }) {
           caption={section.caption}
         />
       );
+
+    case "terminal-animation":
+      return <TerminalAnimation section={section} />;
 
     case "takeaways":
       return (
