@@ -47,9 +47,9 @@ const whyDockerExists: LessonContent = {
     },
     {
       kind: "image",
-      src: containerPackageImg,
-      alt: "Layers of a container package: application code, runtime, libraries, and config",
-      caption: "Code, runtime, libraries, and config, sealed into one standardized unit",
+      src: whyDockerExistsImg,
+      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
+      caption: "The problem before Docker, and the shape of the fix",
     },
     {
       kind: "prose",
@@ -80,6 +80,12 @@ const whyDockerExists: LessonContent = {
       ],
     },
     {
+      kind: "image",
+      src: containerPackageImg,
+      alt: "Layers of a container package: application code, runtime, libraries, and config",
+      caption: "Code, runtime, libraries, and config, sealed into one standardized unit",
+    },
+    {
       kind: "prose",
       heading: "The analogy: shipping containers",
       body: [
@@ -87,12 +93,6 @@ const whyDockerExists: LessonContent = {
         "Then Malcolm McLean introduced the intermodal shipping container: a standard metal box. It did not matter what was inside. The box was always the same dimensions, so cranes, trucks, and ships could all handle it with identical equipment.",
         "Docker is that standardized box for software. It does not care if your app is a Python script, a Node.js API, or a PostgreSQL database. It wraps it in a standard format that any Docker-compatible system can run without asking whether it has the right dependencies installed.",
       ],
-    },
-    {
-      kind: "image",
-      src: whyDockerExistsImg,
-      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
-      caption: "The problem before Docker, and the shape of the fix",
     },
     {
       kind: "callout",
@@ -297,7 +297,7 @@ const containersVsVms: LessonContent = {
 
 const dockerArchitecture: LessonContent = {
   slug: "docker-architecture",
-  title: "Demystifying Docker Architecture: From Command to Container",
+  title: "Docker Architecture",
   subtitle:
     "If you have ever felt like Docker is a bit of a black box, you are not alone. It looks like magic when you type docker run and a fully functioning application appears out of nowhere.",
   sections: [
@@ -612,19 +612,32 @@ const yourFirstContainer: LessonContent = {
       kind: "terminal-animation",
       command: "docker run hello-world",
       output: `Unable to find image 'hello-world:latest' locally
-              latest: Pulling from library/hello-world
-              c1ec31eb5944: Pull complete 
-              Digest: sha256:4bd78111b6914a99dbc560e6a20eab57ff6655aea4a80c50b0c5491968cbc2e6
-              Status: Downloaded newer image for hello-world:latest
-              
-              Hello from Docker!
-              This message shows that your installation appears to be working correctly.
-              
-              To generate this message, Docker took the following steps:
-               1. The Docker client contacted the Docker daemon.
-               2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
-               3. The Docker daemon created a new container from that image which runs the executable that produces the output you are currently reading.
-               4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.`,
+latest: Pulling from library/hello-world
+58dee6a49ef1: Pull complete 
+c3bdf82c34d1: Download complete 
+Digest: sha256:96498ffd522e70807ab6384a5c0485a79b9c7c08ca79ba08623edcad1054e62d
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (arm64v8)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/`,
       buttonLabel: "Run Command",
       caption: "Your first container",
     },
