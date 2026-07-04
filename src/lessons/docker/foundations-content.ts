@@ -663,38 +663,38 @@ docker version`,
       language: "text",
       caption: "Install Docker Engine on Ubuntu / Debian",
       code: `# Remove old versions
-      sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get remove docker docker-engine docker.io containerd runc
       
-      # Install prerequisites
-      sudo apt-get update
-      sudo apt-get install ca-certificates curl gnupg
+# Install prerequisites
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
       
-      # Create Docker keyring
-      sudo install -m 0755 -d /etc/apt/keyrings
+# Create Docker keyring
+sudo install -m 0755 -d /etc/apt/keyrings
       
-      # Download Docker's official GPG key
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \\
-      sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+# Download Docker's official GPG key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \\
+sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
       
-      # Add Docker repository
-      echo \\
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\
-      https://download.docker.com/linux/ubuntu \\
-      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \\
-      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# Add Docker repository
+echo \\
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\
+  https://download.docker.com/linux/ubuntu \\
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \\
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
       
-      # Install Docker Engine
-      sudo apt-get update
-      sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# Install Docker Engine
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
       
-      # (Optional) Allow Docker without sudo
-      sudo usermod -aG docker $USER
+# (Optional) Allow Docker without sudo
+sudo usermod -aG docker $USER
       
-      # Log out and back in
+# Log out and back in
       
-      # Verify installation
-      docker --version
-      docker version`,
+# Verify installation
+docker --version
+docker version`,
     },
     {
       kind: "callout",
@@ -716,18 +716,18 @@ docker version`,
       language: "text",
       caption: "Install Docker on Windows",
       code: `# Option 1: Download Docker Desktop
-      # https://www.docker.com/products/docker-desktop
+# https://www.docker.com/products/docker-desktop
       
-      # Option 2: Install using winget
-      winget install Docker.DockerDesktop
+# Option 2: Install using winget
+winget install Docker.DockerDesktop
       
-      # Enable the WSL2 backend during installation
+# Enable the WSL2 backend during installation
       
-      # Launch Docker Desktop
+# Launch Docker Desktop
       
-      # Verify installation
-      docker --version
-      docker version`,
+# Verify installation
+docker --version
+docker version`,
     },
     {
       kind: "callout",
