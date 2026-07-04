@@ -338,7 +338,19 @@ const dockerArchitecture: LessonContent = {
       kind: "prose",
       heading: "Component by Component Breakdown",
       body: [
-        "**1. Docker CLI, the User Interface (The Customer Ordering Food)**\n\nThis is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.\n\nBecause of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.\n\n*Analogy*: CLI is the customer who walks up and places an order. You do not cook anything or go near the kitchen, you just say what you want out loud, in this case by typing `docker run` or `docker ps`.",
+      body: [
+        "**1. Docker CLI, the User Interface (The Customer Ordering Food)**\n\nThis is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.\n\nBecause of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "The CLI is the customer who walks up and places an order. You do not cook anything or go near the kitchen, you just say what you want out loud, in this case by typing `docker run` or `docker ps`.",
+    },
+    {
+      kind: "prose",
+      body: [
         "**2. dockerd (The Docker Daemon)**\n\nThe Docker Daemon (`dockerd`) is a persistent background process that sits and listens for incoming requests from the CLI.",
       ],
     },
@@ -351,7 +363,19 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "It acts as the high-level orchestration layer for your local operations, accepting requests via a REST API over a Unix socket or a network interface. It manages your networks, storage volumes, and images. However, `dockerd` does NOT run containers directly. Instead, it hands container lifecycle operations down to `containerd`. This architectural split keeps your containers running perfectly even if the Docker daemon restarts or crashes.\n\n*Analogy*: `dockerd` is the restaurant manager who takes your order, checks your ID if needed (security and isolation), and passes the ticket to the kitchen. They run the front of house, keep track of every table, dish, and ingredient in the building, but never actually cook a single thing themselves.",
+      body: [
+        "It acts as the high-level orchestration layer for your local operations, accepting requests via a REST API over a Unix socket or a network interface. It manages your networks, storage volumes, and images. However, `dockerd` does NOT run containers directly. Instead, it hands container lifecycle operations down to `containerd`. This architectural split keeps your containers running perfectly even if the Docker daemon restarts or crashes.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "`dockerd` is the restaurant manager who takes your order, checks your ID if needed (security and isolation), and passes the ticket to the kitchen. They run the front of house, keep track of every table, dish, and ingredient in the building, but never actually cook a single thing themselves.",
+    },
+    {
+      kind: "prose",
+      body: [
         "**3. containerd (The Container Runtime Supervisor)**\n\nOnce `dockerd` hands off a request via internal gRPC communication, `containerd` takes charge of supervising the container lifecycle.",
       ],
     },
@@ -364,8 +388,31 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "It handles the core runtime operations: pulling images, managing storage snapshots, unpacking images, and supervising execution. Once `dockerd` delegates the task to start a container, it mostly steps out of the way, leaving `containerd` in control. Since `containerd` is often busy running multiple containers at once, it does not personally monitor and manage the lifecycle of every single container. Instead, it hands the job off to a dedicated shim per container.\n\n*Analogy*: `containerd` is the kitchen manager who receives the ticket from the front of house and decides how the meal gets made. They manage the pantry (pulling images), track which ingredients are already prepped (snapshots and layers), and decide when a dish should start or stop, but they are too busy running the whole kitchen to stand over one pan themselves.",
-        "**4. containerd-shim (The Head Chef Assistant per Dish)**\n\nThis is the most underrated part of the whole system, and honestly the coolest one. For every single container you run, `containerd` creates one dedicated shim process just for that container.\n\nWhy does this matter? Because once `runc` actually starts the container, `runc` exits immediately. It does its job and leaves. If nothing stuck around, the container process would become an orphan with no one managing its input, output, or signals. The shim stays behind, keeps STDIO (input and output) open, forwards signals like stop or kill, and reports status back up to `containerd`. If `containerd` crashes or undergoes an upgrade, the shim keeps the connection alive and the container running completely uninterrupted.\n\n*Analogy*: `containerd-shim` is the personal waiter assigned to just your table for the entire meal. The head chef cooks your dish and immediately walks away, so this waiter stays behind to keep your food warm, bring refills when you ask, and let the kitchen manager know if you finish or send something back.",
+      body: [
+        "It handles the core runtime operations: pulling images, managing storage snapshots, unpacking images, and supervising execution. Once `dockerd` delegates the task to start a container, it mostly steps out of the way, leaving `containerd` in control. Since `containerd` is often busy running multiple containers at once, it does not personally monitor and manage the lifecycle of every single container. Instead, it hands the job off to a dedicated shim per container.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "`containerd` is the kitchen manager who receives the ticket from the front of house and decides how the meal gets made. They manage the pantry (pulling images), track which ingredients are already prepped (snapshots and layers), and decide when a dish should start or stop, but they are too busy running the whole kitchen to stand over one pan themselves.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**4. containerd-shim (The Head Chef Assistant per Dish)**\n\nThis is the most underrated part of the whole system, and honestly the coolest one. For every single container you run, `containerd` creates one dedicated shim process just for that container.\n\nWhy does this matter? Because once `runc` actually starts the container, `runc` exits immediately. It does its job and leaves. If nothing stuck around, the container process would become an orphan with no one managing its input, output, or signals. The shim stays behind, keeps STDIO (input and output) open, forwards signals like stop or kill, and reports status back up to `containerd`. If `containerd` crashes or undergoes an upgrade, the shim keeps the connection alive and the container running completely uninterrupted.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "`containerd-shim` is the personal waiter assigned to just your table for the entire meal. The head chef cooks your dish and immediately walks away, so this waiter stays behind to keep your food warm, bring refills when you ask, and let the kitchen manager know if you finish or send something back.",
+    },
+    {
+      kind: "prose",
+      body: [
         "**5. runc, the OCI Runtime (The Head Chef Who Actually Cooks)**\n\n`containerd-shim` asks `runc` to actually build and start the container by executing it. `runc` is a lightweight, low-level tool that follows the OCI (Open Container Initiative) specification, which is basically a universal recipe book that all container tools agree to follow.",
       ],
     },
@@ -378,7 +425,19 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "`runc` has one job: interact directly with the Linux kernel to create the container. It reads the container configuration file, sets up the filesystem boundaries, configures namespaces and cgroups, and kicks off the process. This is the exact layer where containers stop behaving like abstract Docker objects and become ordinary Linux processes. The moment the process goes live, `runc` exits immediately. Its job is complete, leaving the shim behind to supervise the container and report its status back up to `containerd`.\n\n*Analogy*: `runc` is the head chef who actually cooks the dish following a strict universal recipe book that every restaurant in the chain uses. Once the dish is plated and handed off, the chef walks straight back to the kitchen and does not linger at your table.",
+      body: [
+        "`runc` has one job: interact directly with the Linux kernel to create the container. It reads the container configuration file, sets up the filesystem boundaries, configures namespaces and cgroups, and kicks off the process. This is the exact layer where containers stop behaving like abstract Docker objects and become ordinary Linux processes. The moment the process goes live, `runc` exits immediately. Its job is complete, leaving the shim behind to supervise the container and report its status back up to `containerd`.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "`runc` is the head chef who actually cooks the dish following a strict universal recipe book that every restaurant in the chain uses. Once the dish is plated and handed off, the chef walks straight back to the kitchen and does not linger at your table.",
+    },
+    {
+      kind: "prose",
+      body: [
         "**6. The Linux Kernel (The Actual Stove, Oven, and Ingredients)**\n\nThis is where the actual isolation happens. The kernel uses core operating system features to build the sandbox walls around the ordinary process that `runc` kicked off:",
       ],
     },
