@@ -495,24 +495,7 @@ const dockerArchitecture: LessonContent = {
       ],
     },
     {
-      kind: "terminal-animation",
-      command: "docker run nginx",
-      output: `Step A: The Request
-1. You type the command in the Docker CLI.
-2. The CLI packages this into a REST API request and sends it to dockerd via a Unix socket (like /var/run/docker.sock on Linux).
-Step B: The Hand-off
-1. dockerd receives the request, verifies it, and tells containerd via gRPC that a new container needs to be supervised.
-2. containerd handles the image layers. If you do not have the Nginx image locally, it reaches out to the registry to pull it.
-Step C: The Creation
-1. containerd spins up a containerd-shim dedicated to this specific container instance.
-2. The shim invokes runc to execute the task.
-3. runc talks to the Linux Kernel, configuring the namespaces and cgroups needed to sandbox the process.
-Step D: The Steady State
-1. The Nginx process starts inside its isolated environment.
-2. runc exits, leaving containerd-shim in charge of monitoring the alive process.
-3. A success status ripples back up the chain: from the shim, to containerd, to dockerd, and finally to your terminal screen via the CLI.`,
-      buttonLabel: "Trace Execution",
-      caption: "End-to-End Execution Trace",
+      kind: "docker-run-under-the-hood",
     }
   ],
 };
@@ -733,7 +716,7 @@ docker version`,
       title: "WSL2 Required",
       body: "Docker Desktop uses WSL2 as its Linux backend on Windows. If WSL2 isn't installed, Docker Desktop will guide you through enabling it during setup.",
     },
-        {
+    {
       kind: "prose",
       heading: "Verifying Your Installation",
       body: [
@@ -862,7 +845,7 @@ docker run hello-world`,
   ],
 };
 
-    
+
 const yourFirstContainer: LessonContent = {
   slug: "your-first-container",
   title: "Your First Container",
