@@ -2,6 +2,7 @@ import type { Section } from "@/lessons/docker/foundations-content";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { LessonAnimation } from "@/components/docker/LessonAnimation";
 import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
+import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
 import { Quiz } from "@/components/sql/Quiz";
 
 export function highlightShell(line: string) {
@@ -280,6 +281,13 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "terminal-animation":
       return <TerminalAnimation section={section} />;
+
+    case "docker-run-under-the-hood":
+      return (
+        <div className="my-8">
+          <DockerRunUnderTheHood />
+        </div>
+      );
 
     case "takeaways":
       return (
