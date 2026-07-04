@@ -2,12 +2,10 @@ import { type LessonContent, type Section } from "@/lessons/types";
 
 export type { Section };
 
-import containerPackageImg from "@/images/docker/foundations/container-package.jpg";
 import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.jpg";
 import containerRevolutionImg from "@/images/docker/foundations/container-revolution.jpg";
 import vmVsContainerHotelImg from "@/images/docker/foundations/containers-vs-vm.jpg";
 import dockerMacWindowsImg from "@/images/docker/foundations/docker-desktop-architecture.jpg";
-import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
 import dockerArchitectureImg from "@/images/docker/foundations/docker-architecture.jpg";
 import dockerArchitectureAnalogyImg from "@/images/docker/foundations/docker-architecture-analogy.jpg";
 import dockerDaemonImg from "@/images/docker/foundations/docker-daemon.jpg";
@@ -968,12 +966,6 @@ root@a1b2c3d4e5f6:/# exit
         "Breaking this down: **`-d`** runs it in the background, in detached mode. **`-p 8080:80`** maps port 8080 on your machine to port 80 inside the container. **`--name my-nginx`** gives it a human-readable name you can reference later. **`nginx`** is simply the image to use.",
         "Now visit `http://localhost:8080` in your browser. That page is being served by Nginx, running inside a Docker container.",
       ],
-    },
-    {
-      kind: "image",
-      src: helloWorldWalkthroughImg,
-      alt: "Step by step walkthrough from opening Docker Desktop to running hello-world in the terminal",
-      caption: "The same flow, start to finish: open Docker Desktop, run the command, see the output",
     },
     {
       kind: "prose",
