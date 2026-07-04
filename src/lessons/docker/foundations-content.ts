@@ -6,7 +6,6 @@ import containerPackageImg from "@/images/docker/foundations/container-package.j
 import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.jpg";
 import containerRevolutionImg from "@/images/docker/foundations/container-revolution.jpg";
 import vmVsContainerHotelImg from "@/images/docker/foundations/vm-vs-container-hotel.jpg";
-import clientServerArchImg from "@/images/docker/foundations/client-server-architecture.jpg";
 import dockerMacWindowsImg from "@/images/docker/foundations/docker-mac-windows-architecture.jpg";
 import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
 import dockerArchitectureImg from "@/images/docker/foundations/docker-architecture.jpg";
@@ -48,9 +47,9 @@ const whyDockerExists: LessonContent = {
     },
     {
       kind: "image",
-      src: whyDockerExistsImg,
-      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
-      caption: "The problem before Docker, and the shape of the fix",
+      src: containerPackageImg,
+      alt: "Layers of a container package: application code, runtime, libraries, and config",
+      caption: "Code, runtime, libraries, and config, sealed into one standardized unit",
     },
     {
       kind: "prose",
@@ -88,6 +87,12 @@ const whyDockerExists: LessonContent = {
         "Then Malcolm McLean introduced the intermodal shipping container: a standard metal box. It did not matter what was inside. The box was always the same dimensions, so cranes, trucks, and ships could all handle it with identical equipment.",
         "Docker is that standardized box for software. It does not care if your app is a Python script, a Node.js API, or a PostgreSQL database. It wraps it in a standard format that any Docker-compatible system can run without asking whether it has the right dependencies installed.",
       ],
+    },
+    {
+      kind: "image",
+      src: whyDockerExistsImg,
+      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
+      caption: "The problem before Docker, and the shape of the fix",
     },
     {
       kind: "callout",
@@ -795,4 +800,4 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       yourFirstContainer,
     ],
   },
-};```
+};
