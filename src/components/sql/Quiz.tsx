@@ -78,7 +78,7 @@ export function Quiz({ data }: { data: QuizData }) {
   }
 
   if (isFinished) {
-    const percentage = (score / data.questions.length) * 100;
+    const percentage = Math.round((score / data.questions.length) * 100);
     let feedback = "";
     if (percentage === 100) feedback = "Perfect! You nailed every concept.";
     else if (percentage >= 80) feedback = "Great job! You have a solid grasp of the material.";
