@@ -338,8 +338,9 @@ const dockerArchitecture: LessonContent = {
       kind: "prose",
       heading: "Component by Component Breakdown",
       body: [
-      body: [
-        "**1. Docker CLI, the User Interface (The Customer Ordering Food)**\n\nThis is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.\n\nBecause of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
+        "**1. Docker CLI, the User Interface**",
+        "This is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.",
+        "Because of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
       ],
     },
     {
@@ -351,7 +352,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "**2. dockerd (The Docker Daemon)**\n\nThe Docker Daemon (`dockerd`) is a persistent background process that sits and listens for incoming requests from the CLI.",
+        "**2. dockerd (The Docker Daemon)**",
+        "The Docker Daemon (`dockerd`) is a persistent background process that sits and listens for incoming requests from the CLI.",
       ],
     },
     {
@@ -363,8 +365,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-      body: [
-        "It acts as the high-level orchestration layer for your local operations, accepting requests via a REST API over a Unix socket or a network interface. It manages your networks, storage volumes, and images. However, `dockerd` does NOT run containers directly. Instead, it hands container lifecycle operations down to `containerd`. This architectural split keeps your containers running perfectly even if the Docker daemon restarts or crashes.",
+        "It acts as the high-level orchestration layer for your local operations, accepting requests via a REST API over a Unix socket or a network interface. It manages your networks, storage volumes, and images.",
+        "However, `dockerd` does NOT run containers directly. Instead, it hands container lifecycle operations down to `containerd`. This architectural split keeps your containers running perfectly even if the Docker daemon restarts or crashes.",
       ],
     },
     {
@@ -376,7 +378,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "**3. containerd (The Container Runtime Supervisor)**\n\nOnce `dockerd` hands off a request via internal gRPC communication, `containerd` takes charge of supervising the container lifecycle.",
+        "**3. containerd (The Container Runtime Supervisor)**",
+        "Once `dockerd` hands off a request via internal gRPC communication, `containerd` takes charge of supervising the container lifecycle.",
       ],
     },
     {
@@ -388,8 +391,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-      body: [
-        "It handles the core runtime operations: pulling images, managing storage snapshots, unpacking images, and supervising execution. Once `dockerd` delegates the task to start a container, it mostly steps out of the way, leaving `containerd` in control. Since `containerd` is often busy running multiple containers at once, it does not personally monitor and manage the lifecycle of every single container. Instead, it hands the job off to a dedicated shim per container.",
+        "It handles the core runtime operations: pulling images, managing storage snapshots, unpacking images, and supervising execution.",
+        "Once `dockerd` delegates the task to start a container, it mostly steps out of the way, leaving `containerd` in control. Since `containerd` is often busy running multiple containers at once, it does not personally monitor and manage the lifecycle of every single container. Instead, it hands the job off to a dedicated shim per container.",
       ],
     },
     {
@@ -401,7 +404,10 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "**4. containerd-shim (The Head Chef Assistant per Dish)**\n\nThis is the most underrated part of the whole system, and honestly the coolest one. For every single container you run, `containerd` creates one dedicated shim process just for that container.\n\nWhy does this matter? Because once `runc` actually starts the container, `runc` exits immediately. It does its job and leaves. If nothing stuck around, the container process would become an orphan with no one managing its input, output, or signals. The shim stays behind, keeps STDIO (input and output) open, forwards signals like stop or kill, and reports status back up to `containerd`. If `containerd` crashes or undergoes an upgrade, the shim keeps the connection alive and the container running completely uninterrupted.",
+        "**4. containerd-shim (The Head Chef Assistant per Dish)**",
+        "This is the most underrated part of the whole system, and honestly the coolest one. For every single container you run, `containerd` creates one dedicated shim process just for that container.",
+        "Why does this matter? Because once `runc` actually starts the container, `runc` exits immediately. It does its job and leaves. If nothing stuck around, the container process would become an orphan with no one managing its input, output, or signals.",
+        "The shim stays behind, keeps STDIO (input and output) open, forwards signals like stop or kill, and reports status back up to `containerd`. If `containerd` crashes or undergoes an upgrade, the shim keeps the connection alive and the container running completely uninterrupted.",
       ],
     },
     {
@@ -413,7 +419,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "**5. runc, the OCI Runtime (The Head Chef Who Actually Cooks)**\n\n`containerd-shim` asks `runc` to actually build and start the container by executing it. `runc` is a lightweight, low-level tool that follows the OCI (Open Container Initiative) specification, which is basically a universal recipe book that all container tools agree to follow.",
+        "**5. runc, the OCI Runtime**",
+        "`containerd-shim` asks `runc` to actually build and start the container by executing it. `runc` is a lightweight, low-level tool that follows the OCI (Open Container Initiative) specification, which is basically a universal recipe book that all container tools agree to follow.",
       ],
     },
     {
@@ -425,8 +432,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-      body: [
-        "`runc` has one job: interact directly with the Linux kernel to create the container. It reads the container configuration file, sets up the filesystem boundaries, configures namespaces and cgroups, and kicks off the process. This is the exact layer where containers stop behaving like abstract Docker objects and become ordinary Linux processes. The moment the process goes live, `runc` exits immediately. Its job is complete, leaving the shim behind to supervise the container and report its status back up to `containerd`.",
+        "`runc` has one job: interact directly with the Linux kernel to create the container. It reads the container configuration file, sets up the filesystem boundaries, configures namespaces and cgroups, and kicks off the process.",
+        "This is the exact layer where containers stop behaving like abstract Docker objects and become ordinary Linux processes. The moment the process goes live, `runc` exits immediately. Its job is complete, leaving the shim behind to supervise the container and report its status back up to `containerd`.",
       ],
     },
     {
@@ -438,7 +445,8 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "**6. The Linux Kernel (The Actual Stove, Oven, and Ingredients)**\n\nThis is where the actual isolation happens. The kernel uses core operating system features to build the sandbox walls around the ordinary process that `runc` kicked off:",
+        "**6. The Linux Kernel**",
+        "This is where the actual isolation happens. The kernel uses core operating system features to build the sandbox walls around the ordinary process that `runc` kicked off:",
       ],
     },
     {
