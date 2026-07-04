@@ -5,7 +5,7 @@ export type { Section };
 import containerPackageImg from "@/images/docker/foundations/container-package.jpg";
 import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.jpg";
 import containerRevolutionImg from "@/images/docker/foundations/container-revolution.jpg";
-import vmVsContainerHotelImg from "@/images/docker/foundations/container-vs-vm.jpg";
+import vmVsContainerHotelImg from "@/images/docker/foundations/containers-vs-vm.jpg";
 import dockerMacWindowsImg from "@/images/docker/foundations/docker-desktop-architecture.jpg";
 import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
 import dockerArchitectureImg from "@/images/docker/foundations/docker-architecture.jpg";
