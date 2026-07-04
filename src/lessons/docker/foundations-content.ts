@@ -601,8 +601,8 @@ const settingUpDocker: LessonContent = {
       caption: "What happens when Docker Engine isn't running",
       code: `$ docker ps
       
-      Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
-      Is the docker daemon running?`,
+Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+Is the docker daemon running?`,
     },
     {
       kind: "callout",
