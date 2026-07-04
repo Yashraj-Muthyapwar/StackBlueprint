@@ -465,7 +465,7 @@ const installingDocker: LessonContent = {
       kind: "prose",
       heading: "macOS",
       body: [
-        "Docker Desktop is the standard path on a Mac. It bundles the CLI, the daemon, and a lightweight Linux VM, since macOS cannot run Linux containers natively.",
+        "**Docker Desktop** is the standard path on a Mac. It bundles the CLI, the daemon, and a lightweight Linux VM, since macOS cannot run Linux containers natively.",
       ],
     },
     {
@@ -489,7 +489,7 @@ docker run hello-world
       kind: "prose",
       heading: "Linux (Ubuntu / Debian)",
       body: [
-        "On Linux you install Docker Engine directly (no VM required) since the host already runs a Linux kernel.",
+        "On Linux you install **Docker Engine** directly (no VM required) since the host already runs a Linux kernel.",
       ],
     },
     {
@@ -530,7 +530,7 @@ docker run hello-world`,
       kind: "prose",
       heading: "Windows",
       body: [
-        "On Windows, Docker Desktop uses WSL2 to get a real Linux kernel under the hood.",
+        "On Windows, **Docker Desktop** uses WSL2 to get a real Linux kernel under the hood.",
       ],
     },
     {
@@ -552,7 +552,7 @@ docker run hello-world`,
       kind: "callout",
       tone: "info",
       title: "Skip Docker Desktop on Linux",
-      body: "If you are on Linux, install Docker Engine directly instead of Docker Desktop. Docker Desktop on Linux adds an unnecessary VM layer you do not need, since the host kernel already handles containers natively. On Mac and Windows, Docker Desktop is the right call because Docker needs a Linux kernel to run containers at all.",
+      body: "If you are on Linux, install **Docker Engine** directly instead of **Docker Desktop**. Docker Desktop on Linux adds an unnecessary VM layer you do not need, since the host kernel already handles containers natively. On Mac and Windows, Docker Desktop is the right call because Docker needs a Linux kernel to run containers at all.",
     },
     {
       kind: "takeaways",
@@ -684,7 +684,7 @@ root@a1b2c3d4e5f6:/# exit
     {
       kind: "prose",
       body: [
-        "Breaking this down: `-d` runs it in the background, in detached mode. `-p 8080:80` maps port 8080 on your machine to port 80 inside the container. `--name my-nginx` gives it a human-readable name you can reference later. `nginx` is simply the image to use.",
+        "Breaking this down: **`-d`** runs it in the background, in detached mode. **`-p 8080:80`** maps port 8080 on your machine to port 80 inside the container. **`--name my-nginx`** gives it a human-readable name you can reference later. **`nginx`** is simply the image to use.",
         "Now visit `http://localhost:8080` in your browser. That page is being served by Nginx, running inside a Docker container.",
       ],
     },
