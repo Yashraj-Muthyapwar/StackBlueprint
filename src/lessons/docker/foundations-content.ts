@@ -630,18 +630,18 @@ Is the docker daemon running?`,
       language: "text",
       caption: "Install Docker on macOS",
       code: `# Option 1: Download Docker Desktop (Recommended)
-            # https://www.docker.com/products/docker-desktop
+# https://www.docker.com/products/docker-desktop
             
-            # Option 2: Install using Homebrew
-            brew install --cask docker
+# Option 2: Install using Homebrew
+brew install --cask docker
             
-            # Launch Docker Desktop
+# Launch Docker Desktop
             
-            # Verify Docker is available
-            docker --version
+# Verify Docker is available
+docker --version
             
-            # Verify the Docker Engine is running
-            docker version`,
+# Verify the Docker Engine is running
+docker version`,
     },
     {
       kind: "callout",
