@@ -17,6 +17,8 @@ import linuxNamespacesImg from "@/images/docker/foundations/linux-namespaces.jpg
 import linuxCgroupsImg from "@/images/docker/foundations/linux-cgroups.jpg";
 import dockerIntroImg from "@/images/docker/foundations/docker-intro.jpg";
 import dockerAnalogyImg from "@/images/docker/foundations/docker-analogy.jpg";
+import dockerDesktopImg from "@/images/docker/foundations/docker-desktop.png";
+import startupSequencesImg from "@/images/docker/foundations/startup-sequences.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -517,161 +519,352 @@ Step D: The Steady State
   ],
 };
 
-const installingDocker: LessonContent = {
-  slug: "installing-docker",
-  title: "Installing Docker",
+const settingUpDocker: LessonContent = {
+  slug: "setting-up-docker",
+  title: "Setting Up Docker",
   subtitle:
-    "Getting the daemon running and the client on your PATH, on whatever OS you use.",
+    "Understand Docker Desktop, prepare your environment, and install Docker on your operating system.",
   sections: [
     {
       kind: "prose",
-      heading: "One goal, three paths",
+      heading: "One Goal, Three Different Setups",
       body: [
-        "Installation varies by operating system, but the goal is identical everywhere: get the Docker daemon running and the `docker` client on your PATH.",
+        "No matter which operating system you use, the goal is exactly the same: install the **Docker CLI**, get the **Docker Engine** running, and verify everything works before running your first container.",
+        "The difference lies in **how** each operating system reaches that goal. Linux can run Docker Engine directly because it already provides the Linux kernel that containers depend on. macOS and Windows cannot, so they rely on **Docker Desktop** to provide that environment.",
       ],
     },
     {
       kind: "image",
       src: dockerMacWindowsImg,
-      alt: "Docker Desktop architecture on Mac and Windows, showing the Linux VM and Docker Engine underneath",
-      caption: "Docker Desktop on Mac and Windows: same experience, different backend underneath",
+      alt: "Docker Desktop architecture on Mac and Windows compared with Docker Engine running directly on Linux",
+      caption:
+        "Same Docker experience, different setup underneath depending on your operating system.",
+    },
+    {
+      kind: "prose",
+      heading: "What is Docker Desktop?",
+      body: [
+        "If you're using **macOS** or **Windows**, the first thing you'll install isn't Docker Engine directly—it's **Docker Desktop**.",
+        "**Docker Desktop** is the official application that bundles everything needed to build, run, and manage containers. Instead of installing multiple tools individually, Docker Desktop packages them into a single application that's easy to install and maintain.",
+        "It includes the **Docker CLI**, **Docker Engine**, **Docker Compose**, and a graphical dashboard for managing containers, images, volumes, and networks.",
+      ],
+    },
+    {
+      kind: "image",
+      src: dockerDesktopImg,
+      alt: "Docker Desktop overview showing its major components and hidden Linux virtual machine",
+      caption:
+        "Docker Desktop bundles everything needed to build, run, and manage containers.",
+    },
+    {
+      kind: "prose",
+      heading: "Why Does Docker Desktop Exist?",
+      body: [
+        "Containers aren't virtual machines—they're isolated Linux processes that rely on Linux kernel features such as **namespaces** and **cgroups**.",
+        "Because **macOS** and **Windows** don't include a Linux kernel, they can't run Linux containers directly. Docker Desktop solves this by providing the Linux environment Docker Engine needs while hiding all of the complexity behind a familiar desktop application.",
+        "If you're on **Linux**, Docker Desktop usually isn't necessary because Docker Engine can run directly on the host operating system.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Linux vs macOS & Windows",
+      body: "Linux installs **Docker Engine** directly. macOS and Windows install **Docker Desktop**, which provides the Linux environment required to run containers.",
+    },
+    {
+      kind: "prose",
+      heading: "Before You Run Your First Docker Command",
+      body: [
+        "Installing Docker Desktop is only the first step. Before any Docker command can work, the **Docker Engine** must be running.",
+        "When you launch Docker Desktop, it automatically prepares everything required before containers can start. Once the startup process completes, Docker is ready to accept commands from the Docker CLI.",
+        "The infographic below shows the high-level startup sequence. Don't worry about understanding every component yet—you'll learn how everything works internally in the **Docker Architecture** lesson.",
+      ],
+    },
+    {
+      kind: "image",
+      src: startupSequencesImg,
+      alt: "Docker Desktop startup sequence",
+      caption:
+        "Behind the scenes, Docker Desktop prepares everything before the engine is ready to run containers.",
+    },
+    {
+      kind: "prose",
+      heading: "The Golden Rule",
+      body: [
+        "The **Docker CLI** is only a client—it sends commands to the **Docker Engine**.",
+        "If Docker Desktop hasn't finished starting, the engine isn't running yet, so the CLI has nothing to communicate with. This is one of the most common mistakes beginners encounter.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "What happens when Docker Engine isn't running",
+      code: `$ docker ps
+      
+      Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+      Is the docker daemon running?`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Always Start Docker Desktop First",
+      body: "Before opening your terminal and running Docker commands, make sure Docker Desktop has fully started and the Docker Engine is running. Once it's ready, every Docker command will work normally.",
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Ready to Install?",
+      body:
+        "Now that you understand what Docker Desktop is and why it's needed, let's install Docker on your operating system.",
     },
     {
       kind: "prose",
       heading: "macOS",
       body: [
-        "**Docker Desktop** is the standard path on a Mac. It bundles the CLI, the daemon, and a lightweight Linux VM, since macOS cannot run Linux containers natively.",
+        "**Docker Desktop** is the recommended way to use Docker on macOS. It installs the Docker CLI, Docker Engine, Docker Compose, and manages the lightweight Linux environment automatically.",
+        "After installing Docker Desktop, launch the application and wait until the Docker whale icon indicates that the engine is running before opening your terminal.",
       ],
     },
     {
       kind: "code",
       language: "text",
-      caption: "macOS install",
-      code: `# Option 1: Docker Desktop (recommended for beginners)
-# Download from https://www.docker.com/products/docker-desktop
-
-# Option 2: Homebrew
-brew install --cask docker
-
-# After installation, verify:
-docker --version
-# Docker version 27.x.x, build xxxxxxx
-
-docker run hello-world
-# Should print "Hello from Docker!" and explain what just happened`,
-    },
-    {
-      kind: "prose",
-      heading: "Linux (Ubuntu / Debian)",
-      body: [
-        "On Linux you install **Docker Engine** directly (no VM required) since the host already runs a Linux kernel.",
-      ],
-    },
-    {
-      kind: "code",
-      language: "text",
-      caption: "Linux install",
-      code: `# Remove old versions
-sudo apt-get remove docker docker-engine docker.io containerd runc
-
-# Install prerequisites
-sudo apt-get update
-sudo apt-get install ca-certificates curl gnupg
-
-# Add Docker's official GPG key
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \\
-  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-# Set up the repository
-echo \\
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\
-  https://download.docker.com/linux/ubuntu \\
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \\
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Install Docker Engine
-sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-# (Optional) Run Docker without sudo
-sudo usermod -aG docker $USER
-# Log out and back in for group changes to take effect
-
-# Verify
-docker run hello-world`,
-    },
-    {
-      kind: "prose",
-      heading: "Windows",
-      body: [
-        "On Windows, **Docker Desktop** uses WSL2 to get a real Linux kernel under the hood.",
-      ],
-    },
-    {
-      kind: "code",
-      language: "text",
-      caption: "Windows install",
-      code: `# Option 1: Docker Desktop (requires WSL2)
-# Download from https://www.docker.com/products/docker-desktop
-# Enable WSL2 backend during installation
-
-# Option 2: Using winget
-winget install Docker.DockerDesktop
-
-# Verify in PowerShell
-docker --version
-docker run hello-world`,
+      caption: "Install Docker on macOS",
+      code: `# Option 1: Download Docker Desktop (Recommended)
+            # https://www.docker.com/products/docker-desktop
+            
+            # Option 2: Install using Homebrew
+            brew install --cask docker
+            
+            # Launch Docker Desktop
+            
+            # Verify Docker is available
+            docker --version
+            
+            # Verify the Docker Engine is running
+            docker version`,
     },
     {
       kind: "callout",
       tone: "info",
-      title: "Skip Docker Desktop on Linux",
-      body: "If you are on Linux, install **Docker Engine** directly instead of **Docker Desktop**. Docker Desktop on Linux adds an unnecessary VM layer you do not need, since the host kernel already handles containers natively. On Mac and Windows, Docker Desktop is the right call because Docker needs a Linux kernel to run containers at all.",
+      title: "Why Doesn't Homebrew Start Docker?",
+      body: "Homebrew installs the Docker Desktop application, but it doesn't automatically launch it. After installation, open Docker Desktop once so it can start the Docker Engine in the background.",
+    },
+
+    {
+      kind: "prose",
+      heading: "Linux (Ubuntu / Debian)",
+      body: [
+        "Linux is different because it already provides the Linux kernel that containers rely on. Instead of installing Docker Desktop, you install **Docker Engine** directly on the host operating system.",
+        "Since there is no hidden virtual machine involved, Docker Engine communicates directly with your Linux kernel, making the setup simpler and more lightweight.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Install Docker Engine on Ubuntu / Debian",
+      code: `# Remove old versions
+      sudo apt-get remove docker docker-engine docker.io containerd runc
+      
+      # Install prerequisites
+      sudo apt-get update
+      sudo apt-get install ca-certificates curl gnupg
+      
+      # Create Docker keyring
+      sudo install -m 0755 -d /etc/apt/keyrings
+      
+      # Download Docker's official GPG key
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \\
+      sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+      
+      # Add Docker repository
+      echo \\
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \\
+      https://download.docker.com/linux/ubuntu \\
+      $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \\
+      sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      
+      # Install Docker Engine
+      sudo apt-get update
+      sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      
+      # (Optional) Allow Docker without sudo
+      sudo usermod -aG docker $USER
+      
+      # Log out and back in
+      
+      # Verify installation
+      docker --version
+      docker version`,
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Linux Users",
+      body: "Unlike macOS and Windows, Linux doesn't require Docker Desktop because Docker Engine can run directly on the host operating system.",
+    },
+
+    {
+      kind: "prose",
+      heading: "Windows",
+      body: [
+        "On Windows, Docker Desktop uses **WSL 2 (Windows Subsystem for Linux)** to provide a real Linux kernel for running containers.",
+        "As with macOS, simply installing Docker Desktop isn't enough—you must start the application and wait for the Docker Engine to finish starting before using Docker commands.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Install Docker on Windows",
+      code: `# Option 1: Download Docker Desktop
+      # https://www.docker.com/products/docker-desktop
+      
+      # Option 2: Install using winget
+      winget install Docker.DockerDesktop
+      
+      # Enable the WSL2 backend during installation
+      
+      # Launch Docker Desktop
+      
+      # Verify installation
+      docker --version
+      docker version`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "WSL2 Required",
+      body: "Docker Desktop uses WSL2 as its Linux backend on Windows. If WSL2 isn't installed, Docker Desktop will guide you through enabling it during setup.",
+    },
+        {
+      kind: "prose",
+      heading: "Verifying Your Installation",
+      body: [
+        "Installing Docker is only half the job—you also need to verify that everything is working correctly. The quickest way to do this is by checking the Docker client, confirming the Docker Engine is running, and finally launching your very first container.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Verify your Docker installation",
+      code: `# Verify the Docker CLI
+docker --version
+
+# Verify the Docker Engine
+docker version
+
+# Run your first container
+docker run hello-world`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "If **hello-world** runs successfully, Docker automatically downloads the image (if necessary), creates a container, runs it, prints a welcome message, and exits. This confirms that your Docker CLI can communicate with the Docker Engine and that your environment is ready for the rest of this course.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Setup Complete!",
+      body: "Congratulations! Your Docker environment is now fully configured. You've successfully installed Docker, started the Docker Engine, and verified that containers can run correctly.",
+    },
+    {
+      kind: "prose",
+      heading: "Common Setup Issues",
+      body: [
+        "If something doesn't work, don't panic. Most Docker setup problems are caused by one of a handful of common issues and are usually easy to fix.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Common installation problems",
+      headers: ["Problem", "Likely Cause", "Solution"],
+      rows: [
+        [
+          "Cannot connect to the Docker daemon",
+          "Docker Engine isn't running",
+          "Start Docker Desktop and wait until it's fully initialized.",
+        ],
+        [
+          "docker: command not found",
+          "Docker CLI isn't installed or isn't on your PATH",
+          "Reinstall Docker Desktop or Docker Engine and restart your terminal.",
+        ],
+        [
+          "permission denied while trying to connect to the Docker daemon socket",
+          "Your Linux user isn't in the docker group",
+          "Run 'sudo usermod -aG docker $USER' and log out and back in.",
+        ],
+        [
+          "Docker Desktop won't start",
+          "Virtualization or WSL2 isn't enabled",
+          "Enable virtualization (Intel VT-x / AMD-V) or install WSL2 as prompted.",
+        ],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Don't Memorize Everything",
+      body: "At this stage, your goal isn't to memorize every command or installation step. Simply understand what Docker Desktop does, why Linux installs Docker differently, and verify that your environment is working correctly. You'll use Docker every lesson from here on, so the commands will quickly become second nature.",
     },
     {
       kind: "takeaways",
       items: [
-        "Every install, on every OS, ends with the same goal: a running daemon and the client on your PATH.",
-        "Mac and Windows need Docker Desktop, which supplies a hidden Linux VM. Linux does not, since the kernel is already there.",
-        "`docker run hello-world` is the universal sanity check that your install actually works.",
-        "Never install Docker Desktop on Linux. Install Docker Engine directly and skip the unnecessary VM layer.",
+        "Docker Desktop is the easiest way to run Docker on macOS and Windows.",
+        "Linux installs Docker Engine directly because it already provides the Linux kernel.",
+        "The Docker CLI sends commands to the Docker Engine, so the engine must be running before Docker commands will work.",
+        "Always wait for Docker Desktop to finish starting before opening your terminal.",
+        "`docker run hello-world` is the quickest way to verify your Docker environment is working correctly.",
       ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "install-mac-windows",
-          question: "Why do Mac and Windows need Docker Desktop, while Linux does not?",
+          id: "setup-docker-desktop",
+          question: "Why do macOS and Windows use Docker Desktop instead of Docker Engine directly?",
           options: [
-            "Docker Desktop is required on every operating system",
-            "Mac and Windows do not run a Linux kernel natively, so Docker Desktop supplies one via a lightweight VM",
-            "Linux is not supported by Docker at all",
-            "Docker Desktop is only a GUI, with no functional difference",
+            "Docker Engine only works with graphical interfaces.",
+            "macOS and Windows don't include a Linux kernel, so Docker Desktop provides the Linux environment containers need.",
+            "Docker Desktop makes containers faster than Linux.",
+            "Docker Engine has been discontinued.",
           ],
           correctIndex: 1,
           explanation:
-            "Containers need a Linux kernel. Linux already has one. Mac and Windows do not, so Docker Desktop creates a small Linux VM to supply it.",
+            "Containers depend on Linux kernel features such as namespaces and cgroups. Docker Desktop provides that Linux environment on macOS and Windows.",
         },
         {
-          id: "install-verify",
-          question: "What command is the universal sanity check that your Docker install works?",
+          id: "setup-engine-running",
+          question: "Why must Docker Desktop be running before executing Docker commands?",
           options: [
-            "docker --help",
-            "docker run hello-world",
-            "docker desktop start",
-            "docker install verify",
+            "The Docker CLI starts Docker Engine automatically.",
+            "The Docker CLI communicates with Docker Engine, so the engine must already be running.",
+            "Docker commands only work when the dashboard is open.",
+            "Docker Desktop compiles Docker commands before running them.",
           ],
           correctIndex: 1,
           explanation:
-            "`docker run hello-world` pulls a tiny image, runs it, and prints a confirmation message, proving the client and daemon can both talk to each other.",
+            "The Docker CLI is simply a client. It sends requests to Docker Engine. If the engine isn't running, the CLI has nothing to communicate with.",
+        },
+        {
+          id: "setup-verification",
+          question: "Which command is commonly used to verify that Docker can successfully run containers?",
+          options: [
+            "docker build",
+            "docker images",
+            "docker run hello-world",
+            "docker inspect",
+          ],
+          correctIndex: 2,
+          explanation:
+            "`docker run hello-world` downloads a small image (if necessary), creates a container, runs it, and prints a success message, confirming that your Docker installation is working correctly.",
         },
       ],
     },
   ],
 };
 
+    
 const yourFirstContainer: LessonContent = {
   slug: "your-first-container",
   title: "Your First Container",
@@ -884,7 +1077,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       whyDockerExists,
       dockerArchitecture,
       containersVsVms,
-      installingDocker,
+      settingUpDocker,
       yourFirstContainer,
     ],
   },
