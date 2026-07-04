@@ -769,7 +769,7 @@ function Pipeline({ t }: { t: number }) {
         padding: "16px 16px 18px",
         display: "flex",
         flexDirection: "column",
-        minWidth: 0,
+        minWidth: 480,
         boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
       }}
     >
@@ -1073,11 +1073,13 @@ export default function DockerRunUnderTheHood() {
       >
         <div
           className="sbduh-term"
-          style={{ display: "flex", flexDirection: "column", minHeight: 560, maxHeight: 680, minWidth: 0 }}
+          style={{ display: "flex", flexDirection: "column", minHeight: 560, minWidth: 0 }}
         >
           <Terminal t={t} />
         </div>
-        <Pipeline t={t} />
+        <div style={{ overflowX: "auto", display: "flex", flex: 1, minWidth: 0 }}>
+          <Pipeline t={t} />
+        </div>
       </div>
 
       <Controls
