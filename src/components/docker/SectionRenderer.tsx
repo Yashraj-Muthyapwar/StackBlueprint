@@ -98,7 +98,7 @@ function parseInlineMarkdown(text: string) {
       return (
         <code
           key={i}
-          className="rounded bg-muted/30 px-1 py-0.5 font-mono text-[0.85em] text-foreground"
+          className="rounded bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 font-mono text-[0.85em] text-red-600 dark:text-red-400 font-medium"
         >
           {part.slice(1, -1)}
         </code>
