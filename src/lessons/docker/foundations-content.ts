@@ -6,7 +6,7 @@ import containerPackageImg from "@/images/docker/foundations/container-package.j
 import whyDockerExistsImg from "@/images/docker/foundations/why-docker-exists.jpg";
 import containerRevolutionImg from "@/images/docker/foundations/container-revolution.jpg";
 import vmVsContainerHotelImg from "@/images/docker/foundations/vm-vs-container-hotel.jpg";
-import dockerMacWindowsImg from "@/images/docker/foundations/docker-mac-windows-architecture.jpg";
+import dockerMacWindowsImg from "@/images/docker/foundations/docker-desktop-architecture.jpg";
 import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
 import dockerArchitectureImg from "@/images/docker/foundations/docker-architecture.jpg";
 import dockerArchitectureAnalogyImg from "@/images/docker/foundations/docker-architecture-analogy.jpg";
@@ -1075,8 +1075,8 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       "Why Docker exists, how it stacks up against VMs, how the pieces fit together, and how to get it running and start your first container.",
     lessons: [
       whyDockerExists,
-      dockerArchitecture,
       containersVsVms,
+      dockerArchitecture,
       settingUpDocker,
       yourFirstContainer,
     ],
