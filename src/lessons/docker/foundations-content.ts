@@ -90,27 +90,18 @@ const whyDockerExists: LessonContent = {
     {
       kind: "prose",
       heading: "The analogy: shipping containers",
-      content: [
-        {
-          kind: "image",
-          src: dockerAnalogyImg,
-          alt: "Docker explained using the shipping container analogy",
-          caption: "A standardized container for applications, just like shipping containers for cargo",
-        },
-        {
-          kind: "paragraph",
-          text: "Before standardized shipping containers arrived in the 1950s, loading cargo onto ships was a nightmare. Every item had a different shape, size, and fragility. Workers manually stacked barrels next to crates next to bags. It was slow, expensive, and things broke constantly.",
-        },
-        {
-          kind: "paragraph",
-          text: "Then Malcolm McLean introduced the intermodal shipping container: a standard metal box. It did not matter what was inside. The box was always the same dimensions, so cranes, trucks, and ships could all handle it with identical equipment.",
-        },
-        {
-          kind: "paragraph",
-          text: "Docker is that standardized box for software. It does not care if your app is a Python script, a Node.js API, or a PostgreSQL database. It wraps it in a standard format that any Docker-compatible system can run without asking whether it has the right dependencies installed.",
-        },
+      image: {
+        src: dockerAnalogyImg,
+        alt: "Docker explained using the shipping container analogy",
+        caption:
+          "A standardized container for applications, just like shipping containers for cargo",
+      },
+      body: [
+        "Before standardized shipping containers arrived in the 1950s...",
+        "Then Malcolm McLean introduced...",
+        "Docker is that standardized box for software...",
       ],
-    }
+    },
     {
       kind: "callout",
       tone: "info",
