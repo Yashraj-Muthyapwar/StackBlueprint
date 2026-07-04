@@ -460,7 +460,7 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "* **Namespaces (pid, net, mnt, ipc, uts):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), and file systems.",
+        "• **Namespaces (pid, net, mnt, ipc, uts):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), and file systems.",
       ]
     },
     {
@@ -472,7 +472,7 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "* **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
+        "• **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
       ]
     },
     {
@@ -484,7 +484,9 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "* **Capabilities and security modules (Seccomp, AppArmor, SELinux):** restrict what the container is allowed to touch, like kitchen safety rules.\n* **Union filesystem:** lets container images be built from layered, reusable pieces, like stacking pre-made sauces instead of remaking them from scratch every time.\n\nContainers are not tiny virtual machines. They are just regular Linux processes with strict boundaries drawn around them using these kernel features.",
+        "• **Capabilities and security modules (Seccomp, AppArmor, SELinux):** restrict what the container is allowed to touch, like kitchen safety rules.",
+        "• **Union filesystem:** lets container images be built from layered, reusable pieces, like stacking pre-made sauces instead of remaking them from scratch every time.",
+        "Containers are not tiny virtual machines. They are just regular Linux processes with strict boundaries drawn around them using these kernel features.",
       ],
     },
     {
