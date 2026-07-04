@@ -9,6 +9,13 @@ import vmVsContainerHotelImg from "@/images/docker/foundations/vm-vs-container-h
 import clientServerArchImg from "@/images/docker/foundations/client-server-architecture.jpg";
 import dockerMacWindowsImg from "@/images/docker/foundations/docker-mac-windows-architecture.jpg";
 import helloWorldWalkthroughImg from "@/images/docker/foundations/hello-world-walkthrough.jpg";
+import dockerArchitectureImg from "@/images/docker/foundations/docker-architecture.jpg";
+import dockerArchitectureAnalogyImg from "@/images/docker/foundations/docker-architecture-analogy.jpg";
+import dockerDaemonImg from "@/images/docker/foundations/docker-daemon.jpg";
+import containerdArchitectureImg from "@/images/docker/foundations/containerd-architecture.jpg";
+import runcImg from "@/images/docker/foundations/runc.jpg";
+import linuxNamespacesImg from "@/images/docker/foundations/linux-namespaces.jpg";
+import linuxCgroupsImg from "@/images/docker/foundations/linux-cgroups.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -41,11 +48,11 @@ const whyDockerExists: LessonContent = {
     },
     {
       kind: "image",
-      src: containerPackageImg,
-      alt: "Layers of a container package: application code, runtime, libraries, and config",
-      caption: "Code, runtime, libraries, and config, sealed into one standardized unit",
+      src: whyDockerExistsImg,
+      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
+      caption: "The problem before Docker, and the shape of the fix",
     },
-        {
+    {
       kind: "prose",
       heading: "What exactly are we talking about?",
       body: [
@@ -81,12 +88,6 @@ const whyDockerExists: LessonContent = {
         "Then Malcolm McLean introduced the intermodal shipping container: a standard metal box. It did not matter what was inside. The box was always the same dimensions, so cranes, trucks, and ships could all handle it with identical equipment.",
         "Docker is that standardized box for software. It does not care if your app is a Python script, a Node.js API, or a PostgreSQL database. It wraps it in a standard format that any Docker-compatible system can run without asking whether it has the right dependencies installed.",
       ],
-    },
-    {
-      kind: "image",
-      src: whyDockerExistsImg,
-      alt: "Why Docker exists: inconsistent environments before Docker, and the standardized container solution",
-      caption: "The problem before Docker, and the shape of the fix",
     },
     {
       kind: "callout",
@@ -291,120 +292,148 @@ const containersVsVms: LessonContent = {
 
 const dockerArchitecture: LessonContent = {
   slug: "docker-architecture",
-  title: "Docker Architecture",
+  title: "Demystifying Docker Architecture: From Command to Container",
   subtitle:
-    "Client, daemon, registry: the three parts that turn \"docker run\" into a running container.",
+    "If you have ever felt like Docker is a bit of a black box, you are not alone. It looks like magic when you type docker run and a fully functioning application appears out of nowhere.",
   sections: [
     {
       kind: "prose",
       heading: "Docker is not one program",
       body: [
-        "Docker is not a single magical binary. It is a client-server architecture with a few distinct moving parts. Understanding them will save you hours of confusion as you go deeper.",
+        "Under the hood, Docker is not a single giant program. It is an organized assembly line of specialized components working together. which you can see in the below image",
       ],
     },
     {
       kind: "image",
-      src: clientServerArchImg,
-      alt: "Docker client sending REST API requests to the Docker daemon, which manages images, containers, volumes, and networks",
-      caption: "Client sends REST requests. Daemon manages images, containers, volumes, and networks.",
+      src: dockerArchitectureImg,
+      alt: "Docker architecture",
+      caption: "Docker architecture",
     },
     {
       kind: "prose",
-      heading: "The three core components",
+      heading: "Why is it built this way?",
       body: [
-        "**Docker Client** (`docker`) is the command-line tool you actually type into. When you run `docker run`, `docker build`, or `docker ps`, you are talking to the client. It does not do any heavy lifting itself. It sends your instructions to the Docker daemon over a REST API.",
-      ],
-    },
-    {
-      kind: "code",
-      language: "text",
-      caption: "Everything you type goes through the client",
-      code: `# These are all Docker Client commands
-docker run nginx
-docker build -t myapp .
-docker ps
-docker logs my-container`,
-    },
-    {
-      kind: "prose",
-      body: [
-        "**Docker Daemon** (`dockerd`) is the background service that does the real work. It manages images, containers, networks, and volumes, and executes whatever the client asks. On Linux it runs as a systemd service. On Mac and Windows it runs inside a lightweight Linux VM managed by Docker Desktop, because containers need a Linux kernel.",
-        "**Docker Registry** is a storage and distribution system for images. Docker Hub is the default public registry, essentially GitHub for container images. Run `docker pull nginx` and the daemon fetches that image from Docker Hub. Private registries (like Amazon ECR, Google Artifact Registry, Azure Container Registry, or a self-hosted option) all work the same way.",
+        "Every layer in Docker has a specific, isolated responsibility. Some components manage APIs, some manage container lifecycle operations, and others interact directly with the Linux kernel. This strict separation keeps the runtime modular, stable, and easier to maintain. If one piece needs an update or crashes, the other components can keep working smoothly without bringing the whole system down.",
       ],
     },
     {
       kind: "prose",
-      heading: "How a docker run command actually flows",
+      heading: "The Restaurant Analogy",
       body: [
-        "Trace what happens the moment you type `docker run -d -p 8080:80 nginx`:",
+        "Think of Docker like ordering food at a restaurant. You (the customer) never walk into the kitchen and cook your own meal. You tell the waiter what you want, the waiter tells the kitchen, the kitchen tells the chef, and the chef actually cooks the food using the stove and ingredients. Docker works the same way. You type a command, and that request quietly travels through several \"staff members\" before a container actually starts running.",
       ],
     },
     {
-      kind: "code",
-      language: "text",
-      caption: "From keystroke to running process",
-      code: `Docker Client parses your command
-Client sends a REST API request to Docker Daemon
-Daemon checks if the "nginx" image exists locally
-If not found locally, Daemon pulls it from Docker Hub
-Daemon creates a new container from the image
-Daemon allocates a read-write filesystem layer
-Daemon creates a network interface and assigns an IP
-Daemon maps port 8080 on host to port 80 in container
-Daemon starts the container process (nginx, in this case)
-Daemon returns the container ID to the Client`,
+      kind: "image",
+      src: dockerArchitectureAnalogyImg,
+      alt: "Docker architecture restaurant analogy",
+      caption: "Docker architecture restaurant analogy",
     },
     {
-      kind: "animation",
-      variant: "docker-client-server",
-      caption: "CLI to REST API to daemon to images, containers, volumes, networks",
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "The daemon is the brain",
-      body: "The client is just the messenger. This is why remote Docker daemons, Docker over SSH, and GUI tools like Portainer all work: they talk to the same daemon API the CLI does.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "Docker is a client-server system: the client sends commands, the daemon does the work.",
-        "The daemon (dockerd) manages every Docker object: images, containers, networks, and volumes.",
-        "Registries like Docker Hub store and distribute images. `docker pull` fetches from one.",
-        "A single `docker run` triggers a ten-step round trip from client to daemon to registry to running process.",
+      kind: "prose",
+      heading: "Component by Component Breakdown",
+      body: [
+        "**1. Docker CLI, the User Interface (The Customer Ordering Food)**\n\nThis is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.\n\nBecause of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.\n\n*Analogy*: CLI is the customer who walks up and places an order. You do not cook anything or go near the kitchen, you just say what you want out loud, in this case by typing `docker run` or `docker ps`.",
+        "**2. dockerd (The Docker Daemon)**\n\nThe Docker Daemon (`dockerd`) is a persistent background process that sits and listens for incoming requests from the CLI.",
       ],
     },
     {
-      kind: "quiz",
-      questions: [
-        {
-          id: "arch-daemon",
-          question: "What actually creates and runs the container when you type `docker run`?",
-          options: [
-            "The Docker Client, directly",
-            "The Docker Daemon, after receiving the request from the client",
-            "Docker Hub",
-            "Your operating system's shell",
-          ],
-          correctIndex: 1,
-          explanation:
-            "The client only sends a REST API request. The daemon is the process that actually pulls images and creates containers.",
-        },
-        {
-          id: "arch-registry",
-          question: "What is Docker Hub?",
-          options: [
-            "A command-line flag for `docker run`",
-            "The default public registry that stores and distributes Docker images",
-            "A replacement for the Docker daemon",
-            "A monitoring dashboard for running containers",
-          ],
-          correctIndex: 1,
-          explanation:
-            "Docker Hub is a registry (a place where images live). `docker pull` and `docker push` talk to a registry like Docker Hub or a private one.",
-        },
+      kind: "image",
+      src: dockerDaemonImg,
+      alt: "Docker Daemon",
+      caption: "Docker Daemon",
+    },
+    {
+      kind: "prose",
+      body: [
+        "It acts as the high-level orchestration layer for your local operations, accepting requests via a REST API over a Unix socket or a network interface. It manages your networks, storage volumes, and images. However, `dockerd` does NOT run containers directly. Instead, it hands container lifecycle operations down to `containerd`. This architectural split keeps your containers running perfectly even if the Docker daemon restarts or crashes.\n\n*Analogy*: `dockerd` is the restaurant manager who takes your order, checks your ID if needed (security and isolation), and passes the ticket to the kitchen. They run the front of house, keep track of every table, dish, and ingredient in the building, but never actually cook a single thing themselves.",
+        "**3. containerd (The Container Runtime Supervisor)**\n\nOnce `dockerd` hands off a request via internal gRPC communication, `containerd` takes charge of supervising the container lifecycle.",
       ],
     },
+    {
+      kind: "image",
+      src: containerdArchitectureImg,
+      alt: "containerd Architecture",
+      caption: "containerd Architecture",
+    },
+    {
+      kind: "prose",
+      body: [
+        "It handles the core runtime operations: pulling images, managing storage snapshots, unpacking images, and supervising execution. Once `dockerd` delegates the task to start a container, it mostly steps out of the way, leaving `containerd` in control. Since `containerd` is often busy running multiple containers at once, it does not personally monitor and manage the lifecycle of every single container. Instead, it hands the job off to a dedicated shim per container.\n\n*Analogy*: `containerd` is the kitchen manager who receives the ticket from the front of house and decides how the meal gets made. They manage the pantry (pulling images), track which ingredients are already prepped (snapshots and layers), and decide when a dish should start or stop, but they are too busy running the whole kitchen to stand over one pan themselves.",
+        "**4. containerd-shim (The Head Chef Assistant per Dish)**\n\nThis is the most underrated part of the whole system, and honestly the coolest one. For every single container you run, `containerd` creates one dedicated shim process just for that container.\n\nWhy does this matter? Because once `runc` actually starts the container, `runc` exits immediately. It does its job and leaves. If nothing stuck around, the container process would become an orphan with no one managing its input, output, or signals. The shim stays behind, keeps STDIO (input and output) open, forwards signals like stop or kill, and reports status back up to `containerd`. If `containerd` crashes or undergoes an upgrade, the shim keeps the connection alive and the container running completely uninterrupted.\n\n*Analogy*: `containerd-shim` is the personal waiter assigned to just your table for the entire meal. The head chef cooks your dish and immediately walks away, so this waiter stays behind to keep your food warm, bring refills when you ask, and let the kitchen manager know if you finish or send something back.",
+        "**5. runc, the OCI Runtime (The Head Chef Who Actually Cooks)**\n\n`containerd-shim` asks `runc` to actually build and start the container by executing it. `runc` is a lightweight, low-level tool that follows the OCI (Open Container Initiative) specification, which is basically a universal recipe book that all container tools agree to follow.",
+      ],
+    },
+    {
+      kind: "image",
+      src: runcImg,
+      alt: "runc",
+      caption: "runc",
+    },
+    {
+      kind: "prose",
+      body: [
+        "`runc` has one job: interact directly with the Linux kernel to create the container. It reads the container configuration file, sets up the filesystem boundaries, configures namespaces and cgroups, and kicks off the process. This is the exact layer where containers stop behaving like abstract Docker objects and become ordinary Linux processes. The moment the process goes live, `runc` exits immediately. Its job is complete, leaving the shim behind to supervise the container and report its status back up to `containerd`.\n\n*Analogy*: `runc` is the head chef who actually cooks the dish following a strict universal recipe book that every restaurant in the chain uses. Once the dish is plated and handed off, the chef walks straight back to the kitchen and does not linger at your table.",
+        "**6. The Linux Kernel (The Actual Stove, Oven, and Ingredients)**\n\nThis is where the actual isolation happens. The kernel uses core operating system features to build the sandbox walls around the ordinary process that `runc` kicked off:",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "* **Namespaces (pid, net, mnt, ipc, uts):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), and file systems.",
+      ]
+    },
+    {
+      kind: "image",
+      src: linuxNamespacesImg,
+      alt: "Linux Namespaces",
+      caption: "Linux Namespaces",
+    },
+    {
+      kind: "prose",
+      body: [
+        "* **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
+      ]
+    },
+    {
+      kind: "image",
+      src: linuxCgroupsImg,
+      alt: "Linux Cgroups",
+      caption: "Linux Cgroups",
+    },
+    {
+      kind: "prose",
+      body: [
+        "* **Capabilities and security modules (Seccomp, AppArmor, SELinux):** restrict what the container is allowed to touch, like kitchen safety rules.\n* **Union filesystem:** lets container images be built from layered, reusable pieces, like stacking pre-made sauces instead of remaking them from scratch every time.\n\nContainers are not tiny virtual machines. They are just regular Linux processes with strict boundaries drawn around them using these kernel features.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The End-to-End Flow: Running a Container",
+      body: [
+        "Let us trace exactly what happens when you hit Enter on `$ docker run nginx`:",
+      ],
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run nginx",
+      output: `Step A: The Request
+1. You type the command in the Docker CLI.
+2. The CLI packages this into a REST API request and sends it to dockerd via a Unix socket (like /var/run/docker.sock on Linux).
+Step B: The Hand-off
+1. dockerd receives the request, verifies it, and tells containerd via gRPC that a new container needs to be supervised.
+2. containerd handles the image layers. If you do not have the Nginx image locally, it reaches out to the registry to pull it.
+Step C: The Creation
+1. containerd spins up a containerd-shim dedicated to this specific container instance.
+2. The shim invokes runc to execute the task.
+3. runc talks to the Linux Kernel, configuring the namespaces and cgroups needed to sandbox the process.
+Step D: The Steady State
+1. The Nginx process starts inside its isolated environment.
+2. runc exits, leaving containerd-shim in charge of monitoring the alive process.
+3. A success status ripples back up the chain: from the shim, to containerd, to dockerd, and finally to your terminal screen via the CLI.`,
+      buttonLabel: "Trace Execution",
+      caption: "End-to-End Execution Trace",
+    }
   ],
 };
 
@@ -591,8 +620,8 @@ const yourFirstContainer: LessonContent = {
                2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
                3. The Docker daemon created a new container from that image which runs the executable that produces the output you are currently reading.
                4. The Docker daemon streamed that output to the Docker client, which sent it to your terminal.`,
-                    buttonLabel: "Run Command",
-                    caption: "Your first container",
+      buttonLabel: "Run Command",
+      caption: "Your first container",
     },
     {
       kind: "prose",
@@ -601,12 +630,6 @@ const yourFirstContainer: LessonContent = {
       ],
     },
 
-    {
-      kind: "prose",
-      body: [
-        "Here is what just happened: Docker pulled the `ubuntu` image from Docker Hub if it was not already cached, created a new container from that image, ran the `echo` command inside it, printed the output, then stopped the container once the process finished.",
-      ],
-    },
     {
       kind: "prose",
       heading: "Getting an interactive shell",
@@ -766,10 +789,10 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       "Why Docker exists, how it stacks up against VMs, how the pieces fit together, and how to get it running and start your first container.",
     lessons: [
       whyDockerExists,
-      containersVsVms,
       dockerArchitecture,
+      containersVsVms,
       installingDocker,
       yourFirstContainer,
     ],
   },
-};
+};```
