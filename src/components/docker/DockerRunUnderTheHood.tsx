@@ -1057,7 +1057,7 @@ export default function DockerRunUnderTheHood() {
         display: "flex",
         flexDirection: "column",
         gap: 14,
-        border: \`1px solid \${C.border}\`,
+        border: `1px solid ${C.border}`,
       }}
     >
       <style dangerouslySetInnerHTML={{ __html: KEYFRAMES }} />
