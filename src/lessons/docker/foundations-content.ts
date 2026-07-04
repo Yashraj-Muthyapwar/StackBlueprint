@@ -224,11 +224,11 @@ const containersVsVms: LessonContent = {
 │          Hardware             │
 └───────────────────────────────┘`,
     },
-    {
-      kind: "animation",
-      variant: "docker-vm-vs-container",
-      caption: "VMs boot a full guest OS. Containers share the host kernel and start in seconds.",
-    },
+    // {
+    //   kind: "animation",
+    //   variant: "docker-vm-vs-container",
+    //   caption: "VMs boot a full guest OS. Containers share the host kernel and start in seconds.",
+    // },
     {
       kind: "table",
       caption: "The result, side by side",
