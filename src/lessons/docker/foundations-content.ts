@@ -563,6 +563,47 @@ const dockerArchitecture: LessonContent = {
     },
     {
       kind: "docker-run-under-the-hood",
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "docker-architecture-dockerd",
+          question: "Which component is responsible for accepting API requests from the CLI but does NOT actually run containers itself?",
+          options: [
+            "containerd",
+            "runc",
+            "dockerd (Docker Daemon)",
+            "Docker Registry"
+          ],
+          correctIndex: 2,
+          explanation: "dockerd is the high-level orchestration layer that receives API requests from the CLI, but it delegates the actual container runtime execution to containerd."
+        },
+        {
+          id: "docker-architecture-shim",
+          question: "Why does containerd create a dedicated 'shim' process for every container?",
+          options: [
+            "To make the container run faster",
+            "To keep the container running if containerd crashes or restarts",
+            "To translate Linux commands into macOS commands",
+            "To download image layers from Docker Hub"
+          ],
+          correctIndex: 1,
+          explanation: "The shim keeps the container's standard I/O streams open and reports its status, allowing the container to survive independently even if containerd is upgraded or restarted."
+        },
+        {
+          id: "docker-architecture-runc",
+          question: "What happens to the 'runc' process immediately after the container starts running?",
+          options: [
+            "It continues running to monitor the container's CPU usage",
+            "It waits for the container to finish before exiting",
+            "It exits immediately, leaving the shim to supervise the container",
+            "It transforms into the container process itself"
+          ],
+          correctIndex: 2,
+          explanation: "runc has exactly one job: configuring the kernel boundaries and starting the process. The moment the process goes live, runc exits completely."
+        }
+      ]
     }
   ],
 };
