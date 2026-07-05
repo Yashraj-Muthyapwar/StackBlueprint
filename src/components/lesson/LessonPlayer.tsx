@@ -92,7 +92,25 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 mt-6">
+      {builder.problem && (() => {
+        const problemText = typeof builder.problem === "function" ? builder.problem(inputs) : builder.problem;
+        if (!problemText) return null;
+        return (
+          <div className="rounded-2xl border border-hairline bg-surface">
+            <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
+              <div className="size-1.5 rounded-full bg-violet shadow-[0_0_10px_var(--violet)]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                problem
+              </span>
+            </div>
+            <div className="px-4 py-3 text-[14px] leading-relaxed text-foreground/90">
+              <p className="whitespace-pre-wrap">{problemText}</p>
+            </div>
+          </div>
+        );
+      })()}
+
       <LessonControls
         builder={builder}
         onRun={handleRun}
