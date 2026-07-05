@@ -162,6 +162,7 @@ const baseEditorExtensions: Extension[] = [
   highlightField,
   breakpointField,
   breakpointLineField,
+  EditorView.lineWrapping,
   EditorView.theme({
     "&": { height: "100%", fontSize: "13px" },
     ".cm-scroller": { fontFamily: "ui-monospace, SFMono-Regular, monospace" },
@@ -331,10 +332,10 @@ function makePrediction(cur: Snapshot, next: Snapshot, targetIdx: number): Predi
       const f = next.frames.at(-1);
       const argHint = f
         ? Object.entries(f.locals)
-            .filter(([, v]) => v.kind === "prim")
-            .slice(0, 3)
-            .map(([k, v]) => `${k}=${String((v as PrimVal).value)}`)
-            .join(", ")
+          .filter(([, v]) => v.kind === "prim")
+          .slice(0, 3)
+          .map(([k, v]) => `${k}=${String((v as PrimVal).value)}`)
+          .join(", ")
         : "";
       const correct = String(rv.value);
       return {
@@ -520,11 +521,10 @@ function HeapCard({
                 key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
                 style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
-                  changedItems.has(i)
+                className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
                     : "border-hairline bg-background"
-                }`}
+                  }`}
               >
                 {valueLabel(v)}
               </span>
@@ -558,11 +558,10 @@ function HeapCard({
                 key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
                 style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
-                  changedItems.has(i)
+                className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
                     : "border-hairline bg-background"
-                }`}
+                  }`}
               >
                 {valueLabel(v)}
               </span>
@@ -620,7 +619,7 @@ export function PythonPlayground() {
 
   // Breakpoints: line numbers with a red dot in the gutter.
   const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
-  const breakpointsCbRef = useRef<(lines: Set<number>) => void>(() => {});
+  const breakpointsCbRef = useRef<(lines: Set<number>) => void>(() => { });
   breakpointsCbRef.current = setBreakpoints;
 
   const editorExtensions = useMemo<Extension[]>(() => {
@@ -1255,13 +1254,12 @@ export function PythonPlayground() {
       {/* Predict mode question card */}
       {prediction && (
         <div
-          className={`rounded-lg border px-3 py-2.5 transition ${
-            prediction.answered
+          className={`rounded-lg border px-3 py-2.5 transition ${prediction.answered
               ? prediction.answered.ok
                 ? "border-mint/50 bg-mint/5"
                 : "border-rose/50 bg-rose/5"
               : "border-amber/50 bg-amber/5"
-          }`}
+            }`}
         >
           <div className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             <Brain className="size-3 text-amber" />
@@ -1315,7 +1313,7 @@ export function PythonPlayground() {
       {/* Main split */}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
         {/* Editor */}
-        <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-hairline bg-surface">
+        <div className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-hairline bg-surface">
           <div className="flex items-center justify-between border-b border-hairline px-3 py-2">
             <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
               main.py
@@ -1327,7 +1325,7 @@ export function PythonPlayground() {
               </span>
             )}
           </div>
-          <div className="min-h-0 flex-1 overflow-hidden">
+          <div className="min-h-0 min-w-0 flex-1 overflow-auto">
             <CodeMirror
               value={code}
               onChange={(v) => setCode(v)}
@@ -1343,7 +1341,7 @@ export function PythonPlayground() {
         </div>
 
         {/* Visualization */}
-        <div className="relative flex min-h-0 flex-col overflow-hidden rounded-xl border border-hairline bg-surface">
+        <div className="relative flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border border-hairline bg-surface">
           <div className="flex items-center justify-between border-b border-hairline px-3 py-2">
             <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
               visualization
@@ -1353,166 +1351,164 @@ export function PythonPlayground() {
             </span>
           </div>
 
-          <div ref={containerRef} className="relative min-h-0 flex-1 overflow-auto">
+          <div ref={containerRef} className="relative min-h-0 min-w-0 flex-1 overflow-auto">
             <div ref={contentRef} className="relative">
-            {/* SVG arrow overlay: lives inside the content box so it scrolls with it */}
-            <svg
-              className="pointer-events-none absolute inset-0"
-              width="100%"
-              height="100%"
-              style={{ position: "absolute", inset: 0 }}
-            >
-              <defs>
-                <marker
-                  id="arrowhead"
-                  viewBox="0 0 10 10"
-                  refX="8"
-                  refY="5"
-                  markerWidth="6"
-                  markerHeight="6"
-                  orient="auto"
-                >
-                  <path d="M0,0 L10,5 L0,10 z" fill="var(--violet)" />
-                </marker>
-                <marker
-                  id="arrowhead-active"
-                  viewBox="0 0 10 10"
-                  refX="8"
-                  refY="5"
-                  markerWidth="7"
-                  markerHeight="7"
-                  orient="auto"
-                >
-                  <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)" />
-                </marker>
-              </defs>
-              {arrows.map((a, i) => {
-                // Smooth bezier — exits source to the right, enters target from the left.
-                const dx = Math.max(40, Math.abs(a.x2 - a.x1) * 0.5);
-                const c1x = a.x1 + dx;
-                const c2x = a.x2 - dx;
-                const d = `M ${a.x1} ${a.y1} C ${c1x} ${a.y1}, ${c2x} ${a.y2}, ${a.x2} ${a.y2}`;
-                return (
-                  <path
-                    key={i}
-                    d={d}
-                    fill="none"
-                    stroke={a.active ? "var(--amber)" : "var(--violet)"}
-                    strokeWidth={a.active ? 1.75 : 1.25}
-                    strokeOpacity={a.active ? 0.95 : 0.65}
-                    strokeLinecap="round"
-                    strokeDasharray={a.active ? "8 6" : undefined}
-                    style={a.active ? { animation: "sb-march 0.5s linear infinite" } : undefined}
-                    markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
-                  />
-                );
-              })}
-            </svg>
-
-            <div className="relative grid grid-cols-[1fr_1.1fr] gap-3 p-3">
-              {/* Frames */}
-              <div className="flex flex-col gap-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  Call Stack
-                </div>
-                {snap?.frames.length ? (
-                  snap.frames.map((f, fi) => {
-                    const isTop = fi === snap.frames.length - 1;
-                    const changed = diff.changedLocals.get(fi);
-                    return (
-                      <div
-                        key={fi}
-                        style={{ marginLeft: Math.min(fi, 4) * 10 }}
-                        className={`rounded-lg border p-2 transition ${
-                          isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
-                        }`}
-                      >
-                        <div className="mb-1.5 flex items-center justify-between font-mono text-[11px]">
-                          <span className={isTop ? "text-mint" : "text-foreground/80"}>
-                            {f.name}()
-                          </span>
-                          <span className="text-muted-foreground">line {f.line}</span>
-                        </div>
-                        {Object.keys(f.locals).length === 0 ? (
-                          <div className="font-mono text-[11px] text-muted-foreground/70">
-                            (no locals)
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px]">
-                            {Object.entries(f.locals).map(([k, v]) => {
-                              const isChanged = changed?.has(k);
-                              return (
-                                <div key={isChanged ? `${k}-${idx}` : k} className="contents">
-                                  <span
-                                    className={
-                                      isChanged ? "text-amber" : "text-muted-foreground"
-                                    }
-                                  >
-                                    {k}
-                                  </span>
-                                  <span
-                                    ref={(el) => registerRef(`var:${fi}:${k}`, el)}
-                                    style={isChanged ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                                    className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
-                                      isChanged
-                                        ? "border-amber/70 bg-amber/10"
-                                        : "border-hairline bg-surface"
-                                    }`}
-                                  >
-                                    {valueLabel(v)}
-                                  </span>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <div className="font-mono text-[11px] text-muted-foreground/70">
-                    Run the code to see frames.
-                  </div>
-                )}
-
-                {snap?.event === "return" && snap.returnValue && (
-                  <div className="rounded-lg border border-mint/40 bg-mint/5 p-2 font-mono text-[12px]">
-                    <div className="mb-1 text-[10px] uppercase tracking-wider text-mint">
-                      returns
-                    </div>
-                    <span className={`rounded border border-mint/40 bg-background px-1.5 py-0.5 ${valueClass(snap.returnValue)}`}>
-                      {valueLabel(snap.returnValue)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Heap */}
-              <div className="flex flex-col gap-2">
-                <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  Heap Objects
-                </div>
-                {heapEntries.length ? (
-                  heapEntries.map(([id, obj]) => (
-                    <HeapCard
-                      key={id}
-                      id={id}
-                      obj={obj}
-                      registerRef={registerRef}
-                      isNew={diff.newHeapIds.has(id)}
-                      changedItems={diff.changedHeapItems.get(id) ?? new Set()}
-                      aliases={aliasesById.get(id) ?? []}
-                      live={liveIds.has(id)}
-                      stepIdx={idx}
+              {/* SVG arrow overlay: lives inside the content box so it scrolls with it */}
+              <svg
+                className="pointer-events-none absolute inset-0"
+                width="100%"
+                height="100%"
+                style={{ position: "absolute", inset: 0 }}
+              >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="6"
+                    markerHeight="6"
+                    orient="auto"
+                  >
+                    <path d="M0,0 L10,5 L0,10 z" fill="var(--violet)" />
+                  </marker>
+                  <marker
+                    id="arrowhead-active"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerWidth="7"
+                    markerHeight="7"
+                    orient="auto"
+                  >
+                    <path d="M0,0 L10,5 L0,10 z" fill="var(--amber)" />
+                  </marker>
+                </defs>
+                {arrows.map((a, i) => {
+                  // Smooth bezier — exits source to the right, enters target from the left.
+                  const dx = Math.max(40, Math.abs(a.x2 - a.x1) * 0.5);
+                  const c1x = a.x1 + dx;
+                  const c2x = a.x2 - dx;
+                  const d = `M ${a.x1} ${a.y1} C ${c1x} ${a.y1}, ${c2x} ${a.y2}, ${a.x2} ${a.y2}`;
+                  return (
+                    <path
+                      key={i}
+                      d={d}
+                      fill="none"
+                      stroke={a.active ? "var(--amber)" : "var(--violet)"}
+                      strokeWidth={a.active ? 1.75 : 1.25}
+                      strokeOpacity={a.active ? 0.95 : 0.65}
+                      strokeLinecap="round"
+                      strokeDasharray={a.active ? "8 6" : undefined}
+                      style={a.active ? { animation: "sb-march 0.5s linear infinite" } : undefined}
+                      markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                     />
-                  ))
-                ) : (
-                  <div className="font-mono text-[11px] text-muted-foreground/70">
-                    No mutable objects yet.
+                  );
+                })}
+              </svg>
+
+              <div className="relative grid grid-cols-[1fr_1.1fr] gap-3 p-3">
+                {/* Frames */}
+                <div className="flex flex-col gap-2">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                    Call Stack
                   </div>
-                )}
+                  {snap?.frames.length ? (
+                    snap.frames.map((f, fi) => {
+                      const isTop = fi === snap.frames.length - 1;
+                      const changed = diff.changedLocals.get(fi);
+                      return (
+                        <div
+                          key={fi}
+                          style={{ marginLeft: Math.min(fi, 4) * 10 }}
+                          className={`rounded-lg border p-2 transition ${isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
+                            }`}
+                        >
+                          <div className="mb-1.5 flex items-center justify-between font-mono text-[11px]">
+                            <span className={isTop ? "text-mint" : "text-foreground/80"}>
+                              {f.name}()
+                            </span>
+                            <span className="text-muted-foreground">line {f.line}</span>
+                          </div>
+                          {Object.keys(f.locals).length === 0 ? (
+                            <div className="font-mono text-[11px] text-muted-foreground/70">
+                              (no locals)
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1 font-mono text-[12px]">
+                              {Object.entries(f.locals).map(([k, v]) => {
+                                const isChanged = changed?.has(k);
+                                return (
+                                  <div key={isChanged ? `${k}-${idx}` : k} className="contents">
+                                    <span
+                                      className={
+                                        isChanged ? "text-amber" : "text-muted-foreground"
+                                      }
+                                    >
+                                      {k}
+                                    </span>
+                                    <span
+                                      ref={(el) => registerRef(`var:${fi}:${k}`, el)}
+                                      style={isChanged ? { animation: "sb-flash 0.6s ease-out" } : undefined}
+                                      className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${isChanged
+                                          ? "border-amber/70 bg-amber/10"
+                                          : "border-hairline bg-surface"
+                                        }`}
+                                    >
+                                      {valueLabel(v)}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="font-mono text-[11px] text-muted-foreground/70">
+                      Run the code to see frames.
+                    </div>
+                  )}
+
+                  {snap?.event === "return" && snap.returnValue && (
+                    <div className="rounded-lg border border-mint/40 bg-mint/5 p-2 font-mono text-[12px]">
+                      <div className="mb-1 text-[10px] uppercase tracking-wider text-mint">
+                        returns
+                      </div>
+                      <span className={`rounded border border-mint/40 bg-background px-1.5 py-0.5 ${valueClass(snap.returnValue)}`}>
+                        {valueLabel(snap.returnValue)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Heap */}
+                <div className="flex flex-col gap-2">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                    Heap Objects
+                  </div>
+                  {heapEntries.length ? (
+                    heapEntries.map(([id, obj]) => (
+                      <HeapCard
+                        key={id}
+                        id={id}
+                        obj={obj}
+                        registerRef={registerRef}
+                        isNew={diff.newHeapIds.has(id)}
+                        changedItems={diff.changedHeapItems.get(id) ?? new Set()}
+                        aliases={aliasesById.get(id) ?? []}
+                        live={liveIds.has(id)}
+                        stepIdx={idx}
+                      />
+                    ))
+                  ) : (
+                    <div className="font-mono text-[11px] text-muted-foreground/70">
+                      No mutable objects yet.
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
