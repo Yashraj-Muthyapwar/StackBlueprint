@@ -1163,11 +1163,22 @@ const terminalPrerequisites: LessonContent = {
 
 $ echo "console.log('App started!');" > app.js
 
+$ cat app.js
+console.log('App started!');
+# (read the file contents using cat)
+
+$ echo "console.log('Doing some work...');" >> app.js
+
+$ cat app.js
+console.log('App started!');
+console.log('Doing some work...');
+# (appended new text using >> and verified it)
+
 $ chmod +x app.js
 
 $ ls -l
--rwxr-xr-x 1 user user 31 Jul 5 12:00 app.js
-# (file created and made executable via chmod)
+-rwxr-xr-x 1 user user 68 Jul 5 12:00 app.js
+# (file was made executable via chmod)
 
 $ mkdir logs
 $ echo "Error: DB connection failed" > logs/app.log
