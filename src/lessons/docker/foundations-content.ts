@@ -491,6 +491,71 @@ const dockerArchitecture: LessonContent = {
     },
     {
       kind: "prose",
+      body: [
+        "**7. Docker Registry (The Warehouse That Stores Ingredients)**",
+        "A container image has to come from somewhere. That's the job of the Docker Registry. When you run docker run nginx, Docker first checks whether the image already exists locally. If it doesn't, containerd pulls only the missing image layers from a registry such as Docker Hub or a private registry. Since layers are reusable and immutable, Docker downloads only what it needs, saving both storage and bandwidth."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "The Docker Registry is the restaurant's warehouse. Before the chefs start cooking, they check the pantry. If an ingredient is missing, they order only what's needed instead of restocking the entire warehouse.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**8. Docker Images & Layers (The Recipe Built from LEGO Blocks)**",
+        "A Docker image isn't one giant file - it's a stack of read-only layers. Each instruction in a Dockerfile, like RUN or COPY, typically creates a new layer. Because these layers are cached and shared between images, Docker only rebuilds or downloads the parts that have changed, making builds and deployments much faster."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "Think of an image like a LEGO model built from reusable bricks. If you change the roof, you don't rebuild the entire house - you simply replace the top layer while keeping the foundation intact.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**9. Overlay2 (The Transparent Notebook)**",
+        "Since image layers are read-only, Docker needs a place for containers to store changes. That's the job of Overlay2, Docker's default storage driver on Linux. It creates a thin writable layer on top of the image, and any file modifications happen there using a technique called Copy-on-Write (CoW). The original image always remains unchanged, allowing many containers to safely share the same base image."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "Imagine every customer receives a transparent sheet placed over a printed menu. Any notes are written on the transparent sheet, while the original menu underneath stays untouched for everyone else.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**10. VirtioFS (The Shared Conveyor Belt) (Docker Desktop for macOS)**",
+        "Containers require a Linux kernel, so Docker Desktop runs them inside a lightweight Linux virtual machine. VirtioFS bridges the gap between macOS and that Linux VM by efficiently sharing files between them. This allows changes you make on your Mac to appear almost instantly inside your containers."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "VirtioFS is like a conveyor belt between the restaurant's dining area and the kitchen, quickly passing ingredients and dishes back and forth without anyone having to walk between the two buildings.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**11. Networking Service (VPNKit / Platform Networking) (Docker Desktop for macOS)**",
+        "Since containers run inside a Linux virtual machine on macOS, they can't communicate directly with your Mac's network. Docker Desktop's networking service, such as VPNKit or the newer platform networking stack, bridges this gap by forwarding ports, handling internet access, and making localhost work seamlessly between your Mac and the containers."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The Restaurant Analogy",
+      body: "It's like a dedicated shuttle that carries customers and meals between the restaurant and a separate kitchen across town, making it feel like they're in the same building even though they're not.",
+    },
+    {
+      kind: "prose",
       heading: "The End-to-End Flow: Running a Container",
       body: [
         "Let us trace exactly what happens when you hit Enter on `$ docker run nginx`:",
