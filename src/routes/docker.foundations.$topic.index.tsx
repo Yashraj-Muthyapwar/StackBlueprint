@@ -80,7 +80,7 @@ function FoundationTopicPage() {
                     <CheckCircle2 className="size-3.5" />
                   </div>
                 ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-hairline/60 bg-surface px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-mint/40 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
                     Read
                   </span>
                 )}
