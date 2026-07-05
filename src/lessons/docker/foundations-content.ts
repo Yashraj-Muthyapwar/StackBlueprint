@@ -1129,8 +1129,12 @@ const terminalPrerequisites: LessonContent = {
         ["<command> > <file>", "Overwrites <file> with the output of <command>"],
         ["cat <file-name>", "Prints the contents of <file-name> to the console"],
         ["ls", "Lists files in the current directory"],
+        ["ls -a", "Lists all files, including hidden ones"],
         ["cd <dir>", "Changes the current directory to <dir>"],
         ["pwd", "Prints the working directory (your current location)"],
+        ["rm <file-name>", "Deletes a file"],
+        ["rmdir <dir-name>", "Deletes an empty directory"],
+        ["ps", "Lists currently running processes"],
         ["<command> -y", "Automatically respond yes to all prompts (e.g. apt-get install -y)"],
       ],
     },
@@ -1138,44 +1142,51 @@ const terminalPrerequisites: LessonContent = {
       kind: "prose",
       heading: "See them in action",
       body: [
-        "Here is what these commands look like when used together in a real terminal session:",
+        "Here is what these commands look like when used together in a real terminal session. Notice how we use `ls` or `cat` to verify that our previous commands actually worked:",
       ],
     },
     {
       kind: "terminal-animation",
       command: "mkdir my-project && cd my-project",
-      output: ``,
-      buttonLabel: "Setup Directory",
-      caption: "Creating a folder",
-    },
-    {
-      kind: "terminal-animation",
-      command: "echo \"Hello, Docker!\" > message.txt",
-      output: ``,
-      buttonLabel: "Create File",
-      caption: "Writing to a file with echo and >",
-    },
-    {
-      kind: "terminal-animation",
-      command: "cat message.txt",
-      output: `Hello, Docker!`,
-      buttonLabel: "Read File",
-      caption: "Reading a file with cat",
-    },
-    {
-      kind: "terminal-animation",
-      command: "echo \"This is line 2\" >> message.txt",
-      output: ``,
-      buttonLabel: "Append Text",
-      caption: "Appending to a file with >>",
-    },
-    {
-      kind: "terminal-animation",
-      command: "cat message.txt",
-      output: `Hello, Docker!
-This is line 2`,
-      buttonLabel: "Read Again",
-      caption: "Verifying the append",
+      output: `$ ls -a
+.  ..
+# (directory created and we are inside it, it's empty)
+
+$ echo "Hello, Docker!" > message.txt
+
+$ ls
+message.txt
+# (file was created)
+
+$ cat message.txt
+Hello, Docker!
+# (reading the file)
+
+$ echo "This is line 2" >> message.txt
+
+$ cat message.txt
+Hello, Docker!
+This is line 2
+# (appending worked)
+
+$ rm message.txt
+
+$ ls
+# (file is gone)
+
+$ cd ..
+
+$ rmdir my-project
+
+$ ls my-project
+ls: cannot access 'my-project': No such file or directory
+
+$ ps
+  PID TTY          TIME CMD
+ 1234 pts/0    00:00:00 bash
+ 5678 pts/0    00:00:00 ps`,
+      buttonLabel: "Run Session",
+      caption: "Terminal session",
     },
     {
       kind: "prose",
