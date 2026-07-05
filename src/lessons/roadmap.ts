@@ -23,6 +23,7 @@ import {
   Lightbulb,
   Download,
   PlayCircle,
+  Terminal,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
