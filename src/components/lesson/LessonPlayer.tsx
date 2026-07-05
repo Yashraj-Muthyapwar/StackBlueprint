@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ArrayCanvas } from "./ArrayCanvas";
 import { CodePane } from "./CodePane";
+import { ElevationMapCanvas } from "./ElevationMapCanvas";
 import { LinkedListCanvas } from "./LinkedListCanvas";
 import { MatrixCanvas } from "./MatrixCanvas";
 import { NarrationCard } from "./NarrationCard";
@@ -107,11 +108,19 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
             </span>
           </div>
           <div className="absolute inset-0">
-            {builder.view === "array" && <ArrayCanvas step={step} />}
-            {builder.view === "matrix" && <MatrixCanvas step={step} />}
-            {builder.view === "linked-list" && shape && (
-              <LinkedListCanvas step={step as LinkedListStep} shape={shape} />
-            )}
+            {(() => {
+              const viewType = typeof builder.view === "function" ? builder.view(inputs) : builder.view;
+              return (
+                <>
+                  {viewType === "array" && <ArrayCanvas step={step} />}
+                  {viewType === "elevation-map" && <ElevationMapCanvas step={step} />}
+                  {viewType === "matrix" && <MatrixCanvas step={step} />}
+                  {viewType === "linked-list" && shape && (
+                    <LinkedListCanvas step={step as LinkedListStep} shape={shape} />
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
         <div className="min-h-[380px]">
