@@ -75,7 +75,18 @@ function LessonPage() {
           {l.title}
         </h1>
         <p className="mt-3 text-balance text-muted-foreground lg:text-lg">
-          {l.subtitle}
+          {l.subtitle.split(/`([^`]+)`/g).map((part, i) =>
+            i % 2 === 1 ? (
+              <code
+                key={i}
+                className="rounded-md bg-background px-1.5 py-0.5 font-mono text-[0.85em] text-foreground ring-1 ring-inset ring-hairline"
+              >
+                {part}
+              </code>
+            ) : (
+              part
+            )
+          )}
         </p>
 
         <div className="mt-10 space-y-7">
