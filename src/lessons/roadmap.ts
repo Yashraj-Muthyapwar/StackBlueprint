@@ -375,8 +375,8 @@ export const roadmap: RoadmapCategory[] = [
     blurb: "From container foundations to advanced multi-container orchestration.",
     patterns: [
       {
-        title: "Foundations",
-        slug: "foundations",
+        title: "Docker & Containers",
+        slug: "what-is-docker",
         path: "/docker/foundations/what-is-docker",
         blurb: "Why Docker exists, how it stacks up against VMs, and how to run your first container.",
         lessons: [
@@ -393,16 +393,22 @@ export const roadmap: RoadmapCategory[] = [
             icon: Container,
           },
           {
+            title: "Terminal Prerequisites",
+            slug: "terminal-prerequisites",
+            path: "/docker/foundations/what-is-docker/terminal-prerequisites",
+            icon: Terminal,
+          },
+          {
+            title: "Setting Up Docker",
+            slug: "setting-up-docker",
+            path: "/docker/foundations/what-is-docker/setting-up-docker",
+            icon: Download,
+          },
+          {
             title: "Docker Architecture",
             slug: "docker-architecture",
             path: "/docker/foundations/what-is-docker/docker-architecture",
             icon: Server,
-          },
-          {
-            title: "Installing Docker",
-            slug: "installing-docker",
-            path: "/docker/foundations/what-is-docker/installing-docker",
-            icon: Download,
           },
           {
             title: "Your First Container",
@@ -415,6 +421,7 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "Networking & Storage",
         slug: "networking-storage",
+        path: "/docker/foundations/networking-storage",
         blurb: "Connecting containers and persisting data with volumes and bind mounts.",
         lessons: [],
       },
