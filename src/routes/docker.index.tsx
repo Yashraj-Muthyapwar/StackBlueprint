@@ -42,6 +42,7 @@ type Topic = {
   unlocked?: boolean;
   routeBase?: "foundations" | "networking-storage" | "compose" | "advanced";
   to?: string;
+  completedCount?: number;
 };
 
 type Section = {
@@ -70,6 +71,7 @@ const sections: Section[] = [
         ],
         unlocked: true,
         routeBase: "foundations",
+        completedCount: 3,
       },
       {
         slug: "images-containers",
@@ -204,6 +206,20 @@ function DockerIndex() {
                             </span>
                           ))}
                         </div>
+                        
+                        {!isLocked && (
+                          <div className="mt-6 flex items-center gap-2">
+                            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
+                              <div 
+                                className="h-full bg-mint" 
+                                style={{ width: `${((t.completedCount || 0) / t.modules.length) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {t.completedCount || 0}/{t.modules.length} lessons complete
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {!isLocked && (
