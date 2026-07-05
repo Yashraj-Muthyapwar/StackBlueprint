@@ -326,11 +326,6 @@ function PatternItem({
               className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
             />
             <span className="flex-1 truncate text-left">{pat.title}</span>
-            <ChevronDown
-              className={`ml-auto size-3 opacity-60 transition-transform group-data-[collapsible=icon]:hidden ${
-                open ? "rotate-180" : ""
-              }`}
-            />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
@@ -378,15 +373,13 @@ function LockedCategoryItem({
             tooltip={`${cat.title} — preview syllabus`}
             className="text-muted-foreground/80"
           >
-            <Lock className="size-3.5" />
+            <ChevronRight
+              className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+            />
             <span className="flex-1 truncate text-left">
               {isSql ? "Syllabus" : "Preview syllabus"}
             </span>
-            <ChevronDown
-              className={`ml-auto size-3 opacity-60 transition-transform group-data-[collapsible=icon]:hidden ${
-                open ? "rotate-180" : ""
-              }`}
-            />
+            <Lock className="ml-auto size-3 opacity-60" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
