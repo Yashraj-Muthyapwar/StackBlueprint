@@ -189,10 +189,10 @@ export function SectionRenderer({ section }: { section: Section }) {
             ) : null}
           </div>
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
-            <code>
+            <code className="block min-w-max">
               {lines.map((line, i) => (
                 <div key={i} className="flex">
-                  <span className="mr-4 inline-block w-6 select-none text-right text-muted-foreground/50">
+                  <span className="mr-4 inline-block w-6 shrink-0 select-none text-right text-muted-foreground/50">
                     {i + 1}
                   </span>
                   <span className="text-foreground/90">{highlightShell(line)}</span>
