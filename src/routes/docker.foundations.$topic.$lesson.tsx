@@ -1,7 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, CheckCircle2 } from "lucide-react";
+import { useEffect } from "react";
 import { FOUNDATION_TOPICS } from "@/lessons/docker/foundations-content";
 import { SectionRenderer } from "@/components/docker/SectionRenderer";
+import { useProgress } from "@/hooks/use-progress";
 
 export const Route = createFileRoute("/docker/foundations/$topic/$lesson")({
   head: ({ params }) => {
@@ -23,6 +25,7 @@ export const Route = createFileRoute("/docker/foundations/$topic/$lesson")({
 function LessonPage() {
   const { topic, lesson } = Route.useParams();
   const t = FOUNDATION_TOPICS[topic];
+  const { isCompleted, markComplete, markIncomplete } = useProgress();
   const idx = t?.lessons.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons[idx] : undefined;
 
@@ -39,6 +42,16 @@ function LessonPage() {
 
   const prev = idx > 0 ? t.lessons[idx - 1] : undefined;
   const next = idx < t.lessons.length - 1 ? t.lessons[idx + 1] : undefined;
+  
+  const hasQuiz = l.sections.some((s) => s.kind === "quiz");
+
+  useEffect(() => {
+    const handleQuizPassed = () => {
+      markComplete(l.slug);
+    };
+    window.addEventListener("quiz-passed", handleQuizPassed);
+    return () => window.removeEventListener("quiz-passed", handleQuizPassed);
+  }, [l.slug, markComplete]);
 
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
@@ -111,8 +124,30 @@ function LessonPage() {
               </div>
             </Link>
           ) : (
-            <span />
+            <div className="hidden sm:block sm:flex-1" />
           )}
+
+          <div className="flex shrink-0 justify-center sm:mx-4">
+            <button
+              onClick={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
+              disabled={hasQuiz && !isCompleted(l.slug)}
+              className={`group inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition-colors ${
+                hasQuiz && !isCompleted(l.slug)
+                  ? "border-hairline/50 bg-surface/10 text-muted-foreground/50 cursor-not-allowed"
+                  : isCompleted(l.slug) 
+                    ? "border-mint/30 bg-mint/10 text-mint hover:bg-mint/20" 
+                    : "border-hairline/70 bg-surface/30 text-muted-foreground hover:bg-surface/60 hover:text-foreground"
+              }`}
+            >
+              <CheckCircle2 className={`size-4 ${isCompleted(l.slug) ? "" : "opacity-50"}`} />
+              {isCompleted(l.slug) 
+                ? "Completed" 
+                : hasQuiz 
+                  ? "Pass Quiz to Complete" 
+                  : "Mark as Complete"}
+            </button>
+          </div>
+
           {next ? (
             <Link
               to="/docker/foundations/$topic/$lesson"
@@ -128,7 +163,7 @@ function LessonPage() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           ) : (
-            <span />
+            <div className="hidden sm:block sm:flex-1" />
           )}
         </nav>
       </div>
