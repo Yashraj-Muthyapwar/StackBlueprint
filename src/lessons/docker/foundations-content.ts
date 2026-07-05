@@ -1104,6 +1104,153 @@ docker run hello-world`,
 };
 
 
+const terminalPrerequisites: LessonContent = {
+  slug: "terminal-prerequisites",
+  title: "Terminal Prerequisites",
+  subtitle:
+    "Before diving into Docker, let's cover the essential Linux terminal commands you'll use every day.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Why learn the terminal?",
+      body: [
+        "Docker is inherently a command-line tool. You will be typing commands, reading outputs, and navigating file systems. If you aren't comfortable with basic Linux commands, you'll be fighting the terminal instead of learning Docker.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Essential Terminal Commands",
+      headers: ["Command", "Usage"],
+      rows: [
+        ["nano <file-name>", "Opens <file-name> in the nano text editor"],
+        ["touch <file-name>", "Creates an empty file with the specified name"],
+        ["echo \"<text>\"", "Prints <text> to the console"],
+        ["<command> >> <file>", "Pushes the output of <command> to the end of <file> (append)"],
+        ["<command> > <file>", "Overwrites <file> with the output of <command>"],
+        ["cat <file-name>", "Prints the contents of <file-name> to the console"],
+        ["ls", "Lists files in the current directory"],
+        ["cd <dir>", "Changes the current directory to <dir>"],
+        ["pwd", "Prints the working directory (your current location)"],
+        ["<command> -y", "Automatically respond yes to all prompts (e.g. apt-get install -y)"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "See them in action",
+      body: [
+        "Here is what these commands look like when used together in a real terminal session:",
+      ],
+    },
+    {
+      kind: "terminal-animation",
+      command: "mkdir my-project && cd my-project",
+      output: ``,
+      buttonLabel: "Setup Directory",
+      caption: "Creating a folder",
+    },
+    {
+      kind: "terminal-animation",
+      command: "echo \"Hello, Docker!\" > message.txt",
+      output: ``,
+      buttonLabel: "Create File",
+      caption: "Writing to a file with echo and >",
+    },
+    {
+      kind: "terminal-animation",
+      command: "cat message.txt",
+      output: `Hello, Docker!`,
+      buttonLabel: "Read File",
+      caption: "Reading a file with cat",
+    },
+    {
+      kind: "terminal-animation",
+      command: "echo \"This is line 2\" >> message.txt",
+      output: ``,
+      buttonLabel: "Append Text",
+      caption: "Appending to a file with >>",
+    },
+    {
+      kind: "terminal-animation",
+      command: "cat message.txt",
+      output: `Hello, Docker!
+This is line 2`,
+      buttonLabel: "Read Again",
+      caption: "Verifying the append",
+    },
+    {
+      kind: "prose",
+      body: [
+        "You'll use these commands frequently when writing Dockerfiles or debugging inside running containers. Memorize them!",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "prereq-ls-easy",
+          question: "Which command lists the files in your current directory?",
+          options: [
+            "cd",
+            "pwd",
+            "ls",
+            "cat"
+          ],
+          correctIndex: 2,
+          explanation: "`ls` (list) shows the contents of the current directory."
+        },
+        {
+          id: "prereq-append-medium-1",
+          question: "What is the difference between `>` and `>>`?",
+          options: [
+            "`>` creates a file, `>>` deletes a file.",
+            "`>` overwrites the file, `>>` appends to the end of the file.",
+            "`>` is for text, `>>` is for binary files.",
+            "There is no difference."
+          ],
+          correctIndex: 1,
+          explanation: "`>` replaces the entire contents of the target file, whereas `>>` adds the new output to the very bottom."
+        },
+        {
+          id: "prereq-nano-medium-2",
+          question: "If you need to manually edit a configuration file inside a terminal, which tool would you use?",
+          options: [
+            "echo",
+            "cat",
+            "nano",
+            "touch"
+          ],
+          correctIndex: 2,
+          explanation: "`nano` is a simple, beginner-friendly command-line text editor."
+        },
+        {
+          id: "prereq-y-flag-hard-1",
+          question: "Why is the `-y` flag (e.g. `apt-get install -y curl`) extremely important when writing Dockerfiles?",
+          options: [
+            "It makes the installation run faster.",
+            "It automatically answers 'yes' to prompts, preventing the automated build process from freezing.",
+            "It verifies the installation was successful.",
+            "It uses the 'Yarn' package manager instead of 'apt'."
+          ],
+          correctIndex: 1,
+          explanation: "Docker image builds are non-interactive. If a command stops to ask 'Do you want to continue? [Y/n]', the build will hang forever. `-y` skips the prompt."
+        },
+        {
+          id: "prereq-combo-hard-2",
+          question: "If you run `touch newfile.txt` followed by `cat newfile.txt`, what will the output be?",
+          options: [
+            "An error message.",
+            "Nothing (blank output).",
+            "'newfile.txt'",
+            "A prompt asking you to edit the file."
+          ],
+          correctIndex: 1,
+          explanation: "`touch` creates an empty file. `cat` reads a file and prints its contents. Reading an empty file prints absolutely nothing."
+        }
+      ]
+    }
+  ]
+};
+
 const yourFirstContainer: LessonContent = {
   slug: "your-first-container",
   title: "Your First Container",
@@ -1220,47 +1367,6 @@ Status: Downloaded newer image for nginx:latest
       ],
     },
     {
-      kind: "prose",
-      heading: "Managing containers day to day",
-      body: [
-        "A handful of commands cover almost everything you will do with a running container.",
-      ],
-    },
-    {
-      kind: "code",
-      language: "text",
-      caption: "Essential container commands",
-      code: `# List running containers
-docker ps
-
-# List ALL containers (including stopped ones)
-docker ps -a
-
-# View container logs
-docker logs my-nginx
-
-# Follow logs in real-time (like tail -f)
-docker logs -f my-nginx
-
-# Execute a command inside a running container
-docker exec -it my-nginx bash
-
-# Stop a container gracefully
-docker stop my-nginx
-
-# Start a stopped container
-docker start my-nginx
-
-# Remove a stopped container
-docker rm my-nginx
-
-# Force remove a running container
-docker rm -f my-nginx
-
-# Remove all stopped containers
-docker container prune`,
-    },
-    {
       kind: "callout",
       tone: "success",
       title: "You just ran your first containers",
@@ -1270,25 +1376,25 @@ docker container prune`,
       kind: "takeaways",
       items: [
         "`docker run` pulls the image if needed, creates a container, and starts it, in one step.",
-        "`-it` gets you an interactive shell inside the container. `-d` runs it detached, in the background.",
+        "`-it` gets you an interactive shell inside the container.",
+        "`-d` runs it detached, in the background.",
         "`-p host:container` maps a port on your machine to a port inside the container.",
-        "`docker ps`, `logs`, `exec`, `stop`, and `rm` cover most of your day-to-day container management.",
       ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "first-container-rm-easy",
-          question: "Which command stops a running container and completely deletes it?",
+          id: "first-container-run-easy",
+          question: "What does the `docker run` command actually do?",
           options: [
-            "docker kill",
-            "docker rm -f",
-            "docker prune",
-            "docker clean"
+            "Only downloads an image from Docker Hub",
+            "Pulls an image (if needed), creates a new container, and starts it",
+            "Starts a previously stopped container",
+            "Compiles source code into a new image"
           ],
           correctIndex: 1,
-          explanation: "The `docker rm` command removes a container, and the `-f` (force) flag tells Docker to stop it first if it is currently running."
+          explanation: "`docker run` is an all-in-one command. It handles the pull, the create, and the start phases automatically."
         },
         {
           id: "first-container-it-medium-1",
@@ -1317,19 +1423,7 @@ docker container prune`,
             "The format is `host:container`. Traffic to port 8080 on your machine gets forwarded to port 80 inside the container, where Nginx is listening.",
         },
         {
-          id: "first-container-exec-hard-1",
-          question: "If you have a detached container running Nginx, how can you open a shell inside it without stopping it?",
-          options: [
-            "docker attach <container_id>",
-            "docker run -it nginx /bin/bash",
-            "docker exec -it <container_id> /bin/bash",
-            "docker shell <container_id>"
-          ],
-          correctIndex: 2,
-          explanation: "`docker exec` executes a new command inside an already-running container. Passing `-it` and a shell like `/bin/bash` gives you an interactive prompt."
-        },
-        {
-          id: "first-container-d-hard-2",
+          id: "first-container-d-hard-1",
           question: "What happens to the terminal window if you omit the `-d` flag when running a web server container?",
           options: [
             "The container fails to start due to lack of a daemon.",
@@ -1339,6 +1433,18 @@ docker container prune`,
           ],
           correctIndex: 2,
           explanation: "Without `-d` (detached mode), Docker attaches your terminal's STDOUT to the container's STDOUT. The container monopolizes your prompt."
+        },
+        {
+          id: "first-container-pull-hard-2",
+          question: "If you run `docker run ubuntu` and Docker says 'Unable to find image locally', what happens next?",
+          options: [
+            "The command fails and exits immediately.",
+            "Docker automatically reaches out to Docker Hub, downloads the image, and then runs it.",
+            "Docker prompts you for a URL to download the image from.",
+            "Docker builds a new Ubuntu image from scratch using your local OS."
+          ],
+          correctIndex: 1,
+          explanation: "Docker's default behavior is to transparently pull missing images from the configured registry (usually Docker Hub) before running."
         }
       ],
     },
@@ -1358,6 +1464,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       containersVsVms,
       settingUpDocker,
       dockerArchitecture,
+      terminalPrerequisites,
       yourFirstContainer,
     ],
   },
