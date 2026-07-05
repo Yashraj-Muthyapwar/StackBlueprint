@@ -769,7 +769,7 @@ function Pipeline({ t }: { t: number }) {
         padding: "16px 16px 18px",
         display: "flex",
         flexDirection: "column",
-        minWidth: 480,
+        minWidth: 0,
         boxShadow: "0 20px 50px rgba(0,0,0,0.45)",
       }}
     >
@@ -1077,9 +1077,7 @@ export default function DockerRunUnderTheHood() {
         >
           <Terminal t={t} />
         </div>
-        <div style={{ overflowX: "auto", display: "flex", flex: 1, minWidth: 0 }}>
-          <Pipeline t={t} />
-        </div>
+        <Pipeline t={t} />
       </div>
 
       <Controls
