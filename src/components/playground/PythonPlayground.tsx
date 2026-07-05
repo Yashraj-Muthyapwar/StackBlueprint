@@ -1325,7 +1325,7 @@ export function PythonPlayground() {
               </span>
             )}
           </div>
-          <div className="min-h-0 min-w-0 flex-1 overflow-auto">
+          <div className="min-h-0 min-w-0 flex-1 overflow-hidden bg-[#282c34]">
             <CodeMirror
               value={code}
               onChange={(v) => setCode(v)}
@@ -1333,6 +1333,7 @@ export function PythonPlayground() {
               theme={oneDark}
               basicSetup={{ lineNumbers: false, foldGutter: false }}
               height="100%"
+              className="h-full [&>.cm-editor]:h-full [&>.cm-editor]:outline-none"
               onCreateEditor={(view) => {
                 editorRef.current.view = view;
               }}
