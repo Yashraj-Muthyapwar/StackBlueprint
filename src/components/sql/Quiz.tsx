@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CheckCircle2, XCircle, ArrowRight, RefreshCcw, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils"; 
@@ -24,6 +24,17 @@ export function Quiz({ data }: { data: QuizData }) {
   const [isFinished, setIsFinished] = useState(false);
 
   const currentQuestion = data.questions[currentIndex];
+
+  useEffect(() => {
+    if (isFinished) {
+      const percentage = Math.round((score / data.questions.length) * 100);
+      if (percentage >= 80) {
+        window.dispatchEvent(
+          new CustomEvent("quiz-passed", { detail: { score: percentage } })
+        );
+      }
+    }
+  }, [isFinished, score, data.questions.length]);
 
   const handleStart = () => {
     setIsStarted(true);
