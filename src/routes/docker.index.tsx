@@ -12,6 +12,8 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useProgress } from "@/hooks/use-progress";
+import { FOUNDATION_TOPICS } from "@/lessons/docker/foundations-content";
 
 export const Route = createFileRoute("/docker/")({
   head: () => ({
@@ -131,6 +133,8 @@ const sections: Section[] = [
 ];
 
 function DockerIndex() {
+  const { isCompleted } = useProgress();
+
   return (
     <div className="flex w-full flex-col font-sans">
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
@@ -169,6 +173,12 @@ function DockerIndex() {
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
+                  
+                  const realTopic = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
+                  const completedCount = realTopic 
+                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length 
+                    : (t.completedCount || 0);
+                  const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
                   const card = (
                     <div
@@ -211,12 +221,12 @@ function DockerIndex() {
                           <div className="mt-6 flex items-center gap-2">
                             <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
                               <div 
-                                className="h-full bg-mint" 
-                                style={{ width: `${((t.completedCount || 0) / t.modules.length) * 100}%` }}
+                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                                style={{ width: `${(completedCount / totalCount) * 100}%` }}
                               />
                             </div>
                             <span className="text-xs font-medium text-muted-foreground">
-                              {t.completedCount || 0}/{t.modules.length} lessons complete
+                              {completedCount}/{totalCount} lessons complete
                             </span>
                           </div>
                         )}
