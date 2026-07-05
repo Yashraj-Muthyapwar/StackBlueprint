@@ -53,17 +53,19 @@ export type Step = {
   cellPointers?: CellPointer[];
   // matrix rect overlay (e.g. 2D prefix query rect)
   matrixRect?: { r1: number; c1: number; r2: number; c2: number; tone?: "violet" | "mint" | "amber" };
+  // optional water levels for elevation-map
+  waterLevels?: number[];
 };
 
-export type View = "array" | "linked-list" | "matrix";
+export type View = "array" | "linked-list" | "matrix" | "elevation-map";
 
 export type InputField =
-  | { key: string; label: string; kind: "intArray"; help?: string }
-  | { key: string; label: string; kind: "int"; min?: number; max?: number; help?: string }
-  | { key: string; label: string; kind: "intMatrix"; help?: string }
-  | { key: string; label: string; kind: "intPairs"; help?: string }
-  | { key: string; label: string; kind: "string"; help?: string }
-  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[]; help?: string };
+  | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
+  | { key: string; label: string; kind: "int"; min?: number; max?: number; help?: string; hidden?: (v: any) => boolean }
+  | { key: string; label: string; kind: "intMatrix"; help?: string; hidden?: (v: any) => boolean }
+  | { key: string; label: string; kind: "intPairs"; help?: string; hidden?: (v: any) => boolean }
+  | { key: string; label: string; kind: "string"; help?: string; hidden?: (v: any) => boolean }
+  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[]; help?: string; hidden?: (v: any) => boolean };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LessonBuilder<TInputs extends Record<string, any> = any> = {
@@ -77,7 +79,7 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   /** Situations where this pattern is the wrong tool. */
   avoidWhen?: string[];
   variant: string;
-  view: View;
+  view: View | ((inputs: TInputs) => View);
   code: string;
   /** Optional per-input override; falls back to `code` when absent. */
   codeFor?: (inputs: Record<string, unknown>) => string;
