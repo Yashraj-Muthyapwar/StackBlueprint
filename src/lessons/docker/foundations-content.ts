@@ -17,6 +17,7 @@ import dockerIntroImg from "@/images/docker/foundations/docker-intro.jpg";
 import dockerAnalogyImg from "@/images/docker/foundations/docker-analogy.jpg";
 import dockerDesktopImg from "@/images/docker/foundations/docker-desktop.png";
 import startupSequencesImg from "@/images/docker/foundations/startup-sequences.jpg";
+import dockerComponentsImg from "@/images/docker/foundations/docker-components.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -488,6 +489,13 @@ const dockerArchitecture: LessonContent = {
         "• **Union filesystem:** lets container images be built from layered, reusable pieces, like stacking pre-made sauces instead of remaking them from scratch every time.",
         "Containers are not tiny virtual machines. They are just regular Linux processes with strict boundaries drawn around them using these kernel features.",
       ],
+    },
+    {
+      kind: "image",
+      src: dockerComponentsImg,
+      alt: "Docker Registry, Images & Layers, Overlay2, VirtioFS, and Networking Service explained",
+      caption:
+        "Additional Docker components that work behind the scenes during image management, storage, and networking.",
     },
     {
       kind: "prose",
