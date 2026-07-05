@@ -126,19 +126,21 @@ export function LessonControls({
       </div>
 
       <div className="grid grid-cols-1 gap-3 px-4 py-3 md:grid-cols-2">
-        {builder.inputs.map((f) => (
-          <FieldEditor
-            key={f.key}
-            field={f}
-            value={raw[f.key] ?? ""}
-            onChange={(v) => {
-              const next = { ...raw, [f.key]: v };
-              const overrides = builder.onInputChange?.(f.key, v, next);
-              const finalRaw = overrides ? { ...next, ...overrides } : next;
-              setRaw(finalRaw);
-              setIsDirty(true);
+        {builder.inputs.map((f) => {
+          if (f.hidden?.(raw)) return null;
+          return (
+            <FieldEditor
+              key={f.key}
+              field={f}
+              value={raw[f.key] ?? ""}
+              onChange={(v) => {
+                const next = { ...raw, [f.key]: v };
+                const overrides = builder.onInputChange?.(f.key, v, next);
+                const finalRaw = overrides ? { ...next, ...overrides } : next;
+                setRaw(finalRaw);
+                setIsDirty(true);
 
-              if (f.kind === "select") {
+                if (f.kind === "select") {
                 const { inputs, error } = parseRaw(builder, finalRaw);
                 if (!error && inputs) {
                   setParseError(null);
@@ -152,7 +154,8 @@ export function LessonControls({
               }
             }}
           />
-        ))}
+          );
+        })}
       </div>
 
       {(parseError || warnings.length > 0) && (
