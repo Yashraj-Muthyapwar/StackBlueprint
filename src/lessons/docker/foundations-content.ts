@@ -93,7 +93,7 @@ const whyDockerExists: LessonContent = {
       kind: "prose",
       heading: "The Big Picture",
       body: [
-        "Now that you know what Docker, images, and containers are, it's helpful to see how they fit together at a high level. Don't worry about understanding every component yet—this diagram is simply a preview of the journey your application takes from your machine to a running container. We'll revisit every part of this architecture in detail later.",
+        "Now that you know what Docker, images, and containers are, it's helpful to see how they fit together at a high level. Don't worry about understanding every component yet this diagram is simply a preview of the journey your application takes from your machine to a running container. We'll revisit every part of this architecture in detail later.",
       ],
     },
     {
