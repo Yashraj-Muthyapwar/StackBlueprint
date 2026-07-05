@@ -197,12 +197,12 @@ export function Quiz({ data }: { data: QuizData }) {
             className="overflow-hidden"
           >
             <div className={`rounded-lg border p-4 ${
-              selectedOption === currentQuestion.correctIndex 
+              selectedOption !== null && shuffledOptions[selectedOption].isCorrect
                 ? "border-mint/30 bg-mint/5 text-mint" 
                 : "border-rose-500/30 bg-rose-500/5 text-rose-500"
             }`}>
               <p className="text-sm font-medium mb-1">
-                {selectedOption === currentQuestion.correctIndex ? "Correct!" : "Incorrect."}
+                {selectedOption !== null && shuffledOptions[selectedOption].isCorrect ? "Correct!" : "Incorrect."}
               </p>
               <p className="text-sm opacity-90 leading-relaxed">
                 {currentQuestion.explanation}
