@@ -1134,7 +1134,7 @@ const terminalPrerequisites: LessonContent = {
         ["ls -a", "Lists all files in the current directory, including hidden ones"],
         ["pwd", "Prints the working directory (your exact path)"],
         ["cd <dir>", "Changes the current directory to <dir>"],
-        ["tree", "Visualizes the directory structure as a tree"],
+        ["tree", "Visualizes the directory structure as a tree (may require 'apt install tree' on minimal images)"],
         ["rm <file-name>", "Deletes a file"],
         ["rmdir <dir-name>", "Deletes an empty directory"],
         ["rm -rf <dir>", "Force deletes a directory and everything inside it"],
@@ -1203,7 +1203,7 @@ PING localhost (127.0.0.1) 56(84) bytes of data.
 
 $ df -h /
 Filesystem      Size  Used Avail Use% Mounted on
-overlay          59G   20G   36G  36% /
+/dev/sda1        59G   20G   36G  36% /
 # (checked our disk space usage to ensure we aren't full)
 
 $ rm logs/app.log
@@ -1505,9 +1505,9 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     lessons: [
       whyDockerExists,
       containersVsVms,
+      terminalPrerequisites,
       settingUpDocker,
       dockerArchitecture,
-      terminalPrerequisites,
       yourFirstContainer,
     ],
   },
