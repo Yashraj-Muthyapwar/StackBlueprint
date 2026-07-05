@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Lock, Layers, Terminal } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Layers, Terminal, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
+import { useProgress } from "@/hooks/use-progress";
 import {
   Collapsible,
   CollapsibleContent,
@@ -210,6 +211,7 @@ function NestedPatternItem({
   const patternActive = !!pat.path && pathname.startsWith(pat.path);
   const [open, setOpen] = useState(patternActive);
   const hasLessons = pat.lessons.length > 0;
+  const { isCompleted } = useProgress();
 
   if (!hasLessons) {
     if (pat.path) {
@@ -260,8 +262,14 @@ function NestedPatternItem({
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
                     <Link to={les.path} onClick={onNavigate}>
-                      <les.icon className="size-3.5" />
-                      <span>{les.title}</span>
+                      {isCompleted(les.slug) ? (
+                        <CheckCircle2 className="size-3.5 text-mint" />
+                      ) : (
+                        <les.icon className="size-3.5" />
+                      )}
+                      <span className={isCompleted(les.slug) ? "text-mint/90 font-medium" : ""}>
+                        {les.title}
+                      </span>
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
@@ -286,6 +294,7 @@ function PatternItem({
   const patternActive = !!pat.path && pathname.startsWith(pat.path);
   const [open, setOpen] = useState(patternActive);
   const hasLessons = pat.lessons.length > 0;
+  const { isCompleted } = useProgress();
 
   if (!hasLessons) {
     if (pat.path) {
@@ -336,8 +345,14 @@ function PatternItem({
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
                     <Link to={les.path} onClick={onNavigate}>
-                      <les.icon className="size-3.5" />
-                      <span>{les.title}</span>
+                      {isCompleted(les.slug) ? (
+                        <CheckCircle2 className="size-3.5 text-mint" />
+                      ) : (
+                        <les.icon className="size-3.5" />
+                      )}
+                      <span className={isCompleted(les.slug) ? "text-mint/90 font-medium" : ""}>
+                        {les.title}
+                      </span>
                     </Link>
                   </SidebarMenuSubButton>
                 </SidebarMenuSubItem>
