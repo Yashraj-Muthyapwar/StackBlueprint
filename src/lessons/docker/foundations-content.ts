@@ -1494,6 +1494,8 @@ Status: Downloaded newer image for nginx:latest
   ],
 };
 
+import { IMAGES_CONTAINERS_TOPICS } from "./images-containers-content";
+
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
   "what-is-docker": {
     slug: "what-is-docker",
@@ -1511,4 +1513,5 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       yourFirstContainer,
     ],
   },
+  ...IMAGES_CONTAINERS_TOPICS,
 };
