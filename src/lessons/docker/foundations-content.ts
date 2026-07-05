@@ -1123,19 +1123,28 @@ const terminalPrerequisites: LessonContent = {
       headers: ["Command", "Usage"],
       rows: [
         ["nano <file-name>", "Opens <file-name> in the nano text editor"],
-        ["touch <file-name>", "Creates an empty file with the specified name"],
-        ["echo \"<text>\"", "Prints <text> to the console"],
-        ["<command> >> <file>", "Pushes the output of <command> to the end of <file> (append)"],
-        ["<command> > <file>", "Overwrites <file> with the output of <command>"],
         ["cat <file-name>", "Prints the contents of <file-name> to the console"],
-        ["ls", "Lists files in the current directory"],
-        ["ls -a", "Lists all files, including hidden ones"],
+        ["grep <pattern> <file>", "Searches for a specific word/pattern within a file"],
+        ["tail -f <file>", "Watches a file in real-time as it grows (great for logs)"],
+        ["less <file>", "Scrolls through large config files or logs safely"],
+        ["touch <file-name>", "Creates an empty file"],
+        ["echo \"<text>\"", "Prints <text> to the console"],
+        ["<command> > <file>", "Overwrites <file> with the output of <command>"],
+        ["<command> >> <file>", "Appends the output of <command> to the end of <file>"],
+        ["ls -a", "Lists all files in the current directory, including hidden ones"],
+        ["pwd", "Prints the working directory (your exact path)"],
         ["cd <dir>", "Changes the current directory to <dir>"],
-        ["pwd", "Prints the working directory (your current location)"],
-        ["rm <file-name>", "Deletes a file"],
-        ["rmdir <dir-name>", "Deletes an empty directory"],
+        ["tree", "Visualizes the directory structure as a tree"],
+        ["rm -rf <dir>", "Force deletes a directory and everything inside it"],
+        ["chown <user> <file>", "Changes the owner of a file or directory"],
+        ["chmod +x <file>", "Changes permissions to make a file executable"],
+        ["curl <url>", "Tests network connectivity by fetching a web page"],
+        ["ping <host>", "Tests basic network connectivity to another host"],
+        ["top", "Displays live CPU and memory usage of running processes"],
         ["ps", "Lists currently running processes"],
-        ["<command> -y", "Automatically respond yes to all prompts (e.g. apt-get install -y)"],
+        ["df -h", "Shows overall available disk space on the system"],
+        ["du -sh <dir>", "Shows the total disk space used by a specific directory"],
+        ["<command> -y", "Automatically responds 'yes' to prompts (crucial in Dockerfiles)"],
       ],
     },
     {
@@ -1147,44 +1156,49 @@ const terminalPrerequisites: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "mkdir my-project && cd my-project",
-      output: `$ ls -a
-.  ..
-# (directory created and we are inside it, it's empty)
+      command: "mkdir my-app && cd my-app",
+      output: `$ pwd
+/home/user/my-app
+# (we verified our exact location before proceeding)
 
-$ echo "Hello, Docker!" > message.txt
+$ echo "console.log('App started!');" > app.js
 
-$ ls
-message.txt
-# (file was created)
+$ chmod +x app.js
 
-$ cat message.txt
-Hello, Docker!
-# (reading the file)
+$ ls -l
+-rwxr-xr-x 1 user user 31 Jul 5 12:00 app.js
+# (file created and made executable via chmod)
 
-$ echo "This is line 2" >> message.txt
+$ mkdir logs
+$ echo "Error: DB connection failed" > logs/app.log
 
-$ cat message.txt
-Hello, Docker!
-This is line 2
-# (appending worked)
+$ tree
+.
+├── app.js
+└── logs
+    └── app.log
+# (visualized our nested directory structure)
 
-$ rm message.txt
+$ grep "Error" logs/app.log
+Error: DB connection failed
+# (filtered the logs to quickly find the crash)
 
-$ ls
-# (file is gone)
+$ ping -c 1 localhost
+PING localhost (127.0.0.1) 56(84) bytes of data.
+64 bytes from localhost (127.0.0.1): icmp_seq=1 ttl=64 time=0.025 ms
+# (verified basic networking is up)
+
+$ df -h /
+Filesystem      Size  Used Avail Use% Mounted on
+overlay          59G   20G   36G  36% /
+# (checked our disk space usage to ensure we aren't full)
 
 $ cd ..
+$ rm -rf my-app
 
-$ rmdir my-project
-
-$ ls my-project
-ls: cannot access 'my-project': No such file or directory
-
-$ ps
-  PID TTY          TIME CMD
- 1234 pts/0    00:00:00 bash
- 5678 pts/0    00:00:00 ps`,
+$ ls my-app
+ls: cannot access 'my-app': No such file or directory
+# (cleaned up the directory completely)`,
       buttonLabel: "Run Session",
       caption: "Terminal session",
     },
