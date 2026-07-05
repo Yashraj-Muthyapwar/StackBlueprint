@@ -1135,6 +1135,8 @@ const terminalPrerequisites: LessonContent = {
         ["pwd", "Prints the working directory (your exact path)"],
         ["cd <dir>", "Changes the current directory to <dir>"],
         ["tree", "Visualizes the directory structure as a tree"],
+        ["rm <file-name>", "Deletes a file"],
+        ["rmdir <dir-name>", "Deletes an empty directory"],
         ["rm -rf <dir>", "Force deletes a directory and everything inside it"],
         ["chown <user> <file>", "Changes the owner of a file or directory"],
         ["chmod +x <file>", "Changes permissions to make a file executable"],
@@ -1205,11 +1207,16 @@ overlay          59G   20G   36G  36% /
 # (checked our disk space usage to ensure we aren't full)
 
 $ cd ..
+
+$ rmdir my-app
+rmdir: failed to remove 'my-app': Directory not empty
+# (rmdir only works on completely empty directories)
+
 $ rm -rf my-app
 
 $ ls my-app
 ls: cannot access 'my-app': No such file or directory
-# (cleaned up the directory completely)`,
+# (rm -rf force deletes the directory and everything inside it)`,
       buttonLabel: "Run Session",
       caption: "Terminal session",
     },
