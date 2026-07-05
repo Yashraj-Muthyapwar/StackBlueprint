@@ -17,6 +17,8 @@ import dockerIntroImg from "@/images/docker/foundations/docker-intro.jpg";
 import dockerAnalogyImg from "@/images/docker/foundations/docker-analogy.jpg";
 import dockerDesktopImg from "@/images/docker/foundations/docker-desktop.png";
 import startupSequencesImg from "@/images/docker/foundations/startup-sequences.jpg";
+import dockerDesktopHelloWorldImg from "@/images/docker/foundations/docker-desktop-hello-world.jpg";
+import howDockerWorksImg from "@/images/docker/foundations/how-docker-works.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -86,6 +88,19 @@ const whyDockerExists: LessonContent = {
       body: [
         "A **Container** is a running instance of an image. If an image is the class definition in programming, the container is the instantiated object. If an image is a recipe, the container is the cake you baked from it. You can start, stop, delete, and run multiple containers from a single image.",
       ],
+    },
+    {
+      kind: "prose",
+      heading: "The Big Picture",
+      body: [
+        "Now that you know what Docker, images, and containers are, it's helpful to see how they fit together at a high level. Don't worry about understanding every component yet—this diagram is simply a preview of the journey your application takes from your machine to a running container. We'll revisit every part of this architecture in detail later.",
+      ],
+    },
+    {
+      kind: "image",
+      src: howDockerWorksImg,
+      alt: "Overview of how Docker works",
+      caption: "How Docker works at a high level.",
     },
     {
       kind: "prose",
@@ -633,7 +648,7 @@ const settingUpDocker: LessonContent = {
       kind: "prose",
       heading: "What is Docker Desktop?",
       body: [
-        "If you're using **macOS** or **Windows**, the first thing you'll install isn't Docker Engine directly—it's **Docker Desktop**.",
+        "If you're using **macOS** or **Windows**, the first thing you'll install isn't Docker Engine directly it's **Docker Desktop**.",
         "**Docker Desktop** is the official application that bundles everything needed to build, run, and manage containers. Instead of installing multiple tools individually, Docker Desktop packages them into a single application that's easy to install and maintain.",
         "It includes the **Docker CLI**, **Docker Engine**, **Docker Compose**, and a graphical dashboard for managing containers, images, volumes, and networks.",
       ],
@@ -649,7 +664,7 @@ const settingUpDocker: LessonContent = {
       kind: "prose",
       heading: "Why Does Docker Desktop Exist?",
       body: [
-        "Containers aren't virtual machines—they're isolated Linux processes that rely on Linux kernel features such as **namespaces** and **cgroups**.",
+        "Containers aren't virtual machines they're isolated Linux processes that rely on Linux kernel features such as **namespaces** and **cgroups**.",
         "Because **macOS** and **Windows** don't include a Linux kernel, they can't run Linux containers directly. Docker Desktop solves this by providing the Linux environment Docker Engine needs while hiding all of the complexity behind a familiar desktop application.",
         "If you're on **Linux**, Docker Desktop usually isn't necessary because Docker Engine can run directly on the host operating system.",
       ],
@@ -666,7 +681,7 @@ const settingUpDocker: LessonContent = {
       body: [
         "Installing Docker Desktop is only the first step. Before any Docker command can work, the **Docker Engine** must be running.",
         "When you launch Docker Desktop, it automatically prepares everything required before containers can start. Once the startup process completes, Docker is ready to accept commands from the Docker CLI.",
-        "The infographic below shows the high-level startup sequence. Don't worry about understanding every component yet—you'll learn how everything works internally in the **Docker Architecture** lesson.",
+        "The infographic below shows the high-level startup sequence. Don't worry about understanding every component yet you'll learn how everything works internally in the **Docker Architecture** lesson.",
       ],
     },
     {
@@ -680,7 +695,7 @@ const settingUpDocker: LessonContent = {
       kind: "prose",
       heading: "The Golden Rule",
       body: [
-        "The **Docker CLI** is only a client—it sends commands to the **Docker Engine**.",
+        "The **Docker CLI** is only a client it sends commands to the **Docker Engine**.",
         "If Docker Desktop hasn't finished starting, the engine isn't running yet, so the CLI has nothing to communicate with. This is one of the most common mistakes beginners encounter.",
       ],
     },
@@ -705,6 +720,13 @@ Is the docker daemon running?`,
       title: "Ready to Install?",
       body:
         "Now that you understand what Docker Desktop is and why it's needed, let's install Docker on your operating system.",
+    },
+    {
+      kind: "image",
+      src: dockerDesktopHelloWorldImg,
+      alt: "Running the Docker hello-world container for the first time",
+      caption:
+        "Your first Docker run: start Docker Desktop, run hello-world, and verify your installation.",
     },
     {
       kind: "prose",
@@ -797,7 +819,7 @@ docker version`,
       heading: "Windows",
       body: [
         "On Windows, Docker Desktop uses **WSL 2 (Windows Subsystem for Linux)** to provide a real Linux kernel for running containers.",
-        "As with macOS, simply installing Docker Desktop isn't enough—you must start the application and wait for the Docker Engine to finish starting before using Docker commands.",
+        "As with macOS, simply installing Docker Desktop isn't enough you must start the application and wait for the Docker Engine to finish starting before using Docker commands.",
       ],
     },
     {
@@ -828,7 +850,7 @@ docker version`,
       kind: "prose",
       heading: "Verifying Your Installation",
       body: [
-        "Installing Docker is only half the job—you also need to verify that everything is working correctly. The quickest way to do this is by checking the Docker client, confirming the Docker Engine is running, and finally launching your very first container.",
+        "Installing Docker is only half the job you also need to verify that everything is working correctly. The quickest way to do this is by checking the Docker client, confirming the Docker Engine is running, and finally launching your very first container.",
       ],
     },
     {
@@ -1170,8 +1192,8 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     lessons: [
       whyDockerExists,
       containersVsVms,
-      dockerArchitecture,
       settingUpDocker,
+      dockerArchitecture,
       yourFirstContainer,
     ],
   },
