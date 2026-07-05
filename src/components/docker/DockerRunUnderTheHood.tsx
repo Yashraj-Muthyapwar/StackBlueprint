@@ -796,119 +796,140 @@ function Pipeline({ t }: { t: number }) {
             const connFlowUp = flowback && STAGES.length - 1 - fbIdx === i + 1;
             return (
               <React.Fragment key={s.id}>
-                <StageCard stage={s} state={running ? "done" : state} flowback={flowback} />
+                <div className="sbduh-stage-row">
+                  <div className="sbduh-stage-main">
+                    <StageCard stage={s} state={running ? "done" : state} flowback={flowback} />
+                  </div>
+                  {i === 2 ? (
+                    <div className="sbduh-registry-col">
+                      <div
+                        style={{
+                          border: `1px solid ${pulling ? hexA(C.purple, 0.8) : C.border}`,
+                          background: pulling ? hexA(C.purple, 0.07) : "rgba(255,255,255,0.015)",
+                          boxShadow: pulling ? `0 0 22px ${hexA(C.purple, 0.22)}` : "none",
+                          borderRadius: 12,
+                          padding: "12px 12px",
+                          opacity: pulling || t >= T.containerdActive ? 1 : 0.42,
+                          transition: "all .45s ease",
+                          textAlign: "left",
+                          height: "100%",
+                        }}
+                      >
+                        <div style={{ color: pulling ? C.purple : C.faint, marginBottom: 6, transition: "color .4s" }}>
+                          {Icon.registry}
+                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 12.5, color: pulling ? "#eef1f8" : C.dim }}>
+                          Registry
+                        </div>
+                        <div style={{ fontSize: 10.5, color: C.dim }}>(Docker Hub)</div>
+                        <div style={{ fontSize: 10.5, lineHeight: 1.45, color: C.faint, marginTop: 6 }}>
+                          Sends the requested image layers
+                        </div>
+                      </div>
+                      {/* dashed arrows to/from containerd */}
+                      <svg
+                        width="30"
+                        height="46"
+                        viewBox="0 0 30 46"
+                        className="sbduh-registry-svg"
+                      >
+                        <defs>
+                          <marker id="sbduh-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                            <path d="M0,0 L6,3 L0,6 z" fill={pulling ? C.purple : C.border} />
+                          </marker>
+                        </defs>
+                        <line
+                          x1="2" y1="12" x2="27" y2="12"
+                          stroke={pulling ? C.purple : C.border}
+                          strokeWidth="1.6"
+                          strokeDasharray="4 4"
+                          markerEnd="url(#sbduh-arr)"
+                          style={pulling ? { animation: "sbduh-dash 0.7s linear infinite" } : undefined}
+                        />
+                        <line
+                          x1="27" y1="34" x2="2" y2="34"
+                          stroke={pulling ? C.purple : C.border}
+                          strokeWidth="1.6"
+                          strokeDasharray="4 4"
+                          markerEnd="url(#sbduh-arr)"
+                          style={pulling ? { animation: "sbduh-dash 0.7s linear infinite" } : undefined}
+                        />
+                      </svg>
+                    </div>
+                  ) : (
+                    <div className="sbduh-registry-spacer" />
+                  )}
+                </div>
                 {i < STAGES.length - 1 && (
-                  <Connector
-                    lit={connLit}
-                    color={STAGES[i + 1].accent}
-                    pulsing={!!connPulse && !started}
-                    flowUp={connFlowUp}
-                  />
+                  <div className="sbduh-stage-row">
+                    <div className="sbduh-stage-main">
+                      <Connector
+                        lit={connLit}
+                        color={STAGES[i + 1].accent}
+                        pulsing={!!connPulse && !started}
+                        flowUp={connFlowUp}
+                      />
+                    </div>
+                    <div className="sbduh-registry-spacer" />
+                  </div>
                 )}
               </React.Fragment>
             );
           })}
 
-          <Connector lit={t >= T.startedActive - 250} color={C.green} pulsing={flowback} flowUp={false} />
-
-          {/* Container Started */}
-          <div
-            style={{
-              display: "flex",
-              gap: 12,
-              alignItems: "flex-start",
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: `1px solid ${started ? hexA(C.green, 0.7) : C.border}`,
-              background: started ? C.greenSoft : "rgba(255,255,255,0.015)",
-              boxShadow: started ? `0 0 26px ${hexA(C.green, 0.18)}` : "none",
-              opacity: started ? 1 : 0.42,
-              transition: "all .5s ease",
-              animation: started && t < T.done ? "sbduh-startglow 2s ease-in-out infinite" : "none",
-            }}
-          >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 9,
-                flexShrink: 0,
-                display: "grid",
-                placeItems: "center",
-                color: started ? C.green : C.faint,
-                background: started ? hexA(C.green, 0.12) : "rgba(255,255,255,0.03)",
-                border: `1px solid ${started ? hexA(C.green, 0.35) : C.border}`,
-                transition: "all .5s ease",
-              }}
-            >
-              {Icon.check}
+          <div className="sbduh-stage-row">
+            <div className="sbduh-stage-main">
+              <Connector lit={t >= T.startedActive - 250} color={C.green} pulsing={flowback} flowUp={false} />
             </div>
-            <div>
-              <div style={{ fontWeight: 700, fontSize: 13.5, color: started ? C.green : C.dim }}>
-                Container Started ✓
-              </div>
-              <div style={{ fontSize: 11.5, lineHeight: 1.5, color: started ? C.dim : C.faint, marginTop: 2 }}>
-                Status flows back: shim → containerd → dockerd → CLI. The container is now running.
-              </div>
-            </div>
+            <div className="sbduh-registry-spacer" />
           </div>
-        </div>
 
-        {/* Registry side card */}
-        <div style={{ width: 128, flexShrink: 0, position: "relative", display: "flex", flexDirection: "column" }}>
-          <div style={{ height: 158 }} />
-          <div
-            style={{
-              border: `1px solid ${pulling ? hexA(C.purple, 0.8) : C.border}`,
-              background: pulling ? hexA(C.purple, 0.07) : "rgba(255,255,255,0.015)",
-              boxShadow: pulling ? `0 0 22px ${hexA(C.purple, 0.22)}` : "none",
-              borderRadius: 12,
-              padding: "12px 12px",
-              opacity: pulling || t >= T.containerdActive ? 1 : 0.42,
-              transition: "all .45s ease",
-              textAlign: "left",
-            }}
-          >
-            <div style={{ color: pulling ? C.purple : C.faint, marginBottom: 6, transition: "color .4s" }}>
-              {Icon.registry}
+          <div className="sbduh-stage-row">
+            <div className="sbduh-stage-main">
+              {/* Container Started */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 12,
+                  alignItems: "flex-start",
+                  padding: "12px 14px",
+                  borderRadius: 12,
+                  border: `1px solid ${started ? hexA(C.green, 0.7) : C.border}`,
+                  background: started ? C.greenSoft : "rgba(255,255,255,0.015)",
+                  boxShadow: started ? `0 0 26px ${hexA(C.green, 0.18)}` : "none",
+                  opacity: started ? 1 : 0.42,
+                  transition: "all .5s ease",
+                  animation: started && t < T.done ? "sbduh-startglow 2s ease-in-out infinite" : "none",
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 9,
+                    flexShrink: 0,
+                    display: "grid",
+                    placeItems: "center",
+                    color: started ? C.green : C.faint,
+                    background: started ? hexA(C.green, 0.12) : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${started ? hexA(C.green, 0.35) : C.border}`,
+                    transition: "all .5s ease",
+                  }}
+                >
+                  {Icon.check}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 13.5, color: started ? C.green : C.dim }}>
+                    Container Started ✓
+                  </div>
+                  <div style={{ fontSize: 11.5, lineHeight: 1.5, color: started ? C.dim : C.faint, marginTop: 2 }}>
+                    Status flows back: shim → containerd → dockerd → CLI. The container is now running.
+                  </div>
+                </div>
+              </div>
             </div>
-            <div style={{ fontWeight: 700, fontSize: 12.5, color: pulling ? "#eef1f8" : C.dim }}>
-              Registry
-            </div>
-            <div style={{ fontSize: 10.5, color: C.dim }}>(Docker Hub)</div>
-            <div style={{ fontSize: 10.5, lineHeight: 1.45, color: C.faint, marginTop: 6 }}>
-              Sends the requested image layers
-            </div>
+            <div className="sbduh-registry-spacer" />
           </div>
-          {/* dashed arrows to/from containerd */}
-          <svg
-            width="30"
-            height="46"
-            viewBox="0 0 30 46"
-            style={{ position: "absolute", left: -26, top: 168, overflow: "visible" }}
-          >
-            <defs>
-              <marker id="sbduh-arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L6,3 L0,6 z" fill={pulling ? C.purple : C.border} />
-              </marker>
-            </defs>
-            <line
-              x1="2" y1="12" x2="27" y2="12"
-              stroke={pulling ? C.purple : C.border}
-              strokeWidth="1.6"
-              strokeDasharray="4 4"
-              markerEnd="url(#sbduh-arr)"
-              style={pulling ? { animation: "sbduh-dash 0.7s linear infinite" } : undefined}
-            />
-            <line
-              x1="27" y1="34" x2="2" y2="34"
-              stroke={pulling ? C.purple : C.border}
-              strokeWidth="1.6"
-              strokeDasharray="4 4"
-              markerEnd="url(#sbduh-arr)"
-              style={pulling ? { animation: "sbduh-dash 0.7s linear infinite" } : undefined}
-            />
-          </svg>
         </div>
       </div>
     </div>
@@ -1028,12 +1049,44 @@ const KEYFRAMES = `
 @keyframes sbduh-dotdown { from { top: -4px } to { top: 100% } }
 @keyframes sbduh-dotup { from { top: 100% } to { top: -4px } }
 @keyframes sbduh-dash { to { stroke-dashoffset: -8 } }
+.sbduh-stage-row {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+.sbduh-stage-main {
+  flex: 1;
+  min-width: 0;
+}
+.sbduh-registry-col {
+  width: 128px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.sbduh-registry-spacer {
+  width: 128px;
+  flex-shrink: 0;
+}
+.sbduh-registry-svg {
+  position: absolute;
+  left: -26px;
+  top: 35px;
+  overflow: visible;
+}
 @media (prefers-reduced-motion: reduce) {
   .sbduh-root * { animation: none !important; transition-duration: 0.01ms !important; }
 }
 @media (max-width: 900px) {
   .sbduh-grid { grid-template-columns: 1fr !important; }
   .sbduh-term { min-height: 380px !important; max-height: 440px !important; }
+}
+@media (max-width: 700px) {
+  .sbduh-stage-row { flex-direction: column; }
+  .sbduh-registry-col { width: 100%; margin-top: 4px; }
+  .sbduh-registry-spacer { display: none; }
+  .sbduh-registry-svg { display: none; }
 }
 `;
 
