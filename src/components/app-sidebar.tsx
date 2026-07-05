@@ -212,6 +212,19 @@ function NestedPatternItem({
   const hasLessons = pat.lessons.length > 0;
 
   if (!hasLessons) {
+    if (pat.path) {
+      return (
+        <SidebarMenuSubItem>
+          <SidebarMenuSubButton asChild isActive={patternActive}>
+            <Link to={pat.path as any} onClick={onNavigate}>
+              <ChevronRight className="size-3.5" />
+              <span>{pat.title}</span>
+            </Link>
+          </SidebarMenuSubButton>
+        </SidebarMenuSubItem>
+      );
+    }
+    
     return (
       <SidebarMenuSubItem>
         <SidebarMenuSubButton asChild isActive={patternActive}>
@@ -275,6 +288,19 @@ function PatternItem({
   const hasLessons = pat.lessons.length > 0;
 
   if (!hasLessons) {
+    if (pat.path) {
+      return (
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
+            <Link to={pat.path as any} onClick={onNavigate}>
+              <ChevronRight className="size-3.5" />
+              <span>{pat.title}</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      );
+    }
+    
     return (
       <SidebarMenuItem>
         <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
