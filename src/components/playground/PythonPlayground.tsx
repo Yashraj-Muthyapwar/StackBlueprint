@@ -2,8 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { Decoration, EditorView, lineNumbers } from "@codemirror/view";
-import { StateField, StateEffect, type Extension } from "@codemirror/state";
+import { Decoration, EditorView, lineNumbers, gutter, GutterMarker } from "@codemirror/view";
+import { StateField, StateEffect, RangeSet, type Extension } from "@codemirror/state";
 import {
   Play,
   RotateCcw,
@@ -15,6 +15,11 @@ import {
   ArrowUpFromLine,
   Sparkles,
   Link2,
+  Brain,
+  FastForward,
+  SkipForward,
+  Check,
+  X,
 } from "lucide-react";
 
 import { getPyodide } from "@/lib/pyodide-loader";
@@ -81,14 +86,93 @@ const highlightField = StateField.define({
   provide: (f) => EditorView.decorations.from(f),
 });
 
-const editorExtensions: Extension[] = [
+// ---------------- Breakpoint gutter extension ----------------
+
+const toggleBreakpoint = StateEffect.define<{ pos: number; on: boolean }>();
+
+const breakpointDot = new (class extends GutterMarker {
+  toDOM() {
+    const el = document.createElement("div");
+    el.style.cssText =
+      "width:8px;height:8px;border-radius:9999px;background:var(--rose);box-shadow:0 0 6px var(--rose);";
+    return el;
+  }
+})();
+
+const breakpointField = StateField.define<RangeSet<GutterMarker>>({
+  create: () => RangeSet.empty,
+  update(set, tr) {
+    set = set.map(tr.changes);
+    for (const e of tr.effects) {
+      if (e.is(toggleBreakpoint)) {
+        if (e.value.on) set = set.update({ add: [breakpointDot.range(e.value.pos)] });
+        else set = set.update({ filter: (from: number) => from !== e.value.pos });
+      }
+    }
+    return set;
+  },
+});
+
+function collectBreakpointLines(view: EditorView): Set<number> {
+  const lines = new Set<number>();
+  const it = view.state.field(breakpointField).iter();
+  while (it.value) {
+    if (it.from <= view.state.doc.length) lines.add(view.state.doc.lineAt(it.from).number);
+    it.next();
+  }
+  return lines;
+}
+
+function hasBreakpointAt(view: EditorView, pos: number): boolean {
+  let found = false;
+  view.state.field(breakpointField).between(pos, pos, () => {
+    found = true;
+  });
+  return found;
+}
+
+// Rose tint on breakpointed lines so setting one gives instant visual feedback.
+const breakpointLineField = StateField.define({
+  create: () => Decoration.none,
+  update(deco: any, tr: any) {
+    deco = deco.map(tr.changes);
+    for (const e of tr.effects) {
+      if (e.is(toggleBreakpoint)) {
+        if (e.value.on) {
+          deco = deco.update({
+            add: [
+              Decoration.line({
+                attributes: { style: "background: rgba(244, 63, 94, 0.09);" },
+              }).range(e.value.pos),
+            ],
+          });
+        } else {
+          deco = deco.update({ filter: (from: number) => from !== e.value.pos });
+        }
+      }
+    }
+    return deco;
+  },
+  provide: (f: any) => EditorView.decorations.from(f),
+});
+
+const baseEditorExtensions: Extension[] = [
   python(),
   oneDark,
-  lineNumbers(),
   highlightField,
+  breakpointField,
+  breakpointLineField,
   EditorView.theme({
     "&": { height: "100%", fontSize: "13px" },
     ".cm-scroller": { fontFamily: "ui-monospace, SFMono-Regular, monospace" },
+    // Whole number column is a click target for breakpoints.
+    ".cm-lineNumbers .cm-gutterElement": { cursor: "pointer" },
+    ".cm-breakpoint-gutter": { width: "14px", cursor: "pointer" },
+    ".cm-breakpoint-gutter .cm-gutterElement": {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
   }),
 ];
 
@@ -192,6 +276,131 @@ function valueKey(v: Value): string {
   return v.kind === "prim" ? `p:${v.type}:${v.value}` : `r:${v.id}`;
 }
 
+// ---------------- Predict mode ----------------
+//
+// Before revealing the next step, ask the learner to commit to a prediction.
+// Committing to a belief and then seeing it confirmed or broken is what turns
+// passive watching into actual reasoning practice.
+
+type Prediction = {
+  targetIdx: number; // the snapshot index this prediction reveals
+  prompt: string;
+  correct: string;
+  options: string[];
+  answered: { choice: string; ok: boolean } | null;
+};
+
+function shuffled<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildOptions(correct: string, type: string, extras: string[]): string[] {
+  const opts = new Set<string>([correct]);
+  if (type === "bool") {
+    const flips: Record<string, string> = { true: "false", false: "true", True: "False", False: "True" };
+    opts.add(flips[correct] ?? "True");
+  } else if (type === "int" || type === "float") {
+    const n = Number(correct);
+    if (Number.isFinite(n)) {
+      for (const cand of [n + 1, n - 1, n * 2]) {
+        if (opts.size < 4) opts.add(String(type === "int" ? Math.trunc(cand) : cand));
+      }
+    }
+  }
+  for (const e of extras) {
+    if (opts.size >= 4) break;
+    if (e !== undefined && e !== null && e !== "") opts.add(e);
+  }
+  // Last-resort fillers so a question never renders with fewer than 3 options.
+  let filler = 0;
+  while (opts.size < 3) opts.add(`${correct}_${++filler}`);
+  return shuffled([...opts]);
+}
+
+// Decide whether stepping from `cur` to `next` is worth a question, and build one.
+function makePrediction(cur: Snapshot, next: Snapshot, targetIdx: number): Prediction | null {
+  // Best question in the trace: what does this function return?
+  if (next.event === "return" && next.returnValue?.kind === "prim") {
+    const rv = next.returnValue;
+    if (["int", "float", "str", "bool"].includes(rv.type)) {
+      const f = next.frames.at(-1);
+      const argHint = f
+        ? Object.entries(f.locals)
+            .filter(([, v]) => v.kind === "prim")
+            .slice(0, 3)
+            .map(([k, v]) => `${k}=${String((v as PrimVal).value)}`)
+            .join(", ")
+        : "";
+      const correct = String(rv.value);
+      return {
+        targetIdx,
+        prompt: `${f?.name ?? "The function"}(${argHint}) is about to return. What value comes back?`,
+        correct,
+        options: buildOptions(correct, rv.type, []),
+        answered: null,
+      };
+    }
+  }
+
+  if (next.event !== "line") return null;
+  const topIdx = next.frames.length - 1;
+  const top = next.frames[topIdx];
+  const prevTop = cur.frames[topIdx];
+  if (!top || !prevTop) return null;
+
+  // Changed primitives (loop counters, accumulators) make the best questions.
+  // A brand-new primitive assignment is the fallback question.
+  let fallback: Prediction | null = null;
+  const framePrims = Object.values(top.locals)
+    .filter((v): v is PrimVal => v.kind === "prim")
+    .map((v) => String(v.value));
+  for (const [k, v] of Object.entries(top.locals)) {
+    if (v.kind !== "prim" || !["int", "float", "str", "bool"].includes(v.type)) continue;
+    const pv = prevTop.locals[k];
+    const correct = String(v.value);
+    if (pv && valueKey(pv) !== valueKey(v)) {
+      const prevStr = pv.kind === "prim" ? String(pv.value) : "";
+      return {
+        targetIdx,
+        prompt: `The highlighted line is about to run. What will ${k} be after it?`,
+        correct,
+        options: buildOptions(correct, v.type, [prevStr]),
+        answered: null,
+      };
+    }
+    if (!pv && !fallback) {
+      fallback = {
+        targetIdx,
+        prompt: `The highlighted line is about to run. What value will ${k} get?`,
+        correct,
+        options: buildOptions(correct, v.type, framePrims.filter((s) => s !== correct)),
+        answered: null,
+      };
+    }
+  }
+  return fallback;
+}
+
+// Map heap id -> variable names pointing at it, for aliasing callouts.
+function refOwners(snap: Snapshot): Map<string, string[]> {
+  const owners = new Map<string, string[]>();
+  snap.frames.forEach((f, fi) => {
+    Object.entries(f.locals).forEach(([k, v]) => {
+      if (v.kind !== "ref") return;
+      const tag = fi === 0 ? k : `${f.name}.${k}`;
+      const list = owners.get(v.id) ?? [];
+      list.push(tag);
+      owners.set(v.id, list);
+    });
+  });
+  return owners;
+}
+
 // Build a plain-English narration of what changed at this step.
 function narrate(snap: Snapshot, prev?: Snapshot): string {
   if (snap.event === "call") {
@@ -218,8 +427,28 @@ function narrate(snap: Snapshot, prev?: Snapshot): string {
     else if (valueKey(pv) !== valueKey(v))
       changes.push(`${k} → ${valuePlain(v, snap.heap)}`);
   });
-  if (!changes.length) return `Running line ${snap.line} in ${top.name}.`;
-  return `Line ${snap.line}: ${changes.join(", ")}.`;
+  let base = !changes.length
+    ? `Running line ${snap.line} in ${top.name}.`
+    : `Line ${snap.line}: ${changes.join(", ")}.`;
+
+  // Aliasing callout: if a heap object just gained a second name, say so.
+  // This is the number one beginner misconception and it deserves a sentence.
+  if (prev) {
+    const now = refOwners(snap);
+    const before = refOwners(prev);
+    for (const [id, names] of now) {
+      if (names.length < 2) continue;
+      const prevNames = before.get(id) ?? [];
+      const newcomers = names.filter((n) => !prevNames.includes(n));
+      if (newcomers.length && prevNames.length) {
+        const obj = snap.heap[id];
+        const kind = obj && "items" in obj ? obj.type : "object";
+        base += ` Careful: ${names.join(" and ")} now point to the SAME ${kind} in memory. Mutating it through one name changes it for all of them.`;
+        break;
+      }
+    }
+  }
+  return base;
 }
 
 // ---------------- Heap rendering ----------------
@@ -232,6 +461,7 @@ function HeapCard({
   changedItems,
   aliases,
   live,
+  stepIdx,
 }: {
   id: string;
   obj: HeapObj;
@@ -240,7 +470,9 @@ function HeapCard({
   changedItems: Set<number>;
   aliases: string[];
   live: boolean;
+  stepIdx: number;
 }) {
+  const popStyle = isNew ? { animation: "sb-pop 0.35s ease-out" } : undefined;
   const shortId = id.slice(-4);
   const ringClass = isNew
     ? "ring-1 ring-mint/50"
@@ -268,6 +500,7 @@ function HeapCard({
     return (
       <div
         ref={(el) => registerRef(`heap:${id}`, el)}
+        style={popStyle}
         className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm transition ${ringClass}`}
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -284,7 +517,9 @@ function HeapCard({
                 </span>
               )}
               <span
+                key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
+                style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
                 className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
                   changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
@@ -307,6 +542,7 @@ function HeapCard({
     return (
       <div
         ref={(el) => registerRef(`heap:${id}`, el)}
+        style={popStyle}
         className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm transition ${ringClass}`}
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -319,7 +555,9 @@ function HeapCard({
               <span className={valueClass(k)}>{valueLabel(k)}</span>
               <span className="text-muted-foreground">→</span>
               <span
+                key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
+                style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
                 className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
                   changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
@@ -340,6 +578,7 @@ function HeapCard({
   return (
     <div
       ref={(el) => registerRef(`heap:${id}`, el)}
+      style={popStyle}
       className={`rounded-lg border border-hairline bg-surface p-2 shadow-sm ${ringClass}`}
     >
       <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -373,9 +612,51 @@ export function PythonPlayground() {
   const [speedIdx, setSpeedIdx] = useState(1);
   const [error, setError] = useState<string | null>(null);
 
+  // Predict mode: intercept forward steps with a "what happens next?" question.
+  const [predictMode, setPredictMode] = useState(false);
+  const [prediction, setPrediction] = useState<Prediction | null>(null);
+  const [score, setScore] = useState({ correct: 0, total: 0, streak: 0 });
+  const lastAskedRef = useRef(-10); // snapshot index of the last question, throttles frequency
+
+  // Breakpoints: line numbers with a red dot in the gutter.
+  const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
+  const breakpointsCbRef = useRef<(lines: Set<number>) => void>(() => {});
+  breakpointsCbRef.current = setBreakpoints;
+
+  const editorExtensions = useMemo<Extension[]>(() => {
+    const toggleAt = (view: EditorView, pos: number) => {
+      const on = !hasBreakpointAt(view, pos);
+      view.dispatch({ effects: toggleBreakpoint.of({ pos, on }) });
+      breakpointsCbRef.current(collectBreakpointLines(view));
+      return true;
+    };
+    return [
+      ...baseEditorExtensions,
+      // Dot gutter first so it renders to the left of the numbers, like an IDE.
+      gutter({
+        class: "cm-breakpoint-gutter",
+        markers: (v: EditorView) => v.state.field(breakpointField),
+        initialSpacer: () => breakpointDot,
+        domEventHandlers: {
+          mousedown: (view: EditorView, line: { from: number }) => toggleAt(view, line.from),
+        },
+      }),
+      // Clicking a line number also toggles: a big, obvious target.
+      lineNumbers({
+        domEventHandlers: {
+          mousedown: (view: EditorView, line: { from: number }) => toggleAt(view, line.from),
+        },
+      }),
+      EditorView.updateListener.of((u) => {
+        if (u.docChanged) breakpointsCbRef.current(collectBreakpointLines(u.view));
+      }),
+    ];
+  }, []);
+
   const editorRef = useRef<{ view?: EditorView }>({});
   const refMap = useRef<Map<string, HTMLElement>>(new Map());
   const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [arrows, setArrows] = useState<
     Array<{ x1: number; y1: number; x2: number; y2: number; active: boolean }>
   >([]);
@@ -408,9 +689,20 @@ export function PythonPlayground() {
       const cur = snap.heap[id];
       const prev = prevSnap.heap[id];
       const items = new Set<number>();
-      if ("items" in cur && "items" in prev) {
-        const cArr = cur.items as unknown as Value[];
-        const pArr = prev.items as unknown as Value[];
+      if (cur.type === "dict" && "items" in cur && prev.type === "dict" && "items" in prev) {
+        const len = Math.max(cur.items.length, prev.items.length);
+        for (let i = 0; i < len; i++) {
+          const a = cur.items[i];
+          const b = prev.items[i];
+          if (!a || !b) {
+            items.add(i);
+            continue;
+          }
+          if (valueKey(a[0]) !== valueKey(b[0]) || valueKey(a[1]) !== valueKey(b[1])) items.add(i);
+        }
+      } else if ("items" in cur && "items" in prev && cur.type !== "dict" && prev.type !== "dict") {
+        const cArr = cur.items as Value[];
+        const pArr = prev.items as Value[];
         const len = Math.max(cArr.length, pArr.length);
         for (let i = 0; i < len; i++) {
           const a = cArr[i];
@@ -419,12 +711,7 @@ export function PythonPlayground() {
             items.add(i);
             continue;
           }
-          // dict items are tuples; treat as pair
-          if (Array.isArray(a) && Array.isArray(b)) {
-            if (valueKey(a[1] as Value) !== valueKey(b[1] as Value)) items.add(i);
-          } else {
-            if (valueKey(a as Value) !== valueKey(b as Value)) items.add(i);
-          }
+          if (valueKey(a) !== valueKey(b)) items.add(i);
         }
       }
       if (items.size) changedHeapItems.set(id, items);
@@ -440,19 +727,92 @@ export function PythonPlayground() {
     view.dispatch({ effects: setHighlight.of(snap ? snap.line : null) });
   }, [snap]);
 
-  // Auto-play
+  const stepBack = useCallback(() => {
+    setPrediction(null);
+    setIdx((i) => Math.max(0, i - 1));
+  }, []);
+
+  const togglePredict = useCallback(() => {
+    setPredictMode((m) => {
+      const next = !m;
+      if (next) {
+        lastAskedRef.current = -10; // allow a question on the very next step
+        setStatus(
+          snapshots.length
+            ? "Predict mode on. Step forward (→ or ▶) and commit to a guess before each reveal."
+            : "Predict mode on. Run & Trace first, then step forward.",
+        );
+      } else {
+        setPrediction(null);
+        setStatus("Predict mode off.");
+      }
+      return next;
+    });
+  }, [snapshots.length]);
+
+  // Forward step. In predict mode this may pause on a question instead of advancing.
+  const stepForward = useCallback(() => {
+    if (!snapshots.length || idx >= snapshots.length - 1) return;
+    if (prediction && !prediction.answered) return; // answer or skip first
+    if (predictMode && idx + 1 - lastAskedRef.current >= 2) {
+      const p = makePrediction(snapshots[idx], snapshots[idx + 1], idx + 1);
+      if (p) {
+        lastAskedRef.current = idx + 1;
+        setPrediction(p);
+        setPlaying(false);
+        return;
+      }
+    }
+    setPrediction(null);
+    setIdx((i) => Math.min(snapshots.length - 1, i + 1));
+  }, [snapshots, idx, prediction, predictMode]);
+
+  const answerPrediction = useCallback(
+    (choice: string) => {
+      if (!prediction || prediction.answered) return;
+      const ok = choice === prediction.correct;
+      setScore((s) => ({
+        correct: s.correct + (ok ? 1 : 0),
+        total: s.total + 1,
+        streak: ok ? s.streak + 1 : 0,
+      }));
+      setPrediction({ ...prediction, answered: { choice, ok } });
+      setIdx(prediction.targetIdx); // reveal the actual state
+    },
+    [prediction],
+  );
+
+  const skipPrediction = useCallback(() => {
+    if (!prediction) return;
+    const target = prediction.targetIdx;
+    setPrediction(null);
+    setIdx(target);
+  }, [prediction]);
+
+  // Jump forward to the next snapshot sitting on a breakpointed line.
+  const runToBreakpoint = useCallback(() => {
+    if (!snapshots.length || !breakpoints.size) return;
+    setPrediction(null);
+    for (let i = idx + 1; i < snapshots.length; i++) {
+      if (breakpoints.has(snapshots[i].line)) {
+        setIdx(i);
+        return;
+      }
+    }
+    setIdx(snapshots.length - 1);
+    setStatus("No more breakpoints ahead. Jumped to the end.");
+  }, [snapshots, breakpoints, idx]);
+
+  // Auto-play. Routed through stepForward so predict mode pauses on questions.
   useEffect(() => {
     if (!playing) return;
     if (idx >= snapshots.length - 1) {
       setPlaying(false);
       return;
     }
-    const t = setTimeout(
-      () => setIdx((i) => Math.min(snapshots.length - 1, i + 1)),
-      SPEEDS[speedIdx].ms,
-    );
+    const t = setTimeout(() => stepForward(), SPEEDS[speedIdx].ms);
     return () => clearTimeout(t);
-  }, [playing, idx, snapshots.length, speedIdx]);
+  }, [playing, idx, snapshots.length, speedIdx, stepForward]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -462,19 +822,30 @@ export function PythonPlayground() {
         return;
       if (e.key === "ArrowRight") {
         e.preventDefault();
-        setIdx((i) => Math.min(snapshots.length - 1, i + 1));
+        stepForward();
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
-        setIdx((i) => Math.max(0, i - 1));
+        stepBack();
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        setPrediction(null);
+        setIdx(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        setPrediction(null);
+        setIdx(Math.max(0, snapshots.length - 1));
       } else if (e.key === " ") {
         if (!snapshots.length) return;
         e.preventDefault();
+        setPrediction(null);
         setPlaying((p) => !p);
+      } else if (e.key === "p" || e.key === "P") {
+        togglePredict();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [snapshots.length]);
+  }, [snapshots.length, stepForward, stepBack, togglePredict]);
 
   const registerRef = useCallback((key: string, el: HTMLElement | null) => {
     if (el) refMap.current.set(key, el);
@@ -482,12 +853,15 @@ export function PythonPlayground() {
   }, []);
 
   // Compute arrows from frame ref-values to heap cards after layout.
-  useLayoutEffect(() => {
-    if (!snap || !containerRef.current) {
+  // Coordinates are measured against the inner content box (contentRef), which
+  // scrolls together with the SVG overlay, so arrows stay attached while
+  // scrolling and never clip below the fold.
+  const computeArrows = useCallback(() => {
+    if (!snap || !contentRef.current) {
       setArrows([]);
       return;
     }
-    const box = containerRef.current.getBoundingClientRect();
+    const box = contentRef.current.getBoundingClientRect();
     const next: Array<{ x1: number; y1: number; x2: number; y2: number; active: boolean }> = [];
 
     const addArrow = (fromKey: string, toId: string, active: boolean) => {
@@ -526,12 +900,29 @@ export function PythonPlayground() {
     setArrows(next);
   }, [snap, diff]);
 
+  useLayoutEffect(() => {
+    computeArrows();
+  }, [computeArrows]);
+
+  useEffect(() => {
+    if (!contentRef.current) return;
+    const ro = new ResizeObserver(() => computeArrows());
+    ro.observe(contentRef.current);
+    window.addEventListener("resize", computeArrows);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", computeArrows);
+    };
+  }, [computeArrows]);
+
   const run = useCallback(async () => {
     setLoading(true);
     setError(null);
     setSnapshots([]);
     setIdx(0);
     setPlaying(false);
+    setPrediction(null);
+    lastAskedRef.current = -10;
     try {
       setStatus("Loading Python runtime…");
       const py = await getPyodide((m) => setStatus(m));
@@ -556,12 +947,8 @@ export function PythonPlayground() {
     }
   }, [code]);
 
-  const step = useCallback(
-    (n: number) => setIdx((i) => Math.max(0, Math.min(snapshots.length - 1, i + n))),
-    [snapshots.length],
-  );
-
   const stdout = snap?.stdout ?? "";
+  const prevStdout = prevSnap?.stdout ?? "";
   const heapEntries = useMemo(() => (snap ? Object.entries(snap.heap) : []), [snap]);
 
   // Aliases: for each heap id, collect "frame.var" labels pointing to it (across all frames).
@@ -607,6 +994,23 @@ export function PythonPlayground() {
     [snap, prevSnap],
   );
 
+  // The literal source text of the line being executed, shown with the narration.
+  const sourceLine = useMemo(
+    () => (snap ? (code.split("\n")[snap.line - 1] ?? "").trim() : ""),
+    [snap, code],
+  );
+
+  // How many times execution has visited the current line so far. Passing 3
+  // through the same line is what makes a loop visible as a loop.
+  const visitCount = useMemo(() => {
+    if (!snap || snap.event !== "line") return 0;
+    let c = 0;
+    for (let i = 0; i <= idx; i++) {
+      if (snapshots[i].line === snap.line && snapshots[i].event === "line") c++;
+    }
+    return c;
+  }, [snap, idx, snapshots]);
+
 
   // Event ribbon content
   const eventBadge = useMemo(() => {
@@ -635,6 +1039,19 @@ export function PythonPlayground() {
 
   return (
     <div className="flex h-[calc(100vh-3rem)] flex-col gap-3 p-4">
+      <style>{`
+        @keyframes sb-flash {
+          0% { box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.45); }
+          100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0); }
+        }
+        @keyframes sb-pop {
+          0% { transform: scale(0.94) translateY(3px); opacity: 0.3; }
+          100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        @keyframes sb-march {
+          to { stroke-dashoffset: -14; }
+        }
+      `}</style>
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2">
         <Button onClick={run} disabled={loading} size="sm" className="gap-1.5">
@@ -647,11 +1064,16 @@ export function PythonPlayground() {
           onValueChange={(label) => {
             const s = SAMPLES.find((x) => x.label === label);
             if (!s) return;
+            const current = SAMPLES.find((x) => x.label === sampleLabel);
+            const edited = current && code.trim() !== current.code.trim();
+            if (edited && !window.confirm("Replace your edited code with this sample?")) return;
             setSampleLabel(label);
             setCode(s.code);
             setSnapshots([]);
             setIdx(0);
             setError(null);
+            setPrediction(null);
+            lastAskedRef.current = -10;
             setStatus("Sample loaded. Press Run.");
           }}
         >
@@ -673,26 +1095,43 @@ export function PythonPlayground() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => step(-1)}
+          onClick={stepBack}
           disabled={!snapshots.length || idx === 0}
+          title="Step back (←)"
         >
           <ChevronLeft className="size-3.5" />
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setPlaying((p) => !p)}
+          onClick={() => {
+            setPrediction(null);
+            setPlaying((p) => !p);
+          }}
           disabled={!snapshots.length}
+          title="Play / pause (space)"
         >
           {playing ? <Square className="size-3.5" /> : <Play className="size-3.5" />}
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => step(1)}
-          disabled={!snapshots.length || idx >= snapshots.length - 1}
+          onClick={stepForward}
+          disabled={
+            !snapshots.length || idx >= snapshots.length - 1 || !!(prediction && !prediction.answered)
+          }
+          title="Step forward (→)"
         >
           <ChevronRight className="size-3.5" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={runToBreakpoint}
+          disabled={!snapshots.length || !breakpoints.size}
+          title="Run to next breakpoint (click a line number to set one)"
+        >
+          <FastForward className="size-3.5" />
         </Button>
         <Button
           variant="ghost"
@@ -700,11 +1139,32 @@ export function PythonPlayground() {
           onClick={() => {
             setIdx(0);
             setPlaying(false);
+            setPrediction(null);
           }}
           disabled={!snapshots.length}
+          title="Back to start"
         >
           <RotateCcw className="size-3.5" />
         </Button>
+
+        <div className="mx-1 h-5 w-px bg-hairline" />
+
+        <Button
+          variant={predictMode ? "default" : "outline"}
+          size="sm"
+          onClick={togglePredict}
+          className="gap-1.5"
+          title="Predict mode (P): commit to a guess before each reveal"
+        >
+          <Brain className="size-3.5" />
+          Predict
+        </Button>
+        {predictMode && score.total > 0 && (
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline bg-surface px-2.5 py-1 font-mono text-[11px] text-foreground/80">
+            {score.correct}/{score.total}
+            {score.streak >= 2 && <span className="text-amber">· streak {score.streak}</span>}
+          </span>
+        )}
 
         <select
           aria-label="Playback speed"
@@ -734,17 +1194,38 @@ export function PythonPlayground() {
             max={Math.max(0, snapshots.length - 1)}
             value={idx}
             disabled={!snapshots.length}
-            onChange={(e) => setIdx(Number(e.target.value))}
+            onChange={(e) => {
+              setPrediction(null);
+              setIdx(Number(e.target.value));
+            }}
             className="relative z-10 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-transparent accent-mint disabled:opacity-40"
           />
-          {/* Plain progress fill */}
-          <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-hairline/60">
+          {/* Progress fill plus an event map: violet ticks are calls, mint ticks are returns */}
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-1.5 -translate-y-1/2 overflow-visible rounded-full bg-hairline/60">
             <div
-              className="h-full bg-mint/60 transition-all"
-              style={{
-                width: snapshots.length > 1 ? `${(idx / (snapshots.length - 1)) * 100}%` : "0%",
-              }}
-            />
+              className="h-full overflow-hidden rounded-full"
+            >
+              <div
+                className="h-full bg-mint/60 transition-all"
+                style={{
+                  width: snapshots.length > 1 ? `${(idx / (snapshots.length - 1)) * 100}%` : "0%",
+                }}
+              />
+            </div>
+            {snapshots.length > 1 &&
+              snapshots.map((s, i) =>
+                s.event === "line" ? null : (
+                  <div
+                    key={i}
+                    className="absolute top-1/2 h-3 w-[2px] -translate-y-1/2 rounded-full"
+                    style={{
+                      left: `${(i / (snapshots.length - 1)) * 100}%`,
+                      background: s.event === "call" ? "var(--violet)" : "var(--mint)",
+                      opacity: i <= idx ? 0.95 : 0.4,
+                    }}
+                  />
+                ),
+              )}
           </div>
         </div>
         {eventBadge && (
@@ -762,9 +1243,74 @@ export function PythonPlayground() {
         <div className="mb-0.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
           <span className="size-1.5 rounded-full bg-mint shadow-[0_0_8px_var(--mint)]" />
           what's happening
+          {sourceLine && (
+            <code className="ml-auto max-w-[50%] truncate rounded border border-hairline bg-background px-2 py-0.5 font-mono text-[11px] normal-case tracking-normal text-foreground/80">
+              {sourceLine}
+            </code>
+          )}
         </div>
         <p className="text-[13px] leading-relaxed text-foreground/90">{narration}</p>
       </div>
+
+      {/* Predict mode question card */}
+      {prediction && (
+        <div
+          className={`rounded-lg border px-3 py-2.5 transition ${
+            prediction.answered
+              ? prediction.answered.ok
+                ? "border-mint/50 bg-mint/5"
+                : "border-rose/50 bg-rose/5"
+              : "border-amber/50 bg-amber/5"
+          }`}
+        >
+          <div className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            <Brain className="size-3 text-amber" />
+            {prediction.answered ? "prediction result" : "predict before you peek"}
+          </div>
+          <p className="mb-2 text-[13px] leading-relaxed text-foreground/90">{prediction.prompt}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            {prediction.options.map((opt) => {
+              const answered = prediction.answered;
+              const isCorrect = opt === prediction.correct;
+              const isChoice = answered?.choice === opt;
+              let cls = "border-hairline bg-surface text-foreground/85 hover:bg-background";
+              if (answered) {
+                if (isCorrect) cls = "border-mint/60 bg-mint/10 text-mint";
+                else if (isChoice) cls = "border-rose/60 bg-rose/10 text-rose";
+                else cls = "border-hairline bg-surface text-muted-foreground/60";
+              }
+              return (
+                <button
+                  key={opt}
+                  onClick={() => answerPrediction(opt)}
+                  disabled={!!answered}
+                  className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 font-mono text-[12px] transition disabled:cursor-default ${cls}`}
+                >
+                  {answered && isCorrect && <Check className="size-3" />}
+                  {answered && isChoice && !isCorrect && <X className="size-3" />}
+                  {opt}
+                </button>
+              );
+            })}
+            {!prediction.answered && (
+              <button
+                onClick={skipPrediction}
+                className="ml-auto inline-flex items-center gap-1 rounded-md px-2 py-1 font-mono text-[11px] text-muted-foreground hover:text-foreground/80"
+              >
+                <SkipForward className="size-3" />
+                skip
+              </button>
+            )}
+            {prediction.answered && (
+              <span className="ml-auto font-mono text-[11px] text-muted-foreground">
+                {prediction.answered.ok
+                  ? "Nailed it. Step on (→)."
+                  : "Check the highlighted state to see why, then step on (→)."}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Main split */}
       <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-2">
@@ -777,6 +1323,7 @@ export function PythonPlayground() {
             {snap && (
               <span className="font-mono text-[11px] text-mint">
                 line {snap.line} · {snap.event}
+                {visitCount > 1 && <span className="text-amber"> · pass {visitCount}</span>}
               </span>
             )}
           </div>
@@ -807,7 +1354,8 @@ export function PythonPlayground() {
           </div>
 
           <div ref={containerRef} className="relative min-h-0 flex-1 overflow-auto">
-            {/* SVG arrow overlay */}
+            <div ref={contentRef} className="relative">
+            {/* SVG arrow overlay: lives inside the content box so it scrolls with it */}
             <svg
               className="pointer-events-none absolute inset-0"
               width="100%"
@@ -853,6 +1401,8 @@ export function PythonPlayground() {
                     strokeWidth={a.active ? 1.75 : 1.25}
                     strokeOpacity={a.active ? 0.95 : 0.65}
                     strokeLinecap="round"
+                    strokeDasharray={a.active ? "8 6" : undefined}
+                    style={a.active ? { animation: "sb-march 0.5s linear infinite" } : undefined}
                     markerEnd={a.active ? "url(#arrowhead-active)" : "url(#arrowhead)"}
                   />
                 );
@@ -872,6 +1422,7 @@ export function PythonPlayground() {
                     return (
                       <div
                         key={fi}
+                        style={{ marginLeft: Math.min(fi, 4) * 10 }}
                         className={`rounded-lg border p-2 transition ${
                           isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
                         }`}
@@ -891,7 +1442,7 @@ export function PythonPlayground() {
                             {Object.entries(f.locals).map(([k, v]) => {
                               const isChanged = changed?.has(k);
                               return (
-                                <div key={k} className="contents">
+                                <div key={isChanged ? `${k}-${idx}` : k} className="contents">
                                   <span
                                     className={
                                       isChanged ? "text-amber" : "text-muted-foreground"
@@ -901,6 +1452,7 @@ export function PythonPlayground() {
                                   </span>
                                   <span
                                     ref={(el) => registerRef(`var:${fi}:${k}`, el)}
+                                    style={isChanged ? { animation: "sb-flash 0.6s ease-out" } : undefined}
                                     className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
                                       isChanged
                                         ? "border-amber/70 bg-amber/10"
@@ -951,6 +1503,7 @@ export function PythonPlayground() {
                       changedItems={diff.changedHeapItems.get(id) ?? new Set()}
                       aliases={aliasesById.get(id) ?? []}
                       live={liveIds.has(id)}
+                      stepIdx={idx}
                     />
                   ))
                 ) : (
@@ -959,6 +1512,7 @@ export function PythonPlayground() {
                   </div>
                 )}
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -971,7 +1525,14 @@ export function PythonPlayground() {
             stdout
           </div>
           <pre className="max-h-40 overflow-auto p-3 font-mono text-[12px] text-foreground/85 whitespace-pre-wrap">
-            {stdout || <span className="text-muted-foreground/60">(empty)</span>}
+            {stdout ? (
+              <>
+                {stdout.slice(0, prevStdout.length)}
+                <span className="bg-mint/15 text-mint">{stdout.slice(prevStdout.length)}</span>
+              </>
+            ) : (
+              <span className="text-muted-foreground/60">(empty)</span>
+            )}
           </pre>
         </div>
         <div className="rounded-xl border border-hairline bg-surface">
