@@ -216,10 +216,10 @@ function NestedPatternItem({
       return (
         <SidebarMenuSubItem>
           <SidebarMenuSubButton asChild isActive={patternActive}>
-            <Link to={pat.path as any} onClick={onNavigate}>
+            <a href={pat.path} onClick={onNavigate}>
               <ChevronRight className="size-3.5" />
               <span>{pat.title}</span>
-            </Link>
+            </a>
           </SidebarMenuSubButton>
         </SidebarMenuSubItem>
       );
@@ -292,10 +292,10 @@ function PatternItem({
       return (
         <SidebarMenuItem>
           <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
-            <Link to={pat.path as any} onClick={onNavigate}>
+            <a href={pat.path} onClick={onNavigate}>
               <ChevronRight className="size-3.5" />
               <span>{pat.title}</span>
-            </Link>
+            </a>
           </SidebarMenuButton>
         </SidebarMenuItem>
       );
