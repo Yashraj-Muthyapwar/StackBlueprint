@@ -1206,17 +1206,17 @@ Filesystem      Size  Used Avail Use% Mounted on
 overlay          59G   20G   36G  36% /
 # (checked our disk space usage to ensure we aren't full)
 
+$ rm logs/app.log
+$ rmdir logs
+$ rm app.js
+# (cleaned up our files and logs folder)
+
 $ cd ..
-
 $ rmdir my-app
-rmdir: failed to remove 'my-app': Directory not empty
-# (rmdir only works on completely empty directories)
-
-$ rm -rf my-app
 
 $ ls my-app
 ls: cannot access 'my-app': No such file or directory
-# (rm -rf force deletes the directory and everything inside it)`,
+# (rmdir successfully removed the now-empty directory)`,
       buttonLabel: "Run Session",
       caption: "Terminal session",
     },
