@@ -17,7 +17,6 @@ import dockerIntroImg from "@/images/docker/foundations/docker-intro.jpg";
 import dockerAnalogyImg from "@/images/docker/foundations/docker-analogy.jpg";
 import dockerDesktopImg from "@/images/docker/foundations/docker-desktop.png";
 import startupSequencesImg from "@/images/docker/foundations/startup-sequences.jpg";
-import dockerComponentsImg from "@/images/docker/foundations/docker-components.jpg";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -489,13 +488,6 @@ const dockerArchitecture: LessonContent = {
         "• **Union filesystem:** lets container images be built from layered, reusable pieces, like stacking pre-made sauces instead of remaking them from scratch every time.",
         "Containers are not tiny virtual machines. They are just regular Linux processes with strict boundaries drawn around them using these kernel features.",
       ],
-    },
-    {
-      kind: "image",
-      src: dockerComponentsImg,
-      alt: "Docker Registry, Images & Layers, Overlay2, VirtioFS, and Networking Service explained",
-      caption:
-        "Additional Docker components that work behind the scenes during image management, storage, and networking.",
     },
     {
       kind: "prose",
@@ -980,32 +972,37 @@ For more examples and ideas, visit:
       ],
     },
     {
-      kind: "code",
-      language: "text",
-      caption: "Interactive mode",
-      code: `docker run -it ubuntu bash`,
-    },
-    {
       kind: "prose",
       body: [
         "The `-it` flags are a pair: `-i` keeps STDIN open so you can type, and `-t` allocates a pseudo-terminal so you get a proper prompt. Now you are inside a minimal Ubuntu environment.",
       ],
     },
     {
-      kind: "code",
-      language: "text",
-      caption: "Poking around inside",
-      code: `root@a1b2c3d4e5f6:/# cat /etc/os-release
-# Shows Ubuntu version info
+      kind: "terminal-animation",
+      command: "docker run -it ubuntu bash",
+      output: `Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+8c208920155b: Pull complete 
+Digest: sha256:d89408b0672e811c00222a7f5a6bfa9f1ed73e970a6c62cdaef3ce010f6991ee
+Status: Downloaded newer image for ubuntu:latest
+
+root@a1b2c3d4e5f6:/# cat /etc/os-release
+PRETTY_NAME="Ubuntu 24.04 LTS"
+NAME="Ubuntu"
+VERSION_ID="24.04"
 
 root@a1b2c3d4e5f6:/# ls /
-# Standard Linux file system
+bin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
 
 root@a1b2c3d4e5f6:/# apt-get update && apt-get install -y curl
-# You can install packages, but they disappear when the container stops
+Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Fetched 382 kB in 1s (439 kB/s)
+Reading package lists... Done
 
-root@a1b2c3d4e5f6:/# exit
-# Back to your host machine`,
+root@a1b2c3d4e5f6:/# exit`,
+      caption: "Interactive mode",
+      buttonLabel: "Launch Ubuntu",
     },
     {
       kind: "prose",
@@ -1013,10 +1010,16 @@ root@a1b2c3d4e5f6:/# exit
       body: ["Something more practical. Run Nginx:"],
     },
     {
-      kind: "code",
-      language: "text",
+      kind: "terminal-animation",
+      command: "docker run -d -p 8080:80 --name my-nginx nginx",
+      output: `Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+afc163c2a36d: Pull complete
+digest: sha256:98f0e8b5b6c06a8f3b7f6a7d2e8d4d8b0c8c0f2c7c8d0a7f6a5b4e3c2d1f0a9b
+Status: Downloaded newer image for nginx:latest
+8b3c2c5d8e1a4f9e2b7c8d6a1e5f3b9c7a2d1e0f6b5c4a3d2e1f0a9b8c7d6e5f4`,
       caption: "docker run, for real this time",
-      code: `docker run -d -p 8080:80 --name my-nginx nginx`,
+      buttonLabel: "Run Nginx",
     },
     {
       kind: "prose",
