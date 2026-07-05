@@ -22,8 +22,24 @@ export function Quiz({ data }: { data: QuizData }) {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [quizAttempt, setQuizAttempt] = useState(0);
 
   const currentQuestion = data.questions[currentIndex];
+
+  const shuffledOptions = React.useMemo(() => {
+    if (!currentQuestion) return [];
+    const options = currentQuestion.options.map((opt, idx) => ({
+      text: opt,
+      isCorrect: idx === currentQuestion.correctIndex,
+      originalIndex: idx
+    }));
+    // Fisher-Yates shuffle
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+    return options;
+  }, [currentQuestion, quizAttempt]);
 
   useEffect(() => {
     if (isFinished) {
@@ -43,6 +59,7 @@ export function Quiz({ data }: { data: QuizData }) {
     setIsFinished(false);
     setSelectedOption(null);
     setIsAnswered(false);
+    setQuizAttempt(prev => prev + 1);
     
     // Dispatch a custom event so other components (like animations) know the quiz started
     window.dispatchEvent(new CustomEvent("quiz-started"));
@@ -52,7 +69,7 @@ export function Quiz({ data }: { data: QuizData }) {
     if (isAnswered) return;
     setSelectedOption(index);
     setIsAnswered(true);
-    if (index === currentQuestion.correctIndex) {
+    if (shuffledOptions[index].isCorrect) {
       setScore((s) => s + 1);
     }
   };
@@ -140,9 +157,9 @@ export function Quiz({ data }: { data: QuizData }) {
       </h3>
 
       <div className="space-y-3">
-        {currentQuestion.options.map((opt, i) => {
+        {shuffledOptions.map((opt, i) => {
           const isSelected = selectedOption === i;
-          const isCorrect = i === currentQuestion.correctIndex;
+          const isCorrect = opt.isCorrect;
           
           let btnClass = "border-hairline bg-surface-2 hover:border-mint/50 hover:bg-surface-3";
           
@@ -163,7 +180,7 @@ export function Quiz({ data }: { data: QuizData }) {
               disabled={isAnswered}
               className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all duration-200 ${btnClass}`}
             >
-              <span className={isAnswered && isCorrect ? "font-medium" : ""}>{opt}</span>
+              <span className={isAnswered && isCorrect ? "font-medium" : ""}>{opt.text}</span>
               {isAnswered && isCorrect && <CheckCircle2 className="size-4 text-mint" />}
               {isAnswered && isSelected && !isCorrect && <XCircle className="size-4 text-rose-500" />}
             </button>
