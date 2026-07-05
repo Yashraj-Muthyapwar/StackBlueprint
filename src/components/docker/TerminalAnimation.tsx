@@ -28,12 +28,17 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
       const currentLine = outputLines[outputLinesShown] || "";
       const isPulling = currentLine.toLowerCase().includes("pull") || currentLine.toLowerCase().includes("download");
       const isStep = currentLine.startsWith("Step");
+      const isComment = currentLine.trim().startsWith("#");
+      const isCommand = currentLine.trim().startsWith("$");
       
       // Calculate a realistic delay
       let delay = Math.random() * 40 + 20; // fast default
       if (outputLinesShown === 0) delay = 400; // Initial delay before output
       else if (isPulling) delay = Math.random() * 400 + 300; // Network operations take time
       else if (isStep) delay = 800; // Emulate a step taking time
+      else if (isComment) delay = 2000; // Long pause after explanatory comments to read them
+      else if (isCommand) delay = 400; // Pause slightly after a command before showing its output
+      else if (currentLine.trim() === "") delay = 400; // Pause on empty lines
 
       const id = window.setTimeout(() => {
         setOutputLinesShown((l) => l + 1);
