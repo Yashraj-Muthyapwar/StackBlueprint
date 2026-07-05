@@ -136,7 +136,7 @@ const whyDockerExists: LessonContent = {
       kind: "quiz",
       questions: [
         {
-          id: "why-docker-cause",
+          id: "why-docker-cause-easy",
           question: "What actually causes most \"works on my machine\" failures?",
           options: [
             "Bad code written by the developer",
@@ -149,7 +149,7 @@ const whyDockerExists: LessonContent = {
             "Environment drift between laptop, CI, and production is the real culprit. Docker's whole job is eliminating that drift.",
         },
         {
-          id: "why-docker-bundle",
+          id: "why-docker-bundle-medium-1",
           question: "What does a Docker container actually bundle together?",
           options: [
             "Only your application source code",
@@ -161,6 +161,45 @@ const whyDockerExists: LessonContent = {
           explanation:
             "A container is your app plus everything it needs to run, packaged as one portable unit.",
         },
+        {
+          id: "why-docker-image-vs-container-medium-2",
+          question: "If an image is the blueprint, what is the container?",
+          options: [
+            "The compiler that builds the image",
+            "The running instance instantiated from the image",
+            "A virtual machine running the image",
+            "The registry where the blueprint is stored",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A container is a live, running instance of a read-only image.",
+        },
+        {
+          id: "why-docker-engine-hard-1",
+          question: "Which of the following correctly describes 'Docker' as a platform versus a 'Container'?",
+          options: [
+            "Docker is the operating system; a container is an application.",
+            "Docker is the set of tools (engine, CLI) used to manage and run containers, while a container is the actual running application.",
+            "Docker is a type of virtual machine, while a container is the hardware.",
+            "Docker and container are exact synonyms.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Docker provides the tools and platform (like Docker Engine) to create and run containers, but the container itself is the standardized unit of software.",
+        },
+        {
+          id: "why-docker-state-hard-2",
+          question: "Why does building an application inside a container resolve the 'cryptic libssl version' issue?",
+          options: [
+            "Containers bypass SSL entirely, removing the need for the library.",
+            "Containers enforce a standardized build-time declaration, ensuring the exact same library version runs everywhere.",
+            "Containers automatically upgrade the host OS to the required library version.",
+            "Containers use cloud-based libraries instead of local ones.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "By declaring the environment at build-time within an image, Docker guarantees that the exact same dependencies (like libssl) are shipped and run everywhere.",
+        }
       ],
     },
   ],
@@ -288,7 +327,7 @@ const containersVsVms: LessonContent = {
       kind: "quiz",
       questions: [
         {
-          id: "vms-boot",
+          id: "vms-boot-easy",
           question: "Why do containers typically start in seconds while VMs take minutes?",
           options: [
             "Containers use faster hard drives",
@@ -301,7 +340,7 @@ const containersVsVms: LessonContent = {
             "A VM has to boot an entire operating system before your app can run. A container just starts a process, since the kernel is already running on the host.",
         },
         {
-          id: "vms-still-win",
+          id: "vms-still-win-medium-1",
           question: "When is a VM still the better choice over a container?",
           options: [
             "When you want a smaller footprint",
@@ -313,6 +352,45 @@ const containersVsVms: LessonContent = {
           explanation:
             "VMs isolate at the hardware level with a separate kernel, which is still the right tool for running a different OS or for hard multi-tenant security boundaries.",
         },
+        {
+          id: "vms-hypervisor-medium-2",
+          question: "What is the role of a hypervisor in a Virtual Machine architecture?",
+          options: [
+            "It runs the containerized processes directly",
+            "It emulates physical hardware so multiple guest operating systems can run concurrently",
+            "It manages Docker images and networks",
+            "It acts as a firewall between the VM and the host OS",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A hypervisor abstracts and provisions physical hardware resources (CPU, RAM, Disk) to allow multiple heavy Guest OSs to run independently.",
+        },
+        {
+          id: "vms-isolation-hard-1",
+          question: "How do containers achieve isolation without a hypervisor?",
+          options: [
+            "They use cloud-based execution",
+            "They rely on the Docker Engine to emulate hardware",
+            "They use Linux kernel features like namespaces and cgroups to isolate processes on a shared kernel",
+            "They run on a hidden hypervisor installed by Docker",
+          ],
+          correctIndex: 2,
+          explanation:
+            "Containers do not emulate hardware. They use built-in Linux features (namespaces for visibility isolation, cgroups for resource limiting) to sandbox standard processes.",
+        },
+        {
+          id: "vms-overhead-hard-2",
+          question: "Which of the following is the primary cause of overhead in Virtual Machines compared to Containers?",
+          options: [
+            "Network latency caused by the hypervisor",
+            "The duplication of the guest OS kernel and background system processes for every VM",
+            "The time it takes to download VM images",
+            "Containers compress data better than VMs",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Every VM requires its own complete operating system (kernel, init system, background daemons). Running 10 VMs means running 10 operating systems, consuming massive amounts of RAM and CPU just to idle.",
+        }
       ],
     },
   ],
@@ -583,7 +661,7 @@ const dockerArchitecture: LessonContent = {
       kind: "quiz",
       questions: [
         {
-          id: "docker-architecture-dockerd",
+          id: "docker-architecture-dockerd-easy",
           question: "Which component is responsible for accepting API requests from the CLI but does NOT actually run containers itself?",
           options: [
             "containerd",
@@ -595,7 +673,7 @@ const dockerArchitecture: LessonContent = {
           explanation: "dockerd is the high-level orchestration layer that receives API requests from the CLI, but it delegates the actual container runtime execution to containerd."
         },
         {
-          id: "docker-architecture-shim",
+          id: "docker-architecture-shim-medium-1",
           question: "Why does containerd create a dedicated 'shim' process for every container?",
           options: [
             "To make the container run faster",
@@ -607,7 +685,7 @@ const dockerArchitecture: LessonContent = {
           explanation: "The shim keeps the container's standard I/O streams open and reports its status, allowing the container to survive independently even if containerd is upgraded or restarted."
         },
         {
-          id: "docker-architecture-runc",
+          id: "docker-architecture-runc-medium-2",
           question: "What happens to the 'runc' process immediately after the container starts running?",
           options: [
             "It continues running to monitor the container's CPU usage",
@@ -617,6 +695,30 @@ const dockerArchitecture: LessonContent = {
           ],
           correctIndex: 2,
           explanation: "runc has exactly one job: configuring the kernel boundaries and starting the process. The moment the process goes live, runc exits completely."
+        },
+        {
+          id: "docker-architecture-oci-hard-1",
+          question: "What is the primary purpose of the Open Container Initiative (OCI) standard in Docker's architecture?",
+          options: [
+            "To ensure that containers are completely secure and cannot be hacked",
+            "To define a standard for container images and runtimes so tools can interoperate",
+            "To replace Docker entirely with a new command line tool",
+            "To provide a standard operating system for all containers to use"
+          ],
+          correctIndex: 1,
+          explanation: "The OCI standard ensures that any OCI-compliant runtime (like runc) can run any OCI-compliant image. It's what allows Docker to play nicely with other container ecosystems."
+        },
+        {
+          id: "docker-architecture-flow-hard-2",
+          question: "Trace the flow of a 'docker run' command through the architecture. Which order is correct?",
+          options: [
+            "CLI -> containerd -> dockerd -> containerd-shim -> runc",
+            "CLI -> dockerd -> containerd -> runc -> containerd-shim",
+            "CLI -> dockerd -> containerd -> containerd-shim -> runc",
+            "CLI -> dockerd -> runc -> containerd -> containerd-shim"
+          ],
+          correctIndex: 2,
+          explanation: "The CLI talks to dockerd, which tells containerd to start a container. containerd spawns a shim, and the shim invokes runc to actually build and launch the container."
         }
       ]
     }
@@ -932,7 +1034,20 @@ docker run hello-world`,
       kind: "quiz",
       questions: [
         {
-          id: "setup-docker-desktop",
+          id: "setup-verification-easy",
+          question: "Which command is commonly used to verify that Docker can successfully run containers?",
+          options: [
+            "docker build",
+            "docker images",
+            "docker run hello-world",
+            "docker inspect",
+          ],
+          correctIndex: 2,
+          explanation:
+            "`docker run hello-world` downloads a small image (if necessary), creates a container, runs it, and prints a success message, confirming that your Docker installation is working correctly.",
+        },
+        {
+          id: "setup-docker-desktop-medium-1",
           question: "Why do macOS and Windows use Docker Desktop instead of Docker Engine directly?",
           options: [
             "Docker Engine only works with graphical interfaces.",
@@ -945,31 +1060,44 @@ docker run hello-world`,
             "Containers depend on Linux kernel features such as namespaces and cgroups. Docker Desktop provides that Linux environment on macOS and Windows.",
         },
         {
-          id: "setup-engine-running",
-          question: "Why must Docker Desktop be running before executing Docker commands?",
+          id: "setup-engine-running-medium-2",
+          question: "Why must Docker Desktop be running before executing Docker commands in your terminal?",
           options: [
             "The Docker CLI starts Docker Engine automatically.",
-            "The Docker CLI communicates with Docker Engine, so the engine must already be running.",
+            "The Docker CLI communicates with Docker Engine via an API, so the engine must already be running.",
             "Docker commands only work when the dashboard is open.",
             "Docker Desktop compiles Docker commands before running them.",
           ],
           correctIndex: 1,
           explanation:
-            "The Docker CLI is simply a client. It sends requests to Docker Engine. If the engine isn't running, the CLI has nothing to communicate with.",
+            "The Docker CLI is simply a client. It sends requests to Docker Engine. If the engine isn't running, the CLI has nothing to communicate with and will return a 'cannot connect' error.",
         },
         {
-          id: "setup-verification",
-          question: "Which command is commonly used to verify that Docker can successfully run containers?",
+          id: "setup-linux-hard-1",
+          question: "How does Docker run on a native Linux host compared to macOS or Windows?",
           options: [
-            "docker build",
-            "docker images",
-            "docker run hello-world",
-            "docker inspect",
+            "Linux still requires a lightweight VM to run Docker securely.",
+            "Linux runs the Docker Daemon directly on the host OS without needing a hidden VM.",
+            "Linux uses Docker Desktop exclusively to manage containers.",
+            "Linux requires you to compile containers from source code every time."
+          ],
+          correctIndex: 1,
+          explanation:
+            "Because Linux already has the required kernel features (namespaces and cgroups), the Docker daemon runs natively as a system service. There is no need for a hidden VM."
+        },
+        {
+          id: "setup-vm-under-hood-hard-2",
+          question: "What technology does Docker Desktop use under the hood on modern Windows to provide the Linux kernel?",
+          options: [
+            "VirtualBox",
+            "VMware Fusion",
+            "Windows Subsystem for Linux (WSL 2)",
+            "Cygwin"
           ],
           correctIndex: 2,
           explanation:
-            "`docker run hello-world` downloads a small image (if necessary), creates a container, runs it, and prints a success message, confirming that your Docker installation is working correctly.",
-        },
+            "On modern Windows, Docker Desktop utilizes WSL 2 to run a lightweight, highly integrated Linux utility VM, which is much faster and more efficient than traditional hypervisors."
+        }
       ],
     },
   ],
@@ -1151,7 +1279,19 @@ docker container prune`,
       kind: "quiz",
       questions: [
         {
-          id: "first-container-it",
+          id: "first-container-rm-easy",
+          question: "Which command stops a running container and completely deletes it?",
+          options: [
+            "docker kill",
+            "docker rm -f",
+            "docker prune",
+            "docker clean"
+          ],
+          correctIndex: 1,
+          explanation: "The `docker rm` command removes a container, and the `-f` (force) flag tells Docker to stop it first if it is currently running."
+        },
+        {
+          id: "first-container-it-medium-1",
           question: "What do the `-it` flags on `docker run` do together?",
           options: [
             "They run the container in the background",
@@ -1164,7 +1304,7 @@ docker container prune`,
             "`-i` keeps STDIN open so you can type, and `-t` allocates a pseudo-terminal so you get a usable prompt. Together they give you an interactive session.",
         },
         {
-          id: "first-container-port",
+          id: "first-container-port-medium-2",
           question: "In `docker run -d -p 8080:80 nginx`, what does `8080:80` mean?",
           options: [
             "Container port 8080 maps to host port 80",
@@ -1176,6 +1316,30 @@ docker container prune`,
           explanation:
             "The format is `host:container`. Traffic to port 8080 on your machine gets forwarded to port 80 inside the container, where Nginx is listening.",
         },
+        {
+          id: "first-container-exec-hard-1",
+          question: "If you have a detached container running Nginx, how can you open a shell inside it without stopping it?",
+          options: [
+            "docker attach <container_id>",
+            "docker run -it nginx /bin/bash",
+            "docker exec -it <container_id> /bin/bash",
+            "docker shell <container_id>"
+          ],
+          correctIndex: 2,
+          explanation: "`docker exec` executes a new command inside an already-running container. Passing `-it` and a shell like `/bin/bash` gives you an interactive prompt."
+        },
+        {
+          id: "first-container-d-hard-2",
+          question: "What happens to the terminal window if you omit the `-d` flag when running a web server container?",
+          options: [
+            "The container fails to start due to lack of a daemon.",
+            "The container starts, but you won't see any logs.",
+            "The container runs in the foreground, hijacking your terminal and blocking further commands until stopped.",
+            "The web server automatically shuts down."
+          ],
+          correctIndex: 2,
+          explanation: "Without `-d` (detached mode), Docker attaches your terminal's STDOUT to the container's STDOUT. The container monopolizes your prompt."
+        }
       ],
     },
   ],
