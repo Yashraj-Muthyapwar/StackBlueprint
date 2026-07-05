@@ -9,6 +9,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [charsTyped, setCharsTyped] = useState(0);
   const [outputLinesShown, setOutputLinesShown] = useState(0);
+  const [outputLineCharsTyped, setOutputLineCharsTyped] = useState(0);
 
   const totalChars = section.command.length;
   // Normalize newlines and remove trailing empty lines to avoid awkward pauses
@@ -26,10 +27,19 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
       return () => window.clearTimeout(id);
     } else if (charsTyped === totalChars && outputLinesShown < totalOutputLines) {
       const currentLine = outputLines[outputLinesShown] || "";
+      const isCommand = currentLine.trim().startsWith("$");
+
+      if (isCommand && outputLineCharsTyped < currentLine.length) {
+        // Typing effect for commands in the output
+        const id = window.setTimeout(() => {
+          setOutputLineCharsTyped((c) => c + 1);
+        }, Math.random() * 20 + 30);
+        return () => window.clearTimeout(id);
+      }
+
       const isPulling = currentLine.toLowerCase().includes("pull") || currentLine.toLowerCase().includes("download");
       const isStep = currentLine.startsWith("Step");
       const isComment = currentLine.trim().startsWith("#");
-      const isCommand = currentLine.trim().startsWith("$");
       
       // Calculate a realistic delay
       let delay = Math.random() * 40 + 20; // fast default
@@ -42,15 +52,17 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
 
       const id = window.setTimeout(() => {
         setOutputLinesShown((l) => l + 1);
+        setOutputLineCharsTyped(0);
       }, delay);
       return () => window.clearTimeout(id);
     }
-  }, [isPlaying, charsTyped, totalChars, outputLinesShown, totalOutputLines, outputLines]);
+  }, [isPlaying, charsTyped, totalChars, outputLinesShown, totalOutputLines, outputLines, outputLineCharsTyped]);
 
   const handlePlay = () => {
     if (isDone) {
       setCharsTyped(0);
       setOutputLinesShown(0);
+      setOutputLineCharsTyped(0);
       setIsPlaying(true);
     } else if (!isPlaying) {
       setIsPlaying(true);
@@ -58,9 +70,6 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
   };
 
   const currentCommand = section.command.slice(0, charsTyped);
-  const currentOutput = outputLinesShown > 0 
-    ? outputLines.slice(0, outputLinesShown).join("\n") + "\n" 
-    : "";
 
   return (
     <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
@@ -97,12 +106,43 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
         </pre>
         
         {charsTyped === totalChars && (
-          <pre className="mt-2 font-mono leading-relaxed text-slate-300 dark:text-foreground/80 overflow-x-auto whitespace-pre-wrap text-[12.5px]">
-            {currentOutput}
-            {!isDone && outputLinesShown < totalOutputLines && (
-              <span className="inline-block h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 align-middle -mt-1" />
-            )}
-          </pre>
+          <div className="mt-2 font-mono leading-relaxed text-slate-300 dark:text-foreground/80 overflow-x-auto whitespace-pre-wrap text-[12.5px] flex flex-col">
+            {outputLines.slice(0, outputLinesShown + 1).map((line, idx) => {
+              if (idx === totalOutputLines) return null;
+              
+              const isCommand = line.trim().startsWith("$");
+              const isCurrentLine = idx === outputLinesShown;
+              
+              const text = (isCurrentLine && isCommand) 
+                ? line.slice(0, outputLineCharsTyped) 
+                : line;
+                
+              if (isCommand) {
+                const stripped = text.replace(/^\$\s*/, "");
+                const isTyping = isCurrentLine && outputLineCharsTyped < line.length;
+                return (
+                  <div key={idx} className="flex mt-2">
+                    <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
+                    <span className="relative text-slate-100 dark:text-foreground/90">
+                      {highlightShell(stripped)}
+                      {isTyping && (
+                         <span className="absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50" />
+                      )}
+                    </span>
+                  </div>
+                );
+              }
+              
+              return (
+                <div key={idx} className="min-h-[1.5em] relative">
+                  {text}
+                  {isCurrentLine && !isCommand && !isDone && (
+                    <span className="inline-block h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 align-middle -mt-1 ml-1" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
 
         {isDone && (
