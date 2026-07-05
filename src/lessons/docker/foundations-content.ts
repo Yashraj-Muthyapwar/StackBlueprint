@@ -400,7 +400,7 @@ const dockerArchitecture: LessonContent = {
   slug: "docker-architecture",
   title: "Docker Architecture",
   subtitle:
-    "Why docker run feels like magic, and what's actually happening underneath.",
+    "Why `docker run` feels like magic, and what's actually happening underneath.",
   sections: [
     {
       kind: "prose",
