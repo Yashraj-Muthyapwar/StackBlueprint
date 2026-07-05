@@ -400,7 +400,7 @@ const dockerArchitecture: LessonContent = {
   slug: "docker-architecture",
   title: "Docker Architecture",
   subtitle:
-    "If you have ever felt like Docker is a bit of a black box, you are not alone. It looks like magic when you type docker run and a fully functioning application appears out of nowhere.",
+    "Why docker run feels like magic, and what's actually happening underneath.",
   sections: [
     {
       kind: "prose",
@@ -440,7 +440,7 @@ const dockerArchitecture: LessonContent = {
       heading: "Component by Component Breakdown",
       body: [
         "**1. Docker CLI, the User Interface**",
-        "This is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon.",
+        "This is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon. *(Note: This socket is Linux/macOS specific; on Windows, the CLI talks to dockerd over a named pipe).*",
         "Because of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
       ],
     },
@@ -553,7 +553,7 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "• **Namespaces (pid, net, mnt, ipc, uts):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), and file systems.",
+        "• **Namespaces (pid, net, mnt, ipc, uts, user, cgroup):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), file systems, user privileges (critical for rootless security), and cgroup boundaries.",
       ]
     },
     {
@@ -625,7 +625,7 @@ const dockerArchitecture: LessonContent = {
       kind: "prose",
       body: [
         "**10. VirtioFS (The Shared Conveyor Belt) (Docker Desktop for macOS)**",
-        "Containers require a Linux kernel, so Docker Desktop runs them inside a lightweight Linux virtual machine. VirtioFS bridges the gap between macOS and that Linux VM by efficiently sharing files between them. This allows changes you make on your Mac to appear almost instantly inside your containers."
+        "Containers require a Linux kernel, so Docker Desktop runs them inside a lightweight Linux virtual machine. VirtioFS bridges the gap between macOS and that Linux VM by efficiently sharing files between them. This allows changes you make on your Mac to appear almost instantly inside your containers. *(Note: Windows uses WSL2's built-in file sharing equivalents).*",
       ],
     },
     {
@@ -638,7 +638,7 @@ const dockerArchitecture: LessonContent = {
       kind: "prose",
       body: [
         "**11. Networking Service (VPNKit / Platform Networking) (Docker Desktop for macOS)**",
-        "Since containers run inside a Linux virtual machine on macOS, they can't communicate directly with your Mac's network. Docker Desktop's networking service, such as VPNKit or the newer platform networking stack, bridges this gap by forwarding ports, handling internet access, and making localhost work seamlessly between your Mac and the containers."
+        "Since containers run inside a Linux virtual machine on macOS, they can't communicate directly with your Mac's network. Docker Desktop's networking service, such as VPNKit or the newer platform networking stack, bridges this gap by forwarding ports, handling internet access, and making localhost work seamlessly between your Mac and the containers. *(Note: Windows uses WSL2's own network proxying equivalents).*",
       ],
     },
     {
