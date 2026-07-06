@@ -1987,7 +1987,7 @@ Hello, Riya!`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -p 80:5000 kodekloud/simple-webapp\ndocker run -p 8000:5000 kodekloud/simple-webapp\ndocker run -p 8001:5000 kodekloud/simple-webapp",
+      command: "docker run -p 80:5000 kodekloud/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
 $ docker run -p 8000:5000 kodekloud/simple-webapp
 * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
@@ -2011,7 +2011,7 @@ $ docker run -p 8001:5000 kodekloud/simple-webapp
     },
     {
       kind: "terminal-animation",
-      command: "docker run -d --name notesdb postgres\ndocker stop notesdb\ndocker rm notesdb",
+      command: "docker run -d --name notesdb postgres",
       output: `d3a0a4c0e5c4
 $ docker stop notesdb
 notesdb
@@ -2096,7 +2096,7 @@ notesdb`,
     },
     {
       kind: "terminal-animation",
-      command: "docker ps\ndocker logs notes-api",
+      command: "docker ps",
       output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
 a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 seconds ago   Up 2 seconds   3000/tcp   notes-api
 $ docker logs notes-api
