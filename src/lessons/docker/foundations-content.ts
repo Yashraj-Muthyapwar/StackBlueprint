@@ -1480,6 +1480,376 @@ Status: Downloaded newer image for nginx:latest
   ],
 };
 
+const basicDockerCommands: LessonContent = {
+  slug: "basic-docker-commands",
+  title: "Basic Docker Commands",
+  subtitle: "Before you run a single container, it helps to know what Docker is actually doing behind the scenes.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Checking your Docker setup",
+      body: [
+        "Two commands are worth knowing before you run anything at all. `docker version` tells you which version of the Docker client and server (the daemon) you have installed, and confirms they can actually talk to each other:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker version",
+      output: `Client:
+ Version:           27.3.1
+ API version:       1.47
+ Go version:        go1.22.7
+
+Server:
+ Engine:
+  Version:          27.3.1
+  API version:      1.47 (minimum version 1.24)`,
+      buttonLabel: "Run Command",
+      caption: "Check Docker version",
+    },
+    {
+      kind: "prose",
+      body: [
+        "`docker info` goes further and gives you a snapshot of the whole Docker environment: how many containers and images you have, how much CPU and memory Docker can see, which storage driver it's using, and more:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker info",
+      output: `Containers: 4
+ Running: 1
+ Paused: 0
+ Stopped: 3
+Images: 6
+Server Version: 27.3.1
+Storage Driver: overlay2
+CPUs: 8
+Total Memory: 15.6GiB`,
+      buttonLabel: "Run Command",
+      caption: "Check Docker info",
+    },
+    {
+      kind: "prose",
+      body: [
+        "If something feels off later on (a container behaving strangely, an image acting different than expected), these two commands are a reasonable first stop, just to confirm you're running the version you think you're running.",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Running a container",
+      body: [
+        "`docker run` is the command that starts a container from an image:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run httpd",
+      output: `Unable to find image 'httpd:latest' locally
+latest: Pulling from library/httpd
+a2abf6c4d29d: Pull complete
+c7b6944d7cb3: Pull complete
+Status: Downloaded newer image for httpd:latest`,
+      buttonLabel: "Run Command",
+      caption: "Start a container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "If the `httpd` (Apache) image isn't already sitting on your machine, Docker fetches it from Docker Hub first, then starts the container.",
+        "Run that same command again, and there is no download step this time. Docker already has the image, so it just starts the container immediately.",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Listing containers",
+      body: [
+        "`docker ps` shows you every container that is currently running:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker ps",
+      output: `CONTAINER ID   IMAGE   COMMAND              CREATED         STATUS         PORTS     NAMES
+7f2a19b3c9e1   httpd   "httpd-foreground"   5 seconds ago   Up 4 seconds   80/tcp    eager_lovelace`,
+      buttonLabel: "Run Command",
+      caption: "List running containers",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Stopped and exited containers do not show up here by default. Add `-a` to see the full picture, running and not:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker ps -a",
+      output: `CONTAINER ID   IMAGE     COMMAND               CREATED          STATUS                       NAMES
+7f2a19b3c9e1   httpd     "httpd-foreground"    5 seconds ago    Up 4 seconds                 eager_lovelace
+b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 minutes ago     quirky_borg`,
+      buttonLabel: "Run Command",
+      caption: "List all containers",
+    },
+    {
+      kind: "prose",
+      body: [
+        "That `-a` flag is one you'll reach for constantly, mainly to answer the question \"where did that container actually go?\"",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Stopping and removing containers",
+      body: [
+        "Stopping a container needs its ID or name, both of which you can grab from `docker ps`:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker stop eager_lovelace",
+      output: `eager_lovelace`,
+      buttonLabel: "Run Command",
+      caption: "Stop a container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Once stopped, the container still exists, just not running. To get rid of it for good:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker rm eager_lovelace\ndocker ps -a",
+      output: `eager_lovelace
+CONTAINER ID   IMAGE     COMMAND               CREATED          STATUS                       NAMES
+b118cc02a94f   alpine    "/bin/sh"             3 minutes ago    Exited (0) 3 minutes ago     quirky_borg`,
+      buttonLabel: "Run Session",
+      caption: "Remove a container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "The container will no longer show up anywhere, including in `docker ps -a`.",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Managing images",
+      body: [
+        "Every image you've pulled or run lives locally until you remove it. See the full list with:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker images",
+      output: `REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
+httpd        latest    3b4b6a4dfb00   3 days ago      166MB
+alpine       latest    3fd9065eaf02   18 months ago   4.14MB
+postgres     latest    d3a0a4c0e5c4   6 months ago    412MB`,
+      buttonLabel: "Run Command",
+      caption: "List images",
+    },
+    {
+      kind: "prose",
+      body: [
+        "If you want to grab an image ahead of time, without starting a container from it right away, `docker pull` does exactly that:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker pull alpine",
+      output: `Using default tag: latest
+latest: Pulling from library/alpine
+c158987b0551: Pull complete
+Status: Downloaded newer image for alpine:latest`,
+      buttonLabel: "Run Command",
+      caption: "Pull an image",
+    },
+    {
+      kind: "prose",
+      body: [
+        "And when an image is no longer needed, remove it with `docker rmi`, as long as no container (even a stopped one) still depends on it:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker rmi alpine",
+      output: `Untagged: alpine:latest
+Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`,
+      buttonLabel: "Run Command",
+      caption: "Remove an image",
+    },
+    {
+      kind: "prose",
+      body: [
+        "If Docker refuses because a container is still referencing that image, remove the container first, then try again.",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Inspecting a container in detail",
+      body: [
+        "`docker ps` gives you a quick overview. When you need the full picture, every configuration detail Docker knows about a container, use `docker inspect`:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker inspect eager_lovelace",
+      output: `[
+    {
+        "Id": "7f2a19b3c9e1...",
+        "State": {
+            "Status": "running",
+            "Running": true
+        },
+        "Config": {
+            "Image": "httpd",
+            "Entrypoint": ["httpd-foreground"]
+        },
+        "NetworkSettings": {
+            "IPAddress": "172.17.0.2"
+        }
+    }
+]`,
+      buttonLabel: "Run Command",
+      caption: "Inspect a container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "This is where you'd look to confirm a container's internal IP address, check what command it actually started with, or see every environment variable it's running with.",
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Viewing logs",
+      body: [
+        "If a container is running in the background (more on that in the next lesson), you can't see its output just by looking at your terminal. `docker logs` shows you what it has printed since it started:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker logs eager_lovelace",
+      output: `[Thu Jul 04 10:02:11.2026] AH00558: httpd: Could not reliably determine the server's fully qualified domain name
+[Thu Jul 04 10:02:11.2026] [mpm_event:notice] AH00489: Apache/2.4 configured, resuming normal operations`,
+      buttonLabel: "Run Command",
+      caption: "View logs",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Worth knowing: those timestamps aren't when you happened to run the command, they're whatever the container's own internal clock recorded the moment each line was written. If a container's clock is off (wrong timezone, wrong date entirely), its logs will confidently report the wrong time right along with it. That's a real thing to check before you spend twenty minutes wondering why a log entry looks like it's from the future or the past.",
+        "By default, `docker logs` prints what's already been written and then exits, it does not sit there waiting for new lines. If you want to watch a container's output as it happens, the way you'd `tail -f` a log file, add `-f` (follow):",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker logs -f eager_lovelace",
+      output: `[Thu Jul 04 10:02:11.2026] AH00558: httpd: Could not reliably determine the server's fully qualified domain name
+[Thu Jul 04 10:02:11.2026] [mpm_event:notice] AH00489: Apache/2.4 configured, resuming normal operations
+172.17.0.1 - - [04/Jul/2026:10:02:45 +0000] "GET / HTTP/1.1" 200 45`,
+      buttonLabel: "Run Command",
+      caption: "Follow logs",
+    },
+    {
+      kind: "prose",
+      body: [
+        "New lines print as the container produces them, in real time, until you press `Ctrl+C` to stop watching. That doesn't stop the container itself, it just ends your view into it, the same idea as detaching without touching the process underneath.",
+        "This is usually the very first thing to check whenever a container isn't behaving the way you expect, before touching anything else.",
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`docker version` and `docker info` tell you what Docker is actually running, and how much it can see of your system.",
+        "`docker run <image>` starts a container, pulling the image automatically the first time.",
+        "`docker ps` shows running containers only; `docker ps -a` shows every container, including stopped ones.",
+        "`docker stop` halts a container without deleting it; `docker rm` removes it for good.",
+        "`docker images`, `docker pull`, and `docker rmi` list, download, and remove images locally.",
+        "`docker inspect` returns full configuration detail for a container as JSON.",
+        "`docker logs` shows what it has printed, and `docker logs -f` follows new output live instead of just dumping what's already there.",
+        "Log timestamps come from the container's own internal clock, not your host's, so a container with the wrong system time will produce logs with the wrong time too."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "basic-cmd-version",
+          question: "Check the installed Docker client and server versions to ensure they can talk to each other.",
+          commandAnswer: ["docker version", "docker --version", "docker -v"],
+          explanation: "`docker version` checks both client and server, while `docker --version` just checks the client."
+        },
+        {
+          id: "basic-cmd-info",
+          question: "View a high-level summary of your Docker environment (total containers, CPU, memory).",
+          commandAnswer: "docker info",
+          explanation: "`docker info` is great for a quick health and capacity check of your Docker daemon."
+        },
+        {
+          id: "basic-cmd-ps",
+          question: "List only the containers that are currently running.",
+          commandAnswer: "docker ps",
+          explanation: "`docker ps` (process status) shows live containers."
+        },
+        {
+          id: "basic-cmd-ps-a",
+          question: "List all containers, including stopped and exited ones.",
+          commandAnswer: ["docker ps -a", "docker ps --all"],
+          explanation: "The `-a` flag gives you the full picture."
+        },
+        {
+          id: "basic-cmd-stop",
+          question: "Stop a running container named `my-web-app`.",
+          commandAnswer: "docker stop my-web-app",
+          explanation: "`docker stop` sends a SIGTERM signal to gracefully halt the container."
+        },
+        {
+          id: "basic-cmd-rm",
+          question: "Remove a stopped container named `my-web-app`.",
+          commandAnswer: "docker rm my-web-app",
+          explanation: "`docker rm` deletes the container from your system permanently."
+        },
+        {
+          id: "basic-cmd-images",
+          question: "List all Docker images stored locally on your machine.",
+          commandAnswer: ["docker images", "docker image ls"],
+          explanation: "`docker images` gives you a quick overview of what's taking up disk space."
+        },
+        {
+          id: "basic-cmd-pull",
+          question: "Download the `nginx` image from Docker Hub without starting a container.",
+          commandAnswer: "docker pull nginx",
+          explanation: "`docker pull` fetches the image so it's ready for later use."
+        },
+        {
+          id: "basic-cmd-rmi",
+          question: "Delete the local `nginx` image.",
+          commandAnswer: ["docker rmi nginx", "docker image rm nginx"],
+          explanation: "`docker rmi` removes the image (as long as no containers are using it)."
+        },
+        {
+          id: "basic-cmd-inspect",
+          question: "View the full JSON configuration for a container named `my-web-app`.",
+          commandAnswer: "docker inspect my-web-app",
+          explanation: "`docker inspect` dumps every detail, from networking to mounted volumes."
+        },
+        {
+          id: "basic-cmd-logs",
+          question: "View the existing output/logs for a container named `my-web-app`.",
+          commandAnswer: "docker logs my-web-app",
+          explanation: "`docker logs` shows you what the process printed since it started."
+        },
+        {
+          id: "basic-cmd-logs-f",
+          question: "Follow the logs for a container named `my-web-app` live in real time.",
+          commandAnswer: ["docker logs -f my-web-app", "docker logs --follow my-web-app"],
+          explanation: "The `-f` flag turns `docker logs` into a live tailing session."
+        }
+      ]
+    }
+  ]
+};
+
+
 import { IMAGES_CONTAINERS_TOPICS } from "./images-containers-content";
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
@@ -1497,6 +1867,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       settingUpDocker,
       dockerArchitecture,
       yourFirstContainer,
+      basicDockerCommands,
     ],
   },
   ...IMAGES_CONTAINERS_TOPICS,
