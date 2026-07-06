@@ -1617,8 +1617,9 @@ b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 min
     },
     {
       kind: "terminal-animation",
-      command: "docker rm eager_lovelace\ndocker ps -a",
+      command: "docker rm eager_lovelace",
       output: `eager_lovelace
+$ docker ps -a
 CONTAINER ID   IMAGE     COMMAND               CREATED          STATUS                       NAMES
 b118cc02a94f   alpine    "/bin/sh"             3 minutes ago    Exited (0) 3 minutes ago     quirky_borg`,
       buttonLabel: "Run Session",
