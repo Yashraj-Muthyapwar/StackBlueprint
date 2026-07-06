@@ -110,8 +110,9 @@ export type LinkedListStep = Pick<
 export type QuizQuestion = {
   id: string;
   question: string;
-  options: string[];
-  correctIndex: number;
+  options?: string[];
+  correctIndex?: number;
+  commandAnswer?: string | string[];
   explanation?: string;
 };
 
