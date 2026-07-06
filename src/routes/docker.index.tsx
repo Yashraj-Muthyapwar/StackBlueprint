@@ -57,7 +57,7 @@ const sections: Section[] = [
   {
     group: "Foundations",
     groupBlurb:
-      "The mental model for containers — understanding the difference between VMs and containers, images, and the Docker runtime.",
+      "The mental model for containers understanding the difference between VMs and containers, images, and the Docker runtime.",
     topics: [
       {
         slug: "what-is-docker",
