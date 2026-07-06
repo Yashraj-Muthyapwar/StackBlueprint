@@ -1230,64 +1230,58 @@ ls: cannot access 'my-app': No such file or directory
       kind: "quiz",
       questions: [
         {
-          id: "prereq-ls-easy",
-          question: "Which command lists the files in your current directory?",
-          options: [
-            "cd",
-            "pwd",
-            "ls",
-            "cat"
-          ],
-          correctIndex: 2,
-          explanation: "`ls` (list) shows the contents of the current directory."
+          id: "prereq-cmd-pwd",
+          question: "Print the working directory (your exact path).",
+          commandAnswer: "pwd",
+          explanation: "`pwd` stands for 'print working directory'. It tells you exactly where you are in the filesystem."
         },
         {
-          id: "prereq-append-medium-1",
-          question: "What is the difference between `>` and `>>`?",
-          options: [
-            "`>` creates a file, `>>` deletes a file.",
-            "`>` overwrites the file, `>>` appends to the end of the file.",
-            "`>` is for text, `>>` is for binary files.",
-            "There is no difference."
-          ],
-          correctIndex: 1,
-          explanation: "`>` replaces the entire contents of the target file, whereas `>>` adds the new output to the very bottom."
+          id: "prereq-cmd-ls",
+          question: "List all files in the current directory, including hidden ones.",
+          commandAnswer: ["ls -a", "ls -al", "ls -la"],
+          explanation: "`ls` lists files, and the `-a` (all) flag ensures hidden files (those starting with a dot) are included."
         },
         {
-          id: "prereq-nano-medium-2",
-          question: "If you need to manually edit a configuration file inside a terminal, which tool would you use?",
-          options: [
-            "echo",
-            "cat",
-            "nano",
-            "touch"
-          ],
-          correctIndex: 2,
-          explanation: "`nano` is a simple, beginner-friendly command-line text editor."
+          id: "prereq-cmd-touch",
+          question: "Create an empty file named `config.yml`.",
+          commandAnswer: "touch config.yml",
+          explanation: "`touch` is the quickest way to create a new, empty file."
         },
         {
-          id: "prereq-y-flag-hard-1",
-          question: "Why is the `-y` flag (e.g. `apt-get install -y curl`) extremely important when writing Dockerfiles?",
-          options: [
-            "It makes the installation run faster.",
-            "It automatically answers 'yes' to prompts, preventing the automated build process from freezing.",
-            "It verifies the installation was successful.",
-            "It uses the 'Yarn' package manager instead of 'apt'."
-          ],
-          correctIndex: 1,
-          explanation: "Docker image builds are non-interactive. If a command stops to ask 'Do you want to continue? [Y/n]', the build will hang forever. `-y` skips the prompt."
+          id: "prereq-cmd-cat",
+          question: "Print the entire contents of `app.log` to the console.",
+          commandAnswer: "cat app.log",
+          explanation: "`cat` (concatenate) reads a file and dumps its entire content to the standard output."
         },
         {
-          id: "prereq-combo-hard-2",
-          question: "If you run `touch newfile.txt` followed by `cat newfile.txt`, what will the output be?",
-          options: [
-            "An error message.",
-            "Nothing (blank output).",
-            "'newfile.txt'",
-            "A prompt asking you to edit the file."
-          ],
-          correctIndex: 1,
-          explanation: "`touch` creates an empty file. `cat` reads a file and prints its contents. Reading an empty file prints absolutely nothing."
+          id: "prereq-cmd-grep",
+          question: "Search for the word 'Error' inside `app.log`.",
+          commandAnswer: ["grep Error app.log", "grep 'Error' app.log", 'grep "Error" app.log'],
+          explanation: "`grep` is an essential tool for searching plain-text data sets for lines that match a regular expression."
+        },
+        {
+          id: "prereq-cmd-rm",
+          question: "Force delete a directory named `old-logs` and everything inside it without prompting.",
+          commandAnswer: ["rm -rf old-logs", "rm -r -f old-logs", "rm -f -r old-logs"],
+          explanation: "`rm` removes files. `-r` (recursive) removes directories and their contents. `-f` (force) ignores nonexistent files and never prompts."
+        },
+        {
+          id: "prereq-cmd-tail",
+          question: "Watch the file `server.log` in real-time as it grows.",
+          commandAnswer: ["tail -f server.log"],
+          explanation: "`tail -f` outputs the last part of files and keeps reading as the file grows, which is perfect for live server logs."
+        },
+        {
+          id: "prereq-cmd-chmod",
+          question: "Make the script `run.sh` executable.",
+          commandAnswer: ["chmod +x run.sh", "chmod a+x run.sh"],
+          explanation: "`chmod` changes file modes or Access Control Lists. `+x` adds the execute permission."
+        },
+        {
+          id: "prereq-cmd-apt",
+          question: "Install `curl` using `apt-get install` without it hanging on a confirmation prompt.",
+          commandAnswer: ["apt-get install -y curl", "apt-get install curl -y"],
+          explanation: "The `-y` flag answers 'yes' automatically. Without it, automated scripts (like Docker image builds) will hang forever waiting for user input."
         }
       ]
     }
