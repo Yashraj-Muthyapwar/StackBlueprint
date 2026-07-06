@@ -425,6 +425,12 @@ export const roadmap: RoadmapCategory[] = [
             path: "/docker/foundations/what-is-docker/your-first-container",
             icon: PlayCircle,
           },
+          {
+            title: "Basic Docker Commands",
+            slug: "basic-docker-commands",
+            path: "/docker/foundations/what-is-docker/basic-docker-commands",
+            icon: Command,
+          },
         ],
       },
       {
