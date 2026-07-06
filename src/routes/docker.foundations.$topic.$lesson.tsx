@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ChevronRight, CheckCircle2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FOUNDATION_TOPICS } from "@/lessons/docker/foundations-content";
 import { SectionRenderer } from "@/components/docker/SectionRenderer";
 import { useProgress } from "@/hooks/use-progress";
@@ -26,6 +26,7 @@ function LessonPage() {
   const { topic, lesson } = Route.useParams();
   const t = FOUNDATION_TOPICS[topic];
   const { isCompleted, markComplete, markIncomplete } = useProgress();
+  const [isQuizActive, setIsQuizActive] = useState(false);
   const idx = t?.lessons.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons[idx] : undefined;
 
@@ -104,7 +105,12 @@ function LessonPage() {
 
         <div className="mt-10 space-y-7">
           {l.sections.map((s, i) => (
-            <SectionRenderer key={i} section={s} />
+            <div 
+              key={i} 
+              className={`transition-all duration-500 ${isQuizActive && s.kind !== "quiz" ? "blur-md pointer-events-none opacity-40 select-none" : ""}`}
+            >
+              <SectionRenderer section={s} onQuizActiveChange={setIsQuizActive} />
+            </div>
           ))}
         </div>
 
