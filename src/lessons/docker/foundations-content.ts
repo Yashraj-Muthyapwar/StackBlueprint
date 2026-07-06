@@ -448,7 +448,7 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "code",
       language: "bash",
-      code: "docker -H=10.123.2.1:2375 run nginx",
+      code: "# Point the CLI to a remote daemon on port 2375 and start Nginx\ndocker -H=10.123.2.1:2375 run nginx",
     },
     {
       kind: "callout",
@@ -579,7 +579,7 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "code",
       language: "bash",
-      code: "docker run --cpus=0.5 ubuntu\ndocker run --memory=100m ubuntu",
+      code: "# Cap this container to 50% of a single CPU core\ndocker run --cpus=0.5 ubuntu\n\n# Restrict this container to a maximum of 100 megabytes of memory\ndocker run --memory=100m ubuntu",
     },
     {
       kind: "image",
