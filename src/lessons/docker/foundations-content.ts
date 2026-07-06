@@ -1428,54 +1428,33 @@ Status: Downloaded newer image for nginx:latest
       kind: "quiz",
       questions: [
         {
-          id: "first-container-run-easy",
-          question: "What does the `docker run` command actually do?",
-          options: [
-            "Only downloads an image from Docker Hub",
-            "Pulls an image (if needed), creates a new container, and starts it",
-            "Starts a previously stopped container",
-            "Compiles source code into a new image"
-          ],
-          correctIndex: 1,
-          explanation: "`docker run` is an all-in-one command. It handles the pull, the create, and the start phases automatically."
+          id: "first-container-cmd-0",
+          question: "Run the official `hello-world` image to verify Docker is working.",
+          commandAnswer: "docker run hello-world",
+          explanation: "This simple command pulls the `hello-world` image (if not already local) and runs it in the foreground to print a confirmation message."
         },
         {
-          id: "first-container-it-medium-1",
-          question: "What do the `-it` flags on `docker run` do together?",
-          options: [
-            "They run the container in the background",
-            "They keep STDIN open and allocate a terminal, giving you an interactive shell",
-            "They install extra tools inside the container",
-            "They map a port to the host",
-          ],
-          correctIndex: 1,
-          explanation:
-            "`-i` keeps STDIN open so you can type, and `-t` allocates a pseudo-terminal so you get a usable prompt. Together they give you an interactive session.",
+          id: "first-container-cmd-1",
+          question: "Run an Ubuntu container interactively with a pseudo-terminal.",
+          commandAnswer: ["docker run -it ubuntu", "docker run -ti ubuntu", "docker run -i -t ubuntu", "docker run -t -i ubuntu"],
+          explanation: "The `-i` flag keeps STDIN open, and `-t` allocates a pseudo-terminal. Together `-it` gives you an interactive shell inside the container."
         },
         {
-          id: "first-container-port-medium-2",
-          question: "In `docker run -d -p 8080:80 nginx`, what does `8080:80` mean?",
-          options: [
-            "Container port 8080 maps to host port 80",
-            "Host port 8080 maps to container port 80",
-            "The container will use 8080 MB of memory",
-            "It sets the container's process ID to 8080",
-          ],
-          correctIndex: 1,
-          explanation:
-            "The format is `host:container`. Traffic to port 8080 on your machine gets forwarded to port 80 inside the container, where Nginx is listening.",
+          id: "first-container-cmd-2",
+          question: "Run an Nginx container in the background (detached mode).",
+          commandAnswer: ["docker run -d nginx", "docker run --detach nginx"],
+          explanation: "The `-d` flag runs the container in detached mode, meaning it runs in the background and frees up your terminal."
         },
         {
-          id: "first-container-d-hard-1",
-          question: "What happens to the terminal window if you omit the `-d` flag when running a web server container?",
-          options: [
-            "The container fails to start due to lack of a daemon.",
-            "The container starts, but you won't see any logs.",
-            "The container runs in the foreground, hijacking your terminal and blocking further commands until stopped.",
-            "The web server automatically shuts down."
+          id: "first-container-cmd-3",
+          question: "Run an Nginx container in the background, mapping port 8080 on your host to port 80 inside the container.",
+          commandAnswer: [
+            "docker run -d -p 8080:80 nginx", 
+            "docker run -p 8080:80 -d nginx", 
+            "docker run -dp 8080:80 nginx",
+            "docker run -pd 8080:80 nginx"
           ],
-          correctIndex: 2,
-          explanation: "Without `-d` (detached mode), Docker attaches your terminal's STDOUT to the container's STDOUT. The container monopolizes your prompt."
+          explanation: "The `-p` flag maps ports in the format `host:container`. `-d` keeps it in the background."
         },
         {
           id: "first-container-pull-hard-2",
