@@ -569,6 +569,71 @@ const openTable: LessonContent = {
   ],
 };
 
+const storageTypes: LessonContent = {
+  slug: "storage-types",
+  title: "Block, File & Object",
+  subtitle: "Understanding storage architectures.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const cloudStorage: LessonContent = {
+  slug: "cloud-storage",
+  title: "Cloud Object Storage",
+  subtitle: "S3, GCS & Azure Blob.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const hdfs: LessonContent = {
+  slug: "distributed-file-systems",
+  title: "Distributed File Systems",
+  subtitle: "HDFS and the Hadoop era.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const dataCompression: LessonContent = {
+  slug: "data-compression",
+  title: "Data Compression",
+  subtitle: "Snappy, Gzip & Zstandard.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
+const inMemoryStorage: LessonContent = {
+  slug: "in-memory-storage",
+  title: "In-Memory Storage",
+  subtitle: "RAM-based storage for ultra-fast access.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Coming Soon",
+      body: ["Content for this lesson will be added soon!"],
+    },
+  ],
+};
+
 export const FOUNDATION_TOPICS: Record<
   string,
   { title: string; blurb: string; slug: string; lessons: LessonContent[] }
@@ -583,6 +648,6 @@ export const FOUNDATION_TOPICS: Record<
     title: "Data Formats & Storage",
     slug: "data-formats",
     blurb: "Understanding how data is stored, compressed, and managed at scale.",
-    lessons: [csvJson, parquetOrc, openTable],
+    lessons: [csvJson, parquetOrc, openTable, storageTypes, cloudStorage, hdfs, dataCompression, inMemoryStorage],
   },
 };
