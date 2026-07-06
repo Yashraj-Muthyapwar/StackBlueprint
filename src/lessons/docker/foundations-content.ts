@@ -441,8 +441,13 @@ const dockerArchitecture: LessonContent = {
       body: [
         "**1. Docker CLI, the User Interface**",
         "This is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon. *(Note: This socket is Linux/macOS specific; on Windows, the CLI talks to dockerd over a named pipe).*",
-        "Because of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
+        "Because of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere. For example, if you want to start a web server on a completely different machine across your network, you can just point your local CLI to that remote host using the `-H` flag.",
       ],
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker -H=10.123.2.1:2375 run nginx",
     },
     {
       kind: "callout",
@@ -565,8 +570,13 @@ const dockerArchitecture: LessonContent = {
     {
       kind: "prose",
       body: [
-        "• **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
+        "• **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O. You can tap into these control groups directly from your terminal by passing specific flags to cap how much juice a container is allowed to sip. For example, you can easily restrict a process to half a CPU core and a strict 100 megabyte memory limit:",
       ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --cpus=0.5 ubuntu\ndocker run --memory=100m ubuntu",
     },
     {
       kind: "image",
