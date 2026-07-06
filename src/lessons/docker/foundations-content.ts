@@ -1851,6 +1851,395 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
 };
 
 
+const dockerRunCommands: LessonContent = {
+  slug: "docker-run-commands",
+  title: "Docker Run Commands",
+  subtitle: "`docker run` looks like one simple command, but the flags around it change almost everything about how a container behaves.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Choosing a version with tags",
+      body: [
+        "Left on its own, `docker run` grabs whichever image is tagged `latest`:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run postgres",
+      output: `Using default tag: latest
+latest: Pulling from library/postgres
+Status: Downloaded newer image for postgres:latest`,
+      buttonLabel: "Run Command",
+      caption: "Run with default latest tag",
+    },
+    {
+      kind: "prose",
+      body: [
+        "If you need a specific version instead, add a colon and the tag:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run postgres:13",
+      output: `Unable to find image 'postgres:13' locally
+13: Pulling from library/postgres
+Status: Downloaded newer image for postgres:13`,
+      buttonLabel: "Run Command",
+      caption: "Run with a specific tag",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Two completely different versions of Postgres, both available on your machine at the same time, each addressed by its own tag. Check an image's Docker Hub page for the full list of tags it publishes before assuming \"latest\" is what you actually want, especially for anything going into production."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Interactive input: `-i` alone isn't enough",
+      body: [
+        "Some programs expect you to type something back. Picture a small script that asks for your name before greeting you:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: `Please tell me your name: Riya\nHello, Riya!`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "Run that same program in a container with no flags, and it never gets the chance to ask:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run kodekloud/name-prompt",
+      output: `Hello, !`,
+      buttonLabel: "Run Command",
+      caption: "Non-interactive run",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Containers run non-interactively by default, so there's nothing there to receive typed input. Adding just `-i` (keep stdin open) still isn't enough on its own:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -i kodekloud/name-prompt",
+      output: `$ Riya
+Hello, Riya!`,
+      buttonLabel: "Run Command",
+      caption: "Running with just -i",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Notice the prompt text itself never appears, only your typed answer and the final greeting. That's because `-i` keeps input open, but there's no terminal for the prompt to be displayed on. Add `-t` (allocate a pseudo-terminal) alongside it, and the container behaves exactly like running the program directly on your machine:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -it kodekloud/name-prompt",
+      output: `Please tell me your name: Riya
+Hello, Riya!`,
+      buttonLabel: "Run Command",
+      caption: "Running with -it",
+    },
+    {
+      kind: "prose",
+      body: [
+        "`-it` together, not just `-i`, is the combination to reach for anytime a container needs to prompt for input or give you an interactive shell."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Publishing ports so others can reach your app",
+      body: [
+        "A container's own IP address (something like `172.17.0.2`) only exists inside Docker's internal network, it isn't reachable from your browser or from anywhere outside the host. Say a small web app inside a container is listening on port 5000:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run kodekloud/simple-webapp",
+      output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
+      buttonLabel: "Run Command",
+      caption: "Running a web app",
+    },
+    {
+      kind: "prose",
+      body: [
+        "To reach it from outside the container, map a port on your host to that container port with `-p`:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -p 80:5000 kodekloud/simple-webapp",
+      output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
+      buttonLabel: "Run Command",
+      caption: "Publishing a port",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now anyone hitting `http://<your-host-ip>:80` gets routed straight to port 5000 inside the container. Nothing stops you from running several instances of the same app side by side, each on its own host port:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -p 80:5000 kodekloud/simple-webapp\ndocker run -p 8000:5000 kodekloud/simple-webapp\ndocker run -p 8001:5000 kodekloud/simple-webapp",
+      output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+$ docker run -p 8000:5000 kodekloud/simple-webapp
+* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+$ docker run -p 8001:5000 kodekloud/simple-webapp
+* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
+      buttonLabel: "Run Session",
+      caption: "Running multiple instances",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Three separate containers, three separate host ports, all pointing at copies of the same image."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "A word on volumes",
+      body: [
+        "A container's filesystem disappears the moment the container is removed. That's fine for a stateless web server, but a real problem for something like a database:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -d --name notesdb postgres\ndocker stop notesdb\ndocker rm notesdb",
+      output: `d3a0a4c0e5c4
+$ docker stop notesdb
+notesdb
+$ docker rm notesdb
+notesdb`,
+      buttonLabel: "Run Session",
+      caption: "Data disappears with the container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Every row that database ever wrote is gone along with the container. Mounting a folder from your host into the container with `-v` keeps the data outside the container's own lifecycle:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -v /opt/pgdata:/var/lib/postgresql/data postgres",
+      output: `PostgreSQL Database Directory appears to contain a database; Skipping initialization...`,
+      buttonLabel: "Run Command",
+      caption: "Mounting a volume",
+    },
+    {
+      kind: "prose",
+      body: [
+        "That's the short version. Volumes have enough nuance (bind mounts vs named volumes, permissions, sharing across containers) that they get a full lesson of their own in the Storage chapter. For now, just know the flag exists and roughly what problem it solves."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Inspecting a running container for its address",
+      body: [
+        "Once a container is up, `docker inspect` is how you find details that don't show up in `docker ps`, like its internal IP address:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker inspect notesdb",
+      output: `[
+    {
+        "Id": "7f2a19b3c9e1...",
+        "State": {
+            "Status": "running",
+            "Running": true
+        },
+        "Config": {
+            "Image": "postgres",
+            "Entrypoint": ["docker-entrypoint.sh"]
+        },
+        "NetworkSettings": {
+            "IPAddress": "172.17.0.3"
+        }
+    }
+]`,
+      buttonLabel: "Run Command",
+      caption: "Inspecting for IP address",
+    },
+    {
+      kind: "prose",
+      body: [
+        "That address is only reachable from inside the Docker host itself, which is exactly why port mapping with `-p` matters for anything you need to reach from outside."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Checking on a container running in the background",
+      body: [
+        "Combine everything above and you get the shape most real containers actually run in: detached, port mapped, and named so you can find it again:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -d -p 3000:3000 --name notes-api kodekloud/notes-api",
+      output: `a1e6d9f27b3c4e5a1908f7c6b3a2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c`,
+      buttonLabel: "Run Command",
+      caption: "Running a detached container",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Check that it's actually up, and watch what it has printed so far:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker ps\ndocker logs notes-api",
+      output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
+a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 seconds ago   Up 2 seconds   3000/tcp   notes-api
+$ docker logs notes-api
+Notes API listening on port 3000
+Connected to database`,
+      buttonLabel: "Run Session",
+      caption: "Checking status and logs",
+    },
+    {
+      kind: "prose",
+      body: [
+        "That's a one-time dump though, it prints what's already there and exits. To watch new lines as they arrive, add `-f`:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker logs -f notes-api",
+      output: `Notes API listening on port 3000
+Connected to database
+Request received: GET /notes
+Request received: POST /notes`,
+      buttonLabel: "Run Command",
+      caption: "Following logs",
+    },
+    {
+      kind: "prose",
+      body: [
+        "New output streams in live from here on, until you press `Ctrl+C` to stop watching. The container keeps running either way, you're only ending your own view into it.",
+        "If you ever need to reattach directly to a detached container's console instead of just reading its logs, `docker attach` does that, using either the full container ID or a short unique prefix:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker attach a1e6d",
+      output: `Notes API listening on port 3000
+Connected to database`,
+      buttonLabel: "Run Command",
+      caption: "Attaching to a container",
+    },
+    {
+      kind: "prose",
+      heading: "Detaching without stopping the container",
+      body: [
+        "Once you're attached, leaving carelessly can cost you. Pressing `Ctrl+C` doesn't just disconnect your terminal, it sends an interrupt signal straight to the container's main process, which will often stop it entirely. If that process is your web server, you've just taken it down by trying to walk away from it.",
+        "The safe way to detach is a different key combination: `Ctrl+P` followed by `Ctrl+Q`. This disconnects your terminal from the container without touching the process running inside it:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker attach notes-api",
+      output: `Notes API listening on port 3000
+$ Ctrl+P Ctrl+Q
+read escape sequence`,
+      buttonLabel: "Run Session",
+      caption: "Detaching safely",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Press `Ctrl+P`, then `Ctrl+Q`, and you're back at your own shell. Check that the container is still running exactly as it was:"
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker ps",
+      output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
+a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 minutes ago   Up 2 minutes   3000/tcp   notes-api`,
+      buttonLabel: "Run Command",
+      caption: "Verifying container is still up",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Still up, still serving requests, exactly as if you'd never attached at all. You can reattach with `docker attach notes-api` any time you need to check on it again, using `Ctrl+P Ctrl+Q` to step away safely each time."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Append `:<tag>` to an image name to run a specific version instead of `latest`.",
+        "`-i` alone keeps input open, but only `-it` together gives a container a real interactive terminal.",
+        "`-p <host-port>:<container-port>` is what makes a container reachable from outside the Docker host, and you can map several host ports to run multiple instances at once.",
+        "Container filesystems are temporary; `-v` mounts a host folder into the container so data survives even after the container is removed (covered fully in the Storage chapter).",
+        "`docker inspect` reveals a container's internal IP and configuration; `docker logs` shows its output; `docker attach` reconnects your terminal directly to it.",
+        "To leave an attached container safely, use `Ctrl+P` then `Ctrl+Q`, not `Ctrl+C`. `Ctrl+C` sends an interrupt straight to the container's process and can stop it."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "run-cmd-tag",
+          question: "Run the `postgres` image with a specific version tag: `13`.",
+          commandAnswer: "docker run postgres:13",
+          explanation: "Adding `:<tag>` specifies which version of the image to run."
+        },
+        {
+          id: "run-cmd-it",
+          question: "Run the `kodekloud/name-prompt` image with an interactive pseudo-terminal so it can ask for your name.",
+          commandAnswer: ["docker run -it kodekloud/name-prompt", "docker run -ti kodekloud/name-prompt", "docker run -i -t kodekloud/name-prompt"],
+          explanation: "`-it` keeps stdin open (`-i`) and allocates a pseudo-TTY (`-t`), which is required for interactive prompts."
+        },
+        {
+          id: "run-cmd-port",
+          question: "Run the `kodekloud/simple-webapp` image, mapping port 80 on your host to port 5000 inside the container.",
+          commandAnswer: ["docker run -p 80:5000 kodekloud/simple-webapp"],
+          explanation: "`-p host_port:container_port` publishes the internal port to your external host interface."
+        },
+        {
+          id: "run-cmd-volume",
+          question: "Run the `postgres` image, mounting your host directory `/opt/pgdata` into `/var/lib/postgresql/data` inside the container.",
+          commandAnswer: ["docker run -v /opt/pgdata:/var/lib/postgresql/data postgres"],
+          explanation: "`-v host_dir:container_dir` persists data by keeping it on the host rather than inside the ephemeral container."
+        },
+        {
+          id: "run-cmd-combo",
+          question: "Run the `kodekloud/notes-api` image in the background (detached), map host port 3000 to container port 3000, and name the container `notes-api`.",
+          commandAnswer: [
+            "docker run -d -p 3000:3000 --name notes-api kodekloud/notes-api",
+            "docker run -p 3000:3000 -d --name notes-api kodekloud/notes-api",
+            "docker run --name notes-api -d -p 3000:3000 kodekloud/notes-api",
+            "docker run -dp 3000:3000 --name notes-api kodekloud/notes-api"
+          ],
+          explanation: "You can combine multiple flags. `-d` runs it in the background, `-p` publishes ports, and `--name` gives it a friendly identifier."
+        },
+        {
+          id: "run-cmd-attach",
+          question: "Reattach your terminal to a background container named `notes-api`.",
+          commandAnswer: "docker attach notes-api",
+          explanation: "`docker attach` connects your local standard input, output, and error streams to a running container."
+        },
+        {
+          id: "run-cmd-detach",
+          question: "You are attached to a container's console. What keyboard combination safely detaches your terminal without stopping the container? (Type exactly as pressed, separated by a space)",
+          commandAnswer: ["Ctrl+P Ctrl+Q", "ctrl+p ctrl+q", "Ctrl-P Ctrl-Q", "ctrl-p ctrl-q", "Ctrl+P, Ctrl+Q"],
+          explanation: "`Ctrl+P` followed by `Ctrl+Q` escapes the session, leaving the container running in the background."
+        }
+      ]
+    }
+  ]
+};
+
+
 import { IMAGES_CONTAINERS_TOPICS } from "./images-containers-content";
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
@@ -1869,6 +2258,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       dockerArchitecture,
       yourFirstContainer,
       basicDockerCommands,
+      dockerRunCommands,
     ],
   },
   ...IMAGES_CONTAINERS_TOPICS,
