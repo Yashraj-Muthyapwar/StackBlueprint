@@ -1913,7 +1913,7 @@ Status: Downloaded newer image for postgres:13`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run kodekloud/name-prompt",
+      command: "docker run StackBlueprint/name-prompt",
       output: `Hello, !`,
       buttonLabel: "Run Command",
       caption: "Non-interactive run",
@@ -1926,7 +1926,7 @@ Status: Downloaded newer image for postgres:13`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -i kodekloud/name-prompt",
+      command: "docker run -i StackBlueprint/name-prompt",
       output: `$ Riya
 Hello, Riya!`,
       buttonLabel: "Run Command",
@@ -1940,7 +1940,7 @@ Hello, Riya!`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -it kodekloud/name-prompt",
+      command: "docker run -it StackBlueprint/name-prompt",
       output: `Please tell me your name: Riya
 Hello, Riya!`,
       buttonLabel: "Run Command",
@@ -1961,7 +1961,7 @@ Hello, Riya!`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run kodekloud/simple-webapp",
+      command: "docker run StackBlueprint/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Command",
       caption: "Running a web app",
@@ -1974,7 +1974,7 @@ Hello, Riya!`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -p 80:5000 kodekloud/simple-webapp",
+      command: "docker run -p 80:5000 StackBlueprint/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Command",
       caption: "Publishing a port",
@@ -1987,11 +1987,11 @@ Hello, Riya!`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -p 80:5000 kodekloud/simple-webapp",
+      command: "docker run -p 80:5000 StackBlueprint/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-$ docker run -p 8000:5000 kodekloud/simple-webapp
+$ docker run -p 8000:5000 StackBlueprint/simple-webapp
 * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
-$ docker run -p 8001:5000 kodekloud/simple-webapp
+$ docker run -p 8001:5000 StackBlueprint/simple-webapp
 * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Session",
       caption: "Running multiple instances",
@@ -2083,7 +2083,7 @@ notesdb`,
     },
     {
       kind: "terminal-animation",
-      command: "docker run -d -p 3000:3000 --name notes-api kodekloud/notes-api",
+      command: "docker run -d -p 3000:3000 --name notes-api StackBlueprint/notes-api",
       output: `a1e6d9f27b3c4e5a1908f7c6b3a2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c`,
       buttonLabel: "Run Command",
       caption: "Running a detached container",
@@ -2098,7 +2098,7 @@ notesdb`,
       kind: "terminal-animation",
       command: "docker ps",
       output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
-a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 seconds ago   Up 2 seconds   3000/tcp   notes-api
+a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 seconds ago   Up 2 seconds   3000/tcp   notes-api
 $ docker logs notes-api
 Notes API listening on port 3000
 Connected to database`,
@@ -2163,7 +2163,7 @@ read escape sequence`,
       kind: "terminal-animation",
       command: "docker ps",
       output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
-a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 minutes ago   Up 2 minutes   3000/tcp   notes-api`,
+a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 minutes ago   Up 2 minutes   3000/tcp   notes-api`,
       buttonLabel: "Run Command",
       caption: "Verifying container is still up",
     },
@@ -2195,14 +2195,14 @@ a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 minutes ago   Up 2 minute
         },
         {
           id: "run-cmd-it",
-          question: "Run the `kodekloud/name-prompt` image with an interactive pseudo-terminal so it can ask for your name.",
-          commandAnswer: ["docker run -it kodekloud/name-prompt", "docker run -ti kodekloud/name-prompt", "docker run -i -t kodekloud/name-prompt"],
+          question: "Run the `StackBlueprint/name-prompt` image with an interactive pseudo-terminal so it can ask for your name.",
+          commandAnswer: ["docker run -it StackBlueprint/name-prompt", "docker run -ti StackBlueprint/name-prompt", "docker run -i -t StackBlueprint/name-prompt"],
           explanation: "`-it` keeps stdin open (`-i`) and allocates a pseudo-TTY (`-t`), which is required for interactive prompts."
         },
         {
           id: "run-cmd-port",
-          question: "Run the `kodekloud/simple-webapp` image, mapping port 80 on your host to port 5000 inside the container.",
-          commandAnswer: ["docker run -p 80:5000 kodekloud/simple-webapp"],
+          question: "Run the `StackBlueprint/simple-webapp` image, mapping port 80 on your host to port 5000 inside the container.",
+          commandAnswer: ["docker run -p 80:5000 StackBlueprint/simple-webapp"],
           explanation: "`-p host_port:container_port` publishes the internal port to your external host interface."
         },
         {
@@ -2213,12 +2213,12 @@ a1e6d9f27b3c   kodekloud/notes-api   "node app.js"   2 minutes ago   Up 2 minute
         },
         {
           id: "run-cmd-combo",
-          question: "Run the `kodekloud/notes-api` image in the background (detached), map host port 3000 to container port 3000, and name the container `notes-api`.",
+          question: "Run the `StackBlueprint/notes-api` image in the background (detached), map host port 3000 to container port 3000, and name the container `notes-api`.",
           commandAnswer: [
-            "docker run -d -p 3000:3000 --name notes-api kodekloud/notes-api",
-            "docker run -p 3000:3000 -d --name notes-api kodekloud/notes-api",
-            "docker run --name notes-api -d -p 3000:3000 kodekloud/notes-api",
-            "docker run -dp 3000:3000 --name notes-api kodekloud/notes-api"
+            "docker run -d -p 3000:3000 --name notes-api StackBlueprint/notes-api",
+            "docker run -p 3000:3000 -d --name notes-api StackBlueprint/notes-api",
+            "docker run --name notes-api -d -p 3000:3000 StackBlueprint/notes-api",
+            "docker run -dp 3000:3000 --name notes-api StackBlueprint/notes-api"
           ],
           explanation: "You can combine multiple flags. `-d` runs it in the background, `-p` publishes ports, and `--name` gives it a friendly identifier."
         },
