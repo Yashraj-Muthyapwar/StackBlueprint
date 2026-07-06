@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, ArrowRight, RefreshCcw, Sparkles } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RefreshCcw, Sparkles, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils"; 
 
 export type QuizQuestion = {
   id: string;
   question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+  options?: string[];
+  correctIndex?: number;
+  commandAnswer?: string | string[];
+  explanation?: string;
 };
 
 export type QuizData = {
   questions: QuizQuestion[];
 };
 
-export function Quiz({ data }: { data: QuizData }) {
+export function Quiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: (active: boolean) => void }) {
   const [isStarted, setIsStarted] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -23,11 +24,17 @@ export function Quiz({ data }: { data: QuizData }) {
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [quizAttempt, setQuizAttempt] = useState(0);
+  const [commandInput, setCommandInput] = useState("");
+  const [isCommandCorrect, setIsCommandCorrect] = useState(false);
+
+  useEffect(() => {
+    onActiveChange?.(isStarted && !isFinished);
+  }, [isStarted, isFinished, onActiveChange]);
 
   const currentQuestion = data.questions[currentIndex];
 
   const shuffledOptions = React.useMemo(() => {
-    if (!currentQuestion) return [];
+    if (!currentQuestion || !currentQuestion.options) return [];
     const options = currentQuestion.options.map((opt, idx) => ({
       text: opt,
       isCorrect: idx === currentQuestion.correctIndex,
@@ -58,6 +65,8 @@ export function Quiz({ data }: { data: QuizData }) {
     setScore(0);
     setIsFinished(false);
     setSelectedOption(null);
+    setCommandInput("");
+    setIsCommandCorrect(false);
     setIsAnswered(false);
     setQuizAttempt(prev => prev + 1);
     
@@ -74,10 +83,29 @@ export function Quiz({ data }: { data: QuizData }) {
     }
   };
 
+  const handleCommandSubmit = () => {
+    if (!currentQuestion.commandAnswer || isAnswered) return;
+    setIsAnswered(true);
+    const normalize = (str: string) => str.trim().replace(/\s+/g, " ");
+    
+    const answers = Array.isArray(currentQuestion.commandAnswer) 
+      ? currentQuestion.commandAnswer 
+      : [currentQuestion.commandAnswer];
+      
+    const correct = answers.some(ans => normalize(commandInput) === normalize(ans));
+    
+    setIsCommandCorrect(correct);
+    if (correct) {
+      setScore((s) => s + 1);
+    }
+  };
+
   const handleNext = () => {
     if (currentIndex < data.questions.length - 1) {
       setCurrentIndex((i) => i + 1);
       setSelectedOption(null);
+      setCommandInput("");
+      setIsCommandCorrect(false);
       setIsAnswered(false);
     } else {
       setIsFinished(true);
@@ -156,37 +184,68 @@ export function Quiz({ data }: { data: QuizData }) {
         {currentQuestion.question}
       </h3>
 
-      <div className="space-y-3">
-        {shuffledOptions.map((opt, i) => {
-          const isSelected = selectedOption === i;
-          const isCorrect = opt.isCorrect;
-          
-          let btnClass = "border-hairline bg-surface-2 hover:border-mint/50 hover:bg-surface-3";
-          
-          if (isAnswered) {
-            if (isCorrect) {
-              btnClass = "border-mint bg-mint/10 text-mint";
-            } else if (isSelected) {
-              btnClass = "border-rose-500/50 bg-rose-500/10 text-rose-500";
-            } else {
-              btnClass = "border-hairline bg-surface/50 opacity-50";
-            }
-          }
-
-          return (
-            <button
-              key={i}
-              onClick={() => handleSelectOption(i)}
+      {currentQuestion.commandAnswer ? (
+        <div className="flex flex-col gap-4">
+          <div className="relative">
+            <Terminal className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input 
+              type="text" 
+              value={commandInput}
+              onChange={(e) => setCommandInput(e.target.value)}
               disabled={isAnswered}
-              className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all duration-200 ${btnClass}`}
+              placeholder="Type your command here..."
+              className="w-full rounded-lg border border-hairline bg-surface-2 py-3 pl-10 pr-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isAnswered && commandInput.trim()) {
+                  handleCommandSubmit();
+                }
+              }}
+            />
+          </div>
+          {!isAnswered && (
+            <button
+              onClick={handleCommandSubmit}
+              disabled={!commandInput.trim()}
+              className="inline-flex w-fit items-center gap-2 rounded-lg bg-mint px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
             >
-              <span className={isAnswered && isCorrect ? "font-medium" : ""}>{opt.text}</span>
-              {isAnswered && isCorrect && <CheckCircle2 className="size-4 text-mint" />}
-              {isAnswered && isSelected && !isCorrect && <XCircle className="size-4 text-rose-500" />}
+              Submit Command
+              <ArrowRight className="size-4" />
             </button>
-          );
-        })}
-      </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {shuffledOptions.map((opt, i) => {
+            const isSelected = selectedOption === i;
+            const isCorrect = opt.isCorrect;
+            
+            let btnClass = "border-hairline bg-surface-2 hover:border-mint/50 hover:bg-surface-3";
+            
+            if (isAnswered) {
+              if (isCorrect) {
+                btnClass = "border-mint bg-mint/10 text-mint";
+              } else if (isSelected) {
+                btnClass = "border-rose-500/50 bg-rose-500/10 text-rose-500";
+              } else {
+                btnClass = "border-hairline bg-surface/50 opacity-50";
+              }
+            }
+
+            return (
+              <button
+                key={i}
+                onClick={() => handleSelectOption(i)}
+                disabled={isAnswered}
+                className={`flex w-full items-center justify-between rounded-lg border px-4 py-3 text-left text-sm transition-all duration-200 ${btnClass}`}
+              >
+                <span className={isAnswered && isCorrect ? "font-medium" : ""}>{opt.text}</span>
+                {isAnswered && isCorrect && <CheckCircle2 className="size-4 text-mint" />}
+                {isAnswered && isSelected && !isCorrect && <XCircle className="size-4 text-rose-500" />}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       <AnimatePresence>
         {isAnswered && (
@@ -197,16 +256,23 @@ export function Quiz({ data }: { data: QuizData }) {
             className="overflow-hidden"
           >
             <div className={`rounded-lg border p-4 ${
-              selectedOption !== null && shuffledOptions[selectedOption].isCorrect
+              (currentQuestion.commandAnswer ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect))
                 ? "border-mint/30 bg-mint/5 text-mint" 
                 : "border-rose-500/30 bg-rose-500/5 text-rose-500"
             }`}>
               <p className="text-sm font-medium mb-1">
-                {selectedOption !== null && shuffledOptions[selectedOption].isCorrect ? "Correct!" : "Incorrect."}
+                {(currentQuestion.commandAnswer ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect)) ? "Correct!" : "Incorrect."}
               </p>
-              <p className="text-sm opacity-90 leading-relaxed">
-                {currentQuestion.explanation}
-              </p>
+              {currentQuestion.commandAnswer && !isCommandCorrect && (
+                <p className="mb-2 text-sm font-mono text-rose-500">
+                  Expected: {Array.isArray(currentQuestion.commandAnswer) ? currentQuestion.commandAnswer[0] : currentQuestion.commandAnswer}
+                </p>
+              )}
+              {currentQuestion.explanation && (
+                <p className="text-sm opacity-90 leading-relaxed">
+                  {currentQuestion.explanation}
+                </p>
+              )}
             </div>
             
             <div className="mt-6 flex justify-end">
