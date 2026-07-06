@@ -156,7 +156,7 @@ function ZoomableImage({ src, alt }: { src: string; alt?: string }) {
   );
 }
 
-export function SectionRenderer({ section }: { section: Section }) {
+export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
   switch (section.kind) {
     case "prose":
       return (
@@ -353,6 +353,6 @@ export function SectionRenderer({ section }: { section: Section }) {
       );
 
     case "quiz":
-      return <Quiz data={{ questions: section.questions }} />;
+      return <Quiz data={{ questions: section.questions }} onActiveChange={onQuizActiveChange} />;
   }
 }
