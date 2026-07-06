@@ -431,6 +431,12 @@ export const roadmap: RoadmapCategory[] = [
             path: "/docker/foundations/what-is-docker/basic-docker-commands",
             icon: Command,
           },
+          {
+            title: "Docker Run Commands",
+            slug: "docker-run-commands",
+            path: "/docker/foundations/what-is-docker/docker-run-commands",
+            icon: PlayCircle,
+          },
         ],
       },
       {
