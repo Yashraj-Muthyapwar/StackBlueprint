@@ -107,128 +107,128 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
           const BELOW_ZONE = 36;
           const totalHeight = CELLS_TOP + CELL + 4 + BELOW_ZONE;
           return (
-        <div
-          className="relative origin-center shrink-0"
-          style={{
-            width: desiredWidth,
-            height: totalHeight,
-            transform: `scale(${scale})`,
-          }}
-        >
-          {/* partition bands — aligned to the cells row */}
-          {partitions.map((p, i) => {
-            if (p.to < p.from) return null;
-            const left = p.from * (CELL + GAP) - 4;
-            const width = (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8;
-            return (
-              <div
-                key={`${p.tone}-${i}`}
-                className="absolute rounded-xl"
-                style={{
-                  left,
-                  width,
-                  top: CELLS_TOP - 4,
-                  height: CELL + 8,
-                  background: PARTITION_BG[p.tone],
-                  border: `1px dashed ${PARTITION_BORDER[p.tone]}`,
-                }}
-              >
-                {p.label && (
-                  <span
-                    className="absolute -top-2 left-2 rounded bg-background px-1.5 font-mono text-[10px] uppercase tracking-widest"
-                    style={{ color: PARTITION_LABEL[p.tone] }}
+            <div
+              className="relative origin-center shrink-0"
+              style={{
+                width: desiredWidth,
+                height: totalHeight,
+                transform: `scale(${scale})`,
+              }}
+            >
+              {/* partition bands — aligned to the cells row */}
+              {partitions.map((p, i) => {
+                if (p.to < p.from) return null;
+                const left = p.from * (CELL + GAP) - 4;
+                const width = (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8;
+                return (
+                  <div
+                    key={`${p.tone}-${i}`}
+                    className="absolute rounded-xl"
+                    style={{
+                      left,
+                      width,
+                      top: CELLS_TOP - 4,
+                      height: CELL + 8,
+                      background: PARTITION_BG[p.tone],
+                      border: `1px dashed ${PARTITION_BORDER[p.tone]}`,
+                    }}
                   >
-                    {p.label}
-                  </span>
-                )}
-              </div>
-            );
-          })}
+                    {p.label && (
+                      <span
+                        className="absolute -top-2 left-2 rounded bg-background px-1.5 font-mono text-[10px] uppercase tracking-widest"
+                        style={{ color: PARTITION_LABEL[p.tone] }}
+                      >
+                        {p.label}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
 
-          {/* index ruler */}
-          <div className="absolute left-0 right-0" style={{ top: 0 }}>
-            <div className="flex" style={{ gap: GAP }}>
-              {array.map((_, i) => (
-                <div
-                  key={i}
-                  className="text-center font-mono text-[10px] text-muted-foreground/70"
-                  style={{ width: CELL }}
-                >
-                  {i}
+              {/* index ruler */}
+              <div className="absolute left-0 right-0" style={{ top: 0 }}>
+                <div className="flex" style={{ gap: GAP }}>
+                  {array.map((_, i) => (
+                    <div
+                      key={i}
+                      className="text-center font-mono text-[10px] text-muted-foreground/70"
+                      style={{ width: CELL }}
+                    >
+                      {i}
+                    </div>
+                  ))}
                 </div>
+              </div>
+
+              {/* cells */}
+              <div className="absolute left-0 flex" style={{ gap: GAP, top: CELLS_TOP }}>
+                {array.map((v, i) => {
+                  const isCompare = highlight?.kind === "compare" && highlight.indices.includes(i);
+                  const isSwap = highlight?.kind === "swap" && highlight.indices.includes(i);
+                  const isMatch = highlight?.kind === "match" && highlight.indices.includes(i);
+                  const ringColor = isMatch
+                    ? "var(--mint)"
+                    : isSwap
+                      ? "var(--rose)"
+                      : isCompare
+                        ? "var(--violet)"
+                        : "transparent";
+                  return (
+                    <motion.div
+                      key={i}
+                      className={cn(
+                        "relative grid place-items-center rounded-xl bg-surface-2 font-mono text-xl font-medium text-foreground",
+                      )}
+                      style={{
+                        width: CELL,
+                        height: CELL,
+                        boxShadow: `inset 0 0 0 1px var(--hairline), 0 0 0 2px ${ringColor}`,
+                      }}
+                      animate={{ scale: isMatch ? 1.06 : isSwap ? 1.04 : 1 }}
+                      transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                    >
+                      <motion.span
+                        key={v + "-" + i}
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                      >
+                        {v}
+                      </motion.span>
+                      {isMatch && (
+                        <motion.div
+                          className="absolute inset-0 rounded-xl"
+                          initial={{ opacity: 0.6, scale: 1 }}
+                          animate={{ opacity: 0, scale: 1.4 }}
+                          transition={{ duration: 0.9, repeat: Infinity }}
+                          style={{ border: "2px solid var(--mint)" }}
+                        />
+                      )}
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* above pointers — sit ABOVE the cells, triangle pointing DOWN */}
+              {[...aboveByIdx.entries()].map(([idx, ps]) => (
+                <PointerCaret
+                  key={`above-${idx}`}
+                  ps={ps}
+                  x={idx * (CELL + GAP) + CELL / 2}
+                  anchorY={CELLS_TOP - 2}
+                  direction="above"
+                />
+              ))}
+              {/* below pointers — sit BELOW the cells, triangle pointing UP */}
+              {[...belowByIdx.entries()].map(([idx, ps]) => (
+                <PointerCaret
+                  key={`below-${idx}`}
+                  ps={ps}
+                  x={idx * (CELL + GAP) + CELL / 2}
+                  anchorY={CELLS_TOP + CELL + 2}
+                  direction="below"
+                />
               ))}
             </div>
-          </div>
-
-          {/* cells */}
-          <div className="absolute left-0 flex" style={{ gap: GAP, top: CELLS_TOP }}>
-            {array.map((v, i) => {
-              const isCompare = highlight?.kind === "compare" && highlight.indices.includes(i);
-              const isSwap = highlight?.kind === "swap" && highlight.indices.includes(i);
-              const isMatch = highlight?.kind === "match" && highlight.indices.includes(i);
-              const ringColor = isMatch
-                ? "var(--mint)"
-                : isSwap
-                  ? "var(--rose)"
-                  : isCompare
-                    ? "var(--violet)"
-                    : "transparent";
-              return (
-                <motion.div
-                  key={i}
-                  className={cn(
-                    "relative grid place-items-center rounded-xl bg-surface-2 font-mono text-xl font-medium text-foreground",
-                  )}
-                  style={{
-                    width: CELL,
-                    height: CELL,
-                    boxShadow: `inset 0 0 0 1px var(--hairline), 0 0 0 2px ${ringColor}`,
-                  }}
-                  animate={{ scale: isMatch ? 1.06 : isSwap ? 1.04 : 1 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 22 }}
-                >
-                  <motion.span
-                    key={v + "-" + i}
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                  >
-                    {v}
-                  </motion.span>
-                  {isMatch && (
-                    <motion.div
-                      className="absolute inset-0 rounded-xl"
-                      initial={{ opacity: 0.6, scale: 1 }}
-                      animate={{ opacity: 0, scale: 1.4 }}
-                      transition={{ duration: 0.9, repeat: Infinity }}
-                      style={{ border: "2px solid var(--mint)" }}
-                    />
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* above pointers — sit ABOVE the cells, triangle pointing DOWN */}
-          {[...aboveByIdx.entries()].map(([idx, ps]) => (
-            <PointerCaret
-              key={`above-${idx}`}
-              ps={ps}
-              x={idx * (CELL + GAP) + CELL / 2}
-              anchorY={CELLS_TOP - 2}
-              direction="above"
-            />
-          ))}
-          {/* below pointers — sit BELOW the cells, triangle pointing UP */}
-          {[...belowByIdx.entries()].map(([idx, ps]) => (
-            <PointerCaret
-              key={`below-${idx}`}
-              ps={ps}
-              x={idx * (CELL + GAP) + CELL / 2}
-              anchorY={CELLS_TOP + CELL + 2}
-              direction="below"
-            />
-          ))}
-        </div>
           );
         })()}
       </div>
@@ -256,10 +256,8 @@ function PointerCaret({
       className="pointer-events-none absolute"
       style={{
         left: x,
-        top: direction === "above" ? undefined : anchorY,
-        bottom: direction === "above" ? undefined : undefined,
-        // For "above" we anchor the BOTTOM of the wrapper to anchorY.
-        ...(direction === "above" ? { top: anchorY, transform: "translate(-50%, -100%)" } : { transform: "translateX(-50%)" }),
+        top: anchorY,
+        transform: direction === "above" ? "translate(-50%, -100%)" : "translateX(-50%)",
       }}
     >
       <motion.div
