@@ -3,6 +3,7 @@ import { type FoundationTopicMeta } from "@/lessons/docker/foundations-content";
 
 import dockerImageImg from "@/images/docker/images-and-containers/docker-image.png";
 import multiStageBuildImg from "@/images/docker/images-and-containers/multi-stage-build.png";
+import pullingImagesImg from "@/images/docker/images-and-containers/pulling-and-inspecting-images.png";
 
 const whatIsImage: LessonContent = {
   slug: "what-is-a-docker-image",
@@ -358,8 +359,368 @@ const whatIsImage: LessonContent = {
 const pullingImages: LessonContent = {
   slug: "pulling-and-inspecting-images",
   title: "Pulling and Inspecting Images",
-  subtitle: "docker pull, docker image ls, docker inspect, and docker history.",
-  sections: [],
+  subtitle: "Download it. Explore it. Understand it before you run it.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Pulling an image",
+      body: [
+        "In the previous lesson, you learned that running:",
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "automatically downloads the image if it doesn't already exist on your machine.",
+        "Docker first checks your local image cache. If the image isn't found, it downloads the image and then starts the container.",
+        "Sometimes, however, you may want to download an image without running it. That's exactly what `docker pull` does."
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker pull nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Example output:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n\nfc7181108d40: Pull complete\nd2e987ca2267: Pull complete\n0b760b431b11: Pull complete\n\nDigest: sha256:96fb261b66270b900ea5a2c17a26abbfabe95506e73c3a3c65869a6dbe83223a\nStatus: Downloaded newer image for nginx:latest"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Each hash represents one image layer being downloaded. These are the same read-only layers you learned about in the previous lesson.",
+        "If you already have the latest version of an image on your machine, running `docker pull` again usually downloads nothing. Docker compares the layers you already have with those available in the registry and downloads only what is missing or has changed."
+      ]
+    },
+    {
+      kind: "image",
+      src: pullingImagesImg,
+      alt: "Diagram showing how docker pull downloads an image",
+      caption: "Downloading an image from a registry to your local machine",
+    },
+    {
+      kind: "prose",
+      heading: "Official images and organization repositories",
+      body: [
+        "When you run:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker pull nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Docker downloads the **official Nginx image** from Docker Hub.",
+        "Official images are maintained by Docker or trusted software maintainers and don't include a username or organization name.",
+        "In many companies, you'll also work with images published by your own organization.",
+        "For example:"
+      ]
+    },
+    {
+      "kind": "code",
+      "language": "bash",
+      "code": "docker pull your-org/payment-service:2.3.1\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
+    },
+    {
+      kind: "prose",
+      body: [
+        "In these examples:",
+        "• **`your-org` or `stackblueprint`** is the repository owner.",
+        "• **`payment-service` or `python-api`** is the image repository.",
+        "• **`2.3.1` or `v1.0.0`** is the image tag.",
+        "This is very common in real-world environments where teams build and publish their own Docker images instead of relying only on public images."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Pulling a specific version",
+      body: [
+        "If you don't specify a tag, Docker automatically assumes the `latest` tag.",
+        "Sometimes you'll want a particular version instead."
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker pull postgres:15"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Using specific version tags makes deployments more predictable because everyone runs the same version of the software."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Viewing your local images",
+      body: [
+        "Once you've downloaded a few images, you can see everything stored on your machine with:"
+      ]
+    },
+    {
+      "kind": "code",
+      "language": "bash",
+      "code": "docker images\n\n# or\ndocker image ls"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Both commands do exactly the same thing.",
+        "Example output:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "REPOSITORY   TAG      IMAGE ID       CREATED        SIZE\npostgres     15       f076c2fa35f5   15 months ago  300MB\npostgres     10.3     cbb7481ff9d5   4 years ago    232MB\nnginx        latest   605c77e624dd   2 months ago   141MB"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Notice that `postgres` appears twice.",
+        "The repository name is the same, but each tag points to a different version of the image.",
+        "You may also notice the **IMAGE ID** column.",
+        "Earlier, you learned about image **digests**. While they both look like hashes, they are different:",
+        "• **The IMAGE ID** is a shortened identifier Docker uses locally.",
+        "• **The digest** uniquely identifies the exact image contents across registries."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Looking inside an image with docker inspect",
+      body: [
+        "Listing an image tells you that it exists.",
+        "Inspecting an image tells you how it is configured.",
+        "Run:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker inspect nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Docker returns a large JSON document containing information such as:",
+        "• Environment variables",
+        "• Default command",
+        "• Entrypoint",
+        "• Exposed ports",
+        "• Labels",
+        "• Architecture",
+        "• Operating system",
+        "• Layer information",
+        "This command is especially useful when you're trying to understand how an image was built or troubleshoot unexpected behavior."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Reading only what you need",
+      body: [
+        "The JSON output can be overwhelming.",
+        "Instead of reading hundreds of lines, you can extract a single value with the `--format` option.",
+        "For example, to display the **default command**:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker inspect --format='{{.Config.Cmd}}' nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "To display the **operating system**:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker inspect --format='{{.Os}}' nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "To display the **CPU architecture**:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker inspect --format='{{.Architecture}}' nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Don't worry about the template syntax yet. The important idea is that `--format` lets you display only the information you care about."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Understanding an image's history",
+      body: [
+        "Every Docker image keeps a record of how it was built.",
+        "You can view that history with:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker history nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Example output:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "IMAGE          CREATED        CREATED BY                                  SIZE\n605c77e624dd   2 months ago   CMD [\"nginx\" \"-g\" \"daemon off;\"]             0B\n<missing>      2 months ago   EXPOSE 80/tcp                                0B\n<missing>      2 months ago   COPY docker-entrypoint.sh /                  1.2kB"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Each row represents one layer or build step.",
+        "Don't worry if you see `<missing>` in the output. Modern versions of Docker optimize how image layers are stored, so some intermediate layer IDs are no longer displayed. The layers are still part of the image.",
+        "The history command is useful for understanding how an image was built, identifying unusually large layers, or investigating why an image consumes more space than expected.",
+        "It also teaches an important security lesson.",
+        "If a developer accidentally includes a secret during the image build process, that information can become part of the image's history. Anyone who has access to the image may also be able to see that history.",
+        "We'll revisit this topic later when we discuss build arguments, environment variables, and image security."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "A typical workflow",
+      body: [
+        "When working with a new image, you'll often follow a workflow like this:"
+      ]
+    },
+    {
+      kind: "diagram",
+      ascii: "docker pull\n      │\n      ▼\ndocker images\n      │\n      ▼\ndocker inspect\n      │\n      ▼\ndocker run",
+      caption: "Common Docker image workflow"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Download the image, verify that you have the correct version, inspect its configuration if needed, and then create a container."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Command Cheatsheet",
+      headers: ["Command", "Description"],
+      rows: [
+        ["`docker pull <image>`", "Downloads an image from a registry"],
+        ["`docker images` / `docker image ls`", "Lists all images stored locally on your machine"],
+        ["`docker inspect <image>`", "Displays detailed configuration and metadata for an image"],
+        ["`docker history <image>`", "Shows the layers and commands used to build an image"]
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`docker pull <image>` downloads an image without creating a container.",
+        "Pulling the same image again usually downloads only new or changed layers.",
+        "Official images don't include a username or organization name, while private or company images usually do.",
+        "Real-world teams commonly publish images under organization repositories such as `your-org/application:version`.",
+        "`docker images` and `docker image ls` both list the images stored on your machine.",
+        "`docker inspect` displays detailed information about an image, and `--format` lets you extract only the values you need.",
+        "`docker history` shows the build history of an image and can help with debugging, optimization, and security reviews."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "What's Next?",
+      body: [
+        "So far you've downloaded and explored Docker images, but an image by itself doesn't do anything.",
+        "In the next lesson, you'll learn how to turn an image into a running container using `docker run`. You'll explore interactive mode (`-it`), detached mode (`-d`), port mapping (`-p`), and how to access applications through `localhost`."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "pulling-inspecting-q1",
+          question: "What does the `docker pull` command do?",
+          options: [
+            "Downloads an image and immediately starts a container",
+            "Downloads an image without starting a container",
+            "Uploads an image to Docker Hub",
+            "Builds a new image from a Dockerfile",
+          ],
+          correctIndex: 1,
+          explanation: "`docker pull` only downloads the image layers to your local machine so it's ready to use.",
+        },
+        {
+          id: "pulling-inspecting-q2",
+          question: "What is the difference between an official image and an organization image?",
+          options: [
+            "Official images are faster to download",
+            "Organization images cannot be run in production",
+            "Official images do not include a username/org in their repository name (e.g., `nginx`)",
+            "Organization images do not have tags",
+          ],
+          correctIndex: 2,
+          explanation: "Official images (like `nginx` or `ubuntu`) are maintained centrally and omit the organization prefix. Organization images (like `your-org/app`) include the namespace.",
+        },
+        {
+          id: "pulling-inspecting-q3",
+          question: "Which command shows you all the Docker images currently stored on your machine?",
+          options: [
+            "docker view",
+            "docker images",
+            "docker history",
+            "docker inspect",
+          ],
+          correctIndex: 1,
+          explanation: "`docker images` (or `docker image ls`) lists the repository, tag, image ID, and size of all local images.",
+        },
+        {
+          id: "pulling-inspecting-q4",
+          question: "Why might you use the `docker history` command?",
+          options: [
+            "To view the shell commands executed inside a running container",
+            "To delete all old and unused images from your computer",
+            "To restart an image that has crashed",
+            "To understand how an image was built or investigate unusually large layers",
+          ],
+          correctIndex: 3,
+          explanation: "`docker history` shows each layer (or instruction) used to build the image, which helps with debugging size issues or checking for accidentally included secrets.",
+        },
+        {
+          id: "pulling-inspecting-q5",
+          question: "How can you extract a specific piece of information from `docker inspect` without reading the entire JSON output?",
+          options: [
+            "By passing the `--grep` flag",
+            "By using the `--format` option",
+            "By adding the `--short` flag",
+            "By passing the `-it` flags",
+          ],
+          correctIndex: 1,
+          explanation: "The `--format` (or `-f`) option allows you to use a Go template to extract specific fields like `{{.Config.Cmd}}` or `{{.Architecture}}`.",
+        }
+      ]
+    }
+  ]
 };
 
 const runningContainers: LessonContent = {
