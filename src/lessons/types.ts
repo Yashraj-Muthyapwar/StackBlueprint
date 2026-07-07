@@ -67,6 +67,13 @@ export type InputField =
   | { key: string; label: string; kind: "string"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "select"; options: { value: string; label: string }[]; help?: string; hidden?: (v: any) => boolean };
 
+export type PracticeProblem = {
+  name: string;
+  difficulty: "easy" | "medium" | "hard";
+  hint: string;
+  link?: string;
+};
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   slug: string;
@@ -95,6 +102,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
     newValue: string,
     currentRaw: Record<string, string>,
   ) => Record<string, string> | null;
+  /** Ordered practice problems, easiest first. Render as a ladder with difficulty badges. */
+  practiceLadder?: PracticeProblem[];
 };
 
 
@@ -120,7 +129,7 @@ export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
-  | { kind: "callout"; tone: "info" | "warn" | "success"; title: string; body: string }
+  | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
   | { kind: "animation"; variant: string; caption?: string }
