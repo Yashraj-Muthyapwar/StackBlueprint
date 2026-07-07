@@ -286,6 +286,71 @@ const whatIsImage: LessonContent = {
       body: [
         "Now that you understand what a Docker image is, the next step is learning how to find, download, and inspect images. In the next lesson, you'll explore commands such as `docker pull`, `docker image ls`, `docker inspect`, and `docker history` to see how Docker stores and manages images locally."
       ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "what-is-image-q1",
+          question: "What is a Docker Image?",
+          options: [
+            "A running instance of an application",
+            "A virtual machine containing the host OS kernel",
+            "A read-only template used to create containers",
+            "A writable layer where application logs are stored",
+          ],
+          correctIndex: 2,
+          explanation: "An image is a read-only template that packages everything an application needs to run. A running instance is called a container.",
+        },
+        {
+          id: "what-is-image-q2",
+          question: "Which of the following is NOT included in a Docker Image?",
+          options: [
+            "Application code",
+            "Operating system kernel",
+            "Libraries and dependencies",
+            "Configuration files",
+          ],
+          correctIndex: 1,
+          explanation: "Unlike virtual machines, Docker containers share the host machine's kernel. The image contains everything else (code, libraries, OS filesystem).",
+        },
+        {
+          id: "what-is-image-q3",
+          question: "What happens to the underlying Docker image when a container is running?",
+          options: [
+            "It is modified to include any new files created by the container",
+            "It remains completely unchanged and read-only",
+            "It is temporarily deleted until the container stops",
+            "It merges with the writable layer permanently",
+          ],
+          correctIndex: 1,
+          explanation: "Images are immutable (read-only). When a container runs, Docker adds a thin writable layer on top of the image for any changes.",
+        },
+        {
+          id: "what-is-image-q4",
+          question: "Why do Docker containers start so quickly compared to Virtual Machines?",
+          options: [
+            "They load a smaller kernel into memory",
+            "They share the host machine's kernel instead of booting their own",
+            "They skip checking for software updates",
+            "They do not contain any application dependencies",
+          ],
+          correctIndex: 1,
+          explanation: "Containers don't need to boot a separate operating system kernel. They share the host's kernel, making them lightweight and extremely fast to start.",
+        },
+        {
+          id: "what-is-image-q5",
+          question: "Which of the following provides a unique, unchangeable identifier for a specific Docker image?",
+          options: [
+            "The image tag (e.g., `latest`)",
+            "The image repository name",
+            "The image digest (e.g., `sha256:...`)",
+            "The image writable layer",
+          ],
+          correctIndex: 2,
+          explanation: "Tags can point to different images over time, but an image digest (a SHA256 hash) always identifies the exact contents of an image and never changes.",
+        }
+      ]
     }
   ],
 };
