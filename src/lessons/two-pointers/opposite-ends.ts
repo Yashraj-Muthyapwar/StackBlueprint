@@ -1,4 +1,4 @@
-import type { LessonBuilder, Step } from "../types";
+import type { LessonBuilder, Step, PracticeProblem } from "../types";
 import { isSortedAsc } from "../util";
 
 type Mode = "two-sum" | "trapping-rain-water";
@@ -37,6 +37,17 @@ const DEFAULTS: Record<Mode, number[]> = {
   "two-sum": [1, 3, 4, 5, 7, 10, 11],
   "trapping-rain-water": [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1],
 };
+
+const practiceLadder: PracticeProblem[] = [
+  { name: "Two Sum II - Input Array Is Sorted", difficulty: "easy", hint: "The canonical elimination proof. Before each move, say WHY that end is dead. Out loud.", link: "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" },
+  { name: "Squares of a Sorted Array", difficulty: "easy", hint: "Twist: the biggest square is at one of the two ends. Fill the result array from the back.", link: "https://leetcode.com/problems/squares-of-a-sorted-array/" },
+  { name: "Boats to Save People", difficulty: "medium", hint: "Greedy pairing: heaviest person plus lightest person. If they fit, both board. If not, the heaviest boards alone. Find the proof for why pairing heaviest with lightest is safe.", link: "https://leetcode.com/problems/boats-to-save-people/" },
+  { name: "Container With Most Water", difficulty: "medium", hint: "The proof is about the shorter wall. Write the proof in one sentence before writing any code.", link: "https://leetcode.com/problems/container-with-most-water/" },
+  { name: "3Sum", difficulty: "medium", hint: "Fix one element with an outer loop, then run this exact pattern on the rest. Big lesson: patterns compose.", link: "https://leetcode.com/problems/3sum/" },
+  { name: "3Sum Closest", difficulty: "medium", hint: "Same skeleton, but instead of returning on exact match, track the best distance seen so far.", link: "https://leetcode.com/problems/3sum-closest/" },
+  { name: "Trapping Rain Water", difficulty: "hard", hint: "The proof: the smaller of the two boundary maxes decides the water level on its own side, no matter what is in the middle. Settle that side.", link: "https://leetcode.com/problems/trapping-rain-water/" },
+  { name: "4Sum", difficulty: "hard", hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.", link: "https://leetcode.com/problems/4sum/" },
+];
 
 function buildTwoSum({ arr, target }: Inputs): Step[] {
   const steps: Step[] = [];
@@ -97,8 +108,8 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
   const steps: Step[] = [];
   const n = arr.length;
   const waterLevels = new Array(n).fill(0);
-  
-  const push = (s: Omit<Step, "array"|"waterLevels"> & { array?: number[], waterLevels?: number[] }) =>
+
+  const push = (s: Omit<Step, "array" | "waterLevels"> & { array?: number[], waterLevels?: number[] }) =>
     steps.push({ ...s, array: s.array ?? [...arr], waterLevels: s.waterLevels ?? [...waterLevels] });
 
   const ptrs = (l: number, r: number) => [
@@ -120,7 +131,7 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
 
   push({ line: 4, pointers: ptrs(left, right), narration: "Start left and right pointers at the boundaries." });
   push({ line: 5, pointers: ptrs(left, right), status: st(), narration: "Initialize left_max and right_max with the boundary heights." });
-  
+
   let safety = 0;
   while (left < right && safety++ < 200) {
     push({ line: 7, pointers: ptrs(left, right), status: st(), narration: `Guard: left (${left}) < right (${right}).` });
@@ -130,35 +141,35 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
       push({ line: 8, pointers: ptrs(left, right), status: st(), narration: `left_max (${left_max}) < right_max (${right_max}). We know the right side can safely trap water.` });
       left += 1;
       push({ line: 9, pointers: ptrs(left, right), status: st(), narration: `Advance left to ${left}.` });
-      
+
       const prev_left_max = left_max;
       left_max = Math.max(left_max, arr[left]);
       push({ line: 10, pointers: ptrs(left, right), status: st(), narration: `Update left_max = max(${prev_left_max}, ${arr[left]}) → ${left_max}.` });
-      
+
       const trapped = left_max - arr[left];
       waterLevels[left] = trapped;
       water += trapped;
-      
+
       push({ line: 11, pointers: ptrs(left, right), status: st(), narration: `Water added at left: ${left_max} - ${arr[left]} = ${trapped}.` });
     } else {
       push({ line: 12, pointers: ptrs(left, right), status: st(), narration: `right_max (${right_max}) <= left_max (${left_max}). We know the left side can safely trap water.` });
       right -= 1;
       push({ line: 13, pointers: ptrs(left, right), status: st(), narration: `Advance right to ${right}.` });
-      
+
       const prev_right_max = right_max;
       right_max = Math.max(right_max, arr[right]);
       push({ line: 14, pointers: ptrs(left, right), status: st(), narration: `Update right_max = max(${prev_right_max}, ${arr[right]}) → ${right_max}.` });
-      
+
       const trapped = right_max - arr[right];
       waterLevels[right] = trapped;
       water += trapped;
-      
+
       push({ line: 15, pointers: ptrs(left, right), status: st(), narration: `Water added at right: ${right_max} - ${arr[right]} = ${trapped}.` });
     }
   }
 
   push({ line: 16, pointers: ptrs(left, right), status: st(), narration: `Pointers met. Total water trapped: ${water}.` });
-  
+
   return steps;
 }
 
@@ -180,6 +191,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
     "You need to count all pairs (not just find one) — a hash map is usually better.",
     "Data is a stream / linked list without random access — use fast-slow or a hash set instead.",
   ],
+  practiceLadder,
   variant: "opposite-ends",
   view: (inputs) => inputs.mode === "trapping-rain-water" ? "elevation-map" : "array",
   code: codeTwoSum,
