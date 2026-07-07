@@ -1,6 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
+
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { LessonPlayer } from "@/components/lesson/LessonPlayer";
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
@@ -126,6 +128,32 @@ function LessonPage() {
           </div>
         ) : null}
 
+        {entry.builder.practiceLadder?.length ? (
+          <div className="mt-8 rounded-2xl border border-hairline bg-surface p-6">
+            <h2 className="mb-4 text-lg font-semibold text-foreground">Practice Ladder</h2>
+            <div className="space-y-4">
+              {entry.builder.practiceLadder.map((prob, i) => (
+                <div key={i} className="flex flex-col gap-2 rounded-xl border border-hairline bg-background p-4 sm:flex-row sm:items-start sm:gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-1.5">
+                      {prob.link ? (
+                        <a href={prob.link} target="_blank" rel="noreferrer" className="font-medium text-foreground hover:underline hover:text-mint">
+                          {prob.name}
+                        </a>
+                      ) : (
+                        <span className="font-medium text-foreground">{prob.name}</span>
+                      )}
+                      <Badge variant={prob.difficulty === "easy" ? "secondary" : prob.difficulty === "medium" ? "default" : "destructive"} className="capitalize">
+                        {prob.difficulty}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{prob.hint}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         <div className="mt-8 flex items-center justify-between gap-3">
           {prev ? (
