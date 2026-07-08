@@ -672,6 +672,12 @@ const pullingImages: LessonContent = {
         },
         {
           id: "pulling-inspecting-q2",
+          question: "Write the command to download the official `nginx` image without running it.",
+          commandAnswer: "docker pull nginx",
+          explanation: "The `docker pull` command downloads an image. For official images, you don't need a repository prefix.",
+        },
+        {
+          id: "pulling-inspecting-q3",
           question: "What is the difference between an official image and an organization image?",
           options: [
             "Official images are faster to download",
@@ -683,19 +689,49 @@ const pullingImages: LessonContent = {
           explanation: "Official images (like `nginx` or `ubuntu`) are maintained centrally and omit the organization prefix. Organization images (like `your-org/app`) include the namespace.",
         },
         {
-          id: "pulling-inspecting-q3",
-          question: "Which command shows you all the Docker images currently stored on your machine?",
-          options: [
-            "docker view",
-            "docker images",
-            "docker history",
-            "docker inspect",
-          ],
-          correctIndex: 1,
-          explanation: "`docker images` (or `docker image ls`) lists the repository, tag, image ID, and size of all local images.",
+          id: "pulling-inspecting-q4",
+          question: "Write the command to download version `15` of the `postgres` image.",
+          commandAnswer: "docker pull postgres:15",
+          explanation: "You append a colon and the tag to the image name to pull a specific version.",
         },
         {
-          id: "pulling-inspecting-q4",
+          id: "pulling-inspecting-q5",
+          question: "What happens if you run `docker pull` on an image you already have the latest version of?",
+          options: [
+            "It downloads the entire image again",
+            "It deletes the old image and downloads the new one",
+            "It compares layers and downloads nothing unless there are changes",
+            "It throws an error",
+          ],
+          correctIndex: 2,
+          explanation: "Docker layer caching ensures that it only downloads layers that you don't already have.",
+        },
+        {
+          id: "pulling-inspecting-q6",
+          question: "Write the command to list all Docker images stored locally on your machine.",
+          commandAnswer: ["docker images", "docker image ls"],
+          explanation: "Both `docker images` and `docker image ls` display a list of all images currently downloaded to your system.",
+        },
+        {
+          id: "pulling-inspecting-q7",
+          question: "In `docker images` output, what is the difference between an IMAGE ID and a digest?",
+          options: [
+            "IMAGE ID is used globally, digest is used locally",
+            "IMAGE ID is a short local identifier, digest uniquely identifies exact contents across registries",
+            "They are exactly the same thing",
+            "IMAGE ID is a tag, digest is a label",
+          ],
+          correctIndex: 1,
+          explanation: "The IMAGE ID is an identifier generated and used locally by your Docker engine, while the digest is a cryptographic hash (SHA256) used universally.",
+        },
+        {
+          id: "pulling-inspecting-q8",
+          question: "Write the command to view the detailed configuration and metadata for the `nginx` image.",
+          commandAnswer: "docker inspect nginx",
+          explanation: "`docker inspect` returns a large JSON document with detailed configurations like environment variables and open ports.",
+        },
+        {
+          id: "pulling-inspecting-q9",
           question: "Why might you use the `docker history` command?",
           options: [
             "To view the shell commands executed inside a running container",
@@ -707,16 +743,10 @@ const pullingImages: LessonContent = {
           explanation: "`docker history` shows each layer (or instruction) used to build the image, which helps with debugging size issues or checking for accidentally included secrets.",
         },
         {
-          id: "pulling-inspecting-q5",
-          question: "How can you extract a specific piece of information from `docker inspect` without reading the entire JSON output?",
-          options: [
-            "By passing the `--grep` flag",
-            "By using the `--format` option",
-            "By adding the `--short` flag",
-            "By passing the `-it` flags",
-          ],
-          correctIndex: 1,
-          explanation: "The `--format` (or `-f`) option allows you to use a Go template to extract specific fields like `{{.Config.Cmd}}` or `{{.Architecture}}`.",
+          id: "pulling-inspecting-q10",
+          question: "Write the command to extract only the CPU Architecture from the `nginx` image using `docker inspect`.",
+          commandAnswer: ["docker inspect --format='{{.Architecture}}' nginx", "docker inspect -f '{{.Architecture}}' nginx", "docker inspect --format '{{.Architecture}}' nginx", "docker inspect -f='{{.Architecture}}' nginx", "docker inspect --format=\"{{.Architecture}}\" nginx", "docker inspect -f \"{{.Architecture}}\" nginx"],
+          explanation: "You can use the `--format` (or `-f`) option with a template string `{{.Architecture}}` to avoid scrolling through the full JSON output.",
         }
       ]
     }
