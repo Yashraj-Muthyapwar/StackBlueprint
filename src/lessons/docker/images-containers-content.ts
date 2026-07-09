@@ -1099,6 +1099,14 @@ const runningContainers: LessonContent = {
       ]
     },
     {
+      kind: "prose",
+      heading: "What's Next?",
+      body: [
+        "Now that you can run containers, the next step is learning how to manage them throughout their lifecycle.",
+        "In the next lesson, you'll learn how to start, stop, and restart containers, view their logs, and clean up your system."
+      ]
+    },
+    {
       kind: "quiz",
       questions: [
         {
