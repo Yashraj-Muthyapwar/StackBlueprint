@@ -761,7 +761,6 @@ const runningContainers: LessonContent = {
     {
       kind: "prose",
       body: [
-        "This is the point where Docker becomes hands-on.",
         "An image is just a packaged blueprint until you start it as a container, and `docker run` is the command that makes that happen."
       ]
     },
