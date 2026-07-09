@@ -757,7 +757,407 @@ const runningContainers: LessonContent = {
   slug: "running-containers",
   title: "Running Containers",
   subtitle: "docker run, interactive mode -it, detached mode -d, port mapping -p, and accessing localhost.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "This is the point where Docker becomes hands-on.",
+        "An image is just a packaged blueprint until you start it as a container, and `docker run` is the command that makes that happen."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "What docker run does",
+      body: [
+        "At its simplest, the command looks like this:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run <image>"
+    },
+    {
+      kind: "prose",
+      body: [
+        "When you run that command, Docker does four things in order:",
+        "1. It checks whether the image already exists on your machine.",
+        "2. It pulls the image if it does not exist locally.",
+        "3. It creates a new container from that image.",
+        "4. It starts the container's main process.",
+        "A quick first test is the `hello-world` image:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run hello-world"
+    },
+    {
+      kind: "prose",
+      body: [
+        "This is a good confidence check because it proves Docker can download an image, create a container, start it, and print output to your terminal.",
+        "When that message finishes, the container stops because its job is complete.",
+        "To see it, list all containers, including stopped ones:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps -a"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You should see a `hello-world` container with a status like `Exited`."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Why containers sometimes stop immediately",
+      body: [
+        "Now try running Ubuntu without giving it an interactive session:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --name ubuntu-shell-check ubuntu"
+    },
+    {
+      kind: "prose",
+      body: [
+        "At first, it may seem like nothing happened.",
+        "Check again with:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps -a"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You will likely see a stopped container with `Exited (0)` in the status column:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "CONTAINER ID   IMAGE     COMMAND       STATUS                    NAMES\nb8f4c2d91a7e   ubuntu    \"/bin/bash\"   Exited (0) 8 seconds ago   ubuntu-shell-check"
+    },
+    {
+      kind: "prose",
+      body: [
+        "That is expected behavior, not a failure.",
+        "A container stays alive only while its main process is still running.",
+        "In this case, the Ubuntu image starts a shell by default, but because no interactive terminal was attached, the shell had nothing to do and exited.",
+        "Remove that stopped container before moving on:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm ubuntu-shell-check"
+    },
+    {
+      kind: "prose",
+      heading: "Run a command inside a container",
+      body: [
+        "You can tell Docker to run a specific command by placing it after the image name:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run ubuntu cat /etc/os-release"
+    },
+    {
+      kind: "prose",
+      body: [
+        "This starts a container from the Ubuntu image, runs `cat /etc/os-release`, prints the operating system details, and then exits.",
+        "For one-time commands, it is cleaner to remove the container automatically when it finishes:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --rm ubuntu cat /etc/os-release"
+    },
+    {
+      kind: "prose",
+      body: [
+        "The `--rm` flag tells Docker to delete the container as soon as it exits, which is useful for quick experiments and temporary checks."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Use an explicit tag",
+      body: [
+        "If you do not specify a tag, Docker uses `latest` by default.",
+        "For learning, it is better to be explicit so your result is predictable:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --rm ubuntu:24.04 cat /etc/os-release"
+    },
+    {
+      kind: "prose",
+      body: [
+        "In `ubuntu:24.04`, the part after the colon is the tag.",
+        "Tags let you choose a specific version or variant instead of depending on whatever `latest` happens to point to."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Use -it for an interactive shell",
+      body: [
+        "If you want to type commands inside a container, run it interactively:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -it --rm ubuntu bash"
+    },
+    {
+      kind: "prose",
+      body: [
+        "The `-i` flag keeps standard input open, and the `-t` flag gives you a terminal session.",
+        "Together, they let you work inside the container as if you had logged into a separate machine.",
+        "Once inside, try a few simple commands:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "whoami\npwd\nls\ncat /etc/os-release"
+    },
+    {
+      kind: "prose",
+      body: [
+        "When you are done, exit the shell:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "exit"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Because you included `--rm`, Docker removes the container as soon as the shell ends."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Use -d to run in the background",
+      body: [
+        "Interactive mode is great for exploration, but services like web servers usually need to keep running while your terminal stays free.",
+        "Start Nginx in detached mode like this:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -d --name web-preview nginx:alpine"
+    },
+    {
+      kind: "prose",
+      body: [
+        "The `-d` flag starts the container in the background and immediately returns control of your terminal.",
+        "To confirm it is running:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You should see `web-preview` with a status like `Up`."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Use -p to reach the container from your machine",
+      body: [
+        "Even though Nginx is running, your browser still cannot reach it yet because the web server is listening on port 80 inside the container, not directly on your computer.",
+        "First remove the container you just started:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm -f web-preview"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now start it again with a published port:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -d -p 8080:80 --name web-preview nginx:alpine"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Read `8080:80` as:",
+        "`host-port:container-port`",
+        "This means traffic sent to port 8080 on your machine gets forwarded to port 80 inside the container.",
+        "Open this address in your browser:",
+        "`http://localhost:8080`",
+        "You should see the default Nginx welcome page.",
+        "If port 8080 is already being used by something else, choose another host port:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -d -p 8081:80 --name web-preview-alt nginx:alpine"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Then open:",
+        "`http://localhost:8081`"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Clean up and practice",
+      body: [
+        "When you are finished, remove the test container:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm -f web-preview"
+    },
+    {
+      kind: "prose",
+      body: [
+        "If you also ran the alternate port example, remove that container too:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm -f web-preview-alt"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Try these commands and explain what each one does:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --rm alpine echo \"hello from alpine\"\ndocker run --rm ubuntu:24.04 cat /etc/os-release\ndocker run -it --rm ubuntu bash\ndocker run -d -p 8080:80 --name practice-web nginx:alpine\ndocker rm -f practice-web"
+    },
+    {
+      kind: "prose",
+      body: [
+        "If you understand those five examples, you understand the most practical uses of `docker run` in beginner Docker work."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`docker run <image>` creates and starts a new container from an image.",
+        "If the image is not stored locally, Docker pulls it first.",
+        "A container stops when its main process exits.",
+        "A command placed after the image name overrides the image's default command.",
+        "`--rm` removes the container automatically after it exits.",
+        "`-it` gives you an interactive terminal session.",
+        "`-d` runs a container in the background.",
+        "`-p <host-port>:<container-port>` publishes a container port to your machine.",
+        "`--name` gives the container a memorable name for later commands."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "running-containers-q1",
+          question: "What does `docker run <image>` do if the image is not already on your machine?",
+          options: [
+            "It returns an error and stops.",
+            "It automatically pulls the image from a registry, then creates and starts the container.",
+            "It builds the image from a local Dockerfile.",
+            "It starts a container with an empty image."
+          ],
+          correctIndex: 1,
+          explanation: "Docker checks locally first. If it's missing, it automatically pulls it before running."
+        },
+        {
+          id: "running-containers-q2",
+          question: "Why did the container exit immediately when running `docker run ubuntu`?",
+          options: [
+            "The Ubuntu image is corrupted.",
+            "Containers only stay alive while their main process is running, and the default shell had no interactive terminal attached.",
+            "You must specify `-d` to run an Ubuntu container.",
+            "The container crashed due to an out-of-memory error."
+          ],
+          correctIndex: 1,
+          explanation: "The Ubuntu image starts a bash shell. Without an interactive terminal attached (`-it`), the shell immediately exits, so the container stops."
+        },
+        {
+          id: "running-containers-q3",
+          question: "Write the command to run an `ubuntu` container, print `/etc/os-release`, and automatically remove the container after it exits.",
+          commandAnswer: "docker run --rm ubuntu cat /etc/os-release",
+          explanation: "The `--rm` flag tells Docker to clean up the container once it stops."
+        },
+        {
+          id: "running-containers-q4",
+          question: "Which flags do you use to start an interactive terminal session inside a container?",
+          options: [
+            "-i and -t (or -it)",
+            "-d and -p",
+            "-r and -m (or --rm)",
+            "-e and -v"
+          ],
+          correctIndex: 0,
+          explanation: "`-i` keeps standard input open, and `-t` allocates a pseudo-TTY (terminal). Together (`-it`), they let you interact with the container."
+        },
+        {
+          id: "running-containers-q5",
+          question: "Write the command to run `nginx:alpine` in the background (detached mode) with the name `web-preview`.",
+          commandAnswer: ["docker run -d --name web-preview nginx:alpine", "docker run --name web-preview -d nginx:alpine"],
+          explanation: "The `-d` flag runs the container in detached mode, and `--name` assigns a custom name."
+        },
+        {
+          id: "running-containers-q6",
+          question: "When publishing ports with `-p 8080:80`, what does each number represent?",
+          options: [
+            "Container port : Host port",
+            "Host port : Container port",
+            "TCP port : UDP port",
+            "Internal port : External port"
+          ],
+          correctIndex: 1,
+          explanation: "The format is `<host-port>:<container-port>`, which means traffic to the host port is forwarded to the container port."
+        },
+        {
+          id: "running-containers-q7",
+          question: "Write the command to force remove a running container named `practice-web`.",
+          commandAnswer: ["docker rm -f practice-web", "docker container rm -f practice-web"],
+          explanation: "The `-f` (force) flag allows you to remove a running container without stopping it first."
+        }
+      ]
+    }
+  ],
 };
 
 const containerLifecycle: LessonContent = {
