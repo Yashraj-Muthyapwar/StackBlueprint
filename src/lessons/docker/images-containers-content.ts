@@ -4,6 +4,7 @@ import { type FoundationTopicMeta } from "@/lessons/docker/foundations-content";
 import dockerImageImg from "@/images/docker/images-and-containers/docker-image.png";
 import multiStageBuildImg from "@/images/docker/images-and-containers/multi-stage-build.png";
 import pullingImagesImg from "@/images/docker/images-and-containers/pulling-and-inspecting-images.png";
+import runningContainersImg from "@/images/docker/images-and-containers/docker-running-containers.png";
 
 const whatIsImage: LessonContent = {
   slug: "what-is-a-docker-image",
@@ -761,6 +762,7 @@ const runningContainers: LessonContent = {
     {
       kind: "prose",
       body: [
+        "This is the point where Docker becomes hands-on.",
         "An image is just a packaged blueprint until you start it as a container, and `docker run` is the command that makes that happen."
       ]
     },
@@ -783,7 +785,18 @@ const runningContainers: LessonContent = {
         "1. It checks whether the image already exists on your machine.",
         "2. It pulls the image if it does not exist locally.",
         "3. It creates a new container from that image.",
-        "4. It starts the container's main process.",
+        "4. It starts the container's main process."
+      ]
+    },
+    {
+      kind: "image",
+      src: runningContainersImg,
+      alt: "Diagram showing the four steps of docker run: check local cache, pull image if missing, create container, and start main process",
+      caption: "The lifecycle of docker run from image to running container",
+    },
+    {
+      kind: "prose",
+      body: [
         "A quick first test is the `hello-world` image:"
       ]
     },
