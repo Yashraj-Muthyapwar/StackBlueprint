@@ -206,7 +206,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "code": {
       const lines = section.code.split("\n");
-      const langLabel = section.language === "bash" ? "docker" : section.language || "docker";
+      let langLabel = section.language || "docker";
+      if (section.language === "bash") {
+        const hasLinuxCmd = section.code.includes("sudo ") || section.code.includes("apt-get") || section.code.includes("nano ") || section.code.includes("systemctl ");
+        langLabel = hasLinuxCmd ? "bash" : "docker";
+      }
       return (
         <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="flex items-center justify-between border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5 min-w-0">
@@ -220,12 +224,14 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                 </span>
               ) : null}
             </div>
-            <div className="flex items-center gap-2">
-              <CopyButton text={section.code} />
-              <div className="rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-                {langLabel}
+            {section.language !== "text" && (
+              <div className="flex items-center gap-2">
+                <CopyButton text={section.code} />
+                <div className="rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  {langLabel}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code className="block min-w-max">
