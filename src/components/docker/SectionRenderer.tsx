@@ -1,5 +1,5 @@
 import type { Section } from "@/lessons/docker/foundations-content";
-import { AlertTriangle, CheckCircle2, Info, X } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, X, Copy, Check } from "lucide-react";
 import { LessonAnimation } from "@/components/docker/LessonAnimation";
 import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
 import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
@@ -156,6 +156,27 @@ function ZoomableImage({ src, alt }: { src: string; alt?: string }) {
   );
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-black/5 dark:hover:bg-white/5"
+      aria-label="Copy code"
+      title="Copy code"
+    >
+      {copied ? <Check className="size-3.5 text-mint" /> : <Copy className="size-3.5" />}
+    </button>
+  );
+}
+
 export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
   switch (section.kind) {
     case "prose":
@@ -178,15 +199,18 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       const lines = section.code.split("\n");
       return (
         <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
-          <div className="flex items-center gap-1.5 border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5 min-w-0">
-            <div className="size-2.5 shrink-0 rounded-full bg-rose-500/80 shadow-sm" />
-            <div className="size-2.5 shrink-0 rounded-full bg-amber-500/80 shadow-sm" />
-            <div className="size-2.5 shrink-0 rounded-full bg-emerald-500/80 shadow-sm" />
-            {section.caption ? (
-              <span className="ml-2 truncate font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                {section.caption}
-              </span>
-            ) : null}
+          <div className="flex items-center justify-between border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <div className="size-2.5 shrink-0 rounded-full bg-rose-500/80 shadow-sm" />
+              <div className="size-2.5 shrink-0 rounded-full bg-amber-500/80 shadow-sm" />
+              <div className="size-2.5 shrink-0 rounded-full bg-emerald-500/80 shadow-sm" />
+              {section.caption ? (
+                <span className="ml-2 truncate font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {section.caption}
+                </span>
+              ) : null}
+            </div>
+            <CopyButton text={section.code} />
           </div>
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code className="block min-w-max">
