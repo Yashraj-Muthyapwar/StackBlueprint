@@ -168,11 +168,20 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded hover:bg-black/5 dark:hover:bg-white/5"
+      className="flex items-center gap-1.5 rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
       aria-label="Copy code"
-      title="Copy code"
     >
-      {copied ? <Check className="size-3.5 text-mint" /> : <Copy className="size-3.5" />}
+      {copied ? (
+        <>
+          <Check className="size-3.5 text-mint" />
+          <span className="text-mint">Copied</span>
+        </>
+      ) : (
+        <>
+          <Copy className="size-3.5" />
+          <span>Copy</span>
+        </>
+      )}
     </button>
   );
 }
@@ -197,6 +206,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "code": {
       const lines = section.code.split("\n");
+      const langLabel = section.language === "bash" ? "docker" : section.language || "docker";
       return (
         <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="flex items-center justify-between border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5 min-w-0">
@@ -210,7 +220,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                 </span>
               ) : null}
             </div>
-            <CopyButton text={section.code} />
+            <div className="flex items-center gap-2">
+              <CopyButton text={section.code} />
+              <div className="rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                {langLabel}
+              </div>
+            </div>
           </div>
           <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
             <code className="block min-w-max">
