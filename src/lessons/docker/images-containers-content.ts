@@ -5,6 +5,7 @@ import dockerImageImg from "@/images/docker/images-and-containers/docker-image.p
 import multiStageBuildImg from "@/images/docker/images-and-containers/multi-stage-build.png";
 import pullingImagesImg from "@/images/docker/images-and-containers/pulling-and-inspecting-images.png";
 import runningContainersImg from "@/images/docker/images-and-containers/docker-running-containers.png";
+import containerLifecycleImg from "@/images/docker/images-and-containers/master_the_container_lifecycle.png";
 
 const whatIsImage: LessonContent = {
   slug: "what-is-a-docker-image",
@@ -1183,8 +1184,406 @@ const runningContainers: LessonContent = {
 const containerLifecycle: LessonContent = {
   slug: "mastering-container-lifecycle",
   title: "Mastering the Container Lifecycle",
-  subtitle: "create, start, stop, restart, --rm, --restart, docker ps -a, and container states.",
-  sections: [],
+  subtitle: "docker create vs run, container states (ps -a), stop & restart, exit codes, --rm cleanup, and --restart policies.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "The states you need to know",
+      body: [
+        "A container usually moves through this simple lifecycle:"
+      ]
+    },
+    {
+      kind: "image",
+      src: containerLifecycleImg,
+      alt: "Diagram showing container lifecycle states: created, running, paused, and exited",
+      caption: "The core states of a Docker container lifecycle",
+    },
+    {
+      kind: "prose",
+      body: [
+        "The most common states you will see are:",
+        "• **Created**: Docker prepared the container, but the process has not started.",
+        "• **Up**: the container's main process is running.",
+        "• **Exited**: the main process finished or stopped.",
+        "Plain `docker ps` shows only running containers:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps"
+    },
+    {
+      kind: "prose",
+      body: [
+        "To see everything:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps -a"
+    },
+    {
+      kind: "prose",
+      heading: "Create and start are separate ideas",
+      body: [
+        "Most of the time you use:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -d --name lifecycle-nginx nginx:alpine"
+    },
+    {
+      kind: "prose",
+      body: [
+        "But `docker run` is really two steps in one:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker create --name lifecycle-created nginx:alpine\ndocker start lifecycle-created"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Try the separate version:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker create --name lifecycle-demo alpine sleep 300\ndocker ps -a"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You should see `lifecycle-demo` in the `Created` state.",
+        "Start it:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker start lifecycle-demo\ndocker ps"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now it should be `Up`."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Stop, start, and restart",
+      body: [
+        "Stop the running container:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker stop lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "The container is stopped, not deleted.",
+        "Start it again:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker start lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Restart it:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker restart lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "These commands change state. They do not remove the container."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Understand exit codes",
+      body: [
+        "Run a successful command:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --name success-demo alpine sh -c \"exit 0\""
+    },
+    {
+      kind: "prose",
+      body: [
+        "Run a failing command:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --name fail-demo alpine sh -c \"exit 7\""
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now check:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps -a"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You should see `Exited (0)` for the first container and `Exited (7)` for the second. Exit codes are one of the first things to check when something fails.",
+        "Clean them up:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm success-demo fail-demo"
+    },
+    {
+      kind: "prose",
+      heading: "Pause and unpause",
+      body: [
+        "Pause freezes a running container's processes without deleting the container:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker pause lifecycle-demo\ndocker ps"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Unpause resumes it:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker unpause lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You will not use this every day as a beginner, but it helps you see that Docker can manage a container's state without rebuilding it."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Remove a container",
+      body: [
+        "To remove a stopped container:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker stop lifecycle-demo\ndocker rm lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "If you are working in a lab and intentionally want it gone immediately:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm -f lifecycle-demo"
+    },
+    {
+      kind: "prose",
+      body: [
+        "`-f` stops it if needed and removes it."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "--rm: do not leave throwaway containers behind",
+      body: [
+        "For one-off commands, use `--rm`:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --rm alpine echo \"no container left behind\""
+    },
+    {
+      kind: "prose",
+      body: [
+        "Check:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker ps -a"
+    },
+    {
+      kind: "prose",
+      body: [
+        "You will not see that container because Docker removed it after it exited."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "--restart: make services recover",
+      body: [
+        "For services you expect to keep running, use a restart policy:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run -d --restart unless-stopped --name restart-nginx nginx:alpine"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Common policies:",
+        "• `no`: never restart automatically. This is the default.",
+        "• `on-failure`: restart only when the process exits with an error.",
+        "• `always`: restart whenever it exits, including after Docker restarts.",
+        "• `unless-stopped`: restart unless you manually stopped it.",
+        "For local learning, `unless-stopped` is usually the least surprising policy for a long-running service.",
+        "Clean up:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker rm -f restart-nginx"
+    },
+    {
+      kind: "prose",
+      heading: "Quick practice",
+      body: [
+        "Run this lifecycle drill:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker create --name sleepy alpine sleep 300\ndocker ps -a\ndocker start sleepy\ndocker ps\ndocker restart sleepy\ndocker stop sleepy\ndocker rm sleepy"
+    },
+    {
+      kind: "prose",
+      body: [
+        "Then run a no-cleanup-needed command:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "docker run --rm alpine echo \"clean\""
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`docker ps` shows running containers.",
+        "`docker ps -a` shows running and stopped containers.",
+        "`docker run` creates and starts a container.",
+        "`docker create` prepares a container without starting it.",
+        "`docker start`, `stop`, `restart`, `pause`, and `unpause` change container state.",
+        "Exit codes tell you how the main process ended.",
+        "`docker rm` removes a stopped container.",
+        "`docker rm -f` force-removes a running container.",
+        "`--rm` is ideal for one-off containers.",
+        "`--restart` controls whether Docker brings a service back after it exits."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "lifecycle-q1",
+          question: "Which state indicates that a container has been prepared but its main process has not yet been started?",
+          options: [
+            "Up",
+            "Created",
+            "Exited",
+            "Paused"
+          ],
+          correctIndex: 1,
+          explanation: "The `Created` state means the container filesystem and config are ready, but the main process hasn't been launched."
+        },
+        {
+          id: "lifecycle-q2",
+          question: "Write the command that combines `docker create` and `docker start` into a single step.",
+          commandAnswer: ["docker run", "docker run <image>"],
+          explanation: "`docker run` both creates and starts a container from an image."
+        },
+        {
+          id: "lifecycle-q3",
+          question: "What does the `docker pause` command do?",
+          options: [
+            "Deletes the container temporarily",
+            "Stops the container and removes its files",
+            "Freezes the container's processes without stopping or deleting it",
+            "Automatically restarts the container"
+          ],
+          correctIndex: 2,
+          explanation: "Pausing freezes a container in its current state. You can later resume it with `docker unpause`."
+        },
+        {
+          id: "lifecycle-q4",
+          question: "Write the command to see all containers, including both running and stopped ones.",
+          commandAnswer: "docker ps -a",
+          explanation: "The `-a` (or `--all`) flag tells `docker ps` to show containers in any state, including `Exited` and `Created`."
+        },
+        {
+          id: "lifecycle-q5",
+          question: "What happens if a process exits with an exit code of `7` in a container?",
+          options: [
+            "The container goes into a `Paused (7)` state.",
+            "The container is automatically deleted.",
+            "The container stops, and `docker ps -a` will show `Exited (7)`.",
+            "The container automatically restarts regardless of policies."
+          ],
+          correctIndex: 2,
+          explanation: "When the main process finishes (successfully or with an error), the container transitions to the `Exited` state, keeping the exit code for debugging."
+        },
+        {
+          id: "lifecycle-q6",
+          question: "Which restart policy will restart a service only if it fails (exits with a non-zero exit code)?",
+          options: [
+            "always",
+            "on-failure",
+            "unless-stopped",
+            "no"
+          ],
+          correctIndex: 1,
+          explanation: "The `on-failure` policy automatically restarts the container if it exits with an error."
+        }
+      ]
+    }
+  ],
 };
 
 const passingConfiguration: LessonContent = {
