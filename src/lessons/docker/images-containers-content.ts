@@ -1187,6 +1187,12 @@ const containerLifecycle: LessonContent = {
   subtitle: "docker create vs run, container states (ps -a), stop & restart, exit codes, --rm cleanup, and --restart policies.",
   sections: [
     {
+      kind: "image",
+      src: containerLifecycleImg,
+      alt: "Diagram showing container lifecycle states: created, running, paused, and exited",
+      caption: "The core states of a Docker container lifecycle",
+    },
+    {
       kind: "prose",
       heading: "The states you need to know",
       body: [
@@ -1194,10 +1200,9 @@ const containerLifecycle: LessonContent = {
       ]
     },
     {
-      kind: "image",
-      src: containerLifecycleImg,
-      alt: "Diagram showing container lifecycle states: created, running, paused, and exited",
-      caption: "The core states of a Docker container lifecycle",
+      kind: "code",
+      language: "text",
+      code: "created -> running -> exited\n              |\n            paused"
     },
     {
       kind: "prose",
