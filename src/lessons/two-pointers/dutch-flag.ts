@@ -1,6 +1,15 @@
-import type { LessonBuilder, Partition, Step } from "../types";
+import type { LessonBuilder, Partition, PracticeProblem, Step } from "../types";
 
 type Inputs = { arr: number[] };
+
+const practiceLadder: PracticeProblem[] = [
+  { name: "Move Zeroes", difficulty: "easy", hint: "Like a 2-color Dutch Flag. Maintain a zone for non-zeroes and a zone for the current scanner.", link: "https://leetcode.com/problems/move-zeroes/" },
+  { name: "Sort Array By Parity", difficulty: "easy", hint: "Another 2-color variation. Evens on the left, odds on the right.", link: "https://leetcode.com/problems/sort-array-by-parity/" },
+  { name: "Sort Colors", difficulty: "medium", hint: "The canonical 3-color Dutch Flag. 0s, 1s, and 2s.", link: "https://leetcode.com/problems/sort-colors/" },
+  { name: "Rearrange Array Elements by Sign", difficulty: "medium", hint: "Partitioning with an added constraint: you must maintain relative order (stable partition).", link: "https://leetcode.com/problems/rearrange-array-elements-by-sign/" },
+  { name: "First Missing Positive", difficulty: "hard", hint: "Partitioning integers to their correct indices (Cyclic Sort). It's an in-place bucket sort.", link: "https://leetcode.com/problems/first-missing-positive/" },
+  { name: "Wiggle Sort II", difficulty: "hard", hint: "Can be solved in O(N) time and O(1) space using Dutch Flag partitioning around the median.", link: "https://leetcode.com/problems/wiggle-sort-ii/" },
+];
 
 const code = `def dutch_flag(arr):
     low, mid, high = 0, 0, len(arr) - 1
@@ -113,6 +122,7 @@ export const dutchFlag: LessonBuilder<Inputs> = {
     "Relative order of equal elements must be preserved (Dutch flag is not stable).",
     "You only need to count categories, not rearrange them.",
   ],
+  practiceLadder,
   variant: "dutch-flag",
   view: "array",
   code,
