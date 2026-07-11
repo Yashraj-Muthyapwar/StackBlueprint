@@ -1,4 +1,4 @@
-import type { LessonBuilder, Step } from "../types";
+import type { LessonBuilder, PracticeProblem, Step } from "../types";
 import { stringifyIntArray } from "../util";
 
 type Mode = "remove-duplicates" | "find-duplicate";
@@ -31,6 +31,15 @@ const DEFAULTS: Record<Mode, number[]> = {
   "remove-duplicates": [0, 0, 1, 1, 1, 2, 2, 3, 3, 4],
   "find-duplicate": [1, 3, 4, 2, 2],
 };
+
+const practiceLadder: PracticeProblem[] = [
+  { name: "Linked List Cycle", difficulty: "easy", hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.", link: "https://leetcode.com/problems/linked-list-cycle/" },
+  { name: "Remove Duplicates from Sorted Array", difficulty: "easy", hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.", link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/" },
+  { name: "Linked List Cycle II", difficulty: "medium", hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.", link: "https://leetcode.com/problems/linked-list-cycle-ii/" },
+  { name: "Find the Duplicate Number", difficulty: "medium", hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.", link: "https://leetcode.com/problems/find-the-duplicate-number/" },
+  { name: "Minimum Window Substring", difficulty: "hard", hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.", link: "https://leetcode.com/problems/minimum-window-substring/" },
+  { name: "Subarrays with K Different Integers", difficulty: "hard", hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.", link: "https://leetcode.com/problems/subarrays-with-k-different-integers/" },
+];
 
 function ptrs(slow: number, fast: number, n: number) {
   // Clamp to valid indices so the canvas never points off-array.
@@ -360,6 +369,7 @@ export const fastSlow: LessonBuilder<Inputs> = {
     "Array isn't sorted (for the dedup variant) — sort first or switch patterns.",
     "Values can be outside [1..n] — Floyd-on-values needs that index mapping to be valid.",
   ],
+  practiceLadder,
   variant: "fast-slow",
   view: "array",
   code: codeRemoveDuplicates,
