@@ -27,7 +27,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
       return () => window.clearTimeout(id);
     } else if (charsTyped === totalChars && outputLinesShown < totalOutputLines) {
       const currentLine = outputLines[outputLinesShown] || "";
-      const isCommand = currentLine.trim().startsWith("$");
+      const isCommand = currentLine.startsWith("$");
 
       if (isCommand && outputLineCharsTyped < currentLine.length) {
         // Typing effect for commands in the output
@@ -110,7 +110,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
             {outputLines.slice(0, outputLinesShown + 1).map((line, idx) => {
               if (idx === totalOutputLines) return null;
               
-              const isCommand = line.trim().startsWith("$");
+              const isCommand = line.startsWith("$");
               const isCurrentLine = idx === outputLinesShown;
               
               const text = (isCurrentLine && isCommand) 
