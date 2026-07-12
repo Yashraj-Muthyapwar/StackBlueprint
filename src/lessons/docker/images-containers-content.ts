@@ -552,7 +552,7 @@ What's next:
       kind: "terminal-animation",
       command: "docker images # docker images [OPTIONS] [REPOSITORY[:TAG]]\n// Note: 'docker image ls' works too!",
       output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
-    postgres     15       f076c2fa35f5   15 months ago  300MB
+    postgres     15       bcab099bfaab   15 months ago  300MB
     postgres     10.3     cbb7481ff9d5   4 years ago    232MB
     nginx        latest   605c77e624dd   2 months ago   141MB`,
       buttonLabel: "Run Command",
@@ -674,7 +674,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker image inspect postgres:15 # docker image inspect <Image ID or Name>\n\n# Or explicitly declare the type:\ndocker inspect --type=image postgres:15"
+      code: "docker image inspect bcab099bfaab # docker image inspect <Image ID>\n\n# Or explicitly declare the type:\ndocker inspect --type=image bcab099bfaab"
     },
     {
       kind: "prose",
@@ -703,7 +703,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Config.Cmd}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
+      code: "docker inspect --format='{{.Config.Cmd}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
     },
     {
       kind: "prose",
@@ -714,7 +714,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Os}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
+      code: "docker inspect --format='{{.Os}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
     },
     {
       kind: "prose",
@@ -725,7 +725,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Architecture}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
+      code: "docker inspect --format='{{.Architecture}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
     },
     {
       kind: "prose",
@@ -743,7 +743,7 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "docker history postgres:15 # docker history <Image Name or ID>",
+      command: "docker history bcab099bfaab # docker history <Image ID>",
       output: `IMAGE          CREATED       CREATED BY                                      SIZE      COMMENT
 bcab099bfaab   5 days ago    CMD ["postgres"]                                0B        buildkit.dockerfile.v0
 <missing>      5 days ago    EXPOSE map[5432/tcp:{}]                         0B        buildkit.dockerfile.v0
@@ -809,8 +809,8 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
       rows: [
         ["`docker pull <image>`", "Downloads an image from a registry"],
         ["`docker images` / `docker image ls`", "Lists all images stored locally on your machine"],
-        ["`docker inspect <image>`", "Displays detailed configuration and metadata for an image"],
-        ["`docker history <image>`", "Shows the layers and commands used to build an image"]
+        ["`docker inspect <image <ID>>`", "Displays detailed configuration and metadata for an image"],
+        ["`docker history <image <ID>>`", "Shows the layers and commands used to build an image"]
       ]
     },
     {
