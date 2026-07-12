@@ -19,6 +19,7 @@ import dockerDesktopImg from "@/images/docker/foundations/docker-desktop.png";
 import startupSequencesImg from "@/images/docker/foundations/startup-sequences.jpg";
 import dockerDesktopHelloWorldImg from "@/images/docker/foundations/docker-desktop-hello-world.jpg";
 import howDockerWorksImg from "@/images/docker/foundations/how-docker-works.jpg";
+import understandPortsImg from "@/images/docker/foundations/understand_ports.png";
 
 export type FoundationTopicMeta = {
   slug: string;
@@ -1259,9 +1260,14 @@ ls: cannot access 'my-app': No such file or directory
       heading: "Understanding Ports",
       body: [
         "Since we are going to be connecting to containers and running web servers, you need to understand **ports**. If an IP address (like `127.0.0.1` or `localhost`) is the street address of an apartment building, a port is the specific apartment number.",
-        "There are 65,535 possible ports on any given computer. When a web server starts up, it usually \"listens\" on port 80 (for HTTP) or 443 (for HTTPS). When you run a database, it might listen on port 5432. The first 1024 ports are considered \"privileged\" and usually require admin rights to bind to on a traditional Linux system.",
-        "When we run Docker containers later, we will frequently \"map\" a port from our host machine to a port inside the container. This acts like a mailroom forwarding traffic from the building's main entrance to the specific container's apartment."
+        "There are 65,535 possible ports on any given computer. The first **1,024** ports are considered \"privileged\" and usually require admin rights. Beyond that, many ports are officially registered to specific applications by the **IANA** (Internet Assigned Numbers Authority). For example, a **web server** usually \"listens\" on **port** `80` **(HTTP)** or `443` **(HTTPS)**, **PostgreSQL** uses `5432`, and **MySQL** uses `3306`.",
+        "When we run Docker containers later, we will frequently **map** a port from our host machine to a port inside the container. This acts like a mailroom forwarding traffic from the building's main entrance to the specific container's apartment."
       ],
+    },
+    {
+      kind: "image",
+      src: understandPortsImg,
+      alt: "Understanding Ports Analogy",
     },
     {
       kind: "callout",
