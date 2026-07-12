@@ -941,26 +941,37 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
 const runningContainers: LessonContent = {
   slug: "running-containers",
   title: "Running Containers",
-  subtitle: "docker run, interactive mode -it, detached mode -d, port mapping -p, and accessing localhost.",
+  subtitle: "docker container run, interactive mode -it, detached mode -d, port mapping -p, and accessing localhost.",
   sections: [
     {
       kind: "prose",
       body: [
         "This is the point where Docker becomes hands-on.",
-        "An image is just a packaged blueprint until you start it as a container, and `docker run` is the command that makes that happen."
+        "An image is just a packaged blueprint until you start it as a container, and `docker container run` is the command that makes that happen."
       ]
     },
     {
       kind: "prose",
-      heading: "What docker run does",
+      heading: "Legacy vs. Grouped Syntax",
+      body: [
+        "Docker commands follow a logical hierarchy. Historically, you'd type `docker run` or `docker ps` directly.",
+        "We adopt the modern grouped syntax for clarity (like `docker container run`).",
+        "Both forms do exactly the same thing, but the grouped syntax makes it obvious what type of resource you are managing."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "What docker container run does",
       body: [
         "At its simplest, the command looks like this:"
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run <image>"
+      kind: "terminal-animation",
+      command: "# Syntax:\n# docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]",
+      output: "",
+      buttonLabel: "View Syntax",
+      caption: "The basic docker container run syntax",
     },
     {
       kind: "prose",
@@ -975,8 +986,8 @@ const runningContainers: LessonContent = {
     {
       kind: "image",
       src: runningContainersImg,
-      alt: "Diagram showing the four steps of docker run: check local cache, pull image if missing, create container, and start main process",
-      caption: "The lifecycle of docker run from image to running container",
+      alt: "Diagram showing the four steps of docker container run: check local cache, pull image if missing, create container, and start main process",
+      caption: "The lifecycle of docker container run from image to running container",
     },
     {
       kind: "prose",
@@ -985,9 +996,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run hello-world"
+      kind: "terminal-animation",
+      command: "docker container run hello-world",
+      output: "Unable to find image 'hello-world:latest' locally\nlatest: Pulling from library/hello-world\nc1ec31eb5944: Pull complete\nDigest: sha256:d000bc5694fc70fced86fdcd8b725c88b0a94cb22c54bc0898555c1e0e8e6dd1\nStatus: Downloaded newer image for hello-world:latest\n\nHello from Docker!\nThis message shows that your installation appears to be working correctly.",
+      buttonLabel: "Run Hello World",
+      caption: "Running your first container",
     },
     {
       kind: "prose",
@@ -998,9 +1011,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker ps -a"
+      kind: "terminal-animation",
+      command: "docker container ls -a",
+      output: "CONTAINER ID   IMAGE         COMMAND    CREATED         STATUS                     PORTS     NAMES\na1b2c3d4e5f6   hello-world   \"/hello\"   2 minutes ago   Exited (0) 2 minutes ago             trusting_turing",
+      buttonLabel: "List All",
+      caption: "Viewing stopped containers",
     },
     {
       kind: "prose",
@@ -1016,9 +1031,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run --name ubuntu-shell-check ubuntu"
+      kind: "terminal-animation",
+      command: "docker container run --name ubuntu-shell-check ubuntu",
+      output: "",
+      buttonLabel: "Run Ubuntu",
+      caption: "Running a shell without an interactive terminal",
     },
     {
       kind: "prose",
@@ -1028,20 +1045,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker ps -a"
-    },
-    {
-      kind: "prose",
-      body: [
-        "You will likely see a stopped container with `Exited (0)` in the status column:"
-      ]
-    },
-    {
-      kind: "code",
-      language: "text",
-      code: "CONTAINER ID   IMAGE     COMMAND       STATUS                    NAMES\nb8f4c2d91a7e   ubuntu    \"/bin/bash\"   Exited (0) 8 seconds ago   ubuntu-shell-check"
+      kind: "terminal-animation",
+      command: "docker container ls -a",
+      output: "CONTAINER ID   IMAGE     COMMAND       STATUS                    NAMES\nb8f4c2d91a7e   ubuntu    \"/bin/bash\"   Exited (0) 8 seconds ago   ubuntu-shell-check",
+      buttonLabel: "Check Status",
+      caption: "Confirming the container exited immediately",
     },
     {
       kind: "prose",
@@ -1053,9 +1061,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker rm ubuntu-shell-check"
+      kind: "terminal-animation",
+      command: "docker container rm ubuntu-shell-check",
+      output: "ubuntu-shell-check",
+      buttonLabel: "Remove Container",
+      caption: "Cleaning up",
     },
     {
       kind: "prose",
@@ -1065,9 +1075,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run ubuntu cat /etc/os-release"
+      kind: "terminal-animation",
+      command: "docker container run ubuntu cat /etc/os-release",
+      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      buttonLabel: "Run Command",
+      caption: "Executing a one-off command",
     },
     {
       kind: "prose",
@@ -1077,9 +1089,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run --rm ubuntu cat /etc/os-release"
+      kind: "terminal-animation",
+      command: "docker container run --rm ubuntu cat /etc/os-release",
+      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      buttonLabel: "Run with --rm",
+      caption: "Running a command and automatically cleaning up",
     },
     {
       kind: "prose",
@@ -1096,9 +1110,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run --rm ubuntu:24.04 cat /etc/os-release"
+      kind: "terminal-animation",
+      command: "docker container run --rm ubuntu:24.04 cat /etc/os-release",
+      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      buttonLabel: "Run Specific Tag",
+      caption: "Running a specific image tag",
     },
     {
       kind: "prose",
@@ -1115,33 +1131,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run -it --rm ubuntu bash"
-    },
-    {
-      kind: "prose",
-      body: [
-        "The `-i` flag keeps standard input open, and the `-t` flag gives you a terminal session.",
-        "Together, they let you work inside the container as if you had logged into a separate machine.",
-        "Once inside, try a few simple commands:"
-      ]
-    },
-    {
-      kind: "code",
-      language: "bash",
-      code: "whoami\npwd\nls\ncat /etc/os-release"
-    },
-    {
-      kind: "prose",
-      body: [
-        "When you are done, exit the shell:"
-      ]
-    },
-    {
-      kind: "code",
-      language: "bash",
-      code: "exit"
+      kind: "terminal-animation",
+      command: "# Start an interactive bash session and explore\n",
+      output: "$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# whoami\nroot\nroot@b8f4c2d91a7e:/# pwd\n/\nroot@b8f4c2d91a7e:/# ls\nbin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var\nroot@b8f4c2d91a7e:/# cat /etc/os-release\nPRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nroot@b8f4c2d91a7e:/# exit\nexit",
+      buttonLabel: "Run Interactive",
+      caption: "Running an interactive shell inside a container",
     },
     {
       kind: "prose",
@@ -1158,9 +1152,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run -d --name web-preview nginx:alpine"
+      kind: "terminal-animation",
+      command: "docker container run -d --name web-preview nginx:alpine",
+      output: "d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2",
+      buttonLabel: "Run Detached",
+      caption: "Starting Nginx in the background",
     },
     {
       kind: "prose",
@@ -1170,9 +1166,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker ps"
+      kind: "terminal-animation",
+      command: "docker container ls",
+      output: "CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES\nd1e2f3a4b5c6   nginx:alpine   \"/docker-entrypoint.…\"   2 seconds ago   Up 1 second    80/tcp    web-preview",
+      buttonLabel: "Check Status",
+      caption: "Confirming the background container is running",
     },
     {
       kind: "prose",
@@ -1184,12 +1182,12 @@ const runningContainers: LessonContent = {
       kind: "prose",
       heading: "The Detached Trap",
       body: [
-        "If a background container fails silently on boot, `docker ps` won't tell you why because the container has already exited. To see what happened, you must check the container's logs."
+        "If a background container fails silently on boot, `docker container ls` won't tell you why because the container has already exited. To see what happened, you must check the container's logs."
       ]
     },
     {
       kind: "terminal-animation",
-      command: "docker logs web-preview",
+      command: "docker container logs web-preview",
       output: "2024/02/10 10:00:00 [notice] 1#1: using the \"epoll\" event method\n2024/02/10 10:00:00 [notice] 1#1: nginx/1.25.3\n2024/02/10 10:00:00 [notice] 1#1: OS: Linux 5.15.0-82-generic\n2024/02/10 10:00:00 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n2024/02/10 10:00:00 [notice] 1#1: start worker processes",
       buttonLabel: "View Logs",
       caption: "Checking logs for a detached container",
@@ -1203,9 +1201,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker rm -f web-preview"
+      kind: "terminal-animation",
+      command: "docker container rm -f web-preview",
+      output: "web-preview",
+      buttonLabel: "Remove",
+      caption: "Force removing the container",
     },
     {
       kind: "prose",
@@ -1214,9 +1214,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run -d -p 8080:80 --name web-preview nginx:alpine"
+      kind: "terminal-animation",
+      command: "docker container run -d -p 8080:80 --name web-preview nginx:alpine",
+      output: "b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6",
+      buttonLabel: "Run Port 8080",
+      caption: "Publishing a port to the host",
     },
     {
       kind: "prose",
@@ -1231,9 +1233,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run -d -p 8081:80 --name web-preview-alt nginx:alpine"
+      kind: "terminal-animation",
+      command: "docker container run -d -p 8081:80 --name web-preview-alt nginx:alpine",
+      output: "c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7",
+      buttonLabel: "Run Port 8081",
+      caption: "Publishing an alternate port",
     },
     {
       kind: "prose",
@@ -1254,10 +1258,10 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "docker run -d --name limited-nginx -m 512m --cpus 0.5 nginx",
+      command: "docker container run -d --name production-nginx -e ENV=prod --restart always -m 512m --cpus 0.5 nginx",
       output: "7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
       buttonLabel: "Run Limited",
-      caption: "Starting a container with resource limits",
+      caption: "Starting a container with resource limits and runtime configuration",
     },
     {
       kind: "prose",
@@ -1270,8 +1274,8 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "# 1. Start Nginx on the remote server (detached mode)\ndocker -H=10.123.2.1:2375 run -d --name remote-nginx nginx",
-      output: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n81b43e7a1eae: Pull complete\nDigest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce\nStatus: Downloaded newer image for nginx:latest\nc83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc\n\n$ # 2. Check local machine (It will be empty!)\n$ docker ps\nCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n\n$ # 3. Query the remote server using the -H flag to verify\n$ docker -H=10.123.2.1:2375 ps\nCONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES\nc83d5a21e49b   nginx     \"/docker-entrypoint.…\"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx",
+      command: "# 1. Start Nginx on the remote server (detached mode)\ndocker -H=10.123.2.1:2375 container run -d --name remote-nginx nginx",
+      output: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n81b43e7a1eae: Pull complete\nDigest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce\nStatus: Downloaded newer image for nginx:latest\nc83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc\n\n$ # 2. Check local machine (It will be empty!)\n$ docker container ls\nCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n\n$ # 3. Query the remote server using the -H flag to verify\n$ docker -H=10.123.2.1:2375 container ls\nCONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES\nc83d5a21e49b   nginx     \"/docker-entrypoint.…\"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx",
       buttonLabel: "Run Remote",
       caption: "Interacting with a remote Docker daemon",
     },
@@ -1283,9 +1287,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker rm -f web-preview"
+      kind: "terminal-animation",
+      command: "docker container rm -f web-preview",
+      output: "web-preview",
+      buttonLabel: "Clean Up",
+      caption: "Removing the test container",
     },
     {
       kind: "prose",
@@ -1294,9 +1300,11 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker rm -f web-preview-alt"
+      kind: "terminal-animation",
+      command: "docker container rm -f web-preview-alt",
+      output: "web-preview-alt",
+      buttonLabel: "Clean Up Alt",
+      caption: "Removing the alternate test container",
     },
     {
       kind: "prose",
@@ -1305,20 +1313,22 @@ const runningContainers: LessonContent = {
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker run --rm alpine echo \"hello from alpine\"\ndocker run --rm ubuntu:24.04 cat /etc/os-release\ndocker run -it --rm ubuntu bash\ndocker run -d -p 8080:80 --name practice-web nginx:alpine\ndocker rm -f practice-web"
+      kind: "terminal-animation",
+      command: "# Try these commands to test your understanding:\n",
+      output: "$ docker container run --rm alpine echo \"hello from alpine\"\nhello from alpine\n\n$ docker container run --rm ubuntu:24.04 cat /etc/os-release\nPRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\n\n$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# exit\nexit\n\n$ docker container run -d -p 8080:80 --name practice-web nginx:alpine\nb5c6d7e8f9a0b1c2d3e4f5a6b7\n\n$ docker container rm -f practice-web\npractice-web",
+      buttonLabel: "Run Practice",
+      caption: "Interactive practice session",
     },
     {
       kind: "prose",
       body: [
-        "If you understand those five examples, you understand the most practical uses of `docker run` in beginner Docker work."
+        "If you understand those five examples, you understand the most practical uses of `docker container run` in beginner Docker work."
       ]
     },
     {
       kind: "takeaways",
       items: [
-        "`docker run <image>` creates and starts a new container from an image.",
+        "`docker container run <image>` creates and starts a new container from an image.",
         "If the image is not stored locally, Docker pulls it first.",
         "A container stops when its main process exits.",
         "A command placed after the image name overrides the image's default command.",
@@ -1342,7 +1352,7 @@ const runningContainers: LessonContent = {
       questions: [
         {
           id: "running-containers-q1",
-          question: "What does `docker run <image>` do if the image is not already on your machine?",
+          question: "What does `docker container run <image>` do if the image is not already on your machine?",
           options: [
             "It returns an error and stops.",
             "It automatically pulls the image from a registry, then creates and starts the container.",
@@ -1354,7 +1364,7 @@ const runningContainers: LessonContent = {
         },
         {
           id: "running-containers-q2",
-          question: "Why did the container exit immediately when running `docker run ubuntu`?",
+          question: "Why did the container exit immediately when running `docker container run ubuntu`?",
           options: [
             "The Ubuntu image is corrupted.",
             "Containers only stay alive while their main process is running, and the default shell had no interactive terminal attached.",
@@ -1367,7 +1377,7 @@ const runningContainers: LessonContent = {
         {
           id: "running-containers-q3",
           question: "Write the command to run an `ubuntu` container, print `/etc/os-release`, and automatically remove the container after it exits.",
-          commandAnswer: "docker run --rm ubuntu cat /etc/os-release",
+          commandAnswer: "docker container run --rm ubuntu cat /etc/os-release",
           explanation: "The `--rm` flag tells Docker to clean up the container once it stops."
         },
         {
@@ -1385,7 +1395,7 @@ const runningContainers: LessonContent = {
         {
           id: "running-containers-q5",
           question: "Write the command to run `nginx:alpine` in the background (detached mode) with the name `web-preview`.",
-          commandAnswer: ["docker run -d --name web-preview nginx:alpine", "docker run --name web-preview -d nginx:alpine"],
+          commandAnswer: ["docker container run -d --name web-preview nginx:alpine", "docker container run --name web-preview -d nginx:alpine"],
           explanation: "The `-d` flag runs the container in detached mode, and `--name` assigns a custom name."
         },
         {
@@ -1403,7 +1413,7 @@ const runningContainers: LessonContent = {
         {
           id: "running-containers-q7",
           question: "Write the command to force remove a running container named `practice-web`.",
-          commandAnswer: ["docker rm -f practice-web", "docker container rm -f practice-web"],
+          commandAnswer: ["docker container rm -f practice-web", "docker container rm -f practice-web"],
           explanation: "The `-f` (force) flag allows you to remove a running container without stopping it first."
         }
       ]
