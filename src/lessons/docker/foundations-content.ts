@@ -2050,7 +2050,7 @@ const dockerRunCommands: LessonContent = {
 latest: Pulling from library/postgres
 Status: Downloaded newer image for postgres:latest`,
       buttonLabel: "Run Command",
-      caption: "Run with default latest tag",
+      caption: "Run with default latest tag (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2065,7 +2065,7 @@ Status: Downloaded newer image for postgres:latest`,
 13: Pulling from library/postgres
 Status: Downloaded newer image for postgres:13`,
       buttonLabel: "Run Command",
-      caption: "Run with a specific tag",
+      caption: "Run with a specific tag (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2096,7 +2096,7 @@ Status: Downloaded newer image for postgres:13`,
       command: "docker run StackBlueprint/name-prompt",
       output: `Hello, !`,
       buttonLabel: "Run Command",
-      caption: "Non-interactive run",
+      caption: "Non-interactive run (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2110,7 +2110,7 @@ Status: Downloaded newer image for postgres:13`,
       output: `$ Riya
 Hello, Riya!`,
       buttonLabel: "Run Command",
-      caption: "Running with just -i",
+      caption: "Running with just -i (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2124,7 +2124,7 @@ Hello, Riya!`,
       output: `Please tell me your name: Riya
 Hello, Riya!`,
       buttonLabel: "Run Command",
-      caption: "Running with -it",
+      caption: "Running with -it (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2144,7 +2144,7 @@ Hello, Riya!`,
       command: "docker run StackBlueprint/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Command",
-      caption: "Running a web app",
+      caption: "Running a web app (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2157,7 +2157,7 @@ Hello, Riya!`,
       command: "docker run -p 80:5000 StackBlueprint/simple-webapp",
       output: `* Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Command",
-      caption: "Publishing a port",
+      caption: "Publishing a port (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2174,7 +2174,7 @@ $ docker run -p 8000:5000 StackBlueprint/simple-webapp
 $ docker run -p 8001:5000 StackBlueprint/simple-webapp
 * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)`,
       buttonLabel: "Run Session",
-      caption: "Running multiple instances",
+      caption: "Running multiple instances (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2198,7 +2198,7 @@ notesdb
 $ docker rm notesdb
 notesdb`,
       buttonLabel: "Run Session",
-      caption: "Data disappears with the container",
+      caption: "Data disappears with the container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2211,7 +2211,7 @@ notesdb`,
       command: "docker run -v /opt/pgdata:/var/lib/postgresql/data postgres",
       output: `PostgreSQL Database Directory appears to contain a database; Skipping initialization...`,
       buttonLabel: "Run Command",
-      caption: "Mounting a volume",
+      caption: "Mounting a volume (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2246,7 +2246,7 @@ notesdb`,
     }
 ]`,
       buttonLabel: "Run Command",
-      caption: "Inspecting for IP address",
+      caption: "Inspecting for IP address (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2266,7 +2266,7 @@ notesdb`,
       command: "docker run -d -p 3000:3000 --name notes-api StackBlueprint/notes-api",
       output: `a1e6d9f27b3c4e5a1908f7c6b3a2d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c`,
       buttonLabel: "Run Command",
-      caption: "Running a detached container",
+      caption: "Running a detached container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2283,7 +2283,7 @@ $ docker logs notes-api
 Notes API listening on port 3000
 Connected to database`,
       buttonLabel: "Run Session",
-      caption: "Checking status and logs",
+      caption: "Checking status and logs (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2299,7 +2299,7 @@ Connected to database
 Request received: GET /notes
 Request received: POST /notes`,
       buttonLabel: "Run Command",
-      caption: "Following logs",
+      caption: "Following logs (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2314,7 +2314,7 @@ Request received: POST /notes`,
       output: `Notes API listening on port 3000
 Connected to database`,
       buttonLabel: "Run Command",
-      caption: "Attaching to a container",
+      caption: "Attaching to a container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2331,7 +2331,7 @@ Connected to database`,
 $ Ctrl+P Ctrl+Q
 read escape sequence`,
       buttonLabel: "Run Session",
-      caption: "Detaching safely",
+      caption: "Detaching safely (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -2345,7 +2345,7 @@ read escape sequence`,
       output: `CONTAINER ID   IMAGE                 COMMAND         CREATED         STATUS         PORTS      NAMES
 a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 minutes ago   Up 2 minutes   3000/tcp   notes-api`,
       buttonLabel: "Run Command",
-      caption: "Verifying container is still up",
+      caption: "Verifying container is still up (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
