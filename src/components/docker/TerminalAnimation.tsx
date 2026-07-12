@@ -101,7 +101,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
           <div className="flex">
             <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
             <span className="relative">
-              {highlightShell(currentCommand)}
+              {highlightShell(currentCommand, true)}
               <span
                 className={`absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 ${!isPlaying && charsTyped === 0 ? 'animate-pulse' : ''} ${charsTyped === totalChars ? 'hidden' : ''}`}
               />
@@ -127,7 +127,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
                   <div key={idx} className="flex mt-2">
                     <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">{promptMatch[1]}</span>
                     <span className="relative text-slate-100 dark:text-foreground/90">
-                      {highlightShell(typedText)}
+                      {highlightShell(typedText, true)}
                       {isTyping && (
                         <span className="absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50" />
                       )}
