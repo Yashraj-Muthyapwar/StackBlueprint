@@ -486,7 +486,7 @@ Status: Downloaded newer image for nginx:latest`,
     {
       "kind": "code",
       "language": "bash",
-      "code": "docker pull your-org/payment-service:2.3.1 # docker pull <Image Name>:<Tag>\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
+      "code": "# Syntax:\n# docker pull <Registry-or-Username>/<Image-Name>:<Tag>\n\n# Example:\ndocker pull stackblueprint/python-api:v1.0.0"
     },
     {
       kind: "prose",
@@ -809,8 +809,8 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
       rows: [
         ["`docker pull <image>`", "Downloads an image from a registry"],
         ["`docker images` / `docker image ls`", "Lists all images stored locally on your machine"],
-        ["`docker inspect <image <ID>>`", "Displays detailed configuration and metadata for an image"],
-        ["`docker history <image <ID>>`", "Shows the layers and commands used to build an image"]
+        ["`docker inspect <Image ID>`", "Displays detailed configuration and metadata for an image"],
+        ["`docker history <Image ID>`", "Shows the layers and commands used to build an image"]
       ]
     },
     {
