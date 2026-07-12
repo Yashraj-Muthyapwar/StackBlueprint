@@ -6,6 +6,7 @@ import multiStageBuildImg from "@/images/docker/images-and-containers/multi-stag
 import pullingImagesImg from "@/images/docker/images-and-containers/pulling-and-inspecting-images.png";
 import runningContainersImg from "@/images/docker/images-and-containers/docker-running-containers.png";
 import containerLifecycleImg from "@/images/docker/images-and-containers/master_the_container_lifecycle.png";
+import imgvsContainerImg from "@/images/docker/images-and-containers/images-vs-containers.png";
 
 const whatIsImage: LessonContent = {
   slug: "what-is-a-docker-image",
@@ -265,7 +266,20 @@ const whatIsImage: LessonContent = {
       heading: "The distinction that matters",
       body: [
         "A Docker image is immutable, reusable, and shared.",
-        "A Docker container is a running instance created from that image.",
+        "A Docker container is a running instance created from that image."
+      ]
+    },
+
+    {
+      kind: "image",
+      src: imgvsContainerImg,
+      alt: "Image vs Container",
+      caption: "Image vs Container",
+    },
+
+    {
+      kind: "prose",
+      body: [
         "In practice, you'll build an image occasionally, but you'll create, stop, remove, and recreate containers many times. That separation between an unchanging image and disposable containers is one of Docker's biggest strengths."
       ]
     },
@@ -1187,6 +1201,12 @@ const containerLifecycle: LessonContent = {
   subtitle: "docker create vs run, container states (ps -a), stop & restart, exit codes, --rm cleanup, and --restart policies.",
   sections: [
     {
+      kind: "image",
+      src: containerLifecycleImg,
+      alt: "Diagram showing container lifecycle states: created, running, paused, and exited",
+      caption: "The core states of a Docker container lifecycle",
+    },
+    {
       kind: "prose",
       heading: "The states you need to know",
       body: [
@@ -1194,10 +1214,9 @@ const containerLifecycle: LessonContent = {
       ]
     },
     {
-      kind: "image",
-      src: containerLifecycleImg,
-      alt: "Diagram showing container lifecycle states: created, running, paused, and exited",
-      caption: "The core states of a Docker container lifecycle",
+      kind: "code",
+      language: "text",
+      code: "created -> running -> exited\n              |\n            paused"
     },
     {
       kind: "prose",
