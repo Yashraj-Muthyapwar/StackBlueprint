@@ -701,9 +701,11 @@ What's next:
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker inspect --format='{{.Config.Cmd}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
+      kind: "terminal-animation",
+      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the default command\ndocker image inspect --format='{{.Config.Cmd}}' bcab099bfaab",
+      output: "[postgres]",
+      buttonLabel: "Run Command",
+      caption: "Reading default command (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -712,9 +714,11 @@ What's next:
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker inspect --format='{{.Os}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
+      kind: "terminal-animation",
+      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the Operating System\ndocker image inspect --format='{{.Os}}' bcab099bfaab",
+      output: "linux",
+      buttonLabel: "Run Command",
+      caption: "Reading operating system (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -723,9 +727,11 @@ What's next:
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker inspect --format='{{.Architecture}}' bcab099bfaab # docker inspect --format='<Template>' <Image ID>"
+      kind: "terminal-animation",
+      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the CPU Architecture\ndocker image inspect --format='{{.Architecture}}' bcab099bfaab",
+      output: "arm64",
+      buttonLabel: "Run Command",
+      caption: "Reading CPU architecture (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
