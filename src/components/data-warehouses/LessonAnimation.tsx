@@ -15,16 +15,18 @@ export function LessonAnimation({
   caption?: string;
 }) {
   return (
-    <figure className="relative overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
+    <figure className="relative overflow-hidden w-full max-w-full rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-mint/5 via-transparent to-transparent opacity-60 pointer-events-none" />
       {caption ? (
         <figcaption className="relative z-10 border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground bg-surface/50 backdrop-blur">
           {caption}
         </figcaption>
       ) : null}
-      <div className="relative z-10">
+      <div className="relative z-10 overflow-x-auto">
         <ClientOnly fallback={<div className="h-[360px] animate-pulse bg-surface-2/40" />}>
-          <AnimationStage variant={variant} />
+          <div className="w-full min-w-0">
+            <AnimationStage variant={variant} />
+          </div>
         </ClientOnly>
       </div>
     </figure>
