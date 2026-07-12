@@ -24,7 +24,7 @@ export function LessonAnimation({
       ) : null}
       <div className="relative z-10 overflow-x-auto">
         <ClientOnly fallback={<div className="h-[360px] animate-pulse bg-surface-2/40" />}>
-          <div className="min-w-[640px] md:min-w-0">
+          <div className="w-full min-w-0">
             <AnimationStage variant={variant} />
           </div>
         </ClientOnly>
