@@ -1,4 +1,4 @@
-import type { Row, Stage, StageStep, RowState, Tone } from "@/components/sql/MultiStage";
+import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
 import { Container, HardDrive, Server } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
