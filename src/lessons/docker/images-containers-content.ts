@@ -507,9 +507,33 @@ Status: Downloaded newer image for nginx:latest`,
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker pull postgres:15"
+      kind: "terminal-animation",
+      command: "docker pull postgres:15",
+      output: `15: Pulling from library/postgres
+02fb38419074: Pull complete 
+637cfd629adc: Pull complete 
+f135cbce02ee: Pull complete 
+f71c554003ad: Pull complete 
+4a07789739d1: Pull complete 
+1f311e7bf767: Pull complete 
+08c3b06ea11d: Pull complete 
+9a10bad9d287: Pull complete 
+07b8b7cb9076: Pull complete 
+2f1f0f30a994: Pull complete 
+1414a1aa0a9e: Pull complete 
+3be819c1c8cf: Pull complete 
+0e32887241a5: Pull complete 
+3a90f5bef7ca: Pull complete 
+82707ce10f85: Download complete 
+10113bcc19b5: Download complete 
+Digest: sha256:bcab099bfaab33333a73a2ebe8c1d615c9f4c2402dd43452f989a36c6da9a5ba
+Status: Downloaded newer image for postgres:15
+docker.io/library/postgres:15
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview postgres:15`,
+      buttonLabel: "Run Command",
+      caption: "Pulling a specific version (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -521,25 +545,24 @@ Status: Downloaded newer image for nginx:latest`,
       kind: "prose",
       heading: "Viewing your local images",
       body: [
-        "Once you've downloaded a few images, you can see everything stored on your machine with:"
+        "Once you've downloaded a few images, you can see everything stored on your machine with `docker images` or `docker image ls` :"
       ]
     },
     {
-      "kind": "code",
-      "language": "bash",
-      "code": "docker images\n\n# or\ndocker image ls"
+      kind: "terminal-animation",
+      command: "docker images",
+      output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
+postgres     15       f076c2fa35f5   15 months ago  300MB
+postgres     10.3     cbb7481ff9d5   4 years ago    232MB
+nginx        latest   605c77e624dd   2 months ago   141MB`,
+      buttonLabel: "Run Command",
+      caption: "Viewing local images (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
       body: [
-        "Both commands do exactly the same thing.",
-        "Example output:"
+        "You can also use `docker image ls` which does exactly the same thing."
       ]
-    },
-    {
-      kind: "code",
-      language: "text",
-      code: "REPOSITORY   TAG      IMAGE ID       CREATED        SIZE\npostgres     15       f076c2fa35f5   15 months ago  300MB\npostgres     10.3     cbb7481ff9d5   4 years ago    232MB\nnginx        latest   605c77e624dd   2 months ago   141MB"
     },
     {
       kind: "prose",
@@ -562,9 +585,28 @@ Status: Downloaded newer image for nginx:latest`,
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker inspect nginx"
+      kind: "terminal-animation",
+      command: "docker inspect nginx",
+      output: `[
+    {
+        "Id": "sha256:605c77e624ddb75e6110f997c58876baa13f8754486b461117934b24a9dc3a85",
+        "RepoTags": [
+            "nginx:latest"
+        ],
+        "Config": {
+            "ExposedPorts": {
+                "80/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NGINX_VERSION=1.25.3"
+            ]
+        }
+        ...
+    }
+]`,
+      buttonLabel: "Run Command",
+      caption: "Inspecting an image (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
