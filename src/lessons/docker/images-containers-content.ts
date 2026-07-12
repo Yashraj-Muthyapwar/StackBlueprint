@@ -1182,6 +1182,20 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
+      heading: "The Detached Trap",
+      body: [
+        "If a background container fails silently on boot, `docker ps` won't tell you why because the container has already exited. To see what happened, you must check the container's logs."
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker logs web-preview",
+      output: "2024/02/10 10:00:00 [notice] 1#1: using the \"epoll\" event method\n2024/02/10 10:00:00 [notice] 1#1: nginx/1.25.3\n2024/02/10 10:00:00 [notice] 1#1: OS: Linux 5.15.0-82-generic\n2024/02/10 10:00:00 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n2024/02/10 10:00:00 [notice] 1#1: start worker processes",
+      buttonLabel: "View Logs",
+      caption: "Checking logs for a detached container",
+    },
+    {
+      kind: "prose",
       heading: "Use -p to reach the container from your machine",
       body: [
         "Even though Nginx is running, your browser still cannot reach it yet because the web server is listening on port 80 inside the container, not directly on your computer.",
@@ -1227,6 +1241,39 @@ const runningContainers: LessonContent = {
         "Then open:",
         "`http://localhost:8081`"
       ]
+    },
+    {
+      kind: "prose",
+      heading: "Going Beyond the Basics: Production Flags",
+      body: [
+        "In real working environments, you will use several key flags to configure containers for production:",
+        "• **Environment Variables (`-e`)**: Inject runtime configurations like database URLs or API keys without hardcoding them in the image.",
+        "• **Restart Policies (`--restart`)**: Ensure a container self-heals if it crashes or if the server reboots (e.g., `--restart always`).",
+        "• **Resource Limits (`-m` and `--cpus`)**: In a shared working environment, an unconstrained container can experience a memory leak and crash the entire host machine. You can explicitly allocate maximum memory and CPU."
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run -d --name limited-nginx -m 512m --cpus 0.5 nginx",
+      output: "7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
+      buttonLabel: "Run Limited",
+      caption: "Starting a container with resource limits",
+    },
+    {
+      kind: "prose",
+      heading: "Real-World Architecture Note",
+      body: [
+        "In enterprise environments, the Docker daemon often isn't running on your local machine.",
+        "• **The `-H` (or `--host`) Flag**: Developers use this to target remote staging or production daemons over secure channels (e.g., `docker -H ssh://user@remote-ip run...`).",
+        "• **Docker Contexts**: Typing `-H` repeatedly is tedious, so in modern environments, teams use `docker context` to save and toggle between remote server endpoints cleanly."
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "# 1. Start Nginx on the remote server (detached mode)\ndocker -H=10.123.2.1:2375 run -d --name remote-nginx nginx",
+      output: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n81b43e7a1eae: Pull complete\nDigest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce\nStatus: Downloaded newer image for nginx:latest\nc83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc\n\n$ # 2. Check local machine (It will be empty!)\n$ docker ps\nCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n\n$ # 3. Query the remote server using the -H flag to verify\n$ docker -H=10.123.2.1:2375 ps\nCONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES\nc83d5a21e49b   nginx     \"/docker-entrypoint.…\"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx",
+      buttonLabel: "Run Remote",
+      caption: "Interacting with a remote Docker daemon",
     },
     {
       kind: "prose",
