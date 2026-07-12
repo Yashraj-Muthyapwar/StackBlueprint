@@ -799,13 +799,13 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
     },
     {
       kind: "diagram",
-      ascii: "docker pull\n      │\n      ▼\ndocker images\n      │\n      ▼\ndocker inspect\n      │\n      ▼\ndocker run",
+      ascii: "docker search\n      │\n      ▼\ndocker pull\n      │\n      ▼\ndocker images\n      │\n      ▼\ndocker inspect\n      │\n      ▼\ndocker run",
       caption: "Common Docker image workflow"
     },
     {
       kind: "prose",
       body: [
-        "Download the image, verify that you have the correct version, inspect its configuration if needed, and then create a container."
+        "Search for an image, download it, verify that you have the correct version, inspect its configuration if needed, and then create a container."
       ]
     },
     {
@@ -813,6 +813,7 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
       caption: "Command Cheatsheet",
       headers: ["Command", "Description"],
       rows: [
+        ["`docker search <term>`", "Searches Docker Hub for public images"],
         ["`docker pull <image>`", "Downloads an image from a registry"],
         ["`docker images` / `docker image ls`", "Lists all images stored locally on your machine"],
         ["`docker inspect <Image ID>`", "Displays detailed configuration and metadata for an image"],
