@@ -1397,8 +1397,7 @@ boot  etc  lib   mnt    proc  run   srv   tmp  var
 
 root@2be2b4cc1d2c:/# exit
 exit
-
-$`,
+`,
       caption: "Interactive mode",
       buttonLabel: "Launch Ubuntu",
     },
@@ -1412,10 +1411,18 @@ $`,
       command: "docker run -d -p 8080:80 --name my-nginx nginx",
       output: `Unable to find image 'nginx:latest' locally
 latest: Pulling from library/nginx
-afc163c2a36d: Pull complete
-digest: sha256:98f0e8b5b6c06a8f3b7f6a7d2e8d4d8b0c8c0f2c7c8d0a7f6a5b4e3c2d1f0a9b
+81b43e7a1eae: Pull complete 
+5d1f91636239: Pull complete 
+63e237f10cf6: Pull complete 
+74e33773ee42: Pull complete 
+3be819c1c8cf: Pull complete 
+41103e2ff54e: Pull complete 
+75e5e08234c9: Pull complete 
+8c0925824bff: Download complete 
+dd2ea61022d9: Download complete 
+Digest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce
 Status: Downloaded newer image for nginx:latest
-8b3c2c5d8e1a4f9e2b7c8d6a1e5f3b9c7a2d1e0f6b5c4a3d2e1f0a9b8c7d6e5f4`,
+b904c9ea8942622d6fb3980c28db4e86db07465ca7aafc6b3bcbbdb3306df4d7`,
       caption: "docker run, for real this time",
       buttonLabel: "Run Nginx",
     },
