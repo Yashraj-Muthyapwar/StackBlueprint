@@ -394,24 +394,59 @@ const pullingImages: LessonContent = {
       body: [
         "automatically downloads the image if it doesn't already exist on your machine.",
         "Docker first checks your local image cache. If the image isn't found, it downloads the image and then starts the container.",
-        "Sometimes, however, you may want to download an image without running it. That's exactly what `docker pull` does."
+        "Before pulling an image, you might want to search Docker Hub to see what's available. The `docker search` command lets you do exactly that from your terminal:"
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker pull nginx"
+      kind: "terminal-animation",
+      command: "docker search nginx",
+      output: `NAME                                     DESCRIPTION                                     STARS     OFFICIAL
+nginx                                    Official build of Nginx.                        21333     [OK]
+nginx/nginx-ingress                      NGINX and  NGINX Plus Ingress Controllers fo…   121       
+nginx/nginx-prometheus-exporter          NGINX Prometheus Exporter for NGINX and NGIN…   52        
+nginx/nginx-ingress-operator             NGINX Ingress Operator for NGINX and NGINX P…   4         
+nginx/nginxaas-loadbalancer-kubernetes                                                   1         
+bitnamicharts/nginx                      Bitnami Helm chart for NGINX Open Source        4         
+ubuntu/nginx                             Nginx, a high-performance reverse proxy & we…   141       
+kasmweb/nginx                            An Nginx image based off nginx:alpine and in…   9         
+rancher/nginx                                                                            4         
+linuxserver/nginx                        An Nginx container, brought to you by LinuxS…   236       
+dtagdevsec/nginx                         T-Pot Nginx                                     0         
+paketobuildpacks/nginx                                                                   0         
+vmware/nginx                                                                             3         
+gluufederation/nginx                      A customized NGINX image containing a consu…   1         
+cleanstart/nginx                         Secure by Design, Built for Speed, Hardened …   0         
+antrea/nginx                             Nginx server used for Antrea e2e testing        0         
+activestate/nginx                        ActiveState's customizable, low-to-no vulner…   0         
+intel/nginx                                                                              0         
+docksal/nginx                            Nginx service image for Docksal                 1         
+geokrety/nginx                           Our customized nginx image                      0         
+circleci/nginx                           This image is for internal use                  2         
+ilios/nginx                              Nginx customized to run Ilios along with the…   0         
+corpusops/nginx                          https://github.com/corpusops/docker-images/     1         
+wayofdev/nginx                           Nginx Docker image for PHP development. SSL-…   0         
+dockette/nginx                           Nginx SSL / HSTS / HTTP2                        3`,
+      buttonLabel: "Run Command",
+      caption: "Searching for images (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
       body: [
-        "Example output:"
+        "Once you've found what you need, you might want to download an image without running it yet. That's exactly what \`docker pull\` does:"
       ]
     },
     {
-      kind: "code",
-      language: "text",
-      code: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n\nfc7181108d40: Pull complete\nd2e987ca2267: Pull complete\n0b760b431b11: Pull complete\n\nDigest: sha256:96fb261b66270b900ea5a2c17a26abbfabe95506e73c3a3c65869a6dbe83223a\nStatus: Downloaded newer image for nginx:latest"
+      kind: "terminal-animation",
+      command: "docker pull nginx",
+      output: `Using default tag: latest
+latest: Pulling from library/nginx
+fc7181108d40: Pull complete
+d2e987ca2267: Pull complete
+0b760b431b11: Pull complete
+Digest: sha256:96fb261b66270b900ea5a2c17a26abbfabe95506e73c3a3c65869a6dbe83223a
+Status: Downloaded newer image for nginx:latest`,
+      buttonLabel: "Run Command",
+      caption: "Pulling an image (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
