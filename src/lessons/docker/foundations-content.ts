@@ -444,12 +444,48 @@ const dockerArchitecture: LessonContent = {
         "This is your entry point. When you open your terminal and type commands like `docker run`, `docker build`, or `docker ps`, you are talking directly to the CLI. It does not actually build or run containers itself; it simply translates your human commands into a structured API request and shoots it over `/var/run/docker.sock` to the Docker daemon. *(Note: This socket is Linux/macOS specific; on Windows, the CLI talks to dockerd over a named pipe).*",
         "Because of this separation, the CLI and the daemon do not even need to be on the same machine. Docker can expose its API remotely, letting external tools and automation systems control the daemon from anywhere.",
         "For example, if you want to start a web server on a completely different machine across your network, you can just point your local CLI to that remote host using the **`-H` flag**.",
+        "Let's start Nginx on the remote server (in detached mode so we keep control of our terminal):",
       ],
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "# Point the CLI to a remote daemon on port 2375 and start Nginx\ndocker -H=10.123.2.1:2375 run nginx",
+      kind: "terminal-animation",
+      command: "docker -H=10.123.2.1:2375 run -d --name remote-nginx nginx",
+      output: `Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+81b43e7a1eae: Pull complete 
+Digest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce
+Status: Downloaded newer image for nginx:latest
+c83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc`,
+      buttonLabel: "Run Command",
+      caption: "Start remote container (Note: Your output may vary based on your system.)",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now check your local machine. It will be completely empty!",
+      ],
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker ps",
+      output: `IMAGE          ID             DISK USAGE     CONTENT SIZE   STATUS
+(No containers running locally)`,
+      buttonLabel: "Run Command",
+      caption: "Check local containers (Note: Your output may vary based on your system.)",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Query the remote server using the `-H` flag to verify it's running there:",
+      ],
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker -H=10.123.2.1:2375 ps",
+      output: `CONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES
+c83d5a21e49b   nginx     "/docker-entrypoint.…"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx`,
+      buttonLabel: "Run Command",
+      caption: "Check remote containers (Note: Your output may vary based on your system.)",
     },
     {
       kind: "callout",
@@ -574,13 +610,40 @@ const dockerArchitecture: LessonContent = {
       body: [
         "• **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
         "You can tap into these control groups directly from your terminal by passing specific flags to cap how much juice a container is allowed to sip.",
-        "For example, you can easily restrict a process to half a CPU core and a strict 100 megabyte memory limit:",
+        "For example, you can easily restrict a process to half a CPU core. Cap this container to 50% of a single CPU core:",
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "# Cap this container to 50% of a single CPU core\ndocker run --cpus=0.5 ubuntu\n\n# Restrict this container to a maximum of 100 megabytes of memory\ndocker run --memory=100m ubuntu",
+      kind: "terminal-animation",
+      command: "docker run --cpus=0.5 ubuntu",
+      output: `Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+b2b4144bf869: Pull complete 
+ade0b5cbf7f1: Pull complete 
+8cf892a939dd: Download complete 
+Digest: sha256:b7f48194d4d8b763a478a621cdc81c27be222ba2206ca3ca6bc42b49685f3d9e
+Status: Downloaded newer image for ubuntu:latest`,
+      buttonLabel: "Run Command",
+      caption: "Cap CPU usage (Note: Your output may vary based on your system.)",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Or restrict this container to a maximum of 100 megabytes of memory:",
+      ]
+    },
+    {
+      kind: "terminal-animation",
+      command: "docker run --memory=100m ubuntu",
+      output: `Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+b2b4144bf869: Pull complete 
+ade0b5cbf7f1: Pull complete 
+8cf892a939dd: Download complete 
+Digest: sha256:b7f48194d4d8b763a478a621cdc81c27be222ba2206ca3ca6bc42b49685f3d9e
+Status: Downloaded newer image for ubuntu:latest`,
+      buttonLabel: "Run Command",
+      caption: "Restrict memory usage (Note: Your output may vary based on your system.)",
     },
     {
       kind: "image",
