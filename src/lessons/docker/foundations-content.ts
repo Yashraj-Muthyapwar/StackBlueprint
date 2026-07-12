@@ -671,6 +671,21 @@ const dockerArchitecture: LessonContent = {
       kind: "docker-run-under-the-hood",
     },
     {
+      kind: "callout",
+      tone: "success",
+      title: "The power of decoupled architecture",
+      body: "Docker's split architecture isn't just an implementation detail. It's what allows containers to be incredibly stable, fast, and interoperable with the wider container ecosystem.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`dockerd` is the high-level manager you talk to; it doesn't run containers itself.",
+        "`containerd` manages the lifecycle of the container and handles images.",
+        "`containerd-shim` keeps the container alive even if the main Docker daemon crashes or updates.",
+        "`runc` is the low-level worker that actually creates the container, then immediately exits.",
+      ],
+    },
+    {
       kind: "quiz",
       questions: [
         {
@@ -1237,6 +1252,30 @@ ls: cannot access 'my-app': No such file or directory
       kind: "prose",
       body: [
         "You'll use these commands frequently when writing Dockerfiles or debugging inside running containers. Memorize them!",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Understanding Ports",
+      body: [
+        "Since we are going to be connecting to containers and running web servers, you need to understand **ports**. If an IP address (like `127.0.0.1` or `localhost`) is the street address of an apartment building, a port is the specific apartment number.",
+        "There are 65,535 possible ports on any given computer. When a web server starts up, it usually \"listens\" on port 80 (for HTTP) or 443 (for HTTPS). When you run a database, it might listen on port 5432. The first 1024 ports are considered \"privileged\" and usually require admin rights to bind to on a traditional Linux system.",
+        "When we run Docker containers later, we will frequently \"map\" a port from our host machine to a port inside the container. This acts like a mailroom forwarding traffic from the building's main entrance to the specific container's apartment."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "The terminal is your primary tool",
+      body: "Docker is designed to be automated and scripted. Graphical interfaces are great for monitoring, but the terminal is where you'll build, run, and debug containers.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Use `ls`, `cd`, and `pwd` to navigate the file system and confirm where you are.",
+        "Use `cat`, `grep`, and `tail` to read, search, and monitor files (especially logs).",
+        "Use `rm`, `rmdir`, and `mkdir` to manage files and folders.",
+        "Ports are like apartment numbers that determine which specific application receives network traffic."
       ],
     },
     {
