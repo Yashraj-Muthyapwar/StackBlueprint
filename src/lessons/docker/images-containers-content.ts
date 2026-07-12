@@ -387,7 +387,7 @@ const pullingImages: LessonContent = {
     {
       kind: "code",
       language: "bash",
-      code: "# docker run <Image Name>\ndocker run nginx"
+      code: "docker run nginx # docker run <Image Name>"
     },
     {
       kind: "prose",
@@ -399,7 +399,7 @@ const pullingImages: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "# docker search <Term>\ndocker search nginx",
+      command: "docker search nginx # docker search <Term>",
       output: `NAME                                     DESCRIPTION                                     STARS     OFFICIAL
 nginx                                    Official build of Nginx.                        21333     [OK]
 nginx/nginx-ingress                      NGINX and  NGINX Plus Ingress Controllers fo…   121       
@@ -437,7 +437,7 @@ dockette/nginx                           Nginx SSL / HSTS / HTTP2               
     },
     {
       kind: "terminal-animation",
-      command: "# docker pull <Image Name>\ndocker pull nginx",
+      command: "docker pull nginx # docker pull <Image Name>",
       output: `Using default tag: latest
 latest: Pulling from library/nginx
 fc7181108d40: Pull complete
@@ -486,7 +486,7 @@ Status: Downloaded newer image for nginx:latest`,
     {
       "kind": "code",
       "language": "bash",
-      "code": "# docker pull <Image Name>:<Tag>\ndocker pull your-org/payment-service:2.3.1\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
+      "code": "docker pull your-org/payment-service:2.3.1 # docker pull <Image Name>:<Tag>\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
     },
     {
       kind: "prose",
@@ -508,7 +508,7 @@ Status: Downloaded newer image for nginx:latest`,
     },
     {
       kind: "terminal-animation",
-      command: "# docker pull <Image Name>:<Tag>\ndocker pull postgres:15",
+      command: "docker pull postgres:15 # docker pull <Image Name>:<Tag>",
       output: `15: Pulling from library/postgres
 02fb38419074: Pull complete 
 637cfd629adc: Pull complete 
@@ -550,7 +550,7 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "# docker images [OPTIONS] [REPOSITORY[:TAG]]\ndocker images\n// Note: 'docker image ls' works too!",
+      command: "docker images # docker images [OPTIONS] [REPOSITORY[:TAG]]\n// Note: 'docker image ls' works too!",
       output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
     postgres     15       f076c2fa35f5   15 months ago  300MB
     postgres     10.3     cbb7481ff9d5   4 years ago    232MB
@@ -586,7 +586,7 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "# docker image inspect <Image ID>\ndocker image inspect bcab099bfaab",
+      command: "docker image inspect bcab099bfaab # docker image inspect <Image ID>",
       output: `[
     {
         "Id": "sha256:bcab099bfaab33333a73a2ebe8c1d615c9f4c2402dd43452f989a36c6da9a5ba",
@@ -674,7 +674,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "# Use the dedicated command:\n# docker image inspect <Image ID or Name>\ndocker image inspect postgres:15\n\n# Or explicitly declare the type:\n# docker inspect --type=image <Image ID or Name>\ndocker inspect --type=image postgres:15"
+      code: "docker image inspect postgres:15 # docker image inspect <Image ID or Name>\n\n# Or explicitly declare the type:\ndocker inspect --type=image postgres:15"
     },
     {
       kind: "prose",
@@ -703,7 +703,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Config.Cmd}}' postgres:15"
+      code: "docker inspect --format='{{.Config.Cmd}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
     },
     {
       kind: "prose",
@@ -714,7 +714,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Os}}' postgres:15"
+      code: "docker inspect --format='{{.Os}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
     },
     {
       kind: "prose",
@@ -725,7 +725,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Architecture}}' postgres:15"
+      code: "docker inspect --format='{{.Architecture}}' postgres:15 # docker inspect --format='<Template>' <Image Name or ID>"
     },
     {
       kind: "prose",
@@ -743,7 +743,7 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "# docker history <Image Name or ID>\ndocker history postgres:15",
+      command: "docker history postgres:15 # docker history <Image Name or ID>",
       output: `IMAGE          CREATED       CREATED BY                                      SIZE      COMMENT
 bcab099bfaab   5 days ago    CMD ["postgres"]                                0B        buildkit.dockerfile.v0
 <missing>      5 days ago    EXPOSE map[5432/tcp:{}]                         0B        buildkit.dockerfile.v0
