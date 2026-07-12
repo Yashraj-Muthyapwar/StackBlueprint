@@ -1,4 +1,4 @@
-import type { Row, Stage, StageStep, RowState, Tone } from "@/components/sql/MultiStage";
+import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
 
 /**
  * Declarative stage registry for all SQL animation variants.
