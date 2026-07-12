@@ -361,14 +361,102 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "Data Ecosystems",
         slug: "data-ecosystems",
+        path: "/data-warehouses/foundations/data-ecosystems",
         blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
-        lessons: [], // Populated by foundations-content.ts in actual routes
+        lessons: [
+          {
+            title: "The Journey of Data",
+            slug: "data-journey",
+            path: "/data-warehouses/foundations/data-ecosystems/data-journey",
+            icon: Activity,
+          },
+          {
+            title: "OLTP vs. OLAP",
+            slug: "oltp-vs-olap",
+            path: "/data-warehouses/foundations/data-ecosystems/oltp-vs-olap",
+            icon: ArrowLeftRight,
+          },
+          {
+            title: "Storing Analytical Data",
+            slug: "analytical-storage",
+            path: "/data-warehouses/foundations/data-ecosystems/analytical-storage",
+            icon: Database,
+          },
+          {
+            title: "Organizing the Landscape",
+            slug: "organizing-data",
+            path: "/data-warehouses/foundations/data-ecosystems/organizing-data",
+            icon: Boxes,
+          },
+          {
+            title: "Database Engines",
+            slug: "database-engines",
+            path: "/data-warehouses/foundations/data-ecosystems/database-engines",
+            icon: Server,
+          },
+          {
+            title: "Modern Data Warehouses",
+            slug: "data-warehouses",
+            path: "/data-warehouses/foundations/data-ecosystems/data-warehouses",
+            icon: Cloud,
+          },
+        ],
       },
       {
         title: "Data Formats & Storage",
         slug: "data-formats",
+        path: "/data-warehouses/foundations/data-formats",
         blurb: "Understanding how data is stored, compressed, and managed at scale.",
-        lessons: [], // Populated by foundations-content.ts in actual routes
+        lessons: [
+          {
+            title: "Human-Readable Formats",
+            slug: "human-readable",
+            path: "/data-warehouses/foundations/data-formats/human-readable",
+            icon: FileCode,
+          },
+          {
+            title: "Row vs. Columnar",
+            slug: "columnar-formats",
+            path: "/data-warehouses/foundations/data-formats/columnar-formats",
+            icon: SquareStack,
+          },
+          {
+            title: "Open Table Formats",
+            slug: "open-table-formats",
+            path: "/data-warehouses/foundations/data-formats/open-table-formats",
+            icon: Layers,
+          },
+          {
+            title: "Block, File & Object",
+            slug: "storage-types",
+            path: "/data-warehouses/foundations/data-formats/storage-types",
+            icon: Container,
+          },
+          {
+            title: "Cloud Object Storage",
+            slug: "cloud-storage",
+            path: "/data-warehouses/foundations/data-formats/cloud-storage",
+            icon: Cloud,
+          },
+          {
+            title: "Distributed File Systems",
+            slug: "distributed-file-systems",
+            path: "/data-warehouses/foundations/data-formats/distributed-file-systems",
+            icon: Server,
+          },
+          {
+            title: "Data Compression",
+            slug: "data-compression",
+            path: "/data-warehouses/foundations/data-formats/data-compression",
+            icon: Hash,
+          },
+          {
+            title: "In-Memory Storage",
+            slug: "in-memory-storage",
+            path: "/data-warehouses/foundations/data-formats/in-memory-storage",
+            icon: Activity,
+          },
+        ],
       },
       lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
       lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
