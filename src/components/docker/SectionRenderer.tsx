@@ -18,12 +18,15 @@ export function highlightShell(line: string, isTerminal?: boolean) {
   while (i < line.length) {
     const ch = line[i];
     if (ch === "#") {
+      const newlineIdx = line.indexOf("\n", i);
+      const end = newlineIdx === -1 ? line.length : newlineIdx;
       nodes.push(
         <span key={key++} className={isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"}>
-          {line.slice(i)}
+          {line.slice(i, end)}
         </span>,
       );
-      break;
+      i = end;
+      continue;
     }
     if (ch === "$") {
       nodes.push(
