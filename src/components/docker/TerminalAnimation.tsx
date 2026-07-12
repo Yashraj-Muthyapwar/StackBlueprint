@@ -27,22 +27,26 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
       return () => window.clearTimeout(id);
     } else if (charsTyped === totalChars && outputLinesShown < totalOutputLines) {
       const currentLine = outputLines[outputLinesShown] || "";
-      const isCommand = currentLine.startsWith("$");
+      const promptMatch = currentLine.match(/^(\$|root@[\w]+:\/#)\s*/);
+      const isCommand = promptMatch !== null;
 
-      if (isCommand && outputLineCharsTyped < currentLine.length) {
-        // Typing effect for commands in the output
-        const id = window.setTimeout(() => {
-          setOutputLineCharsTyped((c) => c + 1);
-        }, Math.random() * 20 + 30);
-        return () => window.clearTimeout(id);
+      if (isCommand) {
+        const commandText = currentLine.slice(promptMatch[0].length);
+        if (outputLineCharsTyped < commandText.length) {
+          // Typing effect for commands in the output
+          const id = window.setTimeout(() => {
+            setOutputLineCharsTyped((c) => c + 1);
+          }, Math.random() * 20 + 30);
+          return () => window.clearTimeout(id);
+        }
       }
 
       const isPulling = currentLine.toLowerCase().includes("pull") || currentLine.toLowerCase().includes("download");
       const isStep = currentLine.startsWith("Step");
       const isComment = currentLine.trim().startsWith("#");
-      
+
       // Calculate a realistic delay
-      let delay = Math.random() * 40 + 20; // fast default
+      let delay = Math.random() * 20 + 30; // fast default
       if (outputLinesShown === 0) delay = 400; // Initial delay before output
       else if (isPulling) delay = Math.random() * 400 + 300; // Network operations take time
       else if (isStep) delay = 800; // Emulate a step taking time
@@ -98,45 +102,44 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
             <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
             <span className="relative">
               {highlightShell(currentCommand)}
-              <span 
+              <span
                 className={`absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 ${!isPlaying && charsTyped === 0 ? 'animate-pulse' : ''} ${charsTyped === totalChars ? 'hidden' : ''}`}
               />
             </span>
           </div>
         </pre>
-        
+
         {charsTyped === totalChars && (
           <div className="mt-2 font-mono leading-relaxed text-slate-300 dark:text-foreground/80 overflow-x-auto whitespace-pre-wrap text-[12.5px] flex flex-col">
             {outputLines.slice(0, outputLinesShown + 1).map((line, idx) => {
               if (idx === totalOutputLines) return null;
-              
-              const isCommand = line.startsWith("$");
+
+              const promptMatch = line.match(/^(\$|root@[\w]+:\/#)\s*/);
+              const isCommand = promptMatch !== null;
               const isCurrentLine = idx === outputLinesShown;
-              
-              const text = (isCurrentLine && isCommand) 
-                ? line.slice(0, outputLineCharsTyped) 
-                : line;
-                
+
               if (isCommand) {
-                const stripped = text.replace(/^\$\s*/, "");
-                const isTyping = isCurrentLine && outputLineCharsTyped < line.length;
+                const commandText = line.slice(promptMatch[0].length);
+                const isTyping = isCurrentLine && outputLineCharsTyped < commandText.length;
+                const typedText = isCurrentLine ? commandText.slice(0, outputLineCharsTyped) : commandText;
+
                 return (
                   <div key={idx} className="flex mt-2">
-                    <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
+                    <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">{promptMatch[1]}</span>
                     <span className="relative text-slate-100 dark:text-foreground/90">
-                      {highlightShell(stripped)}
+                      {highlightShell(typedText)}
                       {isTyping && (
-                         <span className="absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50" />
+                        <span className="absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50" />
                       )}
                     </span>
                   </div>
                 );
               }
-              
+
               return (
                 <div key={idx} className="min-h-[1.5em] relative">
-                  {text}
-                  {isCurrentLine && !isCommand && !isDone && (
+                  {line}
+                  {isCurrentLine && !isDone && (
                     <span className="inline-block h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 align-middle -mt-1 ml-1" />
                   )}
                 </div>
