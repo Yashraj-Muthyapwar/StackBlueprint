@@ -11,7 +11,7 @@ import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.
 import normalizationImg from "@/images/sql/foundations/database_normalization.png";
 import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
-import { type QuizQuestion } from "@/components/sql/Quiz";
+import { type QuizQuestion } from "@/components/lesson/Quiz";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
