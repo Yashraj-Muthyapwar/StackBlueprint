@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Play, RotateCcw } from "lucide-react";
 import { highlightShell } from "./SectionRenderer";
 import type { Section } from "@/lessons/types";
@@ -11,7 +11,24 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
   const [outputLinesShown, setOutputLinesShown] = useState(0);
   const [outputLineCharsTyped, setOutputLineCharsTyped] = useState(0);
 
-  const totalChars = section.command.length;
+  const [staticComments, actualCommand] = useMemo(() => {
+    const lines = section.command.split('\n');
+    const staticCommentLines: string[] = [];
+    let commandLines: string[] = [];
+    let foundCommand = false;
+    
+    for (const line of lines) {
+      if (!foundCommand && (line.trim() === '' || line.trim().startsWith('#'))) {
+        staticCommentLines.push(line);
+      } else {
+        foundCommand = true;
+        commandLines.push(line);
+      }
+    }
+    return [staticCommentLines, commandLines.join('\n')];
+  }, [section.command]);
+
+  const totalChars = actualCommand.length;
   // Normalize newlines and remove trailing empty lines to avoid awkward pauses
   const outputLines = section.output.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
   const totalOutputLines = outputLines.length;
@@ -73,7 +90,7 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
     }
   };
 
-  const currentCommand = section.command.slice(0, charsTyped);
+  const currentCommand = actualCommand.slice(0, charsTyped);
 
   return (
     <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
@@ -98,15 +115,26 @@ export function TerminalAnimation({ section }: { section: TerminalSection }) {
       </div>
       <div className="min-h-[140px] p-4 text-[13px] bg-slate-900 dark:bg-transparent">
         <pre className="font-mono leading-relaxed text-slate-100 dark:text-foreground/90">
-          <div className="flex">
-            <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
-            <span className="relative">
-              {highlightShell(currentCommand, true)}
-              <span
-                className={`absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 ${!isPlaying && charsTyped === 0 ? 'animate-pulse' : ''} ${charsTyped === totalChars ? 'hidden' : ''}`}
-              />
-            </span>
-          </div>
+          {staticComments.length > 0 && (
+            <div className="mb-2">
+              {staticComments.map((line, idx) => (
+                <div key={idx} className="min-h-[1.5em]">
+                  {highlightShell(line, true)}
+                </div>
+              ))}
+            </div>
+          )}
+          {actualCommand.length > 0 && (
+            <div className="flex">
+              <span className="mr-4 inline-block select-none text-slate-500 dark:text-muted-foreground/50">$</span>
+              <span className="relative">
+                {highlightShell(currentCommand, true)}
+                <span
+                  className={`absolute -right-2.5 top-0.5 h-[1.1em] w-1.5 bg-slate-400 dark:bg-foreground/50 ${!isPlaying && charsTyped === 0 ? 'animate-pulse' : ''} ${charsTyped === totalChars ? 'hidden' : ''}`}
+                />
+              </span>
+            </div>
+          )}
         </pre>
 
         {charsTyped === totalChars && (
