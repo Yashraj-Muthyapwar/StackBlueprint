@@ -6,7 +6,7 @@ import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
 import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 
-export function highlightShell(line: string) {
+export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
     "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
     "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
@@ -19,7 +19,7 @@ export function highlightShell(line: string) {
     const ch = line[i];
     if (ch === "#") {
       nodes.push(
-        <span key={key++} className="text-muted-foreground/70">
+        <span key={key++} className={isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"}>
           {line.slice(i)}
         </span>,
       );
@@ -240,7 +240,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                   <span className="mr-4 inline-block w-6 shrink-0 select-none text-right text-muted-foreground/50">
                     {i + 1}
                   </span>
-                  <span className="text-foreground/90">{highlightShell(line)}</span>
+                  <span className="text-foreground/90">{highlightShell(line, false)}</span>
                 </div>
               ))}
             </code>
