@@ -452,7 +452,8 @@ Status: Downloaded newer image for nginx:latest`,
       kind: "prose",
       body: [
         "Each hash represents one image layer being downloaded. These are the same read-only layers you learned about in the previous lesson.",
-        "If you already have the latest version of an image on your machine, running `docker pull` again usually downloads nothing. Docker compares the layers you already have with those available in the registry and downloads only what is missing or has changed."
+        "If you already have the latest version of an image on your machine, running `docker pull` again usually downloads nothing. Docker compares the layers you already have with those available in the registry and downloads only what is missing or has changed.",
+        "However, tags like `:latest` are mutable. If a developer pushes a new build to `:latest` on Docker Hub, running `docker pull` will actually pull down the new layers. In this way, `docker pull` acts as an update mechanism to ensure you have the absolute newest version of that tag."
       ]
     },
     {
@@ -564,6 +565,17 @@ Status: Downloaded newer image for nginx:latest`,
       kind: "code",
       language: "bash",
       code: "docker inspect nginx"
+    },
+    {
+      kind: "prose",
+      body: [
+        "**A crucial note on inspect:** `docker inspect` works on containers, images, volumes, and networks. If you accidentally name a container the exact same thing as an image (e.g., a container named `nginx` running the `nginx` image), Docker might return the container's data instead of the image's data. To prevent bugs, it is a best practice to explicitly declare the type:"
+      ]
+    },
+    {
+      kind: "code",
+      language: "bash",
+      code: "# Use the dedicated command:\ndocker image inspect nginx\n\n# Or explicitly declare the type:\ndocker inspect --type=image nginx"
     },
     {
       kind: "prose",
