@@ -387,7 +387,7 @@ const pullingImages: LessonContent = {
     {
       kind: "code",
       language: "bash",
-      code: "docker run nginx"
+      code: "# docker run <Image Name>\ndocker run nginx"
     },
     {
       kind: "prose",
@@ -399,7 +399,7 @@ const pullingImages: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "docker search nginx",
+      command: "# docker search <Term>\ndocker search nginx",
       output: `NAME                                     DESCRIPTION                                     STARS     OFFICIAL
 nginx                                    Official build of Nginx.                        21333     [OK]
 nginx/nginx-ingress                      NGINX and  NGINX Plus Ingress Controllers fo…   121       
@@ -437,7 +437,7 @@ dockette/nginx                           Nginx SSL / HSTS / HTTP2               
     },
     {
       kind: "terminal-animation",
-      command: "docker pull nginx",
+      command: "# docker pull <Image Name>\ndocker pull nginx",
       output: `Using default tag: latest
 latest: Pulling from library/nginx
 fc7181108d40: Pull complete
@@ -486,7 +486,7 @@ Status: Downloaded newer image for nginx:latest`,
     {
       "kind": "code",
       "language": "bash",
-      "code": "docker pull your-org/payment-service:2.3.1\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
+      "code": "# docker pull <Image Name>:<Tag>\ndocker pull your-org/payment-service:2.3.1\n\n# Or, using a hypothetical example:\ndocker pull stackblueprint/python-api:v1.0.0"
     },
     {
       kind: "prose",
@@ -508,7 +508,7 @@ Status: Downloaded newer image for nginx:latest`,
     },
     {
       kind: "terminal-animation",
-      command: "docker pull postgres:15",
+      command: "# docker pull <Image Name>:<Tag>\ndocker pull postgres:15",
       output: `15: Pulling from library/postgres
 02fb38419074: Pull complete 
 637cfd629adc: Pull complete 
@@ -550,7 +550,7 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "docker images\n# you can use 'docker image ls' as well",
+      command: "# docker images [OPTIONS] [REPOSITORY[:TAG]]\ndocker images\n// Note: 'docker image ls' works too!",
       output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
     postgres     15       f076c2fa35f5   15 months ago  300MB
     postgres     10.3     cbb7481ff9d5   4 years ago    232MB
@@ -586,23 +586,79 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "docker inspect nginx",
+      command: "# docker image inspect <Image ID>\ndocker image inspect bcab099bfaab",
       output: `[
     {
-        "Id": "sha256:605c77e624ddb75e6110f997c58876baa13f8754486b461117934b24a9dc3a85",
+        "Id": "sha256:bcab099bfaab33333a73a2ebe8c1d615c9f4c2402dd43452f989a36c6da9a5ba",
         "RepoTags": [
-            "nginx:latest"
+            "postgres:15"
         ],
+        "RepoDigests": [
+            "postgres@sha256:bcab099bfaab33333a73a2ebe8c1d615c9f4c2402dd43452f989a36c6da9a5ba"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-07-07T17:45:35.101677635Z",
         "Config": {
             "ExposedPorts": {
-                "80/tcp": {}
+                "5432/tcp": {}
             },
             "Env": [
-                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-                "NGINX_VERSION=1.25.3"
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/15/bin",
+                "GOSU_VERSION=1.19",
+                "LANG=en_US.utf8",
+                "PG_MAJOR=15",
+                "PG_VERSION=15.18-1.pgdg13+1",
+                "PGDATA=/var/lib/postgresql/data"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "postgres"
+            ],
+            "Volumes": {
+                "/var/lib/postgresql/data": {}
+            },
+            "StopSignal": "SIGINT"
+        },
+        "Architecture": "arm64",
+        "Variant": "v8",
+        "Os": "linux",
+        "Size": 156739851,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:221f7a7e2aa9a3dc4a14beca97f5dada40cf6915886474e7840e3b44c2b24f1a",
+                "sha256:bfa0544e4f97c8e2d79cf4fbfe88296880cb34d6d9203b5b53afbff5655c996b",
+                "sha256:fe587ed48a657a8e91c92ddff78e862c8285c8dc22d1ac8ae9e7e099873da98f",
+                "sha256:ad8aa2ca7d7d59d435121eea0157839fde884fedbe337316804006c9ed1ef2d8",
+                "sha256:842275195bc2c79aa1831f6f0b970c0996d28766576e07e005a419104d927114",
+                "sha256:f6d1ce2fa0d4241218c592fc0266cdfbfd187b523d19cdaf224cb4c908e0540b",
+                "sha256:9d8e26ac08c9205d8c6cd3d752da55a1c5d15562d6c6c366698d82ddbcf01796",
+                "sha256:f9985e794474284841dd7f836419b16d1594aa55639fa9ae1bc2dde42183c315",
+                "sha256:52eca1ca2038a539da6415724df044f683bbe29708c89c1c0e1865daa4e8e3e6",
+                "sha256:81e5cab7107ec07295bd554cbbe8e7991ef3eff141d4bea5d85cefc88ad0ed92",
+                "sha256:826b19d0801452c844d0168495b55e62916866cb6513e1e794df59e6b966ddb8",
+                "sha256:07deeb3d22b3d08ec14774fb6b4d0a361c42812f53532c6d9b12a5825b083550",
+                "sha256:c0976c87df6132dab180c242aafd2a9985221b833a5aaaa080b2d258dd1567d2",
+                "sha256:a585e45ecc20a43e5ff757e49db8952729127fbed71bfb8419b719627f71b947"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-07-12T16:54:43.120741049Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:bcab099bfaab33333a73a2ebe8c1d615c9f4c2402dd43452f989a36c6da9a5ba",
+            "size": 10237
+        },
+        "Identity": {
+            "Pull": [
+                {
+                    "Repository": "docker.io/library/postgres"
+                }
             ]
         }
-        ...
     }
 ]`,
       buttonLabel: "Run Command",
@@ -611,13 +667,14 @@ What's next:
     {
       kind: "prose",
       body: [
-        "**A crucial note on inspect:** `docker inspect` works on containers, images, volumes, and networks. If you accidentally name a container the exact same thing as an image (e.g., a container named `nginx` running the `nginx` image), Docker might return the container's data instead of the image's data. To prevent bugs, it is a best practice to explicitly declare the type:"
+        "**A crucial note on inspect:** `docker inspect` works on containers, images, volumes, and networks. If you accidentally name a container the exact same thing as an image, Docker might return the container's data instead of the image's data.",
+        "As shown above, using `docker image inspect` prevents bugs because you are explicitly declaring the type. Alternatively, you can explicitly declare the type with a flag:"
       ]
     },
     {
       kind: "code",
       language: "bash",
-      code: "# Use the dedicated command:\ndocker image inspect nginx\n\n# Or explicitly declare the type:\ndocker inspect --type=image nginx"
+      code: "# Use the dedicated command:\n# docker image inspect <Image ID or Name>\ndocker image inspect postgres:15\n\n# Or explicitly declare the type:\n# docker inspect --type=image <Image ID or Name>\ndocker inspect --type=image postgres:15"
     },
     {
       kind: "prose",
@@ -646,7 +703,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Config.Cmd}}' nginx"
+      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Config.Cmd}}' postgres:15"
     },
     {
       kind: "prose",
@@ -657,7 +714,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Os}}' nginx"
+      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Os}}' postgres:15"
     },
     {
       kind: "prose",
@@ -668,7 +725,7 @@ What's next:
     {
       kind: "code",
       language: "bash",
-      code: "docker inspect --format='{{.Architecture}}' nginx"
+      code: "# docker inspect --format='<Template>' <Image Name or ID>\ndocker inspect --format='{{.Architecture}}' postgres:15"
     },
     {
       kind: "prose",
@@ -685,20 +742,36 @@ What's next:
       ]
     },
     {
-      kind: "code",
-      language: "bash",
-      code: "docker history nginx"
-    },
-    {
-      kind: "prose",
-      body: [
-        "Example output:"
-      ]
-    },
-    {
-      kind: "code",
-      language: "text",
-      code: "IMAGE          CREATED        CREATED BY                                  SIZE\n605c77e624dd   2 months ago   CMD [\"nginx\" \"-g\" \"daemon off;\"]             0B\n<missing>      2 months ago   EXPOSE 80/tcp                                0B\n<missing>      2 months ago   COPY docker-entrypoint.sh /                  1.2kB"
+      kind: "terminal-animation",
+      command: "# docker history <Image Name or ID>\ndocker history postgres:15",
+      output: `IMAGE          CREATED       CREATED BY                                      SIZE      COMMENT
+bcab099bfaab   5 days ago    CMD ["postgres"]                                0B        buildkit.dockerfile.v0
+<missing>      5 days ago    EXPOSE map[5432/tcp:{}]                         0B        buildkit.dockerfile.v0
+<missing>      5 days ago    STOPSIGNAL SIGINT                               0B        buildkit.dockerfile.v0
+<missing>      5 days ago    ENTRYPOINT ["docker-entrypoint.sh"]             0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c ln -sT docker-ensure-initdb.s…   16.4kB    buildkit.dockerfile.v0
+<missing>      5 days ago    COPY docker-entrypoint.sh docker-ensure-init…   36.9kB    buildkit.dockerfile.v0
+<missing>      5 days ago    VOLUME [/var/lib/postgresql/data]               0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c install --verbose --directory…   20.5kB    buildkit.dockerfile.v0
+<missing>      5 days ago    ENV PGDATA=/var/lib/postgresql/data             0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c install --verbose --directory…   12.3kB    buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -eux;  dpkg-divert --add …   106kB     buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -ex;   export PYTHONDONTW…   329MB     buildkit.dockerfile.v0
+<missing>      5 days ago    ENV PG_VERSION=15.18-1.pgdg13+1                 0B        buildkit.dockerfile.v0
+<missing>      5 days ago    ENV PATH=/usr/local/sbin:/usr/local/bin:/usr…   0B        buildkit.dockerfile.v0
+<missing>      5 days ago    ENV PG_MAJOR=15                                 0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -ex;  key='B97B0AFCAA1A47…   24.6kB    buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c mkdir /docker-entrypoint-init…   8.19kB    buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -eux;  apt-get update;  a…   3.75MB    buildkit.dockerfile.v0
+<missing>      5 days ago    ENV LANG=en_US.utf8                             0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -eux;  if [ -f /etc/dpkg/…   27.3MB    buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -eux;  savedAptMark="$(ap…   3.8MB     buildkit.dockerfile.v0
+<missing>      5 days ago    ENV GOSU_VERSION=1.19                           0B        buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -ex;  apt-get update;  ap…   17.9MB    buildkit.dockerfile.v0
+<missing>      5 days ago    RUN /bin/sh -c set -eux;  groupadd -r postgr…   53.2kB    buildkit.dockerfile.v0
+<missing>      2 weeks ago   # debian.sh --arch 'arm64' out/ 'trixie' '@1…   109MB     debuerreotype 0.17`,
+      buttonLabel: "Run Command",
+      caption: "Viewing an image's history (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
