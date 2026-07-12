@@ -1370,25 +1370,35 @@ For more examples and ideas, visit:
       command: "docker run -it ubuntu bash",
       output: `Unable to find image 'ubuntu:latest' locally
 latest: Pulling from library/ubuntu
-8c208920155b: Pull complete 
-Digest: sha256:d89408b0672e811c00222a7f5a6bfa9f1ed73e970a6c62cdaef3ce010f6991ee
+ade0b5cbf7f1: Pull complete 
+b2b4144bf869: Pull complete 
+8cf892a939dd: Download complete 
+Digest: sha256:b7f48194d4d8b763a478a621cdc81c27be222ba2206ca3ca6bc42b49685f3d9e
 Status: Downloaded newer image for ubuntu:latest
 
-root@a1b2c3d4e5f6:/# cat /etc/os-release
-PRETTY_NAME="Ubuntu 24.04 LTS"
+root@2be2b4cc1d2c:/# cat /etc/os-release
+PRETTY_NAME="Ubuntu 26.04 LTS"
 NAME="Ubuntu"
-VERSION_ID="24.04"
+VERSION_ID="26.04"
+VERSION="26.04 LTS (Resolute Raccoon)"
+VERSION_CODENAME=resolute
+ID=ubuntu
+ID_LIKE=debian
+HOME_URL="https://www.ubuntu.com/"
+SUPPORT_URL="https://help.ubuntu.com/"
+BUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"
+PRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"
+UBUNTU_CODENAME=resolute
+LOGO=ubuntu-logo
 
-root@a1b2c3d4e5f6:/# ls /
-bin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var
+root@2be2b4cc1d2c:/# ls /
+bin   dev  home  media  opt   root  sbin  sys  usr
+boot  etc  lib   mnt    proc  run   srv   tmp  var
 
-root@a1b2c3d4e5f6:/# apt-get update && apt-get install -y curl
-Get:1 http://archive.ubuntu.com/ubuntu noble InRelease [256 kB]
-Get:2 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
-Fetched 382 kB in 1s (439 kB/s)
-Reading package lists... Done
+root@2be2b4cc1d2c:/# exit
+exit
 
-root@a1b2c3d4e5f6:/# exit`,
+$`,
       caption: "Interactive mode",
       buttonLabel: "Launch Ubuntu",
     },
@@ -1456,8 +1466,8 @@ Status: Downloaded newer image for nginx:latest
           id: "first-container-cmd-3",
           question: "Run an Nginx container in the background, mapping port 8080 on your host to port 80 inside the container.",
           commandAnswer: [
-            "docker run -d -p 8080:80 nginx", 
-            "docker run -p 8080:80 -d nginx", 
+            "docker run -d -p 8080:80 nginx",
+            "docker run -p 8080:80 -d nginx",
             "docker run -dp 8080:80 nginx",
             "docker run -pd 8080:80 nginx"
           ],
