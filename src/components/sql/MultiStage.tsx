@@ -143,7 +143,7 @@ export function QueryBlock({ lines, activeLines = [] }: { lines: string[]; activ
       <div className="border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
         query
       </div>
-      <pre className="m-0 px-3 py-2 font-mono text-[12.5px] leading-relaxed">
+      <pre className="m-0 px-3 py-2 font-mono text-[12.5px] leading-relaxed whitespace-pre-wrap break-words">
         {lines.map((ln, i) => {
           const active = activeLines.includes(i);
           return (
@@ -274,9 +274,9 @@ function StageBanner({
 }) {
   const s = stages[stageIdx];
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/40 px-3 py-2 shadow-sm">
-      <div className="flex items-center gap-2">
-        <span className="rounded-md bg-violet/15 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-violet">
+    <div className="flex flex-col gap-2 rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/40 px-3 py-2 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="shrink-0 rounded-md bg-violet/15 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-violet">
           Concept {stageIdx + 1} / {stages.length}
         </span>
         <span className="font-mono text-[13px] text-foreground/90">{s.name}</span>
@@ -309,8 +309,8 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
   return (
     <div className="grid gap-3">
       <StageBanner stages={stages} stageIdx={stageIdx} />
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-        <div className="space-y-3">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] min-w-0">
+        <div className="space-y-3 min-w-0">
           <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
           {isDual ? (
             <DualPanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
