@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, Info, X, Copy, Check } from "lucide-react"
 import { LessonAnimation } from "@/components/docker/LessonAnimation";
 import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
 import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
-import { Quiz } from "@/components/sql/Quiz";
+import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 
 export function highlightShell(line: string) {
