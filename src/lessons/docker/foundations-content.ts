@@ -1388,7 +1388,7 @@ Share images, automate workflows, and more with a free Docker ID:
 For more examples and ideas, visit:
  https://docs.docker.com/get-started/`,
       buttonLabel: "Run Command",
-      caption: "Your first container",
+      caption: "Your first container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1443,7 +1443,7 @@ boot  etc  lib   mnt    proc  run   srv   tmp  var
 root@2be2b4cc1d2c:/# exit
 exit
 `,
-      caption: "Interactive mode",
+      caption: "Interactive mode (Note: Your output may vary based on your system.)",
       buttonLabel: "Launch Ubuntu",
     },
     {
@@ -1468,7 +1468,7 @@ dd2ea61022d9: Download complete
 Digest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce
 Status: Downloaded newer image for nginx:latest
 b904c9ea8942622d6fb3980c28db4e86db07465ca7aafc6b3bcbbdb3306df4d7`,
-      caption: "docker run, for real this time",
+      caption: "docker run, for real this time (Note: Your output may vary based on your system.)",
       buttonLabel: "Run Nginx",
     },
     {
@@ -1558,16 +1558,34 @@ const basicDockerCommands: LessonContent = {
       kind: "terminal-animation",
       command: "docker version",
       output: `Client:
- Version:           27.3.1
- API version:       1.47
- Go version:        go1.22.7
+ Version:           29.6.1
+ API version:       1.55
+ Go version:        go1.26.4
+ Git commit:        8900f1d
+ Built:             Fri Jun 26 11:39:35 2026
+ OS/Arch:           darwin/arm64
+ Context:           desktop-linux
 
-Server:
+Server: Docker Desktop 4.81.0 (232925)
  Engine:
-  Version:          27.3.1
-  API version:      1.47 (minimum version 1.24)`,
+  Version:          29.6.1
+  API version:      1.55 (minimum version 1.40)
+  Go version:       go1.26.4
+  Git commit:       8ec5ab3
+  Built:            Fri Jun 26 11:39:58 2026
+  OS/Arch:          linux/arm64
+  Experimental:     false
+ containerd:
+  Version:          v2.2.5
+  GitCommit:        e53c7c1516c3b2bff98eb76f1f4117477e6f4e66
+ runc:
+  Version:          1.3.6
+  GitCommit:        v1.3.6-0-g491b69ba
+ docker-init:
+  Version:          0.19.0
+  GitCommit:        de40ad0`,
       buttonLabel: "Run Command",
-      caption: "Check Docker version",
+      caption: "Check Docker version (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1578,17 +1596,110 @@ Server:
     {
       kind: "terminal-animation",
       command: "docker info",
-      output: `Containers: 4
- Running: 1
- Paused: 0
- Stopped: 3
-Images: 6
-Server Version: 27.3.1
-Storage Driver: overlay2
-CPUs: 8
-Total Memory: 15.6GiB`,
+      output: `Client:
+ Version:    29.6.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  agent: Docker AI Agent Runner (Docker Inc.)
+    Version:  v1.88.1
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-agent
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.27.0
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.35.0-desktop.2
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v5.2.0
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.47
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.4.1
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-desktop
+  dhi: CLI for managing Docker Hardened Images (Docker Inc.)
+    Version:  v0.0.5
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-dhi
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.43.1
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.2.5
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.6.7
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.1.5
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-pass
+  sandbox: "docker sandbox" is deprecated, use Docker Sandboxes instead (Docker Inc.)
+    Version:  v0.13.0
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-sandbox
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.22.0
+    Path:     /Users/stackblueprint/.docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 29.6.1
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: e53c7c1516c3b2bff98eb76f1f4117477e6f4e66
+ runc version: v1.3.6-0-g491b69ba
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.12.76-linuxkit
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: aarch64
+ CPUs: 8
+ Total Memory: 7.75GiB
+ Name: docker-desktop
+ ID: a1b2c3d4-e5f6-4789-abcd-ef1234567890
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///Users/stackblueprint/Library/Containers/com.docker.docker/Data/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false`,
       buttonLabel: "Run Command",
-      caption: "Check Docker info",
+      caption: "Check Docker info (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1612,7 +1723,7 @@ a2abf6c4d29d: Pull complete
 c7b6944d7cb3: Pull complete
 Status: Downloaded newer image for httpd:latest`,
       buttonLabel: "Run Command",
-      caption: "Start a container",
+      caption: "Start a container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1634,7 +1745,7 @@ Status: Downloaded newer image for httpd:latest`,
       output: `CONTAINER ID   IMAGE   COMMAND              CREATED         STATUS         PORTS     NAMES
 7f2a19b3c9e1   httpd   "httpd-foreground"   5 seconds ago   Up 4 seconds   80/tcp    eager_lovelace`,
       buttonLabel: "Run Command",
-      caption: "List running containers",
+      caption: "List running containers (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1649,7 +1760,7 @@ Status: Downloaded newer image for httpd:latest`,
 7f2a19b3c9e1   httpd     "httpd-foreground"    5 seconds ago    Up 4 seconds                 eager_lovelace
 b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 minutes ago     quirky_borg`,
       buttonLabel: "Run Command",
-      caption: "List all containers",
+      caption: "List all containers (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1669,7 +1780,7 @@ b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 min
       command: "docker stop eager_lovelace",
       output: `eager_lovelace`,
       buttonLabel: "Run Command",
-      caption: "Stop a container",
+      caption: "Stop a container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1685,7 +1796,7 @@ $ docker ps -a
 CONTAINER ID   IMAGE     COMMAND               CREATED          STATUS                       NAMES
 b118cc02a94f   alpine    "/bin/sh"             3 minutes ago    Exited (0) 3 minutes ago     quirky_borg`,
       buttonLabel: "Run Session",
-      caption: "Remove a container",
+      caption: "Remove a container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1703,12 +1814,12 @@ b118cc02a94f   alpine    "/bin/sh"             3 minutes ago    Exited (0) 3 min
     {
       kind: "terminal-animation",
       command: "docker images",
-      output: `REPOSITORY   TAG       IMAGE ID       CREATED         SIZE
-httpd        latest    3b4b6a4dfb00   3 days ago      166MB
-alpine       latest    3fd9065eaf02   18 months ago   4.14MB
-postgres     latest    d3a0a4c0e5c4   6 months ago    412MB`,
+      output: `IMAGE                      ID             DISK USAGE   CONTENT SIZE   STATUS
+postgres:latest            d3a0a4c0e5c4      412.3MB        138.2MB   Unused
+httpd:latest               3b4b6a4dfb00      165.8MB         54.1MB   Unused
+alpine:latest              3fd9065eaf02        4.14MB         2.10MB   Unused`,
       buttonLabel: "Run Command",
-      caption: "List images",
+      caption: "List images (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1721,10 +1832,17 @@ postgres     latest    d3a0a4c0e5c4   6 months ago    412MB`,
       command: "docker pull alpine",
       output: `Using default tag: latest
 latest: Pulling from library/alpine
-c158987b0551: Pull complete
-Status: Downloaded newer image for alpine:latest`,
+5de55e5ef9c0: Pull complete 
+df8ce8557afe: Download complete 
+aa3ec251a2db: Download complete 
+Digest: sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+Status: Downloaded newer image for alpine:latest
+docker.io/library/alpine:latest
+
+What's next:
+    View a summary of image vulnerabilities and recommendations → docker scout quickview alpine`,
       buttonLabel: "Run Command",
-      caption: "Pull an image",
+      caption: "Pull an image (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1738,7 +1856,7 @@ Status: Downloaded newer image for alpine:latest`,
       output: `Untagged: alpine:latest
 Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`,
       buttonLabel: "Run Command",
-      caption: "Remove an image",
+      caption: "Remove an image (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1773,7 +1891,7 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
     }
 ]`,
       buttonLabel: "Run Command",
-      caption: "Inspect a container",
+      caption: "Inspect a container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1794,7 +1912,7 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
       output: `[Thu Jul 04 10:02:11.2026] AH00558: httpd: Could not reliably determine the server's fully qualified domain name
 [Thu Jul 04 10:02:11.2026] [mpm_event:notice] AH00489: Apache/2.4 configured, resuming normal operations`,
       buttonLabel: "Run Command",
-      caption: "View logs",
+      caption: "View logs (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
@@ -1810,7 +1928,7 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
 [Thu Jul 04 10:02:11.2026] [mpm_event:notice] AH00489: Apache/2.4 configured, resuming normal operations
 172.17.0.1 - - [04/Jul/2026:10:02:45 +0000] "GET / HTTP/1.1" 200 45`,
       buttonLabel: "Run Command",
-      caption: "Follow logs",
+      caption: "Follow logs (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
