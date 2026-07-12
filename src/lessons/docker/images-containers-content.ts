@@ -550,11 +550,11 @@ What's next:
     },
     {
       kind: "terminal-animation",
-      command: "docker images",
+      command: "docker images\n# you can use 'docker image ls' as well",
       output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
-postgres     15       f076c2fa35f5   15 months ago  300MB
-postgres     10.3     cbb7481ff9d5   4 years ago    232MB
-nginx        latest   605c77e624dd   2 months ago   141MB`,
+    postgres     15       f076c2fa35f5   15 months ago  300MB
+    postgres     10.3     cbb7481ff9d5   4 years ago    232MB
+    nginx        latest   605c77e624dd   2 months ago   141MB`,
       buttonLabel: "Run Command",
       caption: "Viewing local images (Note: Your output may vary based on your system.)",
     },
