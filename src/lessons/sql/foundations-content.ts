@@ -24,6 +24,7 @@ export type Section =
     title: string;
     body: string;
   }
+  | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
   | {
@@ -1345,6 +1346,183 @@ WHERE state = 'TX';`,
   ],
 };
 
+const dbmsExplained: LessonContent = {
+  slug: "what-is-a-dbms",
+  title: "What is a DBMS?",
+  subtitle:
+    "Learn how database software stores, protects, and retrieves data safely.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "The Software Behind a Database",
+      body: [
+        "In the previous lesson, you learned that a database stores organized data. But applications do not usually manage the raw data files themselves.",
+        "Instead, they communicate with a **Database Management System (DBMS)**: software that sits between applications and the stored data.",
+      ],
+    },
+    {
+      kind: "analogy",
+      title: "Think of a Library",
+      text: "The books in storage are the database. The librarian is the DBMS: it finds books, keeps records organized, controls who can borrow them, and makes sure many people can use the library without creating chaos.",
+    },
+    {
+      kind: "prose",
+      heading: "Database vs. DBMS",
+      body: [
+        "A **database** is the organized collection of data: customers, orders, products, payments, and more.",
+        "A **DBMS** is the software that manages that data. PostgreSQL, MySQL, SQLite, MongoDB, and SQL Server are examples of DBMS software.",
+        "Your application sends requests to the DBMS. The DBMS decides how to safely read or change the underlying data.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "How Applications Work with Data",
+      headers: ["Layer", "Example", "Responsibility"],
+      rows: [
+        [
+          "Application",
+          "Website, mobile app, dashboard",
+          "Requests or displays data",
+        ],
+        [
+          "DBMS",
+          "PostgreSQL, MySQL, SQLite",
+          "Manages queries, rules, security, and safe updates",
+        ],
+        [
+          "Database storage",
+          "Tables, indexes, logs, files",
+          "Stores the actual data",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What Does a DBMS Do?",
+      body: [
+        "A DBMS handles the difficult work that every application would otherwise need to build for itself:",
+        "• **Stores and retrieves data:** It saves data efficiently and finds it when you need it.",
+        "• **Understands structure:** It keeps track of tables, columns, data types, and relationships. This structure is called the schema.",
+        "• **Processes queries:** You state what data you want, and the DBMS figures out how to retrieve it.",
+        "• **Enforces rules:** It can prevent invalid data, such as an order without a customer or a duplicate email address.",
+        "• **Controls access:** It decides who can read, add, change, or delete data.",
+        "• **Coordinates multiple users:** It prevents simultaneous updates from overwriting each other.",
+        "• **Recovers from failures:** It helps keep committed data safe if a server crashes or an operation fails halfway through.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Queries: Tell It What You Need",
+      body: [
+        "One of the DBMS's most important jobs is processing queries. With SQL, you describe the result you want instead of writing the low-level steps to find it.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      code: `SELECT customer_name, email
+FROM customers
+WHERE state = 'TX';`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "The DBMS checks that the table and columns exist, chooses an efficient way to find matching rows, and returns the result. You say *what* you need; the DBMS handles *how* to retrieve it.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Keeping Changes Safe with Transactions",
+      body: [
+        "Some actions involve several related changes. For example, transferring money means subtracting from one account and adding to another.",
+        "A DBMS can treat those changes as a **transaction**: either every step succeeds, or none of the changes are kept. This prevents situations where money leaves one account but never reaches the other.",
+        "You will explore transactions, concurrency, and recovery in depth later. For now, remember that the DBMS is responsible for making important changes safe.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Common DBMS Products",
+      body: [
+        "You will see different DBMS products in real projects. They have different strengths, but they solve the same core problem: managing data reliably.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Common Database Management Systems",
+      headers: ["DBMS", "Common use"],
+      rows: [
+        ["PostgreSQL", "Feature-rich relational database for applications and analytics"],
+        ["MySQL", "Popular relational database for web applications"],
+        ["SQLite", "Lightweight database stored in a single application file"],
+        ["MongoDB", "Document-based database for flexible data structures"],
+        ["Snowflake / BigQuery", "Cloud platforms for large-scale analytics"],
+      ],
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A database is the data; a DBMS is the software that manages that data.",
+        "The DBMS sits between applications and stored data.",
+        "It handles queries, structure, rules, security, concurrent users, and recovery.",
+        "A transaction helps ensure a group of related changes either all succeed or all fail.",
+        "PostgreSQL, MySQL, SQLite, and MongoDB are examples of DBMS products.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "What is a DBMS?",
+          options: [
+            "A collection of raw data files.",
+            "Software that manages a database.",
+            "A programming language used only for websites.",
+            "A type of spreadsheet.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A DBMS is software that stores, retrieves, protects, and manages database data.",
+        },
+        {
+          id: "q2",
+          question: "Which task is handled by a DBMS?",
+          options: [
+            "Designing the visual layout of a website.",
+            "Managing simultaneous updates from multiple users.",
+            "Writing social-media posts.",
+            "Replacing every application server.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A DBMS coordinates concurrent access so users do not accidentally overwrite each other's changes.",
+        },
+        {
+          id: "q3",
+          question: "What does a transaction help guarantee?",
+          options: [
+            "Every query runs instantly.",
+            "A group of related changes succeeds or fails together.",
+            "Every user can access every table.",
+            "All data is stored in one spreadsheet.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Transactions prevent partial updates when an important multi-step operation fails.",
+        },
+        {
+          id: "q4",
+          question: "Which is an example of DBMS software?",
+          options: ["PostgreSQL", "HTML", "Excel formula", "CSS"],
+          correctIndex: 0,
+          explanation:
+            "PostgreSQL is a database management system.",
+        },
+      ],
+    },
+  ],
+};
+
 const dbUnderTheHood: LessonContent = {
   slug: "db-under-the-hood",
   title: "How Databases Work Under the Hood",
@@ -2423,7 +2601,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+    lessons: [dbWhatIs, dbmsExplained, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
