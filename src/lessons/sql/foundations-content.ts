@@ -1190,6 +1190,24 @@ const dbWhatIs: LessonContent = {
     },
     {
       kind: "prose",
+      heading: "The Core Components",
+      body: [
+        "A database system has a few important parts working together:",
+        "• **Data:** The actual facts being stored, such as names, prices, dates, and orders.",
+        "• **DBMS:** The software that stores, retrieves, protects, and manages the data. Examples include PostgreSQL, MySQL, MongoDB, and SQLite.",
+        "• **Schema:** The blueprint for how data is organized, including tables, columns, data types, and relationships.",
+        "• **Query language:** A way to ask the database for data. SQL is the most common example.",
+        "• **Hardware or cloud infrastructure:** The servers, storage, and memory where the database runs.",
+      ],
+    },
+    {
+      kind: "image",
+      src: databasecomponentsImg,
+      alt: "Core components of a database system",
+      caption: "The main parts of a database system",
+    },
+    {
+      kind: "prose",
       heading: "Asking Questions with SQL",
       body: [
         "With a flat file, finding all customers in Texas could require writing code to open the file, read every line, and manually check each value. With a relational database, you can state what you want:",
