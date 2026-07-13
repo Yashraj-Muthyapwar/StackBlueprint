@@ -130,6 +130,7 @@ export type Section =
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
+  | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
   | { kind: "animation"; variant: string; caption?: string }
