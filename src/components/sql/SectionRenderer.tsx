@@ -1,5 +1,5 @@
 import type { Section } from "@/lessons/sql/foundations-content";
-import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
 import { Quiz } from "@/components/lesson/Quiz";
 
@@ -251,6 +251,19 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "animation":
       return <LessonAnimation variant={section.variant} caption={section.caption} />;
+
+    case "analogy":
+      return (
+        <section className="rounded-xl border border-violet/30 bg-violet/5 p-5 shadow-sm">
+          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-violet">
+            <Brain className="size-5 text-amber" />
+            Analogy: {section.title}
+          </p>
+          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
+            {parseInlineMarkdown(section.text)}
+          </p>
+        </section>
+      );
 
     case "takeaways":
       return (
