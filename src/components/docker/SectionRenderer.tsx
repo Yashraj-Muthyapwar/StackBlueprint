@@ -1,5 +1,5 @@
 import type { Section } from "@/lessons/docker/foundations-content";
-import { AlertTriangle, CheckCircle2, Info, X, Copy, Check } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, X, Copy, Check, Brain } from "lucide-react";
 import { LessonAnimation } from "@/components/docker/LessonAnimation";
 import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
 import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
@@ -378,6 +378,19 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         <div className="my-8">
           <DockerRunUnderTheHood />
         </div>
+      );
+
+    case "analogy":
+      return (
+        <section className="rounded-xl border border-violet/30 bg-violet/5 p-5 shadow-sm">
+          <p className="flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-violet">
+            <Brain className="size-5 text-amber" />
+            Analogy: {section.title}
+          </p>
+          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
+            {parseInlineMarkdown(section.text)}
+          </p>
+        </section>
       );
 
     case "takeaways":
