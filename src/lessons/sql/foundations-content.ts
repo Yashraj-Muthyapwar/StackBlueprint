@@ -11,6 +11,7 @@ import foreignKeysImg from "@/images/sql/foundations/foreign_keys_relationships.
 import normalizationImg from "@/images/sql/foundations/database_normalization.png";
 import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
+import filesVsDatabasesImg from "@/images/sql/foundations/files-vs-databases.png";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 
 export type Section =
@@ -1138,78 +1139,119 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
 };
 const dbWhatIs: LessonContent = {
   slug: "what-is-database",
-  title: "What is a Database?",
-  subtitle: "Data storage, core components, and how databases scale beyond simple spreadsheets.",
+  title: "What Is a Database?",
+  subtitle:
+    "Understand data, information, and why databases replaced scattered files.",
   sections: [
     {
       kind: "prose",
-      heading: "What is a Database?",
+      heading: "From Files to Databases",
       body: [
-        "At its simplest, a database is an organized collection of structured information, or data, stored electronically in a computer system.",
-        "Unlike a simple Excel spreadsheet which is great for a single user entering flat data, a database is built to handle massive amounts of data, ensure data integrity, and allow thousands of users or applications to read and write data at the exact same time without crashing or corrupting the files.",
+        "Imagine a small clinic keeping patient details in paper folders. That works when there are a few patients and one receptionist. But when the clinic becomes a hospital, billing, pharmacy, and labs may each keep their own copy of the same patient record.",
+        "If a patient changes their phone number, every copy must be updated. If one team misses the update, the records no longer agree. Early computer systems faced the same problem when every application stored data in its own files.",
+        "A database solves this by keeping related data organized in one shared place, so people and applications can safely use the same reliable source of truth.",
+      ],
+    },
+    {
+      kind: "image",
+      src: filesVsDatabasesImg,
+      alt: "Files vs Databases",
+      caption: "One database safely serving many users and applications",
+    },
+    {
+      kind: "prose",
+      heading: "Data vs Information",
+      body: [
+        "**Data** is a raw fact, such as `1024`, `2024-11-03`, `$89.50`, or `TX`.",
+        "**Information** is data given context and meaning: “Order #1024 was placed on November 3, 2024, totaled $89.50, and shipped to Texas.”",
+        "Databases store raw data, then help applications turn it into useful information quickly and accurately. For example, a business can ask, “How much did we sell in Texas last month?” and receive an answer in seconds.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Why Simple Files Weren't Enough",
+      body: [
+        "A text file or spreadsheet is useful for small, simple tasks. But as an application grows, separate files create serious problems:",
+        "• **Duplicate and inconsistent data:** The same customer may appear in sales, billing, and shipping files. Updating only one copy creates conflicting records.",
+        "• **Hard-to-answer questions:** Each new question may require someone to write a custom program to read and combine files.",
+        "• **Weak rules and security:** Important rules, such as “every order must belong to a customer,” can be missed. File access is also often too broad.",
+        "• **Unsafe simultaneous updates:** If two people update the same record at once, one update can overwrite the other.",
+        "• **Partial failures:** During a bank transfer, money should never leave one account without reaching the other. Files alone do not reliably protect multi-step operations from crashes.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What a Database Does",
+      body: [
+        "A **database** is an organized collection of related data. It is designed to be shared by multiple users and applications while keeping the data accurate, consistent, and available.",
+        "The **Database Management System (DBMS)** is the software that manages the database. It stores data, enforces rules, controls access, handles simultaneous users, and recovers safely from failures. Popular DBMSs include PostgreSQL, MySQL, MongoDB, and SQLite.",
+        "A database also keeps a **schema**: the blueprint that describes its structure, such as tables, columns, data types, and relationships.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Asking Questions with SQL",
+      body: [
+        "With a flat file, finding all customers in Texas could require writing code to open the file, read every line, and manually check each value. With a relational database, you can state what you want:",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      code: `SELECT customer_name, email
+FROM customers
+WHERE state = 'TX';`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "This is called a **query**. SQL lets you describe *what* data you need, while the database determines the safest and most efficient way to retrieve it.",
       ],
     },
     {
       kind: "animation",
       variant: "intro-what-is-db",
-      caption: "A central database serving many users and applications concurrently",
-    },
-    {
-      kind: "prose",
-      heading: "The Core Components",
-      body: [
-        "A database isn't just a single file; it is an ecosystem. The major pieces include:",
-      ],
-    },
-    {
-      kind: "image",
-      src: databasecomponentsImg,
-      alt: "Database Components",
-      caption: "Database Components",
-    },
-    {
-      kind: "prose",
-      body: [
-        "• **The Data**: The actual raw information being stored (text, numbers, files, dates).",
-        "• **The Hardware**: The physical servers, hard drives (SSDs/HDDs), and memory (RAM) where the data lives.",
-        "• **The Database Management System (DBMS)**: This is the software engine that acts as the interface between the database and its users or applications. When you want to store or fetch data, you talk to the DBMS. Examples include MySQL, PostgreSQL, and MongoDB.",
-        "• **The Query Language**: The specific language used to command the DBMS. The most famous is SQL (Structured Query Language).",
-        "• **Database Schema**: The structural blueprint or design of how the data is organized (e.g., tables, columns, relationships).",
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "The Main Types of Databases",
-      body: [
-        "Databases generally fall into two major categories based on how they model data: Relational (SQL) and Non-Relational (NoSQL).",
-      ],
-    },
-    {
-      kind: "image",
-      src: relationalvsnonrelationalImg,
-      alt: "Relational vs Non-Relational",
-      caption: "Relational vs Non-Relational",
+      caption: "One database safely serving many users and applications",
     },
     {
       kind: "table",
-      caption: "Relational vs Non-Relational Databases",
-      headers: ["Type", "Structure", "Examples", "Best for"],
+      caption: "Flat Files vs Databases",
+      headers: ["Concern", "Flat files", "Database system"],
       rows: [
-        ["Relational (SQL)", "Rigid, structured tables (rows & columns) with Strict Schemas and relationships", "PostgreSQL, MySQL, Oracle, SQLite", "High accuracy, complex transactions (banking, e-commerce)"],
-        ["Non-Relational (NoSQL)", "Flexible, unstructured data (Documents, Key-Value, Graphs)", "MongoDB, Redis, Neo4j", "Unstructured data, massive scale-out, real-time data"],
+        [
+          "Data copies",
+          "Often duplicated across files",
+          "Shared, centrally managed data",
+        ],
+        [
+          "New questions",
+          "Usually need custom code",
+          "Use queries such as SQL",
+        ],
+        [
+          "Business rules",
+          "Repeated across applications",
+          "Defined and enforced centrally",
+        ],
+        [
+          "Multiple users",
+          "Updates can conflict or be lost",
+          "Concurrent access is managed safely",
+        ],
+        [
+          "Failures",
+          "Can leave partial or corrupt data",
+          "Transactions help keep data consistent",
+        ],
       ],
-    },
-    {
-      kind: "animation",
-      variant: "intro-db-types",
-      caption: "Comparing Relational and Non-Relational structures",
     },
     {
       kind: "takeaways",
       items: [
-        "A database is an organized collection of structured data designed for scale and concurrent users.",
-        "The DBMS acts as the software engine managing storage and retrieval.",
-        "Relational (SQL) databases use rigid tables and schemas, while Non-Relational (NoSQL) databases offer flexible data structures.",
+        "Data is raw facts; information is data with context and meaning.",
+        "Databases replaced scattered files because files create duplication, inconsistency, weak security, and unsafe concurrent updates.",
+        "A database stores organized related data, while a DBMS is the software that manages and protects it.",
+        "A schema defines how data is structured, and queries let you ask for the data you need.",
       ],
     },
     {
@@ -1217,124 +1259,71 @@ const dbWhatIs: LessonContent = {
       questions: [
         {
           id: "q1",
-          question: "What is the primary purpose of a database compared to a simple spreadsheet?",
+          question: "What is the main purpose of a database?",
           options: [
-            "To store data in a single file on a local computer.",
-            "To handle massive amounts of data, ensure integrity, and allow concurrent access safely.",
-            "To provide a colorful UI for data entry.",
-            "To prevent any user from deleting data."
+            "To store one file on a local computer.",
+            "To organize related data so it can be shared and used reliably.",
+            "To replace every application with a spreadsheet.",
+            "To prevent users from reading data.",
           ],
           correctIndex: 1,
-          explanation: "Unlike spreadsheets, databases are built for scale, concurrency, and maintaining strict data integrity."
+          explanation:
+            "Databases organize related data and allow people and applications to use it safely and reliably.",
         },
         {
           id: "q2",
-          question: "Which of the following is NOT a core component of a database ecosystem?",
+          question: "What is the difference between data and information?",
           options: [
-            "The Hardware (RAM/Disk)",
-            "The Database Management System (DBMS)",
-            "The Web Browser",
-            "The Query Language (like SQL)"
+            "They are exactly the same.",
+            "Data is raw facts; information is data with context and meaning.",
+            "Information is always stored outside a database.",
+            "Data can only be numbers.",
           ],
-          correctIndex: 2,
-          explanation: "A web browser is a client application, not a core component of the database ecosystem itself."
+          correctIndex: 1,
+          explanation:
+            "A raw value such as `TX` is data. Knowing it represents a customer's state is information.",
         },
         {
           id: "q3",
-          question: "What does 'DBMS' stand for?",
+          question: "Which problem commonly occurs when multiple departments maintain separate files for the same customer?",
           options: [
-            "Database Management System",
-            "Data Backup and Migration System",
-            "Database Memory Storage",
-            "Data Business Management Software"
+            "Data duplication and inconsistency.",
+            "Faster querying.",
+            "Automatic backups.",
+            "Better access control.",
           ],
           correctIndex: 0,
-          explanation: "DBMS stands for Database Management System, the software engine that interfaces with the data."
+          explanation:
+            "Separate copies can drift apart when one is updated and another is not.",
         },
         {
           id: "q4",
-          question: "Which type of database relies on rigid, structured tables with strict schemas?",
+          question: "What does DBMS stand for?",
           options: [
-            "Relational (SQL) Databases",
-            "Document Databases",
-            "Graph Databases",
-            "Key-Value Stores"
+            "Data Backup Management Service",
+            "Database Management System",
+            "Digital Business Mapping Software",
+            "Database Memory Storage",
           ],
-          correctIndex: 0,
-          explanation: "Relational (SQL) databases use rigid tables (rows and columns) and strict schemas to ensure data integrity."
+          correctIndex: 1,
+          explanation:
+            "A DBMS is the software that manages storage, access, rules, and safe updates in a database.",
         },
         {
           id: "q5",
-          question: "Which of the following is an example of a Non-Relational (NoSQL) database?",
+          question: "What is a database schema?",
           options: [
-            "PostgreSQL",
-            "MySQL",
-            "MongoDB",
-            "Oracle"
+            "A database password.",
+            "The physical server that stores data.",
+            "The blueprint for how data is organized.",
+            "A backup copy of a database.",
           ],
           correctIndex: 2,
-          explanation: "MongoDB is a document-based NoSQL database, while the others are Relational (SQL) databases."
+          explanation:
+            "A schema defines the database structure, including tables, columns, data types, and relationships.",
         },
-        {
-          id: "q6",
-          question: "Why can't a simple file or spreadsheet replace a database for a large web application?",
-          options: [
-            "Spreadsheets cost too much.",
-            "Files cannot be read by programming languages.",
-            "Files lack built-in mechanisms for safe concurrent writes and structured querying.",
-            "Spreadsheets cannot store text data."
-          ],
-          correctIndex: 2,
-          explanation: "Databases use complex concurrency control (like locks and transactions) to ensure multiple users can write simultaneously without corrupting the data."
-        },
-        {
-          id: "q7",
-          question: "What is a 'Database Schema'?",
-          options: [
-            "The physical server where data is stored.",
-            "The password used to access the database.",
-            "The structural blueprint of how data is organized, including tables and relationships.",
-            "A backup file of the database."
-          ],
-          correctIndex: 2,
-          explanation: "The schema is the blueprint defining the structure of the database (tables, columns, types, and constraints)."
-        },
-        {
-          id: "q8",
-          question: "If your application requires highly complex transactions (like banking transfers), which database type is typically best?",
-          options: [
-            "Non-Relational (NoSQL)",
-            "Relational (SQL)",
-            "In-memory cache only",
-            "A flat text file"
-          ],
-          correctIndex: 1,
-          explanation: "Relational databases are heavily optimized for complex, multi-step transactions (ACID properties) that guarantee absolute accuracy."
-        },
-        {
-          id: "q9",
-          question: "Which component of the DBMS actually translates your commands into physical disk reads?",
-          options: [
-            "The Storage Engine",
-            "The Query Language",
-            "The Database Schema",
-            "The Hardware"
-          ],
-          correctIndex: 0,
-          explanation: "The storage engine (part of the DBMS) handles the actual I/O operations to physical disk and memory."
-        },
-        {
-          id: "q10",
-          question: "True or False: A single database server can only host one database.",
-          options: [
-            "True",
-            "False"
-          ],
-          correctIndex: 1,
-          explanation: "False. A single database server or DBMS instance can host and manage multiple distinct databases simultaneously."
-        }
-      ]
-    }
+      ],
+    },
   ],
 };
 
