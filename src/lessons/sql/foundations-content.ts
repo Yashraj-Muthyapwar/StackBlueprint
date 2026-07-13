@@ -1139,7 +1139,7 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
 };
 const dbWhatIs: LessonContent = {
   slug: "what-is-database",
-  title: "What Is a Database?",
+  title: "What is a Database?",
   subtitle:
     "Understand data, information, and why databases replaced scattered files.",
   sections: [
