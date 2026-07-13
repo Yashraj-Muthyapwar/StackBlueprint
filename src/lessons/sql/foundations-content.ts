@@ -12,6 +12,7 @@ import normalizationImg from "@/images/sql/foundations/database_normalization.pn
 import denormalizationImg from "@/images/sql/foundations/database_denormalization.png";
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
 import filesVsDatabasesImg from "@/images/sql/foundations/files-vs-databases.png";
+import databaseVsDbmsImg from "@/images/sql/foundations/database-vs-dbms.png";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 
 export type Section =
@@ -1375,26 +1376,10 @@ const dbmsExplained: LessonContent = {
       ],
     },
     {
-      kind: "table",
-      caption: "How Applications Work with Data",
-      headers: ["Layer", "Example", "Responsibility"],
-      rows: [
-        [
-          "Application",
-          "Website, mobile app, dashboard",
-          "Requests or displays data",
-        ],
-        [
-          "DBMS",
-          "PostgreSQL, MySQL, SQLite",
-          "Manages queries, rules, security, and safe updates",
-        ],
-        [
-          "Database storage",
-          "Tables, indexes, logs, files",
-          "Stores the actual data",
-        ],
-      ],
+      kind: "image",
+      src: databaseVsDbmsImg,
+      alt: "Database vs DBMS",
+      caption: "Database vs. DBMS: Data is the asset. DBMS is the management system.",
     },
     {
       kind: "prose",
