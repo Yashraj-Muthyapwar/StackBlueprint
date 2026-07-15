@@ -13,6 +13,7 @@ import denormalizationImg from "@/images/sql/foundations/database_denormalizatio
 import sqlCommandsImg from "@/images/sql/foundations/sql-commands.png";
 import filesVsDatabasesImg from "@/images/sql/foundations/files-vs-databases.png";
 import databaseVsDbmsImg from "@/images/sql/foundations/database-vs-dbms.png";
+import theRelationalModelImg from "@/images/sql/foundations/the-relational-model.png";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 
 export type Section =
@@ -1520,8 +1521,14 @@ const relationalModel: LessonContent = {
       body: [
         "A relational database organizes data into **tables**. If you have used a spreadsheet, the basic idea will feel familiar: rows represent individual things, and columns represent facts about those things.",
         "For example, an online store might keep its customers in one table and its orders in another. Each table has one clear purpose.",
-        "The relational model takes the spreadsheet idea and adds rules that make data easier to query, combine, and trust.",
+        "The **relational model** takes the spreadsheet idea and adds rules that make data easier to query, combine, and trust.",
       ],
+    },
+    {
+      kind: "image",
+      src: theRelationalModelImg,
+      alt: "The Relational Model",
+      caption: "The Relational Model",
     },
     {
       kind: "prose",
