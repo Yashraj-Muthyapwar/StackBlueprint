@@ -1676,6 +1676,192 @@ const relationalModel: LessonContent = {
   ],
 };
 
+const databaseKeys: LessonContent = {
+  slug: "keys-in-relational-databases",
+  title: "Keys in Relational Databases",
+  subtitle:
+    "Learn how databases identify records and connect tables without duplicate or orphaned data.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Why Databases Need Keys",
+      body: [
+        "Imagine two customers named Maria Garcia. They may live in different cities, have different email addresses, and place different orders. A database cannot safely identify people by name alone.",
+        "A **key** is one or more columns that help the database identify a row reliably. Keys prevent duplicates, connect related tables, and protect the quality of your data.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Primary Keys: A Unique Identity",
+      body: [
+        "A **primary key** is the official identifier for each row in a table. Every table should have one primary key.",
+        "A primary key must be unique, which means no two rows can share the same value. It also cannot be empty, because every row must be identifiable.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "pk-anatomy",
+      caption: "Declare, insert, reject NULL, reject duplicate, composite, surrogate",
+    },
+    {
+      kind: "table",
+      caption: "Each customer has a unique customer ID",
+      headers: ["customer_id", "full_name", "email", "city"],
+      rows: [
+        ["101", "Maria Garcia", "maria.garcia@example.com", "Austin"],
+        ["102", "Maria Garcia", "maria.g@example.com", "Dallas"],
+        ["103", "Priya Sharma", "priya@example.com", "Houston"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Both Maria Garcia records have the same name, but their `customer_id` values are different. That is why the customer ID is a much safer primary key than a name.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Foreign Keys: Connecting Tables",
+      body: [
+        "A **foreign key** is a column in one table that refers to a row in another table. It creates a relationship between the two tables.",
+        "For example, an order belongs to a customer. The `orders` table stores the customer's ID rather than repeating the customer's name, email, and address on every order.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "fk-deep",
+      caption: "Foreign Keys in depth",
+    },
+    {
+      kind: "table",
+      caption: "Orders connect to customers through customer_id",
+      headers: ["order_id", "customer_id", "order_date", "total"],
+      rows: [
+        ["5001", "101", "2026-07-15", "$89.50"],
+        ["5002", "101", "2026-07-16", "$24.00"],
+        ["5003", "103", "2026-07-16", "$120.00"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Here, `orders.customer_id` is a foreign key that refers to `customers.customer_id`.",
+        "The database can enforce **referential integrity**: an order cannot point to customer `999` if that customer does not exist. This prevents orphaned records and keeps relationships trustworthy.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "One Customer, Many Orders",
+      body: [
+        "A foreign key does not need to be unique. Customer `101` can appear on many orders because one customer can place many orders.",
+        "This is called a **one-to-many relationship**: one customer can have many orders, but each order belongs to one customer.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Other Types of Keys",
+      body: [
+        "You will encounter a few more key terms as you design databases:",
+        "• **Candidate key:** Any minimal column or group of columns that could uniquely identify a row. A customer ID and a unique email address may both be candidate keys.",
+        "• **Alternate key:** A candidate key that was not chosen as the primary key. It should still be protected from duplicates when the business requires uniqueness.",
+        "• **Composite key:** A key made from two or more columns. For example, `order_id` and `product_id` together can identify one item on an order.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "A composite key in an order_items table",
+      headers: ["order_id", "product_id", "quantity"],
+      rows: [
+        ["5001", "201", "2"],
+        ["5001", "305", "1"],
+        ["5002", "201", "1"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Neither `order_id` nor `product_id` is unique by itself. But together, they identify one specific product on one specific order.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Natural Keys and Surrogate Keys",
+      body: [
+        "A **natural key** is a value that already has real-world meaning, such as an email address, ISBN, or government-issued ID.",
+        "A **surrogate key** is an identifier created only for the database, such as `customer_id = 101`. It has no business meaning and usually does not change.",
+        "A common design is to use a surrogate key as the primary key while also enforcing uniqueness for important real-world values, such as an email address. This gives the database a stable identifier while still preventing duplicate customer records.",
+      ],
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A primary key uniquely identifies every row in a table.",
+        "A foreign key connects one table to another.",
+        "Referential integrity prevents records from referring to data that does not exist.",
+        "A one-to-many relationship lets one parent record, such as a customer, relate to many child records, such as orders.",
+        "Composite keys use multiple columns together, while surrogate keys are database-created identifiers.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "What is the main purpose of a primary key?",
+          options: [
+            "To uniquely identify each row in a table.",
+            "To sort every table alphabetically.",
+            "To store duplicate records.",
+            "To connect directly to a server.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A primary key gives each row a unique, non-empty identity.",
+        },
+        {
+          id: "q2",
+          question: "What does a foreign key do?",
+          options: [
+            "Encrypts a table.",
+            "Connects a row to a related row in another table.",
+            "Deletes duplicate columns.",
+            "Changes the name of a table.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A foreign key stores a value that refers to a key in another table.",
+        },
+        {
+          id: "q3",
+          question: "Why can customer_id appear many times in an orders table?",
+          options: [
+            "Every customer must have exactly one order.",
+            "Foreign-key values must always be unique.",
+            "One customer can place many orders.",
+            "Customer IDs are not useful in an orders table.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "Repeated foreign-key values represent a one-to-many relationship.",
+        },
+        {
+          id: "q4",
+          question: "What is a composite key?",
+          options: [
+            "A key that contains two or more columns.",
+            "A key used only for passwords.",
+            "A duplicate primary key.",
+            "A key that cannot identify a row.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A composite key combines multiple columns to uniquely identify a row.",
+        },
+      ],
+    },
+  ],
+};
+
 const dbUnderTheHood: LessonContent = {
   slug: "db-under-the-hood",
   title: "How Databases Work Under the Hood",
@@ -2754,7 +2940,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, relationalModel, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
