@@ -15,6 +15,7 @@ import filesVsDatabasesImg from "@/images/sql/foundations/files-vs-databases.png
 import databaseVsDbmsImg from "@/images/sql/foundations/database-vs-dbms.png";
 import theRelationalModelImg from "@/images/sql/foundations/the-relational-model.png";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
+import databaseKeysImg from "@/images/sql/foundations/database-keys.png";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -1689,6 +1690,12 @@ const databaseKeys: LessonContent = {
         "Imagine two customers named Maria Garcia. They may live in different cities, have different email addresses, and place different orders. A database cannot safely identify people by name alone.",
         "A **key** is one or more columns that help the database identify a row reliably. Keys prevent duplicates, connect related tables, and protect the quality of your data.",
       ],
+    },
+    {
+      kind: "image",
+      src: databaseKeysImg,
+      alt: "Keys in Relational Databases",
+      caption: "Keys in Relational Databases",
     },
     {
       kind: "prose",
