@@ -1508,6 +1508,167 @@ WHERE state = 'TX';`,
   ],
 };
 
+const relationalModel: LessonContent = {
+  slug: "relational-model-basics",
+  title: "The Relational Model",
+  subtitle:
+    "Learn how relational databases organize data into tables, rows, columns, and relationships.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Tables: A Familiar Starting Point",
+      body: [
+        "A relational database organizes data into **tables**. If you have used a spreadsheet, the basic idea will feel familiar: rows represent individual things, and columns represent facts about those things.",
+        "For example, an online store might keep its customers in one table and its orders in another. Each table has one clear purpose.",
+        "The relational model takes the spreadsheet idea and adds rules that make data easier to query, combine, and trust.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Tables, Rows, and Columns",
+      body: [
+        "A table stores related information. In database language, a table is also called a **relation**.",
+        "Each **row** represents one record. For example, one customer, product, or order. A row is also called a **tuple**.",
+        "Each **column** represents one property of that record, such as a name, email address, price, or date. A column is also called an **attribute**.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "table-anatomy",
+      caption: "Database → Table → Column → Row, one concept at a time",
+    },
+    {
+      kind: "table",
+      caption: "A customers table",
+      headers: ["customer_id", "name", "email", "state"],
+      rows: [
+        ["101", "Priya Sharma", "priya@example.com", "TX"],
+        ["102", "Marcus Lee", "marcus@example.com", "TX"],
+        ["103", "Elena Ortiz", "elena@example.com", "OK"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "In this example, `customers` is the table, each line is a row, and `customer_id`, `name`, `email`, and `state` are columns.",
+        "Each column has an expected type of value. For example, an email column stores text, an order date stores dates, and a price stores numbers. This helps the DBMS reject invalid data.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "One Value per Cell",
+      body: [
+        "A useful rule in relational databases is that each cell should hold one value. For example, do not put three phone numbers into one `phone_number` cell separated by commas.",
+        "Keeping values separate makes data easier to search, sort, update, and validate. If a customer can have several phone numbers, that information usually belongs in a related table.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "How Tables Are Related",
+      body: [
+        "The word *relational* does not mean that all data lives in one huge table. It means separate tables can be connected through matching values.",
+        "For example, an order belongs to a customer. Instead of repeating the customer's name and email on every order, the `orders` table can store that customer's ID.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "An orders table connected to customers",
+      headers: ["order_id", "customer_id", "order_date", "total"],
+      rows: [
+        ["5001", "101", "2026-07-15", "$89.50"],
+        ["5002", "101", "2026-07-16", "$24.00"],
+        ["5003", "102", "2026-07-16", "$120.00"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "The value `101` appears in both tables. It tells the database that orders `5001` and `5002` belong to Priya Sharma.",
+        "This approach reduces repeated data and lets you combine information whenever you need it. You will learn the formal names for these identifiers—primary keys and foreign keys—in the next lesson.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Structure vs. Data",
+      body: [
+        "A table's **schema** is its blueprint: the table name, column names, data types, and rules. The schema changes occasionally.",
+        "The actual rows currently stored in the table are the table's **data**. They change every time someone adds, updates, or removes a record.",
+        "Think of the schema as the layout of a form, and the rows as the completed forms collected over time.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Why the Relational Model Matters",
+      body: [
+        "By storing structured data in separate but connected tables, relational databases make it possible to keep data consistent, avoid unnecessary duplication, and answer questions across many kinds of records.",
+        "For example, a business can connect customers, orders, products, and payments to answer questions such as: “Which customers in Texas placed an order this month?”",
+      ],
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A relational database organizes data into tables, also called relations.",
+        "Rows represent individual records; columns represent properties of those records.",
+        "Each column has an expected type of value, such as text, number, or date.",
+        "Tables connect through shared values, such as a customer ID stored on an order.",
+        "A schema is the structure of a table; the rows are its current data.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "In a relational database, what does a row usually represent?",
+          options: [
+            "One individual record, such as a customer or order.",
+            "The name of the database.",
+            "A type of query.",
+            "A connection between servers.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A row stores one record, such as one customer, product, or order.",
+        },
+        {
+          id: "q2",
+          question: "What is another name for a table in the relational model?",
+          options: ["Relation", "Transaction", "Index", "Query"],
+          correctIndex: 0,
+          explanation:
+            "The formal relational-model term for a table is a relation.",
+        },
+        {
+          id: "q3",
+          question: "Why might an orders table store a customer_id?",
+          options: [
+            "To connect each order to its customer.",
+            "To store the customer's full address repeatedly.",
+            "To replace the order date.",
+            "To make every order identical.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A customer ID lets an order reference its customer without repeating all customer details.",
+        },
+        {
+          id: "q4",
+          question: "What is a schema?",
+          options: [
+            "The current rows in a table.",
+            "The blueprint for how data is organized.",
+            "A backup of the database.",
+            "A user account.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A schema defines the table structure, including its columns, data types, and rules.",
+        },
+      ],
+    },
+  ],
+};
+
 const dbUnderTheHood: LessonContent = {
   slug: "db-under-the-hood",
   title: "How Databases Work Under the Hood",
@@ -2586,7 +2747,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+    lessons: [dbWhatIs, dbmsExplained, relationalModel, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
