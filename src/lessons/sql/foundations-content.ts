@@ -1582,6 +1582,238 @@ const databaseKeys: LessonContent = {
   ],
 };
 
+const databaseLandscape: LessonContent = {
+  slug: "database-landscape",
+  title: "The Database Landscape",
+  subtitle:
+    "Understand relational databases, NoSQL models, distributed SQL, and where SQL fits.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One Problem, Different Tools",
+      body: [
+        "Databases are built for different kinds of work. A system that stores bank transfers has different needs from a system that caches website sessions or analyzes billions of event records.",
+        "Relational databases are the general-purpose default for structured, correctness-critical data. NoSQL databases and distributed SQL systems exist to handle particular data shapes, scale requirements, or access patterns.",
+        "The right question is not “Which database is best?” It is “Which database fits this problem?”",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Relational Databases",
+      body: [
+        "A **relational database** stores data in tables made of rows and columns. Tables connect through keys, the schema defines expected structure, and SQL is used to read and change data.",
+        "Relational databases are strong when data needs to be accurate, connected, and easy to query in many different ways. They are commonly used for customers, orders, payments, inventory, and business reporting.",
+        "Examples include PostgreSQL, MySQL, SQL Server, Oracle Database, and SQLite.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What Does NoSQL Mean?",
+      body: [
+        "**NoSQL** usually means “not only SQL.” It is an umbrella term for database systems that use data models other than traditional relational tables.",
+        "NoSQL systems often trade some relational features—such as a rigid schema, joins, or certain consistency guarantees—for flexibility, high write throughput, or easier distribution across many machines.",
+        "NoSQL does not mean “better than SQL,” and it does not mean SQL is outdated. Many real applications use both relational and NoSQL databases.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The main database families",
+      headers: ["Family", "Data model", "Good fit", "Examples"],
+      rows: [
+        [
+          "Relational",
+          "Tables, rows, columns, and keys",
+          "Orders, payments, inventory, reporting",
+          "PostgreSQL, MySQL, SQLite",
+        ],
+        [
+          "Key-value",
+          "A key linked to a value",
+          "Caching, sessions, rate limits, fast lookups",
+          "Redis, DynamoDB",
+        ],
+        [
+          "Document",
+          "Flexible JSON-like documents",
+          "Catalogs, profiles, content, variable-shaped data",
+          "MongoDB, Couchbase",
+        ],
+        [
+          "Wide-column",
+          "Large, sparse rows grouped into column families",
+          "High-volume events, logs, time-series writes",
+          "Cassandra, HBase, Bigtable",
+        ],
+        [
+          "Graph",
+          "Nodes and relationships",
+          "Fraud detection, recommendations, dependency graphs",
+          "Neo4j, Neptune",
+        ],
+        [
+          "Distributed SQL",
+          "Relational tables across multiple machines",
+          "Global applications needing SQL and strong consistency",
+          "Spanner, CockroachDB, YugabyteDB",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Four Common NoSQL Models",
+      body: [
+        "**Key-value stores** are like a very fast dictionary. You provide a key and receive its value. They are ideal for sessions, cached results, and rate limits.",
+        "**Document databases** store flexible documents, often JSON. A product catalog may have different fields for books, shoes, and laptops without requiring every item to use identical columns.",
+        "**Wide-column databases** are designed for enormous, write-heavy workloads such as logs, sensor readings, and events.",
+        "**Graph databases** make relationships central. They are useful when you need to explore paths, such as friends-of-friends, fraud networks, or service dependencies.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Relational vs. NoSQL: The Trade-Off",
+      body: [
+        "Relational databases emphasize structure, constraints, transactions, and flexible querying with joins. They help prevent invalid or inconsistent data.",
+        "NoSQL systems often give you more flexibility in how data is shaped or distributed. In return, you may need to handle more validation, duplication, or consistency decisions in your application.",
+        "Neither approach automatically scales better. The best choice depends on the access patterns, data model, reliability needs, and operational complexity of your application.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "A practical comparison",
+      headers: ["Question", "Relational database", "NoSQL database"],
+      rows: [
+        [
+          "Do records need a consistent structure?",
+          "Usually a strong fit",
+          "Useful when records vary widely",
+        ],
+        [
+          "Do you need joins and rich reporting?",
+          "Usually a strong fit",
+          "Often requires denormalized data or extra work",
+        ],
+        [
+          "Do you need strict transaction guarantees?",
+          "Usually a strong fit",
+          "Capabilities vary by product and design",
+        ],
+        [
+          "Do you mainly look up data by one key?",
+          "Possible, but may be more than you need",
+          "Key-value stores can be an excellent fit",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Where Does SQL Fit?",
+      body: [
+        "SQL is a query language, not a database type. It began with relational databases, but it is now used across warehouses, analytics engines, lakehouses, and many distributed systems.",
+        "That is why SQL is worth learning deeply. The skills transfer to PostgreSQL, BigQuery, Snowflake, Spark SQL, Trino, and many other tools.",
+        "Some NoSQL systems also provide SQL-like query languages, but their data models and capabilities may differ from a traditional relational database.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Distributed SQL, Sometimes Called NewSQL",
+      body: [
+        "Some modern systems combine relational tables, SQL, and transactions with the ability to distribute data across multiple machines. These are often called **distributed SQL** systems; the older term **NewSQL** is also still used.",
+        "They are useful when an application needs relational guarantees but must operate across regions or handle very large scale. They are powerful, but usually more complex than a standard relational database.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "A realistic architecture can use several databases",
+      body: "A shopping application might use PostgreSQL for orders and payments, Redis for cached sessions, a search engine for product search, and a warehouse for analytics. Using more than one database is common when each tool has a clear job.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Relational databases are the default choice for structured, connected, correctness-critical data.",
+        "NoSQL is an umbrella term covering key-value, document, wide-column, and graph databases.",
+        "NoSQL systems are useful for particular data shapes and access patterns, not as automatic replacements for relational databases.",
+        "SQL is a language, not a database category, and it is used across many modern data platforms.",
+        "Distributed SQL, also called NewSQL by some sources, combines relational SQL with multi-machine scale.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "dl1",
+          question:
+            "Which database family is usually the best starting point for orders, payments, and inventory?",
+          options: [
+            "Relational database",
+            "Graph database",
+            "Key-value store only",
+            "Wide-column database only",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Relational databases are well suited to structured, connected, correctness-critical business data.",
+        },
+        {
+          id: "dl2",
+          question:
+            "Which NoSQL model is especially useful for caching and fast lookups by ID?",
+          options: [
+            "Graph",
+            "Key-value",
+            "Relational",
+            "Wide-column only",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Key-value stores are optimized for retrieving values through known keys.",
+        },
+        {
+          id: "dl3",
+          question: "What is SQL?",
+          options: [
+            "A query language used by many data systems.",
+            "A type of NoSQL database.",
+            "A replacement for all databases.",
+            "A storage device.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "SQL is a language for working with data. It is most closely associated with relational databases but is used much more widely.",
+        },
+        {
+          id: "dl4",
+          question:
+            "Which database family focuses on traversing connections between entities?",
+          options: [
+            "Document",
+            "Graph",
+            "Key-value",
+            "Wide-column",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Graph databases model entities as nodes and their connections as edges.",
+        },
+        {
+          id: "dl5",
+          question:
+            "Which statement best describes relational databases and NoSQL databases?",
+          options: [
+            "NoSQL always replaces relational databases.",
+            "Relational databases are always slower.",
+            "Each can be appropriate depending on the data and workload.",
+            "SQL can only be used with NoSQL databases.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "Database choice depends on the problem, including structure, queries, scale, and reliability needs.",
+        },
+      ],
+    },
+  ],
+};
+
 const dbUnderTheHood: LessonContent = {
   slug: "db-under-the-hood",
   title: "How Databases Work Under the Hood",
@@ -2644,7 +2876,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, sqlCommands, dbUnderTheHood, sqlIntro, normalization],
+    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, sqlCommands, databaseLandscape, dbUnderTheHood, sqlIntro, normalization],
   },
   "data-types": {
     slug: "data-types",
