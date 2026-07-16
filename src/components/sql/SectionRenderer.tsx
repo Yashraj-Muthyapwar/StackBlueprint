@@ -286,6 +286,6 @@ export function SectionRenderer({ section }: { section: Section }) {
       );
       
     case "quiz":
-      return <Quiz data={{ questions: section.questions }} />;
+      return <Quiz data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }} />;
   }
 }
