@@ -1,4 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useProgress } from "@/hooks/use-progress";
+import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
+import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -395,6 +398,8 @@ const sections: Section[] = [
 ];
 
 function SqlIndex() {
+  const { isCompleted } = useProgress();
+
   return (
     <div className="flex w-full flex-col font-sans">
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
@@ -435,6 +440,16 @@ function SqlIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
 
+                  const isFoundations = t.routeBase === "foundations" || !t.routeBase;
+                  const realTopic = isFoundations 
+                    ? FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS]
+                    : QUERYING_TOPICS[t.slug as keyof typeof QUERYING_TOPICS];
+                  
+                  const completedCount = realTopic
+                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length
+                    : 0;
+                  const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
+
                   const card = (
                     <div
                       className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
@@ -471,6 +486,20 @@ function SqlIndex() {
                             </span>
                           ))}
                         </div>
+
+                        {!isLocked && (
+                          <div className="mt-6 flex items-center gap-2">
+                            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
+                              <div 
+                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                                style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {completedCount}/{totalCount} lessons complete
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {!isLocked && (
