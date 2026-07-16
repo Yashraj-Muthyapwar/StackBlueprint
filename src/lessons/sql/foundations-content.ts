@@ -76,7 +76,7 @@ export type Section =
     caption?: string;
   }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "quiz"; questions: QuizQuestion[] };
+  | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {
   slug: string;
@@ -174,6 +174,7 @@ INSERT INTO users (email) VALUES
 
 
 
+// This is saved for latter use - I have just skipped it for later section.
 const normalization: LessonContent = {
   slug: "normalization",
   title: "Normalization & Denormalization",
@@ -1903,6 +1904,9 @@ const dbUnderTheHood: LessonContent = {
   ],
 };
 
+
+// I want to move this to different section.
+
 const sqlIntro: LessonContent = {
   slug: "sql-intro",
   title: "SQL Intro & Architecture",
@@ -2873,6 +2877,201 @@ LIMIT   10;`,
   ],
 };
 
+const fundamentalsQuiz: LessonContent = {
+  slug: "fundamentals-quiz",
+  title: "Database Fundamentals: Final Quiz",
+  subtitle:
+    "Test your knowledge of databases, the relational model, SQL command families, and database architecture.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "fq1",
+          question: "What is a primary drawback of storing structured application data in regular files (like CSVs) instead of a database?",
+          options: [
+            "Files cannot be opened by humans.",
+            "Files do not safely handle multiple users modifying data at the same time (concurrency).",
+            "Files take up more disk space than databases.",
+            "Files require an internet connection."
+          ],
+          correctIndex: 1,
+          explanation: "Databases (through a DBMS) safely handle concurrency, whereas standard files can easily become corrupted if multiple processes write to them simultaneously."
+        },
+        {
+          id: "fq2",
+          question: "What is the primary role of a Database Management System (DBMS)?",
+          options: [
+            "To provide a graphical user interface for designing websites.",
+            "To act as the software engine that safely stores, retrieves, and protects data.",
+            "To generate primary keys automatically without user input.",
+            "To replace the server's operating system."
+          ],
+          correctIndex: 1,
+          explanation: "The DBMS is the software (like PostgreSQL or MySQL) that manages the actual database and ensures data is stored and retrieved reliably."
+        },
+        {
+          id: "fq3",
+          question: "In the relational model, how is data primarily organized?",
+          options: [
+            "Into a hierarchy of folders and files.",
+            "Into a series of interconnected graphs and nodes.",
+            "Into tables consisting of rows and columns.",
+            "Into flexible JSON documents."
+          ],
+          correctIndex: 2,
+          explanation: "The relational model organizes data into tables (relations), where rows represent individual records and columns represent attributes."
+        },
+        {
+          id: "fq4",
+          question: "What is the main purpose of a Primary Key?",
+          options: [
+            "To encrypt sensitive data in a table.",
+            "To establish a connection to another table.",
+            "To uniquely and reliably identify each specific row in a table.",
+            "To sort the table automatically alphabetically."
+          ],
+          correctIndex: 2,
+          explanation: "A primary key ensures every row has a unique, non-empty identity."
+        },
+        {
+          id: "fq5",
+          question: "Why might a database designer choose a 'surrogate key' (like a database-generated ID) over a 'natural key' (like an email address)?",
+          options: [
+            "Surrogate keys take up less space than natural keys.",
+            "Natural keys have no real-world meaning.",
+            "Surrogate keys never change, whereas natural keys (like an email) might change in the real world.",
+            "Surrogate keys are required for NoSQL databases."
+          ],
+          correctIndex: 2,
+          explanation: "Surrogate keys provide a stable, unchanging identity. If a user changes their email (a natural key), you won't have to update all related tables."
+        },
+        {
+          id: "fq6",
+          question: "What does a Foreign Key do?",
+          options: [
+            "It enforces a relationship by referring to a primary key in another table.",
+            "It allows external users to access the database.",
+            "It uniquely identifies a column in the current table.",
+            "It automatically deletes duplicate rows."
+          ],
+          correctIndex: 0,
+          explanation: "A foreign key connects rows across tables and allows the database to enforce referential integrity."
+        },
+        {
+          id: "fq7",
+          question: "Which level of database abstraction is responsible for describing exactly how data is stored on disk (e.g., files, pages, and indexes)?",
+          options: [
+            "The View Level",
+            "The Logical Level",
+            "The Physical Level",
+            "The Schema Level"
+          ],
+          correctIndex: 2,
+          explanation: "The physical level handles the lowest-level storage and retrieval details behind the scenes."
+        },
+        {
+          id: "fq8",
+          question: "What is the benefit of 'Physical Data Independence'?",
+          options: [
+            "It allows users to store unlimited amounts of data.",
+            "It allows administrators to change storage details (like adding an index) without rewriting application queries.",
+            "It prevents the database server from ever crashing.",
+            "It removes the need for primary keys."
+          ],
+          correctIndex: 1,
+          explanation: "Physical data independence means the underlying physical structure can be optimized without breaking the logical or view levels above it."
+        },
+        {
+          id: "fq9",
+          question: "Which family of SQL commands is used to modify the structure of the database, such as creating or dropping tables?",
+          options: [
+            "DML (Data Manipulation Language)",
+            "DQL (Data Query Language)",
+            "DDL (Data Definition Language)",
+            "TCL (Transaction Control Language)"
+          ],
+          correctIndex: 2,
+          explanation: "DDL handles structural, schema-level changes (CREATE, ALTER, DROP)."
+        },
+        {
+          id: "fq10",
+          question: "Which SQL command family do INSERT, UPDATE, and DELETE belong to?",
+          options: [
+            "DDL",
+            "DML",
+            "DCL",
+            "TCL"
+          ],
+          correctIndex: 1,
+          explanation: "DML (Data Manipulation Language) is used to add, change, or remove the actual rows of data."
+        },
+        {
+          id: "fq11",
+          question: "What is the purpose of the COMMIT command in SQL?",
+          options: [
+            "To grant permissions to a new user.",
+            "To permanently save all changes made during the current transaction.",
+            "To undo changes made in the current transaction.",
+            "To define a new table structure."
+          ],
+          correctIndex: 1,
+          explanation: "COMMIT is a TCL command that finalizes a transaction, making its changes permanent."
+        },
+        {
+          id: "fq12",
+          question: "If your application needs to handle very large volumes of flexible, JSON-like data where each record might have different fields, which database model is likely the best fit?",
+          options: [
+            "Relational Database",
+            "Document Database (NoSQL)",
+            "Key-Value Store",
+            "Graph Database"
+          ],
+          correctIndex: 1,
+          explanation: "Document databases are designed to store flexible, variable-shaped data like JSON."
+        },
+        {
+          id: "fq13",
+          question: "What does the term 'NoSQL' generally mean in modern data systems?",
+          options: [
+            "Databases that have completely eliminated SQL.",
+            "Not Only SQL, acting as an umbrella term for non-relational database models.",
+            "A specific database product made by a single company.",
+            "Databases that cannot handle transactions."
+          ],
+          correctIndex: 1,
+          explanation: "NoSQL means 'not only SQL' and covers families like key-value, document, wide-column, and graph databases."
+        },
+        {
+          id: "fq14",
+          question: "Why do databases use a Write-Ahead Log (WAL)?",
+          options: [
+            "To keep track of which users are currently logged in.",
+            "To safely and quickly record changes sequentially on disk before writing them to the main data files, ensuring no data is lost in a crash.",
+            "To store passwords securely.",
+            "To translate SQL commands into machine code."
+          ],
+          correctIndex: 1,
+          explanation: "The WAL provides durability. Sequential writes to the log are very fast, and if the database crashes, it can replay the log to recover data."
+        },
+        {
+          id: "fq15",
+          question: "How does a database satisfy the 'Durability' guarantee of ACID?",
+          options: [
+            "By ensuring no two transactions conflict.",
+            "By caching all data in RAM so it can be read instantly.",
+            "By writing committed changes to permanent storage (like SSD or HDD), so they survive power losses.",
+            "By enforcing foreign key relationships."
+          ],
+          correctIndex: 2,
+          explanation: "Durability guarantees that once a transaction is committed, it will remain in the system even in the event of a crash or power loss."
+        }
+      ]
+    }
+  ]
+};
+
 // ---------- TOPIC INDEX ----------
 
 export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
@@ -2883,7 +3082,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, sqlCommands, databaseLandscape, dbUnderTheHood, sqlIntro, normalization],
+    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, sqlCommands, databaseLandscape, dbUnderTheHood, fundamentalsQuiz],
   },
   "data-types": {
     slug: "data-types",
