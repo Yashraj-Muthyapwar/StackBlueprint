@@ -16,6 +16,7 @@ import databaseVsDbmsImg from "@/images/sql/foundations/database-vs-dbms.png";
 import theRelationalModelImg from "@/images/sql/foundations/the-relational-model.png";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import databaseKeysImg from "@/images/sql/foundations/database-keys.png";
+import levelsOfAbstractionImg from "@/images/sql/foundations/database-levels.png";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -1677,6 +1678,193 @@ const relationalModel: LessonContent = {
   ],
 };
 
+const levelsOfAbstraction: LessonContent = {
+  slug: "levels-of-abstraction",
+  title: "Levels of Abstraction",
+  subtitle:
+    "Understand the physical, logical, and view levels of a database and why they matter.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One Database, Different Perspectives",
+      body: [
+        "You can use a car without knowing how its engine works. You steer, brake, and accelerate while the complex machinery stays hidden underneath.",
+        "Databases work in a similar way. Different people interact with the same data at different levels of detail. This separation is called **abstraction**.",
+        "Abstraction lets developers, analysts, and end users work with useful data without needing to understand where every byte is stored on disk.",
+      ],
+    },
+    {
+      kind: "image",
+      src: levelsOfAbstractionImg,
+      alt: "The three levels of database abstraction",
+      caption: "The three levels of database abstraction",
+    },
+    {
+      kind: "prose",
+      heading: "The Three Levels",
+      body: [
+        "A database can be understood at three levels: the physical level, the logical level, and the view level.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The three levels of database abstraction",
+      headers: ["Level", "Main question", "Example"],
+      rows: [
+        [
+          "View level",
+          "What should this person see?",
+          "A support agent sees a customer's name and order history.",
+        ],
+        [
+          "Logical level",
+          "What data exists and how is it related?",
+          "Customers, orders, products, columns, keys, and relationships.",
+        ],
+        [
+          "Physical level",
+          "How is the data stored and retrieved?",
+          "Files, pages, indexes, memory, and disk storage.",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Physical Level",
+      body: [
+        "The **physical level** is the lowest level. It describes how the DBMS stores and retrieves data behind the scenes.",
+        "This includes storage files, memory, disk pages, indexes, compression, and other performance details. Most developers and analysts do not work directly at this level—and usually do not need to.",
+        "For example, a DBMS may change where data is stored or add an index to make a query faster. The table you use and the query you write can remain exactly the same.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Logical Level",
+      body: [
+        "The **logical level** describes what data exists in the database and how it is organized.",
+        "This is the level you have already started learning: tables, rows, columns, data types, primary keys, foreign keys, and relationships.",
+        "For an online store, the logical level might include `customers`, `orders`, and `products` tables, along with the rules that connect them.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The View Level",
+      body: [
+        "The **view level** shows only the part of the database that a particular user or application needs.",
+        "For example, a customer-support agent may need a customer's name, email, and order history. They should not automatically see payroll data, internal notes, or sensitive payment details.",
+        "Views help simplify complex databases and support security by giving people access to the data relevant to their job.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Different users can see different views of the same data",
+      headers: ["User", "Useful data", "Data usually hidden"],
+      rows: [
+        [
+          "Customer-support agent",
+          "Customer name, email, orders",
+          "Employee salaries and internal financial data",
+        ],
+        [
+          "Warehouse employee",
+          "Products, inventory, shipping details",
+          "Customer payment details",
+        ],
+        [
+          "Finance analyst",
+          "Orders, payments, revenue",
+          "Unrelated operational details",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Data Independence",
+      body: [
+        "The biggest benefit of these levels is **data independence**: changes at one level should have little or no effect on the levels above it.",
+        "**Physical data independence** means storage can change without changing applications. For example, a database administrator can add an index to speed up searches without changing the SQL query or website code.",
+        "**Logical data independence** means the database structure can change while protecting applications and users from unnecessary disruption. This is harder, but views and careful design can help preserve a stable interface.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Schema and Data",
+      body: [
+        "At every level, it helps to distinguish between the **schema** and the **data**.",
+        "The schema is the blueprint: table definitions, columns, relationships, or storage design. The data is the current set of records stored using that blueprint.",
+        "Adding a new customer is a data change. Adding a new column to the `customers` table is a schema change.",
+      ],
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Database abstraction separates storage details from the way people use data.",
+        "The physical level describes how data is stored; the logical level describes tables and relationships; the view level shows tailored slices of data.",
+        "Views simplify access and can help limit sensitive data to the right people.",
+        "Physical data independence lets storage and performance details change without breaking queries or applications.",
+        "A schema is the blueprint of a database; data is the current information stored in that blueprint.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "q1",
+          question: "Which level describes tables, columns, keys, and relationships?",
+          options: [
+            "Physical level",
+            "Logical level",
+            "View level",
+            "Network level",
+          ],
+          correctIndex: 1,
+          explanation:
+            "The logical level describes what data exists and how it is organized.",
+        },
+        {
+          id: "q2",
+          question: "Which level is concerned with indexes, files, and disk storage?",
+          options: [
+            "Physical level",
+            "Logical level",
+            "View level",
+            "Application level",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The physical level describes how the DBMS stores and retrieves data.",
+        },
+        {
+          id: "q3",
+          question: "What is a major purpose of the view level?",
+          options: [
+            "To show every user all database data.",
+            "To show a useful and appropriate slice of data to a user or application.",
+            "To replace primary keys.",
+            "To store data directly on disk.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Views simplify access and can expose only the data relevant to a user or application.",
+        },
+        {
+          id: "q4",
+          question: "What is physical data independence?",
+          options: [
+            "Changing storage details without changing applications or queries.",
+            "Deleting all database files safely.",
+            "Allowing users to ignore security rules.",
+            "Changing a customer's name without saving it.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "For example, adding an index can improve performance without requiring application code changes.",
+        },
+      ],
+    },
+  ],
+};
+
 const databaseKeys: LessonContent = {
   slug: "keys-in-relational-databases",
   title: "Keys in Relational Databases",
@@ -2947,7 +3135,7 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
+    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, dbUnderTheHood, sqlIntro, sqlCommands, primaryKeys, foreignKeys, normalization],
   },
   "data-types": {
     slug: "data-types",
