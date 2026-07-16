@@ -13,6 +13,7 @@ import theRelationalModelImg from "@/images/sql/foundations/the-relational-model
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import databaseKeysImg from "@/images/sql/foundations/database-keys.png";
 import levelsOfAbstractionImg from "@/images/sql/foundations/database-levels.png";
+import databaseLandscapeImg from "@/images/sql/foundations/database-landscape.png";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -1596,6 +1597,12 @@ const databaseLandscape: LessonContent = {
         "Relational databases are the general-purpose default for structured, correctness-critical data. NoSQL databases and distributed SQL systems exist to handle particular data shapes, scale requirements, or access patterns.",
         "The right question is not “Which database is best?” It is “Which database fits this problem?”",
       ],
+    },
+    {
+      kind: "image",
+      src: databaseLandscapeImg,
+      alt: "Database Landscape",
+      caption: "The database landscape",
     },
     {
       kind: "prose",
