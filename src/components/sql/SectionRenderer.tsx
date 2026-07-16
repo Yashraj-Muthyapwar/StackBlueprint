@@ -91,7 +91,7 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-export function SectionRenderer({ section }: { section: Section }) {
+export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
   switch (section.kind) {
     case "prose":
       return (
@@ -250,7 +250,7 @@ export function SectionRenderer({ section }: { section: Section }) {
       );
 
     case "animation":
-      return <LessonAnimation variant={section.variant} caption={section.caption} />;
+      return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
 
     case "analogy":
       return (
@@ -267,7 +267,7 @@ export function SectionRenderer({ section }: { section: Section }) {
 
     case "takeaways":
       return (
-        <section className="rounded-xl border border-mint/30 bg-mint/5 p-5">
+        <section className="rounded-xl border border-hairline bg-surface p-6 shadow-sm">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mint">
             Key takeaways
           </p>
@@ -286,6 +286,6 @@ export function SectionRenderer({ section }: { section: Section }) {
       );
       
     case "quiz":
-      return <Quiz data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }} />;
+      return <Quiz data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }} onActiveChange={onQuizActiveChange} />;
   }
 }
