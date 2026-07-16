@@ -1,6 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Database, Table, Terminal } from "lucide-react";
+import { ArrowRight, ChevronRight, Database, Table, Terminal, CheckCircle2 } from "lucide-react";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
+import { useProgress } from "@/hooks/use-progress";
 
 const ICONS = { table: Table, database: Database, terminal: Terminal } as const;
 
@@ -11,6 +12,7 @@ export const Route = createFileRoute("/sql/querying/$topic/")({
 function QueryingTopicPage() {
   const { topic } = Route.useParams();
   const t = QUERYING_TOPICS[topic];
+  const { isCompleted } = useProgress();
 
   if (!t) {
     return (
@@ -73,9 +75,15 @@ function QueryingTopicPage() {
                   {String(i + 1).padStart(2, "0")} /{" "}
                   {String(t.lessons.length).padStart(2, "0")}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-mint/40 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
-                  Read
-                </span>
+                {isCompleted(les.slug) ? (
+                  <div className="grid size-5 place-items-center rounded-full bg-mint/15 text-mint ring-1 ring-mint/30">
+                    <CheckCircle2 className="size-3.5" />
+                  </div>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-mint/40 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
+                    Read
+                  </span>
+                )}
               </div>
               <h2 className="mt-4 text-base font-medium">{les.title}</h2>
               <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
