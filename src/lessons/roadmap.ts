@@ -472,7 +472,7 @@ export const roadmap: RoadmapCategory[] = [
     overviewPath: "/web-scraping",
     blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
     patterns: [
-      lockedPattern("Beautiful Soup", "beautiful-soup", "Parsing HTML and navigating the DOM tree efficiently."),
+      lockedPattern("Beautiful Soup", "beautiful-soup", "Fetching web pages with Requests, parsing HTML, and navigating the DOM tree."),
       lockedPattern("Selenium", "selenium", "Automating web browsers to scrape dynamic, JavaScript-heavy pages."),
       lockedPattern("Scrapy", "scrapy", "Building scalable, high-performance web crawling spiders."),
     ],
