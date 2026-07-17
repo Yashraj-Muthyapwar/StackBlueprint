@@ -32,6 +32,7 @@ import {
   Wrench,
   Upload,
   HelpCircle,
+  Globe,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -461,6 +462,19 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
       lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
       lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
+    ],
+  },
+  {
+    title: "Web Scraping",
+    slug: "web-scraping",
+    icon: Globe,
+    locked: true,
+    overviewPath: "/web-scraping",
+    blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
+    patterns: [
+      lockedPattern("Beautiful Soup", "beautiful-soup", "Parsing HTML and navigating the DOM tree efficiently."),
+      lockedPattern("Selenium", "selenium", "Automating web browsers to scrape dynamic, JavaScript-heavy pages."),
+      lockedPattern("Scrapy", "scrapy", "Building scalable, high-performance web crawling spiders."),
     ],
   },
   {
