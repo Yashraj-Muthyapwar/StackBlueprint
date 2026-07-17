@@ -1,7 +1,7 @@
 import type { Section } from "@/lessons/data-warehouses/foundations-content";
-import { AlertTriangle, CheckCircle2, Info, X, Brain } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
 import { LessonAnimation } from "@/components/data-warehouses/LessonAnimation";
-import { useState, useEffect } from "react";
+import { ZoomableImage } from "@/components/ui/zoomable-image";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -91,51 +91,7 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-function ZoomableImage({ src, alt }: { src: string; alt?: string }) {
-  const [isZoomed, setIsZoomed] = useState(false);
 
-  useEffect(() => {
-    if (isZoomed) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isZoomed]);
-
-  return (
-    <>
-      <img
-        src={src}
-        alt={alt}
-        onClick={() => setIsZoomed(true)}
-        className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl cursor-zoom-in transition-transform duration-200 hover:scale-[1.015]"
-      />
-      {isZoomed && (
-        <div
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md cursor-zoom-out"
-          onClick={() => setIsZoomed(false)}
-        >
-          <button 
-            className="absolute right-6 top-6 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/80 transition-colors"
-            onClick={(e) => { e.stopPropagation(); setIsZoomed(false); }}
-            aria-label="Close fullscreen image"
-          >
-            <X className="size-6" />
-          </button>
-          <img
-            src={src}
-            alt={alt}
-            className="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
-            onClick={(e) => { e.stopPropagation(); setIsZoomed(false); }}
-          />
-        </div>
-      )}
-    </>
-  );
-}
 
 export function SectionRenderer({ section }: { section: Section }) {
   switch (section.kind) {
@@ -284,8 +240,8 @@ export function SectionRenderer({ section }: { section: Section }) {
     case "image":
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
-          <div className="w-full flex justify-center bg-surface-2/30 py-4">
-            <ZoomableImage src={section.src} alt={section.alt} />
+          <div className="flex w-full justify-center bg-surface-2/30 py-4">
+            <ZoomableImage src={section.src} alt={section.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
           </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
