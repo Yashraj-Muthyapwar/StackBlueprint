@@ -171,6 +171,13 @@ function Landing() {
                   </Link>
                 );
               }
+              if (cat.overviewPath === "/web-scraping") {
+                return (
+                  <Link key={cat.slug} to="/web-scraping" className="block">
+                    {card}
+                  </Link>
+                );
+              }
               return (
                 <Link
                   key={cat.slug}
