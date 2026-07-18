@@ -112,6 +112,14 @@ export function AppSidebar() {
                 >
                   {cat.title}
                 </Link>
+              ) : cat.overviewPath === "/web-scraping" ? (
+                <Link
+                  to="/web-scraping"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
               ) : (
                 <span>{cat.title}</span>
               )}
@@ -213,6 +221,17 @@ function NestedPatternItem({
   const hasLessons = pat.lessons.length > 0;
   const { isCompleted } = useProgress();
 
+  if (pat.locked) {
+    return (
+      <SidebarMenuSubItem>
+        <SidebarMenuSubButton tooltip={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
+          <Lock className="size-3" />
+          <span>{pat.title}</span>
+        </SidebarMenuSubButton>
+      </SidebarMenuSubItem>
+    );
+  }
+
   if (!hasLessons) {
     if (pat.path) {
       return (
@@ -295,6 +314,17 @@ function PatternItem({
   const [open, setOpen] = useState(patternActive);
   const hasLessons = pat.lessons.length > 0;
   const { isCompleted } = useProgress();
+
+  if (pat.locked) {
+    return (
+      <SidebarMenuItem>
+        <SidebarMenuButton tooltip={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
+          <Lock className="size-3" />
+          <span>{pat.title}</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
   if (!hasLessons) {
     if (pat.path) {
