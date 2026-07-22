@@ -1,5 +1,6 @@
 import type { LessonContent, FoundationTopicMeta } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
+import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 
 const selectFrom: LessonContent = {
   slug: "your-first-query",
@@ -13,6 +14,12 @@ const selectFrom: LessonContent = {
         "A **query** is a request for data written in SQL. You describe the result you want, and the database decides how to find it.",
         "Most queries begin with two clauses: `SELECT`, which chooses what to show, and `FROM`, which names where the data comes from.",
       ],
+    },
+    {
+      kind: "image",
+      src: yourFirstQueryImg,
+      alt: "Visualization of how a SELECT statement pulls columns from a table",
+      caption: "A query describes the data you want; the database engine figures out how to retrieve it",
     },
     {
       kind: "table",
