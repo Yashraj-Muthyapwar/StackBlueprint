@@ -3093,11 +3093,11 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
       "The right type is half the schema — pick precisely and your queries get faster, smaller, and safer.",
     lessons: [numericText, datesTimestamps, jsonJsonb, nullSemantics],
   },
-  "select-fundamentals": {
-    slug: "select-fundamentals",
-    title: "SELECT Fundamentals",
+  "sql-querying-fundamentals": {
+    slug: "sql-querying-fundamentals",
+    title: "SQL Querying Fundamentals",
     category: "Foundations",
-    iconKey: "terminal",
+    iconKey: "table",
     blurb:
       "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
     lessons: [selectFrom, sqlComments, sqlOperators, whereLesson, orderLimit, logicalOrder],
