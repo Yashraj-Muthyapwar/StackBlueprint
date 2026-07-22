@@ -268,7 +268,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "takeaways":
       return (
-        <section className="rounded-xl border border-hairline bg-surface p-6 shadow-sm">
+        <section className="rounded-xl border border-mint/30 bg-mint/5 p-5">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mint">
             Key takeaways
           </p>
