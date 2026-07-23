@@ -153,6 +153,30 @@ FROM employees;`,
           ],
           correctIndex: 2,
           explanation: "FROM tells the database which table, view, or subquery you want to read data from."
+        },
+        {
+          id: "yf3",
+          question: "Write the exact clause used to select every column from a table.",
+          commandAnswer: ["SELECT *", "select *", "SELECT * ", "select * "],
+          explanation: "The asterisk (*) is a wildcard that means \"all columns\"."
+        },
+        {
+          id: "yf4",
+          question: "What SQL keyword is required to specify the source of the data?",
+          commandAnswer: ["FROM", "from", "From"],
+          explanation: "The FROM keyword indicates the table from which to retrieve data."
+        },
+        {
+          id: "yf5",
+          question: "Why should you generally avoid using SELECT * in saved queries or application code?",
+          options: [
+            "It is a syntax error in most SQL databases.",
+            "It is fragile to schema changes and returns unnecessary data, wasting bandwidth.",
+            "It runs the query much faster than specifying column names.",
+            "It forces the database to sort the results alphabetically by column name."
+          ],
+          correctIndex: 1,
+          explanation: "Using SELECT * can break your application if columns are added or removed, and it wastes resources by transmitting data you might not need."
         }
       ]
     }
@@ -479,6 +503,53 @@ WHERE (department = \Data OR department = \Finance)
         "Use parentheses whenever mixing AND and OR.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sb1",
+          question: "Which characters are used to start a single-line comment in SQL?",
+          commandAnswer: ["--", "-- "],
+          explanation: "Two dashes (--) mark the beginning of a single-line comment."
+        },
+        {
+          id: "sb2",
+          question: "How do you begin a multi-line comment in SQL?",
+          commandAnswer: ["/*", "/* "],
+          explanation: "A multi-line comment starts with /* and ends with */."
+        },
+        {
+          id: "sb3",
+          question: "Which of these operators is used to check if two values are NOT equal?",
+          options: [
+            "==",
+            "<>",
+            "><",
+            "!!"
+          ],
+          correctIndex: 1,
+          explanation: "<> (and often !=) is used to check for inequality in SQL."
+        },
+        {
+          id: "sb4",
+          question: "What logical operator should you use if you want a row to be returned ONLY when multiple conditions are ALL true?",
+          commandAnswer: ["AND", "and", "And"],
+          explanation: "The AND operator requires all combined conditions to be true."
+        },
+        {
+          id: "sb5",
+          question: "Why is it important to use parentheses when mixing AND and OR operators?",
+          options: [
+            "Because SQL syntax requires parentheses around all operators.",
+            "To prevent the database from throwing a syntax error.",
+            "Because AND is evaluated before OR, which can lead to unexpected logic if not made explicit.",
+            "Parentheses make the query execute faster."
+          ],
+          correctIndex: 2,
+          explanation: "AND has higher precedence than OR. Using parentheses clarifies your exact intended logic and avoids accidental bugs."
+        }
+      ]
+    }
   ],
 };
 
