@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
+import { FOUNDATION_TOPICS } from "@/lessons/web-scraping/foundations-content";
 
 export const Route = createFileRoute("/web-scraping/")({
   head: () => ({
@@ -64,11 +65,12 @@ const sections: Section[] = [
         blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
         icon: Globe,
         modules: [
+          "Web & Clients",
           "HTTP Methods",
           "Headers & Cookies",
-          "Status Codes",
           "The DOM Tree",
-          "Inspecting Elements",
+          "DevTools",
+          "CSR vs SSR",
         ],
         unlocked: true,
         routeBase: "foundations",
@@ -202,9 +204,11 @@ function WebScrapingIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
                   
-                  // For now we just use the static modules array and static completion count
-                  const completedCount = t.completedCount || 0;
-                  const totalCount = t.modules.length;
+                  const realTopic = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
+                  const completedCount = realTopic 
+                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length 
+                    : (t.completedCount || 0);
+                  const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
                   const card = (
                     <div
