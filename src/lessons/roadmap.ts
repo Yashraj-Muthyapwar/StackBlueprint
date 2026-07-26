@@ -33,6 +33,8 @@ import {
   Upload,
   HelpCircle,
   Globe,
+  ShieldAlert,
+  LockKeyhole,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -472,7 +474,20 @@ export const roadmap: RoadmapCategory[] = [
     overviewPath: "/web-scraping",
     blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
     patterns: [
-      lockedPattern("HTTP Foundations", "http-foundations", "Master the DOM, HTTP requests, status codes, headers, and cookies."),
+      {
+        title: "HTTP Foundations",
+        slug: "http-foundations",
+        path: "/web-scraping/foundations/http-foundations",
+        blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
+        lessons: [
+          { title: "How the Web Works", slug: "how-the-web-works", path: "/web-scraping/foundations/http-foundations/how-the-web-works", icon: Globe },
+          { title: "HTTP Methods & Status Codes", slug: "http-methods-and-status-codes", path: "/web-scraping/foundations/http-foundations/http-methods-and-status-codes", icon: ShieldAlert },
+          { title: "Headers & Cookies", slug: "headers-and-cookies", path: "/web-scraping/foundations/http-foundations/headers-and-cookies", icon: LockKeyhole },
+          { title: "The Document Object Model (DOM)", slug: "the-dom", path: "/web-scraping/foundations/http-foundations/the-dom", icon: Search },
+          { title: "Developer Tools (Inspecting Elements)", slug: "developer-tools", path: "/web-scraping/foundations/http-foundations/developer-tools", icon: Wrench },
+          { title: "Client-Side vs Server-Side Rendering", slug: "dynamic-vs-static-content", path: "/web-scraping/foundations/http-foundations/dynamic-vs-static-content", icon: Layers },
+        ],
+      },
       lockedPattern("Static Scraping", "static-scraping", "Fetch raw HTML and parse it efficiently to extract exactly what you need."),
       lockedPattern("Cleaning & Storing", "cleaning-and-storing", "Transform messy text into structured formats and save it to databases or CSVs."),
       lockedPattern("Browser Automation", "browser-automation", "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks."),
