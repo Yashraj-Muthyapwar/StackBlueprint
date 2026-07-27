@@ -97,7 +97,9 @@ function FoundationTopicPage() {
 
         <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {t.lessons.map((les, i) => (
-            <div
+            <Link
+              to="/web-scraping/foundations/$topic/$lesson"
+              params={{ topic: t.slug, lesson: les.slug }}
               key={les.slug}
               className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70"
             >
@@ -120,12 +122,11 @@ function FoundationTopicPage() {
               <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                 {les.subtitle}
               </p>
-              {/* Not wrapping in a Link yet because content is coming soon */}
-              <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-                Coming soon
+              <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-mint">
+                Start lesson
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
