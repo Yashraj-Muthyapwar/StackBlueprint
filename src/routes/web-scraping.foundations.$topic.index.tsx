@@ -1,9 +1,42 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Globe, CheckCircle2 } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronRight,
+  CheckCircle2,
+  Globe,
+  Search,
+  Database,
+  Compass,
+  Settings,
+  LockKeyhole,
+  Repeat,
+  Boxes,
+  Server,
+  ShieldAlert,
+  Activity,
+  Terminal,
+  Bot,
+  FileCode,
+} from "lucide-react";
 import { FOUNDATION_TOPICS } from "@/lessons/web-scraping/foundations-content";
 import { useProgress } from "@/hooks/use-progress";
 
-const ICONS = { globe: Globe, code: Globe, server: Globe } as const;
+const ICONS: Record<string, any> = {
+  globe: Globe,
+  search: Search,
+  database: Database,
+  compass: Compass,
+  settings: Settings,
+  lockKeyhole: LockKeyhole,
+  repeat: Repeat,
+  boxes: Boxes,
+  server: Server,
+  shieldAlert: ShieldAlert,
+  activity: Activity,
+  terminal: Terminal,
+  bot: Bot,
+  fileCode: FileCode,
+};
 
 export const Route = createFileRoute("/web-scraping/foundations/$topic/")({
   component: FoundationTopicPage,
@@ -25,7 +58,7 @@ function FoundationTopicPage() {
     );
   }
 
-  const Icon = ICONS[t.iconKey];
+  const Icon = ICONS[t.iconKey] || Globe;
 
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
