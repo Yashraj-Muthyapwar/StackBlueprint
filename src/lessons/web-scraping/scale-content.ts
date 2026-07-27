@@ -68,7 +68,7 @@ export const SCALE_TOPICS: Record<string, WebScrapingFoundationTopicMeta> = {
     title: "Anti-Bot Systems and What They Detect",
     category: "Scale, Ethics & AI",
     blurb: "Understand how websites fingerprint you and when you've triggered an escalation.",
-    iconKey: "globe",
+    iconKey: "shieldAlert",
     lessons: [howDetectionWorks, browserFingerprinting, detectingCaptchas, knowingWhenToStop],
   },
   "legal-and-ethical": {
@@ -76,7 +76,7 @@ export const SCALE_TOPICS: Record<string, WebScrapingFoundationTopicMeta> = {
     title: "The Legal and Ethical Line",
     category: "Scale, Ethics & AI",
     blurb: "Public data vs protected data, ToS, and scraping personal information.",
-    iconKey: "globe",
+    iconKey: "activity",
     lessons: [publicVsProtected, tosAndCfaa, personalData, copyrightDatabase],
   },
   "scrapers-in-production": {
@@ -84,7 +84,7 @@ export const SCALE_TOPICS: Record<string, WebScrapingFoundationTopicMeta> = {
     title: "Running Scrapers in Production",
     category: "Scale, Ethics & AI",
     blurb: "Incremental scraping, deduplication, alerting, and containerizing your pipelines.",
-    iconKey: "code",
+    iconKey: "terminal",
     lessons: [incrementalScraping, deduplication, scheduling, containerizing, monitoringAlerting, handlingSchemaDrift],
   },
   "ai-agents": {
@@ -92,7 +92,7 @@ export const SCALE_TOPICS: Record<string, WebScrapingFoundationTopicMeta> = {
     title: "AI-Driven Extraction and Browser Agents",
     category: "Scale, Ethics & AI",
     blurb: "Use LLMs and vision models to navigate pages and extract unstructured data automatically.",
-    iconKey: "globe",
+    iconKey: "bot",
     lessons: [llmExtraction, domToMarkdown, visionModels, autoNavigating, costLatency],
   },
   "capstone": {
@@ -100,7 +100,7 @@ export const SCALE_TOPICS: Record<string, WebScrapingFoundationTopicMeta> = {
     title: "Capstone",
     category: "Scale, Ethics & AI",
     blurb: "Build an end-to-end scalable pipeline, from target discovery to publishing.",
-    iconKey: "server",
+    iconKey: "fileCode",
     lessons: [choosingTarget, buildingPipeline, deployingScheduling, publishingDataset],
   },
 };
