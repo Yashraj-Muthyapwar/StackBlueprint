@@ -10,10 +10,18 @@ import {
   LockKeyhole,
   Bot,
   Layers,
+  Repeat,
+  Server,
+  Activity,
+  Compass,
+  FileCode,
+  Terminal,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
 import { FOUNDATION_TOPICS } from "@/lessons/web-scraping/foundations-content";
+import { AUTOMATION_TOPICS } from "@/lessons/web-scraping/automation-content";
+import { SCALE_TOPICS } from "@/lessons/web-scraping/scale-content";
 
 export const Route = createFileRoute("/web-scraping/")({
   head: () => ({
@@ -74,7 +82,6 @@ const sections: Section[] = [
         ],
         unlocked: true,
         routeBase: "foundations",
-        completedCount: 0,
       },
       {
         slug: "static-scraping",
@@ -82,15 +89,31 @@ const sections: Section[] = [
         blurb: "Fetch raw HTML and parse it efficiently to extract exactly what you need.",
         icon: Search,
         modules: [
-          "Python Requests",
-          "BeautifulSoup Selectors",
-          "Extracting Text",
-          "Finding Attributes",
+          "First Request",
+          "Parsing HTML",
+          "CSS Selectors",
+          "XPath and lxml",
+          "Extracting Attributes",
           "Pagination",
         ],
         unlocked: true,
         routeBase: "foundations",
-        completedCount: 0,
+      },
+      {
+        slug: "cleaning-and-storing",
+        title: "Cleaning, Structuring, and Storing",
+        blurb: "Transform messy text into structured formats and save it to databases or CSVs.",
+        icon: Database,
+        modules: [
+          "Defining Schema",
+          "Regex Extraction",
+          "Normalizing Data",
+          "Pandas",
+          "Exporting (JSONL)",
+          "SQLite/Postgres",
+        ],
+        unlocked: true,
+        routeBase: "foundations",
       },
     ],
   },
@@ -99,20 +122,38 @@ const sections: Section[] = [
     groupBlurb: "Handle messy data, execute JavaScript to render dynamic pages, and build robust crawling spiders.",
     topics: [
       {
-        slug: "cleaning-and-storing",
-        title: "Cleaning, Structuring, and Storing Scraped Data",
-        blurb: "Transform messy text into structured formats and save it to databases or CSVs.",
-        icon: Database,
-        modules: ["Regex Parsing", "Data Normalization", "Pandas", "Exporting to CSV/JSON", "SQL Storage"],
+        slug: "hidden-api",
+        title: "Finding the Hidden API",
+        blurb: "Skip HTML entirely by discovering the JSON APIs that power the frontend.",
+        icon: Compass,
+        modules: ["Docs & Portals", "Network Tab", "Replaying Requests", "GraphQL & REST", "Sitemaps/Feeds"],
         unlocked: true,
         routeBase: "automation",
       },
       {
         slug: "browser-automation",
-        title: "Browser Automation with Selenium and Playwright",
+        title: "Browser Automation with Playwright and Selenium",
         blurb: "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks.",
         icon: Settings,
-        modules: ["Headless Browsers", "Waiting for Elements", "Clicking & Typing", "Handling Captchas", "Playwright vs Selenium"],
+        modules: ["When to Use", "Playwright Basics", "Waiting Correctly", "Interacting", "Intercepting Network", "Vs Selenium"],
+        unlocked: true,
+        routeBase: "automation",
+      },
+      {
+        slug: "authenticated-scraping",
+        title: "Sessions, Logins, and Authenticated Scraping",
+        blurb: "Handle cookies, tokens, CSRF, and state to scrape behind login walls safely.",
+        icon: LockKeyhole,
+        modules: ["Session Objects", "Form Logins", "Token Auth", "Reusing Auth State", "What Not To Login"],
+        unlocked: true,
+        routeBase: "automation",
+      },
+      {
+        slug: "async-fetching",
+        title: "Concurrency and Async Fetching",
+        blurb: "Speed up your scrapers 100x using threads, asyncio, and semaphores.",
+        icon: Repeat,
+        modules: ["Latency vs Throughput", "Threads/Processes", "Asyncio/httpx", "Concurrency Caps", "Retries/Timeouts"],
         unlocked: true,
         routeBase: "automation",
       },
@@ -121,7 +162,7 @@ const sections: Section[] = [
         title: "The Scrapy Framework",
         blurb: "Build high-performance, asynchronous web crawling spiders that scale.",
         icon: Boxes,
-        modules: ["Spiders & Items", "Pipelines", "Middlewares", "Async Fetching", "Scrapy Shell"],
+        modules: ["Why Scrapy", "Spiders/Requests", "Items/Pipelines", "Middlewares", "Scrapy Shell", "With Playwright"],
         unlocked: true,
         routeBase: "automation",
       },
@@ -133,28 +174,55 @@ const sections: Section[] = [
     topics: [
       {
         slug: "scale-and-politeness",
-        title: "Scraping at Scale: Robustness and Politeness",
+        title: "Robustness and Politeness",
         blurb: "Manage rate limits, handle retries, rotate proxies, and respect robots.txt.",
-        icon: ShieldAlert,
-        modules: ["Proxy Rotation", "User-Agent Spoofing", "robots.txt", "Rate Limiting", "Handling Bans"],
+        icon: Server,
+        modules: ["robots.txt", "Rate Limiting", "Retry Strategy", "Handling Bans", "Proxy Rotation", "Failing Loudly"],
         unlocked: true,
         routeBase: "scale",
       },
       {
-        slug: "apis-and-alternatives",
-        title: "APIs, Open Datasets, and Alternatives to Scraping",
-        blurb: "Why scrape when you don't have to? Finding official APIs and hidden endpoints.",
-        icon: Layers,
-        modules: ["Network Tab Reverse Engineering", "GraphQL APIs", "REST Endpoints", "Open Data Portals"],
+        slug: "anti-bot-systems",
+        title: "Anti-Bot Systems and What They Detect",
+        blurb: "Understand how websites fingerprint you and when you've triggered an escalation.",
+        icon: ShieldAlert,
+        modules: ["How Detection Works", "Fingerprinting", "Captchas/Walls", "When to Stop"],
+        unlocked: true,
+        routeBase: "scale",
+      },
+      {
+        slug: "legal-and-ethical",
+        title: "The Legal and Ethical Line",
+        blurb: "Public data vs protected data, ToS, and scraping personal information.",
+        icon: Activity,
+        modules: ["Public vs Protected", "ToS & CFAA", "Personal Data/GDPR", "Copyright/Database"],
+        unlocked: true,
+        routeBase: "scale",
+      },
+      {
+        slug: "scrapers-in-production",
+        title: "Running Scrapers in Production",
+        blurb: "Incremental scraping, deduplication, alerting, and containerizing your pipelines.",
+        icon: Terminal,
+        modules: ["Incremental Scrapes", "Deduplication", "Scheduling (Airflow)", "Containerizing", "Alerting", "Schema Drift"],
         unlocked: true,
         routeBase: "scale",
       },
       {
         slug: "ai-agents",
-        title: "Scaling, Automation, and AI-Driven Browser Agents",
+        title: "AI-Driven Extraction and Browser Agents",
         blurb: "Use LLMs and vision models to navigate pages and extract unstructured data automatically.",
         icon: Bot,
-        modules: ["Vision Models", "DOM to Markdown", "LLM Extraction", "Auto-Navigating Agents"],
+        modules: ["LLM Extraction", "DOM to Markdown", "Vision Models", "Auto-Navigating Agents", "Cost/Latency"],
+        unlocked: true,
+        routeBase: "scale",
+      },
+      {
+        slug: "capstone",
+        title: "Capstone",
+        blurb: "Build an end-to-end scalable pipeline, from target discovery to publishing.",
+        icon: FileCode,
+        modules: ["Choosing Target", "Building Pipeline", "Deploying", "Publishing Dataset"],
         unlocked: true,
         routeBase: "scale",
       },
@@ -204,11 +272,21 @@ function WebScrapingIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
                   
-                  const realTopic = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
-                  const completedCount = realTopic 
-                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length 
+                  const getTopicLessons = (t: Topic) => {
+                    const f = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
+                    if (f) return f.lessons;
+                    const a = AUTOMATION_TOPICS[t.slug as keyof typeof AUTOMATION_TOPICS];
+                    if (a) return a.lessons;
+                    const s = SCALE_TOPICS[t.slug as keyof typeof SCALE_TOPICS];
+                    if (s) return s.lessons;
+                    return null;
+                  };
+
+                  const realTopicLessons = getTopicLessons(t);
+                  const completedCount = realTopicLessons 
+                    ? realTopicLessons.filter(l => isCompleted(l.slug)).length 
                     : (t.completedCount || 0);
-                  const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
+                  const totalCount = realTopicLessons ? realTopicLessons.length : t.modules.length;
 
                   const card = (
                     <div
