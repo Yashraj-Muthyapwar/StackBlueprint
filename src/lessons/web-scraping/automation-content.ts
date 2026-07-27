@@ -54,7 +54,7 @@ export const AUTOMATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Finding the Hidden API",
     category: "Advanced Scraping",
     blurb: "Skip HTML entirely by discovering the JSON APIs that power the frontend.",
-    iconKey: "globe",
+    iconKey: "compass",
     lessons: [checkApiFirst, reverseNetwork, replayPython, graphqlRest, sitemapsFeeds],
   },
   "browser-automation": {
@@ -62,7 +62,7 @@ export const AUTOMATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Browser Automation with Playwright and Selenium",
     category: "Advanced Scraping",
     blurb: "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks.",
-    iconKey: "code",
+    iconKey: "settings",
     lessons: [whenToUseBrowser, playwrightBasics, waitingCorrectly, interactingPages, interceptingNetwork, playwrightVsSelenium],
   },
   "authenticated-scraping": {
@@ -70,7 +70,7 @@ export const AUTOMATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Sessions, Logins, and Authenticated Scraping",
     category: "Advanced Scraping",
     blurb: "Handle cookies, tokens, CSRF, and state to scrape behind login walls safely.",
-    iconKey: "server",
+    iconKey: "lockKeyhole",
     lessons: [sessionObjects, formLogins, tokenAuth, reuseBrowserState, whatNotToLogin],
   },
   "async-fetching": {
@@ -78,7 +78,7 @@ export const AUTOMATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Concurrency and Async Fetching",
     category: "Advanced Scraping",
     blurb: "Speed up your scrapers 100x using threads, asyncio, and semaphores.",
-    iconKey: "server",
+    iconKey: "repeat",
     lessons: [whySequentialSlow, threadsProcesses, asyncioHttpx, controlConcurrency, retriesTimeouts],
   },
   "scrapy-framework": {
@@ -86,7 +86,7 @@ export const AUTOMATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "The Scrapy Framework",
     category: "Advanced Scraping",
     blurb: "Build high-performance, asynchronous web crawling spiders that scale.",
-    iconKey: "code",
+    iconKey: "boxes",
     lessons: [whyScrapy, spidersRequests, itemsPipelines, middlewares, scrapyShell, scrapyPlaywright],
   },
 };
