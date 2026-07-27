@@ -138,6 +138,47 @@ print(response.text[:100])                  # <!DOCTYPE html>\\n<html class="cli
         "One browser page load can involve many requests; one requests.get call makes only one.",
         "Start with the simplest allowed request that gives you the data you need."
       ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "how-the-web-works-requests",
+          question: "How does `requests.get()` behave compared to a normal web browser opening a page?",
+          options: [
+            "It automatically downloads all images and CSS files.",
+            "It executes JavaScript exactly like a browser.",
+            "It makes exactly one HTTP request and returns the raw response.",
+            "It hides your identity from the server."
+          ],
+          correctIndex: 2,
+          explanation: "A single `requests.get()` fetches exactly what you ask for and nothing more. It doesn't parse the HTML to discover and download extra assets or run JS."
+        },
+        {
+          id: "how-the-web-works-fragment",
+          question: "In the URL `https://example.com/products?sort=price#reviews`, what does the server do with the `#reviews` fragment?",
+          options: [
+            "It uses it to filter the database query.",
+            "It ignores it because fragments are never sent to the server.",
+            "It redirects the user to the reviews page.",
+            "It returns JSON instead of HTML."
+          ],
+          correctIndex: 1,
+          explanation: "The fragment is handled entirely client-side by the browser. The server only sees the path and the query string."
+        },
+        {
+          id: "how-the-web-works-detection",
+          question: "Why should we avoid thinking our scraper is 'invisible' to the website?",
+          options: [
+            "Because Python is slower than JavaScript.",
+            "Because websites can examine request headers, TLS fingerprints, and behavior to distinguish a script from a real browser.",
+            "Because scrapers cannot connect over HTTPS.",
+            "Because every scraping request requires an API key."
+          ],
+          correctIndex: 1,
+          explanation: "Servers look at details like User-Agent headers, IP reputation, and TLS fingerprints. A generic python script looks very different from Chrome."
+        }
+      ]
     }
   ]
 };
