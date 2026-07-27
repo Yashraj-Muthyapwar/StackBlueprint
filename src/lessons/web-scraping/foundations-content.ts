@@ -5,7 +5,7 @@ export type WebScrapingFoundationTopicMeta = {
   title: string;
   category: string;
   blurb: string;
-  iconKey: "globe" | "code" | "server";
+  iconKey: string;
   lessons: LessonContent[];
 };
 
@@ -85,7 +85,7 @@ export const FOUNDATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Static Scraping with Requests and BeautifulSoup",
     category: "Foundations & Basics",
     blurb: "Fetch raw HTML and parse it efficiently to extract exactly what you need.",
-    iconKey: "code",
+    iconKey: "search",
     lessons: [firstRequest, parsingSoup, cssSelectors, xpathLxml, extractingAttributes, pagination],
   },
   "cleaning-and-storing": {
@@ -93,7 +93,7 @@ export const FOUNDATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     title: "Cleaning, Structuring, and Storing",
     category: "Foundations & Basics",
     blurb: "Transform messy text into structured formats and save it to databases or CSVs.",
-    iconKey: "server",
+    iconKey: "database",
     lessons: [definingSchema, regexExtraction, normalizingData, pandasScraping, exportingFormats, storingSql],
   },
 };
