@@ -658,7 +658,199 @@ const theDom: LessonContent = {
   slug: "the-dom",
   title: "The Document Object Model (DOM)",
   subtitle: "How HTML becomes a tree structure that you can query.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Source vs Live DOM",
+      body: [
+        "HTML is just raw text sent by the server. A parser reads that text and turns it into a tree of elements called the DOM (Document Object Model).",
+        "It is critical to understand the difference between the original source and the live DOM. 'View Page Source' in your browser shows the exact HTML text the server returned. The 'Elements' tab in Developer Tools shows the live DOM, which might have been modified by JavaScript after the page loaded.",
+        "When scraping with a basic HTTP client like requests, you only get the original source text. If you write your scraper based on the DevTools Elements tab, it might fail because JavaScript hasn't run to create those elements yet."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Anchor, up, down",
+      body: [
+        "A robust scraping strategy is 'anchor, up, down'. Instead of trying to guess the exact path from the top of the document to your data, find a unique and stable anchor element.",
+        "Walk UP the tree from that anchor to find the container holding a complete record (like a product card containing a title, price, and link). Then, walk DOWN into that container to extract the specific fields you need.",
+        "When traversing children, remember that element children can include whitespace text nodes (like newlines between HTML tags). Always ask for direct element children (like tags) when structure matters."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Extracting text safely",
+      code: `from bs4 import BeautifulSoup
+
+html = '''
+<div class="product">
+  <h2>Super Widget</h2>
+  <p class="description">A <strong>very</strong> good widget.</p>
+</div>
+'''
+soup = BeautifulSoup(html, "lxml")
+
+h2 = soup.find("h2")
+# .string works when there is exactly one text node inside
+print(h2.string)  # Super Widget
+
+desc = soup.find("p", class_="description")
+# .string returns None if there are child tags inside!
+print(desc.string)  # None
+
+# get_text() recursively extracts all text, letting you add a separator
+print(desc.get_text(strip=True))  # A very good widget.
+print(desc.get_text(separator=" ", strip=True))  # A very good widget.`
+    },
+    {
+      kind: "prose",
+      heading: "The class attribute is special",
+      body: [
+        "The exception worth knowing in advance is class. HTML defines it as a space-separated set of names, so BeautifulSoup exposes it as a list. Comparing it directly with one string will be false even when the element clearly has that class."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Read attributes safely",
+      code: `from bs4 import BeautifulSoup
+
+html = '<article id="post-4021" class="card card--featured" data-sku="BK-901">x</article>'
+article = BeautifulSoup(html, "lxml").find("article")
+
+print(article["id"])                      # post-4021
+print(article.get("data-sku"))             # BK-901
+print(article.get("data-missing"))         # None, no error
+print(article.get("data-missing", "-"))   # -
+
+print(article["class"])                    # ['card', 'card--featured']
+
+# This is False, even though the element has the class:
+print(article["class"] == "card")          # False
+
+# This is the check you want:
+print("card" in article.get("class", []))  # True`
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Data attributes are useful clues",
+      body: "Attributes beginning with data- are often useful because developers may use them to connect UI elements with application data. Values such as data-id or data-price can be cleaner than visible text. They are not guaranteed to be stable or even present, so treat them as a promising signal and verify them against the page and API behavior."
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Extract data attributes at once",
+      code: `from bs4 import BeautifulSoup
+
+html = '''
+<article data-id="4021" data-price="12.99" data-currency="GBP" data-rating="4.5">
+  <span class="price">£12.99</span>
+  <span class="stars">★★★★☆</span>
+</article>
+'''
+article = BeautifulSoup(html, "lxml").find("article")
+
+data = {
+    key[5:]: value
+    for key, value in article.attrs.items()
+    if key.startswith("data-")
+}
+
+print(data)
+# {'id': '4021', 'price': '12.99', 'currency': 'GBP', 'rating': '4.5'}`
+    },
+    {
+      kind: "prose",
+      heading: "Parsers can disagree about broken HTML",
+      body: [
+        "Real HTML can be malformed: unclosed tags, invalid nesting, or attributes without quotes. Every parser repairs those mistakes, and they do not always repair them in the same way.",
+        "Use lxml as a fast default. If a selector works in DevTools but fails against the raw source you fetched, first rule out JavaScript. If the source itself is malformed, html5lib follows browser-style HTML parsing rules and may produce a tree closer to the browser's parsed result. It cannot recreate DOM changes made later by JavaScript."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "The same broken input can produce different trees",
+      code: `from bs4 import BeautifulSoup
+
+broken = "<div><p>one<p>two</div>"
+
+for parser in ["html.parser", "lxml", "html5lib"]:
+    try:
+        soup = BeautifulSoup(broken, parser)
+    except Exception:
+        print(f"{parser}: not installed")
+        continue
+    print(f"--- {parser} ---")
+    print(soup.prettify())
+
+# Always name the parser explicitly. If you omit it, BeautifulSoup selects
+# an available parser, which can change the tree across environments.`
+    },
+    {
+      kind: "prose",
+      heading: "Try it",
+      body: [
+        "Open a product page, right-click the price, and choose Inspect. Walk upward through the Elements panel until you find the smallest container holding one complete record: title, price, and link together. That is the element you will loop over in the next chapter.",
+        "Then view the page source and confirm that the same record exists in the original HTML. While inspecting, note any useful semantic attributes or data attributes, but do not assume they will be permanent without testing them."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "HTML is source text; a parser turns it into a queryable tree. The browser's live DOM may later differ because of JavaScript.",
+        "View Page Source shows the original response; DevTools → Elements shows the live browser document.",
+        "Element children can include whitespace text nodes. Ask for direct element children when structure matters.",
+        "Anchor, up, down: find something stable, walk to the record container, then walk down to the field you need.",
+        "Use get_text with a separator for nested visible text; .string can be None when an element contains child tags.",
+        "BeautifulSoup represents class as a list. Data attributes can be useful clues, not automatic guarantees.",
+        "Always name your parser. Different parsers build different trees from malformed source."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "dom-source-vs-live",
+          question: "Why might a CSS selector work perfectly in the Chrome DevTools 'Elements' tab but fail in your BeautifulSoup script?",
+          options: [
+            "Because BeautifulSoup does not support CSS selectors.",
+            "Because the DevTools 'Elements' tab shows the live DOM after JavaScript execution, while BeautifulSoup only sees the raw HTML source.",
+            "Because BeautifulSoup uses python instead of JavaScript.",
+            "Because Chrome blocks scraping scripts by default."
+          ],
+          correctIndex: 1,
+          explanation: "DevTools shows the DOM *after* JavaScript has run and the browser has corrected mistakes. BeautifulSoup only parses the initial HTML response you fetched."
+        },
+        {
+          id: "dom-beautifulsoup-class",
+          question: "In BeautifulSoup, why will `element['class'] == 'btn'` often return False even if the element is `<div class=\"btn primary\">`?",
+          options: [
+            "Because class is a reserved keyword in Python.",
+            "Because BeautifulSoup represents the class attribute as a list of strings, not a single string.",
+            "Because BeautifulSoup automatically removes classes for security.",
+            "Because you must use `element.get_class()` instead."
+          ],
+          correctIndex: 1,
+          explanation: "HTML defines the class attribute as a space-separated list of names. BeautifulSoup automatically converts this into a Python list."
+        },
+        {
+          id: "dom-text-extraction",
+          question: "When extracting text from an HTML element using BeautifulSoup, why is `.get_text(strip=True)` generally safer than `.string`?",
+          options: [
+            ".string crashes if the text contains unicode characters.",
+            ".string returns None if the element contains child HTML tags, while .get_text() recursively extracts all text inside.",
+            ".get_text() automatically translates the text to English.",
+            ".string only works on the <body> tag."
+          ],
+          correctIndex: 1,
+          explanation: "If a `<p>` tag contains a `<strong>` tag inside it, `.string` returns None because it is ambiguous. `.get_text()` safely extracts all text from the node and its children."
+        }
+      ]
+    }
+  ]
 };
 
 const devTools: LessonContent = {
