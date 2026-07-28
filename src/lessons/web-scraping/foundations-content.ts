@@ -5,6 +5,7 @@ import httpQueryMethodImg from "@/images/web-scraping/foundations/http-query-met
 import httpStatusCodesImg from "@/images/web-scraping/foundations/http-status-codes.png";
 import httpHeadersCookiesImg from "@/images/web-scraping/foundations/http-headers-cookies.png";
 import htmlDOMImg from "@/images/web-scraping/foundations/html-DOM.png";
+import devToolsImg from "@/images/web-scraping/foundations/developer-tools.png";
 
 export type WebScrapingFoundationTopicMeta = {
   slug: string;
@@ -864,7 +865,193 @@ const devTools: LessonContent = {
   slug: "developer-tools",
   title: "Developer Tools (Inspecting Elements)",
   subtitle: "How to reverse-engineer a website using the Elements and Network tabs.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "The Elements Tab: Test before you code",
+      body: [
+        "The Elements tab is your map of the live DOM. It allows you to right-click anything on the page, select Inspect, and instantly see the HTML that renders it.",
+        "Crucially, you can also press Ctrl+F (or Cmd+F) in the Elements tab to test CSS selectors or XPath queries right in the browser. This highlights matching elements and tells you exactly how many matches were found on the page. Testing your selectors here catches duplicates and errors before you even write a single line of Python."
+      ]
+    },
+    {
+      kind: "image",
+      src: devToolsImg,
+      alt: "The Elements and Network Tabs",
+      caption: "The Elements tab helps you build selectors; the Network tab helps you discover APIs."
+    },
+    {
+      kind: "prose",
+      heading: "The Network Tab: Seeing the real requests",
+      body: [
+        "While the Elements tab shows you the current state of the page, the Network tab shows you how it got there. Open the Network tab before loading or interacting with the page to record all incoming and outgoing traffic.",
+        "This is how you discover hidden APIs. By filtering for 'Fetch/XHR', you can often find the exact JSON endpoint the page uses to load data, saving you the trouble of parsing messy HTML.",
+        "When you click on a specific request in the Network tab, you can inspect its Headers, Payload, and Response. This tells you exactly what headers the browser sent, which allows you to mimic them in your scraper to avoid being blocked."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Testing which headers are strictly required",
+      code: `import requests
+
+def find_required_headers(url, headers, expected_text):
+    """
+    Remove headers one by one to see which ones are actually required 
+    by the server to return the correct content.
+    """
+    required = {}
+    
+    for name in headers:
+        # Create a test dictionary without the current header
+        test_headers = {k: v for k, v in headers.items() if k != name}
+        
+        try:
+            response = requests.get(url, headers=test_headers, timeout=10)
+            ok = response.status_code == 200 and expected_text in response.text
+        except requests.RequestException:
+            ok = False
+            
+        if ok:
+            print(f"optional: {name}")
+        else:
+            required[name] = headers[name]
+            print(f"required: {name}")
+
+    return required
+
+minimal = find_required_headers(
+    "https://quotes.toscrape.com/",
+    {
+        "User-Agent": "LearningClient/1.0",
+        "Accept": "text/html",
+        "Accept-Language": "en-US,en;q=0.9",
+    },
+    expected_text="Quotes to Scrape",
+)
+print("required headers:", minimal)`
+    },
+    {
+      kind: "prose",
+      heading: "Two more tabs worth knowing",
+      body: [
+        "The command palette, opened with Ctrl+Shift+P or Cmd+Shift+P, can disable JavaScript before you reload. If the content still appears, it is a good signal that the original HTML contains it. If it disappears, JavaScript is involved, but the source may still contain embedded data or the Network panel may reveal a permitted JSON response. Treat this as a clue, not a final verdict.",
+        "The Application tab shows browser storage such as cookies, local storage, and session storage. It can explain why an application remembers a logged-in browser, but its values may be sensitive. Do not copy, expose, or reuse credentials or tokens from it."
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not trust Copy Selector",
+      body: "Copy selector often produces a long positional path such as #main > div:nth-child(2) > div.row > div:nth-child(3) > span.a8f3d. It describes where an element happens to be today, often using fragile positions and generated class names. Use it to understand the structure, then write a shorter selector based on a stable record container and meaningful attributes."
+    },
+    {
+      kind: "prose",
+      heading: "A routine for every new site",
+      body: [
+        "Use the same sequence each time. First, confirm the target is in scope: review the site's terms, available API documentation, and robots.txt. robots.txt communicates crawl preferences; it is not an access grant or a substitute for permission. Next, load the page with Network open and search the original HTML for a specific value you need.",
+        "If the value is absent, inspect Network for an allowed JSON endpoint. If you do not find one, search loaded resources for embedded state. Use browser automation only when the data is legitimately available through the rendered experience and the simpler approaches do not apply. Starting with the smallest suitable approach is faster, easier to maintain, and gentler on the site."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Automate the first source-inspection step",
+      code: `import requests
+
+FRAMEWORK_HINTS = {
+    "__NEXT_DATA__": "Next.js Pages Router data may be embedded",
+    "self.__next_f.push": "Next.js App Router flight data may be embedded",
+    "window.__NUXT__": "Nuxt state may be embedded",
+    "application/ld+json": "JSON-LD structured data is present",
+}
+
+def recon(url, needle):
+    response = requests.get(
+        url,
+        timeout=20,
+        headers={"User-Agent": "LearningRecon/1.0"},
+    )
+    response.raise_for_status()
+    html = response.text
+
+    print(f"{url}  [{response.status_code}]  {len(html):,} characters")
+    if needle in html:
+        print("  -> found in source HTML; a standard HTTP client may be enough.")
+        return "source"
+
+    print("  -> not found in source HTML.")
+    for marker, description in FRAMEWORK_HINTS.items():
+        if marker in html:
+            print(f"  -> {description}")
+
+    print("  -> inspect Network and loaded resources next.")
+    return "investigate"
+
+recon("https://quotes.toscrape.com/", "The world as we have created it")`
+    },
+    {
+      kind: "prose",
+      heading: "Try it",
+      body: [
+        "Run the routine on a public practice site, a page from a system you own, and a site with a documented public API. Notice where the useful data appears in each case. The point is to choose the smallest appropriate tool, not to force every site into the same workflow.",
+        "Then find a page that loads more content while you scroll. With Network open, identify the request that fires and inspect its URL, parameters, and response. Before using it programmatically, verify that doing so is permitted and that you can make a minimal, well-behaved request."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "View Page Source shows the server response; Elements shows the live browser document after parsing and possible JavaScript changes.",
+        "Test CSS selectors in Elements and use the match count to catch duplicates before coding.",
+        "Open Network before loading, then inspect a promising request's URL, method, parameters, payload, headers, status, and response.",
+        "JSON responses and embedded state are useful leads, but access rules and credentials still matter.",
+        "Treat Copy as cURL and browser storage as potentially sensitive. Use them to understand permitted requests, never to expose or replay private sessions.",
+        "Start with source HTML, then Network and embedded state. Use browser automation only when it is truly needed and allowed.",
+        "Avoid Copy Selector output; prefer short selectors based on stable record containers and meaningful attributes."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "devtools-copy-selector",
+          question: "Why should you avoid using the browser's 'Copy Selector' feature to target elements for scraping?",
+          options: [
+            "It automatically injects tracking codes into your Python script.",
+            "It generates fragile selectors that rely on exact DOM positions and dynamically generated classes, which easily break when the site updates.",
+            "It copies the HTML content instead of the selector.",
+            "BeautifulSoup does not support the type of selectors that browsers generate."
+          ],
+          correctIndex: 1,
+          explanation: "Copy Selector often produces overly specific paths like `#main > div:nth-child(2) > span.x8A1`. If the site design changes slightly, the selector will break immediately."
+        },
+        {
+          id: "devtools-network-tab",
+          question: "What is the primary scraping benefit of monitoring the 'Fetch/XHR' traffic in the Network tab?",
+          options: [
+            "It allows you to download images automatically.",
+            "It shows you the exact CSS styles applied to the page.",
+            "It often reveals the clean JSON APIs powering the site, allowing you to bypass HTML parsing entirely.",
+            "It tells you the server's IP address."
+          ],
+          correctIndex: 2,
+          explanation: "Many modern websites load data dynamically via JSON endpoints. Finding and requesting these endpoints directly is much cleaner than scraping HTML."
+        },
+        {
+          id: "devtools-disable-js",
+          question: "If you disable JavaScript using the command palette and the page data disappears, what does this tell you?",
+          options: [
+            "The site cannot be scraped at all.",
+            "You have been IP banned.",
+            "The data is loaded dynamically via JavaScript, meaning you will either need to find the underlying API request in the Network tab, or use browser automation.",
+            "You need to send an `Accept-Language` header."
+          ],
+          correctIndex: 2,
+          explanation: "Disappearing data means the initial HTML source does not contain what you need. It is rendered client-side, pointing you toward the Network tab to investigate APIs."
+        }
+      ]
+    }
+  ]
 };
 
 const dynamicContent: LessonContent = {
