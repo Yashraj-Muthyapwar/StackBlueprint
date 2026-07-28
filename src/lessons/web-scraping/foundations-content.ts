@@ -4,6 +4,7 @@ import httpMethodsImg from "@/images/web-scraping/foundations/http-methods.png";
 import httpQueryMethodImg from "@/images/web-scraping/foundations/http-query-method.png";
 import httpStatusCodesImg from "@/images/web-scraping/foundations/http-status-codes.png";
 import httpHeadersCookiesImg from "@/images/web-scraping/foundations/http-headers-cookies.png";
+import htmlDOMImg from "@/images/web-scraping/foundations/html-DOM.png";
 
 export type WebScrapingFoundationTopicMeta = {
   slug: string;
@@ -667,6 +668,12 @@ const theDom: LessonContent = {
         "It is critical to understand the difference between the original source and the live DOM. 'View Page Source' in your browser shows the exact HTML text the server returned. The 'Elements' tab in Developer Tools shows the live DOM, which might have been modified by JavaScript after the page loaded.",
         "When scraping with a basic HTTP client like requests, you only get the original source text. If you write your scraper based on the DevTools Elements tab, it might fail because JavaScript hasn't run to create those elements yet."
       ]
+    },
+    {
+      kind: "image",
+      src: htmlDOMImg,
+      alt: "The HTML DOM Tree",
+      caption: "HTML is parsed into a queryable tree structure called the DOM."
     },
     {
       kind: "prose",
