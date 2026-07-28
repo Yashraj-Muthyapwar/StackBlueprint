@@ -425,7 +425,226 @@ const headersCookies: LessonContent = {
   slug: "headers-and-cookies",
   title: "Headers & Cookies",
   subtitle: "How state is maintained and how to mimic a real browser.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Headers: Providing Context",
+      body: [
+        "Headers are key-value pairs sent with every HTTP request and response. They provide essential context about the message being sent. For scrapers, request headers are your primary tool for convincing a server that you are a legitimate user.",
+        "The most critical header is the User-Agent. It identifies your browser and operating system. A generic Python script often sends a default User-Agent like 'python-requests/2.31.0', which is an immediate red flag for most modern websites.",
+        "Other important headers include Accept, which tells the server what kind of content you want (like HTML or JSON), and Accept-Language, which tells the server your preferred language."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Sending custom headers",
+      code: `import requests
+
+# A simple dictionary of headers to override the defaults
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
+}
+
+response = requests.get("https://httpbin.org/headers", headers=HEADERS)
+print(response.json())`
+    },
+    {
+      kind: "prose",
+      heading: "Conditional Requests",
+      body: [
+        "Sometimes you need to scrape a page repeatedly to check for updates. Instead of downloading the whole page every time, you can use headers to ask the server if anything has changed.",
+        "If the server provides an ETag (a unique version identifier) or a Last-Modified date in its response, you can send those back in your next request using the If-None-Match or If-Modified-Since headers.",
+        "If the content hasn't changed, the server will return a 304 Not Modified status code with no body. This saves you bandwidth and makes your scraper much faster and more polite."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Using ETags to avoid unnecessary downloads",
+      code: `import requests
+
+url = "https://api.github.com/repos/psf/requests"
+
+# First request: get the data and save the ETag
+response1 = requests.get(url)
+etag = response1.headers.get("ETag")
+print(response1.status_code) # 200
+
+# Second request: send the ETag back
+headers = {"If-None-Match": etag}
+response2 = requests.get(url, headers=headers)
+
+# The server confirms nothing changed and returns an empty body
+print(response2.status_code) # 304`
+    },
+    {
+      kind: "prose",
+      heading: "Cookies: Remembering State",
+      body: [
+        "HTTP does not remember a previous request on its own. A server needs an explicit way to connect your cart, login, or preferences to the next request you make.",
+        "The server can send a Set-Cookie header. A client that stores it will return the appropriate cookie in later Cookie headers, subject to cookie rules such as domain, path, Secure, and expiry. That is how state can persist across separate HTTP requests."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Without a session, a cookie is not retained",
+      code: `import requests
+
+# This one-off request receives a cookie, then its temporary cookie jar is gone.
+requests.get("https://httpbin.org/cookies/set/band/gold", timeout=10)
+
+# A new request starts with a new cookie jar.
+response = requests.get("https://httpbin.org/cookies", timeout=10)
+print(response.json())  # {'cookies': {}}`
+    },
+    {
+      kind: "prose",
+      heading: "Sessions preserve state and can reuse connections",
+      body: [
+        "requests.Session keeps a cookie jar across its requests and gives you one place to set shared headers. It is a strong default when a scraper makes repeated requests to the same host or needs a stateful flow such as a permitted login.",
+        "A Session also maintains a pool of reusable connections. When the server keeps a connection available, later requests can reuse it and avoid some setup work. This is an optimization, not a guarantee: servers can close connections and network timing still varies."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "A session retains cookies across requests",
+      code: `import requests
+
+with requests.Session() as session:
+    session.headers.update({
+        "User-Agent": "StackBlueprintBot/1.0 (+https://stackblueprint.com/bot)",
+        "Accept-Language": "en-US,en;q=0.9",
+    })
+
+    session.get("https://httpbin.org/cookies/set/band/gold", timeout=10)
+
+    response = session.get("https://httpbin.org/cookies", timeout=10)
+    print(response.json())  # {'cookies': {'band': 'gold'}}`
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Compare separate requests with a session",
+      code: `import time
+import requests
+
+URL = "https://quotes.toscrape.com/page/1/"
+COUNT = 15
+
+start = time.perf_counter()
+for _ in range(COUNT):
+    requests.get(URL, timeout=10)
+separate_requests = time.perf_counter() - start
+
+with requests.Session() as session:
+    start = time.perf_counter()
+    for _ in range(COUNT):
+        session.get(URL, timeout=10)
+    session_requests = time.perf_counter() - start
+
+print(f"separate requests: {separate_requests:.2f}s")
+print(f"one session:       {session_requests:.2f}s")
+print(f"ratio:             {separate_requests / session_requests:.1f}x")
+
+# This is a demonstration, not a benchmark. CDN caches, server behavior, and
+# network conditions can make the difference small or large.`
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not paste browser headers or cookies blindly",
+      body: "Remove Host and Content-Length from copied requests because requests computes them. Avoid advertising compression you cannot decode. Never hardcode a copied Cookie header: values expire, may be scoped to a different domain, and can expose an authenticated session. Let a Session manage cookies where you have permission to use them."
+    },
+    {
+      kind: "prose",
+      heading: "Cookie scope causes real bugs",
+      body: [
+        "Cookies are not global. Host-only cookies set by shop.example.com are sent back only to that host, not automatically to api.example.com. A cookie with Domain=example.com can apply to that domain and its subdomains. Path rules can narrow the scope further, and Secure cookies are sent only over HTTPS.",
+        "This creates a familiar symptom: a permitted login works on the main site, but requests to a related API return 401. Before rewriting your authentication logic, inspect the cookie's domain, path, expiry, and Secure flag."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Inspect cookie scope and flags",
+      code: `import requests
+
+session = requests.Session()
+session.get("https://httpbin.org/cookies/set/theme/dark", timeout=10)
+
+for cookie in session.cookies:
+    print(
+        f"{cookie.name:16} domain={cookie.domain:26} "
+        f"path={cookie.path:8} secure={cookie.secure} "
+        f"expires={cookie.expires}"
+    )`
+    },
+    {
+      kind: "prose",
+      heading: "Try it",
+      body: [
+        "Run the header inspection once with requests defaults and once with the small HEADERS dictionary. Compare what changes. Do not try to recreate every browser header; identify which specific response difference you are investigating.",
+        "Then run the session comparison. Increase COUNT to fifty and observe the result, but treat it as a local experiment rather than a universal performance claim. Finally, run the ETag example and see whether the target server offers a validator."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Headers provide request context and response metadata; inspect them before changing them.",
+        "A User-Agent, Accept, language preference, and compression support should be intentional, not copied wholesale from a browser.",
+        "ETag and Last-Modified support conditional requests, which can return 304 without downloading an unchanged body.",
+        "Cookies preserve state across requests, either as session identifiers or as client-held state.",
+        "A requests.Session is a strong default for repeated requests to the same host: it retains cookies and may reuse connections.",
+        "Cookies follow domain, path, Secure, and expiry rules; a login on one host may not apply to another."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "headers-cookies-session",
+          question: "Why should you use a `requests.Session` when scraping multiple pages from the same website?",
+          options: [
+            "It runs the requests in parallel to speed up scraping.",
+            "It automatically executes JavaScript on the pages you request.",
+            "It persists cookies across requests and can reuse the underlying network connection.",
+            "It automatically bypasses Cloudflare and other bot protections."
+          ],
+          correctIndex: 2,
+          explanation: "A Session acts like a continuous browsing session: it stores any cookies the server sets and sends them back on the next request, and connection pooling speeds up subsequent requests."
+        },
+        {
+          id: "headers-cookies-etag",
+          question: "What is the primary benefit of using ETag or Last-Modified headers in your requests?",
+          options: [
+            "They prove to the server that you are a real human.",
+            "They allow the server to return a 304 Not Modified without sending the full response body if the data hasn't changed.",
+            "They force the server to always return the freshest data possible.",
+            "They allow you to authenticate without a password."
+          ],
+          correctIndex: 1,
+          explanation: "Conditional requests save bandwidth. If the ETag matches what the server has, it returns 304 instead of sending the exact same payload again."
+        },
+        {
+          id: "headers-cookies-copy",
+          question: "Why is it a bad idea to blindly copy all headers and cookies from your browser's network tab into your scraper script?",
+          options: [
+            "Because Python cannot handle headers that are too long.",
+            "Because the server will know you are using Python if you send too many headers.",
+            "Because cookies expire, some headers (like Content-Length) are automatically managed by requests, and copying authentication cookies can leak your personal session.",
+            "Because copying headers is illegal."
+          ],
+          correctIndex: 2,
+          explanation: "Never hardcode cookies or dynamic headers. Let requests handle `Content-Length` and let a Session manage cookies dynamically."
+        }
+      ]
+    }
+  ]
 };
 
 const theDom: LessonContent = {
