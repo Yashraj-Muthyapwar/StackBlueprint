@@ -1,5 +1,8 @@
 import { type LessonContent } from "@/lessons/types";
 import howWebWorksImg from "@/images/web-scraping/foundations/how-web-works.png";
+import httpMethodsImg from "@/images/web-scraping/foundations/http-methods.png";
+import httpQueryMethodImg from "@/images/web-scraping/foundations/http-query-method.png";
+import httpStatusCodesImg from "@/images/web-scraping/foundations/http-status-codes.png";
 
 export type WebScrapingFoundationTopicMeta = {
   slug: string;
@@ -187,7 +190,235 @@ const httpMethods: LessonContent = {
   slug: "http-methods-and-status-codes",
   title: "HTTP Methods & Status Codes",
   subtitle: "GET vs POST, and what 200, 404, and 500 actually mean.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Methods: What do you want to do?",
+      body: [
+        "If a URL identifies what you are looking for, the HTTP method tells the server what you actually want to do with it. Let's look at the most common methods you will use in web scraping.",
+        "**GET:** This is the standard read request. It asks the server to return the resource without changing any data on the server itself. Most page loads and API fetches you make will be GET requests.",
+        "**POST:** You use this to send data to the server to be processed, like submitting a login form or running a complex search. POST requests contain a body that holds the data payload.",
+        "**HEAD:** This asks for the exact same response as a GET, but without downloading the response body. It is extremely useful when you just want to check if a file exists or read its size (via the Content-Length header) without wasting bandwidth."
+      ]
+    },
+    {
+      kind: "image",
+      src: httpMethodsImg,
+      alt: "Common HTTP Methods",
+      caption: "Common HTTP Methods used in web scraping."
+    },
+    {
+      kind: "prose",
+      heading: "The emerging QUERY method",
+      body: [
+        "Historically, if you wanted to fetch data using a complex, deeply nested query, you ran into a problem. GET requests are not supposed to have a body, and many servers simply ignore it if you try. Putting massive queries in the URL string is messy and often hits length limits. POST allows a body, but it is technically meant for modifying data, not for safe, read-only queries.",
+        "To solve this exact issue, the IETF is standardizing a new **QUERY** method. It acts exactly like a GET, meaning it is safe, idempotent, and cacheable. However, it allows you to send your query payload in the request body. As APIs modernize, you will start seeing this method used to fetch data without resorting to POST."
+      ]
+    },
+    {
+      kind: "image",
+      src: httpQueryMethodImg,
+      alt: "The HTTP QUERY Method",
+      caption: "The HTTP QUERY Method allows a request body like POST but remains safe and idempotent like GET."
+    },
+    {
+      kind: "prose",
+      heading: "Status Codes: What happened?",
+      body: [
+        "Every HTTP response includes a three-digit status code. The first digit is the most important one because it defines the broad category of the result.",
+        "**2xx (Success):** The server successfully processed your request. **200 OK** is the standard success code you will see most often. **201 Created** means a resource was successfully made on the server.",
+        "**3xx (Redirection):** The resource has moved, and the server is telling you where to go next. **301 Moved Permanently** means the URL has changed for good, while **302 Found** is just a temporary redirect. **304 Not Modified** tells you that your cached copy is still perfectly fresh.",
+        "**4xx (Client Error):** You made a mistake. **400 Bad Request** means your syntax is invalid. **401 Unauthorized** means you need to log in first. **403 Forbidden** means you lack permission (or your scraper was detected and blocked!). **404 Not Found** means the resource does not exist. **429 Too Many Requests** means you have hit a rate limit and need to slow down.",
+        "**5xx (Server Error):** The server failed to fulfill a perfectly valid request. **500 Internal Server Error** is a generic backend crash. **502 Bad Gateway** often means a proxy or load balancer failed to reach the main application. **503 Service Unavailable** means the server is overloaded or down for maintenance."
+      ]
+    },
+    {
+      kind: "image",
+      src: httpStatusCodesImg,
+      alt: "HTTP Status Codes",
+      caption: "The main categories of HTTP Status Codes."
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "200 OK does not mean 'Success'",
+      body: "A server might return a 200 OK status code, but the body of the response could be a captcha, a login page, or a generic 'Item not found' message wrapped in standard HTML. Always validate the content type and look for a specific marker in the HTML to confirm you received the data you expected."
+    },
+    {
+      kind: "prose",
+      heading: "Following Redirects",
+      body: [
+        "By default, the requests library will automatically follow 3xx redirects for you. This is usually what you want, but it can mask problems. If a product page is removed, the server might redirect you to the home page with a 200 OK.",
+        "You can check if a redirect occurred by inspecting response.history. You can also disable automatic redirects by setting allow_redirects=False. This lets you inspect the raw 3xx response and the 'Location' header to see exactly where the server is trying to send you."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Inspecting redirects manually",
+      code: `import requests
+
+url = "http://github.com" # HTTP instead of HTTPS
+
+# requests follows redirects automatically by default
+response = requests.get(url)
+print(response.url)     # https://github.com/
+print(response.history) # [<Response [301]>]
+
+# To inspect the redirect itself, disable automatic following
+raw = requests.get(url, allow_redirects=False)
+print(raw.status_code, raw.headers.get("location"))`
+    },
+    {
+      kind: "prose",
+      heading: "Retrying, carefully",
+      body: [
+        "Over thousands of requests, some will fail for reasons unrelated to your code: a dropped connection, a server restart, or a brief load-balancer problem. Retries help with those temporary failures.",
+        "Retry the right things. Network timeouts and selected 5xx responses are reasonable to try again with exponential backoff. For 429, wait as long as the server asks. For 403, do not blindly retry: stop and inspect whether the site requires authentication, has blocked access, or does not permit the request."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "A retry loop that knows when to stop",
+      code: `from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
+import random
+import time
+
+import requests
+
+RETRYABLE = {408, 500, 502, 503, 504}
+
+
+def retry_after_seconds(response, default=60):
+    """Read Retry-After as either seconds or an HTTP date."""
+    value = response.headers.get("retry-after")
+    if not value:
+        return default
+
+    try:
+        return max(0, float(value))
+    except ValueError:
+        try:
+            retry_at = parsedate_to_datetime(value)
+            if retry_at.tzinfo is None:
+                retry_at = retry_at.replace(tzinfo=timezone.utc)
+            return max(0, (retry_at - datetime.now(timezone.utc)).total_seconds())
+        except (TypeError, ValueError, IndexError, OverflowError):
+            return default
+
+
+def backoff_delay(attempt):
+    # Exponential backoff plus jitter prevents parallel workers from retrying
+    # together at the exact same moment.
+    return min(2 ** attempt + random.uniform(0, 1), 60)
+
+
+def get_with_retry(url, attempts=4, default_retry_after=60):
+    for attempt in range(attempts):
+        try:
+            response = requests.get(url, timeout=(5, 20))
+        except (requests.Timeout, requests.ConnectionError):
+            if attempt == attempts - 1:
+                break
+            time.sleep(backoff_delay(attempt))
+            continue
+
+        if response.status_code == 200:
+            return response
+
+        if response.status_code == 403:
+            print("forbidden: stopping to inspect the cause")
+            return None
+
+        if response.status_code == 429:
+            if attempt == attempts - 1:
+                break
+            wait = retry_after_seconds(response, default=default_retry_after)
+            print(f"rate limited; waiting {wait:.0f}s")
+            time.sleep(wait)
+            continue
+
+        if response.status_code in RETRYABLE:
+            if attempt == attempts - 1:
+                break
+            time.sleep(backoff_delay(attempt))
+            continue
+
+        print(f"skipping {url}: status {response.status_code}")
+        return None
+
+    print(f"gave up on {url} after {attempts} attempts")
+    return None`
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why add randomness?",
+      body: "The small random delay is called jitter. Without it, requests that fail together often retry together too, creating another spike of traffic. Jitter spreads those retries out."
+    },
+    {
+      kind: "prose",
+      heading: "Try it",
+      body: [
+        "httpbin.org can return a chosen status code, making it useful for testing response handling. Try get_with_retry against /status/200, /status/404, /status/503, and /status/403. To avoid a long wait while testing 429 without a Retry-After header, use attempts=1 or set default_retry_after=0.",
+        "Then request /redirect/3 and inspect response.history. You should see three redirect hops, a final 200 response, and a response.url that differs from the URL you requested."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "The URL identifies a resource; the HTTP method communicates your intended action.",
+        "GET is the standard safe read request. HEAD returns metadata without a response body when the server supports it.",
+        "Status-code families tell you what happened: 2xx succeeded, 3xx redirects or validates a cache, 4xx was rejected, and 5xx failed on the server.",
+        "A 200 is not proof that you got the right content. Validate type, content, and a target-specific marker.",
+        "Retry temporary network failures and selected 5xx responses with backoff and jitter. Respect 429 and inspect 403 rather than blindly repeating it.",
+        "Check response.url and response.history when the data looks wrong. Redirects can hide a missing page."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "http-methods-200-ok",
+          question: "If a server returns a 200 OK status code, does this guarantee that you received the data you wanted?",
+          options: [
+            "Yes, 200 OK means the page loaded perfectly.",
+            "Yes, unless the Content-Type is missing.",
+            "No, the server might return a 200 OK for a captcha, login page, or soft error page.",
+            "No, 200 OK actually means the request was rate-limited."
+          ],
+          correctIndex: 2,
+          explanation: "Websites often return 200 OK even when displaying an error message or a captcha. You must validate the actual content to be sure."
+        },
+        {
+          id: "http-methods-retrying",
+          question: "Which of the following status codes should you NOT blindly retry?",
+          options: [
+            "408 Request Timeout",
+            "502 Bad Gateway",
+            "503 Service Unavailable",
+            "403 Forbidden"
+          ],
+          correctIndex: 3,
+          explanation: "A 403 Forbidden means the server understands your request but refuses to authorize it. Retrying will not help and may get your IP banned."
+        },
+        {
+          id: "http-methods-jitter",
+          question: "What is the purpose of adding 'jitter' to an exponential backoff retry loop?",
+          options: [
+            "To make the code look more complex.",
+            "To prevent multiple failed requests from retrying at the exact same time and causing a traffic spike.",
+            "To bypass Cloudflare protection.",
+            "To wait exactly 60 seconds before retrying."
+          ],
+          correctIndex: 1,
+          explanation: "Jitter adds a small amount of randomness to the delay, spreading out retries and avoiding a synchronized wave of requests hitting the server."
+        }
+      ]
+    }
+  ]
 };
 
 const headersCookies: LessonContent = {
