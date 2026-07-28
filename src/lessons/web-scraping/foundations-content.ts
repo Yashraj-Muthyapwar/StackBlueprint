@@ -3,6 +3,7 @@ import howWebWorksImg from "@/images/web-scraping/foundations/how-web-works.png"
 import httpMethodsImg from "@/images/web-scraping/foundations/http-methods.png";
 import httpQueryMethodImg from "@/images/web-scraping/foundations/http-query-method.png";
 import httpStatusCodesImg from "@/images/web-scraping/foundations/http-status-codes.png";
+import httpHeadersCookiesImg from "@/images/web-scraping/foundations/http-headers-cookies.png";
 
 export type WebScrapingFoundationTopicMeta = {
   slug: string;
@@ -500,6 +501,12 @@ requests.get("https://httpbin.org/cookies/set/band/gold", timeout=10)
 # A new request starts with a new cookie jar.
 response = requests.get("https://httpbin.org/cookies", timeout=10)
 print(response.json())  # {'cookies': {}}`
+    },
+    {
+      kind: "image",
+      src: httpHeadersCookiesImg,
+      alt: "A server issues a cookie and the client returns it on later requests.",
+      caption: "A server issues a cookie and the client returns it on later requests."
     },
     {
       kind: "prose",
