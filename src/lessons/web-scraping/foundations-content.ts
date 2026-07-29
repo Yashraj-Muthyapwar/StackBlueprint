@@ -6,6 +6,7 @@ import httpStatusCodesImg from "@/images/web-scraping/foundations/http-status-co
 import httpHeadersCookiesImg from "@/images/web-scraping/foundations/http-headers-cookies.png";
 import htmlDOMImg from "@/images/web-scraping/foundations/html-DOM.png";
 import devToolsImg from "@/images/web-scraping/foundations/developer-tools.png";
+import renderingLadderImg from "@/images/web-scraping/foundations/client-side-server-side.png";
 
 export type WebScrapingFoundationTopicMeta = {
   slug: string;
@@ -1058,7 +1059,174 @@ const dynamicContent: LessonContent = {
   slug: "dynamic-vs-static-content",
   title: "Client-Side vs Server-Side Rendering",
   subtitle: "Why the DOM you see in DevTools doesn't always match the HTML you scrape.",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Server-Side vs Client-Side",
+      body: [
+        "In traditional Server-Side Rendering (SSR), the server builds the complete HTML string and sends it to the browser. What you see in 'View Page Source' is what you get, making it perfect for basic scraping tools.",
+        "In Client-Side Rendering (CSR), the server sends an empty HTML shell and a large JavaScript bundle. The browser downloads the bundle, runs the JavaScript, fetches the data (usually via an API), and then builds the DOM. If you scrape the raw HTML of a CSR page, you will just find an empty <div> and a <script> tag.",
+        "Modern frameworks often use a hybrid approach like Server-Side Generation (SSG) or Hydration. They send fully rendered HTML first so the page appears instantly, then 'hydrate' it with JavaScript to make it interactive. For scraping, this is great news: the data you need is often in that initial HTML."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Embedded JSON: The Hidden Goldmine",
+      body: [
+        "When a modern framework (like Next.js or Nuxt) renders a page on the server, it often embeds the raw JSON data directly into the HTML source inside a <script> tag. This allows the client-side JavaScript to hydrate the page without making an extra API call.",
+        "This is incredibly valuable for scrapers. Instead of writing complex CSS selectors to extract data from the DOM, you can simply extract the JSON block and parse it natively. One common standard for embedded data is JSON-LD (JSON for Linking Data), which sites use for SEO."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Extract JSON-LD structured data",
+      code: `import json
+import requests
+from bs4 import BeautifulSoup
+
+def extract_json_ld(url):
+    response = requests.get(url, timeout=20)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.content, "lxml")
+
+    blocks = []
+    for tag in soup.find_all("script", type="application/ld+json"):
+        try:
+            data = json.loads(tag.string or "")
+        except json.JSONDecodeError:
+            continue
+
+        if isinstance(data, list):
+            blocks.extend(data)
+        elif isinstance(data, dict) and isinstance(data.get("@graph"), list):
+            blocks.extend(data["@graph"])
+        else:
+            blocks.append(data)
+
+    return blocks
+
+# Pass a page you are permitted to inspect.
+# for block in extract_json_ld("https://example.com/product/123"):
+#     print(block.get("@type"), "->", block.get("name") or block.get("headline"))`
+    },
+    {
+      kind: "prose",
+      heading: "Choose the smallest appropriate approach",
+      body: [
+        "When the initial HTML does not contain your target data, work down a short list and stop at the first permitted option that works: a documented official API, a publicly accessible JSON response the site allows you to use, JSON-LD, or explicitly embedded JSON. Browser automation is the last option, not the first.",
+        "The cost difference can be substantial, but it varies by page and environment. A plain HTTP request is usually simpler and lighter than launching a browser. Across a large crawl, choosing the smallest suitable tool makes the job easier to run, debug, and maintain."
+      ]
+    },
+    {
+      kind: "image",
+      src: renderingLadderImg,
+      alt: "Strategies to investigate before reaching for browser automation.",
+      caption: "Start with the simplest permitted data source before reaching for browser automation."
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "When page one works and page two does not",
+      body: "A server-rendered first page with JavaScript-driven navigation can cause this pattern, but it is not the only explanation. Treat it as a clue. Compare the source HTML for both pages, then use Network to identify whether pagination triggers a request, changes query parameters, or needs a different allowed data source."
+    },
+    {
+      kind: "prose",
+      heading: "Robots.txt and sitemaps",
+      body: [
+        "A site can publish robots.txt at /robots.txt to communicate crawl preferences and point to sitemaps. It is useful context and sitemaps can be a much better URL-discovery source than crawling navigation links.",
+        "robots.txt is not an access grant, a legal conclusion, or a substitute for checking site terms and applicable requirements. Read it alongside the site's documented API and usage policies before you automate requests."
+      ]
+    },
+    {
+      kind: "code",
+      language: "python",
+      caption: "Read robots.txt and discover sitemaps",
+      code: `import urllib.robotparser
+from urllib.parse import urlparse
+
+def robots_check(url, user_agent="LearningBot/1.0"):
+    parts = urlparse(url)
+    robots_url = f"{parts.scheme}://{parts.netloc}/robots.txt"
+
+    parser = urllib.robotparser.RobotFileParser()
+    parser.set_url(robots_url)
+    try:
+        parser.read()
+    except OSError as error:
+        print(f"could not read {robots_url}: {error}")
+        return None
+
+    print(f"robots.txt: {robots_url}")
+    print(f"  allowed for {user_agent}: {parser.can_fetch(user_agent, url)}")
+    print(f"  crawl delay: {parser.crawl_delay(user_agent)}")
+    print(f"  sitemaps: {parser.site_maps()}")
+    return parser.can_fetch(user_agent, url)
+
+robots_check("https://quotes.toscrape.com/page/2/")`
+    },
+    {
+      kind: "prose",
+      heading: "Try it",
+      body: [
+        "Run inspect_initial_html against a public practice site, a page from a system you own, and a page with a documented public API. Use a distinctive visible value as the needle. Record whether it appears in source, JSON-LD, an explicit JSON script block, or a later permitted request.",
+        "For a page that loads more content while scrolling, keep Network open and identify the request that fires. Inspect its URL, parameters, and response. Before calling it in code, verify that the use is permitted and make only the minimal, well-behaved request you need."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SSR, SSG, CSR, and hydration can coexist. The practical question is where your target data first appears.",
+        "A selector that works in the live DOM may not exist in the initial HTML response.",
+        "Search source first, then inspect embedded JSON, JSON-LD, and permitted Network responses before considering browser automation.",
+        "Framework markers and text-size heuristics are clues, not proof of how a page delivers data.",
+        "A generic extractor can safely handle explicit JSON script blocks, but not arbitrary JavaScript or every framework-specific data format.",
+        "Browser automation is often heavier and more complex than a direct HTTP request; choose it only when it is needed and allowed.",
+        "robots.txt and sitemaps help with discovery, but they do not grant permission to scrape."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "dynamic-ssr-vs-csr",
+          question: "If you scrape a page with BeautifulSoup and it only returns a <div> and a <script> tag, what are you likely dealing with?",
+          options: [
+            "A Server-Side Rendered (SSR) page.",
+            "A Client-Side Rendered (CSR) page where JavaScript builds the DOM after loading.",
+            "A page blocked by a CAPTCHA.",
+            "A 404 Error page."
+          ],
+          correctIndex: 1,
+          explanation: "In CSR, the server just sends an empty shell. The browser must execute the JavaScript bundle to actually fetch the data and build the HTML."
+        },
+        {
+          id: "dynamic-json-ld",
+          question: "Why is finding JSON-LD or embedded Next.js data blocks in the HTML source considered a 'goldmine' for scraping?",
+          options: [
+            "It gives you the passwords of other users.",
+            "It allows you to bypass robots.txt restrictions.",
+            "You can parse the data directly as JSON using `json.loads()`, which is vastly simpler and less fragile than writing CSS selectors to extract text from HTML.",
+            "It forces the server to respond faster."
+          ],
+          correctIndex: 2,
+          explanation: "Parsing JSON natively guarantees you get the raw data in a structured format, completely avoiding the fragility of HTML DOM selectors."
+        },
+        {
+          id: "dynamic-automation-ladder",
+          question: "According to the 'smallest appropriate approach' rule, when should you use heavy browser automation tools like Playwright or Selenium?",
+          options: [
+            "It should always be your first choice because it renders everything perfectly.",
+            "Only when the data is not in the source HTML, not in an embedded JSON block, not available via a direct API request, and the site permits its use.",
+            "Only when you want to run your scraper faster.",
+            "Never, because browser automation is illegal."
+          ],
+          correctIndex: 1,
+          explanation: "Browser automation is resource-intensive and complex to maintain. Always try simple HTTP requests (for HTML or APIs) before resorting to spinning up a full browser."
+        }
+      ]
+    }
+  ]
 };
 
 // ==========================================
