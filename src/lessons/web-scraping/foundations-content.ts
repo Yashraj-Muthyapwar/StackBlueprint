@@ -1229,6 +1229,195 @@ robots_check("https://quotes.toscrape.com/page/2/")`
   ]
 };
 
+const fundamentalsQuiz: LessonContent = {
+  slug: "fundamentals-quiz",
+  title: "Foundations & Basics: Final Quiz",
+  subtitle: "Test your knowledge of the web, HTTP, and browser rendering.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "fq-1",
+          question: "What is the fundamental cycle that powers both browsers and web scrapers?",
+          options: [
+            "The Request-Response cycle",
+            "The Event Loop",
+            "The Client-Side Rendering cycle",
+            "The Data Hydration cycle"
+          ],
+          correctIndex: 0,
+          explanation: "Every scraper relies on the basic HTTP Request-Response cycle: you act as the client sending a request, and the server returns a response."
+        },
+        {
+          id: "fq-2",
+          question: "Which HTTP method is specifically designed to ask the server for headers without downloading the body?",
+          options: ["GET", "HEAD", "OPTIONS", "POST"],
+          correctIndex: 1,
+          explanation: "The HEAD method is perfect for checking things like file size or Last-Modified dates without wasting bandwidth downloading the file."
+        },
+        {
+          id: "fq-3",
+          question: "What does a 403 Forbidden status code indicate?",
+          options: [
+            "The server cannot find the page.",
+            "The server is down or broken.",
+            "The server understands the request but refuses to authorize it.",
+            "You are sending too many requests."
+          ],
+          correctIndex: 2,
+          explanation: "403 means you don't have permission. This might mean you need to log in, or it might mean the site blocked your scraper."
+        },
+        {
+          id: "fq-4",
+          question: "Why is the `User-Agent` header so critical in web scraping?",
+          options: [
+            "It tells the server your IP address.",
+            "It tells the server what software is making the request, and servers often block generic Python scripts.",
+            "It is required by law to scrape public data.",
+            "It forces the server to return JSON instead of HTML."
+          ],
+          correctIndex: 1,
+          explanation: "Many sites block default User-Agents like `python-requests`. Changing it to mimic a browser (or identifying your bot responsibly) is often the first step in scraping."
+        },
+        {
+          id: "fq-5",
+          question: "How does a `requests.Session` handle cookies differently than a simple `requests.get()`?",
+          options: [
+            "It encrypts the cookies for security.",
+            "It automatically persists cookies across multiple requests.",
+            "It deletes all cookies before every request.",
+            "It forces the server to accept third-party cookies."
+          ],
+          correctIndex: 1,
+          explanation: "A Session maintains a 'cookie jar', automatically sending back cookies the server issued, which is essential for maintaining state like logins."
+        },
+        {
+          id: "fq-6",
+          question: "What is the primary benefit of the server sending an `ETag` or `Last-Modified` header?",
+          options: [
+            "It proves to the server that you are a real human.",
+            "It allows the client to make conditional requests and save bandwidth.",
+            "It forces the server to always return the freshest data possible.",
+            "It allows you to authenticate without a password."
+          ],
+          correctIndex: 1,
+          explanation: "Conditional requests let the server reply with a 304 Not Modified if the data hasn't changed, saving bandwidth and processing time for both sides."
+        },
+        {
+          id: "fq-7",
+          question: "What is the key difference between the raw HTML source and the live DOM?",
+          options: [
+            "The raw HTML source is written in Python, while the live DOM is written in JavaScript.",
+            "The live DOM includes modifications made by JavaScript after the page loaded.",
+            "The raw HTML source is only visible on Mac computers.",
+            "The live DOM is always smaller in file size."
+          ],
+          correctIndex: 1,
+          explanation: "The DOM is the tree structure created *after* the browser parses the HTML and runs JavaScript. Scrapers only see the raw HTML source unless they use browser automation."
+        },
+        {
+          id: "fq-8",
+          question: "In BeautifulSoup, why does `element['class'] == 'btn'` often return False for `<div class=\"btn primary\">`?",
+          options: [
+            "Because BeautifulSoup automatically removes classes for security.",
+            "Because class is a reserved keyword in Python.",
+            "Because BeautifulSoup exposes the class attribute as a list of strings.",
+            "Because you must use `.get_class()` instead."
+          ],
+          correctIndex: 2,
+          explanation: "HTML defines `class` as a space-separated list, so BeautifulSoup parses it into a Python list like `['btn', 'primary']`."
+        },
+        {
+          id: "fq-9",
+          question: "What is the 'Anchor, up, down' scraping strategy?",
+          options: [
+            "Finding a unique stable element, walking up to the container, and walking down to extract fields.",
+            "Starting at the bottom of the page and scrolling up.",
+            "Using an <a> tag to download a file.",
+            "Checking the header, then the footer, then the body."
+          ],
+          correctIndex: 0,
+          explanation: "This strategy prevents fragile paths. You anchor on something unique (like a title), walk up to the parent record container, and then extract the siblings."
+        },
+        {
+          id: "fq-10",
+          question: "Why should you avoid relying heavily on the browser's 'Copy Selector' feature?",
+          options: [
+            "It generates fragile, highly positional selectors that break easily.",
+            "It automatically injects tracking codes into your Python script.",
+            "It copies the HTML content instead of the selector.",
+            "BeautifulSoup does not support CSS selectors."
+          ],
+          correctIndex: 0,
+          explanation: "Copy Selector often produces paths like `#main > div:nth-child(2) > span.x8A1`, which break the moment the site layout changes slightly."
+        },
+        {
+          id: "fq-11",
+          question: "If you disable JavaScript via the command palette and the data disappears, what should your next step be?",
+          options: [
+            "Give up, the site cannot be scraped.",
+            "Open the Network tab and look for the underlying JSON API request.",
+            "Use a regular expression to parse the JavaScript.",
+            "Change your IP address."
+          ],
+          correctIndex: 1,
+          explanation: "If the data isn't in the HTML, it's being loaded by JavaScript. The Network tab will reveal the clean JSON API the JavaScript is calling."
+        },
+        {
+          id: "fq-12",
+          question: "What is Client-Side Rendering (CSR)?",
+          options: [
+            "The server builds the complete HTML string and sends it to the browser.",
+            "The server sends an empty HTML shell, and JavaScript fetches data to build the DOM.",
+            "The browser sends JavaScript to the server to execute.",
+            "The server renders the page as a static image."
+          ],
+          correctIndex: 1,
+          explanation: "In CSR, the server just provides an empty `<div>` and a script tag. The browser does all the heavy lifting to fetch data and render the page."
+        },
+        {
+          id: "fq-13",
+          question: "Why is JSON-LD or embedded `__NEXT_DATA__` considered a goldmine for scraping?",
+          options: [
+            "It gives you the passwords of other users.",
+            "It bypasses rate limits automatically.",
+            "It allows you to parse clean, structured JSON natively instead of relying on fragile CSS selectors.",
+            "It forces the server to respond faster."
+          ],
+          correctIndex: 2,
+          explanation: "Instead of writing fragile HTML selectors, you can extract the embedded JSON string and use `json.loads()` to get perfectly structured data instantly."
+        },
+        {
+          id: "fq-14",
+          question: "When should you use heavy browser automation tools like Playwright or Selenium?",
+          options: [
+            "Always, it should be your first choice.",
+            "Never, because it is illegal.",
+            "Only when the data is not in the HTML, not in embedded JSON, not in a direct API request, and the site permits its use.",
+            "Whenever you want the scraper to run faster."
+          ],
+          correctIndex: 2,
+          explanation: "Browser automation is slow, resource-intensive, and hard to maintain. It should be the absolute last resort on the 'smallest appropriate approach' ladder."
+        },
+        {
+          id: "fq-15",
+          question: "What is the primary purpose of `robots.txt`?",
+          options: [
+            "To grant you legal permission to scrape the site.",
+            "To provide a list of passwords for the site's APIs.",
+            "To communicate crawl preferences and point to sitemaps.",
+            "To block IP addresses that scrape too fast."
+          ],
+          correctIndex: 2,
+          explanation: "`robots.txt` is a polite request from the site owner about what they prefer you to crawl. It is not a legal document or an access control mechanism."
+        }
+      ]
+    }
+  ]
+};
+
 // ==========================================
 // CHAPTER 2: Static Scraping
 // ==========================================
@@ -1256,7 +1445,7 @@ export const FOUNDATION_TOPICS: Record<string, WebScrapingFoundationTopicMeta> =
     category: "Foundations & Basics",
     blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
     iconKey: "globe",
-    lessons: [howTheWebWorks, httpMethods, headersCookies, theDom, devTools, dynamicContent],
+    lessons: [howTheWebWorks, httpMethods, headersCookies, theDom, devTools, dynamicContent, fundamentalsQuiz],
   },
   "static-scraping": {
     slug: "static-scraping",
