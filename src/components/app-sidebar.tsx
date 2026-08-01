@@ -120,6 +120,22 @@ export function AppSidebar() {
                 >
                   {cat.title}
                 </Link>
+              ) : cat.overviewPath === "/terraform" ? (
+                <Link
+                  to="/terraform"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
+              ) : cat.overviewPath === "/git-github" ? (
+                <Link
+                  to="/git-github"
+                  onClick={closeMobile}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {cat.title}
+                </Link>
               ) : (
                 <span>{cat.title}</span>
               )}
