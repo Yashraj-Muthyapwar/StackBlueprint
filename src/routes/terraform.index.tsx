@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
+import terraformLogo from "@/images/logos/terraform-logo.png";
 
 export const Route = createFileRoute("/terraform/")({
   head: () => ({
@@ -168,8 +169,8 @@ function TerraformIndex() {
     <div className="flex w-full flex-col font-sans">
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-6 grid size-16 place-items-center rounded-2xl bg-mint/10 text-mint ring-1 ring-mint/20 lg:size-20">
-            <Layers className="size-8 lg:size-10" />
+          <div className="mx-auto mb-6 flex justify-center">
+            <img src={terraformLogo} alt="Terraform Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Terraform
