@@ -351,7 +351,7 @@ export const roadmap: RoadmapCategory[] = [
     overviewPath: "/system-design",
     blurb: "Design systems that survive scale, failure, and traffic spikes.",
     patterns: [
-      lockedPattern("Getting Started", "getting-started", "Introduction to system design and core terminology."),
+      lockedPattern("Getting Started", "getting-started", "Introduction to system design and the interview delivery framework."),
       lockedPattern("Networking & Protocols", "networking-protocols", "Understand how data travels across the web (OSI, TCP, DNS)."),
       lockedPattern("Core Concepts & Metrics", "core-metrics", "Measuring performance: Availability, Scalability, and SLAs."),
       lockedPattern("Databases & DBMS", "databases", "Choosing the right storage: SQL vs NoSQL, OLAP vs OLTP, ACID."),
