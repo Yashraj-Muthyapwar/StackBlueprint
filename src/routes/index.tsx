@@ -189,6 +189,13 @@ function Landing() {
                   </Link>
                 );
               }
+              if (cat.overviewPath === "/system-design") {
+                return (
+                  <Link key={cat.slug} to="/system-design" className="block">
+                    {card}
+                  </Link>
+                );
+              }
               if (cat.overviewPath === "/terraform") {
                 return (
                   <Link key={cat.slug} to="/terraform" className="block">
