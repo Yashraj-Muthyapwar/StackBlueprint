@@ -238,11 +238,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                       <td
                         key={ci}
                         className={
-                          "px-4 py-2.5 align-top " +
+                          "px-4 py-2.5 align-top whitespace-pre-line " +
                           (ci === 0 ? "font-medium text-foreground" : "text-muted-foreground")
                         }
                       >
-                        {cell}
+                        {typeof cell === "string" ? parseInlineMarkdown(cell) : cell}
                       </td>
                     ))}
                   </tr>
