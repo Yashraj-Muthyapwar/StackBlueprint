@@ -1,6 +1,7 @@
 import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
 import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-framework.png";
+import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 
 export type { Section };
 
@@ -287,6 +288,159 @@ const deliveryFramework: LessonContent = {
   ]
 };
 
+const functionalVsNonFunctional: LessonContent = {
+  slug: "functional-vs-non-functional-requirements",
+  title: "Functional vs Non-Functional Requirements",
+  subtitle: "Understanding the difference between what a system should do and how well it should do it.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What are Functional Requirements (FRs)?",
+      body: [
+        "Functional requirements describe **what** the system must do: specific features, operations, and behaviors.",
+        "They define the interactions between the system and its users, or between different internal components.",
+        "Common examples include: authentication, search functionality, data processing, payment gateways, and report generation.",
+        "",
+        "**Key questions to ask for FRs:**",
+        "- What specific features do we need to design for this system?",
+        "- What are the possible edge cases we need to consider in our design?"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "What are Non-Functional Requirements (NFRs)?",
+      body: [
+        "Non-functional requirements describe **how** the system should behave. These are the qualities, constraints, and metrics rather than specific features.",
+        "Key quality attributes include:",
+        "- **Performance** (response time, throughput)",
+        "- **Security** (encryption, authorization)",
+        "- **Usability, Reliability, Scalability, Maintainability, Portability**",
+        "",
+        "**Key questions for NFRs:**",
+        "- How fast should the system respond to user actions?",
+        "- Should the system be highly available?",
+        "- How secure should the system be against unauthorized access?"
+      ]
+    },
+    {
+      kind: "image",
+      src: funcVsNonFuncImg,
+      alt: "Diagram illustrating Functional vs Non-Functional Requirements",
+      caption: "Distinguishing between Functional and Non-Functional requirements"
+    },
+    {
+      kind: "table",
+      caption: "Examples (Functional vs Non-Functional)",
+      headers: ["System", "Functional Requirements", "Non-Functional Requirements"],
+      rows: [
+        [
+          "Online Banking",
+          "• User login via username/password\n• Check account balance\n• Notifications for transactions",
+          "• System responds in < 2 seconds\n• All transactions encrypted & meet security rules\n• Handle 100 million users; minimal downtime"
+        ],
+        [
+          "Food Delivery App",
+          "• Browse menu, place orders\n• Make payments, track orders in real time",
+          "• Load menu in under 1 second\n• Support up to 50,000 concurrent orders at peak\n• Easy to use for first-time users (intuitive UI)"
+        ]
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Differences / Contrast",
+      headers: ["Aspect", "Functional Requirements", "Non-Functional Requirements"],
+      rows: [
+        ["Definition", "What the system should do (features, behaviors)", "How the system should perform; system qualities and constraints"],
+        ["Visibility", "Directly observable in the software / product features", "Not directly seen as features; experienced (e.g. speed, robustness)"],
+        ["Measurement", "Easier to test with functional tests—are features working?", "Harder to test; requires benchmarks, SLAs, performance/scalability/security tests"],
+        ["Scope / Impact", "Drives core functionality and user flows; maps to business needs.", "Influences architecture, system design, implementation constraints."],
+        ["Documentation", "Captured via use cases, user stories, functional specs.", "Captured in technical specifications, SLAs, performance/security/quality attribute definitions."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Importance of Balancing Both",
+      body: [
+        "A system with all functional requirements but poor non-functional qualities (e.g. slow, insecure, unreliable) can be unusable in real life.",
+        "Non-functional requirements often get overlooked early, but failing to address them leads to high cost refactors, performance issues, and user dissatisfaction.",
+        "Good non-functional requirements help in scaling, maintenance, and future enhancements."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Common Challenges in Defining Requirements",
+      body: [
+        "- **Ambiguity in Requirements:** Requirements are sometimes vague or incomplete, making it difficult to clearly define what the system must do (functional) and how it should perform (non-functional).",
+        "- **Changing Requirements:** As projects evolve, requirements often shift due to changing business goals, market trends, or user expectations, making it harder to maintain stability in design.",
+        "- **Difficulty in Prioritization:** Determining which requirements matter most can be tricky. Functional needs frequently take priority, while critical non-functional aspects like security or scalability may be overlooked.",
+        "- **Measuring Non-Functional Requirements:** Functional requirements are easier to test, whereas non-functional attributes such as usability, scalability, or reliability are harder to define in measurable terms and validate effectively.",
+        "- **Overlapping or Conflicting Requirements:** Requirements can sometimes conflict or influence each other. For example, strengthening security may reduce system performance, requiring careful trade-offs."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "How to Gather Requirements",
+      headers: ["Requirement Type", "Methods & Techniques"],
+      rows: [
+        [
+          "Functional Requirements",
+          "**Interviews:** Talk to stakeholders or users to understand their needs.\n**Surveys:** Distribute questionnaires to gather input from a larger audience.\n**Workshops:** Host sessions to brainstorm features and gather feedback."
+        ],
+        [
+          "Non-functional Requirements",
+          "**Performance Benchmarks:** Consult with IT teams to set expectations for performance and load.\n**Security Standards:** Consult with security experts to define best practices for data protection.\n**Usability Testing:** Test the system to find areas where users might struggle and refine the interface."
+        ]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Identifying Core Features (FRs)",
+      body: [
+        "When designing a system, functional requirements act as the foundational 'Users must be able to...' statements. During an interview or architectural discussion, these should be the first points of alignment.",
+        "This process is usually highly interactive. You should treat the interviewer like a product manager or client, asking probing questions to define the boundaries of the system. For instance, 'Does the platform need to support X?' or 'What should the behavior be when Y occurs?'",
+        "If you were architecting a social media platform like Twitter, core features might include:",
+        "- Users can publish text-based posts.",
+        "- Users can subscribe to (follow) other accounts.",
+        "- Users can view a timeline of posts from their subscriptions.",
+        "Alternatively, if designing a low-level component like a distributed cache, the features might look like:",
+        "- The cache allows clients to store key-value pairs.",
+        "- The cache allows clients to retrieve values by key.",
+        "- The cache supports time-to-live (TTL) evictions.",
+        "",
+        "**Crucial tip:** Stay focused. While a real-world system might have hundreds of minor features, your goal is to extract and prioritize the top 3 to 5 core flows. A massive list of requirements will bog down your design phase; evaluating your ability to focus on the most impactful features is a key signal interviewers look for."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Defining System Constraints (NFRs)",
+      body: [
+        "Non-functional requirements dictate the operational qualities that matter most for a seamless user experience. They can often be formulated as 'The system must be...' statements.",
+        "Revisiting the Twitter example, crucial NFRs might be:",
+        "- The system must prioritize high availability over strict consistency.",
+        "- The architecture must smoothly scale to handle upwards of 100 million Daily Active Users (DAU).",
+        "- The feed generation should be highly responsive, with latencies kept under 200 milliseconds.",
+        "",
+        "A major pitfall is leaving NFRs too vague. Saying 'the system should be fast' offers no real architectural guidance. Instead, quantifying the goal—such as 'search queries must return results in under 500ms'—provides a concrete target that will directly influence your technology choices."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "NFR Brainstorming Checklist",
+      body: [
+        "If you are struggling to identify the right non-functional requirements for a novel domain, use this checklist to guide your thinking. Aim to pick the 3-5 constraints that will most heavily influence your architecture:",
+        "**CAP Theorem Constraints:** Does the system demand strict consistency (like banking), or is high availability (like a social feed) more critical?",
+        "**Environment Limitations:** Where is the software running? Are there bandwidth limitations, constrained memory (embedded devices), or battery concerns (mobile)?",
+        "**Scale and Traffic Patterns:** Beyond general scale, does the system experience massive, predictable traffic spikes (e.g., ticket sales, holidays)? Is the system highly read-heavy, or write-heavy?",
+        "**Latency Targets:** Which specific user actions require near-instantaneous computation or response? Prioritize the flows that impact user experience the most.",
+        "**Durability Guarantees:** How catastrophic is data loss? A financial ledger requires 100% durability, whereas a temporary analytics cache might tolerate partial data loss during a crash.",
+        "**Security & Privacy:** Does the system handle PII (Personally Identifiable Information), require strict access controls, or mandate at-rest encryption?",
+        "**Fault Tolerance Strategy:** What is the acceptable blast radius of a failure? How quickly must the system recover from node crashes or data center outages?",
+        "**Regulatory Compliance:** Are there specific legal frameworks (HIPAA, GDPR, SOC2) that dictate data residency or auditing capabilities?"
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -295,6 +449,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional],
   }
 };
