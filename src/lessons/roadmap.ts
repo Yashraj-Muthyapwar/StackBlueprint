@@ -49,6 +49,7 @@ import dwLogo from "@/images/logos/data-warehouses-logo.png";
 import dsaLogo from "@/images/logos/dsa-logo.png";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
 import webScraperLogo from "@/images/logos/web-scraper-logo.png";
+import pythonLogo from "@/images/logos/python-logo.png";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
@@ -877,6 +878,21 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("GitHub Actions", "github-actions", "Automating tests and deployments with CI/CD pipelines."),
       lockedPattern("Team Workflows", "workflows", "GitHub Flow, GitFlow, and trunk-based development strategies."),
       lockedPattern("Capstone", "capstone", "Simulate a real-world team project: branching, reviewing, and releasing."),
+    ],
+  },
+  {
+    title: "Python",
+    slug: "python",
+    icon: pythonLogo,
+    locked: true,
+    overviewPath: "/python",
+    blurb: "Master Python from basic syntax to advanced asynchronous programming.",
+    patterns: [
+      lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
+      lockedPattern("Data Structures", "data-structures", "Lists, dictionaries, sets, and tuples."),
+      lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
+      lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
+      lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
     ],
   },
 ];
