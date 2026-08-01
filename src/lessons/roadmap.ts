@@ -41,6 +41,15 @@ import {
 
 import type { LessonBuilder } from "./types";
 
+import dockerLogo from "@/images/logos/docker-logo.png";
+import terraformLogo from "@/images/logos/terraform-logo.png";
+import gitLogo from "@/images/logos/git-logo.png";
+import sqlLogo from "@/images/logos/sql-logo.png";
+import dwLogo from "@/images/logos/data-warehouses-logo.png";
+import dsaLogo from "@/images/logos/dsa-logo.png";
+import systemDesignLogo from "@/images/logos/system-design-logo.png";
+import webScraperLogo from "@/images/logos/web-scraper-logo.png";
+
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
 import { dutchFlag } from "./two-pointers/dutch-flag";
@@ -269,10 +278,10 @@ export type RoadmapSection = {
   title: string;
   patterns: RoadmapPattern[];
 };
-export type RoadmapCategory = {
+export interface RoadmapCategory {
   title: string;
   slug: string;
-  icon: LucideIcon;
+  icon: LucideIcon | string;
   blurb: string;
   /** Optional grouping label shown above the patterns (e.g. "Arrays / Matrix"). */
   sectionTitle?: string;
@@ -319,7 +328,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Patterns (DSA)",
     slug: "patterns-dsa",
-    icon: Boxes,
+    icon: dsaLogo,
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
     overviewPath: "/patterns",
     sections: [
@@ -332,8 +341,8 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "SQL Mastery",
     slug: "sql-mastery",
-    icon: Database,
-    locked: true,
+    icon: sqlLogo,
+    locked: false,
     overviewPath: "/sql",
     blurb: "From joins to query plans — write SQL that scales with your data.",
     patterns: [
@@ -346,7 +355,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "System Design",
     slug: "system-design",
-    icon: Server,
+    icon: systemDesignLogo,
     locked: false,
     overviewPath: "/system-design",
     blurb: "Design systems that survive scale, failure, and traffic spikes.",
@@ -370,7 +379,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Data Warehouses",
     slug: "data-warehouses",
-    icon: Cloud,
+    icon: dwLogo,
     locked: false,
     overviewPath: "/data-warehouses",
     blurb: "Cloud warehouses, modeling, and the cost/perf knobs that matter.",
@@ -483,7 +492,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Web Scraping",
     slug: "web-scraping",
-    icon: Globe,
+    icon: webScraperLogo,
     locked: false,
     overviewPath: "/web-scraping",
     blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
@@ -679,7 +688,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Docker",
     slug: "docker",
-    icon: Server, // Use Server or Box icon (lucide-react)
+    icon: dockerLogo,
     locked: false,
     overviewPath: "/docker",
     blurb: "From container foundations to advanced multi-container orchestration.",
@@ -834,7 +843,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Terraform",
     slug: "terraform",
-    icon: Layers,
+    icon: terraformLogo,
     locked: false,
     overviewPath: "/terraform",
     blurb: "Infrastructure as Code for provisioning and managing cloud resources.",
@@ -853,7 +862,7 @@ export const roadmap: RoadmapCategory[] = [
   {
     title: "Git / GitHub",
     slug: "git-github",
-    icon: GitBranch,
+    icon: gitLogo,
     locked: false,
     overviewPath: "/git-github",
     blurb: "Version control, branching strategies, and collaboration workflows.",
