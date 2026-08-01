@@ -25,6 +25,22 @@ export const Route = createFileRoute("/")({
 
 function Landing() {
   const unlockedCategories = roadmap.filter((c) => !c.locked).length;
+
+  const categorizedRoadmap = [
+    {
+      title: "Software Engineering",
+      tracks: roadmap.filter(cat => ["patterns-dsa", "system-design", "web-scraping"].includes(cat.slug))
+    },
+    {
+      title: "Data & Analytics",
+      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses"].includes(cat.slug))
+    },
+    {
+      title: "DevOps & Tools",
+      tracks: roadmap.filter(cat => ["docker", "terraform", "git-github"].includes(cat.slug))
+    }
+  ];
+
   return (
     <div className="relative overflow-hidden">
       <div className="absolute top-[-10%] left-[-10%] size-[500px] rounded-full bg-mint/20 opacity-50 blur-[100px] animate-orb-1 -z-10 mix-blend-multiply dark:mix-blend-screen pointer-events-none" />
@@ -76,152 +92,166 @@ function Landing() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
-            {roadmap.map((cat) => {
-              const isUnlocked = !cat.locked;
-              const isSql = cat.slug === "sql-mastery";
-              const hasContent = isUnlocked || isSql;
-              const card = (
-                <div
-                  className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
-                    hasContent
-                      ? "border-hairline bg-surface hover:border-mint/50 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)] hover:-translate-y-1"
-                      : "border-hairline/60 bg-surface/40 hover:border-foreground/20 hover:shadow-lg hover:-translate-y-1"
-                  }`}
-                >
-                  <div className="mb-4 flex items-center justify-between">
-                    <div
-                      className={`grid size-10 place-items-center rounded-md ${
-                        hasContent
-                          ? "bg-mint/15 text-mint ring-1 ring-mint/30"
-                          : "bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
-                      }`}
-                    >
-                      <cat.icon className="size-5" />
-                    </div>
-                    {hasContent ? (
-                      <span className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
-                        {isUnlocked ? "Active" : "In Progress"}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
-                        <Lock className="size-3" />
-                        Locked
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-medium tracking-tight">{cat.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{cat.blurb}</p>
-
-                  <div className="mt-5 flex flex-wrap gap-1.5">
-                    {cat.patterns.slice(0, 4).map((p) => (
-                      <span
-                        key={p.slug}
-                        className={
+          <div className="space-y-12">
+            {categorizedRoadmap.map((category) => (
+              <div key={category.title}>
+                <h3 className="mb-6 text-xl font-semibold tracking-tight text-foreground/80">
+                  {category.title}
+                </h3>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-2">
+                  {category.tracks.map((cat) => {
+                    const isUnlocked = !cat.locked;
+                    const isSql = cat.slug === "sql-mastery";
+                    const hasContent = isUnlocked || isSql;
+                    const card = (
+                      <div
+                        className={`group relative h-full overflow-hidden rounded-2xl border p-6 transition-all duration-300 ${
                           hasContent
-                            ? "rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint"
-                            : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/80"
-                        }
+                            ? "border-hairline bg-surface hover:border-mint/50 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)] hover:-translate-y-1"
+                            : "border-hairline/60 bg-surface/40 hover:border-foreground/20 hover:shadow-lg hover:-translate-y-1"
+                        }`}
                       >
-                        {p.title}
-                      </span>
-                    ))}
-                    {cat.patterns.length > 4 && (
-                      <span
-                        className={
-                          hasContent
-                            ? "rounded-full border border-mint/30 px-2.5 py-0.5 text-[11px] text-mint/70"
-                            : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/60"
-                        }
-                      >
-                        +{cat.patterns.length - 4} more
-                      </span>
-                    )}
-                  </div>
+                        <div className="mb-4 flex items-center justify-between">
+                          <div
+                            className={`grid size-10 place-items-center rounded-md ${
+                              typeof cat.icon === "string"
+                                ? ""
+                                : hasContent
+                                  ? "bg-mint/15 text-mint ring-1 ring-mint/30"
+                                  : "bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
+                            }`}
+                          >
+                            {typeof cat.icon === "string" ? (
+                              <img src={cat.icon} alt={`${cat.title} logo`} className="size-8 object-contain drop-shadow-sm" />
+                            ) : (
+                              <cat.icon className="size-5" />
+                            )}
+                          </div>
+                          {hasContent ? (
+                            <span className="rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
+                              {isUnlocked ? "Active" : "In Progress"}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded-full border border-hairline px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground/80">
+                              <Lock className="size-3" />
+                              Locked
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-lg font-medium tracking-tight">{cat.title}</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">{cat.blurb}</p>
 
-                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm">
-                    {hasContent ? (
-                      <span className="text-mint">
-                        {isSql && !isUnlocked ? "Open syllabus" : "Open track"}{" "}
-                        <ArrowRight className="ml-1 inline size-4" />
-                      </span>
-                    ) : (
-                      <span className="text-muted-foreground">
-                        Preview syllabus <ArrowRight className="ml-1 inline size-4" />
-                      </span>
-                    )}
-                  </div>
+                        <div className="mt-5 flex flex-wrap gap-1.5">
+                          {cat.patterns.slice(0, 4).map((p) => (
+                            <span
+                              key={p.slug}
+                              className={
+                                hasContent
+                                  ? "rounded-full border border-mint/30 bg-mint/10 px-2.5 py-0.5 text-[11px] text-mint"
+                                  : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/80"
+                              }
+                            >
+                              {p.title}
+                            </span>
+                          ))}
+                          {cat.patterns.length > 4 && (
+                            <span
+                              className={
+                                hasContent
+                                  ? "rounded-full border border-mint/30 px-2.5 py-0.5 text-[11px] text-mint/70"
+                                  : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/60"
+                              }
+                            >
+                              +{cat.patterns.length - 4} more
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="mt-6 inline-flex items-center gap-1.5 text-sm">
+                          {hasContent ? (
+                            <span className="text-mint">
+                              {isSql && !isUnlocked ? "Open syllabus" : "Open track"}{" "}
+                              <ArrowRight className="ml-1 inline size-4" />
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Preview syllabus <ArrowRight className="ml-1 inline size-4" />
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+
+                    if (cat.overviewPath === "/patterns") {
+                      return (
+                        <Link key={cat.slug} to="/patterns" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/sql") {
+                      return (
+                        <Link key={cat.slug} to="/sql" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/data-warehouses") {
+                      return (
+                        <Link key={cat.slug} to="/data-warehouses" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/docker") {
+                      return (
+                        <Link key={cat.slug} to="/docker" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/web-scraping") {
+                      return (
+                        <Link key={cat.slug} to="/web-scraping" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/system-design") {
+                      return (
+                        <Link key={cat.slug} to="/system-design" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/terraform") {
+                      return (
+                        <Link key={cat.slug} to="/terraform" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/git-github") {
+                      return (
+                        <Link key={cat.slug} to="/git-github" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    return (
+                      <Link
+                        key={cat.slug}
+                        to="/tracks/$track"
+                        params={{ track: cat.slug }}
+                        className="block"
+                      >
+                        {card}
+                      </Link>
+                    );
+                  })}
                 </div>
-              );
-
-              if (cat.overviewPath === "/patterns") {
-                return (
-                  <Link key={cat.slug} to="/patterns" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/sql") {
-                return (
-                  <Link key={cat.slug} to="/sql" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/data-warehouses") {
-                return (
-                  <Link key={cat.slug} to="/data-warehouses" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/docker") {
-                return (
-                  <Link key={cat.slug} to="/docker" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/web-scraping") {
-                return (
-                  <Link key={cat.slug} to="/web-scraping" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/system-design") {
-                return (
-                  <Link key={cat.slug} to="/system-design" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/terraform") {
-                return (
-                  <Link key={cat.slug} to="/terraform" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              if (cat.overviewPath === "/git-github") {
-                return (
-                  <Link key={cat.slug} to="/git-github" className="block">
-                    {card}
-                  </Link>
-                );
-              }
-              return (
-                <Link
-                  key={cat.slug}
-                  to="/tracks/$track"
-                  params={{ track: cat.slug }}
-                  className="block"
-                >
-                  {card}
-                </Link>
-              );
-            })}
-
+              </div>
+            ))}
           </div>
         </div>
       </section>
