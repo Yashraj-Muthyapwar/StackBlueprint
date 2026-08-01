@@ -29,7 +29,7 @@ function Landing() {
   const categorizedRoadmap = [
     {
       title: "Software Engineering",
-      tracks: roadmap.filter(cat => ["patterns-dsa", "system-design", "web-scraping"].includes(cat.slug))
+      tracks: roadmap.filter(cat => ["patterns-dsa", "python", "system-design", "web-scraping"].includes(cat.slug))
     },
     {
       title: "Data & Analytics",
@@ -234,6 +234,13 @@ function Landing() {
                     if (cat.overviewPath === "/git-github") {
                       return (
                         <Link key={cat.slug} to="/git-github" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/python") {
+                      return (
+                        <Link key={cat.slug} to="/python" className="block">
                           {card}
                         </Link>
                       );
