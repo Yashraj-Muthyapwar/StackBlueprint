@@ -36,6 +36,7 @@ import {
   ShieldAlert,
   LockKeyhole,
   Bot,
+  GitBranch,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -816,6 +817,45 @@ export const roadmap: RoadmapCategory[] = [
       },
       lockedPattern("Docker Compose", "compose", "Declarative multi-container applications and local dev environments."),
       lockedPattern("Advanced Docker", "advanced", "Multi-stage builds, security, and registry management."),
+    ],
+  },
+  {
+    title: "Terraform",
+    slug: "terraform",
+    icon: Layers,
+    locked: false,
+    overviewPath: "/terraform",
+    blurb: "Infrastructure as Code for provisioning and managing cloud resources.",
+    patterns: [
+      lockedPattern("Infrastructure as Code", "iac-fundamentals", "Why IaC, declarative vs imperative, and the core workflow."),
+      lockedPattern("Terraform Basics", "basics", "Providers, resources, data sources, and state file intro."),
+      lockedPattern("Variables & Outputs", "variables-outputs", "Parameterizing your infrastructure with locals and variables."),
+      lockedPattern("HCL Logic", "hcl-logic", "Loops, conditionals, dynamic blocks, and built-in functions."),
+      lockedPattern("Modules", "modules", "Creating and consuming reusable infrastructure components."),
+      lockedPattern("State Management", "state-management", "Remote backends, state locking, and state manipulation."),
+      lockedPattern("Environments", "workspaces-envs", "Managing dev, staging, and production with workspaces."),
+      lockedPattern("CI/CD & Automation", "ci-cd-terraform", "Automating deployments with GitHub Actions and Terraform Cloud."),
+      lockedPattern("Capstone", "capstone", "Provision a highly-available cloud architecture from scratch."),
+    ],
+  },
+  {
+    title: "Git / GitHub",
+    slug: "git-github",
+    icon: GitBranch,
+    locked: false,
+    overviewPath: "/git-github",
+    blurb: "Version control, branching strategies, and collaboration workflows.",
+    patterns: [
+      lockedPattern("Git Fundamentals", "git-fundamentals", "Commits, history, and the working tree."),
+      lockedPattern("Branching & Merging", "branching-merging", "Parallel development and combining work with merges."),
+      lockedPattern("Remotes & Collaboration", "remotes", "Working with remote repositories and fetch vs pull."),
+      lockedPattern("Rewriting History", "rewriting-history", "Interactive rebase, amend, and squashing commits."),
+      lockedPattern("Undoing Mistakes", "undoing-things", "Resetting, reverting, and using the reflog."),
+      lockedPattern("Detective Work", "detective-work", "Finding bugs with git bisect and git blame."),
+      lockedPattern("Pull Requests & Review", "pull-requests", "Collaborating on code with branch protection and CODEOWNERS."),
+      lockedPattern("GitHub Actions", "github-actions", "Automating tests and deployments with CI/CD pipelines."),
+      lockedPattern("Team Workflows", "workflows", "GitHub Flow, GitFlow, and trunk-based development strategies."),
+      lockedPattern("Capstone", "capstone", "Simulate a real-world team project: branching, reviewing, and releasing."),
     ],
   },
 ];
