@@ -2,6 +2,7 @@ import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
 import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-framework.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
+import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 
 export type { Section };
 
@@ -437,6 +438,178 @@ const functionalVsNonFunctional: LessonContent = {
         "**Fault Tolerance Strategy:** What is the acceptable blast radius of a failure? How quickly must the system recover from node crashes or data center outages?",
         "**Regulatory Compliance:** Are there specific legal frameworks (HIPAA, GDPR, SOC2) that dictate data residency or auditing capabilities?"
       ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "fn-vs-nfn-1",
+          question: "Which of the following is a clear example of a Functional Requirement?",
+          options: [
+            "The system must handle 50,000 concurrent users at peak.",
+            "The application should respond to user inputs in under 2 seconds.",
+            "Users must be able to securely log in using their username and password.",
+            "All data must be encrypted at rest."
+          ],
+          correctIndex: 2,
+          explanation: "Functional requirements describe WHAT the system must do (e.g. logging in). The other options describe HOW the system behaves (concurrency, latency, encryption), which are Non-Functional Requirements."
+        },
+        {
+          id: "fn-vs-nfn-2",
+          question: "Why is it important to quantify Non-Functional Requirements?",
+          options: [
+            "To give the QA team a larger checklist.",
+            "Vague requirements like 'fast' provide no architectural guidance.",
+            "It makes the system design interview look more professional.",
+            "Functional requirements are impossible to measure."
+          ],
+          correctIndex: 1,
+          explanation: "Saying 'the system should be fast' doesn't help you choose the right technology. Quantifying it (e.g., 'search must return in <500ms') sets a concrete target for your architecture."
+        }
+      ]
+    }
+  ]
+};
+
+const backOfTheEnvelope: LessonContent = {
+  slug: "back-of-the-envelope-estimation",
+  title: "Back-of-the-Envelope Estimation",
+  subtitle: "Master the art of quick, rough calculations to estimate scale and resource capacity.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What is Back-of-the-Envelope Estimation?",
+      body: [
+        "A back-of-the-envelope calculation is a rough, quick approximation of system scale, capacity, and resource requirements.",
+        "It acts as 'impulse math'—calculations you could scribble on a napkin during an interview to prove your architecture can handle the load.",
+        "These calculations are **not intended to be precise**. The goal is order-of-magnitude correctness to ensure your design decisions are rooted in reality."
+      ]
+    },
+    {
+      kind: "image",
+      src: backOfTheEnvelopeImg,
+      alt: "Diagram illustrating back-of-the-envelope estimations",
+      caption: "Using math to validate system design constraints"
+    },
+    {
+      kind: "table",
+      caption: "Core Estimation Techniques",
+      headers: ["Technique", "Meaning & Purpose", "Example"],
+      rows: [
+        ["Rule of Thumb", "Using heuristics based on prior experience when detailed info is missing.", "Estimating that a user will generate 1MB of text data per day as a baseline for storage planning."],
+        ["Approximation", "Simplifying math by rounding to easy numbers without losing much accuracy.", "Using 1,000 users instead of 1,024 when calculating block size limits."],
+        ["Breakdown & Aggregation", "Splitting a large problem into smaller pieces, estimating each, then summing them up.", "Estimating multimedia content and metadata separately, then adding them for total storage."],
+        ["Sanity Check", "Cross-checking whether the final estimate makes real-world sense to avoid grossly unrealistic results.", "Comparing your estimated messaging storage with WhatsApp's known public metrics."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Types of Estimations",
+      body: [
+        "During an interview, you'll be expected to calculate several different metrics depending on the system's focus. Here is a breakdown of the most common estimation types.",
+        "",
+        "**1. Load Estimation**",
+        "Predicting the expected number of requests per second (RPS), data volume, or user traffic."
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Load Estimation Example",
+      code: "System has 100M Daily Active Users (DAU).\nEach user makes 10 requests per day.\n\nTotal Requests = 100M * 10 = 1 Billion requests/day\n\nRequests Per Second (RPS) = 1 Billion / 86,400 seconds\nRPS ≈ 11,574 requests/second"
+    },
+    {
+      kind: "prose",
+      body: [
+        "**2. Storage Estimation**",
+        "Estimating the amount of persistent storage required to hold the data generated by users over time (typically calculated per day or per year)."
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Storage Estimation Example",
+      code: "Photo app with 500M users.\nAverage 2 photos uploaded per user per day.\nAverage photo size is 2MB.\n\nDaily Storage = 500M users * 2 photos * 2MB\nDaily Storage = 2,000,000,000 MB = 2,000 TB/day = 2 PB/day"
+    },
+    {
+      kind: "prose",
+      body: [
+        "**3. Bandwidth Estimation**",
+        "Determining the network bandwidth needed to support data transfer without bottlenecking."
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Bandwidth Estimation Example",
+      code: "Video streaming service with 10M concurrent users.\nEach user streams 1080p video at 4 Mbps.\n\nRequired Bandwidth = 10M users * 4 Mbps\nRequired Bandwidth = 40,000,000 Mbps = 40 Tbps"
+    },
+    {
+      kind: "prose",
+      body: [
+        "**4. Latency Estimation**",
+        "Predicting the response time of a system. Sequential operations add latency together, while parallel operations take the max latency."
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Latency Estimation Example",
+      code: "An API fetches from 3 sources: 50ms, 100ms, and 200ms.\n\nIf sequential:\nTotal Latency = 50ms + 100ms + 200ms = 350ms\n\nIf parallel:\nTotal Latency = max(50ms, 100ms, 200ms) = 200ms"
+    },
+    {
+      kind: "prose",
+      body: [
+        "**5. Resource & Memory Estimation**",
+        "Estimating the hardware required to serve the traffic, such as CPU cores for computation or RAM for caching."
+      ]
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Resource & Memory Example",
+      code: "CPU: 10,000 RPS. Each request needs 10ms of CPU time.\nTotal CPU time/sec = 10,000 * 10ms = 100,000ms\nCores Needed = 100,000ms / 1,000ms per core = 100 cores\n\nRAM: Cache 1% of a 10TB dataset.\nCache Size = 10TB * 0.01 = 0.1TB = 100GB of RAM"
+    },
+    {
+      kind: "table",
+      caption: "Cheat Sheet: Common Multipliers & Data Sizes",
+      headers: ["Prefix", "Symbol", "Power of 10", "Power of 2", "Common Systems Metric"],
+      rows: [
+        ["Kilo", "KB", "10^3", "2^10", "Small text records, basic JSON payloads"],
+        ["Mega", "MB", "10^6", "2^20", "Images, audio clips, web page assets"],
+        ["Giga", "GB", "10^9", "2^30", "RAM limits, HD video clips"],
+        ["Tera", "TB", "10^12", "2^40", "Hard drive sizes, daily DB writes"],
+        ["Peta", "PB", "10^15", "2^50", "Big data lakes, total enterprise storage"]
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "bote-1",
+          question: "What is the primary goal of a Back-of-the-Envelope Estimation?",
+          options: [
+            "To calculate the exact number of servers needed down to the exact decimal.",
+            "To prove to the interviewer that you are good at mental math.",
+            "To achieve order-of-magnitude correctness to ensure your design is realistic.",
+            "To estimate the final cost of the project in dollars."
+          ],
+          correctIndex: 2,
+          explanation: "These estimations are not meant to be perfectly precise. They are meant to validate that your proposed architecture can handle the rough order-of-magnitude scale required."
+        },
+        {
+          id: "bote-2",
+          question: "If a system has 10 million DAU and each user makes 10 requests per day, what is the approximate Requests Per Second (RPS)? (Assume 1 day ≈ 86,400 seconds)",
+          options: [
+            "~115 RPS",
+            "~1,157 RPS",
+            "~11,574 RPS",
+            "~100,000 RPS"
+          ],
+          correctIndex: 1,
+          explanation: "Total daily requests = 10 million * 10 = 100,000,000. RPS = 100,000,000 / 86,400 ≈ 1,157 requests per second."
+        }
+      ]
     }
   ]
 };
@@ -449,6 +622,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
   }
 };
