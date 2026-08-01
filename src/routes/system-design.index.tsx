@@ -1,0 +1,357 @@
+import { Link, createFileRoute } from "@tanstack/react-router";
+import {
+  ArrowRight,
+  Server,
+  Activity,
+  Globe,
+  Database,
+  Layers,
+  Share2,
+  Cpu,
+  Shield,
+  Monitor,
+  LockKeyhole,
+  Network,
+  Scale,
+  Zap,
+  MessageSquare,
+  Key,
+  HardDrive,
+  Layout,
+  PlayCircle,
+  FileCode,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { useProgress } from "@/hooks/use-progress";
+
+export const Route = createFileRoute("/system-design/")({
+  head: () => ({
+    meta: [
+      { title: "System Design — StackBlueprint" },
+      {
+        name: "description",
+        content:
+          "The complete system design roadmap: Networking, Databases, Architecture, and Case Studies.",
+      },
+      { property: "og:title", content: "System Design — StackBlueprint" },
+      {
+        property: "og:description",
+        content:
+          "Master system design from foundations to distributed systems and real-world case studies.",
+      },
+    ],
+  }),
+  component: SystemDesignIndex,
+});
+
+type Topic = {
+  slug: string;
+  title: string;
+  blurb: string;
+  icon: LucideIcon;
+  modules: string[];
+  unlocked?: boolean;
+  routeBase?: string;
+  to?: string;
+  completedCount?: number;
+};
+
+type Section = {
+  group: string;
+  groupBlurb: string;
+  topics: Topic[];
+};
+
+const sections: Section[] = [
+  {
+    group: "System Design Fundamentals",
+    groupBlurb:
+      "The fundamental building blocks of how systems communicate over the internet and how we measure them.",
+    topics: [
+      {
+        slug: "getting-started",
+        title: "Getting Started",
+        blurb: "Introduction to system design and core terminology.",
+        icon: PlayCircle,
+        modules: ["What is system design?", "Basics of System Design", "Time"],
+        unlocked: false,
+        routeBase: "fundamentals",
+      },
+      {
+        slug: "networking-protocols",
+        title: "Networking & Protocols",
+        blurb: "Understand how data travels across the web.",
+        icon: Globe,
+        modules: [
+          "OSI Model",
+          "TCP and UDP",
+          "IP",
+          "Domain Name System (DNS)",
+          "DNS Caching",
+          "Proxy",
+        ],
+        unlocked: false,
+        routeBase: "fundamentals",
+      },
+      {
+        slug: "core-metrics",
+        title: "Core Concepts & Metrics",
+        blurb: "Measuring the performance and reliability of a system.",
+        icon: Activity,
+        modules: ["Availability & Scalability", "Throughput and Latency", "Redundancy & Maintainability", "SLA, SLO, SLI"],
+        unlocked: false,
+        routeBase: "fundamentals",
+      },
+    ],
+  },
+  {
+    group: "Data & Storage",
+    groupBlurb: "Techniques for storing, caching, and scaling data to handle millions of users.",
+    topics: [
+      {
+        slug: "databases",
+        title: "Databases & DBMS",
+        blurb: "Choosing the right storage for your data.",
+        icon: Database,
+        modules: ["SQL vs NoSQL", "OLAP vs OLTP", "ACID vs BASE", "Transactions", "Indexes"],
+        unlocked: false,
+        routeBase: "data-storage",
+      },
+      {
+        slug: "scaling-data",
+        title: "Scaling Data",
+        blurb: "Distributing data across multiple nodes.",
+        icon: Share2,
+        modules: ["Database Replication", "Data Partitioning", "Database Sharding", "Consistent Hashing", "Database Federation"],
+        unlocked: false,
+        routeBase: "data-storage",
+      },
+      {
+        slug: "caching",
+        title: "Caching & Content Delivery",
+        blurb: "Reducing latency and improving performance.",
+        icon: Layers,
+        modules: ["Caching Strategies", "Content Delivery Network (CDN)", "Redis Usecase"],
+        unlocked: false,
+        routeBase: "data-storage",
+      },
+      {
+        slug: "data-structures",
+        title: "Advanced Data Structures",
+        blurb: "Specialized structures for distributed systems.",
+        icon: FileCode,
+        modules: ["Bloom Filter", "Quad Tree", "Geohashing"],
+        unlocked: false,
+        routeBase: "data-storage",
+      },
+    ],
+  },
+  {
+    group: "Architecture & Communication",
+    groupBlurb: "High-level architectural patterns, APIs, and real-time messaging.",
+    topics: [
+      {
+        slug: "architectural-styles",
+        title: "Architectural Styles",
+        blurb: "Breaking down monoliths into manageable services.",
+        icon: Layout,
+        modules: ["Monoliths vs Microservices", "N-tier Architecture", "Event-Driven Architecture (EDA)", "Serverless Architecture"],
+        unlocked: false,
+        routeBase: "architecture",
+      },
+      {
+        slug: "apis-security",
+        title: "APIs & Security",
+        blurb: "How different services exchange data securely.",
+        icon: Key,
+        modules: ["REST Deep Dive", "GraphQL Deep Dive", "gRPC Deep Dive", "API Gateway", "Session vs Token Auth", "OAuth2 & JWT"],
+        unlocked: false,
+        routeBase: "architecture",
+      },
+      {
+        slug: "communication-patterns",
+        title: "Communication Patterns",
+        blurb: "Sync vs Async, queues, and real-time streams.",
+        icon: MessageSquare,
+        modules: ["WebSockets & Long Polling", "Message Queues", "Message Brokers", "Publish-Subscribe", "CDC & Event Sourcing"],
+        unlocked: false,
+        routeBase: "architecture",
+      },
+    ],
+  },
+  {
+    group: "Tradeoffs & System Resilience",
+    groupBlurb: "Navigating engineering tradeoffs, big data, and operational resilience.",
+    topics: [
+      {
+        slug: "system-tradeoffs",
+        title: "System Tradeoffs",
+        blurb: "The art of balancing competing constraints.",
+        icon: Scale,
+        modules: ["CAP & PACELC Theorems", "Strong vs Eventual Consistency", "Vertical vs Horizontal Scaling", "Push vs Pull Architecture"],
+        unlocked: false,
+        routeBase: "resilience",
+      },
+      {
+        slug: "resilience-security",
+        title: "Resilience & Security",
+        blurb: "Designing systems that survive failure.",
+        icon: Shield,
+        modules: ["Circuit Breaker", "Disaster Recovery", "Chaos Engineering", "SSL, TLS, mTLS", "Zero Trust Architecture"],
+        unlocked: false,
+        routeBase: "resilience",
+      },
+      {
+        slug: "big-data",
+        title: "Big Data Processing",
+        blurb: "Processing massive amounts of information.",
+        icon: HardDrive,
+        modules: ["Batch vs Stream Processing", "MapReduce", "ETL Pipelines", "Data Lakes & Warehouses"],
+        unlocked: false,
+        routeBase: "resilience",
+      },
+    ],
+  },
+  {
+    group: "Case Studies (Capstone)",
+    groupBlurb: "Design real-world applications end-to-end.",
+    topics: [
+      {
+        slug: "case-studies",
+        title: "System Design Interviews",
+        blurb: "Applying concepts to tackle real-world system designs.",
+        icon: Monitor,
+        modules: ["URL Shortener", "WhatsApp", "Twitter", "Netflix", "Uber", "YouTube", "Payment System"],
+        unlocked: false,
+        routeBase: "case-studies",
+      },
+    ]
+  }
+];
+
+function SystemDesignIndex() {
+  const { isCompleted } = useProgress();
+
+  return (
+    <div className="flex w-full flex-col font-sans">
+      <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
+        <div className="mx-auto max-w-4xl text-center">
+          <div className="mx-auto mb-6 grid size-16 place-items-center rounded-2xl bg-mint/10 text-mint ring-1 ring-mint/20 lg:size-20">
+            <Server className="size-8 lg:size-10" />
+          </div>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
+            System Design
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
+            Design systems that survive scale, failure, and traffic spikes. From foundational networking to distributed systems and real-world case studies.
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-12 lg:py-20">
+        <div className="flex flex-col gap-24">
+          {sections.map((sec, i) => (
+            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
+              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
+                    {i + 1}
+                  </div>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">
+                    {sec.group}
+                  </h2>
+                </div>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                  {sec.groupBlurb}
+                </p>
+              </div>
+
+              <div className="flex w-full flex-col gap-4">
+                {sec.topics.map((t) => {
+                  const Icon = t.icon;
+                  const isLocked = !t.unlocked;
+                  
+                  const completedCount = t.completedCount || 0;
+                  const totalCount = t.modules.length;
+
+                  const card = (
+                    <div
+                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
+                        isLocked
+                          ? "bg-card/20 opacity-80 grayscale"
+                          : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
+                      }`}
+                    >
+                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
+                        <Icon
+                          className={`size-10 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
+                          strokeWidth={1.5}
+                        />
+                      </div>
+
+                      <div className="flex flex-1 flex-col p-6 sm:p-8">
+                        <div className="flex items-center justify-between gap-4">
+                          <h3 className="text-xl font-semibold tracking-tight text-foreground">
+                            {t.title}
+                          </h3>
+                          {isLocked && <LockKeyhole className="size-5 text-muted-foreground" />}
+                        </div>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {t.blurb}
+                        </p>
+
+                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
+                          {t.modules.map((m) => (
+                            <span
+                              key={m}
+                              className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
+                            >
+                              {m}
+                            </span>
+                          ))}
+                        </div>
+                        
+                        {!isLocked && (
+                          <div className="mt-6 flex items-center gap-2">
+                            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
+                              <div 
+                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                                style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-muted-foreground">
+                              {completedCount}/{totalCount} lessons complete
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {!isLocked && (
+                        <div className="absolute bottom-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-sm:hidden">
+                          <div className="grid size-8 place-items-center rounded-full bg-mint/10 text-mint">
+                            <ArrowRight className="size-4" />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+
+                  if (isLocked) {
+                    return <div key={t.slug}>{card}</div>;
+                  }
+
+                  const toPath = t.to || `/system-design/${t.routeBase}/${t.slug}`;
+                  return (
+                    <Link key={t.slug} to={toPath} className="block w-full outline-none">
+                      {card}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
