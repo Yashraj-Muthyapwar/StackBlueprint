@@ -22,6 +22,7 @@ import { useProgress } from "@/hooks/use-progress";
 import { FOUNDATION_TOPICS } from "@/lessons/web-scraping/foundations-content";
 import { AUTOMATION_TOPICS } from "@/lessons/web-scraping/automation-content";
 import { SCALE_TOPICS } from "@/lessons/web-scraping/scale-content";
+import webScraperLogo from "@/images/logos/web-scraper-logo.png";
 
 export const Route = createFileRoute("/web-scraping/")({
   head: () => ({
@@ -237,8 +238,8 @@ function WebScrapingIndex() {
     <div className="flex w-full flex-col font-sans">
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-6 grid size-16 place-items-center rounded-2xl bg-mint/10 text-mint ring-1 ring-mint/20 lg:size-20">
-            <Globe className="size-8 lg:size-10" />
+          <div className="mx-auto mb-6 flex justify-center">
+            <img src={webScraperLogo} alt="Web Scraping Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Web Scraping
