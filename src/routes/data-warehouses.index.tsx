@@ -10,6 +10,7 @@ import {
   LockKeyhole,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import dwLogo from "@/images/logos/data-warehouses-logo.png";
 
 export const Route = createFileRoute("/data-warehouses/")({
   head: () => ({
@@ -108,8 +109,8 @@ function DataWarehousesIndex() {
     <div className="flex w-full flex-col font-sans">
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto mb-6 grid size-16 place-items-center rounded-2xl bg-mint/10 text-mint ring-1 ring-mint/20 lg:size-20">
-            <Cloud className="size-8 lg:size-10" />
+          <div className="mx-auto mb-6 flex justify-center">
+            <img src={dwLogo} alt="Data Warehouses Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Data Warehouses
@@ -146,11 +147,10 @@ function DataWarehousesIndex() {
 
                   const card = (
                     <div
-                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
-                        isLocked
-                          ? "bg-card/20 opacity-80 grayscale"
-                          : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
-                      }`}
+                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${isLocked
+                        ? "bg-card/20 opacity-80 grayscale"
+                        : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
+                        }`}
                     >
                       <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
                         <Icon
