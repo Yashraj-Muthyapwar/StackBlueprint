@@ -114,7 +114,7 @@ function Landing() {
                   <p className="mt-1 text-sm text-muted-foreground">{cat.blurb}</p>
 
                   <div className="mt-5 flex flex-wrap gap-1.5">
-                    {cat.patterns.map((p) => (
+                    {cat.patterns.slice(0, 4).map((p) => (
                       <span
                         key={p.slug}
                         className={
@@ -126,6 +126,17 @@ function Landing() {
                         {p.title}
                       </span>
                     ))}
+                    {cat.patterns.length > 4 && (
+                      <span
+                        className={
+                          hasContent
+                            ? "rounded-full border border-mint/30 px-2.5 py-0.5 text-[11px] text-mint/70"
+                            : "rounded-full border border-hairline px-2.5 py-0.5 text-[11px] text-muted-foreground/60"
+                        }
+                      >
+                        +{cat.patterns.length - 4} more
+                      </span>
+                    )}
                   </div>
 
                   <div className="mt-6 inline-flex items-center gap-1.5 text-sm">
@@ -174,6 +185,20 @@ function Landing() {
               if (cat.overviewPath === "/web-scraping") {
                 return (
                   <Link key={cat.slug} to="/web-scraping" className="block">
+                    {card}
+                  </Link>
+                );
+              }
+              if (cat.overviewPath === "/terraform") {
+                return (
+                  <Link key={cat.slug} to="/terraform" className="block">
+                    {card}
+                  </Link>
+                );
+              }
+              if (cat.overviewPath === "/git-github") {
+                return (
+                  <Link key={cat.slug} to="/git-github" className="block">
                     {card}
                   </Link>
                 );
