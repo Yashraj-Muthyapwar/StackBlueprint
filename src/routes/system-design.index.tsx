@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
+import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
 
 export const Route = createFileRoute("/system-design/")({
   head: () => ({
@@ -71,10 +72,10 @@ const sections: Section[] = [
       {
         slug: "getting-started",
         title: "Getting Started",
-        blurb: "Introduction to system design and core terminology.",
+        blurb: "Introduction to system design and the interview delivery framework.",
         icon: PlayCircle,
-        modules: ["What is system design?", "Basics of System Design", "Time"],
-        unlocked: false,
+        modules: ["What is System Design?", "Delivery Framework"],
+        unlocked: true,
         routeBase: "fundamentals",
       },
       {
@@ -271,8 +272,11 @@ function SystemDesignIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
                   
-                  const completedCount = t.completedCount || 0;
-                  const totalCount = t.modules.length;
+                  const realTopic = FUNDAMENTALS_TOPICS[t.slug as keyof typeof FUNDAMENTALS_TOPICS];
+                  const completedCount = realTopic 
+                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length 
+                    : (t.completedCount || 0);
+                  const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
                   const card = (
                     <div
