@@ -18,6 +18,7 @@ import {
   Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import dsaLogo from "@/images/logos/dsa-logo.png";
 
 import { patterns } from "@/lessons/roadmap";
 
@@ -175,6 +176,9 @@ function PatternsIndex() {
                 Patterns (DSA) · {unlocked} of {topics.length} topics unlocked
               </span>
             </div>
+          </div>
+          <div className="mb-6">
+            <img src={dsaLogo} alt="DSA Patterns Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
           </div>
           <h1 className="text-balance text-3xl font-semibold tracking-tight lg:text-5xl">
             DSA patterns, visualized.
