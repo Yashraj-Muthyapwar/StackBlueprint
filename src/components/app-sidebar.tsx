@@ -79,7 +79,11 @@ export function AppSidebar() {
         {roadmap.map((cat) => (
           <SidebarGroup key={cat.slug}>
             <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              <cat.icon className="size-3" />
+              {typeof cat.icon === "string" ? (
+                <img src={cat.icon} alt={`${cat.title} logo`} className="size-3 object-contain drop-shadow-sm opacity-80" />
+              ) : (
+                <cat.icon className="size-3" />
+              )}
               {cat.overviewPath === "/patterns" ? (
                 <Link
                   to="/patterns"
