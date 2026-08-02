@@ -7,6 +7,7 @@ import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { IPv4Diagram } from "@/components/system-design/IPv4Diagram";
+import { PortsDiagram } from "@/components/system-design/PortsDiagram";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -340,6 +341,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "ipv4-diagram":
       return <IPv4Diagram />;
+
+    case "ports-diagram":
+      return <PortsDiagram />;
 
     case "analogy":
       return (
