@@ -62,53 +62,87 @@ const SERVICES: Service[] = [
   },
 ];
 
+type PacketState = "idle" | "syn_out" | "syn_firewall" | "syn_server" | "syn_ack_in" | "syn_ack_client" | "ack_out" | "ack_server" | "established" | "rst_in";
+
 export function PortsDiagram() {
   const [selectedService, setSelectedService] = useState<Service>(SERVICES[0]);
   const [isSending, setIsSending] = useState(false);
-  const [packetPos, setPacketPos] = useState<"client" | "network" | "firewall" | "server" | "port" | "rejected">("client");
+  const [packetState, setPacketState] = useState<PacketState>("idle");
   const [sourcePort, setSourcePort] = useState(52345);
 
   const handleSend = () => {
     if (isSending) return;
     setIsSending(true);
-    setPacketPos("client");
+    setPacketState("idle");
     setSourcePort(Math.floor(Math.random() * (65535 - 49152 + 1)) + 49152);
 
-    // Animation sequence
-    setTimeout(() => setPacketPos("network"), 500);
-    setTimeout(() => setPacketPos("firewall"), 2000);
+    let t = 0;
+    const step = (state: PacketState, delay: number) => {
+      t += delay;
+      setTimeout(() => setPacketState(state), t);
+    };
 
-    setTimeout(() => {
-      if (selectedService.isBlocked) {
-        setPacketPos("rejected");
-        setTimeout(() => {
-          setIsSending(false);
-          setPacketPos("client");
-        }, 3000);
-      } else {
-        setPacketPos("server");
-        setTimeout(() => setPacketPos("port"), 1200);
-        setTimeout(() => {
-          setIsSending(false);
-          setPacketPos("client");
-        }, 3500);
-      }
-    }, 3500);
+    // 1. Client sends SYN
+    step("syn_out", 300);
+    // 2. Hits firewall
+    step("syn_firewall", 1800);
+
+    if (selectedService.isBlocked) {
+      // 3. Firewall rejects, sends RST
+      step("rst_in", 2500);
+      setTimeout(() => {
+        setIsSending(false);
+        setPacketState("idle");
+      }, t + 3000);
+    } else {
+      // 3. Firewall allows, reaches server
+      step("syn_server", 1800);
+      // 4. Server responds with SYN-ACK
+      step("syn_ack_in", 1800);
+      // 5. Reaches client
+      step("syn_ack_client", 1800);
+      // 6. Client sends ACK
+      step("ack_out", 1800);
+      // 7. Reaches server
+      step("ack_server", 1800);
+      // 8. Connection established at Port
+      step("established", 1200);
+      
+      setTimeout(() => {
+        setIsSending(false);
+        setPacketState("idle");
+      }, t + 4500);
+    }
   };
 
   const getPacketPosition = () => {
-    if (packetPos === "client") return { x: -180, y: 0, opacity: 0, scale: 0.8 };
-    if (packetPos === "network") return { x: -30, y: 0, opacity: 1, scale: 1 };
-    if (packetPos === "firewall") return { x: 70, y: 0, opacity: 1, scale: 1 };
-    if (packetPos === "rejected") return { x: 20, y: 40, opacity: 0, scale: 0.8 };
-    
-    // Y-offset mapping for visual alignment on the server
-    const yOffsets: Record<string, number> = { web: -70, db: 0, ssh: 70 };
-    
-    if (packetPos === "server") return { x: 120, y: 0, opacity: 1, scale: 0.9 };
-    if (packetPos === "port") return { x: 200, y: yOffsets[selectedService.id] || 0, opacity: 0, scale: 0.5 };
-    
-    return { x: -180, y: 0, opacity: 0, scale: 0.8 };
+    switch (packetState) {
+      case "idle": return { x: -180, y: 0, opacity: 0, scale: 0.8 };
+      case "syn_out": return { x: -30, y: 0, opacity: 1, scale: 1 };
+      case "syn_firewall": return { x: 70, y: 0, opacity: 1, scale: 1 };
+      case "rst_in": return { x: -80, y: 40, opacity: 0, scale: 0.5 };
+      case "syn_server": return { x: 120, y: 0, opacity: 1, scale: 1 };
+      case "syn_ack_in": return { x: -30, y: 0, opacity: 1, scale: 1 };
+      case "syn_ack_client": return { x: -180, y: 0, opacity: 1, scale: 1 };
+      case "ack_out": return { x: 70, y: 0, opacity: 1, scale: 1 };
+      case "ack_server": return { x: 120, y: 0, opacity: 1, scale: 1 };
+      case "established": 
+        const yOffsets: Record<string, number> = { web: -70, db: 0, ssh: 70 };
+        return { x: 200, y: yOffsets[selectedService.id] || 0, opacity: 0, scale: 0.5 };
+      default: return { x: -180, y: 0, opacity: 0, scale: 0.8 };
+    }
+  };
+
+  const getPacketFlag = () => {
+    switch (packetState) {
+      case "syn_ack_in":
+      case "syn_ack_client": return "SYN, ACK";
+      case "ack_out":
+      case "ack_server":
+      case "established": return "ACK";
+      case "rst_in": return "RST";
+      default: return "SYN";
+    }
   };
 
   return (
@@ -179,31 +213,33 @@ export function PortsDiagram() {
                   initial={{ x: -180, y: 0, opacity: 0, scale: 0.8 }}
                   animate={getPacketPosition()}
                   transition={{ 
-                    duration: packetPos === "rejected" ? 0.4 : 1.2, 
+                    duration: packetState === "rst_in" || packetState === "established" ? 1.0 : 1.6, 
                     type: "spring", 
-                    bounce: packetPos === "rejected" ? 0.5 : 0.1 
+                    bounce: 0.1 
                   }}
-                  className={`absolute z-30 flex flex-col items-center justify-center rounded-lg border bg-surface/95 backdrop-blur-sm p-2 shadow-xl w-36 ${packetPos === 'rejected' ? 'border-red-500/50 bg-red-500/10' : selectedService.bg}`}
+                  className={`absolute z-30 flex flex-col items-center justify-center rounded-lg border bg-surface/95 backdrop-blur-sm p-2 shadow-xl w-36 ${packetState === 'rst_in' ? 'border-red-500/50 bg-red-500/10' : selectedService.bg}`}
                 >
-                  {packetPos === 'rejected' ? (
+                  {packetState === 'rst_in' ? (
                      <div className="flex flex-col items-center gap-1 text-red-500 py-1">
                         <X className="size-5" />
                         <span className="text-[9px] font-bold uppercase tracking-wider text-center leading-tight">TCP RST<br/>(Blocked)</span>
                      </div>
                   ) : (
                     <>
-                      <div className="bg-black/10 dark:bg-white/10 w-[110%] -mt-2 mb-2 py-0.5 text-[8px] font-bold text-center tracking-widest uppercase opacity-70">
-                        {selectedService.protocol} Segment
+                      <div className="bg-black/10 dark:bg-white/10 w-[110%] -mt-2 mb-2 py-0.5 text-[8px] font-bold text-center tracking-widest uppercase opacity-80">
+                        {selectedService.protocol} Segment <span className="text-[7px] ml-0.5 px-0.5 border border-current rounded-sm opacity-90">{getPacketFlag()}</span>
                       </div>
                       <div className="flex flex-col w-full gap-0.5 border-b border-hairline/50 pb-1.5 mb-1.5">
                         <div className="flex justify-between items-center w-full">
                            <span className="font-mono text-[8px] text-muted-foreground">SRC:</span>
-                           <span className="font-mono text-[8px]">192.168.1.5:{sourcePort}</span>
+                           <span className="font-mono text-[8px]">
+                             {["syn_ack_in", "syn_ack_client", "rst_in"].includes(packetState) ? `203.0.113.45:${selectedService.port}` : `192.168.1.5:${sourcePort}`}
+                           </span>
                         </div>
                         <div className="flex justify-between items-center w-full">
                            <span className="font-mono text-[8px] text-muted-foreground">DST:</span>
                            <span className={`font-mono text-[9px] font-bold ${selectedService.color}`}>
-                             203.0.113.45:{selectedService.port}
+                             {["syn_ack_in", "syn_ack_client", "rst_in"].includes(packetState) ? `192.168.1.5:${sourcePort}` : `203.0.113.45:${selectedService.port}`}
                            </span>
                         </div>
                       </div>
@@ -223,10 +259,12 @@ export function PortsDiagram() {
                  <motion.line 
                     x1="0%" y1="50%" x2="100%" y2="50%" 
                     stroke="currentColor" 
-                    className={selectedService.isBlocked && packetPos === 'rejected' ? "text-red-500" : "text-mint/50"} 
+                    className={selectedService.isBlocked && packetState === 'rst_in' ? "text-red-500" : "text-mint/50"} 
                     strokeWidth="2" 
                     initial={{ strokeDashoffset: 100, strokeDasharray: "20 100" }}
-                    animate={isSending ? { strokeDashoffset: -100 } : { strokeDashoffset: 100 }}
+                    animate={isSending ? { 
+                      strokeDashoffset: ["syn_ack_in", "syn_ack_client", "rst_in"].includes(packetState) ? 100 : -100 
+                    } : { strokeDashoffset: 100 }}
                     transition={{ duration: 1.5, repeat: isSending ? Infinity : 0, ease: "linear" }}
                  />
                </svg>
@@ -253,7 +291,7 @@ export function PortsDiagram() {
               <div className="mt-6 flex flex-col gap-3 relative">
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground text-left px-1">Active Services</p>
                 {SERVICES.filter(s => !s.isBlocked).map((s) => {
-                  const isTarget = isSending && selectedService.id === s.id && packetPos === "port";
+                  const isTarget = isSending && selectedService.id === s.id && packetState === "established";
                   return (
                     <motion.div
                       key={s.id}
@@ -299,9 +337,12 @@ export function PortsDiagram() {
              <p className="text-sm text-foreground/80 leading-relaxed font-mono">
                {isSending ? (
                  <span className="animate-pulse">
-                    {packetPos === 'firewall' ? `Checking firewall rules for port ${selectedService.port}...` : 
-                     packetPos === 'rejected' ? <span className="text-red-500 font-bold">Connection to port {selectedService.port} refused. Firewall block active.</span> :
-                     packetPos === 'port' ? <span className="text-mint font-bold">{selectedService.successMessage}</span> :
+                    {packetState === 'syn_out' || packetState === 'syn_firewall' ? `Initiating TCP Handshake. Sending SYN packet to port ${selectedService.port}...` : 
+                     packetState === 'rst_in' ? <span className="text-red-500 font-bold">Connection to port {selectedService.port} refused. Firewall returned TCP RST.</span> :
+                     packetState === 'syn_server' ? `Firewall allowed SYN. Server evaluating request...` :
+                     packetState === 'syn_ack_in' || packetState === 'syn_ack_client' ? `Server accepted connection. Returning SYN-ACK packet...` :
+                     packetState === 'ack_out' || packetState === 'ack_server' ? `Client received SYN-ACK. Sending final ACK to establish connection...` :
+                     packetState === 'established' ? <span className="text-mint font-bold">{selectedService.successMessage}</span> :
                      `Routing packet to ${selectedService.name} on port ${selectedService.port}...`}
                  </span>
                ) : (
