@@ -4,6 +4,8 @@ import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-fr
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
+import osiModelImg from "@/images/system-design/Foundations/OSI-Model.png";
+import osiModelSendingImg from "@/images/system-design/Foundations/osi-model-sending-a-request.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
 
@@ -915,6 +917,100 @@ const portsLesson: LessonContent = {
   ]
 };
 
+const osiModelLesson: LessonContent = {
+  slug: "osi-model",
+  title: "OSI Model",
+  subtitle: "Understanding the 7-layer framework for network communication.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What It Is",
+      body: [
+        "The **OSI (Open Systems Interconnection) Model** is a **7-layer framework** for understanding how data moves across networks.",
+        "Each layer has a **specific role** and communicates only with adjacent layers.",
+        "**Purpose:** standardize communication, ensure interoperability, and break down networking into manageable parts."
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why Learn It?",
+      body: "While this model is not directly implemented in the TCP/IP networks that are most common today, it helps make troubleshooting easier, encourages hardware interoperability, develops a security-first mindset, and separates a complex function into simpler components."
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Mnemonic to Remember",
+      body: "### ==purple:A==ll ==blue:P==eople ==teal:S==eems ==green:T==o ==yellow:N==eed ==orange:D==ata ==red:P==rocessing \n(==purple:A==pplication, ==blue:P==resentation, ==teal:S==ession, ==green:T==ransport, ==yellow:N==etwork, ==orange:D==ata Link, ==red:P==hysical)"
+    },
+    {
+      kind: "image",
+      src: osiModelImg,
+      alt: "OSI Model Diagram",
+      caption: "The 7 Layers of the OSI Model"
+    },
+    {
+      kind: "osi-model-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "7 Layers of OSI Model (Bottom → Top)",
+      body: [
+        "**1. Physical Layer**",
+        "• Concerned with **hardware transmission of raw bits (0s and 1s)**.",
+        "• **Defines** cables, switches, voltages, frequencies, connectors.",
+        "• Converts data into **bit streams** for transmission.",
+        "• Both sender & receiver must agree on **signal convention**.",
+        "",
+        "**2. Data Link Layer**",
+        "• Handles **node-to-node communication** within the same network.",
+        "• Takes packets from the Network layer → converts to **frames**.",
+        "• Provides **MAC addressing** and **error detection (CRC)**.",
+        "• **Devices:** Switches, Bridges.",
+        "• **Sub-layers:** LLC (Logical Link Control), MAC (Media Access Control).",
+        "",
+        "**3. Network Layer**",
+        "• Responsible for **routing** and **logical addressing (IP) between networks**.",
+        "• Breaks segments from the transport layer into smaller units, called **packets** and reassembles these packets on the receiving device.",
+        "• Finds the **best path** to the destination.",
+        "• Not needed if devices are on the **same network**.",
+        "• **Devices:** Routers.",
+        "• **Protocols:** IPv4, IPv6, ICMP.",
+        "",
+        "**4. Transport Layer**",
+        "• Ensures **end-to-end communication**, reliability, flow control.",
+        "• Provides **segmentation, acknowledgment, error recovery**.",
+        "• **Protocols:** TCP (reliable), UDP (fast, no guarantee).",
+        "• **Unit:** Segments (TCP) / Datagrams (UDP).",
+        "",
+        "**5. Session Layer**",
+        "• Manages **sessions** (open, maintain, close) between applications.",
+        "• The time between when the communication is opened and closed is known as the **session**.",
+        "• Handles authentication, authorization, synchronization.",
+        "• **Examples:** NetBIOS, RPC, SQL sessions.",
+        "• **Unit:** Data.",
+        "",
+        "**6. Presentation Layer**",
+        "• The presentation layer is also called the **Translation layer**.",
+        "• Translates data into **application-readable format**.",
+        "• Handles **encryption, compression, encoding**.",
+        "• **Examples:** SSL/TLS, JPEG, GIF, MPEG.",
+        "• **Unit:** Data.",
+        "",
+        "**7. Application Layer**",
+        "• Closest to the **end-user**; provides network services.",
+        "• **Examples:** HTTP, HTTPS, FTP, SMTP, DNS.",
+        "• **Unit:** Data."
+      ]
+    },
+    {
+      kind: "image",
+      src: osiModelSendingImg,
+      alt: "Sending a Request through the OSI Model",
+      caption: "How a data request flows down the OSI stack on the sender's side and back up on the receiver's side."
+    }
+  ]
+};
 
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
@@ -932,6 +1028,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson],
+    lessons: [osiModelLesson, ipLesson, portsLesson],
   }
 };
