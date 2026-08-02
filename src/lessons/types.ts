@@ -136,6 +136,7 @@ export type Section =
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "terminal-animation"; command: string; output: string; buttonLabel?: string; caption?: string }
   | { kind: "docker-run-under-the-hood" }
+  | { kind: "ipv4-diagram" }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
