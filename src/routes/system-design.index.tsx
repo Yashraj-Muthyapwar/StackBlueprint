@@ -92,7 +92,7 @@ const sections: Section[] = [
           "DNS Caching",
           "Proxy",
         ],
-        unlocked: false,
+        unlocked: true,
         routeBase: "fundamentals",
       },
       {
