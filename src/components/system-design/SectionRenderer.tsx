@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { IPv4Diagram } from "@/components/system-design/IPv4Diagram";
 import { PortsDiagram } from "@/components/system-design/PortsDiagram";
+import { OsiModelDiagram } from "@/components/system-design/OsiModelDiagram";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -86,8 +87,39 @@ export function highlightShell(line: string, isTerminal?: boolean) {
 }
 
 function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|\n)/g);
   return parts.map((part, i) => {
+    if (part === "\n") {
+      return <br key={i} />;
+    }
+    if (part.startsWith("==") && part.endsWith("==")) {
+      const content = part.slice(2, -2);
+      if (content.includes(":")) {
+        const [color, ...textParts] = content.split(":");
+        const text = textParts.join(":");
+        const colorMap: Record<string, string> = {
+          purple: "text-purple-600 dark:text-purple-400",
+          blue: "text-blue-600 dark:text-blue-400",
+          teal: "text-teal-600 dark:text-teal-400",
+          green: "text-green-600 dark:text-green-400",
+          yellow: "text-yellow-600 dark:text-yellow-500",
+          amber: "text-amber-600 dark:text-amber-500",
+          orange: "text-orange-500 dark:text-orange-400",
+          red: "text-red-500 dark:text-red-400",
+        };
+        const colorClass = colorMap[color] || colorMap.amber;
+        return (
+          <span key={i} className={`font-extrabold ${colorClass}`}>
+            {text}
+          </span>
+        );
+      }
+      return (
+        <span key={i} className="font-extrabold text-amber-600 dark:text-amber-500">
+          {content}
+        </span>
+      );
+    }
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={i} className="font-semibold text-foreground">
@@ -285,9 +317,15 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground/85">
-              {parseInlineMarkdown(section.body)}
-            </p>
+            {section.body.startsWith("### ") ? (
+              <div className="mt-1.5 text-lg font-medium leading-relaxed text-foreground/90">
+                {parseInlineMarkdown(section.body.replace("### ", ""))}
+              </div>
+            ) : (
+              <p className="mt-1 text-sm leading-relaxed text-foreground/85">
+                {parseInlineMarkdown(section.body)}
+              </p>
+            )}
           </div>
         </aside>
       );
@@ -344,6 +382,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "ports-diagram":
       return <PortsDiagram />;
+
+    case "osi-model-diagram":
+      return <OsiModelDiagram />;
 
     case "analogy":
       return (
