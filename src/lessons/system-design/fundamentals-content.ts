@@ -5,7 +5,6 @@ import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-no
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
 import osiModelImg from "@/images/system-design/Foundations/OSI-Model.png";
-import osiModelSendingImg from "@/images/system-design/Foundations/osi-model-sending-a-request.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
 
@@ -1003,12 +1002,6 @@ const osiModelLesson: LessonContent = {
         "• **Unit:** Data."
       ]
     },
-    {
-      kind: "image",
-      src: osiModelSendingImg,
-      alt: "Sending a Request through the OSI Model",
-      caption: "How a data request flows down the OSI stack on the sender's side and back up on the receiver's side."
-    }
   ]
 };
 
