@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, ChevronRight, CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
-import { SectionRenderer } from "@/components/docker/SectionRenderer";
+import { SectionRenderer } from "@/components/system-design/SectionRenderer";
 import { useProgress } from "@/hooks/use-progress";
 
 export const Route = createFileRoute("/system-design/fundamentals/$topic/$lesson")({
