@@ -5,6 +5,7 @@ import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-no
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
+import portsImg from "@/images/system-design/Foundations/ports.png";
 
 export type { Section };
 
@@ -797,6 +798,83 @@ const ipLesson: LessonContent = {
   ]
 };
 
+const portsLesson: LessonContent = {
+  slug: "ports",
+  title: "Ports",
+  subtitle: "Understanding how data reaches the right application.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What Is a Port?",
+      body: [
+        "Ports are **numerical identifiers** used in networking to direct traffic to the correct application or service on a device.",
+        "They work with **IP addresses** to identify **both the device and the specific service/application** on that device.",
+        "This allows multiple services to run on the same machine while still being reachable (e.g., a web server and a database running on the same server).",
+        "",
+        "👉 Think of **IP = street address**, and **Port = apartment number**."
+      ]
+    },
+    {
+      kind: "image",
+      src: portsImg,
+      alt: "Diagram illustrating how IP addresses and ports route traffic",
+      caption: "An IP address routes to the device, while a port routes to the specific application."
+    },
+    {
+      kind: "prose",
+      heading: "How Ports Work",
+      body: [
+        "Each port is represented by a **16-bit number** (0–65535). They are assigned by **IANA** (Internet Assigned Numbers Authority) and are used by **Transport Layer protocols** like TCP and UDP.",
+        "",
+        "**When you visit a website:**",
+        "1. Your browser connects to the server's **IP address** on **port 443** (for HTTPS).",
+        "2. The server listens on that port and responds with the webpage.",
+        "3. Your device might use a **random high-numbered port** (like 52345) to initiate the request.",
+        "",
+        "When a packet arrives:",
+        "• **IP Address** → finds the right machine.",
+        "• **Port Number** → directs to the correct application/service.",
+        "",
+        "This combo `IP:Port` forms a **socket**, which uniquely identifies a connection. The operating system uses the port number to route incoming packets to the correct application."
+      ]
+    },
+    {
+      kind: "ports-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "Port Number Ranges",
+      body: []
+    },
+    {
+      kind: "table",
+      headers: ["Range", "Type", "Purpose", "Examples"],
+      rows: [
+        ["**0–1023**", "Well-known ports", "Reserved for standard services", "HTTP (80), HTTPS (443), FTP (20/21), SSH (22), SMTP (25), DNS (53)"],
+        ["**1024–49151**", "Registered ports", "Assigned to user-defined services", "MySQL (3306), Postgres (5432), Redis (6379), MongoDB (27017)"],
+        ["**49152–65535**", "Dynamic / Private ports", "Used for ephemeral client connections", "Browser → Server traffic"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Types of Ports (Based on Protocol)",
+      body: [
+        "• **TCP Ports** → reliable, connection-oriented communication (**Web (HTTP/HTTPS)**, **Email (SMTP/IMAP)**, **File Transfer (FTP)**).",
+        "• **UDP Ports** → fast, connectionless communication (**Streaming (video/audio)**, **DNS**, **Online Gaming**)."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "**Multiplexing:** Ports allow many services to run on one single device simultaneously.",
+        "**Standardization:** Known services always use fixed port numbers (e.g. 80/443 for web).",
+        "**Security:** Open ports can be attack entry points. Always close unused ports and use firewalls."
+      ]
+    }
+  ]
+};
+
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -813,6 +891,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson],
+    lessons: [ipLesson, portsLesson],
   }
 };
