@@ -3,6 +3,8 @@ import keyComponentsImg from "@/images/system-design/Foundations/key-components.
 import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-framework.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
+import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
+import natImg from "@/images/system-design/Foundations/nat.png";
 
 export type { Section };
 
@@ -614,6 +616,187 @@ const backOfTheEnvelope: LessonContent = {
   ]
 };
 
+const ipLesson: LessonContent = {
+  slug: "ip",
+  title: "IP (Internet Protocol)",
+  subtitle: "Understanding IP addresses, versions, and types.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What It Is?",
+      body: [
+        "An Internet Protocol (IP) address is a unique numerical label assigned to every device on a network, providing both identity and location information to route data accurately across the internet."
+      ]
+    },
+    {
+      kind: "image",
+      src: internetProtocolImg,
+      alt: "Internet Protocol Diagram",
+      caption: "An overview of how IP connects devices on a network."
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Essential for Communication",
+      body: "IP addresses are essential for communication on the internet (computers, routers, websites, IoT devices)."
+    },
+    {
+      kind: "prose",
+      heading: "Versions of IP",
+      body: [
+        "**1. IPv4**",
+        "• 32-bit numeric, dot-decimal format.",
+        "• Capacity: ~4.3 billion addresses.",
+        "• Example: `102.22.192.181`.",
+        "• **Limitations**: exhausted due to global internet growth.",
+        "",
+        "**2. IPv6**",
+        "• 128-bit alphanumeric, hexadecimal format.",
+        "• Capacity: ~3.4 × 10^38 addresses (virtually unlimited).",
+        "• Example: `2001:0db8:85a3:0000:0000:8a2e:0370:7334`.",
+        "• Introduced in 1998, still being adopted."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "IPv4 Address Classes",
+      headers: ["Class", "Leading Bits", "Range", "Default Subnet Mask", "Use Case"],
+      rows: [
+        ["A", "0", "0.0.0.0 - 127.255.255.255", "255.0.0.0", "Large organizations (16M hosts/network)"],
+        ["B", "10", "128.0.0.0 - 191.255.255.255", "255.255.0.0", "Medium-sized organizations (65K hosts/network)"],
+        ["C", "110", "192.0.0.0 - 223.255.255.255", "255.255.255.0", "Small organizations (254 hosts/network)"],
+        ["D", "1110", "224.0.0.0 - 239.255.255.255", "N/A", "Multicast groups"],
+        ["E", "1111", "240.0.0.0 - 255.255.255.255", "N/A", "Experimental / Reserved"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "CIDR Notation (Modern Routing)",
+      body: [
+        "While Classful addressing (Classes A, B, C) is historically important, it is largely obsolete in modern networking.",
+        "Today, networks use **CIDR (Classless Inter-Domain Routing)**. CIDR allows for more flexible allocation of IP addresses by specifying the exact number of bits used for the network portion.",
+        "• Format: `IP Address / Subnet Mask Bits`",
+        "• Example: `192.168.1.0/24` means the first 24 bits define the network, leaving 8 bits (256 addresses) for the host.",
+        "**Real-World Example (AWS VPC)**: When you create a virtual network in the cloud, you must define its size using CIDR. You might create a large VPC at `10.0.0.0/16` (65,536 addresses). You then chop that large network into smaller subnets, like a public subnet at `10.0.1.0/24` (256 addresses) for your web servers, and a private subnet at `10.0.2.0/24` for your databases. CIDR is the standard language for defining these network boundaries."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Syntax of IP Addresses",
+      body: [
+        "**IPv4 Syntax**",
+        "An IPv4 address consists of four decimal numbers (octets), ranging from 0 to 255, separated by dots.",
+        "• Format: `x.x.x.x`",
+        "• Example: `192.168.1.1`",
+        "• Binary representation: Each octet is 8 bits. Example: `11000000.10101000.00000001.00000001` (32 bits total).",
+        "",
+        "**IPv6 Syntax**",
+        "An IPv6 address is represented as eight groups of four hexadecimal digits, separated by colons.",
+        "• Format: `x:x:x:x:x:x:x:x`",
+        "• Example: `2001:0db8:85a3:0000:0000:8a2e:0370:7334`",
+        "• **Shorthand notation**: Leading zeros within a group can be omitted (`0db8` -> `db8`). Consecutive groups of zeros can be replaced by a double colon `::` (only once per address).",
+        "• Shortened Example: `2001:db8:85a3::8a2e:370:7334`"
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Types of IP Addresses",
+      headers: ["Type", "Characteristics", "Example / Use Case"],
+      rows: [
+        [
+          "**Public IP**",
+          "• Assigned by ISP to your network/router.\n• Shared across all devices in that network.",
+          "IP address provided to your router by the ISP."
+        ],
+        [
+          "**Private IP**",
+          "• Assigned internally by router to each device (computers, phones, smart TVs).",
+          "`192.168.1.2`, `10.0.0.5`\nIP addresses generated by your home router for your devices."
+        ],
+        [
+          "**Static IP**",
+          "• Manually configured, **does not change**.\n• More reliable but expensive.",
+          "• Server hosting\n• Remote access\n• Geo-location services"
+        ],
+        [
+          "**Dynamic IP**",
+          "• Assigned by DHCP server, **changes over time**.\n• Cheaper, more common for personal/consumer use.\n• Allows IP reuse within networks.",
+          "More commonly used for consumer equipment and personal use."
+        ]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Network Address Translation (NAT)",
+      body: [
+        "If millions of households use the exact same private IP address block (like `192.168.1.0/24`), how does the internet know where to send data without mixing everyone up?",
+        "The answer is **NAT (Network Address Translation)**. NAT is a process running on your router that translates private, non-routable IP addresses on your internal network into a single, valid public IP address before sending data out to the internet.",
+        "Without NAT, the IPv4 address space (only 4.3 billion addresses) would have run out in the early 2000s. NAT single-handedly saved IPv4 by allowing thousands of devices to share a single public IP.",
+        "",
+        "**🏢 The Corporate Mailroom Analogy**",
+        "Imagine a massive office building. To the outside world, the entire building has just **one public address**: *123 Business Rd*. This is your **Public IP**.",
+        "Inside the building, there are hundreds of employees, each with an internal desk number (Desk 10, Desk 25). These are **Private IPs**.",
+        "When Employee Alice (Desk 10) sends a letter to a client, she drops it off at the Mailroom (the **Router**). The Mailroom puts the letter in a new envelope, writing the sender as *123 Business Rd* (so the client knows how to reply), but it writes down in a secret ledger: *\"I just sent a letter for Alice at Desk 10\"* (**NAT Table**).",
+        "When the client replies to *123 Business Rd*, the Mailroom receives it, checks its ledger, sees the reply is meant for the letter Alice sent, and forwards it internally to Desk 10."
+      ]
+    },
+    {
+      kind: "image",
+      src: natImg,
+      alt: "Network Address Translation (NAT) Diagram",
+      caption: "NAT allows multiple private IP devices to share a single public IP address."
+    },
+    {
+      kind: "prose",
+      body: [
+        "**🌍 Real-World Example**",
+        "1. Your smartphone (Private IP: `192.168.1.15`) wants to load `google.com`.",
+        "2. The request is sent to your Home Wi-Fi Router.",
+        "3. The router intercepts the packet, strips away your private IP, and replaces it with the router's Public IP assigned by your ISP (e.g., `203.0.113.5`). It records this swap in its NAT Table.",
+        "4. Google sees a request from `203.0.113.5` and sends the website data back.",
+        "5. Your router receives the data, checks its NAT Table, and knows it needs to route those packets specifically back to `192.168.1.15` (your phone)."
+      ]
+    },
+    {
+      kind: "ipv4-diagram",
+    },
+    {
+      kind: "animation",
+      variant: "ip-client-server",
+      caption: "Real-world Example: Sending an HTTP Request"
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "ip-1",
+          question: "Which of the following is true about IPv6?",
+          options: [
+            "It uses a 32-bit numeric format.",
+            "It is being phased out in favor of IPv4.",
+            "It has a capacity of approximately 4.3 billion addresses.",
+            "It uses a 128-bit alphanumeric format."
+          ],
+          correctIndex: 3,
+          explanation: "IPv6 was introduced to solve the address exhaustion problem of IPv4. It uses a 128-bit alphanumeric format, providing a virtually unlimited number of addresses."
+        },
+        {
+          id: "ip-2",
+          question: "What is the primary difference between a Public IP and a Private IP?",
+          options: [
+            "A Public IP is used within a local network, while a Private IP is assigned by an ISP.",
+            "A Public IP is shared across devices in a network and assigned by an ISP, while a Private IP is assigned internally by a router.",
+            "Public IPs are only used for servers, while Private IPs are used for consumer devices.",
+            "Public IPs change constantly, while Private IPs remain static."
+          ],
+          correctIndex: 1,
+          explanation: "An ISP assigns a Public IP to a router, which is shared across the internet. The router then assigns Private IPs internally to each device (like laptops or phones) so they can communicate locally."
+        }
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -623,5 +806,13 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
     lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
+  },
+  "networking-protocols": {
+    slug: "networking-protocols",
+    title: "Networking & Protocols",
+    category: "Fundamentals",
+    iconKey: "layers",
+    blurb: "Understand how data travels across the web.",
+    lessons: [ipLesson],
   }
 };
