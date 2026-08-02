@@ -139,6 +139,14 @@ const whatIsSystemDesign: LessonContent = {
       ]
     },
     {
+      kind: "takeaways",
+      items: [
+        "System Design is the process of translating product requirements into a scalable, actionable technical blueprint.",
+        "High-Level Design (HLD) focuses on the macro architecture and components, acting as a guide for management.",
+        "Low-Level Design (LLD) focuses on the micro implementation details, acting as a guide for engineers to write code."
+      ]
+    },
+    {
       kind: "quiz",
       questions: [
         {
@@ -259,6 +267,15 @@ const deliveryFramework: LessonContent = {
         "Now, elevate your design by identifying and resolving bottlenecks. This is where you demonstrate seniority.",
         "Address how to scale the database (sharding/replication), how to cut down latency (CDNs/caches), and how to ensure resilience (handling node failures).",
         "Take the lead in critiquing your own architecture and discussing the trade-offs of your proposed solutions."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Follow a structured framework during interviews to prevent rambling and ensure you cover all critical bases.",
+        "Always start by clarifying ambiguous requirements and defining concrete constraints.",
+        "Establish a simple, working High-Level Design before attempting to optimize or scale individual components.",
+        "Dedicate time at the end to dive deep into bottlenecks, trade-offs, and failure scenarios."
       ]
     },
     {
@@ -444,6 +461,14 @@ const functionalVsNonFunctional: LessonContent = {
       ]
     },
     {
+      kind: "takeaways",
+      items: [
+        "Functional Requirements define what the system MUST do (e.g., 'users can post a tweet').",
+        "Non-Functional Requirements (NFRs) define how the system MUST behave (e.g., latency, availability, durability).",
+        "NFRs dictate your architectural choices—a system optimizing for high availability looks entirely different from one optimizing for strict consistency."
+      ]
+    },
+    {
       kind: "quiz",
       questions: [
         {
@@ -584,6 +609,15 @@ const backOfTheEnvelope: LessonContent = {
         ["Giga", "GB", "10^9", "2^30", "RAM limits, HD video clips"],
         ["Tera", "TB", "10^12", "2^40", "Hard drive sizes, daily DB writes"],
         ["Peta", "PB", "10^15", "2^50", "Big data lakes, total enterprise storage"]
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Back-of-the-envelope calculations are rough estimates used to validate if a design can handle expected loads.",
+        "Focus on calculating Traffic (QPS), Storage Requirements, and Bandwidth.",
+        "Round your numbers aggressively to simplify math (e.g., 1 day ≈ 100,000 seconds).",
+        "Use these estimates to justify your architecture (e.g., 'We need 3 database shards because a single instance can't hold 5TB of active data')."
       ]
     },
     {
@@ -768,6 +802,15 @@ const ipLesson: LessonContent = {
       caption: "Real-world Example: Sending an HTTP Request"
     },
     {
+      kind: "takeaways",
+      items: [
+        "IP (Internet Protocol) is the fundamental set of rules routing data across the internet.",
+        "IPv4 uses 32-bit addresses (exhausted), while IPv6 uses 128-bit addresses to provide a virtually infinite supply.",
+        "Public IPs route across the global internet; Private IPs are restricted to local networks.",
+        "NAT (Network Address Translation) maps multiple private IPs to a single public IP to conserve the IPv4 address space."
+      ]
+    },
+    {
       kind: "quiz",
       questions: [
         {
@@ -870,6 +913,15 @@ const portsLesson: LessonContent = {
         "**Multiplexing:** Ports allow many services to run on one single device simultaneously.",
         "**Standardization:** Known services always use fixed port numbers (e.g. 80/443 for web).",
         "**Security:** Open ports can be attack entry points. Always close unused ports and use firewalls."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "While an IP address directs traffic to a specific machine, a Port directs traffic to a specific application on that machine.",
+        "Ports are 16-bit numbers ranging from 0 to 65535.",
+        "Well-known ports (0-1023) are reserved for standard protocols (e.g., 80 for HTTP, 443 for HTTPS, 22 for SSH).",
+        "A network Socket is the combination of an IP address and a Port (e.g., 192.168.1.5:80)."
       ]
     },
     {
@@ -1002,6 +1054,32 @@ const osiModelLesson: LessonContent = {
         "• **Unit:** Data."
       ]
     },
+    {
+      kind: "takeaways",
+      items: [
+        "The OSI Model is a 7-layer conceptual framework that standardizes how different network components communicate.",
+        "Data flows DOWN the stack (Encapsulation) when sending, and UP the stack (Decapsulation) when receiving.",
+        "Each layer only communicates with the layer immediately above or below it.",
+        "While modern networks use the TCP/IP model, the OSI model is essential for troubleshooting and understanding separation of concerns."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "osi-model-layer-3",
+          question: "Which layer of the OSI model is primarily responsible for logical addressing (IP) and routing data across different networks?",
+          options: [
+            "Layer 2 (Data Link)",
+            "Layer 3 (Network)",
+            "Layer 4 (Transport)",
+            "Layer 7 (Application)"
+          ],
+          correctIndex: 1,
+          explanation: "Layer 3 (the Network layer) handles IP addressing and routing packets across multiple networks to reach their final destination."
+        }
+      ]
+    }
   ]
 };
 
