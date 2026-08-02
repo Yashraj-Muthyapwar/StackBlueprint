@@ -870,6 +870,47 @@ const portsLesson: LessonContent = {
         "**Standardization:** Known services always use fixed port numbers (e.g. 80/443 for web).",
         "**Security:** Open ports can be attack entry points. Always close unused ports and use firewalls."
       ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "ports-https",
+          question: "Which port is traditionally reserved for the HTTPS (secure web) protocol?",
+          options: [
+            "80",
+            "443",
+            "22",
+            "5432"
+          ],
+          correctIndex: 1,
+          explanation: "Port 443 is the standard for secure web traffic (HTTPS), while Port 80 is used for unencrypted HTTP traffic."
+        },
+        {
+          id: "ports-ephemeral",
+          question: "What is the purpose of ephemeral source ports in client-server communication?",
+          options: [
+            "To permanently assign a port to a device.",
+            "To encrypt the packet payload during a TCP handshake.",
+            "To uniquely identify the outgoing connection on the client side, allowing multiple connections from the same IP.",
+            "To act as a firewall rule blocking unauthorized access."
+          ],
+          correctIndex: 2,
+          explanation: "The operating system automatically assigns a random, high-numbered ephemeral port (like 52345) to each outgoing request so it can track which application should receive the incoming response."
+        },
+        {
+          id: "ports-firewall",
+          question: "What does a firewall typically do when it actively blocks a TCP connection request?",
+          options: [
+            "It returns a SYN-ACK packet.",
+            "It establishes the connection but encrypts all the data.",
+            "It drops the packet silently or returns a TCP RST (Reset) packet.",
+            "It redirects the request to Port 443."
+          ],
+          correctIndex: 2,
+          explanation: "When a firewall actively refuses a connection, it sends back a TCP RST (Reset) packet, which immediately terminates the handshake attempt."
+        }
+      ]
     }
   ]
 };
