@@ -1099,6 +1099,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [osiModelLesson, ipLesson, portsLesson],
+    lessons: [ipLesson, portsLesson, osiModelLesson],
   }
 };
