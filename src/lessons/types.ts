@@ -139,6 +139,8 @@ export type Section =
   | { kind: "ipv4-diagram" }
   | { kind: "ports-diagram" }
   | { kind: "osi-model-diagram" }
+  | { kind: "tcp-udp-diagram" }
+  | { kind: "osi-tcp-mapping-diagram" }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
