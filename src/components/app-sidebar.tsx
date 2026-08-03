@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Lock, Layers, Terminal, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Terminal, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
+import logoImg from "@/images/logos/logo.png";
 import { useProgress } from "@/hooks/use-progress";
 import {
   Collapsible,
@@ -40,8 +41,8 @@ export function AppSidebar() {
           onClick={closeMobile}
           className="flex items-center gap-2 px-2 py-1.5 text-foreground transition-colors hover:text-mint"
         >
-          <div className="grid size-7 shrink-0 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
-            <Layers className="size-4" />
+          <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-md">
+            <img src={logoImg} alt="StackBlueprint" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-semibold tracking-tight">StackBlueprint</span>
@@ -273,7 +274,7 @@ function NestedPatternItem({
         </SidebarMenuSubItem>
       );
     }
-    
+
     return (
       <SidebarMenuSubItem>
         <SidebarMenuSubButton asChild isActive={patternActive}>
@@ -367,7 +368,7 @@ function PatternItem({
         </SidebarMenuItem>
       );
     }
-    
+
     return (
       <SidebarMenuItem>
         <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
