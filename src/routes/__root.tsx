@@ -13,6 +13,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import logoUrl from "@/images/logos/logo1.png";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -99,7 +100,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: logoUrl, sizes: "32x32" },
+      { rel: "icon", href: logoUrl, sizes: "192x192" },
+      { rel: "apple-touch-icon", href: logoUrl },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -149,9 +155,10 @@ function RootComponent() {
                 <div className="ml-1 h-4 w-px bg-hairline" />
                 <Link
                   to="/"
-                  className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  stackblueprint
+                  <img src={logoUrl} alt="StackBlueprint Logo" className="size-6 object-contain" />
+                  <span>stackblueprint</span>
                 </Link>
               </div>
               <ThemeToggle />
