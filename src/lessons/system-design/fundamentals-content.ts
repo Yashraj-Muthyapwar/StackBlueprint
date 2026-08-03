@@ -5,6 +5,7 @@ import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-no
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
 import osiModelImg from "@/images/system-design/Foundations/OSI-Model.png";
+import tcpVsUdpImg from "@/images/system-design/Foundations/tcp-vs-udp.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
 
@@ -1083,6 +1084,130 @@ const osiModelLesson: LessonContent = {
   ]
 };
 
+export const tcpUdpLesson: LessonContent = {
+  slug: "tcp-udp",
+  title: "TCP vs UDP",
+  subtitle: "Understanding Transport Layer Protocols",
+  sections: [
+    {
+      kind: "prose",
+      heading: "The TCP/IP Model (Real World vs Theory)",
+      body: [
+        "While the 7-layer OSI Model is a fantastic theoretical framework for understanding networks, the internet as we know it actually runs on the **TCP/IP Model**.",
+        "The TCP/IP model simplifies the 7 OSI layers into just **4 layers**. It groups the layers that handle software applications into one layer, and groups the hardware-level data link and physical layers into another."
+      ]
+    },
+    {
+      kind: "osi-tcp-mapping-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "The Two Types of Delivery",
+      body: [
+        "Once your data has an IP address and knows which port it needs to reach, it needs a delivery service to transport it across the network.",
+        "The Transport Layer gives you two main options for this delivery: TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).",
+        "TCP is focused on reliability and order. UDP is focused entirely on speed."
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "TCP (Transmission Control Protocol)",
+      body: "TCP is connection-oriented. It requires a formal connection before any data transfer begins. It ensures ordered delivery of data with built-in error checking and retransmission of lost packets. Because of this high reliability, it has higher overhead which uses more bandwidth and is slightly slower. It is best suited for transferring files, web pages, images, and emails."
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "UDP (User Datagram Protocol)",
+      body: "UDP is connectionless. It sends data without any prior handshake. It is entirely unreliable because there is no guarantee of delivery, no retransmission, and no strict ordering. However, it is incredibly fast and lightweight with minimal overhead. It is best suited for real-time communications where speed matters more than perfect reliability."
+    },
+    {
+      kind: "tcp-udp-diagram"
+    },
+    {
+      kind: "image",
+      src: tcpVsUdpImg,
+      alt: "TCP vs UDP visual comparison",
+      caption: "A high-level view of how TCP's handshake compares to UDP's direct broadcast."
+    },
+    {
+      kind: "table",
+      caption: "TCP vs UDP Key Differences",
+      headers: ["Feature", "TCP", "UDP"],
+      rows: [
+        ["Connection", "Requires established connection", "Connectionless (no setup)"],
+        ["Delivery", "Guarantees delivery and order", "No guarantee of delivery or order"],
+        ["Error Handling", "Retransmits lost packets", "No retransmission"],
+        ["Speed", "Slower (higher overhead)", "Faster (lightweight, low overhead)"],
+        ["Broadcasting", "Not supported", "Supported (broadcast and multicast)"],
+        ["Use Cases", "Web, email, file transfer, remote login", "Streaming, DNS, VoIP, online gaming"]
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "TCP guarantees your data arrives exactly as sent, but the constant checking makes it slower.",
+        "UDP blasts data as fast as possible without checking if it arrived, making it perfect for live streams.",
+        "Use TCP when losing data breaks the application (like a file download or a web page).",
+        "Use UDP when speed is critical and a few missing pieces won't ruin the experience (like a video call)."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "tcp-udp-use-case",
+          question: "Which of the following scenarios is the BEST use case for UDP?",
+          options: [
+            "Downloading a large PDF document",
+            "Streaming a live sports match",
+            "Loading a banking website",
+            "Sending an important email"
+          ],
+          correctIndex: 1,
+          explanation: "Live sports streaming prioritizes speed and real-time delivery. If a few frames are lost, it is better to skip them and keep the stream live rather than pausing to re-transmit the missing data."
+        },
+        {
+          id: "tcp-guarantee",
+          question: "How does TCP guarantee that data is delivered successfully?",
+          options: [
+            "By sending the data twice just in case.",
+            "By requiring the receiver to send back an Acknowledgment (ACK) for every packet.",
+            "By blasting data as fast as possible to overwhelm the network.",
+            "By using a direct physical cable between the client and server."
+          ],
+          correctIndex: 1,
+          explanation: "TCP uses Acknowledgments (ACKs). The receiver must reply with an ACK to confirm receipt. If the sender doesn't get an ACK, it retransmits the missing packet."
+        },
+        {
+          id: "tcp-udp-overhead",
+          question: "Why is UDP generally faster than TCP?",
+          options: [
+            "UDP has lower overhead because it doesn't establish a connection or check for dropped packets.",
+            "UDP uses a premium internet lane.",
+            "UDP compresses the data more efficiently.",
+            "TCP is an outdated protocol from the 1980s."
+          ],
+          correctIndex: 0,
+          explanation: "UDP simply fires the data at the destination without handshakes, strict ordering, or error recovery, resulting in minimal overhead and much faster transmission."
+        },
+        {
+          id: "tcp-handshake",
+          question: "What is the 3-way handshake in TCP?",
+          options: [
+            "A security protocol to encrypt data.",
+            "The process of closing a connection (FIN, FIN-ACK, ACK).",
+            "The initial connection setup process (SYN, SYN-ACK, ACK) before data is sent.",
+            "A method to group 3 packets together for faster delivery."
+          ],
+          correctIndex: 2,
+          explanation: "Before any data is transferred, TCP establishes a reliable connection using a 3-way handshake: SYN (synchronize), SYN-ACK (synchronize-acknowledge), and ACK (acknowledge)."
+        }
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -1099,6 +1224,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, osiModelLesson],
+    lessons: [ipLesson, portsLesson, osiModelLesson, tcpUdpLesson],
   }
 };
