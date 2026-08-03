@@ -157,7 +157,6 @@ function RootComponent() {
                   to="/"
                   className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <img src={logoUrl} alt="StackBlueprint Logo" className="size-6 object-contain" />
                   <span>stackblueprint</span>
                 </Link>
               </div>
