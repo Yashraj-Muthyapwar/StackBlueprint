@@ -9,6 +9,8 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { IPv4Diagram } from "@/components/system-design/IPv4Diagram";
 import { PortsDiagram } from "@/components/system-design/PortsDiagram";
 import { OsiModelDiagram } from "@/components/system-design/OsiModelDiagram";
+import { OsiToTcpDiagram } from "@/components/system-design/OsiToTcpDiagram";
+import { TcpUdpDiagram } from "@/components/system-design/TcpUdpDiagram";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -399,6 +401,10 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </section>
       );
 
+      case "tcp-udp-diagram":
+        return <TcpUdpDiagram />;
+      case "osi-tcp-mapping-diagram":
+        return <OsiToTcpDiagram />;
     case "takeaways":
       return (
         <section className="rounded-xl border border-mint/30 bg-mint/5 p-5">
