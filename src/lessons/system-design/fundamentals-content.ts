@@ -8,6 +8,7 @@ import osiModelImg from "@/images/system-design/Foundations/OSI-Model.png";
 import tcpVsUdpImg from "@/images/system-design/Foundations/tcp-vs-udp.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
+import vpcCidrSubnetImg from "@/images/system-design/Foundations/vpc-cidr-subnet.png";
 
 export type { Section };
 
@@ -1208,6 +1209,137 @@ export const tcpUdpLesson: LessonContent = {
   ]
 };
 
+const subnetsCidrLesson: LessonContent = {
+  slug: "subnets-and-cidr",
+  title: "Subnets, CIDR & VPCs",
+  subtitle: "Divide and conquer your network. Understand CIDR notation and build real-world Cloud VPCs.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Why Do We Need Subnets?",
+      body: [
+        "In the early days of the Internet, IP addresses were handed out in massive chunks (Class A, B, C). This was extremely inefficient—a company might get a block of 16 million addresses but only need a few thousand. We ran out of IPv4 addresses fast.",
+        "To fix this, **Subnetting** was introduced. Subnetting allows you to take a large block of IP addresses and divide it into smaller, more manageable, and secure logical networks.",
+        "When you move to the Cloud (like AWS or GCP), the first thing you build is a **VPC (Virtual Private Cloud)**, which is essentially your own massive subnet in the cloud. You then slice that VPC into smaller subnets to separate your public-facing web servers from your private databases."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Understanding CIDR Notation",
+      body: [
+        "CIDR (Classless Inter-Domain Routing) is the modern way to allocate IP addresses and define routing. You'll see it written like this: `192.168.1.10/24`.",
+        "An IPv4 address is 32 bits long. The `/24` tells us that the first 24 bits represent the **Network ID**, and the remaining 8 bits (32 - 24 = 8) represent the **Host ID** (the specific devices on that network).",
+        "A `/32` means all bits are used for the network, leaving 0 bits for hosts. This represents a single specific computer.",
+        "A `/0` means 0 bits for the network, and all 32 bits for hosts. This represents the entire Internet (`0.0.0.0/0`)."
+      ]
+    },
+    {
+      kind: "cidr-calculator-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "Taking it to the Cloud: The VPC",
+      body: [
+        "A Virtual Private Cloud (VPC) is a logically isolated section of the AWS (or GCP/Azure) cloud where you can launch resources in a virtual network that you define.",
+        "When you create a VPC, you give it a large CIDR block, typically a `/16` (e.g., `10.0.0.0/16`), which gives you 65,536 IP addresses to work with.",
+        "You then divide this massive VPC into smaller subnets (e.g., `/24` subnets, which give 256 IPs each) across different Availability Zones."
+      ]
+    },
+    {
+      kind: "image",
+      src: vpcCidrSubnetImg,
+      alt: "VPC and Subnets Visualization",
+      caption: "Slicing a /16 VPC into multiple /24 Subnets"
+    },
+    {
+      kind: "prose",
+      heading: "Public vs. Private Subnets",
+      body: [
+        "**Public Subnets**: These subnets have a route to an Internet Gateway (IGW). Instances in a public subnet can talk directly to the Internet (and the Internet can talk back, if security groups allow). You put Load Balancers and Bastion Hosts here.",
+        "**Private Subnets**: These subnets do *not* have a direct route to the Internet Gateway. Instances here are hidden from the outside world. This is where your application servers and databases live.",
+        "**NAT Gateway**: If a server in a private subnet needs to download a patch from the Internet, it routes its request through a NAT Gateway (which lives in the *public* subnet). The NAT Gateway talks to the Internet on its behalf."
+      ]
+    },
+    {
+      kind: "vpc-architecture-diagram"
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "CIDR notation (e.g., `/24`) dictates how many bits of an IP address represent the network vs the host.",
+        "A lower CIDR number (e.g., `/16`) means a larger network with more available IP addresses. A higher number (`/32`) means fewer (just 1).",
+        "VPCs are your private sandbox in the cloud. You slice them into Subnets to organize resources.",
+        "Always put sensitive resources (like Databases and App servers) in Private Subnets. Use Load Balancers and NAT Gateways in Public Subnets."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sysdesign-cidr-size",
+          question: "Which of the following CIDR blocks provides the largest number of available IP addresses?",
+          options: [
+            "/32",
+            "/24",
+            "/16",
+            "/8"
+          ],
+          correctIndex: 3,
+          explanation: "A /8 leaves 24 bits for hosts (32 - 8 = 24), which provides over 16 million IP addresses (2^24). The lower the slash number, the larger the network."
+        },
+        {
+          id: "sysdesign-vpc-private",
+          question: "In a typical Cloud VPC architecture, how does a database in a Private Subnet securely download a software update from the Internet?",
+          options: [
+            "It connects directly to the Internet Gateway.",
+            "It uses a NAT Gateway located in the Public Subnet.",
+            "It cannot download updates; private subnets are completely isolated.",
+            "It uses a Bastion Host to proxy the request."
+          ],
+          correctIndex: 1,
+          explanation: "A NAT Gateway is placed in the Public Subnet. Resources in the Private Subnet route their outbound internet traffic to the NAT Gateway, which translates the private IP to a public IP and fetches the data."
+        },
+        {
+          id: "sysdesign-cidr-usable",
+          question: "How many USABLE host IP addresses are available in a standard /24 subnet?",
+          options: [
+            "256",
+            "254",
+            "128",
+            "255"
+          ],
+          correctIndex: 1,
+          explanation: "A /24 subnet leaves 8 bits for hosts (32 - 24 = 8). 2^8 = 256 total IPs. However, we must subtract 2 for the Network ID and the Broadcast ID. Therefore, 256 - 2 = 254 usable hosts."
+        },
+        {
+          id: "sysdesign-vpc-public",
+          question: "What is the primary defining characteristic of a Public Subnet?",
+          options: [
+            "It has a routing table entry pointing to an Internet Gateway (IGW).",
+            "It automatically assigns static IP addresses to all servers.",
+            "It does not require Security Groups or Firewalls.",
+            "It can only contain Load Balancers, never actual servers."
+          ],
+          correctIndex: 0,
+          explanation: "A subnet is considered 'Public' purely because its route table directs internet-bound traffic (0.0.0.0/0) to an Internet Gateway. Without that route, it is a Private Subnet."
+        },
+        {
+          id: "sysdesign-cidr-broadcast",
+          question: "What is the purpose of the Broadcast Address in a subnet?",
+          options: [
+            "To identify the entire network block to external routers.",
+            "To send a single packet to every host in the subnet simultaneously.",
+            "To assign the first available IP to the default gateway.",
+            "To encrypt all outbound traffic leaving the VPC."
+          ],
+          correctIndex: 1,
+          explanation: "The broadcast address is the very last IP address in a subnet. When a packet is sent to this address, the networking hardware ensures every single device on that subnet receives a copy."
+        }
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -1224,6 +1356,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, osiModelLesson, tcpUdpLesson],
+    lessons: [ipLesson, portsLesson, osiModelLesson, tcpUdpLesson, subnetsCidrLesson],
   }
 };
