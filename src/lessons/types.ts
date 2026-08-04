@@ -141,6 +141,8 @@ export type Section =
   | { kind: "osi-model-diagram" }
   | { kind: "tcp-udp-diagram" }
   | { kind: "osi-tcp-mapping-diagram" }
+  | { kind: "cidr-calculator-diagram" }
+  | { kind: "vpc-architecture-diagram" }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
