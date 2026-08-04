@@ -11,6 +11,8 @@ import { PortsDiagram } from "@/components/system-design/PortsDiagram";
 import { OsiModelDiagram } from "@/components/system-design/OsiModelDiagram";
 import { OsiToTcpDiagram } from "@/components/system-design/OsiToTcpDiagram";
 import { TcpUdpDiagram } from "@/components/system-design/TcpUdpDiagram";
+import { CidrCalculatorDiagram } from "@/components/system-design/CidrCalculatorDiagram";
+import { VpcArchitectureDiagram } from "@/components/system-design/VpcArchitectureDiagram";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -387,6 +389,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "osi-model-diagram":
       return <OsiModelDiagram />;
+
+    case "cidr-calculator-diagram":
+      return <CidrCalculatorDiagram />;
+
+    case "vpc-architecture-diagram":
+      return <VpcArchitectureDiagram />;
 
     case "analogy":
       return (
