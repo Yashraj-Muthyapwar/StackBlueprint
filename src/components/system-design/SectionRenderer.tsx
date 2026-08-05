@@ -13,6 +13,13 @@ import { OsiToTcpDiagram } from "@/components/system-design/OsiToTcpDiagram";
 import { TcpUdpDiagram } from "@/components/system-design/TcpUdpDiagram";
 import { CidrCalculatorDiagram } from "@/components/system-design/CidrCalculatorDiagram";
 import { VpcArchitectureDiagram } from "@/components/system-design/VpcArchitectureDiagram";
+import {
+  CidrExplorer,
+  SubnetMathSteps,
+  ReservedIpsDiagram,
+  VpcCarveDiagram,
+  VpcPacketFlow,
+} from "@/components/system-design/SubnetVisuals";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -364,6 +371,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       );
 
     case "animation":
+      if (section.variant === "vpc-packet-flow") return <VpcPacketFlow />;
       return (
         <LessonAnimation
           variant={section.variant as import("@/components/system-design/animation-stages").AnyVariant}
@@ -409,9 +417,24 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </section>
       );
 
-      case "tcp-udp-diagram":
+    case "tcp-udp":
+      return <TcpUdpDiagram />;
+
+    case "cidr-explorer":
+      return <CidrExplorer />;
+      
+    case "subnet-math-steps":
+      return <SubnetMathSteps />;
+      
+    case "reserved-ips-diagram":
+      return <ReservedIpsDiagram />;
+      
+    case "vpc-carve-diagram":
+      return <VpcCarveDiagram />;
+
+    case "tcp-udp-diagram":
         return <TcpUdpDiagram />;
-      case "osi-tcp-mapping-diagram":
+    case "osi-tcp-mapping-diagram":
         return <OsiToTcpDiagram />;
     case "takeaways":
       return (

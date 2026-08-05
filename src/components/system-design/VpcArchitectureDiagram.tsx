@@ -45,15 +45,15 @@ export function VpcArchitectureDiagram() {
             {/* Internet to IGW */}
             <path d="M 400 40 L 400 72" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
             {/* IGW to LB */}
-            <path d="M 310 90 L 220 90 L 220 155" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
+            <path d="M 310 90 L 220 90 L 220 155" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-emerald-300 dark:text-emerald-700" />
             {/* LB to App */}
-            <path d="M 340 180 L 460 180" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
+            <path d="M 340 180 L 460 180" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-emerald-300 dark:text-emerald-700" />
             {/* App to DB */}
-            <path d="M 580 205 L 580 285" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
+            <path d="M 580 205 L 580 285" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-amber-300 dark:text-amber-700" />
             {/* App to NAT */}
-            <path d="M 460 195 L 400 195 L 400 310 L 340 310" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
+            <path d="M 460 195 L 400 195 L 400 310 L 340 310" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-rose-300 dark:text-rose-700" />
             {/* NAT to IGW */}
-            <path d="M 220 285 L 220 240 L 400 240 L 400 108" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-slate-300 dark:text-slate-600" />
+            <path d="M 220 285 L 220 240 L 400 240 L 400 108" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" className="text-rose-300 dark:text-rose-700" />
           </svg>
 
           {/* Animated Packets using offsetPath */}
