@@ -1247,13 +1247,14 @@ const subnetsCidrLesson: LessonContent = {
         "Watch the carve happen below, then read the resulting plan.",
       ],
     },
-        {
+
+    { kind: "vpc-carve-diagram" },
+    {
       kind: "image",
       src: vpcCidrSubnetImg,
       alt: "VPC and Subnets Visualization",
       caption: "Slicing a /16 VPC into multiple /24 Subnets"
     },
-    { kind: "vpc-carve-diagram" },
     {
       kind: "table",
       caption: "The resulting allocation plan for 10.0.0.0/16 (us-east-1, 3 AZs)",
@@ -1315,7 +1316,7 @@ const subnetsCidrLesson: LessonContent = {
         "Trace a packet through the table below. Change the destination and watch which route wins.",
       ],
     },
-        { kind: "vpc-architecture-diagram" },
+    { kind: "vpc-architecture-diagram" },
     { kind: "animation", variant: "vpc-packet-flow", caption: "Longest prefix match in a live VPC route table" },
     {
       kind: "table",
