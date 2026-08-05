@@ -9,6 +9,7 @@ import tcpVsUdpImg from "@/images/system-design/Foundations/tcp-vs-udp.png";
 import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
 import vpcCidrSubnetImg from "@/images/system-design/Foundations/vpc-cidr-subnet.png";
+import httpVsHttpsImg from "@/images/system-design/Foundations/http-vs-https.png";
 
 export type { Section };
 
@@ -1905,6 +1906,184 @@ export const tcpUdpLesson: LessonContent = {
 };
 
 
+
+export const httpHttpsLesson: LessonContent = {
+  slug: "http-https",
+  title: "HTTP & HTTPS",
+  subtitle: "The protocol that powers the web. Learn how requests and responses work, and why HTTPS is the production standard.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What HTTP Is",
+      body: [
+        "Almost everything a modern system does over the network uses HTTP somewhere. It is the request and response protocol behind websites, public APIs, mobile backends, and a lot of internal service to service calls.",
+        "HTTP defines the meaning of common parts of a request and a response:",
+        "• Methods such as GET, POST, PUT, and DELETE",
+        "• Status codes such as 200, 404, 429, and 503",
+        "• Headers such as Content-Type, Authorization, and Cache-Control",
+        "• Message bodies such as HTML, JSON, or images",
+        "HTTP is not tied to one network transport forever. HTTP/1.1 and HTTP/2 commonly run over TCP. HTTP/3 runs over QUIC, which runs over UDP. The core meaning still stays the same: request method, path, headers, status, and body."
+      ]
+    },
+    {
+      kind: "http-req-res-viewer"
+    },
+    {
+      kind: "prose",
+      heading: "How HTTP Works",
+      body: [
+        "At a high level, an HTTP request follows a simple path. The client resolves the hostname through DNS, opens a transport connection, performs a TLS handshake for HTTPS, and sends an HTTP request. The server routes the request to application code and sends an HTTP response.",
+        "This simple flow often hides many production components like CDNs, API gateways, load balancers, and application servers. These components can read or change HTTP headers only after the traffic has been decrypted.",
+        "HTTP is stateless at the protocol level. Each request carries enough information for the server to understand it, and the protocol itself does not assume the server remembers a hidden session from the previous request.",
+        "That does not mean web systems are stateless. Real systems keep state in cookies, session stores, tokens, caches, and databases. The important design question is simple: where does the state live, and what happens if a request is retried?"
+      ]
+    },
+    {
+      kind: "table",
+      caption: "HTTP Methods (Safe vs Idempotent)",
+      headers: ["Method", "Common Use", "Safe", "Idempotent"],
+      rows: [
+        ["GET", "Read a resource", "Yes", "Yes"],
+        ["HEAD", "Read response headers only", "Yes", "Yes"],
+        ["POST", "Create a resource or start a command", "No", "No by default"],
+        ["PUT", "Replace or create a resource at a known URL", "No", "Yes"],
+        ["PATCH", "Partially update a resource", "No", "Not guaranteed"],
+        ["DELETE", "Delete a resource", "No", "Yes"],
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Idempotency",
+      body: [
+        "Safe means the client is asking to read, not change, server state. Idempotent means repeating the same request should have the same intended effect as sending it once.",
+        "Idempotency is not trivia. It decides whether clients can safely retry after timeouts, connection resets, and load balancer failures. POST requests for payments should usually require an idempotency key to prevent double charging."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "HTTP Status Codes",
+      headers: ["Range", "Meaning", "Examples"],
+      rows: [
+        ["1xx", "Informational", "100 Continue, 103 Early Hints"],
+        ["2xx", "Success", "200 OK, 201 Created, 204 No Content"],
+        ["3xx", "Redirect or alternate location", "301 Moved Permanently, 304 Not Modified"],
+        ["4xx", "Client-side problem", "400 Bad Request, 401 Unauthorized, 404 Not Found, 429 Too Many Requests"],
+        ["5xx", "Server-side or internal dependency problem", "500 Internal Server Error, 502 Bad Gateway, 504 Gateway Timeout"],
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Caching and Conditional Requests",
+      body: [
+        "HTTP has mature caching rules. Used well, caching makes systems faster, reduces load on origin servers, lowers cloud cost, and can keep users working during partial failures.",
+        "Important headers include Cache-Control (who may cache and for how long) and ETag (a version identifier for a cached response). A client can ask whether an ETag is still current using If-None-Match. If it is, the server replies with a 304 Not Modified, saving bandwidth."
+      ]
+    },
+    { kind: "http-cache-diagram" },
+    {
+      kind: "prose",
+      heading: "What HTTPS Adds",
+      body: [
+        "HTTPS is HTTP over TLS. TLS is the modern security protocol. SSL is old terminology and should not be used for new systems. HTTPS provides three main protections:",
+        "1. Confidentiality: People or systems in the middle cannot read the protected HTTP data.",
+        "2. Integrity: People or systems in the middle cannot change protected traffic without being detected.",
+        "3. Server authentication: The client can check that the server is allowed to use the hostname.",
+        "HTTPS is the baseline expectation today. Production APIs should assume HTTPS from the very first design review."
+      ]
+    },
+    {
+      kind: "image",
+      src: httpVsHttpsImg,
+      alt: "Comparison of HTTP vs HTTPS"
+    },
+    {
+      kind: "tls-handshake-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "HTTP Versions",
+      body: [
+        "HTTP has evolved without changing its core request and response model.",
+        "**HTTP/1.1** made reusable connections the default. It is simple and widely supported, but its weakness is concurrency. A single connection handles responses in order, so one slow response can hold up later responses on that connection.",
+        "**HTTP/2** keeps the same HTTP meaning but uses binary frames instead of text messages. It allows multiple streams over one TCP connection. This reduces head of line blocking at the HTTP layer, but not at the TCP layer. If one TCP segment is lost, all streams on that TCP connection may wait until the missing bytes are recovered.",
+        "**HTTP/3** runs over QUIC instead of TCP. QUIC runs over UDP. This finally reduces TCP level head of line blocking between streams and allows faster connection setups."
+      ]
+    },
+    {
+      kind: "http-versions-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "HTTP in Distributed Systems",
+      body: [
+        "HTTP is easy to start with and easy to misuse. Every HTTP client should set timeouts for each stage of a request: DNS lookup, connection setup, the TLS handshake, writing the request, and waiting for response headers.",
+        "The defaults in many libraries are unsafe for production. A missing timeout can turn one slow dependency into exhausted threads, stuck connection pools, or a larger outage.",
+        "Retries should respect HTTP method behavior and application idempotency. Retrying a GET is usually safe. Retrying a POST can create duplicates unless the API supports idempotency keys."
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "HTTP is the request and response language of the web. It uses methods, headers, status codes, and bodies.",
+        "HTTPS is HTTP protected by TLS, which adds encryption, tamper detection, and server identity checks.",
+        "Idempotency matters. Safe methods like GET only read data, while idempotent methods like PUT mean repeating the request is safe.",
+        "HTTP/2 solves HTTP head of line blocking but suffers from TCP head of line blocking. HTTP/3 solves this by moving to UDP.",
+        "Set strict timeouts and retries on all HTTP clients to prevent cascading failures in distributed systems."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "http-idempotency",
+          question: "Which of the following HTTP methods is NOT idempotent by default?",
+          options: ["GET", "PUT", "DELETE", "POST"],
+          correctIndex: 3,
+          explanation: "POST is not idempotent by default. Repeating a POST request can create multiple resources or trigger multiple actions unless the API implements an idempotency key."
+        },
+        {
+          id: "http-status-codes",
+          question: "A client sends too many requests in a short time. Which status code should the server return?",
+          options: ["400 Bad Request", "401 Unauthorized", "429 Too Many Requests", "503 Service Unavailable"],
+          correctIndex: 2,
+          explanation: "429 Too Many Requests is the standard status code for rate limiting."
+        },
+        {
+          id: "http-head-of-line",
+          question: "How does HTTP/3 solve the TCP head of line blocking problem that affects HTTP/2?",
+          options: [
+            "It uses binary frames instead of text.",
+            "It opens multiple parallel TCP connections.",
+            "It runs over QUIC and UDP, making streams completely independent.",
+            "It forces the server to push responses asynchronously."
+          ],
+          correctIndex: 2,
+          explanation: "HTTP/3 runs over QUIC (which uses UDP). Since UDP has no strict ordering or blocking, a lost packet in one stream does not pause other active streams."
+        },
+        {
+          id: "https-benefits",
+          question: "Which of the following is NOT a protection provided by HTTPS?",
+          options: [
+            "Confidentiality (encryption)",
+            "Server Authentication",
+            "Integrity (tamper detection)",
+            "Automatic User Authentication"
+          ],
+          correctIndex: 3,
+          explanation: "HTTPS verifies the server's identity via certificates, but it does not automatically authenticate the end user. You still need OAuth, JWTs, or session cookies for that."
+        },
+        {
+          id: "http-caching",
+          question: "Which header does a client use to ask the server if a cached resource is still valid based on its ETag?",
+          options: ["Cache-Control", "If-None-Match", "Last-Modified", "Content-Type"],
+          correctIndex: 1,
+          explanation: "The client sends the 'If-None-Match' header containing the cached ETag. If the resource hasn't changed, the server returns a 304 Not Modified."
+        }
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -1913,7 +2092,7 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson],
   },
   "networking-protocols": {
     slug: "networking-protocols",
@@ -1921,6 +2100,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson],
   }
 };
