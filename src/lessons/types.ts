@@ -143,6 +143,10 @@ export type Section =
   | { kind: "osi-tcp-mapping-diagram" }
   | { kind: "cidr-calculator-diagram" }
   | { kind: "vpc-architecture-diagram" }
+  | { kind: "http-req-res-viewer" }
+  | { kind: "tls-handshake-diagram" }
+  | { kind: "http-versions-diagram" }
+  | { kind: "http-cache-diagram" }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
