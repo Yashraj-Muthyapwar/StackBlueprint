@@ -970,6 +970,699 @@ const portsLesson: LessonContent = {
   ]
 };
 
+
+const subnetsCidrLesson: LessonContent = {
+  slug: "subnets-and-cidr",
+  title: "Subnets & CIDR",
+  subtitle:
+    "From binary masks to a production VPC: how to slice an address space so your cloud network actually scales.",
+  sections: [
+    // ────────────────────────────────────────────────────────────────────
+    // 1. WHY
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Why Subnets Exist",
+      body: [
+        "In the last lesson you learned that an IP address identifies a device and CIDR notation describes a range. This lesson is about the decision that sits on top of that: **how do you split one big range into many smaller ones, and why would you bother?**",
+        "Picture a flat network. Every server, laptop, printer, and guest phone lives in one address space with nothing between them. Three problems show up immediately:",
+        "**Performance.** Broadcast traffic (ARP requests, discovery protocols) goes to every device in the range. One flat network with 4,000 devices means every device processes every broadcast. That is wasted CPU and wasted bandwidth on a link nobody asked for.",
+        "**Security.** If the guest Wi-Fi tablet can reach the payroll database at the IP layer, your only defence is host-level firewalls. One misconfiguration and the blast radius is the entire company. Segmentation gives you a place to put the wall.",
+        "**Management.** A flat network cannot be documented, cannot be reasoned about, and cannot be automated. When an incident starts, `10.4.19.7` tells you nothing. In a segmented network it tells you the region, the tier, and the availability zone.",
+        "Subnetting is the answer to all three. You take one address block and cut it into smaller blocks along bit boundaries, then put routing and policy between them.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The Cloud Framing",
+      body: "In a data centre, subnets solve broadcast storms. In the cloud, broadcast does not even exist (AWS, GCP, and Azure all drop broadcast and multicast by default). Yet subnets matter more than ever, because in the cloud a subnet is the unit of routing, the unit of availability zone placement, and the unit of network policy. Getting the layout wrong is one of the few cloud mistakes you cannot fix without a migration.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 2. THE MASK
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "The Subnet Mask: A Filter Made of Bits",
+      body: [
+        "An IPv4 address is 32 bits. Those bits are split into two parts: a **network portion** (which network am I on?) and a **host portion** (which device am I within that network?).",
+        "The subnet mask is what draws the line. It is also 32 bits, but with a strict rule: all the 1s come first, then all the 0s. No mixing.",
+        "• A `1` in the mask means *this bit belongs to the network*.",
+        "• A `0` in the mask means *this bit belongs to the host*.",
+        "A mask of `255.255.255.0` is `11111111.11111111.11111111.00000000` in binary. The first 24 bits are network, the last 8 are host. That is exactly what the shorthand `/24` means: count the leading 1s.",
+        "When a router receives a packet, it performs a **bitwise AND** between the destination IP and the mask. The result is the network ID, and that is what it looks up in its routing table. This is the single operation that all of IP routing rests on.",
+      ],
+    },
+    { kind: "subnet-math-steps" },
+    {
+      kind: "prose",
+      heading: "Reading a CIDR Block",
+      body: [
+        "CIDR (Classless Inter-Domain Routing) replaced the old rigid Class A/B/C system in 1993. Instead of being locked into three fixed sizes, you specify the prefix length yourself and get any power-of-two block size you want.",
+        "`10.0.64.0/20` decodes as:",
+        "• **Prefix length 20** → the first 20 bits are fixed (the network).",
+        "• **Host bits = 32 − 20 = 12** → 2^12 = **4,096 total addresses**.",
+        "• **Range** → `10.0.64.0` through `10.0.79.255`.",
+        "Two numbers do almost all the work in practice. **Total addresses = 2^(32 − prefix)**, and **block size in the interesting octet = 256 − mask value for that octet**. For a /20, the mask is `255.255.240.0`, so the block size in the third octet is 256 − 240 = 16. That is why /20 subnets step in increments of 16: `10.0.0.0`, `10.0.16.0`, `10.0.32.0`, `10.0.48.0`.",
+        "Move the slider below and watch the network/host boundary move with it. Every subnetting question you will ever be asked is a question about where that line sits.",
+      ],
+    },
+    { kind: "cidr-explorer" },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Smaller Prefix = Bigger Network",
+      body: "This trips up almost everyone at first. A /16 is LARGER than a /24. The number counts how many bits are locked to the network, so a bigger number leaves fewer bits for hosts. Say it out loud a few times: a /8 is enormous, a /30 is four addresses.",
+    },
+    {
+      kind: "table",
+      caption: "CIDR Cheat Sheet (memorise the /24 row, derive the rest)",
+      headers: [
+        "Prefix",
+        "Subnet Mask",
+        "Total Addresses",
+        "Usable (on-prem, −2)",
+        "Usable (AWS/Azure, −5)",
+        "Typical Use",
+      ],
+      rows: [
+        ["/16", "255.255.0.0", "65,536", "65,534", "65,531", "A whole VPC / VNet"],
+        ["/18", "255.255.192.0", "16,384", "16,382", "16,379", "A reserved tier inside a VPC"],
+        ["/20", "255.255.240.0", "4,096", "4,094", "4,091", "App subnet per AZ (K8s friendly)"],
+        ["/22", "255.255.252.0", "1,024", "1,022", "1,019", "Data subnet per AZ"],
+        ["/24", "255.255.255.0", "256", "254", "251", "Public subnet, small workloads"],
+        ["/26", "255.255.255.192", "64", "62", "59", "Load balancer subnet"],
+        ["/27", "255.255.255.224", "32", "30", "27", "AWS ALB minimum (needs 8 free IPs)"],
+        ["/28", "255.255.255.240", "16", "14", "11", "Smallest AWS subnet allowed"],
+        ["/30", "255.255.255.252", "4", "2", "n/a", "Point-to-point WAN link"],
+        ["/31", "255.255.255.254", "2", "2 (RFC 3021)", "n/a", "Modern point-to-point link"],
+        ["/32", "255.255.255.255", "1", "1", "n/a", "Single host, loopback, route target"],
+      ],
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 3. THE MINUS TWO / MINUS FIVE
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "The Addresses You Do Not Get to Use",
+      body: [
+        "Every subnet loses addresses off the top. On a traditional network you lose two:",
+        "• **Network ID** (all host bits 0, e.g. `10.0.1.0`): the name of the subnet itself, not assignable.",
+        "• **Broadcast address** (all host bits 1, e.g. `10.0.1.255`): reserved for send-to-everyone traffic.",
+        "That is the classic `2^h − 2` formula. A /30 has 4 addresses and 2 usable, which is why it was the standard for router-to-router links.",
+        "**In the cloud the tax is higher.** AWS and Azure reserve **five** addresses in every subnet, GCP reserves **four**. This is not a footnote. On a /28 you plan for 16 addresses and get 11. Teams discover this during an incident, when an auto-scaling group cannot launch instances because the subnet is out of IPs.",
+      ],
+    },
+    { kind: "reserved-ips-diagram" },
+    {
+      kind: "table",
+      caption: "Reserved Addresses by Provider (example subnet 10.0.1.0/24)",
+      headers: ["Address", "AWS", "Azure", "GCP"],
+      rows: [
+        ["10.0.1.0", "Network address", "Network address", "Network address"],
+        ["10.0.1.1", "VPC router", "Default gateway", "Default gateway"],
+        ["10.0.1.2", "DNS resolver (base + 2)", "Azure DNS mapping", "Usable"],
+        ["10.0.1.3", "Reserved for future use", "Reserved for future use", "Usable"],
+        ["10.0.1.254", "Usable", "Usable", "Reserved for future use"],
+        ["10.0.1.255", "Broadcast (reserved, unsupported)", "Broadcast", "Broadcast"],
+        ["**Total lost**", "**5**", "**5**", "**4**"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do Not Design Tight",
+      body: "A /28 for a 12-person team's workload leaves zero room for a sidecar container, a new replica, or a printer. The deck's advice holds in the cloud too: size for the requirement, then go one prefix bigger. Address space inside an RFC 1918 range is free. Re-architecting a VPC because you ran out is not.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 4. VLSM
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "FLSM vs VLSM: Stop Wasting Half Your Space",
+      body: [
+        "**Fixed Length Subnet Masking (FLSM)** cuts a block into equal pieces. Simple, and catastrophically wasteful. If you split `192.168.10.0/24` into four equal /26 blocks (64 addresses each), the point-to-point WAN link that needs exactly 2 addresses consumes a full 64-address block. You just burned 62 addresses on a link between two routers.",
+        "**Variable Length Subnet Masking (VLSM)** lets subnets of different sizes coexist in the same parent block. This is how every modern network is built, and it is what CIDR was designed to enable.",
+        "",
+        "**The Golden Rule: allocate from largest host requirement to smallest.**",
+        "If you allocate the small blocks first, you fragment the space and the large block no longer has a contiguous home. Sort your requirements descending, then walk down the address space in order.",
+      ],
+    },
+    {
+      kind: "table",
+      caption:
+        "Worked VLSM example: carving 192.168.10.0/24 (the classic on-prem drill)",
+      headers: ["Segment", "Hosts Needed", "Round up to 2^n", "Prefix", "Assigned Range", "Wasted"],
+      rows: [
+        ["HQ LAN", "50", "64", "/26", "192.168.10.0 – .63", "12"],
+        ["Branch 1", "30", "32", "/27", "192.168.10.64 – .95", "0"],
+        ["Branch 2", "12", "16", "/28", "192.168.10.96 – .111", "2"],
+        ["WAN link", "2", "4", "/30", "192.168.10.112 – .115", "0"],
+        ["**Remaining**", "—", "—", "—", "**192.168.10.116 – .255 (140 free)**", "—"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Notice the arithmetic that makes this work. Each subnet starts exactly where the previous one ended, and each start address is a multiple of its own block size. `192.168.10.64` is a legal /27 boundary because 64 is divisible by 32. `192.168.10.70` would not be.",
+        "**This is the rule that matters:** a subnet's network ID must be divisible by its block size. Break it and your router will either reject the configuration or silently route traffic to the wrong place.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "The Cardinal Sin: Overlapping Subnets",
+      body: "Never assign two ranges that contain each other, like 192.168.1.0/24 and 192.168.1.0/25 on the same network. In the cloud this bites you at the org level: two VPCs that both use 10.0.0.0/16 can never be peered, and a VPN back to a corporate network using the same range will fail. Overlap is the number one reason a cloud network has to be rebuilt.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 5. RFC 1918
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "table",
+      caption: "RFC 1918 Private Ranges (the only ranges you should build on)",
+      headers: ["Range", "CIDR", "Total Addresses", "Practical Cloud Use"],
+      rows: [
+        [
+          "10.0.0.0 – 10.255.255.255",
+          "10.0.0.0/8",
+          "16,777,216",
+          "The default for cloud. Big enough to give every VPC, region, and account a non-overlapping slice.",
+        ],
+        [
+          "172.16.0.0 – 172.31.255.255",
+          "172.16.0.0/12",
+          "1,048,576",
+          "Docker's default bridge lives at 172.17.0.0/16. Avoid this range on hosts running containers.",
+        ],
+        [
+          "192.168.0.0 – 192.168.255.255",
+          "192.168.0.0/16",
+          "65,536",
+          "Home routers. Almost guaranteed to collide with an employee's home network over VPN. Do not use it in cloud.",
+        ],
+        [
+          "100.64.0.0 – 100.127.255.255",
+          "100.64.0.0/10 (RFC 6598)",
+          "4,194,304",
+          "Carrier-grade NAT space. Commonly borrowed as a secondary VPC CIDR for Kubernetes pod IPs.",
+        ],
+      ],
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 6. INTO THE CLOUD
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Part 2: Everything Above, Applied to a VPC",
+      body: [
+        "A **VPC** (Virtual Private Cloud) is a logically isolated network you define inside a provider's data centres. You give it a CIDR block, and every resource you launch draws an IP from it. GCP calls it a VPC too, Azure calls it a VNet, and the mental model is identical.",
+        "Four things are true in the cloud that are not true on-prem, and they change how you design:",
+        "**1. A subnet is pinned to one Availability Zone (AWS/Azure).** Not a rack, not a switch, an entire failure domain. If you want a workload in three AZs you need three subnets. This is the reason cloud subnet counts multiply so fast.",
+        "**2. There is no such thing as a 'public subnet' setting.** A subnet is public purely because its route table has a `0.0.0.0/0` route pointing at an Internet Gateway. Change the route and the same subnet becomes private. Public and private are properties of routing, not of the subnet object.",
+        "**3. The primary VPC CIDR is immutable.** On AWS you can add secondary CIDR blocks later, but you can never change or shrink the first one. On GCP you can expand a subnet's range but never shrink it. Your first `terraform apply` is a long-term commitment.",
+        "**4. Every subnet is already routed to every other subnet in the VPC.** The `local` route is created automatically and cannot be deleted. Isolation between subnets comes from security groups and NACLs, not from the absence of a route.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Provider Differences That Actually Change Your Design",
+      headers: ["Concept", "AWS", "GCP", "Azure"],
+      rows: [
+        [
+          "Top-level CIDR",
+          "VPC has a primary CIDR, /16 to /28. Up to 5 secondary blocks by default (50 max).",
+          "VPC has no CIDR of its own. Each subnet carries its own range.",
+          "VNet has an address space that can hold multiple prefixes.",
+        ],
+        [
+          "Subnet scope",
+          "Single Availability Zone.",
+          "**Regional.** One subnet spans all zones in the region.",
+          "Regional (spans zones).",
+        ],
+        [
+          "Reserved IPs per subnet",
+          "5",
+          "4",
+          "5",
+        ],
+        [
+          "Can you resize?",
+          "No. Add a secondary CIDR and new subnets instead.",
+          "Yes, primary range can be expanded in place.",
+          "Can add prefixes; subnet resize only if empty.",
+        ],
+        [
+          "Public vs private",
+          "Determined by route to Internet Gateway.",
+          "Determined by whether the VM has an external IP.",
+          "Determined by public IP association and route table.",
+        ],
+        [
+          "Outbound from private",
+          "NAT Gateway (per AZ, metered per GB).",
+          "Cloud NAT (regional, no per-AZ instance).",
+          "NAT Gateway (zonal or zone-redundant).",
+        ],
+      ],
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 7. THE CARVE
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Designing a Real VPC, Step by Step",
+      body: [
+        "Here is the method. It is the VLSM golden rule with a cloud-shaped wrapper.",
+        "**Step 1: Pick the VPC block.** Default to a `/16` from `10.0.0.0/8`. 65,536 addresses sounds absurd for a small app, and it is exactly the right amount, because the block costs nothing and running out costs a migration. Reserve a different /16 for every VPC in your organisation so peering is always possible: `10.0.0.0/16` for prod-us-east-1, `10.1.0.0/16` for prod-eu-west-1, `10.10.0.0/16` for staging, and so on.",
+        "**Step 2: Cut the VPC into tiers before you cut it into AZs.** This is the step people skip, and it is why so many VPCs end up unreadable. Split the /16 into four /18 blocks, one per tier, and hold the fourth back for growth.",
+        "**Step 3: Cut each tier into per-AZ subnets, and always leave one slot spare.** Three AZs today, a fourth AZ opens next year. If you allocate exactly three, you have to break the pattern to add a fourth.",
+        "**Step 4: Size each subnet by what runs in it, not by symmetry.** Public subnets hold NAT gateways and load balancer ENIs, so a /24 is generous. App subnets hold pods and tasks, so they need room. Data subnets hold a handful of RDS and ElastiCache ENIs.",
+        "Watch the carve happen below, then read the resulting plan.",
+      ],
+    },
+        {
+      kind: "image",
+      src: vpcCidrSubnetImg,
+      alt: "VPC and Subnets Visualization",
+      caption: "Slicing a /16 VPC into multiple /24 Subnets"
+    },
+    { kind: "vpc-carve-diagram" },
+    {
+      kind: "table",
+      caption: "The resulting allocation plan for 10.0.0.0/16 (us-east-1, 3 AZs)",
+      headers: ["Tier", "Reserved Block", "AZ-a", "AZ-b", "AZ-c", "Spare"],
+      rows: [
+        [
+          "**Public** (ALB, NAT GW, bastion)",
+          "10.0.0.0/18",
+          "10.0.0.0/24",
+          "10.0.1.0/24",
+          "10.0.2.0/24",
+          "10.0.3.0/24 → 10.0.63.255",
+        ],
+        [
+          "**Private App** (EKS pods, ECS tasks, EC2)",
+          "10.0.64.0/18",
+          "10.0.64.0/20",
+          "10.0.80.0/20",
+          "10.0.96.0/20",
+          "10.0.112.0/20",
+        ],
+        [
+          "**Private Data** (RDS, ElastiCache, MSK)",
+          "10.0.128.0/18",
+          "10.0.128.0/22",
+          "10.0.132.0/22",
+          "10.0.136.0/22",
+          "10.0.140.0/22 → 10.0.191.255",
+        ],
+        [
+          "**Growth** (4th AZ, K8s pods, future tier)",
+          "10.0.192.0/18",
+          "—",
+          "—",
+          "—",
+          "16,384 addresses held in reserve",
+        ],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why the App Tier Gets /20 and the Data Tier Gets /22",
+      body: "A /22 gives 1,019 usable addresses, which is far more than enough for the ENIs of a few managed databases. A /20 gives 4,091, which sounds excessive until you run EKS with the AWS VPC CNI, where every single pod consumes a real VPC IP address. At 30 pods per node and 50 nodes you are already at 1,500 addresses in one AZ. Size the tier that consumes IPs per-workload, not per-instance.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 8. ROUTING
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Route Tables and Longest Prefix Match",
+      body: [
+        "You have subnets. Now they need to know where to send traffic. Every subnet is associated with exactly one **route table**, and a route table is a list of `destination CIDR → target` rules.",
+        "When a packet leaves an instance, the VPC router compares the destination IP against every route and picks the **most specific match**, meaning the one with the longest prefix. `10.0.0.0/16` beats `0.0.0.0/0`. `10.0.5.0/24` beats `10.0.0.0/16`. The default route `0.0.0.0/0` matches everything and therefore always loses to any other match, which is why it works as a catch-all.",
+        "This one rule explains the entire public/private split:",
+        "• A **public** subnet's route table has `0.0.0.0/0 → igw-xxxx` (Internet Gateway). Instances with a public IP get two-way internet.",
+        "• A **private** subnet's route table has `0.0.0.0/0 → nat-xxxx` (NAT Gateway). Instances get outbound internet for package downloads and API calls, but nothing on the internet can initiate a connection inward.",
+        "Trace a packet through the table below. Change the destination and watch which route wins.",
+      ],
+    },
+        { kind: "vpc-architecture-diagram" },
+    { kind: "animation", variant: "vpc-packet-flow", caption: "Longest prefix match in a live VPC route table" },
+    {
+      kind: "table",
+      caption: "A private subnet route table, annotated",
+      headers: ["Destination", "Target", "What it does", "Who created it"],
+      rows: [
+        ["10.0.0.0/16", "local", "Reaches every other subnet in this VPC. Cannot be deleted or overridden.", "AWS, automatically"],
+        ["0.0.0.0/0", "nat-0a1b2c3d", "Catch-all outbound. Sends internet-bound traffic to the NAT Gateway in the public subnet of the same AZ.", "You"],
+        ["10.1.0.0/16", "pcx-9f8e7d6c", "Traffic for the peered analytics VPC goes over the peering connection, not the internet.", "You"],
+        ["172.20.0.0/16", "vgw-4d3c2b1a", "Traffic for the on-prem data centre goes over the VPN / Direct Connect virtual gateway.", "You"],
+        ["pl-63a5400a (S3 prefix list)", "vpce-1122334455", "S3 traffic uses a Gateway Endpoint, staying on the AWS backbone and skipping NAT data charges entirely.", "You"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "The NAT Gateway Bill",
+      body: "NAT Gateways charge both an hourly rate and a per-GB processing fee on everything that passes through. A data pipeline pulling terabytes from S3 through a NAT Gateway is one of the most common surprise cloud bills there is. Add an S3 Gateway Endpoint (it is free) and that route disappears from the NAT entirely. Deploy one NAT Gateway per AZ, not one shared across AZs, or a single-AZ failure takes out egress for everything and you pay cross-AZ data transfer on top.",
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 9. TERRAFORM
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Expressing the Plan as Code",
+      body: [
+        "Hand-typing CIDR blocks into Terraform is how off-by-one overlaps get shipped. Terraform's `cidrsubnet(prefix, newbits, netnum)` function does the bit arithmetic for you: it adds `newbits` to the prefix length and returns block number `netnum`.",
+        "`cidrsubnet(\"10.0.0.0/16\", 4, 0)` → `10.0.0.0/20`  (16 + 4 = /20, first block)",
+        "`cidrsubnet(\"10.0.0.0/16\", 4, 1)` → `10.0.16.0/20` (second block)",
+        "`cidrsubnet(\"10.0.0.0/16\", 8, 0)` → `10.0.0.0/24`  (16 + 8 = /24, first block)",
+      ],
+    },
+    {
+      kind: "code",
+      language: "hcl",
+      caption: "A three-AZ VPC that matches the plan above",
+      code: `locals {
+  vpc_cidr = "10.0.0.0/16"
+  azs      = ["us-east-1a", "us-east-1b", "us-east-1c"]
+}
+
+resource "aws_vpc" "main" {
+  cidr_block           = local.vpc_cidr
+  enable_dns_support   = true
+  enable_dns_hostnames = true
+  tags = { Name = "prod-us-east-1" }
+}
+
+# Public tier: /24 per AZ, carved from the 10.0.0.0/18 reservation.
+# newbits = 8 -> /24. netnum 0,1,2 -> 10.0.0.0, 10.0.1.0, 10.0.2.0
+resource "aws_subnet" "public" {
+  count                   = length(local.azs)
+  vpc_id                  = aws_vpc.main.id
+  availability_zone       = local.azs[count.index]
+  cidr_block              = cidrsubnet(local.vpc_cidr, 8, count.index)
+  map_public_ip_on_launch = true
+  tags = {
+    Name                     = "public-\${local.azs[count.index]}"
+    "kubernetes.io/role/elb" = "1"
+  }
+}
+
+# Private app tier: /20 per AZ inside the 10.0.64.0/18 reservation.
+# newbits = 4 -> /20. netnum 4,5,6 -> 10.0.64.0, 10.0.80.0, 10.0.96.0
+resource "aws_subnet" "private_app" {
+  count             = length(local.azs)
+  vpc_id            = aws_vpc.main.id
+  availability_zone = local.azs[count.index]
+  cidr_block        = cidrsubnet(local.vpc_cidr, 4, 4 + count.index)
+  tags = {
+    Name                              = "private-app-\${local.azs[count.index]}"
+    "kubernetes.io/role/internal-elb" = "1"
+  }
+}
+
+# Private data tier: /22 per AZ inside the 10.0.128.0/18 reservation.
+# newbits = 6 -> /22. netnum 32,33,34 -> 10.0.128.0, 10.0.132.0, 10.0.136.0
+resource "aws_subnet" "private_data" {
+  count             = length(local.azs)
+  vpc_id            = aws_vpc.main.id
+  availability_zone = local.azs[count.index]
+  cidr_block        = cidrsubnet(local.vpc_cidr, 6, 32 + count.index)
+  tags = { Name = "private-data-\${local.azs[count.index]}" }
+}
+
+# One NAT Gateway per AZ. Costs more, survives an AZ failure.
+resource "aws_nat_gateway" "this" {
+  count         = length(local.azs)
+  allocation_id = aws_eip.nat[count.index].id
+  subnet_id     = aws_subnet.public[count.index].id
+}
+
+resource "aws_route_table" "private" {
+  count  = length(local.azs)
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.this[count.index].id
+  }
+}`,
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Verifying the carve before you apply it",
+      code: `# Confirm two blocks do not overlap (Python has this built in)
+python3 -c "
+import ipaddress
+a = ipaddress.ip_network('10.0.64.0/20')
+b = ipaddress.ip_network('10.0.80.0/20')
+print('overlap:', a.overlaps(b))
+print('a range:', a[0], '->', a[-1], '| usable on AWS:', a.num_addresses - 5)
+"
+
+# List every /20 inside a /16 reservation
+python3 -c "
+import ipaddress
+for net in ipaddress.ip_network('10.0.64.0/18').subnets(new_prefix=20):
+    print(net, net[0], '->', net[-1])
+"
+
+# Check live IP consumption in a subnet before scaling
+aws ec2 describe-subnets --subnet-ids subnet-0a1b2c3d \\
+  --query 'Subnets[0].[CidrBlock,AvailableIpAddressCount]' --output text`,
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 10. THE KUBERNETES TRAP
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "The Kubernetes IP Exhaustion Trap",
+      body: [
+        "This deserves its own section because it is the most common way a well-designed VPC runs out of addresses.",
+        "With the **AWS VPC CNI** (the default on EKS), every pod gets a real, routable VPC IP address from the subnet its node lives in. Not a virtual overlay address, a genuine subnet IP. A single `m5.large` node can host 29 pods, and each one takes an address.",
+        "Do the arithmetic on a /24 app subnet: 251 usable addresses. Eight nodes at 29 pods each and you are full. `kubectl get pods` shows `Pending`, the events say `failed to assign an IP address to container`, and nothing scales until you fix the network layout.",
+        "Three ways out, in order of preference:",
+        "**1. Size the app tier correctly from day one.** A /20 per AZ gives 4,091 addresses. This is why the plan above uses /20 for app subnets.",
+        "**2. Add a secondary CIDR for pods.** Attach `100.64.0.0/16` (RFC 6598 CGNAT space) as a secondary VPC CIDR, create pod-only subnets in it, and enable CNI custom networking. Pods get addresses from the secondary range while nodes and load balancers stay in the primary range.",
+        "**3. Turn on prefix delegation.** The CNI assigns each node a /28 prefix instead of individual IPs, which raises pod density per node dramatically and reduces API pressure.",
+        "**On GKE it is structured differently.** GKE uses alias IP ranges: your subnet has a primary range for nodes plus named secondary ranges for pods and services. A typical layout is a /20 primary for nodes, a /14 secondary for pods, and a /20 secondary for services. The pod range is chosen at cluster creation and cannot be changed afterwards, so the same planning discipline applies.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Pod IP demand: work this out before you pick a prefix",
+      code: `Cluster target:  50 nodes per AZ, 30 pods per node
+Pod IPs needed:  50 x 30           = 1,500
+Node IPs:        50                =    50
+Internal LB ENIs, headroom:        =   200
+                                     -------
+Total per AZ:                        1,750
+
+/22 = 1,019 usable  ->  NOT ENOUGH
+/21 = 2,043 usable  ->  fits, but only 14% headroom
+/20 = 4,091 usable  ->  comfortable, allows the cluster to double
+
+Decision: /20 per AZ for the app tier.`,
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 11. ORG SCALE
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "prose",
+      heading: "Thinking Beyond One VPC",
+      body: [
+        "The moment you have two VPCs, subnet design becomes an organisational problem. Two VPCs that both use `10.0.0.0/16` can never peer, can never share a Transit Gateway route table, and can never both reach the same on-prem network.",
+        "Adopt a **top-down allocation scheme** and write it down before you build the second VPC:",
+        "• `10.0.0.0/8` is the corporate space, split by purpose.",
+        "• `10.0.0.0/12` → production (each region and account gets a /16 inside it).",
+        "• `10.16.0.0/12` → staging.",
+        "• `10.32.0.0/12` → development and sandboxes.",
+        "• `10.48.0.0/12` → shared services (transit, inspection, shared tooling).",
+        "• `100.64.0.0/10` → Kubernetes pod ranges, deliberately outside RFC 1918 so it never collides with on-prem.",
+        "Then within production: `10.0.0.0/16` prod-us-east-1, `10.1.0.0/16` prod-us-west-2, `10.2.0.0/16` prod-eu-west-1, and so on. Any engineer reading `10.2.64.19` can decode it as production, Ireland, app tier without opening a console.",
+        "Both AWS and Azure ship an **IPAM** service that enforces this hierarchy and blocks allocations that would overlap. If your organisation is past three VPCs, it is worth the setup.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "A Word on IPv6",
+      body: [
+        "Everything above is IPv4 arithmetic driven by scarcity. IPv6 removes the scarcity entirely, and with it most of the planning.",
+        "In AWS a VPC gets a `/56` and every subnet gets a fixed `/64`. You do not size IPv6 subnets by host count, because a single /64 holds 18 quintillion addresses. At ten million allocations per second with no reuse, exhausting one /64 takes roughly 58,000 years.",
+        "The mental shift: **stop sizing by host count, start planning by network segment.** The /64 boundary is fixed by the standard (SLAAC depends on it), so your only design decision is how many /64s each segment gets.",
+        "IPv6 also removes NAT from the picture. Every address is globally routable, so an **Egress-Only Internet Gateway** replaces the NAT Gateway when you want outbound-only traffic. Same routing concept, no address translation, no per-GB processing fee. Most cloud networks today run **dual stack**, carrying both protocols, because the wider internet is still mid-transition.",
+      ],
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 12. TROUBLESHOOTING
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "table",
+      caption: "Debugging Checklist: 'my instance cannot reach X'",
+      headers: ["Symptom", "Most likely cause", "Where to look"],
+      rows: [
+        [
+          "Cannot reach the internet from a private subnet",
+          "Route table has no 0.0.0.0/0 entry, or it points at an IGW instead of a NAT Gateway.",
+          "Route table associated with that subnet.",
+        ],
+        [
+          "Public instance unreachable from outside",
+          "No public IP assigned, or the subnet's route table lacks the IGW route.",
+          "`map_public_ip_on_launch` and the route table.",
+        ],
+        [
+          "Auto-scaling fails with `InsufficientFreeAddressesInSubnet`",
+          "Subnet exhausted. Remember the 5 reserved addresses.",
+          "`AvailableIpAddressCount` on the subnet.",
+        ],
+        [
+          "Peering connection created but traffic does not flow",
+          "Peering only builds the pipe. You must add routes on **both** sides.",
+          "Route tables in both VPCs.",
+        ],
+        [
+          "VPN to on-prem drops some destinations",
+          "Overlapping CIDR between VPC and the on-prem network.",
+          "Compare both ranges for overlap.",
+        ],
+        [
+          "Traffic reaches the subnet but the app never responds",
+          "Routing is fine. This is a security group or NACL problem.",
+          "Security group inbound rules, then NACLs (which are stateless and need both directions).",
+        ],
+      ],
+    },
+
+    // ────────────────────────────────────────────────────────────────────
+    // 13. WRAP
+    // ────────────────────────────────────────────────────────────────────
+    {
+      kind: "takeaways",
+      items: [
+        "A subnet mask is a filter of contiguous 1s then 0s. The router ANDs the destination IP with the mask to get the network ID, and that single operation drives all IP routing.",
+        "Total addresses = 2^(32 − prefix). A smaller prefix number means a bigger network. A subnet's network ID must be divisible by its own block size.",
+        "VLSM's golden rule: allocate from the largest host requirement down to the smallest, or you fragment the space.",
+        "On-prem you lose 2 addresses per subnet. AWS and Azure take 5, GCP takes 4. Size accordingly, then go one prefix bigger.",
+        "In the cloud a subnet is pinned to one Availability Zone, and 'public' means nothing more than having a 0.0.0.0/0 route to an Internet Gateway.",
+        "The primary VPC CIDR is permanent. Reserve tiers first (/18 blocks), then carve AZ subnets inside them, and always leave a spare slot.",
+        "Route tables resolve by longest prefix match, which is why 0.0.0.0/0 works as a catch-all and why the local route can never be overridden.",
+        "Kubernetes pods consume real VPC IPs. Size the app tier for pod count, not node count, or use a secondary CIDR from 100.64.0.0/10.",
+        "Never let two VPCs share a CIDR. Plan an org-wide allocation scheme before you build the second one.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "cidr-block-size",
+          question:
+            "You have the block 10.0.0.0/16 and need to carve subnets of /20. What is the network ID of the third /20 subnet?",
+          options: ["10.0.20.0/20", "10.0.32.0/20", "10.0.3.0/20", "10.0.48.0/20"],
+          correctIndex: 1,
+          explanation:
+            "A /20 has a mask of 255.255.240.0, so the block size in the third octet is 256 − 240 = 16. The subnets step 10.0.0.0, 10.0.16.0, 10.0.32.0, 10.0.48.0. The third one is 10.0.32.0/20.",
+        },
+        {
+          id: "cidr-aws-usable",
+          question:
+            "You create a 10.0.5.0/28 subnet in an AWS VPC. How many addresses can you actually assign to instances?",
+          options: ["16", "14", "11", "13"],
+          correctIndex: 2,
+          explanation:
+            "A /28 has 2^4 = 16 total addresses. AWS reserves five in every subnet: the network address, the VPC router, the DNS resolver, one held for future use, and the broadcast address. That leaves 11.",
+        },
+        {
+          id: "cidr-public-private",
+          question: "What actually makes a subnet 'public' in AWS?",
+          options: [
+            "A checkbox labelled 'public' on the subnet resource.",
+            "Its route table contains a 0.0.0.0/0 route pointing at an Internet Gateway.",
+            "It uses an address range outside RFC 1918.",
+            "It sits in the first Availability Zone of the region.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "There is no public flag. A subnet is public purely because of routing. Point 0.0.0.0/0 at an Internet Gateway and it is public; point it at a NAT Gateway and the same subnet becomes private.",
+        },
+        {
+          id: "cidr-longest-prefix",
+          question:
+            "A packet is destined for 10.1.4.20. The route table contains 10.0.0.0/16 → local, 0.0.0.0/0 → nat-abc, and 10.1.0.0/16 → pcx-xyz. Which route wins?",
+          options: [
+            "0.0.0.0/0 → nat-abc, because default routes take priority.",
+            "10.0.0.0/16 → local, because local routes always win.",
+            "10.1.0.0/16 → pcx-xyz, because it is the most specific match.",
+            "The packet is dropped because two routes match.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "Routers use longest prefix match. 10.1.4.20 does not fall inside 10.0.0.0/16 at all. Between 10.1.0.0/16 and 0.0.0.0/0, the /16 is more specific, so the packet goes over the peering connection.",
+        },
+        {
+          id: "cidr-vlsm-order",
+          question:
+            "Why does VLSM require you to allocate the largest subnet first?",
+          options: [
+            "Because routers process larger subnets faster.",
+            "Because small subnets allocated first fragment the space and leave no contiguous room for a large block.",
+            "Because the largest subnet must always start at the .0 address.",
+            "It is a convention only and has no technical effect.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Every subnet must start on a boundary divisible by its own block size. Placing small blocks first leaves gaps that no longer align to the boundary a large block needs, so the large block cannot fit even when the raw address count would allow it.",
+        },
+        {
+          id: "cidr-k8s",
+          question:
+            "An EKS cluster in a /24 app subnet stops scheduling pods with 'failed to assign an IP address to container'. What is happening?",
+          options: [
+            "The security group is blocking the CNI plugin.",
+            "The AWS VPC CNI gives every pod a real VPC IP, and the 251 usable addresses in the /24 are exhausted.",
+            "The NAT Gateway has hit its connection limit.",
+            "The cluster needs a larger instance type.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "With the AWS VPC CNI, pods consume actual subnet addresses rather than overlay addresses. A /24 gives 251 usable IPs, which roughly eight nodes at 29 pods each will exhaust. Fix it with a larger subnet, a secondary CIDR from 100.64.0.0/10, or prefix delegation.",
+        },
+        {
+          id: "cidr-ipv6-sizing",
+          question: "Why do you not size IPv6 subnets by host count?",
+          options: [
+            "Because IPv6 does not use subnets.",
+            "Because the /64 boundary is fixed by the standard and holds 18 quintillion addresses, so host count is never the constraint.",
+            "Because IPv6 addresses are assigned by the ISP and cannot be subdivided.",
+            "Because NAT handles the address sharing instead.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "IPv6 subnets are standardised at /64 because SLAAC depends on that boundary. A single /64 would take roughly 58,000 years to exhaust at ten million allocations per second, so you plan by network segment rather than by host count.",
+        },
+      ],
+    },
+  ],
+};
+
+
+
 const osiModelLesson: LessonContent = {
   slug: "osi-model",
   title: "OSI Model",
@@ -1084,6 +1777,7 @@ const osiModelLesson: LessonContent = {
     }
   ]
 };
+
 
 export const tcpUdpLesson: LessonContent = {
   slug: "tcp-udp",
@@ -1209,136 +1903,6 @@ export const tcpUdpLesson: LessonContent = {
   ]
 };
 
-const subnetsCidrLesson: LessonContent = {
-  slug: "subnets-and-cidr",
-  title: "Subnets, CIDR & VPCs",
-  subtitle: "Divide and conquer your network. Understand CIDR notation and build real-world Cloud VPCs.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "Why Do We Need Subnets?",
-      body: [
-        "In the early days of the Internet, IP addresses were handed out in massive chunks (Class A, B, C). This was extremely inefficient—a company might get a block of 16 million addresses but only need a few thousand. We ran out of IPv4 addresses fast.",
-        "To fix this, **Subnetting** was introduced. Subnetting allows you to take a large block of IP addresses and divide it into smaller, more manageable, and secure logical networks.",
-        "When you move to the Cloud (like AWS or GCP), the first thing you build is a **VPC (Virtual Private Cloud)**, which is essentially your own massive subnet in the cloud. You then slice that VPC into smaller subnets to separate your public-facing web servers from your private databases."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "Understanding CIDR Notation",
-      body: [
-        "CIDR (Classless Inter-Domain Routing) is the modern way to allocate IP addresses and define routing. You'll see it written like this: `192.168.1.10/24`.",
-        "An IPv4 address is 32 bits long. The `/24` tells us that the first 24 bits represent the **Network ID**, and the remaining 8 bits (32 - 24 = 8) represent the **Host ID** (the specific devices on that network).",
-        "A `/32` means all bits are used for the network, leaving 0 bits for hosts. This represents a single specific computer.",
-        "A `/0` means 0 bits for the network, and all 32 bits for hosts. This represents the entire Internet (`0.0.0.0/0`)."
-      ]
-    },
-    {
-      kind: "cidr-calculator-diagram"
-    },
-    {
-      kind: "prose",
-      heading: "Taking it to the Cloud: The VPC",
-      body: [
-        "A Virtual Private Cloud (VPC) is a logically isolated section of the AWS (or GCP/Azure) cloud where you can launch resources in a virtual network that you define.",
-        "When you create a VPC, you give it a large CIDR block, typically a `/16` (e.g., `10.0.0.0/16`), which gives you 65,536 IP addresses to work with.",
-        "You then divide this massive VPC into smaller subnets (e.g., `/24` subnets, which give 256 IPs each) across different Availability Zones."
-      ]
-    },
-    {
-      kind: "image",
-      src: vpcCidrSubnetImg,
-      alt: "VPC and Subnets Visualization",
-      caption: "Slicing a /16 VPC into multiple /24 Subnets"
-    },
-    {
-      kind: "prose",
-      heading: "Public vs. Private Subnets",
-      body: [
-        "**Public Subnets**: These subnets have a route to an Internet Gateway (IGW). Instances in a public subnet can talk directly to the Internet (and the Internet can talk back, if security groups allow). You put Load Balancers and Bastion Hosts here.",
-        "**Private Subnets**: These subnets do *not* have a direct route to the Internet Gateway. Instances here are hidden from the outside world. This is where your application servers and databases live.",
-        "**NAT Gateway**: If a server in a private subnet needs to download a patch from the Internet, it routes its request through a NAT Gateway (which lives in the *public* subnet). The NAT Gateway talks to the Internet on its behalf."
-      ]
-    },
-    {
-      kind: "vpc-architecture-diagram"
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "CIDR notation (e.g., `/24`) dictates how many bits of an IP address represent the network vs the host.",
-        "A lower CIDR number (e.g., `/16`) means a larger network with more available IP addresses. A higher number (`/32`) means fewer (just 1).",
-        "VPCs are your private sandbox in the cloud. You slice them into Subnets to organize resources.",
-        "Always put sensitive resources (like Databases and App servers) in Private Subnets. Use Load Balancers and NAT Gateways in Public Subnets."
-      ]
-    },
-    {
-      kind: "quiz",
-      questions: [
-        {
-          id: "sysdesign-cidr-size",
-          question: "Which of the following CIDR blocks provides the largest number of available IP addresses?",
-          options: [
-            "/32",
-            "/24",
-            "/16",
-            "/8"
-          ],
-          correctIndex: 3,
-          explanation: "A /8 leaves 24 bits for hosts (32 - 8 = 24), which provides over 16 million IP addresses (2^24). The lower the slash number, the larger the network."
-        },
-        {
-          id: "sysdesign-vpc-private",
-          question: "In a typical Cloud VPC architecture, how does a database in a Private Subnet securely download a software update from the Internet?",
-          options: [
-            "It connects directly to the Internet Gateway.",
-            "It uses a NAT Gateway located in the Public Subnet.",
-            "It cannot download updates; private subnets are completely isolated.",
-            "It uses a Bastion Host to proxy the request."
-          ],
-          correctIndex: 1,
-          explanation: "A NAT Gateway is placed in the Public Subnet. Resources in the Private Subnet route their outbound internet traffic to the NAT Gateway, which translates the private IP to a public IP and fetches the data."
-        },
-        {
-          id: "sysdesign-cidr-usable",
-          question: "How many USABLE host IP addresses are available in a standard /24 subnet?",
-          options: [
-            "256",
-            "254",
-            "128",
-            "255"
-          ],
-          correctIndex: 1,
-          explanation: "A /24 subnet leaves 8 bits for hosts (32 - 24 = 8). 2^8 = 256 total IPs. However, we must subtract 2 for the Network ID and the Broadcast ID. Therefore, 256 - 2 = 254 usable hosts."
-        },
-        {
-          id: "sysdesign-vpc-public",
-          question: "What is the primary defining characteristic of a Public Subnet?",
-          options: [
-            "It has a routing table entry pointing to an Internet Gateway (IGW).",
-            "It automatically assigns static IP addresses to all servers.",
-            "It does not require Security Groups or Firewalls.",
-            "It can only contain Load Balancers, never actual servers."
-          ],
-          correctIndex: 0,
-          explanation: "A subnet is considered 'Public' purely because its route table directs internet-bound traffic (0.0.0.0/0) to an Internet Gateway. Without that route, it is a Private Subnet."
-        },
-        {
-          id: "sysdesign-cidr-broadcast",
-          question: "What is the purpose of the Broadcast Address in a subnet?",
-          options: [
-            "To identify the entire network block to external routers.",
-            "To send a single packet to every host in the subnet simultaneously.",
-            "To assign the first available IP to the default gateway.",
-            "To encrypt all outbound traffic leaving the VPC."
-          ],
-          correctIndex: 1,
-          explanation: "The broadcast address is the very last IP address in a subnet. When a packet is sent to this address, the networking hardware ensures every single device on that subnet receives a copy."
-        }
-      ]
-    }
-  ]
-};
 
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
@@ -1348,7 +1912,7 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson],
   },
   "networking-protocols": {
     slug: "networking-protocols",
@@ -1356,6 +1920,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, osiModelLesson, tcpUdpLesson, subnetsCidrLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson],
   }
 };
