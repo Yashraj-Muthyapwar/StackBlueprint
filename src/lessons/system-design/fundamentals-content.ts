@@ -10,6 +10,7 @@ import natImg from "@/images/system-design/Foundations/nat.png";
 import portsImg from "@/images/system-design/Foundations/ports.png";
 import vpcCidrSubnetImg from "@/images/system-design/Foundations/vpc-cidr-subnet.png";
 import httpVsHttpsImg from "@/images/system-design/Foundations/http-vs-https.png";
+import dnsImg from "@/images/system-design/Foundations/dns.png";
 
 export type { Section };
 
@@ -2084,6 +2085,323 @@ export const httpHttpsLesson: LessonContent = {
   ]
 };
 
+export const dnsLesson: LessonContent = {
+  slug: "dns",
+  title: "Domain Name System (DNS)",
+  subtitle:
+    "How a name like `blog.example.com` turns into an IP address, who answers along the way, and why caching is what actually keeps it standing up.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "The problem DNS solves",
+      body: [
+        "Computers do not talk to names. They talk to addresses. Before your browser can send a single byte to `example.com`, it needs a number like `93.184.216.34` — because that is what a router knows how to forward a packet toward.",
+        "So one of two things has to be true. Either every person memorises the IP address of every service they use, or something translates names into addresses on demand. **DNS is that something.**",
+        "It is usually described as the phonebook of the internet, and that captures the lookup part. But a phonebook is one book, printed once, in one place. DNS is a **hierarchical, decentralised, globally distributed database** that answers trillions of queries a day, has no single owner, and has never been fully offline. That is the part worth understanding.",
+        "One thing to be clear about from the start: **DNS does not fetch anything.** It resolves a name to an address and stops. Everything you actually wanted — the HTML, the API response, the video — happens afterwards, over a separate connection to the address DNS handed back."
+      ]
+    },
+    {
+      kind: "analogy",
+      title: "Asking for directions, not being driven there",
+      text:
+        "You want to visit a company you only know by name. You ask a **concierge** (the resolver). The concierge does not know either, so they ask the **city registry** (root), which says \"that's a commercial firm, ask the commercial registry.\" The **commercial registry** (TLD) says \"that company keeps its own records office — here's where it is.\" The **records office** (authoritative nameserver) finally gives the street address. The concierge writes it in a notepad (cache) and hands it to you. Then — and only then — **you** make the journey yourself. The concierge never went anywhere on your behalf."
+    },
+    {
+      kind: "prose",
+      heading: "The four kinds of server involved",
+      body: [
+        "Almost every DNS explanation gets confusing because people say \"the DNS server\" as if there is one. There are four distinct roles, and each one has a genuinely different job.",
+        "**1. Recursive resolver.** The only one your device ever talks to. It accepts one question and takes on the responsibility of returning a finished answer. It is run by your ISP, or by a public provider like `1.1.1.1` (Cloudflare) or `8.8.8.8` (Google), and it is where nearly all of the caching happens.",
+        "**2. Root server.** The top of the tree, denoted by a single dot. It does not know any website addresses. It knows which servers run each top-level domain. There are **13 root server identities** (`a` through `m`, overseen by ICANN), but hundreds of physical machines share those addresses using **anycast routing**, so \"the root server\" you reach is whichever one is closest to you on the network.",
+        "**3. TLD server.** Holds every domain registered under one top-level domain — `.com`, `.org`, `.net`, `.uk`, `.jp`. The `.com` zone is operated by Verisign under IANA/ICANN delegation. It stores one delegation per domain: which nameservers are authoritative for it. It does not store your website's IP address either.",
+        "**4. Authoritative nameserver.** The source of truth for a specific domain. It holds the zone file with every record you configured, and it is the only server entitled to say a name does not exist (**NXDOMAIN**).",
+        "Notice the pattern: **the first two servers you ask never answer your question.** They tell you who to ask next. That refusal to centralise is the single design decision that lets DNS scale to the whole internet."
+      ]
+    },
+    {
+      kind: "dns-resolution-walkthrough"
+    },
+    {
+      kind: "prose",
+      heading: "The lookup, in words",
+      body: [
+        "1. You type `blog.example.com`. The browser checks its own cache, then the OS stub resolver's cache. If either has a valid entry, the lookup ends here — and most of the time, it does.",
+        "2. On a miss, the client sends **one recursive query** to its configured resolver, with the RD (recursion desired) flag set.",
+        "3. The resolver checks its cache. On a miss, it queries a **root server**.",
+        "4. The root replies with a **referral**: the nameservers for `.com`.",
+        "5. The resolver queries the **`.com` TLD server**.",
+        "6. The TLD replies with another referral: the **authoritative nameservers** for `example.com`.",
+        "7. The resolver queries the **authoritative nameserver**.",
+        "8. The authoritative server returns the **A record** — the IP address — with the AA (authoritative answer) bit set and a TTL.",
+        "9. The resolver caches everything it learned and returns the address to the client.",
+        "10. The browser opens a TCP connection to that IP, performs the TLS handshake, and sends the HTTP request. **This is where DNS ends and the actual page load begins.**"
+      ]
+    },
+    {
+      kind: "image",
+      src: dnsImg,
+      alt: "Overview of the Domain Name System: the step-by-step lookup from browser to authoritative nameserver, common record types, and how caching speeds up later requests",
+      caption: "The whole system on one page — lookup, records, and caching",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "DNS runs on UDP port 53 — and that choice has consequences",
+      body:
+        "A query and its answer usually fit in a single UDP datagram, so there is no handshake and no connection state: one packet out, one packet back. That is why lookups are fast. It is also why DNS is a favourite tool for amplification attacks (a small spoofed query producing a large reply aimed at a victim), and why responses larger than the limit fall back to TCP. Modern deployments increasingly wrap the whole thing in TLS or HTTPS — **DoT** on port 853, **DoH** on port 443 — so that your ISP cannot read or rewrite your lookups."
+    },
+    {
+      kind: "prose",
+      heading: "The namespace is a tree",
+      body: [
+        "Every domain name is a path from a leaf up to the root, written right to left. `blog.example.com.` is really four labels: `blog`, then `example`, then `com`, then the empty root label — that trailing dot you almost never type but which is always implied.",
+        "Each level is delegated to a different party, and that delegation is the reason no single organisation has to be trusted with everything. ICANN oversees the root. Verisign runs `.com`. Nominet runs `.uk`. You run `example.com` once you register it. Below that, **subdomains cost you nothing and need no registrar** — they are just extra lines in a file you already control."
+      ]
+    },
+    {
+      kind: "dns-hierarchy-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "Subdomains, and why they matter architecturally",
+      body: [
+        "A subdomain is a prefix on a domain you already own: `subdomain.primarydomain.TLD`. `blog.example.com`, `support.example.com`, `api.example.com`.",
+        "The useful part is not the naming. It is that **each subdomain can point at completely different infrastructure** while sharing one registered domain: `blog` at a static host, `api` at a load balancer in your VPC, `support` at a third-party SaaS vendor, `status` at a status-page provider. One domain, four vendors, zero coordination between them.",
+        "A **DNS zone** is the portion of the namespace that one entity administers. By default your whole domain is one zone, but you can delegate a subtree — say, hand `internal.example.com` to a different team with its own nameservers — and it becomes its own zone. That is how large organisations give teams autonomy over their own names without handing over the keys to the whole domain."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Three query types",
+      body: [
+        "The words *recursive* and *iterative* describe **what the asker expects back**, not different protocols. A single lookup normally contains both.",
+        "**Recursive** — \"go and find the real answer.\" The server must return the finished result or an error. Your device only ever does this.",
+        "**Iterative** — \"tell me the best you have.\" Usually a referral to a server closer to the answer. The asker keeps the work. Root and TLD servers deliberately answer only iteratively; if they did recursive work for everyone, a handful of machines would have to serve the entire internet.",
+        "**Non-recursive** — the server already knows, from cache or because it is authoritative for that zone. No other server is contacted. This is by far the most common case in production."
+      ]
+    },
+    {
+      kind: "dns-query-types-diagram"
+    },
+    {
+      kind: "prose",
+      heading: "Records: what a domain is actually made of",
+      body: [
+        "A **DNS record** is one instruction stored on an authoritative nameserver. Together they form the **zone file** — a plain-text description of everything a domain does. Every managed DNS console you have ever used (Route 53, Cloudflare, Azure DNS) is a form that edits these lines.",
+        "Every record carries a **TTL**: how long anyone else is allowed to cache it. Pick the type by what you are pointing at — an address, another name, a mail server, a service, or a piece of text."
+      ]
+    },
+    {
+      kind: "dns-record-explorer"
+    },
+    {
+      kind: "table",
+      caption: "Common record types",
+      headers: ["Record", "Purpose", "Typical use"],
+      rows: [
+        ["**A**", "Maps a name to an IPv4 address", "`example.com → 93.184.216.34`"],
+        ["**AAAA**", "Maps a name to an IPv6 address", "Dual-stack hosts; queried in parallel with A"],
+        ["**CNAME**", "Points one name at another name", "`blog → hosting.netlify.app` — cannot sit on the bare domain"],
+        ["**MX**", "Names the mail servers for the domain", "Lowest preference number wins; must point at a hostname"],
+        ["**TXT**", "Arbitrary text on a name", "SPF, DKIM, DMARC, domain-ownership proofs"],
+        ["**NS**", "Declares the authoritative servers for a zone", "The record that performs delegation"],
+        ["**SOA**", "Zone admin data, serial, and timers", "One per zone; last field is the negative-caching TTL"],
+        ["**SRV**", "Locates a service, including its port", "SIP, XMPP, LDAP, Kubernetes service discovery"],
+        ["**PTR**", "Maps an IP back to a name (reverse DNS)", "Lives in `in-addr.arpa`; checked by mail servers"],
+        ["**CERT**", "Publishes a certificate in DNS", "Rare; TLSA and CAA are the relatives you will meet"]
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "The CNAME trap that catches nearly everyone once",
+      body:
+        "A CNAME cannot coexist with any other record on the same name. Your bare domain (`example.com`) must already have SOA and NS records — so it **cannot** have a CNAME. This is why pointing a naked domain at a CDN or SaaS host fails, and why providers invented non-standard `ALIAS` / `ANAME` records that behave like a CNAME at the apex but resolve server-side and return an A record."
+    },
+    {
+      kind: "prose",
+      heading: "Reverse DNS",
+      body: [
+        "A reverse lookup goes the other way: IP address to name. It uses **PTR** records published in a special zone — `93.184.216.34` becomes a query for `34.216.184.93.in-addr.arpa` (the octets reversed, because names are read most-specific-first).",
+        "It is not needed to browse the web. It matters in exactly two places. **Mail servers** check that a sending IP has a PTR record and that the name it returns resolves back to the same IP; a mismatch is a strong spam signal. And **logs and traceroutes** use it to turn raw addresses into readable hostnames.",
+        "One practical note: only the owner of the IP block can set a PTR record. That is your hosting or cloud provider, not your DNS provider — so this is one record you usually cannot fix yourself."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Caching: the part that makes DNS work at all",
+      body: [
+        "A full recursive walk costs three round trips to servers scattered around the world. If every page load did that, the web would feel broken and the root servers would have melted decades ago.",
+        "They have not, because **a DNS answer is cached at four independent layers** before it reaches your application: the browser, the operating system stub resolver, the local router, and the recursive resolver. A query only travels as far as the first layer that still holds a valid copy.",
+        "Each layer honours the **TTL** that came with the record — the number of seconds it is allowed to keep the answer. When the TTL expires, the entry is purged and the next request re-queries."
+      ]
+    },
+    {
+      kind: "dns-cache-journey"
+    },
+    {
+      kind: "prose",
+      heading: "What TTL actually buys and costs",
+      body: [
+        "TTL is the only control you have over caches you do not own, and it is a genuine tradeoff.",
+        "**A short TTL** (30–60s) means changes take effect almost immediately, which is what you want during a migration or a failover. It also means far more traffic to your authoritative nameservers, and it makes you more fragile: if your nameservers become unreachable, cached copies expire quickly and users start failing.",
+        "**A long TTL** (hours to a day) means fewer queries, lower cost, and real resilience — clients keep working from cache even while your nameservers are down. The price is that a mistake, or a needed failover, can take a full TTL to reach everybody.",
+        "The standard playbook before a planned migration: **drop the TTL to 60 seconds about a day in advance**, wait for the old long-TTL entries to age out, cut over, confirm, then raise the TTL back up.",
+        "This is also the honest explanation of \"DNS propagation.\" Nothing propagates. There is no push, no broadcast, no sync. You are simply waiting for other people's caches to expire on their own schedule."
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Flushing your own caches",
+      body:
+        "When a change looks like it has not taken effect, clear the layers you control before blaming anyone. Chrome keeps its own cache at `chrome://net-internals/#dns` → *Clear host cache*. On Windows: `ipconfig /flushdns`. On macOS: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`. On Linux with systemd: `resolvectl flush-caches`. Then verify against the authority directly with `dig @ns1.yourprovider.net example.com` — that bypasses every cache in between and tells you what is actually configured."
+    },
+    {
+      kind: "prose",
+      heading: "Where DNS bites you in production",
+      body: [
+        "**It is a single point of failure with excellent uptime, which is the dangerous combination.** DNS works so reliably that teams forget it is in the request path. The 2016 Dyn outage took down Twitter, Spotify, GitHub and Reddit — none of which had failed. Their DNS provider had. Use two independent DNS providers for anything critical.",
+        "**Cache poisoning.** If an attacker can get a forged answer accepted, they redirect your users to their server. **DNSSEC** cryptographically signs records so a resolver can verify the answer really came from the zone's owner. It does not encrypt anything — that is what DoT and DoH are for.",
+        "**Amplification attacks.** A small spoofed query can produce a large reply aimed at a victim. Response rate limiting and refusing to run open resolvers are the defences.",
+        "**Round-robin DNS is not load balancing.** Multiple A records on one name spread traffic, but DNS has no health checking: a dead server keeps being handed out until the record is removed and every cached copy expires. Real load balancing happens behind a single address.",
+        "**Protect the account, not just the zone.** Whoever controls your registrar account controls where every user of your domain is sent. Enforce MFA, use registrar lock, and restrict who can edit records.",
+        "**Do not forget the lookup in your timeouts.** DNS resolution is a distinct stage of an HTTP request with its own failure mode. A client with no DNS timeout can hang indefinitely on a resolver that has stopped answering."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Managed DNS providers you will meet",
+      headers: ["Provider", "Why teams pick it"],
+      rows: [
+        ["**Route 53** (AWS)", "Deep AWS integration, health checks, latency and geolocation routing policies"],
+        ["**Cloudflare DNS**", "Very fast anycast network, DDoS protection, free DNSSEC"],
+        ["**Google Cloud DNS**", "Simple, scalable, priced per query and zone"],
+        ["**Azure DNS**", "Native integration with Azure identity and resources"],
+        ["**NS1**", "Programmable traffic steering and data-driven routing"]
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "DNS translates names to IP addresses and then gets out of the way — it never fetches your content.",
+        "Four roles, not one server: the **resolver** does the walking, the **root** and **TLD** servers only hand out referrals, and the **authoritative nameserver** is the single source of truth for a domain.",
+        "The namespace is a tree read right to left, and each level is delegated to a different party. That delegation is why DNS scales without a central database.",
+        "**Recursive** means \"find me the answer,\" **iterative** means \"tell me who to ask next,\" and **non-recursive** means \"I already know.\" One lookup normally uses all three.",
+        "Records live in a zone file on the authoritative server. A points at IPv4, AAAA at IPv6, CNAME at another name, MX at mail servers, NS at nameservers, PTR back at a name.",
+        "Caching at four layers — browser, OS, router, resolver — is what keeps DNS fast, and **TTL is your only lever over caches you do not own**.",
+        "\"Propagation\" is not a push; it is waiting for other people's TTLs to expire. Lower the TTL a day before a planned migration.",
+        "Treat DNS as production infrastructure: redundant providers, DNSSEC, MFA on the registrar account, and an explicit resolution timeout in every client."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "dns-root-role",
+          question: "A recursive resolver queries a root server for `blog.example.com`. What does the root server return?",
+          options: [
+            "The IP address of blog.example.com",
+            "The addresses of the authoritative nameservers for example.com",
+            "A referral to the nameservers for the .com TLD",
+            "NXDOMAIN, because root servers only handle bare domains"
+          ],
+          correctIndex: 2,
+          explanation:
+            "Root servers store no website addresses. They know which servers run each top-level domain, so they answer with a referral to the .com TLD nameservers. The resolver then has to ask again, one level deeper."
+        },
+        {
+          id: "dns-who-walks",
+          question: "In a normal lookup from a laptop, which machine actually contacts the root, TLD, and authoritative servers?",
+          options: [
+            "The laptop's operating system, one server at a time",
+            "The recursive resolver, on the client's behalf",
+            "The authoritative nameserver, which forwards upward",
+            "The browser, using parallel HTTPS requests"
+          ],
+          correctIndex: 1,
+          explanation:
+            "The client is a stub resolver: it sends exactly one recursive query and waits. The recursive resolver does all the iterative walking and returns a single finished answer."
+        },
+        {
+          id: "dns-cname-apex",
+          question: "Why can't you put a CNAME record on a bare domain like `example.com`?",
+          options: [
+            "CNAMEs are only valid for subdomains by registrar policy",
+            "A CNAME cannot coexist with other records, and the apex already needs SOA and NS records",
+            "Bare domains must always resolve to an IPv4 address",
+            "CNAMEs would break the TTL inherited from the TLD server"
+          ],
+          correctIndex: 1,
+          explanation:
+            "A CNAME must be the only record on its name. The zone apex is required to carry SOA and NS records, so a CNAME there is illegal. Providers work around this with non-standard ALIAS/ANAME records that resolve server-side."
+        },
+        {
+          id: "dns-ttl-tradeoff",
+          question: "You are migrating a service to a new IP tomorrow. What should you do to the record's TTL?",
+          options: [
+            "Raise it to 24 hours so caches stay stable during the cutover",
+            "Lower it to about 60 seconds a day before the migration",
+            "Leave it alone; TTL only affects the authoritative server",
+            "Set it to 0 during the migration to disable caching entirely"
+          ],
+          correctIndex: 1,
+          explanation:
+            "Lower it well ahead of time so the old long-TTL entries age out of everyone's caches before you cut over. Then the change itself is visible within about a minute, and you can raise the TTL again once you have confirmed the migration."
+        },
+        {
+          id: "dns-propagation",
+          question: "Which statement about \"DNS propagation\" is accurate?",
+          options: [
+            "Authoritative servers push updates to all resolvers worldwide",
+            "Root servers broadcast the change down through the TLD servers",
+            "Nothing is pushed; you are waiting for existing cached entries to hit their TTL and expire",
+            "Registrars replicate changes to resolvers on a fixed 48-hour schedule"
+          ],
+          correctIndex: 2,
+          explanation:
+            "There is no push mechanism in DNS. Your authoritative servers are updated instantly; everyone else keeps serving their cached copy until its TTL runs out and they re-query."
+        },
+        {
+          id: "dns-ptr",
+          question: "A mail server rejects your outgoing mail as likely spam, citing reverse DNS. Which record is missing or wrong?",
+          options: ["MX", "TXT (SPF)", "PTR", "NS"],
+          correctIndex: 2,
+          explanation:
+            "Reverse DNS uses PTR records in the in-addr.arpa zone to map an IP back to a name. Receiving mail servers check that the sending IP has a PTR record that resolves back to the same IP. Note that only the owner of the IP block — your hosting provider — can set it."
+        },
+        {
+          id: "dns-nxdomain",
+          question: "Which server is entitled to authoritatively state that a name does not exist (NXDOMAIN)?",
+          options: [
+            "Any recursive resolver that fails to find it",
+            "The root server for that TLD's branch",
+            "The authoritative nameserver for the zone",
+            "The registrar that sold the domain"
+          ],
+          correctIndex: 2,
+          explanation:
+            "Only the authoritative nameserver holds the complete zone, so only it can say with authority that a name is absent. How long resolvers remember that negative answer is controlled by the last field of the SOA record."
+        },
+        {
+          id: "dns-udp",
+          question: "DNS queries normally travel over UDP port 53. What is the main consequence of that choice?",
+          options: [
+            "Lookups are fast with no handshake, but responses can be spoofed and abused for amplification",
+            "Every lookup is encrypted end to end by default",
+            "Answers are guaranteed to arrive in order, like TCP",
+            "Only one query can be in flight per client at a time"
+          ],
+          correctIndex: 0,
+          explanation:
+            "One packet out, one packet back, no connection setup — that is why DNS is fast. It also means an attacker can forge replies or use small spoofed queries to generate large ones aimed at a victim. DNSSEC addresses forgery; DoT and DoH add encryption."
+        }
+      ]
+    }
+  ]
+};
+
 export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
@@ -2092,7 +2410,7 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson, dnsLesson],
   },
   "networking-protocols": {
     slug: "networking-protocols",
@@ -2100,6 +2418,6 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson, dnsLesson],
   }
 };
