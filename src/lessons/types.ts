@@ -147,6 +147,11 @@ export type Section =
   | { kind: "tls-handshake-diagram" }
   | { kind: "http-versions-diagram" }
   | { kind: "http-cache-diagram" }
+  | { kind: "dns-resolution-walkthrough" }
+  | { kind: "dns-hierarchy-diagram" }
+  | { kind: "dns-query-types-diagram" }
+  | { kind: "dns-record-explorer" }
+  | { kind: "dns-cache-journey" }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
