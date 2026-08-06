@@ -20,6 +20,8 @@ import {
   VpcCarveDiagram,
   VpcPacketFlow,
 } from "@/components/system-design/SubnetVisuals";
+import HttpVisuals from "@/components/system-design/HttpVisuals";
+import DnsVisuals from "@/components/system-design/DnsVisuals";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -431,6 +433,25 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       
     case "vpc-carve-diagram":
       return <VpcCarveDiagram />;
+    case "http-req-res-viewer":
+      return <HttpVisuals.HttpReqResViewer />;
+    case "tls-handshake-diagram":
+      return <HttpVisuals.TlsHandshakeDiagram />;
+    case "http-versions-diagram":
+      return <HttpVisuals.HttpVersionsDiagram />;
+    case "http-cache-diagram":
+      return <HttpVisuals.HttpCacheDiagram />;
+
+    case "dns-resolution-walkthrough":
+      return <DnsVisuals.DnsResolutionWalkthrough />;
+    case "dns-hierarchy-diagram":
+      return <DnsVisuals.DnsHierarchyDiagram />;
+    case "dns-query-types-diagram":
+      return <DnsVisuals.DnsQueryTypesDiagram />;
+    case "dns-record-explorer":
+      return <DnsVisuals.DnsRecordExplorer />;
+    case "dns-cache-journey":
+      return <DnsVisuals.DnsCacheJourney />;
 
     case "tcp-udp-diagram":
         return <TcpUdpDiagram />;
