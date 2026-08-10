@@ -168,22 +168,21 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
         {pointers.map((p, i) => {
           const sharing = pointers.filter((q) => q.index === p.index);
           const shareIdx = sharing.findIndex((q) => q.name === p.name);
-          const offset = sharing.length > 1 ? (shareIdx - (sharing.length - 1) / 2) * 22 : 0;
+          const offset = sharing.length > 1 ? (shareIdx - (sharing.length - 1) / 2) * 34 : 0;
           const x = p.index * (CELL + GAP) + CELL / 2 + offset;
           const color = COLOR_MAP[p.color];
           const isHighlight = step.highlight?.indices.includes(p.index);
-          
 
-          
           return (
             <motion.div
               key={p.name}
               initial={false}
-              animate={{ x: x - 12 }} // center the 24px wide pointer
+              animate={{ x: x - 20 }} // center the 40px wide pointer
               transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
               className="absolute -bottom-20 z-40 flex flex-col items-center"
-              style={{ width: 24 }}
+              style={{ width: 40 }}
             >
+
               {/* Connection line shooting up to the terrain */}
               {isHighlight && (
                 <motion.div 
