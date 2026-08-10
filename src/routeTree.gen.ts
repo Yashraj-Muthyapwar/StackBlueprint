@@ -11,22 +11,42 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as WebScrapingIndexRouteImport } from './routes/web-scraping.index'
+import { Route as TerraformIndexRouteImport } from './routes/terraform.index'
+import { Route as SystemDesignIndexRouteImport } from './routes/system-design.index'
 import { Route as SqlIndexRouteImport } from './routes/sql.index'
+import { Route as PythonIndexRouteImport } from './routes/python.index'
 import { Route as PatternsIndexRouteImport } from './routes/patterns.index'
+import { Route as GitGithubIndexRouteImport } from './routes/git-github.index'
+import { Route as DockerIndexRouteImport } from './routes/docker.index'
 import { Route as DataWarehousesIndexRouteImport } from './routes/data-warehouses.index'
 import { Route as TracksTrackRouteImport } from './routes/tracks.$track'
 import { Route as PatternsPatternRouteImport } from './routes/patterns.$pattern'
 import { Route as PatternsPatternIndexRouteImport } from './routes/patterns.$pattern.index'
+import { Route as WebScrapingFoundationsTopicRouteImport } from './routes/web-scraping.foundations.$topic'
+import { Route as SystemDesignFundamentalsTopicRouteImport } from './routes/system-design.fundamentals.$topic'
+import { Route as SystemDesignDistributedSystemsTopicRouteImport } from './routes/system-design.distributed-systems.$topic'
 import { Route as SqlQueryingTopicRouteImport } from './routes/sql.querying.$topic'
 import { Route as SqlFoundationsTopicRouteImport } from './routes/sql.foundations.$topic'
 import { Route as PatternsCategoryCategoryRouteImport } from './routes/patterns.category.$category'
 import { Route as PatternsPatternLessonRouteImport } from './routes/patterns.$pattern.$lesson'
+import { Route as DockerFoundationsTopicRouteImport } from './routes/docker.foundations.$topic'
 import { Route as DataWarehousesFoundationsTopicRouteImport } from './routes/data-warehouses.foundations.$topic'
+import { Route as WebScrapingScaleTopicIndexRouteImport } from './routes/web-scraping.scale.$topic.index'
+import { Route as WebScrapingFoundationsTopicIndexRouteImport } from './routes/web-scraping.foundations.$topic.index'
+import { Route as WebScrapingAutomationTopicIndexRouteImport } from './routes/web-scraping.automation.$topic.index'
+import { Route as SystemDesignFundamentalsTopicIndexRouteImport } from './routes/system-design.fundamentals.$topic.index'
+import { Route as SystemDesignDistributedSystemsTopicIndexRouteImport } from './routes/system-design.distributed-systems.$topic.index'
 import { Route as SqlQueryingTopicIndexRouteImport } from './routes/sql.querying.$topic.index'
 import { Route as SqlFoundationsTopicIndexRouteImport } from './routes/sql.foundations.$topic.index'
+import { Route as DockerFoundationsTopicIndexRouteImport } from './routes/docker.foundations.$topic.index'
 import { Route as DataWarehousesFoundationsTopicIndexRouteImport } from './routes/data-warehouses.foundations.$topic.index'
+import { Route as WebScrapingFoundationsTopicLessonRouteImport } from './routes/web-scraping.foundations.$topic.$lesson'
+import { Route as SystemDesignFundamentalsTopicLessonRouteImport } from './routes/system-design.fundamentals.$topic.$lesson'
+import { Route as SystemDesignDistributedSystemsTopicLessonRouteImport } from './routes/system-design.distributed-systems.$topic.$lesson'
 import { Route as SqlQueryingTopicLessonRouteImport } from './routes/sql.querying.$topic.$lesson'
 import { Route as SqlFoundationsTopicLessonRouteImport } from './routes/sql.foundations.$topic.$lesson'
+import { Route as DockerFoundationsTopicLessonRouteImport } from './routes/docker.foundations.$topic.$lesson'
 import { Route as DataWarehousesFoundationsTopicLessonRouteImport } from './routes/data-warehouses.foundations.$topic.$lesson'
 
 const PlaygroundRoute = PlaygroundRouteImport.update({
@@ -39,14 +59,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WebScrapingIndexRoute = WebScrapingIndexRouteImport.update({
+  id: '/web-scraping/',
+  path: '/web-scraping/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TerraformIndexRoute = TerraformIndexRouteImport.update({
+  id: '/terraform/',
+  path: '/terraform/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SystemDesignIndexRoute = SystemDesignIndexRouteImport.update({
+  id: '/system-design/',
+  path: '/system-design/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SqlIndexRoute = SqlIndexRouteImport.update({
   id: '/sql/',
   path: '/sql/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PythonIndexRoute = PythonIndexRouteImport.update({
+  id: '/python/',
+  path: '/python/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PatternsIndexRoute = PatternsIndexRouteImport.update({
   id: '/patterns/',
   path: '/patterns/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GitGithubIndexRoute = GitGithubIndexRouteImport.update({
+  id: '/git-github/',
+  path: '/git-github/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DockerIndexRoute = DockerIndexRouteImport.update({
+  id: '/docker/',
+  path: '/docker/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DataWarehousesIndexRoute = DataWarehousesIndexRouteImport.update({
@@ -69,6 +119,24 @@ const PatternsPatternIndexRoute = PatternsPatternIndexRouteImport.update({
   path: '/',
   getParentRoute: () => PatternsPatternRoute,
 } as any)
+const WebScrapingFoundationsTopicRoute =
+  WebScrapingFoundationsTopicRouteImport.update({
+    id: '/web-scraping/foundations/$topic',
+    path: '/web-scraping/foundations/$topic',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SystemDesignFundamentalsTopicRoute =
+  SystemDesignFundamentalsTopicRouteImport.update({
+    id: '/system-design/fundamentals/$topic',
+    path: '/system-design/fundamentals/$topic',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SystemDesignDistributedSystemsTopicRoute =
+  SystemDesignDistributedSystemsTopicRouteImport.update({
+    id: '/system-design/distributed-systems/$topic',
+    path: '/system-design/distributed-systems/$topic',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const SqlQueryingTopicRoute = SqlQueryingTopicRouteImport.update({
   id: '/sql/querying/$topic',
   path: '/sql/querying/$topic',
@@ -90,11 +158,46 @@ const PatternsPatternLessonRoute = PatternsPatternLessonRouteImport.update({
   path: '/$lesson',
   getParentRoute: () => PatternsPatternRoute,
 } as any)
+const DockerFoundationsTopicRoute = DockerFoundationsTopicRouteImport.update({
+  id: '/docker/foundations/$topic',
+  path: '/docker/foundations/$topic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DataWarehousesFoundationsTopicRoute =
   DataWarehousesFoundationsTopicRouteImport.update({
     id: '/data-warehouses/foundations/$topic',
     path: '/data-warehouses/foundations/$topic',
     getParentRoute: () => rootRouteImport,
+  } as any)
+const WebScrapingScaleTopicIndexRoute =
+  WebScrapingScaleTopicIndexRouteImport.update({
+    id: '/web-scraping/scale/$topic/',
+    path: '/web-scraping/scale/$topic/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const WebScrapingFoundationsTopicIndexRoute =
+  WebScrapingFoundationsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WebScrapingFoundationsTopicRoute,
+  } as any)
+const WebScrapingAutomationTopicIndexRoute =
+  WebScrapingAutomationTopicIndexRouteImport.update({
+    id: '/web-scraping/automation/$topic/',
+    path: '/web-scraping/automation/$topic/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const SystemDesignFundamentalsTopicIndexRoute =
+  SystemDesignFundamentalsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SystemDesignFundamentalsTopicRoute,
+  } as any)
+const SystemDesignDistributedSystemsTopicIndexRoute =
+  SystemDesignDistributedSystemsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SystemDesignDistributedSystemsTopicRoute,
   } as any)
 const SqlQueryingTopicIndexRoute = SqlQueryingTopicIndexRouteImport.update({
   id: '/',
@@ -107,11 +210,35 @@ const SqlFoundationsTopicIndexRoute =
     path: '/',
     getParentRoute: () => SqlFoundationsTopicRoute,
   } as any)
+const DockerFoundationsTopicIndexRoute =
+  DockerFoundationsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DockerFoundationsTopicRoute,
+  } as any)
 const DataWarehousesFoundationsTopicIndexRoute =
   DataWarehousesFoundationsTopicIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => DataWarehousesFoundationsTopicRoute,
+  } as any)
+const WebScrapingFoundationsTopicLessonRoute =
+  WebScrapingFoundationsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => WebScrapingFoundationsTopicRoute,
+  } as any)
+const SystemDesignFundamentalsTopicLessonRoute =
+  SystemDesignFundamentalsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => SystemDesignFundamentalsTopicRoute,
+  } as any)
+const SystemDesignDistributedSystemsTopicLessonRoute =
+  SystemDesignDistributedSystemsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => SystemDesignDistributedSystemsTopicRoute,
   } as any)
 const SqlQueryingTopicLessonRoute = SqlQueryingTopicLessonRouteImport.update({
   id: '/$lesson',
@@ -123,6 +250,12 @@ const SqlFoundationsTopicLessonRoute =
     id: '/$lesson',
     path: '/$lesson',
     getParentRoute: () => SqlFoundationsTopicRoute,
+  } as any)
+const DockerFoundationsTopicLessonRoute =
+  DockerFoundationsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => DockerFoundationsTopicRoute,
   } as any)
 const DataWarehousesFoundationsTopicLessonRoute =
   DataWarehousesFoundationsTopicLessonRouteImport.update({
@@ -137,37 +270,73 @@ export interface FileRoutesByFullPath {
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
+  '/docker/': typeof DockerIndexRoute
+  '/git-github/': typeof GitGithubIndexRoute
   '/patterns/': typeof PatternsIndexRoute
+  '/python/': typeof PythonIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/system-design/': typeof SystemDesignIndexRoute
+  '/terraform/': typeof TerraformIndexRoute
+  '/web-scraping/': typeof WebScrapingIndexRoute
   '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
+  '/docker/foundations/$topic': typeof DockerFoundationsTopicRouteWithChildren
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
+  '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicRouteWithChildren
+  '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
+  '/web-scraping/foundations/$topic': typeof WebScrapingFoundationsTopicRouteWithChildren
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
   '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
+  '/docker/foundations/$topic/$lesson': typeof DockerFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
+  '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
+  '/web-scraping/foundations/$topic/$lesson': typeof WebScrapingFoundationsTopicLessonRoute
   '/data-warehouses/foundations/$topic/': typeof DataWarehousesFoundationsTopicIndexRoute
+  '/docker/foundations/$topic/': typeof DockerFoundationsTopicIndexRoute
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
+  '/system-design/distributed-systems/$topic/': typeof SystemDesignDistributedSystemsTopicIndexRoute
+  '/system-design/fundamentals/$topic/': typeof SystemDesignFundamentalsTopicIndexRoute
+  '/web-scraping/automation/$topic/': typeof WebScrapingAutomationTopicIndexRoute
+  '/web-scraping/foundations/$topic/': typeof WebScrapingFoundationsTopicIndexRoute
+  '/web-scraping/scale/$topic/': typeof WebScrapingScaleTopicIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/playground': typeof PlaygroundRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses': typeof DataWarehousesIndexRoute
+  '/docker': typeof DockerIndexRoute
+  '/git-github': typeof GitGithubIndexRoute
   '/patterns': typeof PatternsIndexRoute
+  '/python': typeof PythonIndexRoute
   '/sql': typeof SqlIndexRoute
+  '/system-design': typeof SystemDesignIndexRoute
+  '/terraform': typeof TerraformIndexRoute
+  '/web-scraping': typeof WebScrapingIndexRoute
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/patterns/$pattern': typeof PatternsPatternIndexRoute
   '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
+  '/docker/foundations/$topic/$lesson': typeof DockerFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
+  '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
+  '/web-scraping/foundations/$topic/$lesson': typeof WebScrapingFoundationsTopicLessonRoute
   '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicIndexRoute
+  '/docker/foundations/$topic': typeof DockerFoundationsTopicIndexRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic': typeof SqlQueryingTopicIndexRoute
+  '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicIndexRoute
+  '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicIndexRoute
+  '/web-scraping/automation/$topic': typeof WebScrapingAutomationTopicIndexRoute
+  '/web-scraping/foundations/$topic': typeof WebScrapingFoundationsTopicIndexRoute
+  '/web-scraping/scale/$topic': typeof WebScrapingScaleTopicIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,20 +345,40 @@ export interface FileRoutesById {
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/tracks/$track': typeof TracksTrackRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
+  '/docker/': typeof DockerIndexRoute
+  '/git-github/': typeof GitGithubIndexRoute
   '/patterns/': typeof PatternsIndexRoute
+  '/python/': typeof PythonIndexRoute
   '/sql/': typeof SqlIndexRoute
+  '/system-design/': typeof SystemDesignIndexRoute
+  '/terraform/': typeof TerraformIndexRoute
+  '/web-scraping/': typeof WebScrapingIndexRoute
   '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
+  '/docker/foundations/$topic': typeof DockerFoundationsTopicRouteWithChildren
   '/patterns/$pattern/$lesson': typeof PatternsPatternLessonRoute
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
+  '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicRouteWithChildren
+  '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
+  '/web-scraping/foundations/$topic': typeof WebScrapingFoundationsTopicRouteWithChildren
   '/patterns/$pattern/': typeof PatternsPatternIndexRoute
   '/data-warehouses/foundations/$topic/$lesson': typeof DataWarehousesFoundationsTopicLessonRoute
+  '/docker/foundations/$topic/$lesson': typeof DockerFoundationsTopicLessonRoute
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
+  '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
+  '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
+  '/web-scraping/foundations/$topic/$lesson': typeof WebScrapingFoundationsTopicLessonRoute
   '/data-warehouses/foundations/$topic/': typeof DataWarehousesFoundationsTopicIndexRoute
+  '/docker/foundations/$topic/': typeof DockerFoundationsTopicIndexRoute
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
+  '/system-design/distributed-systems/$topic/': typeof SystemDesignDistributedSystemsTopicIndexRoute
+  '/system-design/fundamentals/$topic/': typeof SystemDesignFundamentalsTopicIndexRoute
+  '/web-scraping/automation/$topic/': typeof WebScrapingAutomationTopicIndexRoute
+  '/web-scraping/foundations/$topic/': typeof WebScrapingFoundationsTopicIndexRoute
+  '/web-scraping/scale/$topic/': typeof WebScrapingScaleTopicIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,37 +388,73 @@ export interface FileRouteTypes {
     | '/patterns/$pattern'
     | '/tracks/$track'
     | '/data-warehouses/'
+    | '/docker/'
+    | '/git-github/'
     | '/patterns/'
+    | '/python/'
     | '/sql/'
+    | '/system-design/'
+    | '/terraform/'
+    | '/web-scraping/'
     | '/data-warehouses/foundations/$topic'
+    | '/docker/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
+    | '/system-design/distributed-systems/$topic'
+    | '/system-design/fundamentals/$topic'
+    | '/web-scraping/foundations/$topic'
     | '/patterns/$pattern/'
     | '/data-warehouses/foundations/$topic/$lesson'
+    | '/docker/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/system-design/distributed-systems/$topic/$lesson'
+    | '/system-design/fundamentals/$topic/$lesson'
+    | '/web-scraping/foundations/$topic/$lesson'
     | '/data-warehouses/foundations/$topic/'
+    | '/docker/foundations/$topic/'
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
+    | '/system-design/distributed-systems/$topic/'
+    | '/system-design/fundamentals/$topic/'
+    | '/web-scraping/automation/$topic/'
+    | '/web-scraping/foundations/$topic/'
+    | '/web-scraping/scale/$topic/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/playground'
     | '/tracks/$track'
     | '/data-warehouses'
+    | '/docker'
+    | '/git-github'
     | '/patterns'
+    | '/python'
     | '/sql'
+    | '/system-design'
+    | '/terraform'
+    | '/web-scraping'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/patterns/$pattern'
     | '/data-warehouses/foundations/$topic/$lesson'
+    | '/docker/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/system-design/distributed-systems/$topic/$lesson'
+    | '/system-design/fundamentals/$topic/$lesson'
+    | '/web-scraping/foundations/$topic/$lesson'
     | '/data-warehouses/foundations/$topic'
+    | '/docker/foundations/$topic'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
+    | '/system-design/distributed-systems/$topic'
+    | '/system-design/fundamentals/$topic'
+    | '/web-scraping/automation/$topic'
+    | '/web-scraping/foundations/$topic'
+    | '/web-scraping/scale/$topic'
   id:
     | '__root__'
     | '/'
@@ -237,20 +462,40 @@ export interface FileRouteTypes {
     | '/patterns/$pattern'
     | '/tracks/$track'
     | '/data-warehouses/'
+    | '/docker/'
+    | '/git-github/'
     | '/patterns/'
+    | '/python/'
     | '/sql/'
+    | '/system-design/'
+    | '/terraform/'
+    | '/web-scraping/'
     | '/data-warehouses/foundations/$topic'
+    | '/docker/foundations/$topic'
     | '/patterns/$pattern/$lesson'
     | '/patterns/category/$category'
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
+    | '/system-design/distributed-systems/$topic'
+    | '/system-design/fundamentals/$topic'
+    | '/web-scraping/foundations/$topic'
     | '/patterns/$pattern/'
     | '/data-warehouses/foundations/$topic/$lesson'
+    | '/docker/foundations/$topic/$lesson'
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
+    | '/system-design/distributed-systems/$topic/$lesson'
+    | '/system-design/fundamentals/$topic/$lesson'
+    | '/web-scraping/foundations/$topic/$lesson'
     | '/data-warehouses/foundations/$topic/'
+    | '/docker/foundations/$topic/'
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
+    | '/system-design/distributed-systems/$topic/'
+    | '/system-design/fundamentals/$topic/'
+    | '/web-scraping/automation/$topic/'
+    | '/web-scraping/foundations/$topic/'
+    | '/web-scraping/scale/$topic/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -259,12 +504,24 @@ export interface RootRouteChildren {
   PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
   TracksTrackRoute: typeof TracksTrackRoute
   DataWarehousesIndexRoute: typeof DataWarehousesIndexRoute
+  DockerIndexRoute: typeof DockerIndexRoute
+  GitGithubIndexRoute: typeof GitGithubIndexRoute
   PatternsIndexRoute: typeof PatternsIndexRoute
+  PythonIndexRoute: typeof PythonIndexRoute
   SqlIndexRoute: typeof SqlIndexRoute
+  SystemDesignIndexRoute: typeof SystemDesignIndexRoute
+  TerraformIndexRoute: typeof TerraformIndexRoute
+  WebScrapingIndexRoute: typeof WebScrapingIndexRoute
   DataWarehousesFoundationsTopicRoute: typeof DataWarehousesFoundationsTopicRouteWithChildren
+  DockerFoundationsTopicRoute: typeof DockerFoundationsTopicRouteWithChildren
   PatternsCategoryCategoryRoute: typeof PatternsCategoryCategoryRoute
   SqlFoundationsTopicRoute: typeof SqlFoundationsTopicRouteWithChildren
   SqlQueryingTopicRoute: typeof SqlQueryingTopicRouteWithChildren
+  SystemDesignDistributedSystemsTopicRoute: typeof SystemDesignDistributedSystemsTopicRouteWithChildren
+  SystemDesignFundamentalsTopicRoute: typeof SystemDesignFundamentalsTopicRouteWithChildren
+  WebScrapingFoundationsTopicRoute: typeof WebScrapingFoundationsTopicRouteWithChildren
+  WebScrapingAutomationTopicIndexRoute: typeof WebScrapingAutomationTopicIndexRoute
+  WebScrapingScaleTopicIndexRoute: typeof WebScrapingScaleTopicIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -283,6 +540,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/web-scraping/': {
+      id: '/web-scraping/'
+      path: '/web-scraping'
+      fullPath: '/web-scraping/'
+      preLoaderRoute: typeof WebScrapingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terraform/': {
+      id: '/terraform/'
+      path: '/terraform'
+      fullPath: '/terraform/'
+      preLoaderRoute: typeof TerraformIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system-design/': {
+      id: '/system-design/'
+      path: '/system-design'
+      fullPath: '/system-design/'
+      preLoaderRoute: typeof SystemDesignIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sql/': {
       id: '/sql/'
       path: '/sql'
@@ -290,11 +568,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SqlIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/python/': {
+      id: '/python/'
+      path: '/python'
+      fullPath: '/python/'
+      preLoaderRoute: typeof PythonIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/patterns/': {
       id: '/patterns/'
       path: '/patterns'
       fullPath: '/patterns/'
       preLoaderRoute: typeof PatternsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/git-github/': {
+      id: '/git-github/'
+      path: '/git-github'
+      fullPath: '/git-github/'
+      preLoaderRoute: typeof GitGithubIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docker/': {
+      id: '/docker/'
+      path: '/docker'
+      fullPath: '/docker/'
+      preLoaderRoute: typeof DockerIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-warehouses/': {
@@ -325,6 +624,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatternsPatternIndexRouteImport
       parentRoute: typeof PatternsPatternRoute
     }
+    '/web-scraping/foundations/$topic': {
+      id: '/web-scraping/foundations/$topic'
+      path: '/web-scraping/foundations/$topic'
+      fullPath: '/web-scraping/foundations/$topic'
+      preLoaderRoute: typeof WebScrapingFoundationsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system-design/fundamentals/$topic': {
+      id: '/system-design/fundamentals/$topic'
+      path: '/system-design/fundamentals/$topic'
+      fullPath: '/system-design/fundamentals/$topic'
+      preLoaderRoute: typeof SystemDesignFundamentalsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system-design/distributed-systems/$topic': {
+      id: '/system-design/distributed-systems/$topic'
+      path: '/system-design/distributed-systems/$topic'
+      fullPath: '/system-design/distributed-systems/$topic'
+      preLoaderRoute: typeof SystemDesignDistributedSystemsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sql/querying/$topic': {
       id: '/sql/querying/$topic'
       path: '/sql/querying/$topic'
@@ -353,12 +673,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatternsPatternLessonRouteImport
       parentRoute: typeof PatternsPatternRoute
     }
+    '/docker/foundations/$topic': {
+      id: '/docker/foundations/$topic'
+      path: '/docker/foundations/$topic'
+      fullPath: '/docker/foundations/$topic'
+      preLoaderRoute: typeof DockerFoundationsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/data-warehouses/foundations/$topic': {
       id: '/data-warehouses/foundations/$topic'
       path: '/data-warehouses/foundations/$topic'
       fullPath: '/data-warehouses/foundations/$topic'
       preLoaderRoute: typeof DataWarehousesFoundationsTopicRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/web-scraping/scale/$topic/': {
+      id: '/web-scraping/scale/$topic/'
+      path: '/web-scraping/scale/$topic'
+      fullPath: '/web-scraping/scale/$topic/'
+      preLoaderRoute: typeof WebScrapingScaleTopicIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/web-scraping/foundations/$topic/': {
+      id: '/web-scraping/foundations/$topic/'
+      path: '/'
+      fullPath: '/web-scraping/foundations/$topic/'
+      preLoaderRoute: typeof WebScrapingFoundationsTopicIndexRouteImport
+      parentRoute: typeof WebScrapingFoundationsTopicRoute
+    }
+    '/web-scraping/automation/$topic/': {
+      id: '/web-scraping/automation/$topic/'
+      path: '/web-scraping/automation/$topic'
+      fullPath: '/web-scraping/automation/$topic/'
+      preLoaderRoute: typeof WebScrapingAutomationTopicIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/system-design/fundamentals/$topic/': {
+      id: '/system-design/fundamentals/$topic/'
+      path: '/'
+      fullPath: '/system-design/fundamentals/$topic/'
+      preLoaderRoute: typeof SystemDesignFundamentalsTopicIndexRouteImport
+      parentRoute: typeof SystemDesignFundamentalsTopicRoute
+    }
+    '/system-design/distributed-systems/$topic/': {
+      id: '/system-design/distributed-systems/$topic/'
+      path: '/'
+      fullPath: '/system-design/distributed-systems/$topic/'
+      preLoaderRoute: typeof SystemDesignDistributedSystemsTopicIndexRouteImport
+      parentRoute: typeof SystemDesignDistributedSystemsTopicRoute
     }
     '/sql/querying/$topic/': {
       id: '/sql/querying/$topic/'
@@ -374,12 +736,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SqlFoundationsTopicIndexRouteImport
       parentRoute: typeof SqlFoundationsTopicRoute
     }
+    '/docker/foundations/$topic/': {
+      id: '/docker/foundations/$topic/'
+      path: '/'
+      fullPath: '/docker/foundations/$topic/'
+      preLoaderRoute: typeof DockerFoundationsTopicIndexRouteImport
+      parentRoute: typeof DockerFoundationsTopicRoute
+    }
     '/data-warehouses/foundations/$topic/': {
       id: '/data-warehouses/foundations/$topic/'
       path: '/'
       fullPath: '/data-warehouses/foundations/$topic/'
       preLoaderRoute: typeof DataWarehousesFoundationsTopicIndexRouteImport
       parentRoute: typeof DataWarehousesFoundationsTopicRoute
+    }
+    '/web-scraping/foundations/$topic/$lesson': {
+      id: '/web-scraping/foundations/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/web-scraping/foundations/$topic/$lesson'
+      preLoaderRoute: typeof WebScrapingFoundationsTopicLessonRouteImport
+      parentRoute: typeof WebScrapingFoundationsTopicRoute
+    }
+    '/system-design/fundamentals/$topic/$lesson': {
+      id: '/system-design/fundamentals/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/system-design/fundamentals/$topic/$lesson'
+      preLoaderRoute: typeof SystemDesignFundamentalsTopicLessonRouteImport
+      parentRoute: typeof SystemDesignFundamentalsTopicRoute
+    }
+    '/system-design/distributed-systems/$topic/$lesson': {
+      id: '/system-design/distributed-systems/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/system-design/distributed-systems/$topic/$lesson'
+      preLoaderRoute: typeof SystemDesignDistributedSystemsTopicLessonRouteImport
+      parentRoute: typeof SystemDesignDistributedSystemsTopicRoute
     }
     '/sql/querying/$topic/$lesson': {
       id: '/sql/querying/$topic/$lesson'
@@ -394,6 +784,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/sql/foundations/$topic/$lesson'
       preLoaderRoute: typeof SqlFoundationsTopicLessonRouteImport
       parentRoute: typeof SqlFoundationsTopicRoute
+    }
+    '/docker/foundations/$topic/$lesson': {
+      id: '/docker/foundations/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/docker/foundations/$topic/$lesson'
+      preLoaderRoute: typeof DockerFoundationsTopicLessonRouteImport
+      parentRoute: typeof DockerFoundationsTopicRoute
     }
     '/data-warehouses/foundations/$topic/$lesson': {
       id: '/data-warehouses/foundations/$topic/$lesson'
@@ -437,6 +834,22 @@ const DataWarehousesFoundationsTopicRouteWithChildren =
     DataWarehousesFoundationsTopicRouteChildren,
   )
 
+interface DockerFoundationsTopicRouteChildren {
+  DockerFoundationsTopicLessonRoute: typeof DockerFoundationsTopicLessonRoute
+  DockerFoundationsTopicIndexRoute: typeof DockerFoundationsTopicIndexRoute
+}
+
+const DockerFoundationsTopicRouteChildren: DockerFoundationsTopicRouteChildren =
+  {
+    DockerFoundationsTopicLessonRoute: DockerFoundationsTopicLessonRoute,
+    DockerFoundationsTopicIndexRoute: DockerFoundationsTopicIndexRoute,
+  }
+
+const DockerFoundationsTopicRouteWithChildren =
+  DockerFoundationsTopicRoute._addFileChildren(
+    DockerFoundationsTopicRouteChildren,
+  )
+
 interface SqlFoundationsTopicRouteChildren {
   SqlFoundationsTopicLessonRoute: typeof SqlFoundationsTopicLessonRoute
   SqlFoundationsTopicIndexRoute: typeof SqlFoundationsTopicIndexRoute
@@ -463,20 +876,99 @@ const SqlQueryingTopicRouteChildren: SqlQueryingTopicRouteChildren = {
 const SqlQueryingTopicRouteWithChildren =
   SqlQueryingTopicRoute._addFileChildren(SqlQueryingTopicRouteChildren)
 
+interface SystemDesignDistributedSystemsTopicRouteChildren {
+  SystemDesignDistributedSystemsTopicLessonRoute: typeof SystemDesignDistributedSystemsTopicLessonRoute
+  SystemDesignDistributedSystemsTopicIndexRoute: typeof SystemDesignDistributedSystemsTopicIndexRoute
+}
+
+const SystemDesignDistributedSystemsTopicRouteChildren: SystemDesignDistributedSystemsTopicRouteChildren =
+  {
+    SystemDesignDistributedSystemsTopicLessonRoute:
+      SystemDesignDistributedSystemsTopicLessonRoute,
+    SystemDesignDistributedSystemsTopicIndexRoute:
+      SystemDesignDistributedSystemsTopicIndexRoute,
+  }
+
+const SystemDesignDistributedSystemsTopicRouteWithChildren =
+  SystemDesignDistributedSystemsTopicRoute._addFileChildren(
+    SystemDesignDistributedSystemsTopicRouteChildren,
+  )
+
+interface SystemDesignFundamentalsTopicRouteChildren {
+  SystemDesignFundamentalsTopicLessonRoute: typeof SystemDesignFundamentalsTopicLessonRoute
+  SystemDesignFundamentalsTopicIndexRoute: typeof SystemDesignFundamentalsTopicIndexRoute
+}
+
+const SystemDesignFundamentalsTopicRouteChildren: SystemDesignFundamentalsTopicRouteChildren =
+  {
+    SystemDesignFundamentalsTopicLessonRoute:
+      SystemDesignFundamentalsTopicLessonRoute,
+    SystemDesignFundamentalsTopicIndexRoute:
+      SystemDesignFundamentalsTopicIndexRoute,
+  }
+
+const SystemDesignFundamentalsTopicRouteWithChildren =
+  SystemDesignFundamentalsTopicRoute._addFileChildren(
+    SystemDesignFundamentalsTopicRouteChildren,
+  )
+
+interface WebScrapingFoundationsTopicRouteChildren {
+  WebScrapingFoundationsTopicLessonRoute: typeof WebScrapingFoundationsTopicLessonRoute
+  WebScrapingFoundationsTopicIndexRoute: typeof WebScrapingFoundationsTopicIndexRoute
+}
+
+const WebScrapingFoundationsTopicRouteChildren: WebScrapingFoundationsTopicRouteChildren =
+  {
+    WebScrapingFoundationsTopicLessonRoute:
+      WebScrapingFoundationsTopicLessonRoute,
+    WebScrapingFoundationsTopicIndexRoute:
+      WebScrapingFoundationsTopicIndexRoute,
+  }
+
+const WebScrapingFoundationsTopicRouteWithChildren =
+  WebScrapingFoundationsTopicRoute._addFileChildren(
+    WebScrapingFoundationsTopicRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PlaygroundRoute: PlaygroundRoute,
   PatternsPatternRoute: PatternsPatternRouteWithChildren,
   TracksTrackRoute: TracksTrackRoute,
   DataWarehousesIndexRoute: DataWarehousesIndexRoute,
+  DockerIndexRoute: DockerIndexRoute,
+  GitGithubIndexRoute: GitGithubIndexRoute,
   PatternsIndexRoute: PatternsIndexRoute,
+  PythonIndexRoute: PythonIndexRoute,
   SqlIndexRoute: SqlIndexRoute,
+  SystemDesignIndexRoute: SystemDesignIndexRoute,
+  TerraformIndexRoute: TerraformIndexRoute,
+  WebScrapingIndexRoute: WebScrapingIndexRoute,
   DataWarehousesFoundationsTopicRoute:
     DataWarehousesFoundationsTopicRouteWithChildren,
+  DockerFoundationsTopicRoute: DockerFoundationsTopicRouteWithChildren,
   PatternsCategoryCategoryRoute: PatternsCategoryCategoryRoute,
   SqlFoundationsTopicRoute: SqlFoundationsTopicRouteWithChildren,
   SqlQueryingTopicRoute: SqlQueryingTopicRouteWithChildren,
+  SystemDesignDistributedSystemsTopicRoute:
+    SystemDesignDistributedSystemsTopicRouteWithChildren,
+  SystemDesignFundamentalsTopicRoute:
+    SystemDesignFundamentalsTopicRouteWithChildren,
+  WebScrapingFoundationsTopicRoute:
+    WebScrapingFoundationsTopicRouteWithChildren,
+  WebScrapingAutomationTopicIndexRoute: WebScrapingAutomationTopicIndexRoute,
+  WebScrapingScaleTopicIndexRoute: WebScrapingScaleTopicIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
