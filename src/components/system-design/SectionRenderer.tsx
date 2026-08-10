@@ -11,6 +11,11 @@ import { PortsDiagram } from "@/components/system-design/PortsDiagram";
 import { OsiModelDiagram } from "@/components/system-design/OsiModelDiagram";
 import { OsiToTcpDiagram } from "@/components/system-design/OsiToTcpDiagram";
 import { TcpUdpDiagram } from "@/components/system-design/TcpUdpDiagram";
+import { AvailabilityDiagram } from "@/components/system-design/AvailabilityDiagram";
+import { ReliabilityDiagram } from "@/components/system-design/ReliabilityDiagram";
+import { ConsistencyDiagram } from "@/components/system-design/ConsistencyDiagram";
+import { CapTheoremDiagram } from "@/components/system-design/CapTheoremDiagram";
+import { PacelcTheoremDiagram } from "@/components/system-design/PacelcTheoremDiagram";
 import { CidrCalculatorDiagram } from "@/components/system-design/CidrCalculatorDiagram";
 import { VpcArchitectureDiagram } from "@/components/system-design/VpcArchitectureDiagram";
 import {
@@ -454,7 +459,17 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return <DnsVisuals.DnsCacheJourney />;
 
     case "tcp-udp-diagram":
-        return <TcpUdpDiagram />;
+      return <TcpUdpDiagram />;
+    case "availability-diagram":
+      return <AvailabilityDiagram />;
+    case "reliability-diagram":
+      return <ReliabilityDiagram />;
+    case "consistency-diagram":
+      return <ConsistencyDiagram />;
+    case "cap-theorem-diagram":
+      return <CapTheoremDiagram />;
+    case "pacelc-theorem-diagram":
+      return <PacelcTheoremDiagram />;
     case "osi-tcp-mapping-diagram":
         return <OsiToTcpDiagram />;
     case "takeaways":
