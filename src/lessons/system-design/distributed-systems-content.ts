@@ -1,5 +1,6 @@
 import { type LessonContent, type Section } from "@/lessons/types";
 import capImg from "@/images/system-design/distributed-systems/cap.png";
+import pacelcImg from "@/images/system-design/distributed-systems/pacelc.png";
 export type DistributedSystemsTopicMeta = {
   slug: string;
   title: string;
@@ -698,18 +699,175 @@ const pacelcTheorem: LessonContent = {
   sections: [
     {
       kind: "prose",
-      heading: "Why PACELC?",
+      heading: "The big idea",
       body: [
-        "CAP describes the trade-off when a partition occurs. But most of the time, replicas can communicate normally. Even then, distributed systems face a trade-off.",
-        "Waiting for cross-region replication improves coordination but increases latency. Acknowledging locally is faster, but replicas temporarily disagree.",
-        "CAP doesn't describe this normal-operation latency trade-off. PACELC does."
+        "**PACELC = Partition + Availability + Consistency + Else + Latency + Consistency**",
+        "PACELC extends the CAP theorem. The key idea is:"
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Core Rule",
+      body: "If there is a network Partition, a distributed system chooses between Availability and Consistency. Else, when the system is operating normally, it chooses between Latency and Consistency."
+    },
+    {
+      kind: "prose",
+      heading: "Easy memory",
+      body: [
+        "**CAP:** What happens during a partition?",
+        "**PACELC:** What happens during a partition, and what trade-off exists when there isn't one?"
       ]
     },
     {
       kind: "prose",
-      heading: "What Does PACELC Mean?",
+      heading: "1. Why PACELC?",
       body: [
-        "If there is a Partition (P), choose between Availability (A) and Consistency (C); Else (E), choose between Latency (L) and Consistency (C)."
+        "CAP explains an important failure scenario: during a network partition, you must choose between Consistency and Availability.",
+        "But distributed systems have a trade-off even when the network is perfectly healthy.",
+        "For example:"
+      ]
+    },
+    {
+      kind: "diagram",
+      ascii: `Local replica → Low latency → May be slightly stale`
+    },
+    {
+      kind: "prose",
+      body: ["versus:"]
+    },
+    {
+      kind: "diagram",
+      ascii: `Cross-region coordination → Higher latency → Stronger consistency`
+    },
+    {
+      kind: "prose",
+      body: [
+        "CAP doesn't really describe this **normal-operation latency vs consistency trade-off**. PACELC does."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "2. P = Partition",
+      body: [
+        "The **P** represents a network partition (like we saw in the CAP lesson)."
+      ]
+    },
+    {
+      kind: "diagram",
+      ascii: `Region A          Region B
+Node A    X       Node B
+          ↑
+    Network failure`
+    },
+    {
+      kind: "prose",
+      body: [
+        "The nodes are alive but cannot communicate. PACELC asks: **What should the system prioritize during this partition?**"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "3. A = Availability vs C = Consistency",
+      body: [
+        "During a partition, the system can prioritize:",
+        "• **Availability (PA):** Keep serving requests (allowing stale reads, local writes, temporary divergence).",
+        "• **Consistency (PC):** Don't return unsafe/stale data (rejecting or delaying requests until the partition heals)."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "4. The \"ELC\" Part",
+      body: [
+        "This is what makes PACELC different from CAP.",
+        "**ELC = Else, Latency vs Consistency**",
+        "If there is **no partition** (normal operation), you must choose between:"
+      ]
+    },
+    {
+      kind: "diagram",
+      ascii: `          No Partition
+               ↓
+        Normal operation
+               ↓
+       ┌───────┴───────┐
+       ↓               ↓
+    Lower latency   Stronger
+                    consistency
+       ↓               ↓
+    Less           More
+ coordination     coordination`
+    },
+    {
+      kind: "prose",
+      heading: "5. Why Does Consistency Increase Latency?",
+      body: [
+        "Imagine a database replicated across two regions."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Option 1: Local write",
+      body: [
+        "Write locally and respond immediately. Very fast. But Region B may not have the latest value yet. (Lower latency + Potentially weaker consistency)."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Option 2: Synchronous replication",
+      body: [
+        "Write to Region A, send to Region B, confirm replication, then respond. The system has to wait for coordination. (Higher latency + Stronger consistency).",
+        "That's the **ELC trade-off**."
+      ]
+    },
+    {
+      kind: "image",
+      src: pacelcImg,
+      alt: "PACELC diagram showing the flow chart of decisions",
+      caption: "PACELC in one diagram: P -> A vs C, E -> L vs C"
+    },
+    {
+      kind: "prose",
+      heading: "6. The formula to remember",
+      body: [
+        "**P → A vs C**",
+        "**E → L vs C**"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "7. Real-World Example",
+      body: [
+        "Imagine a globally replicated user database:"
+      ]
+    },
+    {
+      kind: "diagram",
+      ascii: `                 Users
+                   │
+          ┌────────┴────────┐
+          ↓                 ↓
+      US Region         Europe Region
+       Node A              Node B
+          │                  │
+          └──── Replication ─┘`
+    },
+    {
+      kind: "prose",
+      body: [
+        "**Normal operation (Healthy Network):**",
+        "• **Low-latency approach (EL):** Write locally to the US Node and respond immediately. Europe gets the update slightly later. (Latency > Consistency)",
+        "• **Strong-consistency approach (EC):** Wait for replication. US Node waits for Europe Node to confirm. The client waits longer. (Consistency > Latency)"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "8. What If a Partition Happens?",
+      body: [
+        "The network breaks: `US Node    X    Europe Node`.",
+        "The PACELC decision changes.",
+        "• **AP-style behavior (PA):** Keep accepting requests. Potentially stale data is reconciled later. (Availability > Consistency)",
+        "• **CP-style behavior (PC):** Stop unsafe operations. Reject or delay. (Consistency > Availability)"
       ]
     },
     {
@@ -717,78 +875,144 @@ const pacelcTheorem: LessonContent = {
     },
     {
       kind: "prose",
-      heading: "The PACELC Trade-offs",
+      heading: "9. PACELC vs CAP",
       body: [
-        "**During a partition:** Consistency ↔ Availability (The CAP trade-off).",
-        "**During normal operation:** Consistency ↔ Latency. Stronger consistency requires additional network round trips."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "Multi-Region Example",
-      body: [
-        "**Stronger consistency:** Wait for remote coordination (Write → US → Europe → ACK). Result: Higher latency.",
-        "**Lower latency:** Acknowledge locally (Write → US → ACK, then replicate to Europe). Result: Potential temporary divergence."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "PACELC Classifications",
-      body: [
-        "- **PA/EL:** Prefer availability during partitions; low latency during normal operation.",
-        "- **PA/EC:** Prefer availability during partitions; consistency during normal operation.",
-        "- **PC/EL:** Prefer consistency during partitions; low latency during normal operation.",
-        "- **PC/EC:** Prefer consistency always."
+        "This is the most important comparison."
       ]
     },
     {
       kind: "table",
-      caption: "CAP vs. PACELC",
+      caption: "PACELC vs CAP Summary",
       headers: ["", "CAP", "PACELC"],
       rows: [
-        ["Partition", "✓", "✓"],
-        ["Normal operation", "—", "✓"],
-        ["Partition trade-off", "Consistency ↔ Availability", "Consistency ↔ Availability"],
-        ["Normal-operation trade-off", "—", "Consistency ↔ Latency"],
-        ["Main question", "What happens when replicas cannot communicate?", "What do we sacrifice during failure AND normal operation?"]
+        ["Focus", "Focuses on partitions", "Focuses on partitions + normal operation"],
+        ["Formula", "P → A vs C", "P → A vs C, Else → L vs C"],
+        ["Normal latency trade-off", "Doesn't emphasize normal latency trade-off", "More complete distributed-system model"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "10. Examples",
+      body: []
+    },
+    {
+      kind: "prose",
+      heading: "Strongly consistent system (EC)",
+      body: [
+        "More coordination → Higher latency → Stronger consistency. Useful when correctness is critical (Financial transactions, Inventory, Permission state)."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Low-latency system (EL)",
+      body: [
+        "Less coordination → Lower latency → Potentially weaker consistency. Useful when small amounts of staleness are acceptable (Social feeds, Recommendations, Analytics)."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "11. Important Interview Point",
+      body: [
+        "PACELC does **not** mean: *\"Consistency always makes the system slow.\"*",
+        "The more accurate idea is:"
+      ]
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Nuance",
+      body: "Stronger distributed consistency often requires additional coordination, which can increase latency."
+    },
+    {
+      kind: "prose",
+      body: [
+        "The actual trade-off depends on number of replicas, network distance, quorum requirements, replication strategy, etc."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "12. Common Interview Traps",
+      body: []
+    },
+    {
+      kind: "prose",
+      heading: "❌ \"PACELC replaces CAP.\"",
+      body: [
+        "No. PACELC **extends the CAP discussion**. CAP focuses on P → A vs C. PACELC adds Else → L vs C."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "❌ \"ELC means eventual consistency.\"",
+      body: [
+        "No. E means **Else**, L means **Latency**."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "❌ \"Latency is only important during a partition.\"",
+      body: [
+        "No. PACELC specifically highlights the latency/consistency trade-off during **normal operation**."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "❌ \"More consistency always means more latency.\"",
+      body: [
+        "Not necessarily in every implementation. The point is that *stronger distributed guarantees often require more coordination*, and coordination can increase latency."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "13. System Design Interview Approach",
+      body: [
+        "When designing a distributed system, ask two questions:",
+        "**Question 1: What happens during a partition?**",
+        "Need Availability? → AP-style behavior. Need strong Consistency? → CP-style behavior.",
+        "**Question 2: What happens when the network is healthy?**",
+        "Need lower Latency? → Reduce coordination. Need stronger Consistency? → Increase coordination."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "14. CAP + PACELC Together",
+      body: [
+        "Think of them as two layers:"
       ]
     },
     {
       kind: "diagram",
-      ascii: `                  Distributed System
-                         │
-                 Multiple replicas
-                         │
-                         ▼
-                 Network communication
-                         │
-              ┌──────────┴──────────┐
-              │                     │
-        Network partition       No partition
-              │                     │
-              ▼                     ▼
-             CAP                  PACELC
-              │                     │
-           C ↔ A                  C ↔ L`
+      ascii: `              Distributed System
+                      │
+             ┌────────┴────────┐
+             │                 │
+        Partition?          No Partition
+             │                 │
+             ▼                 ▼
+          CAP side          PACELC side
+             │                 │
+          A vs C             L vs C`
     },
     {
       kind: "prose",
-      heading: "Final Takeaway",
+      heading: "CAP asks:",
       body: [
-        "Availability is about serving requests.",
-        "Reliability is about consistently performing the intended function.",
-        "Consistency is about the guarantees clients receive when data is replicated.",
-        "CAP explains the fundamental trade-off during a partition.",
-        "PACELC extends that reasoning to the latency-vs-consistency trade-off during normal operation."
+        "**\"What happens when things break?\"**"
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "PACELC asks:",
+      body: [
+        "**\"What happens when things break, and what trade-off do we make when things are working?\"**"
       ]
     },
     {
       kind: "takeaways",
       items: [
-        "PACELC formally recognizes that even without network partitions, distributed systems must trade between Latency and Consistency.",
-        "Synchronous multi-region replication favors Consistency (EC) but penalizes Latency.",
-        "Asynchronous replication favors Latency (EL) but accepts temporary inconsistency.",
-        "PACELC gives a more complete picture of system behavior than CAP alone."
+        "PACELC in 30 Seconds: PACELC extends CAP by adding the trade-off that exists during normal operation.",
+        "If there's a network partition, we choose between Availability and Consistency (P → A vs C).",
+        "Else, when the system is healthy, we choose between Latency and Consistency (E → L vs C) because stronger consistency requires additional coordination."
       ]
     },
     {
