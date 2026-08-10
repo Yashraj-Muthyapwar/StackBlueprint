@@ -166,9 +166,14 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
 
         {/* Pointers */}
         {pointers.map((p, i) => {
-          const x = p.index * (CELL + GAP) + CELL / 2;
+          const sharing = pointers.filter((q) => q.index === p.index);
+          const shareIdx = sharing.findIndex((q) => q.name === p.name);
+          const offset = sharing.length > 1 ? (shareIdx - (sharing.length - 1) / 2) * 22 : 0;
+          const x = p.index * (CELL + GAP) + CELL / 2 + offset;
           const color = COLOR_MAP[p.color];
           const isHighlight = step.highlight?.indices.includes(p.index);
+          
+
           
           return (
             <motion.div
