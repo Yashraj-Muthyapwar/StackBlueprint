@@ -213,48 +213,33 @@
 }
 
 @keyframes water-wave {
-  0% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-25%) translateY(-1.5px); }
-  100% { transform: translateX(0%) translateY(0); }
-}
-
-@keyframes water-caustics {
-  0% { opacity: 0.15; transform: translateY(0); }
-  50% { opacity: 0.4; transform: translateY(-2px); }
-  100% { opacity: 0.15; transform: translateY(0); }
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0%); }
 }
 
 @utility water-body {
   background-image: linear-gradient(
     100deg,
-    color-mix(in oklab, #0ea5e9 55%, transparent) 0%,
-    color-mix(in oklab, #38bdf8 75%, transparent) 25%,
-    color-mix(in oklab, #22d3ee 60%, transparent) 50%,
-    color-mix(in oklab, #38bdf8 75%, transparent) 75%,
-    color-mix(in oklab, #0ea5e9 55%, transparent) 100%
+    color-mix(in oklab, #0ea5e9 45%, transparent) 0%,
+    color-mix(in oklab, #38bdf8 60%, transparent) 35%,
+    color-mix(in oklab, #22d3ee 50%, transparent) 65%,
+    color-mix(in oklab, #0ea5e9 45%, transparent) 100%
   );
   background-size: 200% 100%;
-  animation: water-drift 6s linear infinite;
+  animation: water-drift 8s linear infinite;
 }
 
 @utility water-surface {
-  background-image: radial-gradient(
-    circle at 50% 100%,
-    color-mix(in oklab, #e0f2fe 95%, transparent) 0%,
-    transparent 70%
+  background-image: linear-gradient(
+    to right,
+    transparent 0%,
+    color-mix(in oklab, #e0f2fe 85%, transparent) 25%,
+    transparent 50%,
+    color-mix(in oklab, #e0f2fe 85%, transparent) 75%,
+    transparent 100%
   );
-  animation: water-wave 3s ease-in-out infinite alternate;
+  animation: water-wave 5s ease-in-out infinite alternate;
 }
 
-@utility water-caustic {
-  background-image: repeating-linear-gradient(
-    115deg,
-    transparent 0px,
-    transparent 5px,
-    color-mix(in oklab, #e0f2fe 45%, transparent) 6px,
-    transparent 8px
-  );
-  animation: water-caustics 4s ease-in-out infinite;
-}
 
 
