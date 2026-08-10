@@ -144,6 +144,9 @@ export type Section =
   | { kind: "reliability-diagram" }
   | { kind: "consistency-diagram" }
   | { kind: "cap-theorem-diagram" }
+  | { kind: "cap-consistency-diagram" }
+  | { kind: "cap-availability-diagram" }
+  | { kind: "cap-partition-diagram" }
   | { kind: "pacelc-theorem-diagram" }
   | { kind: "osi-tcp-mapping-diagram" }
   | { kind: "cidr-calculator-diagram" }
@@ -162,20 +165,11 @@ export type Section =
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
+  | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type LessonContent = {
   slug: string;
   title: string;
   subtitle: string;
   sections: Section[];
-};
-
-export type FoundationTopicMeta = {
-  slug: string;
-  title: string;
-  category: string;
-  iconKey: "table" | "database" | "terminal";
-  blurb: string;
-  lessons: LessonContent[];
 };
