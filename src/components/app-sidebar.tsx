@@ -253,7 +253,7 @@ function NestedPatternItem({
   if (pat.locked) {
     return (
       <SidebarMenuSubItem>
-        <SidebarMenuSubButton tooltip={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
+        <SidebarMenuSubButton title={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
           <Lock className="size-3" />
           <span>{pat.title}</span>
         </SidebarMenuSubButton>

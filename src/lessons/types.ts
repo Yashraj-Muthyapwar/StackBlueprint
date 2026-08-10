@@ -162,11 +162,20 @@ export type Section =
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "quiz"; questions: QuizQuestion[] };
+  | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {
   slug: string;
   title: string;
   subtitle: string;
   sections: Section[];
+};
+
+export type FoundationTopicMeta = {
+  slug: string;
+  title: string;
+  category: string;
+  iconKey: "table" | "database" | "terminal";
+  blurb: string;
+  lessons: LessonContent[];
 };

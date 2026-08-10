@@ -1,4 +1,4 @@
-import type { LessonContent, FoundationTopicMeta } from "../types";
+import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";

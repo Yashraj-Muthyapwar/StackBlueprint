@@ -2112,7 +2112,7 @@ WHERE product_id = 1;`,
     },
     {
       kind: "callout",
-      tone: "warning",
+      tone: "warn",
       title: "A safe habit for UPDATE and DELETE",
       body: "Always check the WHERE clause. Without one, UPDATE or DELETE can affect every row in the table. Before a destructive change, run a SELECT using the same WHERE clause to preview the affected rows.",
     },
