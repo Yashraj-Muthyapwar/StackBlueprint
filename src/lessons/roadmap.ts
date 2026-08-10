@@ -371,6 +371,7 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("Architectural Styles", "architectural-styles", "Monoliths, Microservices, Event-Driven, and Serverless."),
       lockedPattern("APIs & Security", "apis-security", "REST, GraphQL, gRPC, API Gateways, and OAuth2/JWT."),
       lockedPattern("Communication Patterns", "communication-patterns", "WebSockets, Message Queues, Pub/Sub, and CDC."),
+      lockedPattern("Distributed Systems", "distributed-systems", "Trading off consistency, availability, and latency."),
       lockedPattern("System Tradeoffs", "system-tradeoffs", "Balancing constraints: CAP Theorem, Consistency, and Scaling."),
       lockedPattern("Resilience & Security", "resilience-security", "Circuit Breakers, Chaos Engineering, and Disaster Recovery."),
       lockedPattern("Big Data Processing", "big-data", "Batch vs Stream Processing, MapReduce, and Data Lakes."),
