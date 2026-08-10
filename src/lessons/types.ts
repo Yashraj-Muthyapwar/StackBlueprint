@@ -147,6 +147,10 @@ export type Section =
   | { kind: "pacelc-theorem-diagram" }
   | { kind: "osi-tcp-mapping-diagram" }
   | { kind: "cidr-calculator-diagram" }
+  | { kind: "cidr-explorer" }
+  | { kind: "subnet-math-steps" }
+  | { kind: "reserved-ips-diagram" }
+  | { kind: "vpc-carve-diagram" }
   | { kind: "vpc-architecture-diagram" }
   | { kind: "http-req-res-viewer" }
   | { kind: "tls-handshake-diagram" }
