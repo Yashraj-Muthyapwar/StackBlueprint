@@ -82,7 +82,7 @@ const ipClientServer: Stage[] = [
       ],
     },
     steps: [
-      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "updated" : "kept"), "The OS wraps the payload in an IP packet, adding the source and destination IP addresses so routers know where to send it.", { noteTone: "mint" }),
+      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"), "The OS wraps the payload in an IP packet, adding the source and destination IP addresses so routers know where to send it.", { noteTone: "mint" }),
     ],
   },
   {
@@ -108,7 +108,7 @@ const ipClientServer: Stage[] = [
       ],
     },
     steps: [
-      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "updated" : "kept"), "The server processes the request and sends a response. The Source and Destination IPs are swapped to route it back to you.", { noteTone: "amber" }),
+      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"), "The server processes the request and sends a response. The Source and Destination IPs are swapped to route it back to you.", { noteTone: "amber" }),
     ],
   }
 ];
