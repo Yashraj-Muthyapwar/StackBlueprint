@@ -121,26 +121,44 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
                     animate={{ height: water * unitHeight, opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    className="w-full overflow-hidden backdrop-blur-[2px] shadow-[0_0_18px_rgba(14,165,233,0.35)] rounded-t-[2px]"
+                    className="w-full backdrop-blur-[2px] shadow-[0_0_18px_rgba(14,165,233,0.35)] rounded-t-[2px]"
                     style={{ position: "absolute", bottom: val * unitHeight, zIndex: 10 }}
                   >
-                    {/* drifting body */}
-                    <div
-                      className="water-body absolute inset-0"
-                      style={{ animationDelay: `${(i % 5) * -0.7}s` }}
-                    />
-                    {/* light caustics */}
-                    <div
-                      className="water-caustic absolute inset-0 mix-blend-screen"
-                      style={{ animationDelay: `${(i % 4) * -0.9}s` }}
-                    />
-                    {/* rippling surface highlight */}
-                    <div
-                      className="water-surface absolute -top-px left-0 h-[6px] w-[200%]"
-                      style={{ animationDelay: `${(i % 3) * -0.5}s` }}
-                    />
-                    <div className="absolute inset-x-0 top-0 h-px bg-sky-200/90" />
+                    <div className="absolute inset-0 overflow-hidden rounded-t-[2px]">
+                      {/* drifting body */}
+                      <div
+                        className="water-body absolute inset-0"
+                        style={{ animationDelay: `${(i % 5) * -0.7}s, ${(i % 3) * -0.55}s` }}
+                      />
+                      {/* light caustics */}
+                      <div
+                        className="water-caustic absolute inset-0 mix-blend-screen"
+                        style={{ animationDelay: `${(i % 4) * -0.9}s` }}
+                      />
+                      {/* diagonal glints */}
+                      <div
+                        className="water-glint absolute inset-0 mix-blend-screen opacity-60"
+                        style={{ animationDelay: `${(i % 5) * -1.1}s` }}
+                      />
+                      {/* rippling surface highlight */}
+                      <div
+                        className="water-surface absolute -top-px left-0 h-[6px] w-[200%]"
+                        style={{ animationDelay: `${(i % 3) * -0.5}s` }}
+                      />
+                    </div>
+                    {/* tide crests riding on top of the surface */}
+                    <div className="absolute -top-[5px] left-0 h-[10px] w-[200%] overflow-visible pointer-events-none">
+                      <div
+                        className="water-crest absolute inset-0 opacity-90"
+                        style={{ animationDelay: `${(i % 4) * -1.1}s` }}
+                      />
+                      <div
+                        className="water-crest-alt absolute inset-0 opacity-70 mix-blend-screen"
+                        style={{ animationDelay: `${(i % 3) * -1.7}s` }}
+                      />
+                    </div>
                   </motion.div>
+
                 )}
               </AnimatePresence>
 
