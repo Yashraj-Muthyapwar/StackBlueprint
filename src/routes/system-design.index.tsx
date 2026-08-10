@@ -29,10 +29,12 @@ import {
   Car,
   Clapperboard,
   Landmark,
+  Network,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
 import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
 
 export const Route = createFileRoute("/system-design/")({
@@ -247,6 +249,22 @@ const sections: Section[] = [
     group: "Tradeoffs & System Resilience",
     groupBlurb: "Navigating engineering tradeoffs and operational resilience.",
     topics: [
+      {
+        slug: "distributed-systems",
+        title: "Distributed Systems",
+        blurb: "Trading off consistency, availability, and latency.",
+        icon: Network,
+        modules: [
+          "CAP & PACELC",
+          "Scalability",
+          "Availability",
+          "Consistency",
+          "Latency",
+          "Single Point of Failures",
+        ],
+        unlocked: true,
+        routeBase: "distributed-systems",
+      },
       {
         slug: "system-tradeoffs",
         title: "System Tradeoffs",
@@ -589,7 +607,7 @@ function SystemDesignIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
 
-                  const realTopic = FUNDAMENTALS_TOPICS[t.slug as keyof typeof FUNDAMENTALS_TOPICS];
+                  const realTopic = FUNDAMENTALS_TOPICS[t.slug as keyof typeof FUNDAMENTALS_TOPICS] || DISTRIBUTED_SYSTEMS_TOPICS[t.slug as keyof typeof DISTRIBUTED_SYSTEMS_TOPICS];
                   const completedCount = realTopic
                     ? realTopic.lessons.filter((l) => isCompleted(l.slug)).length
                     : t.completedCount || 0;
