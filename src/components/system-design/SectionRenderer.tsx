@@ -17,6 +17,9 @@ import { AvailabilityDiagram } from "@/components/system-design/distributed-syst
 import { ReliabilityDiagram } from "@/components/system-design/distributed-systems/ReliabilityDiagram";
 import { ConsistencyDiagram } from "@/components/system-design/distributed-systems/ConsistencyDiagram";
 import { CapTheoremDiagram } from "@/components/system-design/distributed-systems/CapTheoremDiagram";
+import { CapConsistencyDiagram } from "@/components/system-design/distributed-systems/CapConsistencyDiagram";
+import { CapAvailabilityDiagram } from "@/components/system-design/distributed-systems/CapAvailabilityDiagram";
+import { CapPartitionDiagram } from "@/components/system-design/distributed-systems/CapPartitionDiagram";
 import { PacelcTheoremDiagram } from "@/components/system-design/distributed-systems/PacelcTheoremDiagram";
 import {
   CidrExplorer,
@@ -468,6 +471,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return <ConsistencyDiagram />;
     case "cap-theorem-diagram":
       return <CapTheoremDiagram />;
+    case "cap-consistency-diagram":
+      return <CapConsistencyDiagram />;
+    case "cap-availability-diagram":
+      return <CapAvailabilityDiagram />;
+    case "cap-partition-diagram":
+      return <CapPartitionDiagram />;
     case "pacelc-theorem-diagram":
       return <PacelcTheoremDiagram />;
     case "osi-tcp-mapping-diagram":
