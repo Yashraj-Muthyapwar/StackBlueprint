@@ -6,27 +6,27 @@ import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
 import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
-import { IPv4Diagram } from "@/components/system-design/IPv4Diagram";
-import { PortsDiagram } from "@/components/system-design/PortsDiagram";
-import { OsiModelDiagram } from "@/components/system-design/OsiModelDiagram";
-import { OsiToTcpDiagram } from "@/components/system-design/OsiToTcpDiagram";
-import { TcpUdpDiagram } from "@/components/system-design/TcpUdpDiagram";
-import { AvailabilityDiagram } from "@/components/system-design/AvailabilityDiagram";
-import { ReliabilityDiagram } from "@/components/system-design/ReliabilityDiagram";
-import { ConsistencyDiagram } from "@/components/system-design/ConsistencyDiagram";
-import { CapTheoremDiagram } from "@/components/system-design/CapTheoremDiagram";
-import { PacelcTheoremDiagram } from "@/components/system-design/PacelcTheoremDiagram";
-import { CidrCalculatorDiagram } from "@/components/system-design/CidrCalculatorDiagram";
-import { VpcArchitectureDiagram } from "@/components/system-design/VpcArchitectureDiagram";
+import { IPv4Diagram } from "@/components/system-design/networking-protocols/IPv4Diagram";
+import { PortsDiagram } from "@/components/system-design/networking-protocols/PortsDiagram";
+import { OsiModelDiagram } from "@/components/system-design/networking-protocols/OsiModelDiagram";
+import { OsiToTcpDiagram } from "@/components/system-design/networking-protocols/OsiToTcpDiagram";
+import { TcpUdpDiagram } from "@/components/system-design/networking-protocols/TcpUdpDiagram";
+import { CidrCalculatorDiagram } from "@/components/system-design/networking-protocols/CidrCalculatorDiagram";
+import { VpcArchitectureDiagram } from "@/components/system-design/networking-protocols/VpcArchitectureDiagram";
+import { AvailabilityDiagram } from "@/components/system-design/distributed-systems/AvailabilityDiagram";
+import { ReliabilityDiagram } from "@/components/system-design/distributed-systems/ReliabilityDiagram";
+import { ConsistencyDiagram } from "@/components/system-design/distributed-systems/ConsistencyDiagram";
+import { CapTheoremDiagram } from "@/components/system-design/distributed-systems/CapTheoremDiagram";
+import { PacelcTheoremDiagram } from "@/components/system-design/distributed-systems/PacelcTheoremDiagram";
 import {
   CidrExplorer,
   SubnetMathSteps,
   ReservedIpsDiagram,
   VpcCarveDiagram,
   VpcPacketFlow,
-} from "@/components/system-design/SubnetVisuals";
-import HttpVisuals from "@/components/system-design/HttpVisuals";
-import DnsVisuals from "@/components/system-design/DnsVisuals";
+} from "@/components/system-design/networking-protocols/SubnetVisuals";
+import HttpVisuals from "@/components/system-design/networking-protocols/HttpVisuals";
+import DnsVisuals from "@/components/system-design/networking-protocols/DnsVisuals";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -424,7 +424,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </section>
       );
 
-    case "tcp-udp":
+    case "tcp-udp-diagram":
       return <TcpUdpDiagram />;
 
     case "cidr-explorer":
