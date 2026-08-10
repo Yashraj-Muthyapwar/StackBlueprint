@@ -175,7 +175,7 @@ export type FoundationTopicMeta = {
   slug: string;
   title: string;
   category: string;
-  iconKey: "database" | "table" | "terminal" | (string & {});
+  iconKey: "table" | "database" | "terminal";
   blurb: string;
   lessons: LessonContent[];
 };
