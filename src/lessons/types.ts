@@ -140,6 +140,11 @@ export type Section =
   | { kind: "ports-diagram" }
   | { kind: "osi-model-diagram" }
   | { kind: "tcp-udp-diagram" }
+  | { kind: "availability-diagram" }
+  | { kind: "reliability-diagram" }
+  | { kind: "consistency-diagram" }
+  | { kind: "cap-theorem-diagram" }
+  | { kind: "pacelc-theorem-diagram" }
   | { kind: "osi-tcp-mapping-diagram" }
   | { kind: "cidr-calculator-diagram" }
   | { kind: "vpc-architecture-diagram" }
