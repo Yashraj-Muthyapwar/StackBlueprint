@@ -33,7 +33,7 @@ function Landing() {
     },
     {
       title: "Data & Analytics",
-      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses"].includes(cat.slug))
+      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses", "data-engineering"].includes(cat.slug))
     },
     {
       title: "DevOps & Tools",
@@ -113,16 +113,16 @@ function Landing() {
                       >
                         <div className="mb-4 flex items-center justify-between">
                           <div
-                            className={`grid size-10 place-items-center rounded-md ${
+                            className={`flex min-w-[40px] items-center justify-center rounded-md ${
                               typeof cat.icon === "string"
-                                ? ""
+                                ? (cat.slug === "data-engineering" ? "h-16" : "h-10")
                                 : hasContent
-                                  ? "bg-mint/15 text-mint ring-1 ring-mint/30"
-                                  : "bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
+                                  ? "h-10 bg-mint/15 text-mint ring-1 ring-mint/30"
+                                  : "h-10 bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline"
                             }`}
                           >
                             {typeof cat.icon === "string" ? (
-                              <img src={cat.icon} alt={`${cat.title} logo`} className="size-8 object-contain drop-shadow-sm" />
+                              <img src={cat.icon} alt={`${cat.title} logo`} className={`${cat.slug === "data-engineering" ? "h-16 -ml-2" : "h-8"} w-auto object-contain drop-shadow-sm`} />
                             ) : (
                               <cat.icon className="size-5" />
                             )}
@@ -241,6 +241,13 @@ function Landing() {
                     if (cat.overviewPath === "/python") {
                       return (
                         <Link key={cat.slug} to="/python" className="block">
+                          {card}
+                        </Link>
+                      );
+                    }
+                    if (cat.overviewPath === "/data-engineering") {
+                      return (
+                        <Link key={cat.slug} to="/data-engineering" className="block">
                           {card}
                         </Link>
                       );
