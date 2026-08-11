@@ -50,6 +50,7 @@ import dsaLogo from "@/images/logos/dsa-logo.png";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
 import webScraperLogo from "@/images/logos/web-scraper-logo.png";
 import pythonLogo from "@/images/logos/python-logo.png";
+import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
@@ -894,6 +895,153 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
       lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
       lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
+    ],
+  },
+  {
+    title: "Fundamentals of Data Engineering",
+    slug: "data-engineering",
+    icon: dataEngineeringLogo,
+    locked: false,
+    overviewPath: "/data-engineering",
+    blurb: "Core principles, lifecycle, architecture, and undercurrents of data engineering.",
+    patterns: [
+      {
+        title: "1. Data Engineering Described",
+        slug: "data-engineering-described",
+        path: "/data-engineering/data-engineering-described",
+        blurb: "What is data engineering, its lifecycle, evolution, and required skills.",
+        lessons: [
+          { title: "What Is Data Engineering?", slug: "what-is-data-engineering", path: "/data-engineering/data-engineering-described/what-is-data-engineering", icon: Activity },
+          { title: "Data Engineering Skills and Activities", slug: "skills-and-activities", path: "/data-engineering/data-engineering-described/skills-and-activities", icon: Activity },
+          { title: "Data Engineers Inside an Organization", slug: "inside-an-organization", path: "/data-engineering/data-engineering-described/inside-an-organization", icon: Activity },
+        ],
+      },
+      {
+        title: "2. The Data Engineering Lifecycle",
+        slug: "data-engineering-lifecycle",
+        path: "/data-engineering/data-engineering-lifecycle",
+        blurb: "Generation, Storage, Ingestion, Transformation, and Serving Data.",
+        lessons: [
+          { title: "What Is the Data Engineering Lifecycle?", slug: "what-is-the-lifecycle", path: "/data-engineering/data-engineering-lifecycle/what-is-the-lifecycle", icon: Repeat },
+          { title: "Generation: Source Systems", slug: "generation", path: "/data-engineering/data-engineering-lifecycle/generation", icon: Repeat },
+          { title: "Storage", slug: "storage", path: "/data-engineering/data-engineering-lifecycle/storage", icon: Repeat },
+          { title: "Ingestion", slug: "ingestion", path: "/data-engineering/data-engineering-lifecycle/ingestion", icon: Repeat },
+          { title: "Transformation", slug: "transformation", path: "/data-engineering/data-engineering-lifecycle/transformation", icon: Repeat },
+          { title: "Serving Data", slug: "serving-data", path: "/data-engineering/data-engineering-lifecycle/serving-data", icon: Repeat },
+          { title: "Major Undercurrents", slug: "major-undercurrents", path: "/data-engineering/data-engineering-lifecycle/major-undercurrents", icon: Repeat },
+        ],
+      },
+      {
+        title: "3. Designing Good Data Architecture",
+        slug: "designing-data-architecture",
+        path: "/data-engineering/designing-data-architecture",
+        blurb: "Enterprise architecture, principles of good data architecture, and domains.",
+        lessons: [
+          { title: "What Is Data Architecture?", slug: "what-is-data-architecture", path: "/data-engineering/designing-data-architecture/what-is-data-architecture", icon: Layers },
+          { title: "Principles of Good Data Architecture", slug: "principles", path: "/data-engineering/designing-data-architecture/principles", icon: Layers },
+          { title: "Major Architecture Concepts", slug: "major-concepts", path: "/data-engineering/designing-data-architecture/major-concepts", icon: Layers },
+          { title: "Examples and Types of Data Architecture", slug: "examples", path: "/data-engineering/designing-data-architecture/examples", icon: Layers },
+          { title: "Who's Involved with Designing?", slug: "whos-involved", path: "/data-engineering/designing-data-architecture/whos-involved", icon: Layers },
+        ],
+      },
+      {
+        title: "4. Choosing Technologies",
+        slug: "choosing-technologies",
+        path: "/data-engineering/choosing-technologies",
+        blurb: "Evaluating team size, speed to market, cost, and technology location.",
+        lessons: [
+          { title: "Team Size and Capabilities", slug: "team-size", path: "/data-engineering/choosing-technologies/team-size", icon: Settings },
+          { title: "Cost Optimization and Business Value", slug: "cost-optimization", path: "/data-engineering/choosing-technologies/cost-optimization", icon: Settings },
+          { title: "Location", slug: "location", path: "/data-engineering/choosing-technologies/location", icon: Settings },
+          { title: "Build Versus Buy", slug: "build-vs-buy", path: "/data-engineering/choosing-technologies/build-vs-buy", icon: Settings },
+          { title: "Monolith Versus Modular", slug: "monolith-vs-modular", path: "/data-engineering/choosing-technologies/monolith-vs-modular", icon: Settings },
+          { title: "Serverless Versus Servers", slug: "serverless-vs-servers", path: "/data-engineering/choosing-technologies/serverless-vs-servers", icon: Settings },
+        ],
+      },
+      {
+        title: "5. Data Generation in Source Systems",
+        slug: "data-generation",
+        path: "/data-engineering/data-generation",
+        blurb: "Databases, APIs, change data capture, logs, and streaming platforms.",
+        lessons: [
+          { title: "Sources of Data", slug: "sources-of-data", path: "/data-engineering/data-generation/sources-of-data", icon: Server },
+          { title: "Source Systems: Main Ideas", slug: "source-systems-main-ideas", path: "/data-engineering/data-generation/source-systems-main-ideas", icon: Server },
+          { title: "Source System Practical Details", slug: "practical-details", path: "/data-engineering/data-generation/practical-details", icon: Server },
+        ],
+      },
+      {
+        title: "6. Storage",
+        slug: "storage-deep-dive",
+        path: "/data-engineering/storage-deep-dive",
+        blurb: "Raw ingredients, storage systems, and abstractions like data lakes and warehouses.",
+        lessons: [
+          { title: "Raw Ingredients of Data Storage", slug: "raw-ingredients", path: "/data-engineering/storage-deep-dive/raw-ingredients", icon: Database },
+          { title: "Data Storage Systems", slug: "data-storage-systems", path: "/data-engineering/storage-deep-dive/data-storage-systems", icon: Database },
+          { title: "Data Engineering Storage Abstractions", slug: "abstractions", path: "/data-engineering/storage-deep-dive/abstractions", icon: Database },
+          { title: "Big Ideas and Trends in Storage", slug: "trends", path: "/data-engineering/storage-deep-dive/trends", icon: Database },
+        ],
+      },
+      {
+        title: "7. Ingestion",
+        slug: "ingestion-deep-dive",
+        path: "/data-engineering/ingestion-deep-dive",
+        blurb: "Batch ingestion, streams, file formats, and pushing vs pulling.",
+        lessons: [
+          { title: "What Is Data Ingestion?", slug: "what-is-data-ingestion", path: "/data-engineering/ingestion-deep-dive/what-is-data-ingestion", icon: Download },
+          { title: "Key Engineering Considerations", slug: "key-considerations", path: "/data-engineering/ingestion-deep-dive/key-considerations", icon: Download },
+          { title: "Batch Ingestion Considerations", slug: "batch-ingestion", path: "/data-engineering/ingestion-deep-dive/batch-ingestion", icon: Download },
+          { title: "Message and Stream Ingestion", slug: "message-and-stream", path: "/data-engineering/ingestion-deep-dive/message-and-stream", icon: Download },
+          { title: "Ways to Ingest Data", slug: "ways-to-ingest", path: "/data-engineering/ingestion-deep-dive/ways-to-ingest", icon: Download },
+          { title: "Practical Issues with Common File Formats", slug: "file-formats", path: "/data-engineering/ingestion-deep-dive/file-formats", icon: Download },
+        ],
+      },
+      {
+        title: "8. Queries, Modeling, and Transformation",
+        slug: "queries-modeling-transformation",
+        path: "/data-engineering/queries-modeling-transformation",
+        blurb: "Query optimization, conceptual/logical data models, and batch/streaming transformations.",
+        lessons: [
+          { title: "Queries", slug: "queries", path: "/data-engineering/queries-modeling-transformation/queries", icon: FileCode },
+          { title: "Data Modeling", slug: "data-modeling", path: "/data-engineering/queries-modeling-transformation/data-modeling", icon: FileCode },
+          { title: "Transformations", slug: "transformations", path: "/data-engineering/queries-modeling-transformation/transformations", icon: FileCode },
+        ],
+      },
+      {
+        title: "9. Serving Data for Analytics, ML, and Reverse ETL",
+        slug: "serving-data-deep-dive",
+        path: "/data-engineering/serving-data-deep-dive",
+        blurb: "Analytics, self-service data products, reverse ETL, and embedded analytics.",
+        lessons: [
+          { title: "General Considerations for Serving Data", slug: "general-considerations", path: "/data-engineering/serving-data-deep-dive/general-considerations", icon: Target },
+          { title: "Analytics", slug: "analytics", path: "/data-engineering/serving-data-deep-dive/analytics", icon: Target },
+          { title: "Machine Learning", slug: "machine-learning", path: "/data-engineering/serving-data-deep-dive/machine-learning", icon: Target },
+          { title: "Ways to Serve Data", slug: "ways-to-serve", path: "/data-engineering/serving-data-deep-dive/ways-to-serve", icon: Target },
+          { title: "Reverse ETL", slug: "reverse-etl", path: "/data-engineering/serving-data-deep-dive/reverse-etl", icon: Target },
+        ],
+      },
+      {
+        title: "10. Security and Privacy",
+        slug: "security-and-privacy",
+        path: "/data-engineering/security-and-privacy",
+        blurb: "Active security, principle of least privilege, and patching.",
+        lessons: [
+          { title: "People", slug: "people", path: "/data-engineering/security-and-privacy/people", icon: ShieldAlert },
+          { title: "Processes", slug: "processes", path: "/data-engineering/security-and-privacy/processes", icon: ShieldAlert },
+          { title: "Technology", slug: "technology", path: "/data-engineering/security-and-privacy/technology", icon: ShieldAlert },
+        ],
+      },
+      {
+        title: "11. The Future of Data Engineering",
+        slug: "future-of-data-engineering",
+        path: "/data-engineering/future-of-data-engineering",
+        blurb: "Cloud-scale Data OS, live data stack, and the decline of complexity.",
+        lessons: [
+          { title: "The Decline of Complexity", slug: "decline-of-complexity", path: "/data-engineering/future-of-data-engineering/decline-of-complexity", icon: TrendingUp },
+          { title: "The Cloud-Scale Data OS", slug: "cloud-scale-data-os", path: "/data-engineering/future-of-data-engineering/cloud-scale-data-os", icon: TrendingUp },
+          { title: "Moving Toward the Live Data Stack", slug: "live-data-stack", path: "/data-engineering/future-of-data-engineering/live-data-stack", icon: TrendingUp },
+          { title: "Dark Matter Data and Spreadsheets", slug: "spreadsheets", path: "/data-engineering/future-of-data-engineering/spreadsheets", icon: TrendingUp },
+        ],
+      },
     ],
   },
 ];
