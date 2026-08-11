@@ -912,6 +912,7 @@ export const roadmap: RoadmapCategory[] = [
         blurb: "What is data engineering, its lifecycle, evolution, and required skills.",
         lessons: [
           { title: "What Is Data Engineering?", slug: "what-is-data-engineering", path: "/data-engineering/data-engineering-described/what-is-data-engineering", icon: Activity },
+          { title: "Data Landscape", slug: "data-landscape", path: "/data-engineering/data-engineering-described/data-landscape", icon: Activity },
           { title: "Data Engineering Skills and Activities", slug: "skills-and-activities", path: "/data-engineering/data-engineering-described/skills-and-activities", icon: Activity },
           { title: "Data Engineers Inside an Organization", slug: "inside-an-organization", path: "/data-engineering/data-engineering-described/inside-an-organization", icon: Activity },
         ],
