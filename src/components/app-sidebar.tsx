@@ -24,6 +24,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
   useSidebar,
+  SidebarGroupAction,
 } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
@@ -77,119 +78,68 @@ export function AppSidebar() {
         </SidebarGroup>
 
 
-        {roadmap.map((cat) => (
-          <SidebarGroup key={cat.slug}>
-            <SidebarGroupLabel className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-              {typeof cat.icon === "string" ? (
-                <img src={cat.icon} alt={`${cat.title} logo`} className="size-3 object-contain drop-shadow-sm opacity-80" />
-              ) : (
-                <cat.icon className="size-3" />
-              )}
-              {cat.overviewPath === "/patterns" ? (
-                <Link
-                  to="/patterns"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/sql" ? (
-                <Link
-                  to="/sql"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/data-warehouses" ? (
-                <Link
-                  to="/data-warehouses"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/docker" ? (
-                <Link
-                  to="/docker"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/web-scraping" ? (
-                <Link
-                  to="/web-scraping"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/system-design" ? (
-                <Link
-                  to="/system-design"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/terraform" ? (
-                <Link
-                  to="/terraform"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : cat.overviewPath === "/git-github" ? (
-                <Link
-                  to="/git-github"
-                  onClick={closeMobile}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {cat.title}
-                </Link>
-              ) : (
-                <span>{cat.title}</span>
-              )}
-              {cat.locked && <Lock className="ml-auto size-3 opacity-60" />}
-            </SidebarGroupLabel>
+        {roadmap.map((cat) => {
+          const isCategoryActive = cat.overviewPath ? pathname.startsWith(cat.overviewPath) : false;
+          
+          return (
+            <Collapsible key={cat.slug} defaultOpen={isCategoryActive} className="group/collapsible">
+              <SidebarGroup className="py-0">
+                <CollapsibleTrigger asChild>
+                  <SidebarGroupLabel className="flex w-full cursor-pointer items-center justify-between text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-foreground">
+                    <div className="flex flex-1 items-center gap-2">
+                      {typeof cat.icon === "string" ? (
+                        <img src={cat.icon} alt={`${cat.title} logo`} className="size-3 object-contain drop-shadow-sm opacity-80" />
+                      ) : (
+                        <cat.icon className="size-3" />
+                      )}
+                      {cat.overviewPath ? (
+                        <Link
+                          to={cat.overviewPath as any}
+                          onClick={closeMobile}
+                          className="flex-1 text-left transition-colors hover:text-foreground outline-none"
+                        >
+                          {cat.title}
+                        </Link>
+                      ) : (
+                        <span className="flex-1 text-left">{cat.title}</span>
+                      )}
+                      {cat.locked && <Lock className="size-3 opacity-60" />}
+                    </div>
+                  </SidebarGroupLabel>
+                </CollapsibleTrigger>
 
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {cat.locked ? (
-                  <LockedCategoryItem cat={cat} pathname={pathname} onNavigate={closeMobile} />
-                ) : cat.sections && cat.sections.length > 0 ? (
-                  cat.sections.map((sec) => (
-                    <SectionMaster
-                      key={sec.title}
-                      title={sec.title}
-                      patterns={sec.patterns}
-                      pathname={pathname}
-                      onNavigate={closeMobile}
-                    />
-                  ))
-                ) : cat.sectionTitle ? (
-                  <SectionMaster
-                    title={cat.sectionTitle}
-                    patterns={cat.patterns}
-                    pathname={pathname}
-                    onNavigate={closeMobile}
-                  />
-                ) : (
-                  cat.patterns.map((pat) => (
-                    <PatternItem
-                      key={pat.slug}
-                      pat={pat}
-                      pathname={pathname}
-                      onNavigate={closeMobile}
-                    />
-                  ))
-                )}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+                <CollapsibleContent>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      {cat.locked ? (
+                        <LockedCategoryItem cat={cat} pathname={pathname} onNavigate={closeMobile} />
+                      ) : cat.sectionTitle ? (
+                        <SectionMaster
+                          title={cat.sectionTitle}
+                          patterns={cat.patterns}
+                          pathname={pathname}
+                          onNavigate={closeMobile}
+                        />
+                      ) : (
+                        (cat.sections && cat.sections.length > 0 
+                          ? cat.sections.flatMap((sec) => sec.patterns) 
+                          : cat.patterns
+                        ).map((pat) => (
+                          <PatternItem
+                            key={pat.slug}
+                            pat={pat}
+                            pathname={pathname}
+                            onNavigate={closeMobile}
+                          />
+                        ))
+                      )}
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </CollapsibleContent>
+              </SidebarGroup>
+            </Collapsible>
+          );
+        })}
       </SidebarContent>
     </Sidebar>
   );
@@ -206,8 +156,8 @@ function SectionMaster({
   pathname: string;
   onNavigate: () => void;
 }) {
-  void pathname;
-  const [open, setOpen] = useState<boolean>(true);
+  const isSectionActive = patterns.some((p) => p.path && pathname.startsWith(p.path));
+  const [open, setOpen] = useState<boolean>(isSectionActive);
   return (
     <Collapsible open={open} onOpenChange={setOpen} asChild>
       <SidebarMenuItem>
@@ -253,7 +203,7 @@ function NestedPatternItem({
   if (pat.locked) {
     return (
       <SidebarMenuSubItem>
-        <SidebarMenuSubButton title={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
+        <SidebarMenuSubButton tooltip={`${pat.title} (Coming soon)`} className="text-muted-foreground/70 cursor-not-allowed">
           <Lock className="size-3" />
           <span>{pat.title}</span>
         </SidebarMenuSubButton>
