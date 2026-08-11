@@ -123,9 +123,9 @@ function DataEngineeringIndex() {
 
                 const toPath = t.path || `/data-engineering/${t.slug}`;
                 return (
-                  <a key={t.slug} href={toPath} className="block w-full outline-none">
+                  <Link key={t.slug} to={toPath} className="block w-full outline-none">
                     {card}
-                  </a>
+                  </Link>
                 );
               })}
             </div>
