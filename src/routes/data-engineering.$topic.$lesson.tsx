@@ -5,7 +5,7 @@ import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
 export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
   head: ({ params }) => {
     const cat = CATEGORY_BY_SLUG["data-engineering"];
-    const t = cat?.patterns.find((p) => p.slug === params.topic);
+    const t = cat?.patterns.find((p) => p.slug === params.topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === params.topic);
     const l = t?.lessons?.find((x) => x.slug === params.lesson);
     if (!t || !l) return { meta: [{ title: "Lesson — Data Engineering" }] };
     return {
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
 function DataEngineeringLessonPage() {
   const { topic, lesson } = Route.useParams();
   const cat = CATEGORY_BY_SLUG["data-engineering"];
-  const t = cat?.patterns.find((p) => p.slug === topic);
+  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 
