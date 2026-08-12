@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, ChevronRight, Construction, CheckCircle2 } from 
 import { useProgress } from "@/hooks/use-progress";
 import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
 import { SectionRenderer } from "@/components/data-engineering/SectionRenderer";
-import { DESCRIBED_TOPICS } from "@/lessons/data-engineering/described-content";
+import { FOUNDATION_TOPICS } from "@/lessons/data-engineering/foundations-content";
 
 export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
   head: ({ params }) => {
@@ -32,7 +32,7 @@ function DataEngineeringLessonPage() {
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 
-  const content = DESCRIBED_TOPICS[topic]?.lessons.find(x => x.slug === lesson);
+  const content = FOUNDATION_TOPICS[topic]?.lessons.find(x => x.slug === lesson);
   const hasQuiz = content?.sections.some(s => s.kind === "quiz") ?? false;
 
   useEffect(() => {
@@ -130,9 +130,9 @@ function DataEngineeringLessonPage() {
               Source: <a href="https://mad.firstmark.com" target="_blank" rel="noopener noreferrer" className="text-mint hover:underline">MAD (Machine Learning, AI, Data) Landscape</a>. All rights reserved by FirstMark.
             </p>
           </div>
-        ) : DESCRIBED_TOPICS[topic]?.lessons.find(x => x.slug === lesson) ? (
+        ) : FOUNDATION_TOPICS[topic]?.lessons.find(x => x.slug === lesson) ? (
           <div className="mt-10 space-y-7">
-            {DESCRIBED_TOPICS[topic].lessons.find(x => x.slug === lesson)!.sections.map((s, i) => (
+            {FOUNDATION_TOPICS[topic].lessons.find(x => x.slug === lesson)!.sections.map((s, i) => (
               <SectionRenderer key={i} section={s} />
             ))}
           </div>
