@@ -4,8 +4,11 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { Quiz } from "@/components/lesson/Quiz";
 
 function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|!!.*?!!)/g);
   return parts.map((part, i) => {
+    if (part.startsWith('!!') && part.endsWith('!!')) {
+      return <span key={i} className="font-semibold text-red-500 dark:text-red-400">{part.slice(2, -2)}</span>;
+    }
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
     }
