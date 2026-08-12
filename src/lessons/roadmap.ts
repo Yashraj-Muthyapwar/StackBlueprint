@@ -935,6 +935,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "1.2 Data Landscape", slug: "data-landscape", path: "/data-engineering/data-engineering-described/data-landscape", icon: Activity },
               { title: "1.3 Data Engineering Skills and Responsibilities", slug: "skills-and-responsibilities", path: "/data-engineering/data-engineering-described/skills-and-responsibilities", icon: Activity },
               { title: "1.4 Data Engineers Within an Organization", slug: "within-organization", path: "/data-engineering/data-engineering-described/within-organization", icon: Activity },
+              { title: "1.5 Working With Stakeholders and Data Requirements", slug: "working-with-stakeholders", path: "/data-engineering/data-engineering-described/working-with-stakeholders", icon: Activity },
             ],
           },
           {
