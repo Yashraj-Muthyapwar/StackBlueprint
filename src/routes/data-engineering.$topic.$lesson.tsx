@@ -26,7 +26,6 @@ export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
 function DataEngineeringLessonPage() {
   const { topic, lesson } = Route.useParams();
   const { isCompleted, markComplete, markIncomplete } = useProgress();
-
   const cat = CATEGORY_BY_SLUG["data-engineering"];
   const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
@@ -66,6 +65,8 @@ function DataEngineeringLessonPage() {
       onToggleComplete={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
       showKeyTakeaways={lesson !== "data-landscape"}
       isPlaceholder={!content && lesson !== "data-landscape"}
+      sections={content?.sections}
+      renderSection={(s, onQuizActiveChange) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />}
     >
       {lesson === "data-landscape" ? (
         <>
@@ -108,8 +109,6 @@ function DataEngineeringLessonPage() {
             Source: <a href="https://mad.firstmark.com" target="_blank" rel="noopener noreferrer" className="text-mint hover:underline">MAD (Machine Learning, AI, Data) Landscape</a>. All rights reserved by FirstMark.
           </p>
         </>
-      ) : content ? (
-        <SectionRenderer sections={content.sections} />
       ) : null}
     </LessonLayout>
   );
