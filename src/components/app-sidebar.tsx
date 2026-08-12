@@ -311,7 +311,6 @@ function PatternItem({
         <SidebarMenuItem>
           <SidebarMenuButton asChild isActive={patternActive} tooltip={pat.title}>
             <a href={pat.path} onClick={onNavigate}>
-              <ChevronRight className="size-3.5" />
               <span>{pat.title}</span>
             </a>
           </SidebarMenuButton>
@@ -327,7 +326,6 @@ function PatternItem({
             params={{ pattern: pat.slug }}
             onClick={onNavigate}
           >
-            <ChevronRight className="size-3.5" />
             <span>{pat.title}</span>
           </Link>
         </SidebarMenuButton>
@@ -340,9 +338,6 @@ function PatternItem({
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton isActive={patternActive} tooltip={pat.title}>
-            <ChevronRight
-              className={`size-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
-            />
             <span className="flex-1 truncate text-left">{pat.title}</span>
           </SidebarMenuButton>
         </CollapsibleTrigger>
