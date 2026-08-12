@@ -4,6 +4,11 @@ export type { Section };
 import dataLifecycleImg from "@/images/data-engineering-fundamentals/foundations/data-engineering-lifecycle.png";
 import evolutionImg from "@/images/data-engineering-fundamentals/foundations/evolution-of-data-engineering.png";
 import scenarioImg from "@/images/data-engineering-fundamentals/foundations/scenario.png";
+import deResponsibilityImg from "@/images/data-engineering-fundamentals/foundations/data-engineer-responsibility.png";
+import deSkillsImg from "@/images/data-engineering-fundamentals/foundations/data-engineer-skills.png";
+import fitnessAppImg from "@/images/data-engineering-fundamentals/foundations/fitness-app.png";
+import sixPartBalanceImg from "@/images/data-engineering-fundamentals/foundations/six-part-balance.png";
+import skillsToBuildFirstImg from "@/images/data-engineering-fundamentals/foundations/skills-to-build-first.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -244,20 +249,24 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            kind: "list",
-            heading: "A good data engineer balances six things:",
-            items: [
-              "Cost",
-              "Speed of delivery",
-              "Ability to scale",
-              "Simplicity",
-              "Reuse",
-              "Compatibility with other tools"
-            ]
+            kind: "image",
+            src: sixPartBalanceImg,
+            alt: "The six-part balance",
+            caption: "The six-part balance of a data engineer"
           },
           {
             kind: "prose",
             heading: "What a data engineer is responsible for",
+            body: []
+          },
+          {
+            kind: "image",
+            src: deResponsibilityImg,
+            alt: "Data engineer responsibilities",
+            caption: "Core responsibilities of a data engineer"
+          },
+          {
+            kind: "prose",
             body: [
               "### 1. Making data available",
               "Data begins in many places: product events, payment systems, spreadsheets, APIs, support tools, and databases.",
@@ -308,18 +317,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            kind: "table",
-            headers: ["Skill", "Why it matters"],
-            rows: [
-              ["SQL", "Lets you query, combine, and transform data."],
-              ["Python", "Helps automate tasks and work with data tools."],
-              ["Data modeling", "Helps you organize data so others can understand and use it."],
-              ["Databases and storage", "Helps you choose where data belongs and how it should be accessed."],
-              ["Software engineering", "Helps you write testable, maintainable pipeline code."],
-              ["Orchestration", "Helps schedule and coordinate data jobs."],
-              ["Communication", "Helps turn vague business requests into useful systems."],
-              ["Cost awareness", "Helps avoid expensive designs that deliver little value."]
-            ]
+            kind: "image",
+            src: skillsToBuildFirstImg,
+            alt: "Skills to build first",
+            caption: "Core skills for data engineers"
           },
           {
             kind: "prose",
@@ -346,6 +347,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "5. Schedule the pipeline to run each morning.",
               "6. Give the analytics team access to the final table."
             ]
+          },
+          {
+            kind: "image",
+            src: fitnessAppImg,
+            alt: "Fitness app data pipeline",
+            caption: "A simple fitness app data pipeline"
           },
           {
             kind: "prose",
