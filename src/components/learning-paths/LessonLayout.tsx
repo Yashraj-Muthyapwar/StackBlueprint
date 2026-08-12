@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { LessonCompleteButton } from "./LessonCompleteButton";
@@ -13,8 +14,11 @@ export interface LessonLayoutProps {
   lesson: {
     slug: string;
     title: string;
+    subtitle?: string;
   };
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  sections?: any[];
+  renderSection?: (section: any, onQuizActiveChange: (active: boolean) => void) => React.ReactNode;
   hasQuiz?: boolean;
   isCompleted: boolean;
   onToggleComplete: () => void;
@@ -28,12 +32,15 @@ export function LessonLayout({
   topic,
   lesson,
   children,
+  sections,
+  renderSection,
   hasQuiz = false,
   isCompleted,
   onToggleComplete,
   showKeyTakeaways = true,
   isPlaceholder = false,
 }: LessonLayoutProps) {
+  const [isQuizActive, setIsQuizActive] = useState(false);
   const idx = topic.lessons?.findIndex((x) => x.slug === lesson.slug) ?? -1;
   const prev = idx > 0 ? topic.lessons![idx - 1] : undefined;
   const next = idx < (topic.lessons?.length ?? 0) - 1 ? topic.lessons![idx + 1] : undefined;
@@ -68,6 +75,22 @@ export function LessonLayout({
         <h1 className="mt-2 text-3xl font-semibold tracking-tight lg:text-4xl">
           {lesson.title}
         </h1>
+        {lesson.subtitle && (
+          <p className="mt-3 text-balance text-muted-foreground lg:text-lg">
+            {lesson.subtitle.split(/`([^`]+)`/g).map((part, i) =>
+              i % 2 === 1 ? (
+                <code
+                  key={i}
+                  className="rounded-md bg-background px-1.5 py-0.5 font-mono text-[0.85em] text-foreground ring-1 ring-inset ring-hairline"
+                >
+                  {part}
+                </code>
+              ) : (
+                part
+              )
+            )}
+          </p>
+        )}
 
         <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
           {isPlaceholder ? (
@@ -84,9 +107,22 @@ export function LessonLayout({
             </div>
           ) : (
             <>
-              {children}
+              {sections && renderSection ? (
+                <div className="space-y-7">
+                  {sections.map((s, i) => (
+                    <div 
+                      key={i} 
+                      className={`transition-all duration-500 ${isQuizActive && s.kind !== "quiz" ? "blur-md pointer-events-none opacity-40 select-none" : ""}`}
+                    >
+                      {renderSection(s, setIsQuizActive)}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                children
+              )}
 
-              {showKeyTakeaways && (
+              {showKeyTakeaways && !sections?.some(s => s.kind === "takeaways" || s.type === "takeaways") && (
                 <div className="mt-16 rounded-xl border border-hairline/60 bg-surface/20 p-8 text-center">
                   <h3 className="text-xl font-medium tracking-tight text-foreground">
                     Key Takeaways
