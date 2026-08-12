@@ -1,14 +1,14 @@
 import { type LessonContent, type Section } from "@/lessons/types";
 export type { Section };
 
-import dataLifecycleImg from "@/images/data-engineering-fundamentals/foundations/data-engineering-lifecycle.png";
-import evolutionImg from "@/images/data-engineering-fundamentals/foundations/evolution-of-data-engineering.png";
-import scenarioImg from "@/images/data-engineering-fundamentals/foundations/scenario.png";
-import deResponsibilityImg from "@/images/data-engineering-fundamentals/foundations/data-engineer-responsibility.png";
-import deSkillsImg from "@/images/data-engineering-fundamentals/foundations/data-engineer-skills.png";
-import fitnessAppImg from "@/images/data-engineering-fundamentals/foundations/fitness-app.png";
-import sixPartBalanceImg from "@/images/data-engineering-fundamentals/foundations/six-part-balance.png";
-import skillsToBuildFirstImg from "@/images/data-engineering-fundamentals/foundations/skills-to-build-first.png";
+import dataLifecycleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineering-lifecycle.png";
+import evolutionImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/evolution-of-data-engineering.png";
+import scenarioImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/scenario.png";
+import deResponsibilityImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-responsibility.png";
+import deSkillsImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-skills.png";
+import fitnessAppImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/fitness-app.png";
+import sixPartBalanceImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/six-part-balance.png";
+import skillsToBuildFirstImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/skills-to-build-first.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
