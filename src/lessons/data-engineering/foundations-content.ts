@@ -1,597 +1,1140 @@
-import { type LessonContent, type Section } from "@/lessons/types";
-export type { Section };
+import type { LucideIcon } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Boxes,
+  Database,
+  Flag,
+  Layers,
+  Maximize2,
+  Repeat,
+  Search,
+  Server,
+  Sigma,
+  SquareStack,
+  Target,
+  TrendingUp,
+  Triangle,
+  RotateCw,
+  FlipHorizontal,
+  Compass,
+  Cloud,
+  Hash,
+  Container,
+  Lightbulb,
+  Download,
+  PlayCircle,
+  Terminal,
+  Settings,
+  Activity,
+  Trash2,
+  FileCode,
+  Command,
+  Wrench,
+  Upload,
+  HelpCircle,
+  Globe,
+  ShieldAlert,
+  LockKeyhole,
+  Bot,
+  GitBranch,
+} from "lucide-react";
 
-import dataLifecycleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineering-lifecycle.png";
-import evolutionImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/evolution-of-data-engineering.png";
-import scenarioImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/scenario.png";
-import deResponsibilityImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-responsibility.png";
-import deSkillsImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-skills.png";
-import fitnessAppImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/fitness-app.png";
-import sixPartBalanceImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/six-part-balance.png";
-import skillsToBuildFirstImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/skills-to-build-first.png";
-import dataEngineerBridgeImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-the-bridge.png";
-import internalExternalFacingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/internal-external-facing.png";
-import upstreamDownstreamImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/upstream-downstream.png";
-import foodDeliveryExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/food-delivery-example.png";
+import type { LessonBuilder } from "./types";
 
-export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
-  "data-engineering-described": {
-    title: "1. Understanding the Data Engineering Discipline",
-    slug: "data-engineering-described",
+import dockerLogo from "@/images/logos/docker-logo.png";
+import terraformLogo from "@/images/logos/terraform-logo.png";
+import gitLogo from "@/images/logos/git-logo.png";
+import sqlLogo from "@/images/logos/sql-logo.png";
+import dwLogo from "@/images/logos/data-warehouses-logo.png";
+import dsaLogo from "@/images/logos/dsa-logo.png";
+import systemDesignLogo from "@/images/logos/system-design-logo.png";
+import webScraperLogo from "@/images/logos/web-scraper-logo.png";
+import pythonLogo from "@/images/logos/python-logo.png";
+import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
+import pandasLogo from "@/images/logos/pandas-logo.svg";
+
+import { oppositeEnds } from "./two-pointers/opposite-ends";
+import { fastSlow } from "./two-pointers/fast-slow";
+import { dutchFlag } from "./two-pointers/dutch-flag";
+
+import { fixedSize } from "./sliding-window/fixed-size";
+import { variableExpandShrink } from "./sliding-window/variable-expand-shrink";
+import { monotonicWindow } from "./sliding-window/monotonic-window";
+
+import { prefixSum } from "./prefix/prefix-sum";
+import { prefixXor } from "./prefix/prefix-xor";
+import { prefix2D } from "./prefix/prefix-2d";
+
+import { kadane } from "./kadane/max-subarray";
+import { maxProduct } from "./kadane/max-product-subarray";
+import { subarrayGivenXor } from "./kadane/subarray-given-xor";
+
+import { bsearchIndex } from "./binary-search/on-index";
+import { bsearchAnswer } from "./binary-search/on-answer";
+
+import { rotate90 } from "./matrix/rotate-90";
+import { transposeFlip } from "./matrix/transpose-flip";
+import { spiral } from "./matrix/spiral";
+import { diagonal } from "./matrix/diagonal";
+
+import { longestSubstringNoRepeat } from "./strings/longest-substring-no-repeat";
+import { minWindowSubstring } from "./strings/min-window-substring";
+import { anagramInString } from "./strings/anagram-in-string";
+import { palindromeCheck } from "./strings/palindrome-check";
+import { reverseWords } from "./strings/reverse-words";
+import { stringCompression } from "./strings/string-compression";
+import { kmp } from "./strings/kmp";
+import { rabinKarp } from "./strings/rabin-karp";
+import { zAlgorithm } from "./strings/z-algorithm";
+
+import { frequencyCounting } from "./hash-map/frequency-counting";
+import { topKFrequent } from "./hash-map/top-k-frequent";
+import { twoSum } from "./hash-map/two-sum";
+import { subarraySumK } from "./hash-map/subarray-sum-k";
+import { arrayIntersection } from "./hash-map/array-intersection";
+import { happyNumber } from "./hash-map/happy-number";
+import { containsDuplicateK } from "./hash-map/contains-duplicate-k";
+import { firstUniqueChar } from "./hash-map/first-unique-char";
+import { groupAnagrams } from "./hash-map/group-anagrams";
+import { groupShiftedStrings } from "./hash-map/group-shifted-strings";
+
+export type PatternEntry = {
+  slug: string;
+  title: string;
+  blurb: string;
+  category: string;
+  lessons: { builder: LessonBuilder; icon: LucideIcon }[];
+};
+
+export const patterns: PatternEntry[] = [
+  {
+    slug: "two-pointers",
+    title: "Two Pointers",
+    category: "Arrays",
+    blurb: "Two indices walk the array — converging, chasing, or partitioning.",
     lessons: [
-      {
-        slug: "what-data-engineering-means",
-        title: "1.1 What Data Engineering Means",
-        subtitle: "The process of building systems that collect, store, process, and deliver data so it can be used effectively.",
-        sections: [
-          {
-            kind: "prose",
-            heading: "What Is Data Engineering?",
-            body: [
-              "Data engineering is the process of building systems that collect, store, process, and deliver data so it can be used effectively.",
-              "A simple way to think about it is:",
-              "**Raw Data → Reliable Data → Useful Information**",
-              "Data engineers make sure data gets from its source to the people and systems that need it, such as analysts, applications, and machine-learning systems."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "The Data Engineering Lifecycle",
-            body: [
-              "The lifecycle describes the journey of data:",
-              "**Generation → Ingestion → Transformation → Storage → Serving**"
-            ]
-          },
-          {
-            kind: "image",
-            src: dataLifecycleImg,
-            alt: "The Data Engineering Lifecycle",
-            caption: "Generation → Ingestion → Transformation → Storage → Serving"
-          },
-          {
-            kind: "list",
-            items: [
-              "**Generation:** Data is created by applications, databases, APIs, devices, logs, and users.",
-              "**Ingestion:** Data is collected and brought into the data platform.",
-              "**Transformation:** Data is cleaned, combined, and prepared for use.",
-              "**Storage:** Data is stored so it can be processed and accessed reliably.",
-              "**Serving:** Data is delivered to analytics, machine learning, applications, and other consumers."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "The lifecycle is the journey; a data pipeline is the system that moves data through that journey."
-            ]
-          },
-          {
-            kind: "list",
-            heading: "What Makes Data Engineering More Than Just Moving Data?",
-            body: [
-              "A data engineer must also consider the foundations that run across the entire lifecycle:"
-            ],
-            items: [
-              "**Security:** Protecting data from unauthorized access.",
-              "**Data Management:** Organizing and maintaining data quality.",
-              "**DataOps:** Practices for improving the speed and quality of data analytics.",
-              "**Data Architecture:** Designing the structure of data systems.",
-              "**Orchestration:** Coordinating data workflows and processes.",
-              "**Software Engineering:** Applying software development principles to data systems."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "These help ensure that data systems are secure, reliable, scalable, maintainable, and easy to operate."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "From Lifecycle to Real-World Systems",
-            body: [
-              "Understanding the lifecycle is only the beginning. A data engineer also needs to answer:",
-              "*What does the business need, and how should we build the system to provide it?*"
-            ]
-          },
-          {
-            kind: "image",
-            src: scenarioImg,
-            alt: "Real-World Data Scenario",
-            caption: "A real-world business scenario"
-          },
-          {
-            kind: "prose",
-            body: [
-              "This leads to four important ideas:"
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "1. Understand the Requirement",
-            body: [
-              "First, understand who needs the data, what they need, and how they will use it."
-            ]
-          },
-          {
-            kind: "list",
-            heading: "2. Design the Data Architecture",
-            body: [
-              "Create the blueprint for how data will flow, be stored, processed, and consumed.",
-              "**Sources → Pipelines → Storage → Processing → Consumers**",
-              "**Key Components:**"
-            ],
-            items: [
-              "**Data Sources:** Where data comes from, such as APIs, databases, applications, and devices.",
-              "**Data Pipelines:** Automated processes that move and transport data from one system to another.",
-              {
-                text: "**Storage:** Systems used to persist data reliably for processing and future use.",
-                subitems: [
-                  "**Data Warehouses:** Central repositories for storing and analyzing large amounts of structured data.",
-                  "**Data Lakes:** Storage for large amounts of raw, structured, semi-structured, and unstructured data."
-                ]
-              },
-              "**Data Processing:** The stage where data is cleaned, transformed, joined, enriched, and prepared for downstream use.",
-              "**Consumers:** The people, applications, or systems that use the processed data, such as analysts, dashboards, applications, and machine-learning systems."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Data architecture connects these components into one system that moves data from its source to the people and systems that need it."
-            ]
-          },
-          {
-            kind: "list",
-            heading: "3. Choose the Right Technology",
-            body: [
-              "The technology should follow the requirement—not the other way around.",
-              "Examples include:"
-            ],
-            items: [
-              "**Data Processing:** Spark, Flink",
-              "**Data Warehousing:** BigQuery, Redshift",
-              "**Data Integration:** NiFi, Talend"
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "4. Design for Scale",
-            body: [
-              "Create a plan for how the data system will be built, how data will flow through it, and how each component will work together.",
-              "The design should also allow the system to continue working effectively as data volume, users, and workloads grow.",
-              "**Good system design = Clear architecture + Efficient data flow + Scalability**"
-            ]
-          },
-          {
-            kind: "callout",
-            tone: "info",
-            title: "A Simple Data Engineering Mindset",
-            body: "When designing a data system, think in this order:\n\n**Requirement → Architecture → Technology → Implementation → Scale**\n\nThis prevents the common mistake of choosing tools first and figuring out the problem later."
-          },
-          {
-            kind: "prose",
-            heading: "How Data Engineering Evolved",
-            body: [
-              "As data became larger, faster, and more varied, the technologies and architectures used to manage it evolved as well—from traditional databases and warehouses to distributed systems, cloud platforms, streaming systems, and modern AI-driven data platforms."
-            ]
-          },
-          {
-            kind: "image",
-            src: evolutionImg,
-            alt: "Evolution of Data Engineering",
-            caption: "The evolution of data engineering over time"
-          },
-          {
-            kind: "prose",
-            body: [
-              "The important takeaway is not to memorize every technology or date.",
-              "Data engineering evolved because the way organizations generate and use data kept changing."
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Data engineering is more than moving data from one place to another.",
-              "It is about understanding the business requirement, designing the right data architecture, choosing appropriate technologies, and building a system that delivers trusted data at scale.",
-              "**Lifecycle** = How data moves",
-              "**Undercurrents** = What keeps the system reliable",
-              "**Architecture** = How the system is designed",
-              "**Technology** = How we implement it",
-              "**Goal** = Deliver useful, trusted data"
-            ]
-          },
-          {
-            kind: "quiz",
-            questions: [
-              {
-                id: "de-fundamentals-1",
-                question: "What is the primary goal of data engineering?",
-                options: [
-                  "To analyze data and create business dashboards.",
-                  "To build systems that collect, store, process, and deliver data.",
-                  "To train machine learning models for predictive analytics.",
-                  "To manually move data from one place to another."
-                ],
-                correctIndex: 1,
-                explanation: "Data engineering is the process of building systems that collect, store, process, and deliver data so it can be used effectively."
-              },
-              {
-                id: "de-fundamentals-2",
-                question: "According to the Data Engineering Mindset, what is the first step when designing a data system?",
-                options: [
-                  "Technology",
-                  "Architecture",
-                  "Requirement",
-                  "Scale"
-                ],
-                correctIndex: 2,
-                explanation: "You must first understand who needs the data, what they need, and how they will use it (the Requirement)."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        slug: "skills-and-responsibilities",
-        title: "1.3 Data Engineering Skills and Responsibilities",
-        subtitle: "Understand what data engineers do, which skills matter most, and how their work helps a company use data reliably.",
-        sections: [
-          {
-            kind: "prose",
-            heading: "Why this matters",
-            body: [
-              "A ^^data engineer^^ builds the systems that move data from where it is created to where people can use it. Without that foundation, dashboards become unreliable, analysts lose time, and machine learning projects struggle to get useful data.",
-              "A **data engineer** is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "The core idea",
-            body: [
-              "Data engineering is part technical work and part problem solving for the business.",
-              "The technical side is about collecting, storing, cleaning, and delivering data. The business side is about understanding what people need, choosing a sensible solution, and keeping costs under control."
-            ]
-          },
-          {
-            kind: "image",
-            src: sixPartBalanceImg,
-            alt: "The six-part balance",
-            caption: "The six-part balance of a data engineer"
-          },
-          {
-            kind: "prose",
-            heading: "What a data engineer is responsible for",
-            body: []
-          },
-          {
-            kind: "image",
-            src: deResponsibilityImg,
-            alt: "Data engineer responsibilities",
-            caption: "Core responsibilities of a data engineer"
-          },
-          {
-            kind: "prose",
-            body: [
-              "### 1. Making data available",
-              "Data begins in many places: product events, payment systems, spreadsheets, APIs, support tools, and databases.",
-              "A data engineer creates pipelines that collect this data and move it into a central place, such as a data warehouse or data lake.",
-              "For example, an online store may need daily data from orders, customers, inventory, and ad platforms in one place before anyone can answer, “Which campaign created the most repeat customers?”",
-              "### 2. Making data trustworthy",
-              "Raw data is often incomplete, duplicated, incorrectly formatted, or inconsistent.",
-              "A data engineer transforms it into a version that others can safely use. This might include standardizing dates, removing duplicate orders, handling missing values, and documenting what each field means.",
-              "The goal is simple: when someone sees `revenue` in a report, they should know exactly how it was calculated.",
-              "### 3. Designing the data system",
-              "Data engineers choose how data should move through a company.",
-              "They decide which data should be stored, where it should live, how often it should update, and who should be allowed to access it. They also plan for change. A pipeline that works for 100 customers may fail when the company has 10 million events per day.",
-              "This does not always mean building custom systems. Often, the best solution is a simple managed tool that solves the real problem well.",
-              "### 4. Keeping pipelines reliable",
-              "A pipeline is only useful if it runs when expected.",
-              "Data engineers monitor failures, set up alerts, retry safe operations, and test changes before releasing them. They also schedule dependent jobs in the correct order.",
-              "For example, a daily sales table should not update before the order data has arrived.",
-              "This approach is often called DataOps. It applies software delivery habits, testing, monitoring, and teamwork to data systems.",
-              "### 5. Protecting data",
-              "Some data is sensitive. Think names, email addresses, payment details, health information, or employee records.",
-              "Data engineers help protect it by controlling access, encrypting data where needed, tracking how it is used, and keeping only the data that has a clear purpose.",
-              "Security is not a final checklist item. It is part of how the system is designed.",
-              "### 6. Working with people across the company",
-              "Data engineers work with analysts, data scientists, software engineers, product managers, and business teams.",
-              "A request such as “We need customer churn data” is not yet a technical requirement. The engineer needs to ask follow-up questions:"
-            ]
-          },
-          {
-            kind: "list",
-            items: [
-              "What counts as a churned customer?",
-              "How quickly does the data need to update?",
-              "Who will use it?",
-              "What decision will it support?"
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Clear communication prevents teams from building the wrong thing efficiently."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "Skills to build first",
-            body: [
-              "You do not need to learn every data tool before starting. Focus on these foundations:"
-            ]
-          },
-          {
-            kind: "image",
-            src: skillsToBuildFirstImg,
-            alt: "Skills to build first",
-            caption: "Core skills for data engineers"
-          },
-          {
-            kind: "prose",
-            body: [
-              "Start with SQL. It is the language you will use often, even when working with modern cloud tools."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "A simple example",
-            body: [
-              "Imagine a fitness app where every time a user completes a workout, the app records an event.",
-              "If the product team wants a weekly retention report, a data engineer would build a pipeline to reliably collect, clean, and deliver that data.",
-              "Here is what that process might look like:"
-            ]
-          },
-          {
-            kind: "image",
-            src: fitnessAppImg,
-            alt: "Fitness app data pipeline",
-            caption: "A simple fitness app data pipeline"
-          },
-          {
-            kind: "prose",
-            body: [
-              "The analyst can now build the report without manually combining raw files every week."
-            ]
-          },
-          {
-            kind: "list",
-            heading: "Common mistakes",
-            items: [
-              "**Learning tools before fundamentals:** Learn how data moves and changes before chasing every new platform.",
-              "**Treating data quality as someone else’s problem:** Unclear or broken data reduces trust in every downstream report.",
-              "**Building too much too early:** Use the simplest system that meets the current need and can grow with the company.",
-              "**Ignoring the business question:** A technically impressive pipeline is still a failure if it does not support a useful decision."
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Data engineers create reliable paths from raw data to useful data.",
-              "Their responsibilities include data quality, system design, reliability, security, and collaboration.",
-              "Strong fundamentals matter more than knowing every tool.",
-              "Good data engineering balances business value with cost, simplicity, and scale."
-            ]
-          },
-          {
-            kind: "quiz",
-            questions: [
-              {
-                id: "skills-quiz-1",
-                question: "What is the main goal of a data pipeline?",
-                options: [
-                  "To build machine learning models.",
-                  "To make useful data available reliably.",
-                  "To design business dashboards.",
-                  "To manually combine raw files every week."
-                ],
-                correctIndex: 1,
-                explanation: "The main goal of a data pipeline is to reliably move data from its source to where it can be used."
-              },
-              {
-                id: "skills-quiz-2",
-                question: "Why does a data engineer need communication skills?",
-                options: [
-                  "To write Python scripts faster.",
-                  "To manage their team's vacation schedule.",
-                  "To turn business needs into clear data requirements.",
-                  "To memorize every new data tool."
-                ],
-                correctIndex: 2,
-                explanation: "A data engineer must ask the right questions to understand what the business actually needs before building a solution."
-              },
-              {
-                id: "skills-quiz-3",
-                question: "Which skill should most beginners prioritize first?",
-                options: [
-                  "SQL",
-                  "Advanced orchestration",
-                  "Machine learning",
-                  "Kubernetes"
-                ],
-                correctIndex: 0,
-                explanation: "Start with SQL. It is the core language used to query, combine, and transform data."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        slug: "within-organization",
-        title: "1.4 Data Engineers Within an Organization",
-        subtitle: "Learn where data engineers fit in a company and who their work supports.",
-        sections: [
-          {
-            kind: "prose",
-            heading: "Why this matters",
-            body: [
-              "Data engineers do not work alone. They sit between the systems that produce data and the people or products that need it.",
-              "Understanding this position helps you design better pipelines, ask better questions, and avoid building data systems nobody can use."
-            ]
-          },
-          {
-            kind: "image",
-            src: dataEngineerBridgeImg,
-            alt: "Data Engineer at the core of Data Infrastructure",
-            caption: "The Data Engineer sits at the center of the data ecosystem, connecting data sources to data consumers."
-          },
-          {
-            kind: "prose",
-            heading: "The core idea",
-            body: ["A data engineer connects two sides of an organization:",
-              "**Upstream:** Systems and teams that create raw data.",
-              "**Downstream:** People and systems that use prepared data.",
-            ]
-          },
-          {
-            kind: "image",
-            src: upstreamDownstreamImg,
-            alt: "Upstream vs Downstream",
-            caption: "Connecting data producers to data consumers"
-          },
-          {
-            kind: "prose",
-            body: [
-              "For example, a checkout service produces order events. A data engineer collects and prepares those events. An analyst then uses the prepared data to understand weekly sales."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "Internal-facing and external-facing work",
-            body: []
-          },
-          {
-            kind: "image",
-            src: internalExternalFacingImg,
-            alt: "Internal vs External",
-            caption: "Internal dashboard with daily refresh versus customer app with near real-time updates."
-          },
-          {
-            kind: "prose",
-            body: [
-              "### 1. Internal-facing data engineering",
-              "Internal-facing data engineers build systems for people inside the company.",
-              "Their work often supports:"
-            ]
-          },
-          {
-            kind: "list",
-            items: [
-              "Dashboards and reports",
-              "Business operations",
-              "Analyst queries",
-              "Data science projects",
-              "Machine learning models"
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "For example, an internal sales dashboard may show revenue, refunds, and conversion rate. The data engineer makes sure its underlying data is accurate and updated at the right time."
-            ]
-          },
+      { builder: oppositeEnds, icon: ArrowLeftRight },
+      { builder: fastSlow, icon: Repeat },
+      { builder: dutchFlag, icon: Flag },
+    ],
+  },
+  {
+    slug: "sliding-window",
+    title: "Sliding Window",
+    category: "Arrays",
+    blurb: "A window of contiguous elements expands and contracts as the pointers walk.",
+    lessons: [
+      { builder: fixedSize, icon: SquareStack },
+      { builder: variableExpandShrink, icon: Maximize2 },
+      { builder: monotonicWindow, icon: TrendingUp },
+    ],
+  },
+  {
+    slug: "prefix",
+    title: "Prefix Based",
+    category: "Arrays",
+    blurb: "Precompute cumulative state so range queries become O(1) subtractions.",
+    lessons: [
+      { builder: prefixSum, icon: Sigma },
+      { builder: prefixXor, icon: Sigma },
+      { builder: prefix2D, icon: Layers },
+    ],
+  },
+  {
+    slug: "kadane",
+    title: "Kadane's / Subarray",
+    category: "Arrays",
+    blurb: "Greedy single-pass scans over subarrays — extend or restart.",
+    lessons: [
+      { builder: kadane, icon: TrendingUp },
+      { builder: maxProduct, icon: Triangle },
+      { builder: subarrayGivenXor, icon: Hash },
+    ],
+  },
+  {
+    slug: "binary-search",
+    title: "Binary Search",
+    category: "Arrays",
+    blurb: "Halve the search range each step — on indices, or on the answer itself.",
+    lessons: [
+      { builder: bsearchIndex, icon: Search },
+      { builder: bsearchAnswer, icon: Target },
+    ],
+  },
+  {
+    slug: "matrix",
+    title: "Matrix / 2D Array",
+    category: "Arrays",
+    blurb: "Index-arithmetic patterns over grids — rotations, traversals, transformations.",
+    lessons: [
+      { builder: rotate90, icon: RotateCw },
+      { builder: transposeFlip, icon: FlipHorizontal },
+      { builder: spiral, icon: Compass },
+      { builder: diagonal, icon: Compass },
+    ],
+  },
+  {
+    slug: "sliding-window-string",
+    title: "Sliding Window",
+    category: "Strings",
+    blurb: "Windowed substring problems — distinct chars, cover-of-pattern, anagrams.",
+    lessons: [
+      { builder: longestSubstringNoRepeat, icon: Maximize2 },
+      { builder: minWindowSubstring, icon: Target },
+      { builder: anagramInString, icon: Repeat },
+    ],
+  },
+  {
+    slug: "two-pointers-string",
+    title: "Two Pointers",
+    category: "Strings",
+    blurb: "Mirror/converging pointers and in-place reads-writes over char buffers.",
+    lessons: [
+      { builder: palindromeCheck, icon: ArrowLeftRight },
+      { builder: reverseWords, icon: Repeat },
+      { builder: stringCompression, icon: Hash },
+    ],
+  },
+  {
+    slug: "pattern-matching",
+    title: "Pattern Matching",
+    category: "Strings",
+    blurb: "Exact substring search: KMP failure function, Rabin–Karp rolling hash, Z-algorithm.",
+    lessons: [
+      { builder: kmp, icon: Search },
+      { builder: rabinKarp, icon: Hash },
+      { builder: zAlgorithm, icon: Target },
+    ],
+  },
+  {
+    slug: "hash-frequency",
+    title: "Frequency Based",
+    category: "Hash Map",
+    blurb: "Count occurrences in O(n), then mine the counts for modes, top-K, and majorities.",
+    lessons: [
+      { builder: frequencyCounting, icon: Sigma },
+      { builder: topKFrequent, icon: TrendingUp },
+    ],
+  },
+  {
+    slug: "hash-lookup",
+    title: "Lookup Based",
+    category: "Hash Map",
+    blurb: "Trade an O(n²) pair scan for one pass: hash what you've seen, look up the complement.",
+    lessons: [
+      { builder: twoSum, icon: Target },
+      { builder: subarraySumK, icon: Sigma },
+    ],
+  },
+  {
+    slug: "hash-set",
+    title: "Set Based",
+    category: "Hash Map",
+    blurb: "Membership in O(1) — intersections, dedup, and cycle detection over visited states.",
+    lessons: [
+      { builder: arrayIntersection, icon: Layers },
+      { builder: happyNumber, icon: Repeat },
+    ],
+  },
+  {
+    slug: "hash-index",
+    title: "Index Mapping",
+    category: "Hash Map",
+    blurb: "Store the *index* a value last appeared at — enables window jumps and uniqueness checks.",
+    lessons: [
+      { builder: containsDuplicateK, icon: Search },
+      { builder: firstUniqueChar, icon: Hash },
+    ],
+  },
+  {
+    slug: "hash-grouping",
+    title: "Grouping Pattern",
+    category: "Hash Map",
+    blurb: "Normalize each item to a canonical key; equal keys partition the input into buckets.",
+    lessons: [
+      { builder: groupAnagrams, icon: Layers },
+      { builder: groupShiftedStrings, icon: SquareStack },
+    ],
+  },
+];
 
+export const PATTERN_BY_SLUG: Record<string, PatternEntry> = Object.fromEntries(
+  patterns.map((p) => [p.slug, p]),
+);
+
+// ---- Sidebar roadmap shape ----
+export type RoadmapLesson = {
+  title: string;
+  slug: string;
+  path: string;
+  icon: LucideIcon;
+};
+export type RoadmapPattern = {
+  title: string;
+  slug: string;
+  path?: string;
+  blurb: string;
+  lessons: RoadmapLesson[];
+  locked?: boolean;
+};
+export type RoadmapSection = {
+  title: string;
+  blurb?: string;
+  patterns: RoadmapPattern[];
+};
+export interface RoadmapCategory {
+  title: string;
+  slug: string;
+  icon: LucideIcon | string;
+  blurb: string;
+  /** Optional grouping label shown above the patterns (e.g. "Arrays / Matrix"). */
+  sectionTitle?: string;
+  /** Multiple labelled sub-sections under this category (rendered in order). */
+  sections?: RoadmapSection[];
+  /** Path to the category's overview page when the category is unlocked. */
+  overviewPath?: string;
+  patterns: RoadmapPattern[];
+  locked?: boolean;
+};
+
+const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
+  title: p.title,
+  slug: p.slug,
+  path: `/patterns/${p.slug}`,
+  blurb: p.blurb,
+  lessons: p.lessons.map((l) => ({
+    title: l.builder.title.replace(/^[^—]+—\s*/, ""),
+    slug: l.builder.slug,
+    path: `/patterns/${p.slug}/${l.builder.slug}`,
+    icon: l.icon,
+  })),
+});
+
+const arrayPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Arrays")
+  .map(toRoadmapPattern);
+const stringPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Strings")
+  .map(toRoadmapPattern);
+const hashMapPatterns: RoadmapPattern[] = patterns
+  .filter((p) => p.category === "Hash Map")
+  .map(toRoadmapPattern);
+
+const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
+  title,
+  slug,
+  blurb,
+  lessons: [],
+  locked: true,
+});
+
+export const roadmap: RoadmapCategory[] = [
+  {
+    title: "Patterns (DSA)",
+    slug: "patterns-dsa",
+    icon: dsaLogo,
+    blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
+    overviewPath: "/patterns",
+    sections: [
+      { title: "Arrays / Matrix", patterns: arrayPatterns },
+      { title: "Strings", patterns: stringPatterns },
+      { title: "Hash Map", patterns: hashMapPatterns },
+    ],
+    patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
+  },
+  {
+    title: "SQL Mastery",
+    slug: "sql-mastery",
+    icon: sqlLogo,
+    locked: false,
+    overviewPath: "/sql",
+    blurb: "From joins to query plans — write SQL that scales with your data.",
+    patterns: [
+      lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
+      lockedPattern("Window Functions", "window-functions", "ROW_NUMBER, RANK, LAG/LEAD, framed aggregates — analytics inside SQL."),
+      lockedPattern("CTEs", "ctes", "Common Table Expressions and recursive CTEs for readable, layered queries."),
+      lockedPattern("Optimization", "optimization", "Reading EXPLAIN plans, indexing strategy, and rewriting hot queries."),
+    ],
+  },
+  {
+    title: "System Design",
+    slug: "system-design",
+    icon: systemDesignLogo,
+    locked: false,
+    overviewPath: "/system-design",
+    blurb: "Design systems that survive scale, failure, and traffic spikes.",
+    patterns: [
+      lockedPattern("Getting Started", "getting-started", "Introduction to system design and the interview delivery framework."),
+      lockedPattern("Networking & Protocols", "networking-protocols", "Understand how data travels across the web (OSI, TCP, DNS)."),
+      lockedPattern("Core Concepts & Metrics", "core-metrics", "Measuring performance: Availability, Scalability, and SLAs."),
+      lockedPattern("Databases & DBMS", "databases", "Choosing the right storage: SQL vs NoSQL, OLAP vs OLTP, ACID."),
+      lockedPattern("Scaling Data", "scaling-data", "Distributing data: Replication, Partitioning, Sharding, Consistent Hashing."),
+      lockedPattern("Caching & Content Delivery", "caching", "Reducing latency with caching strategies and CDNs."),
+      lockedPattern("Advanced Data Structures", "data-structures", "Specialized structures like Bloom Filters and Quad Trees."),
+      lockedPattern("Architectural Styles", "architectural-styles", "Monoliths, Microservices, Event-Driven, and Serverless."),
+      lockedPattern("APIs & Security", "apis-security", "REST, GraphQL, gRPC, API Gateways, and OAuth2/JWT."),
+      lockedPattern("Communication Patterns", "communication-patterns", "WebSockets, Message Queues, Pub/Sub, and CDC."),
+      lockedPattern("Distributed Systems", "distributed-systems", "Trading off consistency, availability, and latency."),
+      lockedPattern("System Tradeoffs", "system-tradeoffs", "Balancing constraints: CAP Theorem, Consistency, and Scaling."),
+      lockedPattern("Resilience & Security", "resilience-security", "Circuit Breakers, Chaos Engineering, and Disaster Recovery."),
+      lockedPattern("Big Data Processing", "big-data", "Batch vs Stream Processing, MapReduce, and Data Lakes."),
+      lockedPattern("Case Studies (Capstone)", "case-studies", "Design real-world apps like Twitter, URL Shorteners, and Netflix."),
+    ],
+  },
+  {
+    title: "Data Warehouses",
+    slug: "data-warehouses",
+    icon: dwLogo,
+    locked: false,
+    overviewPath: "/data-warehouses",
+    blurb: "Cloud warehouses, modeling, and the cost/perf knobs that matter.",
+    patterns: [
+      {
+        title: "Data Ecosystems",
+        slug: "data-ecosystems",
+        path: "/data-warehouses/foundations/data-ecosystems",
+        blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
+        lessons: [
           {
-            kind: "prose",
-            body: [
-              "### 2. External-facing data engineering",
-              "External-facing data engineers build systems that directly support customer-facing products.",
-              "Examples include:"
-            ]
+            title: "The Journey of Data",
+            slug: "data-journey",
+            path: "/data-warehouses/foundations/data-ecosystems/data-journey",
+            icon: Activity,
           },
           {
-            kind: "list",
-            items: [
-              "Product recommendations",
-              "Live delivery tracking",
-              "Customer activity feeds",
-              "Connected device data",
-              "In-app analytics"
-            ]
+            title: "OLTP vs. OLAP",
+            slug: "oltp-vs-olap",
+            path: "/data-warehouses/foundations/data-ecosystems/oltp-vs-olap",
+            icon: ArrowLeftRight,
           },
           {
-            kind: "prose",
-            body: [
-              "This work often has stricter requirements. A customer-facing system may need to serve many users at once, respond quickly, and carefully separate one customer’s data from another’s."
-            ]
+            title: "Storing Analytical Data",
+            slug: "analytical-storage",
+            path: "/data-warehouses/foundations/data-ecosystems/analytical-storage",
+            icon: Database,
           },
           {
-            kind: "prose",
-            body: [
-              "### 3. Most roles are a blend",
-              "A company may use the same clean order data for an internal finance report and a customer-facing order tracking feature.",
-              "The needs differ. Internal teams may accept a daily refresh. A customer checking their delivery status expects a much faster answer.",
-              "The data engineer must understand who uses the data and what “good enough” means for that use case."
-            ]
+            title: "Organizing the Landscape",
+            slug: "organizing-data",
+            path: "/data-warehouses/foundations/data-ecosystems/organizing-data",
+            icon: Boxes,
           },
           {
-            kind: "prose",
-            heading: "A simple example",
-            body: [
-              "A food delivery company wants to improve delivery-time estimates.",
-              "The app creates order, driver location, and delivery events. A data engineer prepares this information in two ways:",
-              "A fast data stream powers the delivery estimate shown to customers.",
-              "A daily dataset helps operations teams find slow delivery areas.",
-              "The raw data is similar, but the consumers and requirements are different."
-            ]
+            title: "Database Engines",
+            slug: "database-engines",
+            path: "/data-warehouses/foundations/data-ecosystems/database-engines",
+            icon: Server,
           },
           {
-            kind: "image",
-            src: foodDeliveryExampleImg,
-            alt: "Food delivery example",
-            caption: "Food delivery data pipeline for different requirements"
+            title: "Modern Data Warehouses",
+            slug: "data-warehouses",
+            path: "/data-warehouses/foundations/data-ecosystems/data-warehouses",
+            icon: Cloud,
+          },
+        ],
+      },
+      {
+        title: "Data Formats & Storage",
+        slug: "data-formats",
+        path: "/data-warehouses/foundations/data-formats",
+        blurb: "Understanding how data is stored, compressed, and managed at scale.",
+        lessons: [
+          {
+            title: "Human-Readable Formats",
+            slug: "human-readable",
+            path: "/data-warehouses/foundations/data-formats/human-readable",
+            icon: FileCode,
           },
           {
-            kind: "takeaways",
-            items: [
-              "Data engineers connect data producers with data consumers.",
-              "Internal-facing work supports teams inside the company.",
-              "External-facing work supports customer-facing products.",
-              "The same raw data can serve different users with different requirements."
-            ]
+            title: "Row vs. Columnar",
+            slug: "columnar-formats",
+            path: "/data-warehouses/foundations/data-formats/columnar-formats",
+            icon: SquareStack,
           },
           {
-            kind: "quiz",
-            questions: [
-              {
-                id: "org-quiz-1",
-                question: "What is an upstream stakeholder?",
-                options: [
-                  "A person or system that creates or provides source data.",
-                  "A person or system that uses prepared data.",
-                  "An analyst building dashboards.",
-                  "A customer viewing their activity feed."
-                ],
-                correctIndex: 0,
-                explanation: "Upstream stakeholders (producers) are the source of the data."
-              },
-              {
-                id: "org-quiz-2",
-                question: "What is a downstream stakeholder?",
-                options: [
-                  "A person or system that creates or provides source data.",
-                  "A person or system that uses prepared data.",
-                  "A database server generating logs.",
-                  "A third-party API."
-                ],
-                correctIndex: 1,
-                explanation: "Downstream stakeholders (consumers) use the data that has been prepared."
-              },
-              {
-                id: "org-quiz-3",
-                question: "Why might internal and external data systems need different designs?",
-                options: [
-                  "Because internal teams don't care about data quality.",
-                  "They can have different needs for speed, scale, security, and reliability.",
-                  "External data systems always use SQL, while internal systems use Python.",
-                  "Internal systems never need to be updated."
-                ],
-                correctIndex: 1,
-                explanation: "Customer-facing (external) systems often have stricter requirements for speed, uptime, and security compared to an internal daily report."
-              }
-            ]
+            title: "Open Table Formats",
+            slug: "open-table-formats",
+            path: "/data-warehouses/foundations/data-formats/open-table-formats",
+            icon: Layers,
+          },
+          {
+            title: "Block, File & Object",
+            slug: "storage-types",
+            path: "/data-warehouses/foundations/data-formats/storage-types",
+            icon: Container,
+          },
+          {
+            title: "Cloud Object Storage",
+            slug: "cloud-storage",
+            path: "/data-warehouses/foundations/data-formats/cloud-storage",
+            icon: Cloud,
+          },
+          {
+            title: "Distributed File Systems",
+            slug: "distributed-file-systems",
+            path: "/data-warehouses/foundations/data-formats/distributed-file-systems",
+            icon: Server,
+          },
+          {
+            title: "Data Compression",
+            slug: "data-compression",
+            path: "/data-warehouses/foundations/data-formats/data-compression",
+            icon: Hash,
+          },
+          {
+            title: "In-Memory Storage",
+            slug: "in-memory-storage",
+            path: "/data-warehouses/foundations/data-formats/in-memory-storage",
+            icon: Activity,
+          },
+        ],
+      },
+      lockedPattern("Snowflake", "snowflake", "Virtual warehouses, micro-partitions, clustering, and Snowpark fundamentals."),
+      lockedPattern("BigQuery", "bigquery", "Slots, partitioning & clustering, BI Engine, and cost-aware query design."),
+      lockedPattern("Amazon Redshift", "redshift", "Distribution styles, sort keys, RA3 nodes, and workload management."),
+    ],
+  },
+  {
+    title: "Web Scraping",
+    slug: "web-scraping",
+    icon: webScraperLogo,
+    locked: false,
+    overviewPath: "/web-scraping",
+    blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
+    patterns: [
+      {
+        title: "HTTP Foundations",
+        slug: "http-foundations",
+        path: "/web-scraping/foundations/http-foundations",
+        blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
+        lessons: [
+          { title: "How the Web Works", slug: "how-the-web-works", path: "/web-scraping/foundations/http-foundations/how-the-web-works", icon: Globe },
+          { title: "HTTP Methods & Status Codes", slug: "http-methods-and-status-codes", path: "/web-scraping/foundations/http-foundations/http-methods-and-status-codes", icon: ShieldAlert },
+          { title: "Headers & Cookies", slug: "headers-and-cookies", path: "/web-scraping/foundations/http-foundations/headers-and-cookies", icon: LockKeyhole },
+          { title: "The Document Object Model (DOM)", slug: "the-dom", path: "/web-scraping/foundations/http-foundations/the-dom", icon: Search },
+          { title: "Developer Tools (Inspecting Elements)", slug: "developer-tools", path: "/web-scraping/foundations/http-foundations/developer-tools", icon: Wrench },
+          { title: "Client-Side vs Server-Side Rendering", slug: "dynamic-vs-static-content", path: "/web-scraping/foundations/http-foundations/dynamic-vs-static-content", icon: Layers },
+        ],
+      },
+      {
+        title: "Static Scraping",
+        slug: "static-scraping",
+        path: "/web-scraping/foundations/static-scraping",
+        blurb: "Fetch raw HTML and parse it efficiently to extract exactly what you need.",
+        lessons: [
+          { title: "Your First Request", slug: "your-first-request", path: "/web-scraping/foundations/static-scraping/your-first-request", icon: Search },
+          { title: "Parsing HTML with BeautifulSoup", slug: "parsing-html-beautifulsoup", path: "/web-scraping/foundations/static-scraping/parsing-html-beautifulsoup", icon: Search },
+          { title: "CSS Selectors in Practice", slug: "css-selectors", path: "/web-scraping/foundations/static-scraping/css-selectors", icon: Search },
+          { title: "XPath and lxml", slug: "xpath-and-lxml", path: "/web-scraping/foundations/static-scraping/xpath-and-lxml", icon: Search },
+          { title: "Extracting Text and Attributes", slug: "extracting-text-attributes", path: "/web-scraping/foundations/static-scraping/extracting-text-attributes", icon: Search },
+          { title: "Following Pagination", slug: "following-pagination", path: "/web-scraping/foundations/static-scraping/following-pagination", icon: Search },
+        ],
+      },
+      {
+        title: "Cleaning & Storing",
+        slug: "cleaning-and-storing",
+        path: "/web-scraping/foundations/cleaning-and-storing",
+        blurb: "Transform messy text into structured formats and save it to databases or CSVs.",
+        lessons: [
+          { title: "Defining Your Schema First", slug: "defining-your-schema", path: "/web-scraping/foundations/cleaning-and-storing/defining-your-schema", icon: Database },
+          { title: "Regex for Extraction", slug: "regex-for-extraction", path: "/web-scraping/foundations/cleaning-and-storing/regex-for-extraction", icon: Database },
+          { title: "Normalizing Data", slug: "normalizing-data", path: "/web-scraping/foundations/cleaning-and-storing/normalizing-data", icon: Database },
+          { title: "Pandas for Scraped Data", slug: "pandas-for-scraped-data", path: "/web-scraping/foundations/cleaning-and-storing/pandas-for-scraped-data", icon: Database },
+          { title: "Exporting to CSV, JSON, and JSONL", slug: "exporting-csv-json", path: "/web-scraping/foundations/cleaning-and-storing/exporting-csv-json", icon: Database },
+          { title: "Storing in SQLite and Postgres", slug: "storing-sqlite-postgres", path: "/web-scraping/foundations/cleaning-and-storing/storing-sqlite-postgres", icon: Database },
+        ],
+      },
+      {
+        title: "Finding the Hidden API",
+        slug: "hidden-api",
+        path: "/web-scraping/automation/hidden-api",
+        blurb: "Skip HTML entirely by discovering the JSON APIs that power the frontend.",
+        lessons: [
+          { title: "Check for an API First", slug: "check-api-first", path: "/web-scraping/automation/hidden-api/check-api-first", icon: Compass },
+          { title: "Reverse-Engineering the Network Tab", slug: "reverse-engineering-network", path: "/web-scraping/automation/hidden-api/reverse-engineering-network", icon: Compass },
+          { title: "Replaying Requests in Python", slug: "replaying-requests-python", path: "/web-scraping/automation/hidden-api/replaying-requests-python", icon: Compass },
+          { title: "GraphQL and REST Endpoints", slug: "graphql-and-rest", path: "/web-scraping/automation/hidden-api/graphql-and-rest", icon: Compass },
+          { title: "Sitemaps and Feeds", slug: "sitemaps-and-feeds", path: "/web-scraping/automation/hidden-api/sitemaps-and-feeds", icon: Compass },
+        ],
+      },
+      {
+        title: "Browser Automation",
+        slug: "browser-automation",
+        path: "/web-scraping/automation/browser-automation",
+        blurb: "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks.",
+        lessons: [
+          { title: "When You Actually Need a Browser", slug: "when-you-need-browser", path: "/web-scraping/automation/browser-automation/when-you-need-browser", icon: Settings },
+          { title: "Playwright Basics", slug: "playwright-basics", path: "/web-scraping/automation/browser-automation/playwright-basics", icon: Settings },
+          { title: "Waiting Correctly", slug: "waiting-correctly", path: "/web-scraping/automation/browser-automation/waiting-correctly", icon: Settings },
+          { title: "Interacting with Pages", slug: "interacting-with-pages", path: "/web-scraping/automation/browser-automation/interacting-with-pages", icon: Settings },
+          { title: "Intercepting Network Traffic", slug: "intercepting-network-traffic", path: "/web-scraping/automation/browser-automation/intercepting-network-traffic", icon: Settings },
+          { title: "Playwright vs Selenium", slug: "playwright-vs-selenium", path: "/web-scraping/automation/browser-automation/playwright-vs-selenium", icon: Settings },
+        ],
+      },
+      {
+        title: "Authenticated Scraping",
+        slug: "authenticated-scraping",
+        path: "/web-scraping/automation/authenticated-scraping",
+        blurb: "Handle cookies, tokens, CSRF, and state to scrape behind login walls safely.",
+        lessons: [
+          { title: "Session Objects and Cookie Persistence", slug: "session-objects", path: "/web-scraping/automation/authenticated-scraping/session-objects", icon: LockKeyhole },
+          { title: "Form Logins and CSRF Tokens", slug: "form-logins-csrf", path: "/web-scraping/automation/authenticated-scraping/form-logins-csrf", icon: LockKeyhole },
+          { title: "Token-Based Auth", slug: "token-based-auth", path: "/web-scraping/automation/authenticated-scraping/token-based-auth", icon: LockKeyhole },
+          { title: "Reusing Browser Auth State", slug: "reusing-browser-auth", path: "/web-scraping/automation/authenticated-scraping/reusing-browser-auth", icon: LockKeyhole },
+          { title: "What You Should Not Log Into", slug: "what-not-to-login", path: "/web-scraping/automation/authenticated-scraping/what-not-to-login", icon: LockKeyhole },
+        ],
+      },
+      {
+        title: "Async Fetching",
+        slug: "async-fetching",
+        path: "/web-scraping/automation/async-fetching",
+        blurb: "Speed up your scrapers 100x using threads, asyncio, and semaphores.",
+        lessons: [
+          { title: "Why Sequential Scraping Is Slow", slug: "why-sequential-is-slow", path: "/web-scraping/automation/async-fetching/why-sequential-is-slow", icon: Repeat },
+          { title: "Threads and Processes", slug: "threads-and-processes", path: "/web-scraping/automation/async-fetching/threads-and-processes", icon: Repeat },
+          { title: "Asyncio and httpx", slug: "asyncio-and-httpx", path: "/web-scraping/automation/async-fetching/asyncio-and-httpx", icon: Repeat },
+          { title: "Controlling Concurrency", slug: "controlling-concurrency", path: "/web-scraping/automation/async-fetching/controlling-concurrency", icon: Repeat },
+          { title: "Retries and Timeouts in Async Code", slug: "retries-and-timeouts", path: "/web-scraping/automation/async-fetching/retries-and-timeouts", icon: Repeat },
+        ],
+      },
+      {
+        title: "The Scrapy Framework",
+        slug: "scrapy-framework",
+        path: "/web-scraping/automation/scrapy-framework",
+        blurb: "Build high-performance, asynchronous web crawling spiders that scale.",
+        lessons: [
+          { title: "Why a Framework", slug: "why-a-framework", path: "/web-scraping/automation/scrapy-framework/why-a-framework", icon: Boxes },
+          { title: "Spiders and Requests", slug: "spiders-and-requests", path: "/web-scraping/automation/scrapy-framework/spiders-and-requests", icon: Boxes },
+          { title: "Items, ItemLoaders, and Pipelines", slug: "items-and-pipelines", path: "/web-scraping/automation/scrapy-framework/items-and-pipelines", icon: Boxes },
+          { title: "Middlewares", slug: "middlewares", path: "/web-scraping/automation/scrapy-framework/middlewares", icon: Boxes },
+          { title: "The Scrapy Shell", slug: "scrapy-shell", path: "/web-scraping/automation/scrapy-framework/scrapy-shell", icon: Boxes },
+          { title: "Scrapy with Playwright", slug: "scrapy-with-playwright", path: "/web-scraping/automation/scrapy-framework/scrapy-with-playwright", icon: Boxes },
+        ],
+      },
+      {
+        title: "Robustness and Politeness",
+        slug: "scale-and-politeness",
+        path: "/web-scraping/scale/scale-and-politeness",
+        blurb: "Manage rate limits, handle retries, rotate proxies, and respect robots.txt.",
+        lessons: [
+          { title: "Reading robots.txt Properly", slug: "reading-robots-txt", path: "/web-scraping/scale/scale-and-politeness/reading-robots-txt", icon: Server },
+          { title: "Rate Limiting and Throttling", slug: "rate-limiting-throttling", path: "/web-scraping/scale/scale-and-politeness/rate-limiting-throttling", icon: Server },
+          { title: "Retry Strategy", slug: "retry-strategy", path: "/web-scraping/scale/scale-and-politeness/retry-strategy", icon: Server },
+          { title: "Handling Bans and Blocks", slug: "handling-bans", path: "/web-scraping/scale/scale-and-politeness/handling-bans", icon: Server },
+          { title: "Proxy Rotation", slug: "proxy-rotation", path: "/web-scraping/scale/scale-and-politeness/proxy-rotation", icon: Server },
+          { title: "Failing Loudly", slug: "failing-loudly", path: "/web-scraping/scale/scale-and-politeness/failing-loudly", icon: Server },
+        ],
+      },
+      {
+        title: "Anti-Bot Systems",
+        slug: "anti-bot-systems",
+        path: "/web-scraping/scale/anti-bot-systems",
+        blurb: "Understand how websites fingerprint you and when you've triggered an escalation.",
+        lessons: [
+          { title: "How Detection Works", slug: "how-detection-works", path: "/web-scraping/scale/anti-bot-systems/how-detection-works", icon: ShieldAlert },
+          { title: "Browser Fingerprinting", slug: "browser-fingerprinting", path: "/web-scraping/scale/anti-bot-systems/browser-fingerprinting", icon: ShieldAlert },
+          { title: "Detecting Captchas and Walls", slug: "detecting-captchas", path: "/web-scraping/scale/anti-bot-systems/detecting-captchas", icon: ShieldAlert },
+          { title: "Knowing When to Stop", slug: "knowing-when-to-stop", path: "/web-scraping/scale/anti-bot-systems/knowing-when-to-stop", icon: ShieldAlert },
+        ],
+      },
+      {
+        title: "The Legal and Ethical Line",
+        slug: "legal-and-ethical",
+        path: "/web-scraping/scale/legal-and-ethical",
+        blurb: "Public data vs protected data, ToS, and scraping personal information.",
+        lessons: [
+          { title: "Public Data vs Protected Data", slug: "public-vs-protected-data", path: "/web-scraping/scale/legal-and-ethical/public-vs-protected-data", icon: Activity },
+          { title: "Terms of Service, CFAA, and hiQ v LinkedIn", slug: "tos-cfaa-hiq", path: "/web-scraping/scale/legal-and-ethical/tos-cfaa-hiq", icon: Activity },
+          { title: "Personal Data, GDPR, and CCPA", slug: "personal-data-gdpr", path: "/web-scraping/scale/legal-and-ethical/personal-data-gdpr", icon: Activity },
+          { title: "Copyright and Database Rights", slug: "copyright-database-rights", path: "/web-scraping/scale/legal-and-ethical/copyright-database-rights", icon: Activity },
+        ],
+      },
+      {
+        title: "Scrapers in Production",
+        slug: "scrapers-in-production",
+        path: "/web-scraping/scale/scrapers-in-production",
+        blurb: "Incremental scraping, deduplication, alerting, and containerizing your pipelines.",
+        lessons: [
+          { title: "Incremental Scraping", slug: "incremental-scraping", path: "/web-scraping/scale/scrapers-in-production/incremental-scraping", icon: Terminal },
+          { title: "Deduplication at Scale", slug: "deduplication-scale", path: "/web-scraping/scale/scrapers-in-production/deduplication-scale", icon: Terminal },
+          { title: "Scheduling", slug: "scheduling", path: "/web-scraping/scale/scrapers-in-production/scheduling", icon: Terminal },
+          { title: "Containerizing a Scraper", slug: "containerizing-scraper", path: "/web-scraping/scale/scrapers-in-production/containerizing-scraper", icon: Terminal },
+          { title: "Monitoring and Alerting", slug: "monitoring-alerting", path: "/web-scraping/scale/scrapers-in-production/monitoring-alerting", icon: Terminal },
+          { title: "Handling Schema Drift", slug: "handling-schema-drift", path: "/web-scraping/scale/scrapers-in-production/handling-schema-drift", icon: Terminal },
+        ],
+      },
+      {
+        title: "AI-Driven Extraction",
+        slug: "ai-agents",
+        path: "/web-scraping/scale/ai-agents",
+        blurb: "Use LLMs and vision models to navigate pages and extract unstructured data automatically.",
+        lessons: [
+          { title: "LLM Extraction from HTML", slug: "llm-extraction", path: "/web-scraping/scale/ai-agents/llm-extraction", icon: Bot },
+          { title: "DOM to Markdown", slug: "dom-to-markdown", path: "/web-scraping/scale/ai-agents/dom-to-markdown", icon: Bot },
+          { title: "Vision Models for Layout", slug: "vision-models", path: "/web-scraping/scale/ai-agents/vision-models", icon: Bot },
+          { title: "Auto-Navigating Agents", slug: "auto-navigating-agents", path: "/web-scraping/scale/ai-agents/auto-navigating-agents", icon: Bot },
+          { title: "Cost, Latency, and Determinism", slug: "cost-latency-determinism", path: "/web-scraping/scale/ai-agents/cost-latency-determinism", icon: Bot },
+        ],
+      },
+      {
+        title: "Capstone",
+        slug: "capstone",
+        path: "/web-scraping/scale/capstone",
+        blurb: "Build an end-to-end scalable pipeline, from target discovery to publishing.",
+        lessons: [
+          { title: "Choosing a Target and Scoping the Dataset", slug: "choosing-target", path: "/web-scraping/scale/capstone/choosing-target", icon: FileCode },
+          { title: "Building the Pipeline", slug: "building-pipeline", path: "/web-scraping/scale/capstone/building-pipeline", icon: FileCode },
+          { title: "Deploying and Scheduling It", slug: "deploying-scheduling", path: "/web-scraping/scale/capstone/deploying-scheduling", icon: FileCode },
+          { title: "Publishing the Dataset and Writing It Up", slug: "publishing-dataset", path: "/web-scraping/scale/capstone/publishing-dataset", icon: FileCode },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Docker",
+    slug: "docker",
+    icon: dockerLogo,
+    locked: false,
+    overviewPath: "/docker",
+    blurb: "From container foundations to advanced multi-container orchestration.",
+    patterns: [
+      {
+        title: "Docker & Containers",
+        slug: "what-is-docker",
+        path: "/docker/foundations/what-is-docker",
+        blurb: "Why Docker exists, how it stacks up against VMs, and how to run your first container.",
+        lessons: [
+          {
+            title: "Why Docker Exists",
+            slug: "why-docker-exists",
+            path: "/docker/foundations/what-is-docker/why-docker-exists",
+            icon: Lightbulb,
+          },
+          {
+            title: "Containers vs Virtual Machines",
+            slug: "containers-vs-vms",
+            path: "/docker/foundations/what-is-docker/containers-vs-vms",
+            icon: Container,
+          },
+          {
+            title: "Terminal Prerequisites",
+            slug: "terminal-prerequisites",
+            path: "/docker/foundations/what-is-docker/terminal-prerequisites",
+            icon: Terminal,
+          },
+          {
+            title: "Setting Up Docker",
+            slug: "setting-up-docker",
+            path: "/docker/foundations/what-is-docker/setting-up-docker",
+            icon: Download,
+          },
+          {
+            title: "Docker Architecture",
+            slug: "docker-architecture",
+            path: "/docker/foundations/what-is-docker/docker-architecture",
+            icon: Server,
+          },
+          {
+            title: "Your First Container",
+            slug: "your-first-container",
+            path: "/docker/foundations/what-is-docker/your-first-container",
+            icon: PlayCircle,
+          },
+          {
+            title: "Basic Docker Commands",
+            slug: "basic-docker-commands",
+            path: "/docker/foundations/what-is-docker/basic-docker-commands",
+            icon: Command,
+          },
+          {
+            title: "Docker Run Commands",
+            slug: "docker-run-commands",
+            path: "/docker/foundations/what-is-docker/docker-run-commands",
+            icon: PlayCircle,
+          },
+        ],
+      },
+      {
+        title: "Images and Containers",
+        slug: "images-and-containers",
+        path: "/docker/foundations/images-and-containers",
+        blurb: "Master the core lifecycle of Docker: building images, running containers, and debugging running environments.",
+        lessons: [
+          {
+            title: "What is a Docker Image?",
+            slug: "what-is-a-docker-image",
+            path: "/docker/foundations/images-and-containers/what-is-a-docker-image",
+            icon: Layers,
+          },
+          {
+            title: "Pulling and Inspecting Images",
+            slug: "pulling-and-inspecting-images",
+            path: "/docker/foundations/images-and-containers/pulling-and-inspecting-images",
+            icon: Search,
+          },
+          {
+            title: "Running Containers",
+            slug: "running-containers",
+            path: "/docker/foundations/images-and-containers/running-containers",
+            icon: PlayCircle,
+          },
+          {
+            title: "Mastering the Container Lifecycle",
+            slug: "mastering-container-lifecycle",
+            path: "/docker/foundations/images-and-containers/mastering-container-lifecycle",
+            icon: Activity,
+          },
+          {
+            title: "Passing Configuration: ARG vs. ENV",
+            slug: "passing-configuration",
+            path: "/docker/foundations/images-and-containers/passing-configuration",
+            icon: Settings,
+          },
+          {
+            title: "Debugging Containers",
+            slug: "debugging-containers",
+            path: "/docker/foundations/images-and-containers/debugging-containers",
+            icon: Terminal,
+          },
+          {
+            title: "Cleaning Up Images and Containers",
+            slug: "cleaning-up",
+            path: "/docker/foundations/images-and-containers/cleaning-up",
+            icon: Trash2,
+          },
+          {
+            title: "Writing a Dockerfile",
+            slug: "writing-a-dockerfile",
+            path: "/docker/foundations/images-and-containers/writing-a-dockerfile",
+            icon: FileCode,
+          },
+          {
+            title: "CMD vs. ENTRYPOINT",
+            slug: "cmd-vs-entrypoint",
+            path: "/docker/foundations/images-and-containers/cmd-vs-entrypoint",
+            icon: Command,
+          },
+          {
+            title: "Image Building & Caching",
+            slug: "image-building-caching",
+            path: "/docker/foundations/images-and-containers/image-building-caching",
+            icon: Wrench,
+          },
+          {
+            title: "Publishing Images",
+            slug: "publishing-images",
+            path: "/docker/foundations/images-and-containers/publishing-images",
+            icon: Upload,
+          },
+          {
+            title: "Images & Containers Quiz",
+            slug: "images-containers-quiz",
+            path: "/docker/foundations/images-and-containers/images-containers-quiz",
+            icon: HelpCircle,
+          },
+        ],
+      },
+      {
+        title: "Networking & Storage",
+        slug: "networking-storage",
+        path: "/docker/foundations/networking-storage",
+        blurb: "Connecting containers and persisting data with volumes and bind mounts.",
+        lessons: [],
+      },
+      lockedPattern("Docker Compose", "compose", "Declarative multi-container applications and local dev environments."),
+      lockedPattern("Advanced Docker", "advanced", "Multi-stage builds, security, and registry management."),
+    ],
+  },
+  {
+    title: "Terraform",
+    slug: "terraform",
+    icon: terraformLogo,
+    locked: false,
+    overviewPath: "/terraform",
+    blurb: "Infrastructure as Code for provisioning and managing cloud resources.",
+    patterns: [
+      lockedPattern("Infrastructure as Code", "iac-fundamentals", "Why IaC, declarative vs imperative, and the core workflow."),
+      lockedPattern("Terraform Basics", "basics", "Providers, resources, data sources, and state file intro."),
+      lockedPattern("Variables & Outputs", "variables-outputs", "Parameterizing your infrastructure with locals and variables."),
+      lockedPattern("HCL Logic", "hcl-logic", "Loops, conditionals, dynamic blocks, and built-in functions."),
+      lockedPattern("Modules", "modules", "Creating and consuming reusable infrastructure components."),
+      lockedPattern("State Management", "state-management", "Remote backends, state locking, and state manipulation."),
+      lockedPattern("Environments", "workspaces-envs", "Managing dev, staging, and production with workspaces."),
+      lockedPattern("CI/CD & Automation", "ci-cd-terraform", "Automating deployments with GitHub Actions and Terraform Cloud."),
+      lockedPattern("Capstone", "capstone", "Provision a highly-available cloud architecture from scratch."),
+    ],
+  },
+  {
+    title: "Git / GitHub",
+    slug: "git-github",
+    icon: gitLogo,
+    locked: false,
+    overviewPath: "/git-github",
+    blurb: "Version control, branching strategies, and collaboration workflows.",
+    patterns: [
+      lockedPattern("Git Fundamentals", "git-fundamentals", "Commits, history, and the working tree."),
+      lockedPattern("Branching & Merging", "branching-merging", "Parallel development and combining work with merges."),
+      lockedPattern("Remotes & Collaboration", "remotes", "Working with remote repositories and fetch vs pull."),
+      lockedPattern("Rewriting History", "rewriting-history", "Interactive rebase, amend, and squashing commits."),
+      lockedPattern("Undoing Mistakes", "undoing-things", "Resetting, reverting, and using the reflog."),
+      lockedPattern("Detective Work", "detective-work", "Finding bugs with git bisect and git blame."),
+      lockedPattern("Pull Requests & Review", "pull-requests", "Collaborating on code with branch protection and CODEOWNERS."),
+      lockedPattern("GitHub Actions", "github-actions", "Automating tests and deployments with CI/CD pipelines."),
+      lockedPattern("Team Workflows", "workflows", "GitHub Flow, GitFlow, and trunk-based development strategies."),
+      lockedPattern("Capstone", "capstone", "Simulate a real-world team project: branching, reviewing, and releasing."),
+    ],
+  },
+  {
+    title: "Python",
+    slug: "python",
+    icon: pythonLogo,
+    locked: true,
+    overviewPath: "/python",
+    blurb: "Master Python from basic syntax to advanced asynchronous programming.",
+    patterns: [
+      lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
+      lockedPattern("Data Structures", "data-structures", "Lists, dictionaries, sets, and tuples."),
+      lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
+      lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
+      lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
+    ],
+  },
+  {
+    title: "Pandas",
+    slug: "pandas",
+    icon: pandasLogo,
+    locked: false,
+    overviewPath: "/pandas",
+    blurb: "Master data manipulation and analysis with Pandas.",
+    patterns: [
+      lockedPattern("DataFrames & Series", "dataframes-series", "Core Pandas data structures and basic operations."),
+      lockedPattern("Data Cleaning", "data-cleaning", "Handling missing values, duplicates, and data types."),
+      lockedPattern("Data Aggregation", "data-aggregation", "Group by, merge, join, and pivot tables."),
+    ],
+  },
+  {
+    title: "Fundamentals of Data Engineering",
+    slug: "data-engineering",
+    icon: dataEngineeringLogo,
+    locked: false,
+    overviewPath: "/data-engineering",
+    blurb: "Core principles, lifecycle, architecture, and undercurrents of data engineering.",
+    patterns: [],
+    sections: [
+      {
+        title: "Part I — Data Engineering Foundations",
+        blurb: "The core concepts, lifecycle stages, and architectural principles that form the bedrock of data engineering.",
+        patterns: [
+          {
+            title: "1. Understanding the Data Engineering Discipline",
+            slug: "data-engineering-described",
+            path: "/data-engineering/data-engineering-described",
+            blurb: "What is data engineering, its lifecycle, evolution, and required skills.",
+            lessons: [
+              { title: "1.1 What Data Engineering Means", slug: "what-data-engineering-means", path: "/data-engineering/data-engineering-described/what-data-engineering-means", icon: Activity },
+              { title: "1.2 Data Landscape", slug: "data-landscape", path: "/data-engineering/data-engineering-described/data-landscape", icon: Activity },
+              { title: "1.3 Data Engineering Skills and Responsibilities", slug: "skills-and-responsibilities", path: "/data-engineering/data-engineering-described/skills-and-responsibilities", icon: Activity },
+              { title: "1.4 Data Engineers Within an Organization", slug: "within-organization", path: "/data-engineering/data-engineering-described/within-organization", icon: Activity },
+              { title: "1.5 Working With Stakeholders and Data Requirements", slug: "working-with-stakeholders", path: "/data-engineering/data-engineering-described/working-with-stakeholders", icon: Activity },
+            ],
+          },
+          {
+            title: "2. The End-to-End Data Journey",
+            slug: "data-engineering-lifecycle",
+            path: "/data-engineering/data-engineering-lifecycle",
+            blurb: "Generation, Storage, Ingestion, Transformation, and Serving Data.",
+            lessons: [
+              { title: "2.1 The Data Engineering Lifecycle", slug: "data-engineering-lifecycle-intro", path: "/data-engineering/data-engineering-lifecycle/data-engineering-lifecycle-intro", icon: Repeat },
+              { title: "2.2 Core Stages of the Data Journey", slug: "core-stages", path: "/data-engineering/data-engineering-lifecycle/core-stages", icon: Repeat },
+              { title: "2.3 Cross-Cutting Engineering Practices", slug: "cross-cutting", path: "/data-engineering/data-engineering-lifecycle/cross-cutting", icon: Repeat },
+            ],
+          },
+          {
+            title: "3. Designing Scalable Data Platforms",
+            slug: "designing-data-architecture",
+            path: "/data-engineering/designing-data-architecture",
+            blurb: "Fundamentals of architecture, principles, patterns, and platforms.",
+            lessons: [
+              { title: "3.1 Fundamentals of Data Architecture", slug: "fundamentals-of-data-architecture", path: "/data-engineering/designing-data-architecture/fundamentals-of-data-architecture", icon: Layers },
+              { title: "3.2 Principles for Reliable and Scalable Systems", slug: "principles-reliable-scalable", path: "/data-engineering/designing-data-architecture/principles-reliable-scalable", icon: Layers },
+              { title: "3.3 Common Data Architecture Patterns", slug: "common-architecture-patterns", path: "/data-engineering/designing-data-architecture/common-architecture-patterns", icon: Layers },
+              { title: "3.4 Modern Data Platform Architectures", slug: "modern-platform-architectures", path: "/data-engineering/designing-data-architecture/modern-platform-architectures", icon: Layers },
+            ],
+          },
+          {
+            title: "4. Selecting the Right Data Technologies",
+            slug: "choosing-technologies",
+            path: "/data-engineering/choosing-technologies",
+            blurb: "Evaluating technology choices, deployment models, and trade-offs.",
+            lessons: [
+              { title: "4.1 Evaluating Technology Choices", slug: "evaluating-technology-choices", path: "/data-engineering/choosing-technologies/evaluating-technology-choices", icon: Settings },
+              { title: "4.2 Cloud, Infrastructure, and Deployment Models", slug: "cloud-infrastructure-deployment", path: "/data-engineering/choosing-technologies/cloud-infrastructure-deployment", icon: Settings },
+              { title: "4.3 Build, Buy, and Open Source Decisions", slug: "build-buy-open-source", path: "/data-engineering/choosing-technologies/build-buy-open-source", icon: Settings },
+              { title: "4.4 Architecture and Performance Trade-Offs", slug: "architecture-performance-tradeoffs", path: "/data-engineering/choosing-technologies/architecture-performance-tradeoffs", icon: Settings },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Part II — The Data Engineering Pipeline",
+        blurb: "How data is generated in source systems, stored efficiently, and ingested into the data platform.",
+        patterns: [
+          {
+            title: "5. Where Data Comes From",
+            slug: "data-generation",
+            path: "/data-engineering/data-generation",
+            blurb: "Databases, APIs, change data capture, logs, and streaming platforms.",
+            lessons: [
+              { title: "5.1 Understanding Data Sources", slug: "understanding-data-sources", path: "/data-engineering/data-generation/understanding-data-sources", icon: Server },
+              { title: "5.2 Databases, APIs, Files, and Logs", slug: "databases-apis-files-logs", path: "/data-engineering/data-generation/databases-apis-files-logs", icon: Server },
+              { title: "5.3 Events, Messages, and Change Data", slug: "events-messages-change-data", path: "/data-engineering/data-generation/events-messages-change-data", icon: Server },
+              { title: "5.4 Working With External and Shared Data", slug: "external-shared-data", path: "/data-engineering/data-generation/external-shared-data", icon: Server },
+            ],
+          },
+          {
+            title: "6. Building the Data Storage Layer",
+            slug: "storage-deep-dive",
+            path: "/data-engineering/storage-deep-dive",
+            blurb: "Foundations, systems, data organization, and modern architectures.",
+            lessons: [
+              { title: "6.1 Foundations of Data Storage", slug: "foundations-data-storage", path: "/data-engineering/storage-deep-dive/foundations-data-storage", icon: Database },
+              { title: "6.2 Storage Systems and Data Platforms", slug: "storage-systems-platforms", path: "/data-engineering/storage-deep-dive/storage-systems-platforms", icon: Database },
+              { title: "6.3 Data Organization and Performance", slug: "data-organization-performance", path: "/data-engineering/storage-deep-dive/data-organization-performance", icon: Database },
+              { title: "6.4 Modern Storage Architectures", slug: "modern-storage-architectures", path: "/data-engineering/storage-deep-dive/modern-storage-architectures", icon: Database },
+            ],
+          },
+          {
+            title: "7. Moving Data Into the Platform",
+            slug: "ingestion-deep-dive",
+            path: "/data-engineering/ingestion-deep-dive",
+            blurb: "Ingestion fundamentals, batch, streaming, and operational considerations.",
+            lessons: [
+              { title: "7.1 Data Ingestion Fundamentals", slug: "data-ingestion-fundamentals", path: "/data-engineering/ingestion-deep-dive/data-ingestion-fundamentals", icon: Download },
+              { title: "7.2 Batch and Incremental Ingestion", slug: "batch-incremental-ingestion", path: "/data-engineering/ingestion-deep-dive/batch-incremental-ingestion", icon: Download },
+              { title: "7.3 Streaming and Event-Based Ingestion", slug: "streaming-event-based-ingestion", path: "/data-engineering/ingestion-deep-dive/streaming-event-based-ingestion", icon: Download },
+              { title: "7.4 Ingestion Patterns and Technologies", slug: "ingestion-patterns-technologies", path: "/data-engineering/ingestion-deep-dive/ingestion-patterns-technologies", icon: Download },
+              { title: "7.5 Reliability and Operational Considerations", slug: "reliability-operational-considerations", path: "/data-engineering/ingestion-deep-dive/reliability-operational-considerations", icon: Download },
+            ],
           }
-        ]
+        ],
+      },
+      {
+        title: "Part III — Processing & Data Modeling",
+        blurb: "Techniques for transforming raw data into structured models optimized for analytics and reporting.",
+        patterns: [
+          {
+            title: "8. Querying and Transforming Data",
+            slug: "querying-transforming",
+            path: "/data-engineering/querying-transforming",
+            blurb: "Query optimization, transformation patterns, and processing frameworks.",
+            lessons: [
+              { title: "8.1 Query Processing and Optimization", slug: "query-processing-optimization", path: "/data-engineering/querying-transforming/query-processing-optimization", icon: FileCode },
+              { title: "8.2 Data Transformation Patterns", slug: "data-transformation-patterns", path: "/data-engineering/querying-transforming/data-transformation-patterns", icon: FileCode },
+              { title: "8.3 Batch and Streaming Processing", slug: "batch-streaming-processing", path: "/data-engineering/querying-transforming/batch-streaming-processing", icon: FileCode },
+              { title: "8.4 Advanced Data Access Techniques", slug: "advanced-data-access", path: "/data-engineering/querying-transforming/advanced-data-access", icon: FileCode },
+            ],
+          },
+          {
+            title: "9. Designing Effective Data Models",
+            slug: "data-modeling",
+            path: "/data-engineering/data-modeling",
+            blurb: "Fundamentals of modeling, analytical modeling, and stream modeling.",
+            lessons: [
+              { title: "9.1 Fundamentals of Data Modeling", slug: "fundamentals-data-modeling", path: "/data-engineering/data-modeling/fundamentals-data-modeling", icon: FileCode },
+              { title: "9.2 Analytical Data Modeling", slug: "analytical-data-modeling", path: "/data-engineering/data-modeling/analytical-data-modeling", icon: FileCode },
+              { title: "9.3 Modeling Batch and Streaming Data", slug: "modeling-batch-streaming", path: "/data-engineering/data-modeling/modeling-batch-streaming", icon: FileCode },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Part IV — Data Delivery",
+        blurb: "Serving curated data to downstream consumers through dashboards, machine learning models, and reverse ETL.",
+        patterns: [
+          {
+            title: "10. Serving Data for Analytics and AI",
+            slug: "serving-data-analytics-ai",
+            path: "/data-engineering/serving-data-analytics-ai",
+            blurb: "Data products, analytics delivery, machine learning, and reverse ETL.",
+            lessons: [
+              { title: "10.1 Designing Data Products", slug: "designing-data-products", path: "/data-engineering/serving-data-analytics-ai/designing-data-products", icon: Target },
+              { title: "10.2 Delivering Data for Analytics", slug: "delivering-data-analytics", path: "/data-engineering/serving-data-analytics-ai/delivering-data-analytics", icon: Target },
+              { title: "10.3 Preparing Data for Machine Learning", slug: "preparing-data-ml", path: "/data-engineering/serving-data-analytics-ai/preparing-data-ml", icon: Target },
+              { title: "10.4 Data Sharing and Consumption Patterns", slug: "data-sharing-consumption", path: "/data-engineering/serving-data-analytics-ai/data-sharing-consumption", icon: Target },
+              { title: "10.5 Reverse ETL and Operational Data Delivery", slug: "reverse-etl", path: "/data-engineering/serving-data-analytics-ai/reverse-etl", icon: Target },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Part V — Trust & Security",
+        blurb: "Ensuring data integrity, implementing access controls, and maintaining robust security practices.",
+        patterns: [
+          {
+            title: "11. Protecting Data and Building Trust",
+            slug: "protecting-data",
+            path: "/data-engineering/protecting-data",
+            blurb: "Security principles, protecting infrastructure, and monitoring access.",
+            lessons: [
+              { title: "11.1 Security Principles and Responsibilities", slug: "security-principles", path: "/data-engineering/protecting-data/security-principles", icon: ShieldAlert },
+              { title: "11.2 Protecting Data and Infrastructure", slug: "protecting-data-infrastructure", path: "/data-engineering/protecting-data/protecting-data-infrastructure", icon: ShieldAlert },
+              { title: "11.3 Monitoring, Access, and Operational Security", slug: "monitoring-access-operational", path: "/data-engineering/protecting-data/monitoring-access-operational", icon: ShieldAlert },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Part VI — The Future of Data Engineering",
+        blurb: "Emerging trends, the rise of the live data stack, and how the role of the data engineer is evolving.",
+        patterns: [
+          {
+            title: "12. The Evolution of Modern Data Engineering",
+            slug: "evolution-modern-data-engineering",
+            path: "/data-engineering/evolution-modern-data-engineering",
+            blurb: "Changing landscape, cloud-scale platforms, and the future role.",
+            lessons: [
+              { title: "12.1 The Changing Data Engineering Landscape", slug: "changing-landscape", path: "/data-engineering/evolution-modern-data-engineering/changing-landscape", icon: TrendingUp },
+              { title: "12.2 Cloud-Scale and Real-Time Data Platforms", slug: "cloud-scale-real-time", path: "/data-engineering/evolution-modern-data-engineering/cloud-scale-real-time", icon: TrendingUp },
+              { title: "12.3 Data, Applications, and Machine Learning", slug: "data-apps-ml", path: "/data-engineering/evolution-modern-data-engineering/data-apps-ml", icon: TrendingUp },
+              { title: "12.4 The Future Role of the Data Engineer", slug: "future-role", path: "/data-engineering/evolution-modern-data-engineering/future-role", icon: TrendingUp },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Part VII — Technical Deep Dives",
+        blurb: "A closer look at low-level mechanics like serialization formats, compression, and cloud networking.",
+        patterns: [
+          {
+            title: "13. How Data Is Encoded and Compressed",
+            slug: "encoded-compressed",
+            path: "/data-engineering/encoded-compressed",
+            blurb: "Serialization fundamentals, formats, and compression techniques.",
+            lessons: [
+              { title: "13.1 Data Serialization Fundamentals", slug: "data-serialization", path: "/data-engineering/encoded-compressed/data-serialization", icon: Hash },
+              { title: "13.2 Serialization Formats", slug: "serialization-formats", path: "/data-engineering/encoded-compressed/serialization-formats", icon: Hash },
+              { title: "13.3 Data Compression Techniques", slug: "data-compression", path: "/data-engineering/encoded-compressed/data-compression", icon: Hash },
+              { title: "13.4 Choosing Formats for Performance and Storage", slug: "choosing-formats", path: "/data-engineering/encoded-compressed/choosing-formats", icon: Hash },
+            ],
+          },
+          {
+            title: "14. Cloud Networking for Data Engineers",
+            slug: "cloud-networking",
+            path: "/data-engineering/cloud-networking",
+            blurb: "Networking fundamentals, subnets, routing, and connectivity.",
+            lessons: [
+              { title: "14.1 Cloud Networking Fundamentals", slug: "networking-fundamentals", path: "/data-engineering/cloud-networking/networking-fundamentals", icon: Cloud },
+              { title: "14.2 Networks, Subnets, and Routing", slug: "networks-subnets-routing", path: "/data-engineering/cloud-networking/networks-subnets-routing", icon: Cloud },
+              { title: "14.3 Connectivity and Network Security", slug: "connectivity-network-security", path: "/data-engineering/cloud-networking/connectivity-network-security", icon: Cloud },
+              { title: "14.4 Networking Patterns for Data Platforms", slug: "networking-patterns", path: "/data-engineering/cloud-networking/networking-patterns", icon: Cloud },
+            ],
+          },
+        ],
       }
     ]
-  }
-};
+  },
+];
+
+export const CATEGORY_BY_SLUG: Record<string, RoadmapCategory> = Object.fromEntries(
+  roadmap.map((c) => [c.slug, c]),
+);
