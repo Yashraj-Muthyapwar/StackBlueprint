@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, LockKeyhole } from "lucide-react";
 import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
 import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { useProgress } from "@/hooks/use-progress";
 
 export const Route = createFileRoute("/data-engineering/")({
   head: () => ({
@@ -25,6 +26,7 @@ export const Route = createFileRoute("/data-engineering/")({
 
 function DataEngineeringIndex() {
   const category = CATEGORY_BY_SLUG["data-engineering"]!;
+  const { isCompleted } = useProgress();
   
   return (
     <div className="flex w-full flex-col font-sans">
@@ -71,6 +73,9 @@ function DataEngineeringIndex() {
                   {sec.patterns.map((t) => {
                     const Icon = t.lessons?.[0]?.icon || LockKeyhole;
                     const isLocked = t.locked;
+                    
+                    const completedCount = t.lessons?.filter(l => isCompleted(l.slug)).length || 0;
+                    const totalCount = t.lessons?.length || 0;
 
                     const card = (
                       <div
@@ -113,6 +118,20 @@ function DataEngineeringIndex() {
                               </span>
                             )}
                           </div>
+
+                          {!isLocked && totalCount > 0 && (
+                            <div className="mt-6 flex items-center gap-2 pr-12">
+                              <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
+                                <div 
+                                  className="h-full bg-mint transition-all duration-500 ease-out" 
+                                  style={{ width: `${(completedCount / totalCount) * 100}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-medium text-muted-foreground">
+                                {completedCount}/{totalCount} lessons complete
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         {!isLocked && (
