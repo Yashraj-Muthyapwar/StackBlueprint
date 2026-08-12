@@ -165,7 +165,8 @@ export type Section =
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "quiz"; questions: QuizQuestion[] };
+  | { kind: "list"; heading?: string; body?: string[]; items: (string | { text: string; subitems: string[] })[] }
+  | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {
   slug: string;
