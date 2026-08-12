@@ -9,6 +9,10 @@ import deSkillsImg from "@/images/data-engineering-fundamentals/foundations/Unde
 import fitnessAppImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/fitness-app.png";
 import sixPartBalanceImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/six-part-balance.png";
 import skillsToBuildFirstImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/skills-to-build-first.png";
+import dataEngineerBridgeImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-engineer-the-bridge.png";
+import internalExternalFacingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/internal-external-facing.png";
+import upstreamDownstreamImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/upstream-downstream.png";
+import foodDeliveryExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/food-delivery-example.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -406,6 +410,183 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 0,
                 explanation: "Start with SQL. It is the core language used to query, combine, and transform data."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "within-organization",
+        title: "1.4 Data Engineers Within an Organization",
+        subtitle: "Learn where data engineers fit in a company and who their work supports.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Data engineers do not work alone. They sit between the systems that produce data and the people or products that need it.",
+              "Understanding this position helps you design better pipelines, ask better questions, and avoid building data systems nobody can use."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataEngineerBridgeImg,
+            alt: "Data Engineer at the core of Data Infrastructure",
+            caption: "The Data Engineer sits at the center of the data ecosystem, connecting data sources to data consumers."
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: ["A data engineer connects two sides of an organization:",
+              "**Upstream:** Systems and teams that create raw data.",
+              "**Downstream:** People and systems that use prepared data.",
+            ]
+          },
+          {
+            kind: "image",
+            src: upstreamDownstreamImg,
+            alt: "Upstream vs Downstream",
+            caption: "Connecting data producers to data consumers"
+          },
+          {
+            kind: "prose",
+            body: [
+              "For example, a checkout service produces order events. A data engineer collects and prepares those events. An analyst then uses the prepared data to understand weekly sales."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Internal-facing and external-facing work",
+            body: []
+          },
+          {
+            kind: "image",
+            src: internalExternalFacingImg,
+            alt: "Internal vs External",
+            caption: "Internal dashboard with daily refresh versus customer app with near real-time updates."
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 1. Internal-facing data engineering",
+              "Internal-facing data engineers build systems for people inside the company.",
+              "Their work often supports:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "Dashboards and reports",
+              "Business operations",
+              "Analyst queries",
+              "Data science projects",
+              "Machine learning models"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "For example, an internal sales dashboard may show revenue, refunds, and conversion rate. The data engineer makes sure its underlying data is accurate and updated at the right time."
+            ]
+          },
+
+          {
+            kind: "prose",
+            body: [
+              "### 2. External-facing data engineering",
+              "External-facing data engineers build systems that directly support customer-facing products.",
+              "Examples include:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "Product recommendations",
+              "Live delivery tracking",
+              "Customer activity feeds",
+              "Connected device data",
+              "In-app analytics"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "This work often has stricter requirements. A customer-facing system may need to serve many users at once, respond quickly, and carefully separate one customer’s data from another’s."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 3. Most roles are a blend",
+              "A company may use the same clean order data for an internal finance report and a customer-facing order tracking feature.",
+              "The needs differ. Internal teams may accept a daily refresh. A customer checking their delivery status expects a much faster answer.",
+              "The data engineer must understand who uses the data and what “good enough” means for that use case."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "A food delivery company wants to improve delivery-time estimates.",
+              "The app creates order, driver location, and delivery events. A data engineer prepares this information in two ways:",
+              "A fast data stream powers the delivery estimate shown to customers.",
+              "A daily dataset helps operations teams find slow delivery areas.",
+              "The raw data is similar, but the consumers and requirements are different."
+            ]
+          },
+          {
+            kind: "image",
+            src: foodDeliveryExampleImg,
+            alt: "Food delivery example",
+            caption: "Food delivery data pipeline for different requirements"
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Data engineers connect data producers with data consumers.",
+              "Internal-facing work supports teams inside the company.",
+              "External-facing work supports customer-facing products.",
+              "The same raw data can serve different users with different requirements."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "org-quiz-1",
+                question: "What is an upstream stakeholder?",
+                options: [
+                  "A person or system that creates or provides source data.",
+                  "A person or system that uses prepared data.",
+                  "An analyst building dashboards.",
+                  "A customer viewing their activity feed."
+                ],
+                correctIndex: 0,
+                explanation: "Upstream stakeholders (producers) are the source of the data."
+              },
+              {
+                id: "org-quiz-2",
+                question: "What is a downstream stakeholder?",
+                options: [
+                  "A person or system that creates or provides source data.",
+                  "A person or system that uses prepared data.",
+                  "A database server generating logs.",
+                  "A third-party API."
+                ],
+                correctIndex: 1,
+                explanation: "Downstream stakeholders (consumers) use the data that has been prepared."
+              },
+              {
+                id: "org-quiz-3",
+                question: "Why might internal and external data systems need different designs?",
+                options: [
+                  "Because internal teams don't care about data quality.",
+                  "They can have different needs for speed, scale, security, and reliability.",
+                  "External data systems always use SQL, while internal systems use Python.",
+                  "Internal systems never need to be updated."
+                ],
+                correctIndex: 1,
+                explanation: "Customer-facing (external) systems often have stricter requirements for speed, uptime, and security compared to an internal daily report."
               }
             ]
           }
