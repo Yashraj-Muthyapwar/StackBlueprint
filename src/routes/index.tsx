@@ -33,7 +33,7 @@ function Landing() {
     },
     {
       title: "Data & Analytics",
-      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses", "data-engineering"].includes(cat.slug))
+      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses", "data-engineering", "pandas"].includes(cat.slug))
     },
     {
       title: "DevOps & Tools",
