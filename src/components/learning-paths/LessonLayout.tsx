@@ -46,7 +46,7 @@ export function LessonLayout({
   const next = idx < (topic.lessons?.length ?? 0) - 1 ? topic.lessons![idx + 1] : undefined;
 
   return (
-    <div className="px-6 py-10 lg:px-12 lg:py-14">
+    <div className="px-6 pb-6 pt-10 lg:px-12 lg:pb-8 lg:pt-14">
       <div className="mx-auto max-w-3xl lg:max-w-4xl xl:max-w-5xl">
         <nav
           aria-label="Breadcrumb"
