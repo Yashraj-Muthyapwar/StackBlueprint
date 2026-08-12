@@ -332,20 +332,9 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             kind: "prose",
             heading: "A simple example",
             body: [
-              "Imagine a fitness app.",
-              "Every time a user completes a workout, the app records an event. The product team wants a weekly retention report.",
-              "A data engineer might:"
-            ]
-          },
-          {
-            kind: "list",
-            items: [
-              "1. Collect workout events from the app database.",
-              "2. Store the raw events safely.",
-              "3. Clean invalid or duplicate events.",
-              "4. Create a table showing each user’s weekly activity.",
-              "5. Schedule the pipeline to run each morning.",
-              "6. Give the analytics team access to the final table."
+              "Imagine a fitness app where every time a user completes a workout, the app records an event.",
+              "If the product team wants a weekly retention report, a data engineer would build a pipeline to reliably collect, clean, and deliver that data.",
+              "Here is what that process might look like:"
             ]
           },
           {
