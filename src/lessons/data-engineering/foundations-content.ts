@@ -236,8 +236,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "A data engineer builds the systems that move data from where it is created to where people can use it. Without that foundation, dashboards become unreliable, analysts lose time, and machine learning projects struggle to get useful data.",
-              "A data engineer is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time."
+              "A **data engineer** builds the systems that move data from where it is created to where people can use it. Without that foundation, dashboards become unreliable, analysts lose time, and machine learning projects struggle to get useful data.",
+              "A !!data engineer!! is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time."
             ]
           },
           {
