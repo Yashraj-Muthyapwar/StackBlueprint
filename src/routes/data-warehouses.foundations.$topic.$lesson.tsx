@@ -52,8 +52,8 @@ function DataWarehousesLessonPage() {
       isCompleted={isCompleted(l.slug)}
       onToggleComplete={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
       isPlaceholder={!content}
-    >
-      {content ? <SectionRenderer sections={content.sections} /> : null}
-    </LessonLayout>
+      sections={content?.sections}
+      renderSection={(s, onQuizActiveChange) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />}
+    />
   );
 }
