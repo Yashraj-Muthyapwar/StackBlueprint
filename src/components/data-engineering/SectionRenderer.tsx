@@ -29,11 +29,20 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               {section.heading}
             </h2>
           ) : null}
-          {section.body.map((p, i) => (
-            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
-              {parseInlineMarkdown(p)}
-            </p>
-          ))}
+          {section.body.map((p, i) => {
+            if (p.startsWith('### ')) {
+              return (
+                <h3 key={i} className="mt-8 mb-2 text-lg font-semibold tracking-tight text-foreground lg:text-xl">
+                  {parseInlineMarkdown(p.replace('### ', ''))}
+                </h3>
+              );
+            }
+            return (
+              <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+                {parseInlineMarkdown(p)}
+              </p>
+            );
+          })}
         </section>
       );
 
