@@ -221,6 +221,199 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           }
         ]
+      },
+      {
+        slug: "skills-and-responsibilities",
+        title: "1.3 Data Engineering Skills and Responsibilities",
+        subtitle: "Understand what data engineers do, which skills matter most, and how their work helps a company use data reliably.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "A data engineer builds the systems that move data from where it is created to where people can use it. Without that foundation, dashboards become unreliable, analysts lose time, and machine learning projects struggle to get useful data.",
+              "A data engineer is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Data engineering is part technical work and part problem solving for the business.",
+              "The technical side is about collecting, storing, cleaning, and delivering data. The business side is about understanding what people need, choosing a sensible solution, and keeping costs under control."
+            ]
+          },
+          {
+            kind: "list",
+            heading: "A good data engineer balances six things:",
+            items: [
+              "Cost",
+              "Speed of delivery",
+              "Ability to scale",
+              "Simplicity",
+              "Reuse",
+              "Compatibility with other tools"
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "What a data engineer is responsible for",
+            body: [
+              "### 1. Making data available",
+              "Data begins in many places: product events, payment systems, spreadsheets, APIs, support tools, and databases.",
+              "A data engineer creates pipelines that collect this data and move it into a central place, such as a data warehouse or data lake.",
+              "For example, an online store may need daily data from orders, customers, inventory, and ad platforms in one place before anyone can answer, “Which campaign created the most repeat customers?”",
+              "### 2. Making data trustworthy",
+              "Raw data is often incomplete, duplicated, incorrectly formatted, or inconsistent.",
+              "A data engineer transforms it into a version that others can safely use. This might include standardizing dates, removing duplicate orders, handling missing values, and documenting what each field means.",
+              "The goal is simple: when someone sees `revenue` in a report, they should know exactly how it was calculated.",
+              "### 3. Designing the data system",
+              "Data engineers choose how data should move through a company.",
+              "They decide which data should be stored, where it should live, how often it should update, and who should be allowed to access it. They also plan for change. A pipeline that works for 100 customers may fail when the company has 10 million events per day.",
+              "This does not always mean building custom systems. Often, the best solution is a simple managed tool that solves the real problem well.",
+              "### 4. Keeping pipelines reliable",
+              "A pipeline is only useful if it runs when expected.",
+              "Data engineers monitor failures, set up alerts, retry safe operations, and test changes before releasing them. They also schedule dependent jobs in the correct order.",
+              "For example, a daily sales table should not update before the order data has arrived.",
+              "This approach is often called DataOps. It applies software delivery habits, testing, monitoring, and teamwork to data systems.",
+              "### 5. Protecting data",
+              "Some data is sensitive. Think names, email addresses, payment details, health information, or employee records.",
+              "Data engineers help protect it by controlling access, encrypting data where needed, tracking how it is used, and keeping only the data that has a clear purpose.",
+              "Security is not a final checklist item. It is part of how the system is designed.",
+              "### 6. Working with people across the company",
+              "Data engineers work with analysts, data scientists, software engineers, product managers, and business teams.",
+              "A request such as “We need customer churn data” is not yet a technical requirement. The engineer needs to ask follow-up questions:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "What counts as a churned customer?",
+              "How quickly does the data need to update?",
+              "Who will use it?",
+              "What decision will it support?"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Clear communication prevents teams from building the wrong thing efficiently."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Skills to build first",
+            body: [
+              "You do not need to learn every data tool before starting. Focus on these foundations:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["Skill", "Why it matters"],
+            rows: [
+              ["SQL", "Lets you query, combine, and transform data."],
+              ["Python", "Helps automate tasks and work with data tools."],
+              ["Data modeling", "Helps you organize data so others can understand and use it."],
+              ["Databases and storage", "Helps you choose where data belongs and how it should be accessed."],
+              ["Software engineering", "Helps you write testable, maintainable pipeline code."],
+              ["Orchestration", "Helps schedule and coordinate data jobs."],
+              ["Communication", "Helps turn vague business requests into useful systems."],
+              ["Cost awareness", "Helps avoid expensive designs that deliver little value."]
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Start with SQL. It is the language you will use often, even when working with modern cloud tools."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine a fitness app.",
+              "Every time a user completes a workout, the app records an event. The product team wants a weekly retention report.",
+              "A data engineer might:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "1. Collect workout events from the app database.",
+              "2. Store the raw events safely.",
+              "3. Clean invalid or duplicate events.",
+              "4. Create a table showing each user’s weekly activity.",
+              "5. Schedule the pipeline to run each morning.",
+              "6. Give the analytics team access to the final table."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "The analyst can now build the report without manually combining raw files every week."
+            ]
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Learning tools before fundamentals:** Learn how data moves and changes before chasing every new platform.",
+              "**Treating data quality as someone else’s problem:** Unclear or broken data reduces trust in every downstream report.",
+              "**Building too much too early:** Use the simplest system that meets the current need and can grow with the company.",
+              "**Ignoring the business question:** A technically impressive pipeline is still a failure if it does not support a useful decision."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Data engineers create reliable paths from raw data to useful data.",
+              "Their responsibilities include data quality, system design, reliability, security, and collaboration.",
+              "Strong fundamentals matter more than knowing every tool.",
+              "Good data engineering balances business value with cost, simplicity, and scale."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "skills-quiz-1",
+                question: "What is the main goal of a data pipeline?",
+                options: [
+                  "To build machine learning models.",
+                  "To make useful data available reliably.",
+                  "To design business dashboards.",
+                  "To manually combine raw files every week."
+                ],
+                correctIndex: 1,
+                explanation: "The main goal of a data pipeline is to reliably move data from its source to where it can be used."
+              },
+              {
+                id: "skills-quiz-2",
+                question: "Why does a data engineer need communication skills?",
+                options: [
+                  "To write Python scripts faster.",
+                  "To manage their team's vacation schedule.",
+                  "To turn business needs into clear data requirements.",
+                  "To memorize every new data tool."
+                ],
+                correctIndex: 2,
+                explanation: "A data engineer must ask the right questions to understand what the business actually needs before building a solution."
+              },
+              {
+                id: "skills-quiz-3",
+                question: "Which skill should most beginners prioritize first?",
+                options: [
+                  "SQL",
+                  "Advanced orchestration",
+                  "Machine learning",
+                  "Kubernetes"
+                ],
+                correctIndex: 0,
+                explanation: "Start with SQL. It is the core language used to query, combine, and transform data."
+              }
+            ]
+          }
+        ]
       }
     ]
   }
