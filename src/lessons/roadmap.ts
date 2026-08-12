@@ -51,6 +51,7 @@ import systemDesignLogo from "@/images/logos/system-design-logo.png";
 import webScraperLogo from "@/images/logos/web-scraper-logo.png";
 import pythonLogo from "@/images/logos/python-logo.png";
 import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
+import pandasLogo from "@/images/logos/pandas-logo.svg";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
@@ -896,6 +897,19 @@ export const roadmap: RoadmapCategory[] = [
       lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
       lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
       lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
+    ],
+  },
+  {
+    title: "Pandas",
+    slug: "pandas",
+    icon: pandasLogo,
+    locked: false,
+    overviewPath: "/pandas",
+    blurb: "Master data manipulation and analysis with Pandas.",
+    patterns: [
+      lockedPattern("DataFrames & Series", "dataframes-series", "Core Pandas data structures and basic operations."),
+      lockedPattern("Data Cleaning", "data-cleaning", "Handling missing values, duplicates, and data types."),
+      lockedPattern("Data Aggregation", "data-aggregation", "Group by, merge, join, and pivot tables."),
     ],
   },
   {
