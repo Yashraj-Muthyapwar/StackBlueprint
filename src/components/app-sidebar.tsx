@@ -120,11 +120,22 @@ export function AppSidebar() {
                           pathname={pathname}
                           onNavigate={closeMobile}
                         />
+                      ) : cat.sections && cat.sections.length > 0 ? (
+                        cat.sections.map((sec) => {
+                          const parts = sec.title ? sec.title.split(" — ") : [];
+                          const heading = parts.length === 2 ? parts[1] : (sec.title || "Chapters");
+                          return (
+                            <SectionMaster
+                              key={heading}
+                              title={heading}
+                              patterns={sec.patterns}
+                              pathname={pathname}
+                              onNavigate={closeMobile}
+                            />
+                          );
+                        })
                       ) : (
-                        (cat.sections && cat.sections.length > 0 
-                          ? cat.sections.flatMap((sec) => sec.patterns) 
-                          : cat.patterns
-                        ).map((pat) => (
+                        cat.patterns.map((pat) => (
                           <PatternItem
                             key={pat.slug}
                             pat={pat}
