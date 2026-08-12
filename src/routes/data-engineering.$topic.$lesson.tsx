@@ -1,6 +1,10 @@
+import { useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, ChevronRight, Construction } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronRight, Construction, CheckCircle2 } from "lucide-react";
+import { useProgress } from "@/hooks/use-progress";
 import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { SectionRenderer } from "@/components/data-engineering/SectionRenderer";
+import { DESCRIBED_TOPICS } from "@/lessons/data-engineering/described-content";
 
 export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
   head: ({ params }) => {
@@ -21,10 +25,24 @@ export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
 
 function DataEngineeringLessonPage() {
   const { topic, lesson } = Route.useParams();
+  const { isCompleted, markComplete, markIncomplete } = useProgress();
+
   const cat = CATEGORY_BY_SLUG["data-engineering"];
   const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
+
+  const content = DESCRIBED_TOPICS[topic]?.lessons.find(x => x.slug === lesson);
+  const hasQuiz = content?.sections.some(s => s.kind === "quiz") ?? false;
+
+  useEffect(() => {
+    if (!l) return;
+    const handleQuizPassed = () => {
+      markComplete(l.slug);
+    };
+    window.addEventListener("quiz-passed", handleQuizPassed);
+    return () => window.removeEventListener("quiz-passed", handleQuizPassed);
+  }, [l?.slug, markComplete]);
 
   if (!t || !l) {
     return (
@@ -112,6 +130,12 @@ function DataEngineeringLessonPage() {
               Source: <a href="https://mad.firstmark.com" target="_blank" rel="noopener noreferrer" className="text-mint hover:underline">MAD (Machine Learning, AI, Data) Landscape</a>. All rights reserved by FirstMark.
             </p>
           </div>
+        ) : DESCRIBED_TOPICS[topic]?.lessons.find(x => x.slug === lesson) ? (
+          <div className="mt-10 space-y-7">
+            {DESCRIBED_TOPICS[topic].lessons.find(x => x.slug === lesson)!.sections.map((s, i) => (
+              <SectionRenderer key={i} section={s} />
+            ))}
+          </div>
         ) : (
           <div className="mt-16 flex flex-col items-center justify-center rounded-2xl border border-dashed border-mint/30 bg-mint/5 px-6 py-20 text-center">
             <div className="mb-4 grid size-16 place-items-center rounded-full bg-mint/10 text-mint ring-4 ring-mint/10">
@@ -140,7 +164,30 @@ function DataEngineeringLessonPage() {
               </div>
             </Link>
           ) : (
-            <span />
+            <div className="hidden sm:block sm:flex-1" />
+          )}
+
+          {l && (
+            <div className="flex shrink-0 justify-center sm:mx-4">
+              <button
+                onClick={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
+                disabled={hasQuiz && !isCompleted(l.slug)}
+                className={`group inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-medium transition-colors ${
+                  hasQuiz && !isCompleted(l.slug)
+                    ? "border-hairline/50 bg-surface/10 text-muted-foreground/50 cursor-not-allowed"
+                    : isCompleted(l.slug) 
+                      ? "border-mint/30 bg-mint/10 text-mint hover:bg-mint/20" 
+                      : "border-hairline/70 bg-surface/30 text-muted-foreground hover:bg-surface/60 hover:text-foreground"
+                }`}
+              >
+                <CheckCircle2 className={`size-4 ${isCompleted(l.slug) ? "" : "opacity-50"}`} />
+                {isCompleted(l.slug) 
+                  ? "Completed" 
+                  : hasQuiz 
+                    ? "Pass Quiz to Complete" 
+                    : "Mark as Complete"}
+              </button>
+            </div>
           )}
           {next ? (
             <Link
@@ -157,7 +204,7 @@ function DataEngineeringLessonPage() {
               <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
           ) : (
-            <span />
+            <div className="hidden sm:block sm:flex-1" />
           )}
         </nav>
       </div>
