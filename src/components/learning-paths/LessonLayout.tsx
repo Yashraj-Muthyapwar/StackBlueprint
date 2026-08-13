@@ -122,7 +122,9 @@ export function LessonLayout({
                 children
               )}
 
-              {showKeyTakeaways && !sections?.some(s => s.kind === "takeaways" || s.type === "takeaways") && (
+              {showKeyTakeaways && 
+               !(sections?.length === 1 && sections[0].kind === "quiz" && sections[0].isFinalQuiz) && 
+               !sections?.some(s => s.kind === "takeaways" || s.type === "takeaways") && (
                 <div className="mt-16 rounded-xl border border-hairline/60 bg-surface/20 p-8 text-center">
                   <h3 className="text-xl font-medium tracking-tight text-foreground">
                     Key Takeaways
