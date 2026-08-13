@@ -9,12 +9,14 @@ export interface LessonLayoutProps {
   topic: {
     slug: string;
     title: string;
+    path?: string;
     lessons?: any[];
   };
   lesson: {
     slug: string;
     title: string;
     subtitle?: string;
+    path?: string;
   };
   children?: React.ReactNode;
   sections?: any[];
@@ -45,6 +47,12 @@ export function LessonLayout({
   const prev = idx > 0 ? topic.lessons![idx - 1] : undefined;
   const next = idx < (topic.lessons?.length ?? 0) - 1 ? topic.lessons![idx + 1] : undefined;
 
+  const isEffectivelyPlaceholder = 
+    isPlaceholder || 
+    !sections ||
+    sections.length === 0 ||
+    (sections.length === 1 && sections[0].heading === "Coming Soon");
+
   return (
     <div className="px-6 pb-6 pt-10 lg:px-12 lg:pb-8 lg:pt-14">
       <div className="mx-auto max-w-3xl lg:max-w-4xl xl:max-w-5xl">
@@ -57,8 +65,8 @@ export function LessonLayout({
           </Link>
           <ChevronRight className="size-3" />
           <Link
-            to={`${trackPath}/$topic`}
-            params={{ topic: topic.slug }}
+            to={(topic.path || `${trackPath}/$topic`) as any}
+            params={topic.path ? undefined : { topic: topic.slug }}
             className="hover:text-foreground"
           >
             {topic.title}
@@ -93,7 +101,7 @@ export function LessonLayout({
         )}
 
         <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {isPlaceholder ? (
+          {isEffectivelyPlaceholder ? (
             <div className="rounded-3xl border border-dashed border-mint/30 bg-mint/5 px-6 py-20 text-center shadow-sm">
               <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-mint/10 text-mint">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h20"/><path d="M12 2v20"/><path d="m4.93 4.93 14.14 14.14"/><path d="m19.07 4.93-14.14 14.14"/></svg>
@@ -140,8 +148,8 @@ export function LessonLayout({
           <nav className="mt-14 flex flex-col gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
             {prev ? (
               <Link
-                to={`${trackPath}/$topic/$lesson`}
-                params={{ topic: topic.slug, lesson: prev.slug }}
+                to={(prev.path || `${trackPath}/$topic/$lesson`) as any}
+                params={prev.path ? undefined : { topic: topic.slug, lesson: prev.slug }}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
                 <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
@@ -166,8 +174,8 @@ export function LessonLayout({
 
             {next ? (
               <Link
-                to={`${trackPath}/$topic/$lesson`}
-                params={{ topic: topic.slug, lesson: next.slug }}
+                to={(next.path || `${trackPath}/$topic/$lesson`) as any}
+                params={next.path ? undefined : { topic: topic.slug, lesson: next.slug }}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 text-right transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
                 <div>
