@@ -17,6 +17,9 @@ import vagueRequestsImg from "@/images/data-engineering-fundamentals/foundations
 import peopleDEWorksWithImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/people-a-data-engineer-works-with.png";
 import requestsIntoRequirementsImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/requests-into-requirements.png";
 import marketingTeamExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/marketing-team-example.png";
+import deOnCloudImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/DE-on-cloud.png";
+import cloudVsOnPremisesImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/cloud-vs-on-premises.png";
+import retailCompanyExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/retail-company-example.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -744,6 +747,239 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 2,
                 explanation: "Shared definitions (like 'daily sales') ensure everyone in the company is looking at the same reality and dashboards do not contradict each other."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "data-engineering-on-the-cloud",
+        title: "1.6 Data Engineering on the Cloud",
+        subtitle: "Learn how cloud platforms support the data engineering lifecycle and how AWS, Google Cloud, and Azure map to the same core jobs.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Cloud platforms let data teams store, process, and serve data without owning physical servers. Instead of starting by managing infrastructure, a team can focus on building reliable data products.",
+              "The tools have different names across AWS, Google Cloud, and Azure. The underlying data engineering work stays the same."
+            ]
+          },
+          {
+            kind: "image",
+            src: deOnCloudImg,
+            alt: "DE on cloud",
+            caption: "The underlying data engineering work stays the same across clouds."
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Every cloud data platform follows a similar flow:"
+            ]
+          },
+          {
+            kind: "pipeline-flow",
+            steps: [
+              { title: "Generate", description: "An app, database, device, API, or SaaS tool creates data." },
+              { title: "Ingest", description: "The data enters the platform." },
+              { title: "Store", description: "The platform keeps raw and prepared data." },
+              { title: "Transform", description: "Raw data is cleaned, joined, and modeled." },
+              { title: "Serve", description: "People, applications, and models use the prepared data." }
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Security, access control, cost management, testing, and monitoring apply at every stage."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "The lifecycle across cloud providers",
+            body: [
+              "### 1. Generate and ingest data",
+              "Data can come from product databases, web events, payment providers, CSV files, APIs, and connected devices.",
+              "There are two common ingestion patterns:",
+              "Batch ingestion: Data arrives on a schedule, such as every hour or every night.",
+              "Streaming ingestion: Events arrive continuously or with very low delay.",
+              "A daily finance report may work well with batch ingestion. A fraud detection system may need streaming data."
+            ]
+          },
+          {
+            kind: "cloud-provider-grid",
+            items: [
+              { provider: "AWS", content: "**Amazon Kinesis** or **Amazon Data Firehose** can receive and deliver streaming data." },
+              { provider: "Google Cloud", content: "**Pub/Sub** receives messages, while **Dataflow** can process batch and streaming pipelines." },
+              { provider: "Azure", content: "**Event Hubs** handles event streams, while **Data Factory** is commonly used for scheduled data movement." }
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 2. Store data",
+              "Cloud data is commonly stored in one of two places.",
+              "**Data lake**",
+              "A data lake stores raw, semi-structured, and unstructured data. Files such as JSON, CSV, logs, images, and Parquet files can live there."
+            ]
+          },
+          {
+            kind: "cloud-provider-grid",
+            items: [
+              { provider: "AWS", content: "**Amazon S3**" },
+              { provider: "Google Cloud", content: "**Cloud Storage**" },
+              { provider: "Azure", content: "**Azure Data Lake Storage Gen2**" }
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Data warehouse**",
+              "A data warehouse stores curated data for reporting and analytics. It is usually organized into tables that analysts can query with SQL."
+            ]
+          },
+          {
+            kind: "cloud-provider-grid",
+            items: [
+              { provider: "AWS", content: "**Amazon Redshift**" },
+              { provider: "Google Cloud", content: "**BigQuery**" },
+              { provider: "Azure", content: "**Azure Synapse Analytics**" }
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "A practical design often uses both. Store raw data in a lake, then create cleaned analytics tables in a warehouse or lakehouse.",
+              "### 3. Transform data",
+              "Transformation turns raw data into reliable data.",
+              "A transformation might **remove duplicate events, convert timestamps to a shared time zone, standardize country codes, join orders with customer data, calculate daily revenue**, and **create a table ready for a dashboard**.",
+              "This work may happen before loading into a warehouse, called ETL, or after loading, called ELT. Cloud warehouses often make ELT practical because they can process large SQL workloads."
+            ]
+          },
+          {
+            kind: "cloud-provider-grid",
+            items: [
+              { provider: "AWS", content: "**AWS Glue** can prepare and integrate data. **Amazon EMR** is another option for managed big-data frameworks." },
+              { provider: "Google Cloud", content: "**Dataflow** runs **Apache Beam** pipelines for batch and streaming transformations." },
+              { provider: "Azure", content: "**Azure Databricks** and **Azure Synapse** can clean, transform, and process data." }
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 4. Serve data",
+              "Serving makes prepared data useful.",
+              "The destination may be **a business dashboard**, **a SQL query used by an analyst**, **a recommendation service in an application**, **a machine learning training dataset**, or **an operational report**."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "The right serving pattern depends on the need. A weekly executive report can refresh daily. A delivery-tracking screen may need updates within seconds."
+            ]
+          },
+          {
+            kind: "cloud-provider-grid",
+            items: [
+              { provider: "AWS", content: "**Athena** can query data in S3 with SQL. **QuickSight** can create dashboards." },
+              { provider: "Google Cloud", content: "**BigQuery** can serve analytics queries, with **Looker** for reporting and exploration." },
+              { provider: "Azure", content: "**Synapse Analytics** can serve SQL workloads, with **Power BI** for dashboards." }
+            ]
+          },
+          {
+            kind: "image",
+            src: cloudVsOnPremisesImg,
+            alt: "Cloud vs on-premises",
+            caption: "On-Premises Infrastructure vs. Cloud Data Platform"
+          },
+          {
+            kind: "prose",
+            heading: "A simple migration path",
+            body: [
+              "Moving to the cloud is not just copying data to a new location. Treat it as a staged project.",
+              "### 1. Assess",
+              "List the current data sources, pipelines, users, dependencies, security needs, and costs.",
+              "Ask which workloads should move first. A low-risk reporting pipeline is often a better first migration than the most critical production system.",
+              "### 2. Design the foundation",
+              "Set up identity and access rules, networking, encryption, monitoring, tagging, and cost controls before moving sensitive workloads.",
+              "### 3. Migrate a small workload",
+              "Move one pipeline, validate the results against the old system, and fix gaps. This creates a repeatable pattern for later migrations.",
+              "### 4. Optimize after moving",
+              "Review query cost, storage layout, pipeline speed, access policies, and reliability. Migration is not finished when the data arrives in the cloud.",
+              "AWS describes a similar progression as assess, mobilize, and migrate. The important principle applies across all cloud providers: understand the current state before moving at scale."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A Simple Example",
+            body: [
+              "Here is how a single pipeline transforms raw website and mobile app events into clean, trusted data to power BI dashboards, analytics, and personalization models across major cloud platforms."
+            ]
+          },
+          {
+            kind: "image",
+            src: retailCompanyExampleImg,
+            alt: "Retail company example",
+            caption: "A cross-cloud example of a retail data pipeline."
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Choosing tools before defining the need:** Start with data volume, freshness, users, security, and budget.",
+              "**Assuming streaming is always better:** It adds complexity and cost. Use it when low latency creates real value.",
+              "**Skipping governance:** Access controls, data definitions, and lineage matter from the first pipeline.",
+              "**Treating migration as a one-time copy:** Validate, monitor, and optimize after every move.",
+              "**Trying to learn every cloud at once:** Learn the lifecycle first, then go deep on one platform."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "AWS, Google Cloud, and Azure use different names for similar data engineering jobs.",
+              "The lifecycle is more important than any single service.",
+              "Data lakes store broad and often raw data. Warehouses organize curated data for analytics.",
+              "Cloud simplifies infrastructure management, but it does not remove responsibility for security, quality, or cost."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "cloud-quiz-1",
+                question: "What is the difference between batch and streaming ingestion?",
+                options: [
+                  "Batch is for small data; streaming is for large data.",
+                  "Batch moves data on a schedule. Streaming processes events continuously or with low delay.",
+                  "Batch is used only by AWS; streaming is used by Google Cloud.",
+                  "Batch requires SQL; streaming requires Python."
+                ],
+                correctIndex: 1,
+                explanation: "Batch ingestion runs at set intervals (e.g., daily), while streaming ingestion handles data as it arrives."
+              },
+              {
+                id: "cloud-quiz-2",
+                question: "When would you use a data lake?",
+                options: [
+                  "When you need to store raw or varied data types, including files and semi-structured data.",
+                  "When analysts only need to run fast SQL queries on highly structured data.",
+                  "When you want to replace your product database.",
+                  "When you need to build business dashboards directly."
+                ],
+                correctIndex: 0,
+                explanation: "Data lakes are flexible storage repositories that can hold all types of data (structured, semi-structured, unstructured)."
+              },
+              {
+                id: "cloud-quiz-3",
+                question: "Why is a cloud migration not finished after moving data?",
+                options: [
+                  "Because cloud providers require monthly data re-uploads.",
+                  "The system still needs validation, security controls, monitoring, and cost optimization.",
+                  "Because on-premises servers must be kept running as backups forever.",
+                  "Data instantly becomes corrupted in the cloud and must be cleaned manually."
+                ],
+                correctIndex: 1,
+                explanation: "Moving data is only one step; ensuring the system is secure, performant, and cost-effective is an ongoing process."
               }
             ]
           }
