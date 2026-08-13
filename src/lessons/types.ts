@@ -164,6 +164,8 @@ export type Section =
   | { kind: "dns-query-types-diagram" }
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
+  | { kind: "cloud-provider-grid"; items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[] }
+  | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
   | { kind: "list"; heading?: string; body?: string[]; items: (string | { text: string; subitems: string[] })[] }
   | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
