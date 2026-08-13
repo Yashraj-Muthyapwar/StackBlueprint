@@ -984,6 +984,199 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           }
         ]
+      },
+      {
+        slug: "foundations-quiz",
+        title: "1.7 Foundations Quiz",
+        subtitle: "Test your knowledge of the core concepts covered in the Data Engineering Foundations track.",
+        sections: [
+          {
+            kind: "quiz",
+            isFinalQuiz: true,
+            questions: [
+              {
+                id: "fq-1",
+                question: "What is the primary role of a data engineer compared to a data scientist?",
+                options: [
+                  "To train machine learning models to predict future trends.",
+                  "To build and maintain systems that collect, clean, and deliver data reliably.",
+                  "To design the user interface for internal business dashboards.",
+                  "To manage the company's financial budget for cloud resources."
+                ],
+                correctIndex: 1,
+                explanation: "While data scientists focus on analyzing data and building models, data engineers build the infrastructure and pipelines that make that data available in the first place."
+              },
+              {
+                id: "fq-2",
+                question: "Why is a data engineer often described as a 'bridge' within a company?",
+                options: [
+                  "Because they sit between the systems that produce data and the people or products that need to consume it.",
+                  "Because they are responsible for physically connecting server racks.",
+                  "Because they write the software that customers interact with directly.",
+                  "Because they translate business language into foreign languages."
+                ],
+                correctIndex: 0,
+                explanation: "Data engineers connect upstream data producers (like software applications) to downstream data consumers (like analysts and dashboards)."
+              },
+              {
+                id: "fq-3",
+                question: "What is the main difference between an OLTP database and an OLAP data warehouse?",
+                options: [
+                  "OLTP is for slow, analytical queries; OLAP is for fast, single-row transactions.",
+                  "OLTP handles fast, everyday application transactions; OLAP is designed for complex analytical queries over large datasets.",
+                  "OLTP is strictly for unstructured data; OLAP is strictly for structured data.",
+                  "There is no difference; the terms are used interchangeably."
+                ],
+                correctIndex: 1,
+                explanation: "Online Transaction Processing (OLTP) is optimized for quick reads/writes of individual records, whereas Online Analytical Processing (OLAP) is optimized for scanning and aggregating large volumes of data."
+              },
+              {
+                id: "fq-4",
+                question: "Which of the following is the best example of unstructured data?",
+                options: [
+                  "A strictly formatted CSV file containing daily sales totals.",
+                  "A relational database table of user profiles.",
+                  "A folder full of customer support audio recordings.",
+                  "A spreadsheet with rows and columns."
+                ],
+                correctIndex: 2,
+                explanation: "Audio recordings, raw text, and images are unstructured data because they do not fit neatly into tabular rows and columns."
+              },
+              {
+                id: "fq-5",
+                question: "Which language is the most universally essential for a data engineer when filtering, aggregating, and joining data across almost all modern data warehouses?",
+                options: [
+                  "Java",
+                  "C++",
+                  "SQL",
+                  "Rust"
+                ],
+                correctIndex: 2,
+                explanation: "SQL (Structured Query Language) is the lingua franca of data engineering, used to query and transform data in nearly every relational database and data warehouse."
+              },
+              {
+                id: "fq-6",
+                question: "What is the purpose of a data orchestration tool (like Airflow or Dagster)?",
+                options: [
+                  "To generate beautiful charts and graphs for executives.",
+                  "To schedule, run, and monitor data pipelines in the correct order while handling failures.",
+                  "To compress data files before sending them over the internet.",
+                  "To secure passwords and sensitive API keys."
+                ],
+                correctIndex: 1,
+                explanation: "Orchestration tools manage the complex dependencies of data pipelines, ensuring tasks run in the right sequence and providing alerts if something breaks."
+              },
+              {
+                id: "fq-7",
+                question: "In the context of a data pipeline, who are typically considered 'upstream' stakeholders?",
+                options: [
+                  "Data analysts who write SQL queries against the final data warehouse.",
+                  "Executives who consume weekly sales dashboards.",
+                  "Software engineers who build the application that generates the raw data.",
+                  "Machine learning models that require training data."
+                ],
+                correctIndex: 2,
+                explanation: "Upstream stakeholders own or influence the source systems that produce the raw data entering the pipeline."
+              },
+              {
+                id: "fq-8",
+                question: "Which scenario is an example of 'internal-facing' data engineering?",
+                options: [
+                  "Building a recommendation engine that suggests products to customers on an e-commerce website.",
+                  "Providing a live dashboard showing delivery times to external clients.",
+                  "Creating a clean dataset of daily sales so the company's finance team can run their monthly reports.",
+                  "Sending automated marketing emails to users."
+                ],
+                correctIndex: 2,
+                explanation: "Internal-facing work supports the company's own employees, such as analysts, executives, or finance teams."
+              },
+              {
+                id: "fq-9",
+                question: "When gathering requirements for a new data pipeline, why is defining 'data freshness' critical?",
+                options: [
+                  "It determines whether data needs to be updated continuously or on a schedule, which massively impacts system cost and complexity.",
+                  "It is a legal requirement for compliance with privacy laws.",
+                  "It dictates which programming language must be used to write the code.",
+                  "It ensures the data has a pleasant visual design on dashboards."
+                ],
+                correctIndex: 0,
+                explanation: "Building a real-time streaming pipeline is much more complex and expensive than a daily batch pipeline, so determining how 'fresh' the data actually needs to be is crucial."
+              },
+              {
+                id: "fq-10",
+                question: "Why is it important for a data engineer to agree on 'shared definitions' (e.g., what constitutes a 'daily sale') before building a pipeline?",
+                options: [
+                  "So that the code executes faster in the cloud.",
+                  "Because without shared definitions, different dashboards might calculate the same metric in different ways, leading to confusion and mistrust.",
+                  "It reduces the amount of storage space needed in a data lake.",
+                  "It allows the pipeline to skip the transformation phase entirely."
+                ],
+                correctIndex: 1,
+                explanation: "A single, agreed-upon definition (the 'single source of truth') ensures consistency across all reporting and analysis within the organization."
+              },
+              {
+                id: "fq-11",
+                question: "In the typical cloud data lifecycle, what happens during the 'Ingest' phase?",
+                options: [
+                  "Data is presented to users via a BI dashboard.",
+                  "Data is collected from various sources and enters the data platform.",
+                  "Data is joined, cleaned, and heavily modeled.",
+                  "A user clicks a button on a website, generating an event."
+                ],
+                correctIndex: 1,
+                explanation: "The ingestion phase is where data is moved from its source (like a database or API) into the cloud data platform."
+              },
+              {
+                id: "fq-12",
+                question: "What is a primary difference between a Data Lake and a Data Warehouse?",
+                options: [
+                  "A data lake stores raw, varied data types (JSON, CSV, images), while a data warehouse stores highly curated, structured data organized for fast analytical querying.",
+                  "A data lake is used exclusively for financial data; a data warehouse is used for user behavior data.",
+                  "A data warehouse can hold infinitely more data than a data lake.",
+                  "A data lake only exists on-premises, while data warehouses only exist in the cloud."
+                ],
+                correctIndex: 0,
+                explanation: "Data lakes are flexible repositories for all raw data, whereas warehouses are structured and optimized specifically for SQL-based analytics."
+              },
+              {
+                id: "fq-13",
+                question: "Which of the following represents a streaming ingestion scenario?",
+                options: [
+                  "A script that downloads a CSV of daily expenses every night at midnight.",
+                  "A pipeline that loads historical tax records from the previous decade once a year.",
+                  "A fraud detection system that analyzes and ingests credit card swipes in near real-time as they happen.",
+                  "A monthly payroll report generation task."
+                ],
+                correctIndex: 2,
+                explanation: "Streaming ingestion processes events continuously and with very low latency, which is essential for immediate actions like fraud detection."
+              },
+              {
+                id: "fq-14",
+                question: "Which set of cloud services correctly corresponds to the 'Data Warehouse' concept across AWS, Google Cloud, and Azure?",
+                options: [
+                  "Amazon S3, Cloud Storage, Azure Data Lake Storage",
+                  "Amazon Redshift, Google BigQuery, Azure Synapse Analytics",
+                  "Amazon Kinesis, Google Pub/Sub, Azure Event Hubs",
+                  "AWS Glue, Google Dataflow, Azure Databricks"
+                ],
+                correctIndex: 1,
+                explanation: "Redshift (AWS), BigQuery (Google Cloud), and Synapse Analytics (Azure) are the primary managed data warehouse solutions for their respective platforms."
+              },
+              {
+                id: "fq-15",
+                question: "Why is it a mistake to treat a cloud migration simply as a 'one-time copy' of data?",
+                options: [
+                  "Because cloud providers require you to manually click 'copy' every single day.",
+                  "Because moving the data is only the first step; the system still requires validation, security controls, monitoring, and continuous cost optimization.",
+                  "Because data automatically corrupts after 24 hours in the cloud if not re-copied.",
+                  "Because you cannot delete on-premises servers after moving to the cloud."
+                ],
+                correctIndex: 1,
+                explanation: "A successful migration involves ongoing tuning of query performance, managing access policies, and optimizing cloud costs long after the initial data transfer is complete."
+              }
+            ]
+          }
+        ]
       }
     ]
   }
