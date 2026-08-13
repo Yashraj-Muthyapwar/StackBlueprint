@@ -20,6 +20,11 @@ import marketingTeamExampleImg from "@/images/data-engineering-fundamentals/foun
 import deOnCloudImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/DE-on-cloud.png";
 import cloudVsOnPremisesImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/cloud-vs-on-premises.png";
 import retailCompanyExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/retail-company-example.png";
+import cloudNetworkingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/cloud-networking.png";
+import subnetsInActionImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/subnets-in-action.png";
+import cidrInActionImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/CIDR-in-action.png";
+import howPlatformsDifferImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/how-platforms-differ.png";
+import deNetworkExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/DE-Network-Example.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -986,8 +991,256 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
         ]
       },
       {
+        slug: "cloud-networking-basics",
+        title: "1.7 Cloud Networking Basics: VPCs, Subnets, and CIDR",
+        subtitle: "Learn how cloud networks organize resources and how to read IP ranges across AWS, Google Cloud, and Azure.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Data pipelines, warehouses, databases, and compute resources need a secure way to communicate. Cloud networking defines which resources can reach each other, which can reach the internet, and which should remain private.",
+              "Before deploying a data platform, you need to understand three building blocks: **Virtual private network, Subnet, CIDR range**"
+            ]
+          },
+          {
+            kind: "image",
+            src: cloudNetworkingImg,
+            alt: "Cloud networking building blocks",
+            caption: "Cloud networking building blocks: VPC, Subnet, and CIDR range"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "A cloud virtual network is your private network space inside a cloud provider.",
+              "Inside that network, you divide IP addresses into smaller ranges called subnets. Each resource, such as a virtual machine or managed service endpoint, receives an IP address from a subnet."
+            ]
+          },
+          {
+            kind: "code",
+            code: `Virtual network: 10.0.0.0/16
+│
+├── Ingestion subnet: 10.0.1.0/24
+├── Processing subnet: 10.0.2.0/24
+└── Data subnet: 10.0.3.0/24`
+          },
+          {
+            kind: "prose",
+            body: [
+              "This structure helps you organize resources, control traffic, and leave room for growth.",
+              "### 1. What is a VPC?",
+              "A VPC, or Virtual Private Cloud, is a logically isolated network in the cloud. It is the private boundary around your resources.",
+              "Cloud providers use different names:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["Cloud provider", "Virtual network name"],
+            rows: [
+              ["AWS", "Virtual Private Cloud (VPC)"],
+              ["Google Cloud", "Virtual Private Cloud (VPC) network"],
+              ["Azure", "Virtual Network (VNet)"]
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "The concept is the same: create a private address space, place resources inside it, and define how traffic enters, leaves, and moves within it.",
+              "### 2. What is a subnet?",
+              "A subnet is a smaller range of IP addresses inside a VPC or VNet.",
+              "Think of a VPC as an office building and subnets as separate rooms. You might place web servers in one room, data-processing jobs in another, and databases in a third."
+            ]
+          },
+          {
+            kind: "code",
+            code: `VPC or VNet
+├── Web subnet
+├── Application subnet
+├── Data processing subnet
+└── Database subnet`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Subnets make it easier to **organize resources by purpose**, **apply traffic rules**, **route traffic through a firewall or gateway**, **keep databases away from direct internet access**, and **plan IP address capacity**."
+            ]
+          },
+          {
+            kind: "image",
+            src: subnetsInActionImg,
+            alt: "Subnets in action",
+            caption: "Subnets in action: Organizing resources by purpose and applying traffic rules"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Security Boundary",
+            body: "A subnet alone is not always a security boundary. You still need security rules, firewalls, network security groups, or equivalent controls to restrict traffic."
+          },
+          {
+            kind: "prose",
+            heading: "3. What is CIDR?",
+            body: [
+              "CIDR, short for Classless Inter-Domain Routing, is a compact way to describe an IP address range.",
+              "For example: `10.0.0.0/16`",
+              "This means the network begins at `10.0.0.0` and has a large range of addresses available. The number after the slash controls the size of the range:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["CIDR range", "Total IPv4 addresses", "Common use"],
+            rows: [
+              ["/16", "65,536", "A large VPC or VNet"],
+              ["/20", "4,096", "A large workload subnet"],
+              ["/24", "256", "A common application subnet"],
+              ["/28", "16", "A small subnet for a specific service"]
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "**A smaller number after the slash means a larger network.** For example, `10.0.0.0/16` is larger than `10.0.1.0/24`."
+            ]
+          },
+          {
+            kind: "image",
+            src: cidrInActionImg,
+            alt: "CIDR in action",
+            caption: "CIDR in action: A smaller number after the slash means a larger network"
+          },
+          {
+            kind: "prose",
+            heading: "How the Platforms Differ",
+            body: [
+              "AWS, Google Cloud, and Azure share the same core networking goals, but differ in scope: AWS ties subnets to single Availability Zones, Google Cloud uses a global VPC with regional subnets, and Azure uses regional VNets that span zones."
+            ]
+          },
+          {
+            kind: "image",
+            src: howPlatformsDifferImg,
+            alt: "How platforms differ",
+            caption: "How platforms differ: AWS vs. Google Cloud vs. Azure network scopes"
+          },
+          {
+            kind: "prose",
+            heading: "Public and private subnets",
+            body: [
+              "A common beginner mistake is to assume that a subnet is automatically public or private. It is not. A subnet becomes effectively public or private based on routing and access configuration.",
+              "**Public subnet**",
+              "A public subnet can support resources that need internet-facing access, such as a load balancer or public web server.",
+              "**Private subnet**",
+              "A private subnet contains resources that should not accept direct internet traffic, such as **data processing workers**, **databases**, **internal APIs**, **data warehouse components**, or **private service endpoints**.",
+              "For a data platform, keep sensitive processing and storage access in private network paths whenever possible. In AWS, public internet access requires an appropriate route through an internet gateway. AWS does not expose a VPC CIDR range directly to the internet."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A Data Engineering Network Example",
+            body: [
+              "Segmenting a cloud network keeps public-facing entry points isolated from core storage and processing layers. If a public component gets compromised, strict subnet boundaries limit the blast radius and protect critical data."
+            ]
+          },
+          {
+            kind: "image",
+            src: deNetworkExampleImg,
+            alt: "DE Network Example",
+            caption: "A Data Engineering Network Example: Segmenting a cloud network to keep public-facing entry points isolated"
+          },
+          {
+            kind: "prose",
+            heading: "Rules for planning CIDR ranges",
+            body: [
+              "**1. Do not overlap ranges**",
+              "Avoid overlapping CIDR ranges across cloud networks, offices, VPNs, and other cloud providers. For example, if your office network uses `10.0.0.0/16`, do not reuse that exact range for a cloud VPC that must connect back to the office.",
+              "Overlapping ranges make VPN, peering, and hybrid connectivity difficult or impossible without extra translation work. Azure explicitly requires non-overlapping CIDR blocks when linking VNets or connecting to on-premises networks.",
+              "**2. Leave room to grow**",
+              "Avoid allocating only enough addresses for today. A small subnet can run out of IP addresses because of scaling, load balancers, Kubernetes, private endpoints, or provider-reserved addresses. Give growing services enough room from the start.",
+              "**3. Separate by responsibility**",
+              "Use subnets for meaningful groups, not for every individual service. A simple data platform might have: Ingestion, Compute, Data access, Management, and Private endpoints.",
+              "**4. Use private address ranges**",
+              "Most internal cloud networks use RFC 1918 private ranges: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`. Choose ranges that fit your company-wide IP plan. Google Cloud and Azure both document these private ranges for internal network planning."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Common mistakes",
+            body: [
+              "**Using overlapping ranges:** This blocks or complicates future connectivity.",
+              "**Making every workload public:** Most data infrastructure should use private access.",
+              "**Creating subnets that are too small:** Autoscaling and managed services can consume more IP addresses than expected.",
+              "**Treating a subnet as a security policy:** Use firewalls, security groups, NSGs, and route controls too.",
+              "**Learning provider names before the concept:** Understand network, subnet, CIDR, routing, and security first."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "AWS VPC, Google Cloud VPC, and Azure VNet are versions of the same core idea.",
+              "Subnets divide a network into smaller, purposeful IP ranges.",
+              "CIDR notation defines the size of each IP range.",
+              "Good network planning supports security, scaling, and future cloud or hybrid connectivity.",
+              "Data systems should keep processing and sensitive data paths private by default."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "cn-1",
+                question: "What is the difference between a VPC and a subnet?",
+                options: [
+                  "A VPC or VNet is the larger private network. A subnet is a smaller IP range within it.",
+                  "A subnet is the entire cloud network, and a VPC is a small section of it.",
+                  "They are the exact same thing.",
+                  "A VPC is for databases, and subnets are for web servers."
+                ],
+                correctIndex: 0,
+                explanation: "A VPC (or VNet) represents the overall network boundary, while subnets divide that space into manageable segments."
+              },
+              {
+                id: "cn-2",
+                question: "Which range is larger: /16 or /24?",
+                options: [
+                  "/24 is larger.",
+                  "/16 is larger.",
+                  "They are the same size.",
+                  "It depends on the cloud provider."
+                ],
+                correctIndex: 1,
+                explanation: "In CIDR notation, a smaller suffix number indicates a larger number of available IP addresses. A /16 has 65,536 addresses, while a /24 has only 256."
+              },
+              {
+                id: "cn-3",
+                question: "Why should cloud CIDR ranges not overlap with on-premises ranges?",
+                options: [
+                  "It causes servers to run out of memory.",
+                  "Overlap makes routing between those networks unreliable or impossible.",
+                  "Cloud providers charge extra for overlapping ranges.",
+                  "It is a strict legal requirement."
+                ],
+                correctIndex: 1,
+                explanation: "If two networks use the same IP addresses, a router won't know which network a packet should go to."
+              },
+              {
+                id: "cn-4",
+                question: "Is a subnet automatically secure because it is private?",
+                options: [
+                  "Yes, private subnets block all inbound and outbound traffic by default.",
+                  "No. Security also requires traffic rules, firewall controls, and identity-based access.",
+                  "Yes, if it has a /24 CIDR block.",
+                  "No, private subnets are inherently less secure than public ones."
+                ],
+                correctIndex: 1,
+                explanation: "A subnet is just a logical grouping of IP addresses. It does not provide security unless paired with strict rules (like security groups or Network ACLs)."
+              }
+            ]
+          }
+        ]
+      },
+      {
         slug: "foundations-quiz",
-        title: "1.7 Foundations Quiz",
+        title: "1.9 Foundations Quiz",
         subtitle: "Test your knowledge of the core concepts covered in the Data Engineering Foundations track.",
         sections: [
           {
