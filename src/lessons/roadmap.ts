@@ -937,6 +937,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "1.4 Data Engineers Within an Organization", slug: "within-organization", path: "/data-engineering/data-engineering-described/within-organization", icon: Activity },
               { title: "1.5 Working With Stakeholders and Data Requirements", slug: "working-with-stakeholders", path: "/data-engineering/data-engineering-described/working-with-stakeholders", icon: Activity },
               { title: "1.6 Data Engineering on the Cloud", slug: "data-engineering-on-the-cloud", path: "/data-engineering/data-engineering-described/data-engineering-on-the-cloud", icon: Activity },
+              { title: "1.7 Foundations Quiz", slug: "foundations-quiz", path: "/data-engineering/data-engineering-described/foundations-quiz", icon: Activity },
             ],
           },
           {
