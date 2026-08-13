@@ -25,6 +25,10 @@ import subnetsInActionImg from "@/images/data-engineering-fundamentals/foundatio
 import cidrInActionImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/CIDR-in-action.png";
 import howPlatformsDifferImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/how-platforms-differ.png";
 import deNetworkExampleImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/DE-Network-Example.png";
+import natImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/nat.png";
+import firewallsImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/firewalls-and-security-rules.png";
+import dataPlatformDesignImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-platform-design.png";
+import platformMappingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/platform-mapping.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -1234,6 +1238,224 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 correctIndex: 1,
                 explanation: "A subnet is just a logical grouping of IP addresses. It does not provide security unless paired with strict rules (like security groups or Network ACLs)."
               }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "controlling-cloud-traffic",
+        title: "1.8 Controlling Cloud Traffic: Routing, Gateways, NAT, and Firewalls",
+        subtitle: "Learn how cloud platforms decide where traffic goes and whether that traffic is allowed.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "A private subnet is not automatically secure, and a public IP does not automatically make a service reachable.",
+              "Every connection needs two decisions:",
+              "**Routing:** Where should the traffic go?",
+              "**Security:** Is that traffic allowed?"
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "A route does not grant access. A firewall rule does not create a path. You need both."
+            ]
+          },
+          {
+            kind: "pipeline-flow",
+            steps: [
+              {
+                title: "Workload",
+                description: "The application, virtual machine, container, or database initiating the connection."
+              },
+              {
+                title: "Route table",
+                description: "Chooses a path based on the destination IP address."
+              },
+              {
+                title: "Gateway",
+                description: "Connects a private network to another network, such as the internet. (e.g., NAT lets private resources start outbound connections without accepting inbound)."
+              },
+              {
+                title: "Security rules",
+                description: "Allows or blocks traffic by source, destination, port, protocol, and direction."
+              },
+              {
+                title: "Destination",
+                description: "The final target endpoint receiving the network traffic."
+              }
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "1. Routing: choosing the path",
+            body: [
+              "A route has two important parts:",
+              "Destination → Target or next hop",
+              "For example:",
+              "`0.0.0.0/0 → Internet gateway`",
+              "`0.0.0.0/0` means “every IPv4 destination not matched by a more specific route.” It is often called the default route.",
+              "A route table may also send traffic to: Another VPC or VNet, An on-premises network through VPN or private connectivity, A firewall appliance, A NAT gateway, or A private cloud-service endpoint.",
+              "When more than one route could apply, platforms usually select the most specific matching range. A route to `10.20.0.0/16` is more specific than a route to `0.0.0.0/0`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "2. Internet gateways: connecting a network to the internet",
+            body: [
+              "An internet gateway provides a route target for internet-bound traffic.",
+              "**AWS**",
+              "Attach an Internet Gateway to a VPC, then add a route such as: `0.0.0.0/0 → Internet Gateway`",
+              "A subnet with this route is considered public. A workload also needs a public IPv4 address or an IPv6 address to communicate directly with the internet.",
+              "**Google Cloud**",
+              "Google Cloud VPC networks include a default internet gateway route. You do not create and attach a separate internet gateway resource like you do in AWS.",
+              "For a VM to reach the internet directly, it needs an allowed egress firewall rule and either an external IP address or Cloud NAT.",
+              "**Azure**",
+              "Azure uses system routes and explicit outbound options instead of an AWS-style internet gateway resource. A subnet has a default route to the internet unless you override it with a user-defined route.",
+              "For production private workloads, use an explicit outbound method such as Azure NAT Gateway rather than relying on default outbound access."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "3. NAT: private outbound access",
+            body: [
+              "NAT, or Network Address Translation, lets a private resource start an internet connection using a public IP owned by the NAT service.",
+              "The resource can download updates, call an API, or access a package registry. Internet users cannot initiate a new connection back to that private resource through NAT."
+            ]
+          },
+          {
+            kind: "image",
+            src: natImg,
+            alt: "NAT",
+            caption: "NAT: Allowing private outbound access"
+          },
+          {
+            kind: "prose",
+            heading: "4. Firewalls and Security Rules",
+            body: [
+              "Security rules act as network gatekeepers, controlling traffic based on source, destination, protocol, port, direction, and action. AWS Security Groups, Google Cloud Firewall Rules, and Azure NSGs all use different names, but they share the same goal: restricting communication to only authorized paths."
+            ]
+          },
+          {
+            kind: "image",
+            src: firewallsImg,
+            alt: "Firewalls and Security Rules",
+            caption: "Firewalls and Security Rules: Network gatekeepers"
+          },
+          {
+            kind: "prose",
+            heading: "A Cloud-Neutral Data Platform Design",
+            body: [
+              "This architecture applies the principle of **least privilege** across cloud providers. By restricting public access to an entry-point load balancer and locking downstream traffic into private subnets, each processing step only receives the specific access it needs to function safely."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataPlatformDesignImg,
+            alt: "Data Platform Design",
+            caption: "Data Platform Design: Applying the principle of least privilege"
+          },
+          {
+            kind: "prose",
+            heading: "Platform Mapping",
+            body: [
+              "Every major cloud provider uses different product names for the exact same networking primitives. Whether managing routing, internet access, firewalls, or private endpoints, AWS, Google Cloud, and Azure all achieve identical architectural outcomes."
+            ]
+          },
+          {
+            kind: "image",
+            src: platformMappingImg,
+            alt: "Platform Mapping",
+            caption: "Platform Mapping: Provider names for networking primitives"
+          },
+          {
+            kind: "prose",
+            heading: "Common mistakes",
+            body: [
+              "**Adding a firewall rule but no route:** The traffic is allowed, but it has nowhere to go.",
+              "**Adding a route but no firewall rule:** The path exists, but traffic is denied.",
+              "**Giving private workloads public IP addresses:** Prefer NAT for outbound access.",
+              "**Allowing 0.0.0.0/0 to sensitive ports:** Never expose database or admin ports broadly.",
+              "**Using only IP addresses for access rules:** Use workload or service groups when the platform supports them.",
+              "**Forgetting return traffic:** This matters especially with stateless controls such as AWS Network ACLs."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "ct-1",
+                question: "What does a route table do?",
+                options: [
+                  "It allows or denies traffic.",
+                  "It chooses the next path for traffic based on the destination address.",
+                  "It provides a public IP to private resources.",
+                  "It restricts communication to only authorized paths."
+                ],
+                correctIndex: 1,
+                explanation: "A route table selects a path based on the destination IP. It does not enforce security."
+              },
+              {
+                id: "ct-2",
+                question: "What does NAT provide?",
+                options: [
+                  "Outbound internet access for private resources without accepting unsolicited inbound connections.",
+                  "Inbound internet access directly to databases.",
+                  "A way to block all traffic entering the VPC.",
+                  "A method for routing traffic to another VPC."
+                ],
+                correctIndex: 0,
+                explanation: "Network Address Translation allows resources in a private subnet to securely initiate outbound connections to the internet."
+              },
+              {
+                id: "ct-3",
+                question: "Can a firewall rule replace a route?",
+                options: [
+                  "Yes, if the rule is configured with an IP address.",
+                  "No. A firewall rule allows or denies traffic. A route decides where it goes.",
+                  "Yes, in Google Cloud.",
+                  "No, but a route can replace a firewall rule."
+                ],
+                correctIndex: 1,
+                explanation: "Routing and security are two distinct networking functions. You always need both."
+              },
+              {
+                id: "ct-4",
+                question: "Which control is closest to an AWS Security Group in Azure?",
+                options: [
+                  "Azure NAT Gateway",
+                  "Azure VNet",
+                  "A Network Security Group",
+                  "Azure Firewall Appliance"
+                ],
+                correctIndex: 2,
+                explanation: "Azure Network Security Groups (NSGs) function similarly to AWS Security Groups by enforcing traffic rules at the subnet or network interface level."
+              },
+              {
+                id: "ct-5",
+                question: "Why should a database usually be in a private subnet?",
+                options: [
+                  "To save on cloud costs.",
+                  "It should accept traffic only from approved internal workloads, not directly from the internet.",
+                  "Because databases do not have IP addresses.",
+                  "Because they require a NAT Gateway to function."
+                ],
+                correctIndex: 1,
+                explanation: "Keeping databases in private subnets is a core security practice to prevent unauthorized internet exposure."
+              }
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Routing decides where traffic goes.",
+              "Security controls decide whether traffic is allowed.",
+              "Internet gateways support direct internet paths.",
+              "NAT gives private workloads safe outbound internet access.",
+              "AWS Security Groups, Google Cloud firewall rules, and Azure NSGs all control network access in different ways."
             ]
           }
         ]
