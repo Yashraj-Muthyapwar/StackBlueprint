@@ -1384,6 +1384,16 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
+            kind: "takeaways",
+            items: [
+              "Routing decides where traffic goes.",
+              "Security controls decide whether traffic is allowed.",
+              "Internet gateways support direct internet paths.",
+              "NAT gives private workloads safe outbound internet access.",
+              "AWS Security Groups, Google Cloud firewall rules, and Azure NSGs all control network access in different ways."
+            ]
+          },
+          {
             kind: "quiz",
             questions: [
               {
@@ -1446,16 +1456,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 correctIndex: 1,
                 explanation: "Keeping databases in private subnets is a core security practice to prevent unauthorized internet exposure."
               }
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Routing decides where traffic goes.",
-              "Security controls decide whether traffic is allowed.",
-              "Internet gateways support direct internet paths.",
-              "NAT gives private workloads safe outbound internet access.",
-              "AWS Security Groups, Google Cloud firewall rules, and Azure NSGs all control network access in different ways."
             ]
           }
         ]
