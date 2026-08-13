@@ -938,6 +938,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "1.5 Working With Stakeholders and Data Requirements", slug: "working-with-stakeholders", path: "/data-engineering/data-engineering-described/working-with-stakeholders", icon: Activity },
               { title: "1.6 Data Engineering on the Cloud", slug: "data-engineering-on-the-cloud", path: "/data-engineering/data-engineering-described/data-engineering-on-the-cloud", icon: Activity },
               { title: "1.7 Cloud Networking Basics: VPCs, Subnets, and CIDR", slug: "cloud-networking-basics", path: "/data-engineering/data-engineering-described/cloud-networking-basics", icon: Activity },
+              { title: "1.8 Controlling Cloud Traffic: Routing, Gateways, NAT, and Firewalls", slug: "controlling-cloud-traffic", path: "/data-engineering/data-engineering-described/controlling-cloud-traffic", icon: Activity },
               { title: "1.9 Foundations Quiz", slug: "foundations-quiz", path: "/data-engineering/data-engineering-described/foundations-quiz", icon: Activity },
             ],
           },
