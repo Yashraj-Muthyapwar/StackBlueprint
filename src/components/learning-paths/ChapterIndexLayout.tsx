@@ -61,8 +61,8 @@ export function ChapterIndexLayout({ trackTitle, trackPath, topic }: ChapterInde
           {topic.lessons?.map((les: any, i: number) => (
             <Link
               key={les.slug}
-              to={`${trackPath}/$topic/$lesson`}
-              params={{ topic: topic.slug, lesson: les.slug }}
+              to={les.path as any}
+              params={les.path ? undefined : { topic: topic.slug, lesson: les.slug }}
               className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70"
             >
               <div className="flex items-center justify-between">
