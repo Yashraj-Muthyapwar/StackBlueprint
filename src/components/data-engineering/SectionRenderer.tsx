@@ -1,7 +1,49 @@
+import React, { useState, useEffect } from "react";
 import type { Section } from "@/lessons/types";
-import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Brain, ArrowRight } from "lucide-react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { Quiz } from "@/components/lesson/Quiz";
+
+function InteractivePipelineFlow({ steps }: { steps: { title: string; description: string }[] }) {
+  const [activeStep, setActiveStep] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const timer = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % steps.length);
+    }, 5000); // 5 seconds duration
+    return () => clearInterval(timer);
+  }, [steps.length, isAutoPlaying]);
+
+  return (
+    <div className="my-6 rounded-xl border border-hairline bg-slate-50/50 dark:bg-surface shadow-sm overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 p-4 border-b border-hairline bg-slate-100/50 dark:bg-zinc-900/50">
+        {steps.map((step, i) => (
+          <React.Fragment key={i}>
+            <button 
+              onClick={() => {
+                setActiveStep(i);
+                setIsAutoPlaying(false);
+              }}
+              className={`px-3.5 py-1.5 rounded-lg border font-medium text-sm shadow-sm transition-colors ${activeStep === i ? 'bg-mint text-white border-mint' : 'bg-white dark:bg-zinc-800/80 border-hairline text-foreground hover:bg-slate-50 dark:hover:bg-zinc-700'}`}
+            >
+              {step.title}
+            </button>
+            {i < steps.length - 1 && (
+              <div className="text-muted-foreground/60">
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+      <div className="p-5 text-[15px] leading-relaxed text-foreground/90">
+        <strong className="text-foreground font-semibold">{steps[activeStep].title}:</strong> {parseInlineMarkdown(steps[activeStep].description)}
+      </div>
+    </div>
+  );
+}
 
 function parseInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|!!.*?!!|\^\^.*?\^\^)/g);
@@ -13,7 +55,11 @@ function parseInlineMarkdown(text: string) {
       return <span key={i} className="font-semibold text-red-500 dark:text-red-400">{part.slice(2, -2)}</span>;
     }
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+      const content = part.slice(2, -2);
+      if (content === 'AWS') return <strong key={i} className="font-semibold text-amber-500">{content}</strong>;
+      if (content === 'Azure') return <strong key={i} className="font-semibold text-blue-500">{content}</strong>;
+      if (content === 'Google Cloud') return <strong key={i} className="font-semibold text-red-500">{content}</strong>;
+      return <strong key={i} className="font-semibold">{content}</strong>;
     }
     if (part.startsWith('*') && part.endsWith('*')) {
       return <em key={i} className="italic text-foreground">{part.slice(1, -1)}</em>;
@@ -174,6 +220,37 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           </p>
         </section>
       );
+
+    case "cloud-provider-grid":
+      return (
+        <div className="grid gap-3 md:grid-cols-3 my-5">
+          {section.items.map((item, i) => {
+            const colors = {
+              "AWS": "border-amber-500/20 bg-amber-500/5",
+              "Google Cloud": "border-red-500/20 bg-red-500/5",
+              "Azure": "border-blue-500/20 bg-blue-500/5"
+            };
+            const textColors = {
+              "AWS": "text-amber-600 dark:text-amber-500",
+              "Google Cloud": "text-red-600 dark:text-red-500",
+              "Azure": "text-blue-600 dark:text-blue-500"
+            };
+            return (
+              <div key={i} className={`rounded-xl border ${colors[item.provider]} p-4 flex flex-col shadow-sm`}>
+                <div className={`font-semibold tracking-tight text-sm uppercase mb-2 ${textColors[item.provider]}`}>
+                  {item.provider}
+                </div>
+                <div className="text-[15px] text-foreground/90 leading-relaxed">
+                  {parseInlineMarkdown(item.content)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+
+    case "pipeline-flow":
+      return <InteractivePipelineFlow steps={section.steps} />;
 
     case "takeaways":
       return (
