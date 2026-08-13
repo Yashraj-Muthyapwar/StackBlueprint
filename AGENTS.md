@@ -16,6 +16,7 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
 * **Key Takeaways**: Every lesson must end with a clearly defined "Key Takeaways" section.
 * **Quizzes & Completion**: 
   * A Quiz section should be added if appropriate for the lesson content, though it can be skipped if not applicable.
+  * If a quiz is present, it MUST ALWAYS be placed at the very end of the lesson content (i.e., AFTER the Key Takeaways section).
   * You MUST ALWAYS add a button to mark the lesson as completed at the end of the lesson, regardless of whether a quiz is present.
 
 ### 3. Track Creation
