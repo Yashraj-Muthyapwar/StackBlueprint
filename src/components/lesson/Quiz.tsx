@@ -388,7 +388,7 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
   );
 
   return (
-    <div className="mt-8 w-full max-w-3xl mx-auto pb-24">
+    <div className="mt-8 w-full max-w-3xl mx-auto">
       {isSubmitted && (
         <div className="mb-16 rounded-xl border border-hairline bg-surface p-8 text-center">
           <div className="text-5xl font-bold tracking-tight text-mint mb-2">
