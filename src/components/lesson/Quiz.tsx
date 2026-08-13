@@ -428,28 +428,28 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-2">
+                  <div className="space-y-3 mt-4">
                     {q.shuffledOptions.map((opt: any, oIndex: number) => {
                       const isSelected = selectedAnswers[qIndex] === oIndex;
                       const isCorrect = opt.isCorrect;
                       
-                      let rowClass = "border-2 border-transparent hover:bg-surface-2 text-foreground/90";
-                      let indicatorClass = "border-hairline text-muted-foreground";
+                      let rowClass = "border border-hairline bg-surface hover:border-mint/40 hover:bg-surface-2/50 text-foreground/90 shadow-sm";
+                      let indicatorClass = "border-hairline bg-surface-2 text-muted-foreground";
                       
                       if (isSelected) {
-                        rowClass = "border-2 border-foreground bg-foreground/5 text-foreground";
-                        indicatorClass = "border-foreground bg-foreground text-background";
+                        rowClass = "border-mint bg-mint/5 text-foreground shadow-md ring-1 ring-mint/50";
+                        indicatorClass = "border-mint bg-mint text-white";
                       }
                       
                       if (isSubmitted) {
                         if (isCorrect) {
-                          rowClass = "border-2 border-mint bg-mint/10 text-foreground";
+                          rowClass = "border-mint bg-mint/10 text-foreground ring-1 ring-mint";
                           indicatorClass = "border-mint bg-mint text-white";
                         } else if (isSelected) {
-                          rowClass = "border-2 border-rose-500 bg-rose-500/10 text-foreground";
+                          rowClass = "border-rose-500 bg-rose-500/10 text-foreground ring-1 ring-rose-500";
                           indicatorClass = "border-rose-500 bg-rose-500 text-white";
                         } else {
-                          rowClass = "border-2 border-transparent opacity-50";
+                          rowClass = "border-hairline bg-surface/40 opacity-40";
                         }
                       }
 
@@ -458,15 +458,15 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
                           key={oIndex}
                           onClick={() => handleSelectOption(qIndex, oIndex)}
                           disabled={isSubmitted}
-                          className={cn("flex w-full items-start gap-4 rounded-lg px-4 py-3 text-left transition-colors", rowClass)}
+                          className={cn("group flex w-full items-start gap-5 rounded-xl px-5 py-4 text-left transition-all duration-200", rowClass)}
                         >
-                          <div className={cn("mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-medium transition-colors", indicatorClass)}>
+                          <div className={cn("mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-semibold transition-colors shadow-sm", indicatorClass)}>
                             {String.fromCharCode(65 + oIndex)}
                           </div>
-                          <span className="text-base leading-relaxed">{opt.text}</span>
+                          <span className="text-base leading-relaxed flex-1 mt-1">{opt.text}</span>
                           
-                          {isSubmitted && isCorrect && <CheckCircle2 className="ml-auto size-5 shrink-0 text-mint" />}
-                          {isSubmitted && isSelected && !isCorrect && <XCircle className="ml-auto size-5 shrink-0 text-rose-500" />}
+                          {isSubmitted && isCorrect && <CheckCircle2 className="ml-auto size-6 shrink-0 text-mint" />}
+                          {isSubmitted && isSelected && !isCorrect && <XCircle className="ml-auto size-6 shrink-0 text-rose-500" />}
                         </button>
                       );
                     })}
@@ -514,14 +514,14 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
       </div>
 
       {!isSubmitted && (
-        <div className="mt-20 flex justify-center border-t border-hairline pt-10">
+        <div className="mt-16 flex justify-center pt-8">
           <button
             onClick={handleSubmit}
             disabled={!allAnswered}
-            className="inline-flex items-center gap-2 rounded-lg bg-foreground px-8 py-3.5 text-base font-medium text-background transition-all hover:bg-foreground/90 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex items-center gap-3 rounded-full bg-mint px-10 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-mint/20 transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
           >
             Submit Exam
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-5" />
           </button>
         </div>
       )}
