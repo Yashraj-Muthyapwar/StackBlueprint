@@ -1,4 +1,4 @@
-import logoImg from "@/images/logos/logo.png";
+import logoImg from "@/images/logos/new-logo.png";
 import { Shield, FileText } from "lucide-react";
 
 export function Footer() {
@@ -14,9 +14,9 @@ export function Footer() {
         
         {/* Left side: Brand lockup */}
         <div className="group flex cursor-pointer items-center gap-4">
-          <div className="relative flex size-10 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-mint/20 via-mint/5 to-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.2)] ring-1 ring-mint/20 transition-all duration-500 group-hover:scale-110 group-hover:ring-mint/50 group-hover:shadow-[0_0_30px_-5px_rgba(94,234,212,0.5)]">
-            <div className="absolute inset-0 bg-gradient-to-tr from-mint/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            <img src={logoImg} alt="StackBlueprint Logo" className="relative z-10 size-5 object-contain transition-all duration-500 group-hover:rotate-[15deg] group-hover:scale-110" />
+          <div className="relative flex size-10 items-center justify-center overflow-hidden rounded-xl bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all duration-500 group-hover:scale-110 group-hover:ring-mint/50 group-hover:shadow-[0_0_30px_-5px_rgba(94,234,212,0.4)]">
+            <div className="absolute inset-0 bg-gradient-to-tr from-mint/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+            <img src={logoImg} alt="StackBlueprint Logo" className="relative z-10 size-6 object-contain transition-transform duration-500 group-hover:scale-110" />
           </div>
           <div className="flex flex-col">
             <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-sm font-bold tracking-tight text-transparent transition-all duration-300 group-hover:to-mint/80">
