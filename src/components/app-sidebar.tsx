@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight, Lock, Terminal, CheckCircle2 } from "lucide-
 import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
-import logoImg from "@/images/logos/logo.png";
+import logoImg from "@/images/logos/new-logo.png";
 import { useProgress } from "@/hooks/use-progress";
 import {
   Collapsible,
