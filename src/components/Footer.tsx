@@ -13,10 +13,9 @@ export function Footer() {
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row sm:gap-0">
         
         {/* Left side: Brand lockup */}
-        <div className="group flex cursor-pointer items-center gap-4">
-          <div className="relative flex size-10 items-center justify-center overflow-hidden rounded-xl bg-white/80 dark:bg-black/50 backdrop-blur-md shadow-sm ring-1 ring-black/5 dark:ring-white/10 transition-all duration-500 group-hover:scale-110 group-hover:ring-mint/50 group-hover:shadow-[0_0_30px_-5px_rgba(94,234,212,0.4)]">
-            <div className="absolute inset-0 bg-gradient-to-tr from-mint/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-            <img src={logoImg} alt="StackBlueprint Logo" className="relative z-10 size-6 object-contain transition-transform duration-500 group-hover:scale-110" />
+        <div className="group flex cursor-pointer items-center gap-2">
+          <div className="grid size-8 shrink-0 place-items-center transition-transform duration-500 group-hover:scale-110">
+            <img src={logoImg} alt="StackBlueprint Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col">
             <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-sm font-bold tracking-tight text-transparent transition-all duration-300 group-hover:to-mint/80">
