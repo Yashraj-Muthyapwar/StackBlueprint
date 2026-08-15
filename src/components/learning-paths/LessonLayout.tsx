@@ -49,9 +49,8 @@ export function LessonLayout({
 
   const isEffectivelyPlaceholder = 
     isPlaceholder || 
-    !sections ||
-    sections.length === 0 ||
-    (sections.length === 1 && sections[0].heading === "Coming Soon");
+    (!children && (!sections || sections.length === 0)) ||
+    (sections?.length === 1 && sections[0].heading === "Coming Soon");
 
   return (
     <div className="px-6 pb-6 pt-10 lg:px-12 lg:pb-8 lg:pt-14">
