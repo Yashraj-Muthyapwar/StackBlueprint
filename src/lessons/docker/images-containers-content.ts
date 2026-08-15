@@ -968,7 +968,7 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "terminal-animation",
-      command: "# Syntax:\n# docker container run [OPTIONS] IMAGE [COMMAND] [ARG...]",
+      command: "# Syntax:\ndocker container run [OPTIONS] IMAGE [COMMAND] [ARG...]",
       output: "",
       buttonLabel: "View Syntax",
       caption: "The basic docker container run syntax",
