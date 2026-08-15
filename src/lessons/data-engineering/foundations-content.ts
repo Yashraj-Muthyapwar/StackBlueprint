@@ -29,6 +29,8 @@ import natImg from "@/images/data-engineering-fundamentals/foundations/Understan
 import firewallsImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/firewalls-and-security-rules.png";
 import dataPlatformDesignImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/data-platform-design.png";
 import platformMappingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/platform-mapping.png";
+import sourceSystemsImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/source-systems.png";
+import journeyFitnessAppImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/fitness-app.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -1648,6 +1650,163 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 1,
                 explanation: "A successful migration involves ongoing tuning of query performance, managing access policies, and optimizing cloud costs long after the initial data transfer is complete."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "data-engineering-lifecycle": {
+    title: "2. The Data Engineering Lifecycle",
+    slug: "data-engineering-lifecycle",
+    lessons: [
+      {
+        slug: "data-generation-and-source-systems",
+        title: "2.1 Data Generation and Source Systems",
+        subtitle: "Learn where data begins and how to evaluate a source before building a pipeline.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Every data pipeline starts with a source system. If you do not understand how that system creates, stores, and changes data, your pipeline will eventually produce incorrect results or break unexpectedly.",
+              "Data engineers usually do not own source systems. They need to work closely with the teams that do."
+            ]
+          },
+          {
+            kind: "image",
+            src: sourceSystemsImg,
+            alt: "Source Systems",
+            caption: "Application database, SaaS tool, API, and IoT devices all send data toward one pipeline."
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "A source system is the original location where data is created.",
+              "Common sources include:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "Application databases",
+              "Web and mobile events",
+              "APIs",
+              "SaaS tools such as CRM or payment platforms",
+              "Message queues",
+              "Log files",
+              "Sensors and IoT devices"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "A checkout database, for example, may create an order record when a customer completes a purchase. That record can later be used for finance reporting, marketing analysis, and product insights."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Understand the source before ingesting it",
+            body: [
+              "Ask these questions before you build:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Who owns the source?** Know who to contact when fields change or data is missing.",
+              "**What does the data mean?** Confirm the meaning of fields such as status, revenue, or created_at.",
+              "**How is data stored?** It may live in a relational database, a document store, a queue, or short-lived logs.",
+              "**How fast does it arrive?** A daily CSV file and thousands of events per second need different designs.",
+              "**How long is it retained?** Some source data is deleted quickly. Capture it before it is lost if you need historical analysis."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "info",
+            title: "Source-System Checklist",
+            body: "A source-system checklist fills in ownership, schema, frequency, volume, and retention."
+          },
+          {
+            kind: "prose",
+            heading: "Schemas change",
+            body: [
+              "A schema describes the structure of data, such as field names, types, and relationships.",
+              "A source team may rename customer_email, change a number into text, or add a new order status. These changes can break transformations and dashboards.",
+              "Treat the source schema as a contract. Document it, monitor it, and agree with source owners on how changes will be communicated."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Unannounced schema changes break downstream dashboards. Establishing a formal data contract ensures source teams communicate updates early, letting pipelines handle field migrations smoothly without disrupting business reporting."
+            ]
+          },
+          {
+            kind: "image",
+            src: journeyFitnessAppImg,
+            alt: "Fitness app schema change example",
+            caption: "A fitness app schema change example"
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Assuming source data is clean:** Application data is built for operations, not always analytics.",
+              "**Ignoring source ownership:** Every important source needs a clear owner.",
+              "**Skipping schema monitoring:** Small source changes can cause large downstream problems.",
+              "**Collecting sensitive fields without a purpose:** Ingest only what you need."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Source systems create the data used by pipelines.",
+              "Data engineers need to understand source ownership, schema, frequency, volume, and retention.",
+              "Source changes should be treated as planned changes, not surprises."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "ds-quiz-1",
+                question: "What is a source system?",
+                options: [
+                  "The system where data originates.",
+                  "A dashboard used by executives.",
+                  "The data warehouse where data is stored.",
+                  "The team that writes SQL queries."
+                ],
+                correctIndex: 0,
+                explanation: "A source system is the original location where data is created."
+              },
+              {
+                id: "ds-quiz-2",
+                question: "Why does a data engineer need to know the source owner?",
+                options: [
+                  "To know who to fire when data goes missing.",
+                  "To understand the data and respond when the source changes.",
+                  "Because data engineers never write their own code.",
+                  "To give them access to the data warehouse."
+                ],
+                correctIndex: 1,
+                explanation: "Knowing the source owner allows you to communicate effectively when fields change or data is missing."
+              },
+              {
+                id: "ds-quiz-3",
+                question: "What is a schema?",
+                options: [
+                  "The structure and meaning of a dataset’s fields.",
+                  "A tool for moving data.",
+                  "A type of data pipeline.",
+                  "A common mistake when collecting data."
+                ],
+                correctIndex: 0,
+                explanation: "A schema describes the structure of data, such as field names, types, and relationships."
               }
             ]
           }
