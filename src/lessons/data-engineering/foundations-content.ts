@@ -36,6 +36,14 @@ import batchVsStreamingImg from "@/images/data-engineering-fundamentals/foundati
 import ecommExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/ecomm-example.png";
 import realTimeClicksExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/real-time-clicks-example.png";
 import storageHierarchyImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/storage-hierarchy.png";
+import rawToRealWorldImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/raw-to-real-world.png";
+import transformationImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/transformation.png";
+import queriesImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/queries.png";
+import dataModelingImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/data-modeling.png";
+import commonTransformationPatternsImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/common-transformation-patterns.png";
+import threeCommonWaysServeImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/three-common-ways-serve.png";
+import closingLoopImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/closing-loop.png";
+import dataIntoActionImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/data-into-action.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -2006,6 +2014,279 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 2,
                 explanation: "Object storage (like Amazon S3) is cheap, scalable, and perfect for large volumes of raw files and logs, making it the foundation of a data lake."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "transforming-and-serving",
+        title: "2.3 Transforming and Serving Data",
+        subtitle: "Learn how data becomes trustworthy, useful, and available to the people and products that need it.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Raw data is rarely ready for a dashboard, model, or customer-facing feature.",
+              "Transformation makes data understandable and reliable. Serving puts that prepared data in the hands of people and systems that can use it."
+            ]
+          },
+          {
+            kind: "image",
+            src: rawToRealWorldImg,
+            alt: "Raw to Real World",
+            caption: "Raw data transformed into real-world insights."
+          },
+          {
+            kind: "prose",
+            heading: "Part 1: Transformation",
+            body: [
+              "Transformation is the work of changing raw data into a reliable structure for a specific use.",
+              "It may make data cleaner, more consistent, easier to query, or more useful for a report or model.",
+              "**What transformations do**",
+              "A transformation might:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "Convert a text value into a date or number",
+              "Remove duplicate records",
+              "Standardize country names and product codes",
+              "Join related data together",
+              "Calculate a new metric",
+              "Group data into daily, weekly, or monthly totals",
+              "Create features for a machine learning model"
+            ]
+          },
+          {
+            kind: "image",
+            src: transformationImg,
+            alt: "Transformation",
+            caption: "Various ways to transform data."
+          },
+          {
+            kind: "prose",
+            heading: "Queries: Asking Data a Question",
+            body: [
+              "A query translates a plain business question into structured SQL code that a database can execute. By filtering, joining, and aggregating raw records, it transforms raw data into clear, actionable answers."
+            ]
+          },
+          {
+            kind: "image",
+            src: queriesImg,
+            alt: "Queries",
+            caption: "A query asks a data system a question."
+          },
+          {
+            kind: "prose",
+            heading: "Watch out for poor queries",
+            body: [
+              "A poorly designed query can cause two major problems."
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Slow performance:** The database scans too much data or performs unnecessary work.",
+              "**Row explosion:** A join creates far more rows than expected."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "For example, if one customer has three orders and two marketing records, joining both tables without care can produce six rows instead of three.",
+              "Before trusting a query, check:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "Does the row count make sense?",
+              "Is each join using the correct key?",
+              "Does the output match the business definition?",
+              "Is the query reading more data than necessary?"
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Data Modeling: Organizing Data for Use",
+            body: [
+              "Data modeling transforms raw source tables into structured dimensional models. This eliminates the need for analysts to write complex joins while enforcing consistent business logic across all reporting."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataModelingImg,
+            alt: "Data Modeling",
+            caption: "Organizing data for clear and repeatable use."
+          },
+          {
+            kind: "prose",
+            heading: "When transformation happens",
+            body: [
+              "Transformation does not only happen after ingestion."
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Before ingestion:** A source application adds an event timestamp",
+              "**During ingestion:** Convert incoming text values into correct data types",
+              "**After ingestion:** Build clean reporting tables and aggregates"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "The best location depends on the use case. Keep transformations close to where they create the most value and are easiest to maintain."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Common Transformation Patterns",
+            body: [
+              "Data transformations shape raw events into reliable inputs for analytics and machine learning. Through standardization, enrichment, aggregation, and featurization, pipelines turn messy records into consistent business insights and predictive signals."
+            ]
+          },
+          {
+            kind: "image",
+            src: commonTransformationPatternsImg,
+            alt: "Common Transformation Patterns",
+            caption: "Standardization, enrichment, aggregation, and featurization."
+          },
+          {
+            kind: "prose",
+            heading: "Part 2: Serving data",
+            body: [
+              "Serving is the final step: making prepared data available to a person, product, or system.",
+              "Data is not valuable because it is stored. It becomes valuable when it supports a decision or action."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Three Common Ways to Serve Data",
+            body: [
+              "Data serving targets three distinct user needs: Business Intelligence for historical decisions, Operational Analytics for immediate action, and Embedded Analytics for customer-facing applications. Matching the consumption pattern to the right delivery method ensures data drives practical value."
+            ]
+          },
+          {
+            kind: "image",
+            src: threeCommonWaysServeImg,
+            alt: "Three Common Ways to Serve Data",
+            caption: "BI, Operational Analytics, and Embedded Analytics."
+          },
+          {
+            kind: "prose",
+            heading: "Closing the Loop: From ML Predictions to Business Action",
+            body: [
+              "Serving data to machine learning models provides the consistent features needed for accurate predictions. Reverse ETL takes those calculated insights and syncs them back into daily tools like CRMs, turning raw analytics into direct business action."
+            ]
+          },
+          {
+            kind: "image",
+            src: closingLoopImg,
+            alt: "Closing the Loop",
+            caption: "Syncing data from the data platform back into operational tools via Reverse ETL."
+          },
+          {
+            kind: "prose",
+            heading: "Turning Data into Action: Reducing Product Returns",
+            body: [
+              "This end-to-end flow demonstrates how raw order events are ingested, transformed, modeled, and queried to drive business decisions. By surfacing return rates on a BI dashboard, product teams can address root causes directly rather than relying on unvalidated data."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataIntoActionImg,
+            alt: "Data into Action",
+            caption: "End-to-end flow: Ingest, transform, model, query, and take action."
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Transforming without a clear use case:** Every transformation should support a user, decision, or product feature.",
+              "**Using unclear metric definitions:** Define terms such as revenue, active user, and return rate once.",
+              "**Ignoring row explosion:** Check row counts after joins.",
+              "**Serving raw sensitive data:** Give users only the fields and access they need.",
+              "**Building dashboards nobody uses:** Start with a real question or workflow.",
+              "**Treating reverse ETL as an afterthought:** Validate what is written back into operational tools."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Transformation makes raw data useful, consistent, and trustworthy.",
+              "Queries retrieve and shape data to answer questions.",
+              "Data modeling organizes information for repeatable business use.",
+              "Serving delivers data to analysts, products, and ML systems.",
+              "Reverse ETL turns analytical output into operational action."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "ts-quiz-1",
+                question: "What is transformation?",
+                options: [
+                  "Changing raw data into a reliable structure for a specific use.",
+                  "Moving data from a database to object storage.",
+                  "Securing data from unauthorized access.",
+                  "Connecting a dashboard to a data warehouse."
+                ],
+                correctIndex: 0,
+                explanation: "Transformation takes raw data and modifies it (e.g., standardizing formats or aggregating records) to make it ready for analysis."
+              },
+              {
+                id: "ts-quiz-2",
+                question: "What is a query?",
+                options: [
+                  "A request to read or work with records in a data system.",
+                  "A tool for moving data into object storage.",
+                  "A method for changing source data.",
+                  "A common mistake in data pipelines."
+                ],
+                correctIndex: 0,
+                explanation: "A query asks a question of your data by filtering, joining, and aggregating raw records."
+              },
+              {
+                id: "ts-quiz-3",
+                question: "What is row explosion?",
+                options: [
+                  "A database crash caused by too much storage.",
+                  "When a join creates more records than expected.",
+                  "A sudden increase in user activity.",
+                  "The process of deleting old records."
+                ],
+                correctIndex: 1,
+                explanation: "Row explosion happens when a poorly designed join matches multiple rows in both tables, multiplying the record count."
+              },
+              {
+                id: "ts-quiz-4",
+                question: "What is the difference between BI and operational analytics?",
+                options: [
+                  "BI explores business performance and trends. Operational analytics supports immediate action.",
+                  "BI is used for real-time data, while operational analytics is used for batch data.",
+                  "BI only uses object storage, while operational analytics uses databases.",
+                  "BI is for engineers, while operational analytics is for managers."
+                ],
+                correctIndex: 0,
+                explanation: "BI typically powers dashboards for strategic or historical decisions, whereas operational analytics drives day-to-day or automated actions."
+              },
+              {
+                id: "ts-quiz-5",
+                question: "What is reverse ETL?",
+                options: [
+                  "Extracting data from a warehouse into a data lake.",
+                  "Sending prepared data from the data platform back into operational tools.",
+                  "The process of cleaning raw data.",
+                  "Deleting sensitive data from source systems."
+                ],
+                correctIndex: 1,
+                explanation: "Reverse ETL takes transformed data or insights from the data platform and syncs them back into SaaS tools like CRMs."
               }
             ]
           }
