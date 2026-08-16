@@ -31,6 +31,10 @@ import dataPlatformDesignImg from "@/images/data-engineering-fundamentals/founda
 import platformMappingImg from "@/images/data-engineering-fundamentals/foundations/Understanding_the_Data_Engineering_Discipline/platform-mapping.png";
 import sourceSystemsImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/source-systems.png";
 import journeyFitnessAppImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/fitness-app.png";
+import ingestionVsStorageImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/ingestion-vs-storage.png";
+import batchVsStreamingImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/batch-vs-streaming.png";
+import ecommExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/ecomm-example.png";
+import realTimeClicksExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/real-time-clicks-example.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -1807,6 +1811,194 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 0,
                 explanation: "A schema describes the structure of data, such as field names, types, and relationships."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "data-ingestion-and-storage",
+        title: "2.2 Data Ingestion and Storage",
+        subtitle: "Learn how to move data from sources into storage, and how to choose the right storage for your needs.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Data has little value if it cannot move reliably from its source to the people and systems that need it.",
+              "Ingestion brings data into the platform. Storage makes it available for processing, analysis, and future use."
+            ]
+          },
+          {
+            kind: "image",
+            src: ingestionVsStorageImg,
+            alt: "Ingestion vs Storage",
+            caption: "Ingestion is moving data; storage is keeping it."
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Ingestion is the process of getting data from source systems into your data platform. Storage is where you keep that data once it arrives. These two stages are tightly connected: how you ingest affects where and how you store, and your storage choices affect how you can ingest in the future."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "**1. Choose between batch and streaming ingestion**",
+              "Virtually all data is generated continuously, but you can ingest it in two main ways:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Batch ingestion** - Moves data on a set schedule or threshold (nightly exports, hourly updates). It is simpler, cheaper, and ideal when real-time availability is unnecessary.",
+              "**Streaming ingestion:** Processes events continuously in near-real time (fraud detection, live clickstreams). It adds technical complexity and cost, so use it only when speed directly enables a real business action."
+            ]
+          },
+          {
+            kind: "image",
+            src: batchVsStreamingImg,
+            alt: "Batch vs Streaming Ingestion",
+            caption: "Batch runs on a schedule; Streaming processes events as they happen."
+          },
+          {
+            kind: "prose",
+            body: [
+              "**2. Push, pull, and CDC**",
+              "Data can enter a pipeline in different ways:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Push:** The source sends data to the pipeline.",
+              "**Pull:** The pipeline retrieves data from the source.",
+              "**Change Data Capture, or CDC:** The pipeline captures inserted, updated, or deleted records from a database."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "For example, a scheduled pipeline may pull newly created orders every hour. A CDC pipeline can capture each order update as it happens.",
+              "**3. Storage: keeping data available**",
+              "Storage is not just a final destination. It supports ingestion, transformation, analysis, and serving.",
+              "Common storage systems include:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "**Databases (DBMS)** – for structured, transactional data. Great for fast reads and writes on individual records.",
+              "**Object storage** – like Amazon S3. Stores files as \"objects\" – cheap, scalable, and perfect for large volumes of raw data.",
+              "**Data warehouses** – optimised for analytical queries. They store structured data from multiple sources and make it easy to run complex SELECT statements.",
+              "**Data lakes** – hold raw data in its native format. Useful when you don't yet know how you'll use the data.",
+              "**Data lakehouses** – a hybrid that combines the flexibility of lakes with the performance of warehouses."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "You'll often use more than one of these in a single architecture.",
+              "**4. Consider data temperature**",
+              "Not all data needs to be stored the same way. Hot data is accessed frequently maybe several times a second – and needs fast retrieval. Cold data is rarely queried and can be stored cheaply, even if retrieval is slow. Lukewarm sits in between.",
+              "Cloud providers offer different storage tiers for each temperature. Hot storage costs more per month but has low retrieval fees; cold storage is cheap to keep but expensive to access. Match your storage to how often you actually use the data."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Choosing the right approach",
+            body: [
+              "Ask these questions:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "How fresh must the data be?",
+              "How large is the data volume?",
+              "What formats will arrive?",
+              "Who will query the data later?",
+              "What are the cost limits?",
+              "Can the storage system scale with future demand?"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Do not use row-by-row inserts for large data loads when a bulk load is available. Bulk loading is often faster and cheaper."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A Simple Example",
+            body: [
+              "This pipeline captures raw user events via Kafka and stores them in S3 before transforming them with Databricks. Cleaned aggregates then load into Snowflake, powering fast BI dashboards for business analysts."
+            ]
+          },
+          {
+            kind: "image",
+            src: realTimeClicksExampleImg,
+            alt: "Real-time Clicks Example",
+            caption: "A real-time clicks pipeline capturing events via Kafka, storing in S3, processing with Databricks, and loading to Snowflake."
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Choosing streaming when batch would do:** Streaming adds complexity and cost. Only use it when you genuinely need sub‑second latency.",
+              "**Storing everything in a data warehouse:** Warehouses are great for analytics but expensive for raw, rarely‑used data. Use object storage for cold data.",
+              "**Ignoring retrieval costs:** Cold storage is cheap to keep but can be surprisingly expensive to read from. Factor that into your planning."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Ingestion moves data from source systems into the platform.",
+              "Batch, streaming, push, pull, and CDC solve different needs.",
+              "Storage supports the entire lifecycle, not only one stage.",
+              "Choose tools based on freshness, scale, cost, and intended use."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "is-quiz-1",
+                question: "What is the difference between batch and streaming ingestion?",
+                options: [
+                  "Batch moves data on a schedule. Streaming processes events continuously or with low delay.",
+                  "Batch is only used for databases, while streaming is for logs.",
+                  "Streaming is always cheaper than batch ingestion.",
+                  "Batch ingestion requires object storage, while streaming uses databases."
+                ],
+                correctIndex: 0,
+                explanation: "Batch ingestion processes data at set intervals (e.g. nightly), whereas streaming processes data as it arrives in near-real time."
+              },
+              {
+                id: "is-quiz-2",
+                question: "What does CDC capture?",
+                options: [
+                  "The location of the customer who made a purchase.",
+                  "Changes made to records in a source database.",
+                  "The total volume of data in object storage.",
+                  "The cost of running a data warehouse."
+                ],
+                correctIndex: 1,
+                explanation: "Change Data Capture (CDC) captures inserts, updates, and deletes from a source database."
+              },
+              {
+                id: "is-quiz-3",
+                question: "What storage type is commonly used for raw files and logs?",
+                options: [
+                  "Relational database (DBMS)",
+                  "Data warehouse",
+                  "Object storage or a data lake",
+                  "A fast caching layer"
+                ],
+                correctIndex: 2,
+                explanation: "Object storage (like Amazon S3) is cheap, scalable, and perfect for large volumes of raw files and logs, making it the foundation of a data lake."
               }
             ]
           }
