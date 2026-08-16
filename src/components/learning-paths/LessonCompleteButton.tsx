@@ -4,14 +4,16 @@ export interface LessonCompleteButtonProps {
   isCompleted: boolean;
   hasQuiz: boolean;
   onToggle: () => void;
+  isDisabled?: boolean;
 }
 
 export function LessonCompleteButton({
   isCompleted,
   hasQuiz,
   onToggle,
+  isDisabled,
 }: LessonCompleteButtonProps) {
-  const disabled = hasQuiz && !isCompleted;
+  const disabled = (hasQuiz && !isCompleted) || isDisabled;
   
   return (
     <button
