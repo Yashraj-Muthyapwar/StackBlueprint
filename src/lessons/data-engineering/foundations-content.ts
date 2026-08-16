@@ -35,6 +35,7 @@ import ingestionVsStorageImg from "@/images/data-engineering-fundamentals/founda
 import batchVsStreamingImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/batch-vs-streaming.png";
 import ecommExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/ecomm-example.png";
 import realTimeClicksExampleImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/real-time-clicks-example.png";
+import storageHierarchyImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/storage-hierarchy.png";
 
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
@@ -1905,6 +1906,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Not all data needs to be stored the same way. Hot data is accessed frequently maybe several times a second – and needs fast retrieval. Cold data is rarely queried and can be stored cheaply, even if retrieval is slow. Lukewarm sits in between.",
               "Cloud providers offer different storage tiers for each temperature. Hot storage costs more per month but has low retrieval fees; cold storage is cheap to keep but expensive to access. Match your storage to how often you actually use the data."
             ]
+          },
+          {
+            kind: "image",
+            src: storageHierarchyImg,
+            alt: "Storage Hierarchy by Temperature",
+            caption: "Match your storage tier to data temperature to balance cost and speed."
           },
           {
             kind: "prose",
