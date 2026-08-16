@@ -165,7 +165,7 @@ export function LessonLayout({
 
             <div className="flex shrink-0 justify-center sm:mx-4">
               <LessonCompleteButton
-                isCompleted={isCompleted}
+                isCompleted={isCompleted && !isEffectivelyPlaceholder}
                 hasQuiz={hasQuiz}
                 onToggle={onToggleComplete}
                 isDisabled={isEffectivelyPlaceholder}
