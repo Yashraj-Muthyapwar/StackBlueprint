@@ -58,9 +58,6 @@ export function ThemeToggle() {
           const AnyLightbulb = Lightbulb as any;
           return (
             <AnyLightbulb
-              toggled={!isDark}
-              toggle={setIsDark}
-              forceSelected={!isDark}
               className="pointer-events-none" 
             />
           );
