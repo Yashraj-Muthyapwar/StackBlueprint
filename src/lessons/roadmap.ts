@@ -949,7 +949,7 @@ export const roadmap: RoadmapCategory[] = [
             blurb: "Generation, Storage, Ingestion, Transformation, and Serving Data.",
             lessons: [
               { title: "2.1 Data Generation and Source Systems", slug: "data-generation-and-source-systems", path: "/data-engineering/data-engineering-lifecycle/data-generation-and-source-systems", icon: Repeat },
-              { title: "2.2 Core Stages of the Data Journey", slug: "core-stages", path: "/data-engineering/data-engineering-lifecycle/core-stages", icon: Repeat },
+              { title: "2.2 Data Ingestion and Storage", slug: "data-ingestion-and-storage", path: "/data-engineering/data-engineering-lifecycle/data-ingestion-and-storage", icon: Repeat },
               { title: "2.3 Cross-Cutting Engineering Practices", slug: "cross-cutting", path: "/data-engineering/data-engineering-lifecycle/cross-cutting", icon: Repeat },
             ],
           },
