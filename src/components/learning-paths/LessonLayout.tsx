@@ -168,6 +168,7 @@ export function LessonLayout({
                 isCompleted={isCompleted}
                 hasQuiz={hasQuiz}
                 onToggle={onToggleComplete}
+                isDisabled={isEffectivelyPlaceholder}
               />
             </div>
 
