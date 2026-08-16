@@ -45,6 +45,15 @@ import threeCommonWaysServeImg from "@/images/data-engineering-fundamentals/foun
 import closingLoopImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/closing-loop.png";
 import dataIntoActionImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/data-into-action.png";
 
+import strongFoundationsImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/strong-foundations.png";
+import securityImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/security.png";
+import dataManagementImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/data-management.png";
+import dataopsImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/dataops.png";
+import dataArchitectureImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/data-architecture.png";
+import orchestrationImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/orchestration.png";
+import trustworthyDashboardImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/Trustworthy-dashboard.png";
+import softwareEngineeringImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/software-engineeing.png";
+
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
     title: "1. Understanding the Data Engineering Discipline",
@@ -2287,6 +2296,207 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 correctIndex: 1,
                 explanation: "Reverse ETL takes transformed data or insights from the data platform and syncs them back into SaaS tools like CRMs."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "undercurrents-reliable-data",
+        title: "2.4 The Undercurrents: Practices That Keep Data Reliable",
+        subtitle: "Learn the six practices that make data systems secure, trusted, reliable, and easier to change.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "A pipeline can run on schedule and still fail the business.",
+              "It may expose private data, produce an incorrect metric, cost far more than expected, or break without anyone noticing. The undercurrents are the engineering practices that prevent those failures across every lifecycle stage."
+            ]
+          },
+          {
+            kind: "image",
+            src: strongFoundationsImg,
+            alt: "Strong Foundations",
+            caption: "Engineering practices that prevent data failures."
+          },
+          {
+            kind: "prose",
+            heading: "1. Security: Protect Data by Default",
+            body: [
+              "Data security relies on least privilege access and minimizing sensitive data collection at every pipeline stage. Applying role-based controls, encryption, and strict audit logging ensures users and systems only access what they need to fulfill their specific purpose."
+            ]
+          },
+          {
+            kind: "image",
+            src: securityImg,
+            alt: "Security",
+            caption: "Role-based controls, encryption, and strict audit logging."
+          },
+          {
+            kind: "prose",
+            heading: "2. Data Management: Make Data Understandable and Trusted",
+            body: [
+              "Effective data management establishes clear ownership, metadata, lineage, and quality checks across the entire data lifecycle. Defining rules and context upfront turns raw tables into trusted assets, eliminating ambiguity so users can make confident decisions."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataManagementImg,
+            alt: "Data Management",
+            caption: "Ownership, metadata, lineage, and quality checks."
+          },
+          {
+            kind: "prose",
+            heading: "3. DataOps: Operate Data Products Reliably",
+            body: [
+              "DataOps combines automation, observability, and incident response to deploy pipelines smoothly and catch failures early. Proactive monitoring alerts teams to broken jobs or bad data before downstream dashboards reflect incorrect metrics."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataopsImg,
+            alt: "DataOps",
+            caption: "Automation, observability, and incident response."
+          },
+          {
+            kind: "prose",
+            heading: "4. Data Architecture: Design for Change and Tradeoffs",
+            body: [
+              "Effective data architecture balances business value against key tradeoffs like cost, speed, and complexity. Choosing scalable, loosely coupled components ensures your system meets current requirements while remaining adaptable to future needs."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataArchitectureImg,
+            alt: "Data Architecture",
+            caption: "Design for change and balance key tradeoffs."
+          },
+          {
+            kind: "prose",
+            heading: "5. Orchestration: Coordinate Dependent Work",
+            body: [
+              "Orchestration manages task dependencies using a DAG to execute workflows in the correct order. If an upstream step fails, it automatically pauses downstream execution to prevent corrupt or incomplete data from reaching reports."
+            ]
+          },
+          {
+            kind: "image",
+            src: orchestrationImg,
+            alt: "Orchestration",
+            caption: "Coordinate dependent work using directed acyclic graphs."
+          },
+          {
+            kind: "prose",
+            heading: "6. Software Engineering: Treat Pipelines as Production Code",
+            body: [
+              "Treating data pipelines as production code applies engineering rigor through version control, code review, and automated testing. Defining infrastructure as code creates repeatable environments, making pipeline deployments trackable and error recovery fast."
+            ]
+          },
+          {
+            kind: "image",
+            src: softwareEngineeringImg,
+            alt: "Software Engineering",
+            caption: "Treating data pipelines as production code applies engineering rigor."
+          },
+          {
+            kind: "prose",
+            heading: "A Simple Example",
+            body: [
+              "A daily revenue dashboard relies on security, data management, DataOps, architecture, orchestration, and software engineering working as a cohesive system. Governing the complete pipeline infrastructure ensures that reports remain accurate, secure, and delivered on schedule."
+            ]
+          },
+          {
+            kind: "image",
+            src: trustworthyDashboardImg,
+            alt: "Trustworthy Dashboard",
+            caption: "Software engineering practices lead to trustworthy outputs."
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "**Giving every user admin access:** Use least privilege.",
+              "**Collecting data “just in case”:** Ingest sensitive data only for a clear purpose.",
+              "**Leaving datasets without owners:** Unowned data becomes untrusted data.",
+              "**Waiting for users to report failures:** Monitor freshness, quality, and job status proactively.",
+              "**Managing complex dependencies with cron alone:** Use orchestration when workflows grow.",
+              "**Building the most advanced system first:** Choose the simplest design that solves the real need.",
+              "**Making production changes manually:** Use version control and repeatable deployments."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "The undercurrents support every data lifecycle stage.",
+              "Security and data management create trust.",
+              "DataOps makes pipelines observable and reliable in production.",
+              "Architecture balances business needs with cost, simplicity, and future change.",
+              "Orchestration coordinates dependent work.",
+              "Software engineering practices make data systems safer to change and maintain."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "uc-quiz-1",
+                question: "What does least privilege mean?",
+                options: [
+                  "Grant only the access required for a task.",
+                  "Give everyone access so work is not blocked.",
+                  "Only managers should have access to the data warehouse.",
+                  "All databases must be publicly accessible."
+                ],
+                correctIndex: 0,
+                explanation: "Least privilege is the security principle of giving a user or system only the bare minimum permissions needed to do their job."
+              },
+              {
+                id: "uc-quiz-2",
+                question: "What does data lineage show?",
+                options: [
+                  "The total cost of running a data platform.",
+                  "Where data originated and how it changed on the way to its destination.",
+                  "The code used to deploy infrastructure.",
+                  "The organizational chart of the data team."
+                ],
+                correctIndex: 1,
+                explanation: "Data lineage tracks the flow of data from its source, through various transformations, to its final consumption point."
+              },
+              {
+                id: "uc-quiz-3",
+                question: "What does orchestration add beyond scheduling?",
+                options: [
+                  "It automatically writes data to a data lake.",
+                  "Dependency management, retries, monitoring, history, and alerts.",
+                  "It generates machine learning models from raw data.",
+                  "It translates business questions into SQL."
+                ],
+                correctIndex: 1,
+                explanation: "Unlike simple cron schedules, orchestration manages task dependencies (DAGs) and handles failures smoothly."
+              },
+              {
+                id: "uc-quiz-4",
+                question: "What is a key goal of DataOps?",
+                options: [
+                  "Build the most complex architecture possible.",
+                  "Ensure all data is stored in object storage.",
+                  "Deliver reliable data products through automation, observability, and effective incident response.",
+                  "Eliminate the need for data engineers."
+                ],
+                correctIndex: 2,
+                explanation: "DataOps applies operational rigor to data, focusing on monitoring, automated testing, and fast incident recovery."
+              },
+              {
+                id: "uc-quiz-5",
+                question: "What does FinOps help a data team manage?",
+                options: [
+                  "The cost and value of cloud and data-platform decisions.",
+                  "The schema of a data warehouse.",
+                  "The network security of a VPC.",
+                  "The code review process."
+                ],
+                correctIndex: 0,
+                explanation: "FinOps focuses on understanding and optimizing the financial cost of cloud operations, ensuring money is spent efficiently."
               }
             ]
           }
