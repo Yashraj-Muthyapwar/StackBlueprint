@@ -2784,6 +2784,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Architecture connects business outcomes to technical systems.",
+            "Start with requirements, not tools.",
+            "Operational architecture defines what is needed.",
+            "Technical architecture defines how it will be delivered."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -2798,21 +2807,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "The design of systems that support an organization\u2019s data needs as those needs change."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Architecture connects business outcomes to technical systems.",
-            "Start with requirements, not tools.",
-            "Operational architecture defines what is needed.",
-            "Technical architecture defines how it will be delivered."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn the principles used to design reliable and scalable systems."
           ]
         }
       ]
@@ -2949,6 +2943,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Good architecture plans for failure and change.",
+            "Shared components should help, not restrict, teams.",
+            "Loose coupling makes systems safer to evolve.",
+            "Security and cost are design decisions."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -2963,21 +2966,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "The maximum acceptable amount of data loss after a failure."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Good architecture plans for failure and change.",
-            "Shared components should help, not restrict, teams.",
-            "Loose coupling makes systems safer to evolve.",
-            "Security and cost are design decisions."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn how domains, services, and events shape a data platform."
           ]
         }
       ]
@@ -3144,6 +3132,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Domains define business ownership areas.",
+            "Services should have focused responsibilities.",
+            "Distributed systems add both scale and complexity.",
+            "Events help systems communicate without tight coupling."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3158,21 +3155,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "It lets teams and components change independently through stable interfaces."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Domains define business ownership areas.",
-            "Services should have focused responsibilities.",
-            "Distributed systems add both scale and complexity.",
-            "Events help systems communicate without tight coupling."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Explore the major data platform patterns for batch, streaming, and large-scale data."
           ]
         }
       ]
@@ -3309,6 +3291,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Batch is often the simplest choice for scheduled reporting.",
+            "Streaming is useful when low latency creates real value.",
+            "Warehouses, lakes, and lakehouses solve different problems.",
+            "Architecture patterns should follow requirements, not hype."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3323,21 +3314,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "When the business needs to react to new data within seconds or minutes."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Batch is often the simplest choice for scheduled reporting.",
-            "Streaming is useful when low latency creates real value.",
-            "Warehouses, lakes, and lakehouses solve different problems.",
-            "Architecture patterns should follow requirements, not hype."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn how to evaluate and select data technologies."
           ]
         }
       ]
@@ -3454,6 +3430,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Start with the problem, not the product.",
+            "Evaluate tools using the same criteria.",
+            "Prefer shared components where appropriate.",
+            "Build only when it creates clear value."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3468,21 +3453,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "Clear requirements, constraints, ownership, and success criteria."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Start with the problem, not the product.",
-            "Evaluate tools using the same criteria.",
-            "Prefer shared components where appropriate.",
-            "Build only when it creates clear value."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn how cloud infrastructure and deployment models affect a platform."
           ]
         }
       ]
@@ -3574,6 +3544,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           "caption": "Shared object storage connected to analytics, transformation, machine learning, and streaming workloads."
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Infrastructure affects cost, scale, and operations.",
+            "Data location can be a compliance requirement.",
+            "Choose compute based on workload behavior.",
+            "Separating storage and compute can improve flexibility."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3588,21 +3567,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "For short-lived, event-driven, or intermittent workloads where reducing infrastructure management is valuable."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Infrastructure affects cost, scale, and operations.",
-            "Data location can be a compliance requirement.",
-            "Choose compute based on workload behavior.",
-            "Separating storage and compute can improve flexibility."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn how security, compliance, and governance shape architecture decisions."
           ]
         }
       ]
@@ -3732,6 +3696,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Security begins with understanding the data.",
+            "Least privilege reduces the impact of mistakes.",
+            "Governance creates trust and discoverability.",
+            "Compliance requirements should guide design choices early."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3746,21 +3719,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "Granting only the minimum access required for a task."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Security begins with understanding the data.",
-            "Least privilege reduces the impact of mistakes.",
-            "Governance creates trust and discoverability.",
-            "Compliance requirements should guide design choices early."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Learn how to manage platform cost, migrations, and continuous change."
           ]
         }
       ]
@@ -3868,6 +3826,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "takeaways",
+          "items": [
+            "Cost is an operational and architectural concern.",
+            "Most platform work improves existing systems.",
+            "Incremental migration reduces risk.",
+            "Good architecture evolves through continuous review and small improvements."
+          ]
+        },
+        {
           "kind": "quiz",
           "questions": [
             {
@@ -3882,21 +3849,6 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "correctIndex": 0,
               "explanation": "They reduce risk, allow validation at each step, and make it easier to roll back a problem."
             }
-          ]
-        },
-        {
-          "kind": "takeaways",
-          "items": [
-            "Cost is an operational and architectural concern.",
-            "Most platform work improves existing systems.",
-            "Incremental migration reduces risk.",
-            "Good architecture evolves through continuous review and small improvements."
-          ]
-        },
-        {
-          "kind": "prose",
-          "body": [
-            "**What\u2019s next:** Translate stakeholder requirements into concrete architecture decisions and delivery plans."
           ]
         }
       ]
