@@ -2696,5 +2696,1211 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
         ]
       }
     ]
-  }
+  },
+  "designing-scalable-data-platforms": {
+  "title": "3. Designing Scalable Data Platforms",
+  "slug": "designing-scalable-data-platforms",
+  "lessons": [
+    {
+      "slug": "fundamentals-of-data-architecture",
+      "title": "3.1 Fundamentals of Data Architecture",
+      "subtitle": "Understand what data architecture is and how it connects business goals to data systems.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "A pipeline can run successfully but still fail the business. It may deliver the wrong metric, refresh too late, cost too much, or become difficult to change.",
+            "Data architecture helps a team make intentional decisions before those problems grow."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Enterprise architecture and data architecture",
+          "body": [
+            "Enterprise architecture looks at how an organization\u2019s business, applications, technology, and data fit together.",
+            "Data architecture is the data-focused part of that picture. It decides how data is created, moved, stored, transformed, governed, and served."
+          ]
+        },
+        {
+          "kind": "image",
+          "src": "/placeholder.png",
+          "alt": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture.",
+          "caption": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture."
+        },
+        {
+          "kind": "list",
+          "heading": "A practical definition",
+          "body": [
+            "Data architecture is the design of systems that support an organization’s changing data needs.",
+            "It includes decisions about:"
+          ],
+          "items": [
+            "**Data sources and ownership**",
+            "**Ingestion, storage, and transformation**",
+            "**Analytics and application serving**",
+            "**Security and governance**",
+            "**Reliability and recovery**",
+            "**Scalability and cost**",
+            "**People, processes, and tools**"
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Operational versus technical architecture",
+          "body": [
+            "**Operational architecture** explains what the business needs.",
+            "Example: Finance needs a trusted daily revenue report before 9 AM.",
+            "**Technical architecture** explains how the platform will meet that need.",
+            "Example: Ingest order and refund data, validate it, create a revenue model, and refresh a dashboard.",
+            "Start with the operational need. Then choose the technical design."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Conway\u2019s Law",
+          "body": [
+            "Systems often reflect the communication structure of the teams that build them.",
+            "If application, analytics, and data teams work separately without clear contracts, the company may create disconnected systems and conflicting definitions.",
+            "Healthy communication, shared ownership, and documented interfaces improve both the organization and the architecture."
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Who participates in architecture decisions?",
+          "body": [
+            "Architecture is a team activity.",
+            "People involved may include:"
+          ],
+          "items": [
+            "Data engineers",
+            "Analytics engineers",
+            "Software and platform engineers",
+            "Security and compliance teams",
+            "Data scientists",
+            "Analysts",
+            "Product managers",
+            "Business stakeholders"
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "fundamentals-of-data-architecture-quiz",
+              "question": "What is data architecture?",
+              "options": [
+                "The design of systems that support an organization\u2019s data needs as those needs change.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "The design of systems that support an organization\u2019s data needs as those needs change."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Architecture connects business outcomes to technical systems.",
+            "Start with requirements, not tools.",
+            "Operational architecture defines what is needed.",
+            "Technical architecture defines how it will be delivered."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn the principles used to design reliable and scalable systems."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "principles-for-reliable-and-scalable-systems",
+      "title": "3.2 Principles for Reliable and Scalable Systems",
+      "subtitle": "Learn the nine principles that guide good data architecture decisions.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "A good platform is not just fast. It is secure, maintainable, recoverable, cost-aware, and able to evolve.",
+            "Use these principles when reviewing a design."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "1. Choose common components wisely",
+          "body": [
+            "Use shared building blocks when they benefit multiple teams.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Object storage",
+            "Orchestration",
+            "Monitoring",
+            "Version control",
+            "Metadata catalogs",
+            "Identity and access management"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Shared components reduce duplicated work. Do not force every team into the same tool when a specialized need requires something else."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "2. Plan for failure",
+          "body": [
+            "Failures are normal.",
+            "A source can go offline. A job can run twice. A schema can change. A cloud service can fail.",
+            "Design for alerts, retries, backups, recovery, and safe reruns.",
+            "Important terms:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "**Availability:** How often a service is usable.",
+            "**Reliability:** Whether it produces the expected result.",
+            "**RTO:** Maximum acceptable recovery time.",
+            "**RPO:** Maximum acceptable data loss."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "3. Architect for scalability",
+          "body": [
+            "Scalability means handling more data, users, queries, and workloads as demand grows.",
+            "Measure current load, likely spikes, future growth, and cost. Do not build a highly complex distributed system before it is needed."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "4. Architecture is leadership",
+          "body": [
+            "Architects guide technical decisions, help teams understand trade-offs, and create shared standards.",
+            "Good architecture leadership enables teams. It should not become a command-and-control bottleneck."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "5. Always be architecting",
+          "body": [
+            "Architecture is ongoing work.",
+            "Review the current state, identify the next important problem, make a small improvement, measure the result, and reassess."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "6. Build loosely coupled systems",
+          "body": [
+            "Components should communicate through stable APIs, events, or data contracts.",
+            "This allows one component to change without breaking every downstream consumer."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "7. Make reversible decisions",
+          "body": [
+            "Prefer small decisions that can be tested, changed, or rolled back.",
+            "A pilot with one dataset is easier to reverse than migrating every pipeline at once."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "8. Prioritize security",
+          "body": [
+            "Every data engineer shares responsibility for the security of the systems they build.",
+            "Use least privilege, encryption, audit logs, secure network controls, and masking for sensitive data."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "9. Embrace FinOps",
+          "body": [
+            "FinOps connects cloud spending to business value.",
+            "Monitor storage, compute, queries, data transfer, failed jobs, and idle resources. The goal is useful outcomes for an acceptable cost."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "A practical review lens",
+          "body": [
+            "AWS Well-Architected principles are useful for reviewing systems:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Operational excellence",
+            "Security",
+            "Reliability",
+            "Performance efficiency",
+            "Cost optimization",
+            "Sustainability"
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "principles-for-reliable-and-scalable-systems-quiz",
+              "question": "What does RPO measure?",
+              "options": [
+                "The maximum acceptable amount of data loss after a failure.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "The maximum acceptable amount of data loss after a failure."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Good architecture plans for failure and change.",
+            "Shared components should help, not restrict, teams.",
+            "Loose coupling makes systems safer to evolve.",
+            "Security and cost are design decisions."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn how domains, services, and events shape a data platform."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "designing-modular-and-event-driven-systems",
+      "title": "3.3 Designing Modular and Event-Driven Systems",
+      "subtitle": "Learn how services communicate, scale, and remain independent.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "As an organization grows, one application and one database cannot own every responsibility forever.",
+            "A modular system gives teams clear boundaries while allowing data to move safely between them."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Domains and services",
+          "body": [
+            "A **domain** is an area of the business.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Sales",
+            "Payments",
+            "Inventory",
+            "Customer support"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "A **service** has a focused responsibility within a domain.",
+            "For example, the sales domain may contain:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Order service",
+            "Product service",
+            "Pricing service"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Data engineers need to understand domains because each domain creates, owns, and changes data differently."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Distributed systems",
+          "body": [
+            "A distributed system uses multiple computers or services that work together.",
+            "This can improve scale and availability, but it also adds complexity:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Network delays",
+            "Duplicate events",
+            "Partial failures",
+            "Data consistency challenges",
+            "More monitoring and recovery work"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Use distributed systems when the benefits justify their operational cost."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Tiers, monoliths, and microservices",
+          "body": [
+            "A basic architecture may have:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Application tier",
+            "Database tier",
+            "Analytics tier"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "A **monolith** keeps many responsibilities in one application or codebase.",
+            "It is often a good starting point because it is simple to build and deploy.",
+            "**Microservices** split responsibilities into separate services.",
+            "They allow independent scaling and releases, but require stronger operations, monitoring, and communication.",
+            "Choose the simplest structure that works for the team and product."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Single tenant and multitenant systems",
+          "body": [
+            "A **single-tenant** system serves one customer or team with isolated data or infrastructure.",
+            "A **multitenant** system serves multiple customers or teams on shared infrastructure while keeping their data isolated.",
+            "Multitenancy can reduce cost but requires strong access controls and tenant isolation."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Event-driven architecture",
+          "body": [
+            "An event records that something happened.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Order placed",
+            "Payment completed",
+            "Product returned",
+            "User signed up"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "In an event-driven system, one service publishes an event and other systems react to it."
+          ]
+        },
+        {
+          "kind": "code",
+          "code": "Order placed\n   \u2193\nOrder event\n   \u2193\nInventory update | customer message | analytics pipeline"
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "The order service does not need to know how every downstream system works."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Event processing risks",
+          "body": [
+            "Events may arrive late, arrive twice, or arrive out of order.",
+            "Plan for:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Unique event IDs",
+            "Idempotent processing",
+            "Schema versioning",
+            "Retries",
+            "Dead-letter queues",
+            "Monitoring"
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "designing-modular-and-event-driven-systems-quiz",
+              "question": "Why is loose coupling useful?",
+              "options": [
+                "It lets teams and components change independently through stable interfaces.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "It lets teams and components change independently through stable interfaces."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Domains define business ownership areas.",
+            "Services should have focused responsibilities.",
+            "Distributed systems add both scale and complexity.",
+            "Events help systems communicate without tight coupling."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Explore the major data platform patterns for batch, streaming, and large-scale data."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "batch-streaming-and-modern-data-platform-patterns",
+      "title": "3.4 Batch, Streaming, and Modern Data Platform Patterns",
+      "subtitle": "Learn the major patterns used to store, process, and serve data at scale.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "There is no one best architecture pattern.",
+            "The right choice depends on data volume, freshness requirements, users, team skills, governance needs, and cost."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Batch architecture",
+          "body": [
+            "Batch systems process accumulated data on a schedule."
+          ]
+        },
+        {
+          "kind": "code",
+          "code": "Source systems\n   \u2193\nNightly ingestion\n   \u2193\nValidation and transformation\n   \u2193\nCurated tables\n   \u2193\nMorning dashboard"
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Batch is often cheaper and easier to debug than streaming."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Streaming architecture",
+          "body": [
+            "Streaming systems process events continuously as they arrive.",
+            "Use streaming when fresh data creates real value, such as fraud detection, live inventory, device monitoring, or operational alerts."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Data warehouse",
+          "body": [
+            "A data warehouse stores structured, modeled data for analytics.",
+            "It is a strong choice for:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Business intelligence",
+            "Dashboards",
+            "SQL analysis",
+            "Standardized metrics",
+            "Historical reporting"
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Data lake",
+          "body": [
+            "A data lake stores large volumes of raw data, usually in object storage.",
+            "It is useful for:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Logs and events",
+            "JSON files",
+            "Images and documents",
+            "Historical retention",
+            "Data science and machine learning"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Without ownership, metadata, quality checks, and governance, a data lake can become a data swamp."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Data lakehouse",
+          "body": [
+            "A lakehouse combines flexible object storage with stronger table management and governance.",
+            "It can support analytics and machine learning workloads from the same broad platform."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Modern data stack",
+          "body": [
+            "The modern data stack usually combines managed tools for:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Ingestion",
+            "Storage",
+            "Transformation",
+            "Orchestration",
+            "Data quality",
+            "Cataloging",
+            "Analytics",
+            "Observability"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "The goal is not to collect more tools. It is to make delivery and self-service easier."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Lambda, Kappa, and Dataflow",
+          "body": [
+            "**Lambda architecture** uses a batch path for complete historical data and a speed path for recent events. It can be powerful but often creates duplicate logic.",
+            "**Kappa architecture** uses an event stream as the main source of truth. Teams can replay events to rebuild results.",
+            "**The Dataflow model** helps teams think about batch and streaming as related processing problems rather than fully separate worlds."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "IoT and data mesh",
+          "body": [
+            "**IoT architecture** handles data from devices such as sensors, cameras, and vehicles. It must account for intermittent connectivity, device identity, and large event volumes.",
+            "**Data mesh** is an organizational approach where domains own and publish their data as products, supported by self-service infrastructure and shared governance."
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "batch-streaming-and-modern-data-platform-patterns-quiz",
+              "question": "When is streaming a better choice than batch?",
+              "options": [
+                "When the business needs to react to new data within seconds or minutes.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "When the business needs to react to new data within seconds or minutes."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Batch is often the simplest choice for scheduled reporting.",
+            "Streaming is useful when low latency creates real value.",
+            "Warehouses, lakes, and lakehouses solve different problems.",
+            "Architecture patterns should follow requirements, not hype."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn how to evaluate and select data technologies."
+          ]
+        }
+      ]
+    }
+  ]
+},
+  "selecting-the-right-data-technologies": {
+  "title": "4. Selecting the Right Data Technologies",
+  "slug": "selecting-the-right-data-technologies",
+  "lessons": [
+    {
+      "slug": "evaluating-technology-choices",
+      "title": "4.1 Evaluating Technology Choices",
+      "subtitle": "Learn how to choose tools based on requirements instead of popularity.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "A technically impressive tool can still be the wrong choice if the team cannot operate it, it does not meet compliance needs, or its cost model does not fit the business."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Start with requirements",
+          "body": [
+            "Before selecting a tool, define:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "The business outcome",
+            "Data sources and formats",
+            "Required freshness",
+            "Expected scale",
+            "Reliability needs",
+            "Security and compliance constraints",
+            "Team skills",
+            "Budget",
+            "Existing systems"
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Use a decision scorecard",
+          "body": [
+            "Evaluate each option against the same criteria:"
+          ]
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Criteria",
+            "Questions to ask"
+          ],
+          "rows": []
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "|---|---|"
+          ]
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Business fit",
+            "Does it solve the actual problem?"
+          ],
+          "rows": [
+            [
+              "Operations",
+              "Can the team run and monitor it?"
+            ],
+            [
+              "Scalability",
+              "Can it handle expected growth?"
+            ],
+            [
+              "Security",
+              "Does it meet access and compliance needs?"
+            ],
+            [
+              "Cost",
+              "What will it cost at normal and peak usage?"
+            ],
+            [
+              "Integration",
+              "Does it work with current systems?"
+            ],
+            [
+              "Exit path",
+              "Can we migrate later if needed?"
+            ]
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Common components",
+          "body": [
+            "Prefer existing shared components when they are already secure, reliable, and well-supported.",
+            "Examples include shared object storage, orchestration, monitoring, metadata catalogs, and identity systems.",
+            "Do not reinvent a common capability without a clear reason."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Build versus buy",
+          "body": [
+            "**Build** when the capability is core to your product or provides a meaningful advantage.",
+            "**Buy or use a managed service** when the capability is standard and operating it yourself adds little value.",
+            "Example: Building a custom workflow scheduler is rarely a competitive advantage."
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "evaluating-technology-choices-quiz",
+              "question": "What should come before choosing a data tool?",
+              "options": [
+                "Clear requirements, constraints, ownership, and success criteria.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "Clear requirements, constraints, ownership, and success criteria."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Start with the problem, not the product.",
+            "Evaluate tools using the same criteria.",
+            "Prefer shared components where appropriate.",
+            "Build only when it creates clear value."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn how cloud infrastructure and deployment models affect a platform."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cloud-infrastructure-and-deployment-models",
+      "title": "4.2 Cloud, Infrastructure, and Deployment Models",
+      "subtitle": "Understand where data systems run and how infrastructure choices affect operations.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "Infrastructure choices affect performance, reliability, security, cost, and how much operational work the team must do."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Cloud, on-premises, and hybrid systems",
+          "body": [
+            "**Cloud systems** provide elastic infrastructure and managed services.",
+            "Benefits include:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Fast provisioning",
+            "Flexible scaling",
+            "Global regions",
+            "Reduced hardware maintenance",
+            "Usage-based pricing"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**On-premises systems** run on hardware owned or managed by the organization.",
+            "They may be needed for legacy systems, strict data residency rules, or specialized environments.",
+            "**Hybrid systems** combine cloud and on-premises resources."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Location and data residency",
+          "body": [
+            "Data location can affect:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Legal obligations",
+            "Customer contracts",
+            "Latency",
+            "Disaster recovery",
+            "Data transfer cost",
+            "Team access"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Know where sensitive data is stored and processed."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Compute choices",
+          "body": [
+            "**Virtual machines** are useful for specialized and long-running workloads.",
+            "**Containers** package applications consistently and make deployments more portable.",
+            "**Serverless compute** is useful for event-driven or intermittent workloads. It reduces infrastructure management but can introduce execution limits and usage-based costs."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Separate storage and compute",
+          "body": [
+            "Modern cloud platforms often separate storage from compute.",
+            "This allows many workloads to use shared data while scaling compute independently.",
+            "Example: Raw data remains in object storage while an analytics engine starts compute only when a team runs a query."
+          ]
+        },
+        {
+          "kind": "image",
+          "src": "/placeholder.png",
+          "alt": "Shared object storage connected to analytics, transformation, machine learning, and streaming workloads.",
+          "caption": "Shared object storage connected to analytics, transformation, machine learning, and streaming workloads."
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "cloud-infrastructure-and-deployment-models-quiz",
+              "question": "When is serverless a strong option?",
+              "options": [
+                "For short-lived, event-driven, or intermittent workloads where reducing infrastructure management is valuable.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "For short-lived, event-driven, or intermittent workloads where reducing infrastructure management is valuable."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Infrastructure affects cost, scale, and operations.",
+            "Data location can be a compliance requirement.",
+            "Choose compute based on workload behavior.",
+            "Separating storage and compute can improve flexibility."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn how security, compliance, and governance shape architecture decisions."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "security-compliance-and-governance-by-design",
+      "title": "4.3 Security, Compliance, and Governance by Design",
+      "subtitle": "Learn how to make data platforms safe, explainable, and compliant from the start.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "Security and compliance cannot be added at the end.",
+            "If a team cannot explain where sensitive data came from, who can access it, and when it should be deleted, the platform is incomplete."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Classify data",
+          "body": [
+            "Identify the sensitivity of data early.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Public data",
+            "Internal business data",
+            "Confidential customer data",
+            "Personally identifiable information",
+            "Financial or health data"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Classification helps determine access, encryption, retention, and monitoring requirements."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Use least privilege",
+          "body": [
+            "Give users and systems only the access required for their current task.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "An analyst can query approved reporting tables.",
+            "A pipeline can write only to its assigned storage path.",
+            "A contractor receives time-limited access."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Avoid broad admin permissions."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Protect data in transit and at rest",
+          "body": [
+            "Use encryption:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "**In transit:** While data moves between systems.",
+            "**At rest:** While data is stored."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Also use secure secrets management, network controls, data masking, and audit logs."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Governance and data management",
+          "body": [
+            "Governance helps people find, understand, and trust data.",
+            "Important practices include:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Clear ownership",
+            "Metadata and documentation",
+            "Data lineage",
+            "Quality checks",
+            "Retention rules",
+            "Privacy policies",
+            "Access reviews"
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Compliance as an architecture input",
+          "body": [
+            "Compliance requirements can affect:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Cloud region selection",
+            "Storage location",
+            "Access design",
+            "Data retention",
+            "Deletion workflows",
+            "Audit requirements",
+            "Vendor selection"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Bring security and compliance stakeholders into architecture discussions early."
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "security-compliance-and-governance-by-design-quiz",
+              "question": "What does least privilege mean?",
+              "options": [
+                "Granting only the minimum access required for a task.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "Granting only the minimum access required for a task."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Security begins with understanding the data.",
+            "Least privilege reduces the impact of mistakes.",
+            "Governance creates trust and discoverability.",
+            "Compliance requirements should guide design choices early."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Learn how to manage platform cost, migrations, and continuous change."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "cost-migration-and-continuous-architecture",
+      "title": "4.4 Cost, Migration, and Continuous Architecture",
+      "subtitle": "Learn how to evolve a data platform without losing control of cost, risk, or reliability.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "Most teams do not build a platform from nothing. They inherit legacy databases, manual reporting, old pipelines, and changing business needs.",
+            "The goal is not a perfect final architecture. The goal is steady improvement."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "FinOps and business value",
+          "body": [
+            "FinOps helps engineering, finance, and business teams make informed spending decisions.",
+            "Track:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Storage growth",
+            "Compute usage",
+            "Query cost",
+            "Data transfer",
+            "Idle resources",
+            "Failed jobs",
+            "Cost by team, pipeline, or product"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "A lower cloud bill is not always a better outcome. A platform should provide value that justifies its cost."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Greenfield and brownfield projects",
+          "body": [
+            "A **greenfield project** starts with few existing technical constraints.",
+            "A **brownfield project** improves systems that already exist and are already used by the business.",
+            "Most real data platform work is brownfield work."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Avoid big-bang migrations",
+          "body": [
+            "Replacing everything at once is risky.",
+            "A safer migration approach:",
+            "1. Identify one high-value problem.",
+            "2. Build the replacement beside the current system.",
+            "3. Validate old and new outputs.",
+            "4. Move users or workloads gradually.",
+            "5. Monitor reliability and cost.",
+            "6. Retire the old component after proven success."
+          ]
+        },
+        {
+          "kind": "image",
+          "src": "/placeholder.png",
+          "alt": "Legacy pipeline and new pipeline operating in parallel, followed by a gradual move of users to the new system.",
+          "caption": "Legacy pipeline and new pipeline operating in parallel, followed by a gradual move of users to the new system."
+        },
+        {
+          "kind": "prose",
+          "heading": "Keep decisions reversible",
+          "body": [
+            "Prefer small experiments and phased rollouts.",
+            "Examples:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Pilot a new transformation tool with one model.",
+            "Migrate one source before migrating every source.",
+            "Run a new pipeline beside the old pipeline until outputs match."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Architecture never stops",
+          "body": [
+            "A good team continually asks:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Is this still meeting the business need?",
+            "Are costs growing faster than value?",
+            "Have usage patterns changed?",
+            "Can we simplify the design?",
+            "Is the platform secure and reliable?",
+            "What should improve next?"
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "cost-migration-and-continuous-architecture-quiz",
+              "question": "Why are incremental migrations safer than big-bang migrations?",
+              "options": [
+                "They reduce risk, allow validation at each step, and make it easier to roll back a problem.",
+                "Option 2",
+                "Option 3",
+                "Option 4"
+              ],
+              "correctIndex": 0,
+              "explanation": "They reduce risk, allow validation at each step, and make it easier to roll back a problem."
+            }
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Cost is an operational and architectural concern.",
+            "Most platform work improves existing systems.",
+            "Incremental migration reduces risk.",
+            "Good architecture evolves through continuous review and small improvements."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "**What\u2019s next:** Translate stakeholder requirements into concrete architecture decisions and delivery plans."
+          ]
+        }
+      ]
+    }
+  ]
+},
 };
