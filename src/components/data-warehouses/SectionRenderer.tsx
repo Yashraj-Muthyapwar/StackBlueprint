@@ -93,7 +93,7 @@ function parseInlineMarkdown(text: string) {
 
 
 
-export function SectionRenderer({ section }: { section: Section }) {
+export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
   switch (section.kind) {
     case "prose":
       return (
@@ -264,6 +264,45 @@ export function SectionRenderer({ section }: { section: Section }) {
           <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
             {parseInlineMarkdown(section.text)}
           </p>
+        </section>
+      );
+
+    case "list":
+      return (
+        <section className="space-y-3">
+          {section.heading ? (
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
+              {section.heading}
+            </h2>
+          ) : null}
+          {section.body?.map((p, i) => (
+            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+              {parseInlineMarkdown(p)}
+            </p>
+          ))}
+          <ul className="list-disc space-y-0.5 pl-6 text-muted-foreground lg:text-lg !mt-1 !mb-1">
+            {section.items.map((it, i) => {
+              if (typeof it === "string") {
+                return (
+                  <li key={i} className="leading-normal">
+                    {parseInlineMarkdown(it)}
+                  </li>
+                );
+              }
+              return (
+                <li key={i} className="leading-normal">
+                  {parseInlineMarkdown(it.text)}
+                  <ul className="list-[circle] space-y-0.5 pl-6 mt-1.5">
+                    {it.subitems.map((sub, j) => (
+                      <li key={j} className="leading-normal">
+                        {parseInlineMarkdown(sub)}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              );
+            })}
+          </ul>
         </section>
       );
 
