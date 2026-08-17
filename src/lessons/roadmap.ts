@@ -952,6 +952,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "2.2 Data Ingestion and Storage", slug: "data-ingestion-and-storage", path: "/data-engineering/data-engineering-lifecycle/data-ingestion-and-storage", icon: Repeat },
               { title: "2.3 Transforming and Serving Data", slug: "transforming-and-serving", path: "/data-engineering/data-engineering-lifecycle/transforming-and-serving", icon: Repeat },
               { title: "2.4 The Undercurrents: Practices That Keep Data Reliable", slug: "undercurrents-reliable-data", path: "/data-engineering/data-engineering-lifecycle/undercurrents-reliable-data", icon: Repeat },
+              { title: "2.5 The Data Journey Quiz", slug: "data-journey-quiz", path: "/data-engineering/data-engineering-lifecycle/data-journey-quiz", icon: Repeat },
             ],
           },
           {
