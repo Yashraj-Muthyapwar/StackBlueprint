@@ -74,6 +74,7 @@ function PandasIndex() {
       title="Pandas"
       blurb="Master data manipulation and analysis with Pandas."
       logoSrc={pandasLogo}
+      basePath="/pandas"
       sections={PANDAS_SECTIONS}
     />
   );
