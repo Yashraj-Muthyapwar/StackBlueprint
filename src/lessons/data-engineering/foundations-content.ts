@@ -2501,6 +2501,199 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           }
         ]
+      },
+      {
+        slug: "data-journey-quiz",
+        title: "2.5 The Data Journey Quiz",
+        subtitle: "Test your knowledge on data generation, ingestion, transformation, serving, and the undercurrents.",
+        sections: [
+          {
+            kind: "quiz",
+            isFinalQuiz: true,
+            questions: [
+              {
+                id: "ch2-quiz-1",
+                question: "Which pattern moves data from an operational system into a data platform continuously as changes occur?",
+                options: [
+                  "Batch ingestion",
+                  "Reverse ETL",
+                  "Change Data Capture (CDC)",
+                  "Data modeling"
+                ],
+                correctIndex: 2,
+                explanation: "Change Data Capture (CDC) reads the source database log and streams inserts, updates, and deletes in near-real time."
+              },
+              {
+                id: "ch2-quiz-2",
+                question: "What is the primary difference between a Data Lake and a Data Warehouse?",
+                options: [
+                  "Data Lakes store structured relational tables, while Warehouses store raw unstructured files.",
+                  "Data Lakes store raw data in object storage cheaply, while Warehouses store structured, modeled data optimized for fast querying.",
+                  "Data Lakes only support batch ingestion, while Warehouses only support streaming.",
+                  "Data Lakes are on-premises, while Warehouses are in the cloud."
+                ],
+                correctIndex: 1,
+                explanation: "Data Lakes use cheap object storage for raw, unstructured data. Data Warehouses use optimized relational databases for clean, structured analytics."
+              },
+              {
+                id: "ch2-quiz-3",
+                question: "What problem does 'row explosion' describe?",
+                options: [
+                  "A database running out of storage space.",
+                  "A query join that produces far more records than expected due to a lack of a proper key.",
+                  "A sudden spike in streaming events.",
+                  "When reverse ETL writes too much data back to a CRM."
+                ],
+                correctIndex: 1,
+                explanation: "Row explosion happens when a poorly constructed join matches multiple rows to multiple rows, multiplying the output size unintentionally."
+              },
+              {
+                id: "ch2-quiz-4",
+                question: "Which of the following is an example of Operational Analytics?",
+                options: [
+                  "A quarterly revenue report for the board of directors.",
+                  "A dashboard tracking historical customer churn.",
+                  "An automated system that blocks a credit card transaction suspected of fraud in real-time.",
+                  "A year-over-year sales comparison."
+                ],
+                correctIndex: 2,
+                explanation: "Operational Analytics is used to drive immediate, day-to-day actions or automated responses, rather than historical reporting."
+              },
+              {
+                id: "ch2-quiz-5",
+                question: "Why is orchestration an essential 'undercurrent' for data pipelines?",
+                options: [
+                  "It automatically provisions cloud infrastructure.",
+                  "It writes complex SQL transformations for you.",
+                  "It ensures that tasks run in the correct order, handles dependencies, and pauses downstream work if upstream steps fail.",
+                  "It encrypts sensitive data automatically."
+                ],
+                correctIndex: 2,
+                explanation: "Orchestration uses a Directed Acyclic Graph (DAG) to coordinate dependent tasks reliably and prevent corrupt data from reaching reports."
+              },
+              {
+                id: "ch2-quiz-6",
+                question: "What is a source system?",
+                options: [
+                  "A dashboard where business users view reports.",
+                  "The original location where data is created, such as an application database or IoT sensor.",
+                  "A storage layer optimized for analytical queries.",
+                  "A tool used to orchestrate pipeline tasks."
+                ],
+                correctIndex: 1,
+                explanation: "A source system is where data is born. Without understanding how a source system operates, data pipelines are prone to unexpected breakages."
+              },
+              {
+                id: "ch2-quiz-7",
+                question: "Why might a data engineer choose a pull-based ingestion tool like Fivetran?",
+                options: [
+                  "To query the source system on a schedule and extract new records automatically.",
+                  "To force the source system to send real-time streams of data.",
+                  "To build a machine learning model on the source database.",
+                  "To delete old records from the source system."
+                ],
+                correctIndex: 0,
+                explanation: "Pull-based ingestion reaches into the source system on a set schedule (batch) to extract data, which is simpler to set up than waiting for the source to push events."
+              },
+              {
+                id: "ch2-quiz-8",
+                question: "What does 'data temperature' refer to in data storage?",
+                options: [
+                  "The physical temperature of the server racks in a data center.",
+                  "How recently the data was created.",
+                  "Matching storage tiers to how frequently data is accessed (hot vs cold) to balance cost and speed.",
+                  "The severity of a security breach."
+                ],
+                correctIndex: 2,
+                explanation: "Hot data is accessed frequently and requires fast, expensive storage. Cold data is rarely accessed and can be stored cheaply."
+              },
+              {
+                id: "ch2-quiz-9",
+                question: "What is the primary benefit of data modeling?",
+                options: [
+                  "It eliminates the need for orchestration tools.",
+                  "It allows data to be stored securely on-premises.",
+                  "It organizes raw tables into structured dimensional models, eliminating the need for analysts to repeatedly write complex joins.",
+                  "It converts relational databases into object storage."
+                ],
+                correctIndex: 2,
+                explanation: "Data modeling enforces consistent business logic and structures data so it is easy to query and report on repeatedly."
+              },
+              {
+                id: "ch2-quiz-10",
+                question: "What is a major risk of transforming data without a clear use case?",
+                options: [
+                  "The database will run out of storage immediately.",
+                  "You waste engineering effort and compute costs building tables and dashboards that nobody uses.",
+                  "The source system will crash under the load.",
+                  "Reverse ETL will fail to sync the data."
+                ],
+                correctIndex: 1,
+                explanation: "Every transformation should support a specific user, decision, or product feature. Transforming data 'just in case' leads to bloated and confusing data platforms."
+              },
+              {
+                id: "ch2-quiz-11",
+                question: "What is the security principle of 'least privilege'?",
+                options: [
+                  "Giving every user admin access to reduce bottlenecks.",
+                  "Ensuring users and systems only have the bare minimum access necessary to fulfill their specific purpose.",
+                  "Storing sensitive data in plain text so it is easier to read.",
+                  "Allowing public access to data lakes to increase transparency."
+                ],
+                correctIndex: 1,
+                explanation: "Least privilege minimizes the risk of unauthorized access or accidental data leaks by restricting permissions strictly to what is required."
+              },
+              {
+                id: "ch2-quiz-12",
+                question: "How does DataOps improve pipeline reliability?",
+                options: [
+                  "By manually checking every row of data before it is loaded.",
+                  "By applying automation, proactive observability, and incident response to catch bad data before it reaches downstream users.",
+                  "By rewriting all SQL queries in Python.",
+                  "By completely eliminating the need for a data warehouse."
+                ],
+                correctIndex: 1,
+                explanation: "DataOps brings software engineering operational rigor to data, focusing on monitoring, testing, and fast incident recovery."
+              },
+              {
+                id: "ch2-quiz-13",
+                question: "What problem does data lineage solve?",
+                options: [
+                  "It automatically scales cloud infrastructure up and down.",
+                  "It provides visibility into where data originated and how it was transformed before arriving at a dashboard.",
+                  "It encrypts passwords in the database.",
+                  "It schedules tasks to run at midnight."
+                ],
+                correctIndex: 1,
+                explanation: "Data lineage helps teams trace back to the root cause of an error by showing the exact path the data took through the pipeline."
+              },
+              {
+                id: "ch2-quiz-14",
+                question: "Why should data pipelines be treated as production code?",
+                options: [
+                  "So that they can be sold as commercial software.",
+                  "To enforce version control, code reviews, and automated testing, making deployments trackable and safe to change.",
+                  "Because all pipelines must be written in C++.",
+                  "To prevent data analysts from writing SQL."
+                ],
+                correctIndex: 1,
+                explanation: "Treating infrastructure and pipelines as code creates repeatable environments and prevents brittle, manual pipeline deployments."
+              },
+              {
+                id: "ch2-quiz-15",
+                question: "What is reverse ETL?",
+                options: [
+                  "Extracting data from a warehouse and moving it back into the data lake.",
+                  "Syncing calculated insights from the data platform back into operational tools (like CRMs) so business teams can act on them.",
+                  "Reversing a failed database transaction.",
+                  "Deleting old data to save money."
+                ],
+                correctIndex: 1,
+                explanation: "Reverse ETL 'closes the loop' by taking analytical outputs and pushing them back into the day-to-day tools that operations, marketing, and sales teams use."
+              }
+            ]
+          }
+        ]
       }
     ]
   }
