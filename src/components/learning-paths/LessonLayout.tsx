@@ -65,7 +65,7 @@ export function LessonLayout({
           <ChevronRight className="size-3" />
           <Link
             to={(topic.path || `${trackPath}/$topic`) as any}
-            params={topic.path ? undefined : { topic: topic.slug }}
+            params={topic.path ? undefined : { topic: topic.slug } as any}
             className="hover:text-foreground"
           >
             {topic.title}
@@ -148,7 +148,7 @@ export function LessonLayout({
             {prev ? (
               <Link
                 to={(prev.path || `${trackPath}/$topic/$lesson`) as any}
-                params={prev.path ? undefined : { topic: topic.slug, lesson: prev.slug }}
+                params={prev.path ? undefined : { topic: topic.slug, lesson: prev.slug } as any}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
                 <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
@@ -175,7 +175,7 @@ export function LessonLayout({
             {next ? (
               <Link
                 to={(next.path || `${trackPath}/$topic/$lesson`) as any}
-                params={next.path ? undefined : { topic: topic.slug, lesson: next.slug }}
+                params={next.path ? undefined : { topic: topic.slug, lesson: next.slug } as any}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 text-right transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
                 <div>
