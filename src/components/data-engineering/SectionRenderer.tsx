@@ -285,21 +285,21 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               {parseInlineMarkdown(p)}
             </p>
           ))}
-          <ul className="list-disc space-y-1.5 pl-6 text-muted-foreground lg:text-lg">
+          <ul className="list-disc space-y-0.5 pl-6 text-muted-foreground lg:text-lg !mt-1 !mb-1">
             {section.items.map((it, i) => {
               if (typeof it === "string") {
                 return (
-                  <li key={i} className="leading-relaxed">
+                  <li key={i} className="leading-normal">
                     {parseInlineMarkdown(it)}
                   </li>
                 );
               }
               return (
-                <li key={i} className="leading-relaxed">
+                <li key={i} className="leading-normal">
                   {parseInlineMarkdown(it.text)}
-                  <ul className="list-[circle] space-y-1.5 pl-6 mt-1.5">
+                  <ul className="list-[circle] space-y-0.5 pl-6 mt-1.5">
                     {it.subitems.map((sub, j) => (
-                      <li key={j} className="leading-relaxed">
+                      <li key={j} className="leading-normal">
                         {parseInlineMarkdown(sub)}
                       </li>
                     ))}
