@@ -2825,15 +2825,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "1. Choose common components wisely",
           "body": [
             "Use shared building blocks when they benefit multiple teams.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Object storage",
             "Orchestration",
@@ -2850,17 +2847,14 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "2. Plan for failure",
           "body": [
             "Failures are normal.",
             "A source can go offline. A job can run twice. A schema can change. A cloud service can fail.",
             "Design for alerts, retries, backups, recovery, and safe reruns.",
             "Important terms:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "**Availability:** How often a service is usable.",
             "**Reliability:** Whether it produces the expected result.",
@@ -2925,14 +2919,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "A practical review lens",
           "body": [
             "AWS Well-Architected principles are useful for reviewing systems:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Operational excellence",
             "Security",
@@ -2984,15 +2975,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Domains and services",
           "body": [
             "A **domain** is an area of the business.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Sales",
             "Payments",
@@ -3001,14 +2989,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "body": [
             "A **service** has a focused responsibility within a domain.",
             "For example, the sales domain may contain:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Order service",
             "Product service",
@@ -3022,15 +3007,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Distributed systems",
           "body": [
             "A distributed system uses multiple computers or services that work together.",
             "This can improve scale and availability, but it also adds complexity:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Network delays",
             "Duplicate events",
@@ -3046,14 +3028,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Tiers, monoliths, and microservices",
           "body": [
             "A basic architecture may have:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Application tier",
             "Database tier",
@@ -3080,15 +3059,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Event-driven architecture",
           "body": [
             "An event records that something happened.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Order placed",
             "Payment completed",
@@ -3113,15 +3089,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Event processing risks",
           "body": [
             "Events may arrive late, arrive twice, or arrive out of order.",
             "Plan for:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Unique event IDs",
             "Idempotent processing",
@@ -3198,15 +3171,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Data warehouse",
           "body": [
             "A data warehouse stores structured, modeled data for analytics.",
             "It is a strong choice for:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Business intelligence",
             "Dashboards",
@@ -3216,15 +3186,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Data lake",
           "body": [
             "A data lake stores large volumes of raw data, usually in object storage.",
             "It is useful for:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Logs and events",
             "JSON files",
@@ -3248,14 +3215,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Modern data stack",
           "body": [
             "The modern data stack usually combines managed tools for:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Ingestion",
             "Storage",
@@ -3337,14 +3301,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Start with requirements",
           "body": [
             "Before selecting a tool, define:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "The business outcome",
             "Data sources and formats",
@@ -3470,15 +3431,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Cloud, on-premises, and hybrid systems",
           "body": [
             "**Cloud systems** provide elastic infrastructure and managed services.",
             "Benefits include:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Fast provisioning",
             "Flexible scaling",
@@ -3496,14 +3454,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Location and data residency",
           "body": [
             "Data location can affect:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Legal obligations",
             "Customer contracts",
@@ -3585,15 +3540,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Classify data",
           "body": [
             "Identify the sensitivity of data early.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Public data",
             "Internal business data",
@@ -3609,15 +3561,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Use least privilege",
           "body": [
             "Give users and systems only the access required for their current task.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "An analyst can query approved reporting tables.",
             "A pipeline can write only to its assigned storage path.",
@@ -3631,14 +3580,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Protect data in transit and at rest",
           "body": [
             "Use encryption:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "**In transit:** While data moves between systems.",
             "**At rest:** While data is stored."
@@ -3651,15 +3597,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Governance and data management",
           "body": [
             "Governance helps people find, understand, and trust data.",
             "Important practices include:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Clear ownership",
             "Metadata and documentation",
@@ -3671,14 +3614,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Compliance as an architecture input",
           "body": [
             "Compliance requirements can affect:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Cloud region selection",
             "Storage location",
@@ -3737,15 +3677,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "FinOps and business value",
           "body": [
             "FinOps helps engineering, finance, and business teams make informed spending decisions.",
             "Track:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Storage growth",
             "Compute usage",
@@ -3792,15 +3729,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           "caption": "Legacy pipeline and new pipeline operating in parallel, followed by a gradual move of users to the new system."
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Keep decisions reversible",
           "body": [
             "Prefer small experiments and phased rollouts.",
             "Examples:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Pilot a new transformation tool with one model.",
             "Migrate one source before migrating every source.",
@@ -3808,14 +3742,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "prose",
+          "kind": "list",
           "heading": "Architecture never stops",
           "body": [
             "A good team continually asks:"
-          ]
-        },
-        {
-          "kind": "list",
+          ],
           "items": [
             "Is this still meeting the business need?",
             "Are costs growing faster than value?",
