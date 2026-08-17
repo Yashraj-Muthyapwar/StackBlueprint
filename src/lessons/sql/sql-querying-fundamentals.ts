@@ -1,4 +1,4 @@
-import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
+import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
@@ -684,11 +684,11 @@ const queryingFundamentalsQuiz: LessonContent = {
   ]
 };
 
-export const sqlQueryingFundamentalsTopic: FoundationTopicMeta = {
+export const sqlQueryingFundamentalsTopic = {
   slug: "sql-querying-fundamentals",
   title: "SQL Querying Fundamentals",
   category: "Foundations",
-  iconKey: "table",
+  iconKey: "table" as const,
   blurb:
     "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
   lessons: [selectFrom, sqlBasics, whereLesson, orderLimit, logicalOrder, queryingFundamentalsQuiz],
