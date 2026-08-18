@@ -54,6 +54,22 @@ import orchestrationImg from "@/images/data-engineering-fundamentals/foundations
 import trustworthyDashboardImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/Trustworthy-dashboard.png";
 import softwareEngineeringImg from "@/images/data-engineering-fundamentals/foundations/Data-Journey/software-engineeing.png";
 
+import enterpriseArchImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/enterprise-architecture.png";
+import conwayLawImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/conway-law.png";
+import dataArchPatternsImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/data-architecture-patterns.png";
+import principlesForReliableSystemsImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/principles-for-reliable-systems.png";
+import awsVsGcpPrinciplesImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/aws-vs-gcp-principles.png";
+import designingModularEventDrivenSystemsImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/designing-modular-event-driven-systems.png";
+import eventDrivenSystemsImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/event-driven-systems.png";
+import dataPlatformPatternsImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/data-platform-patterns.png";
+import batchArchitectureImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/Batch-Architecture.png";
+import streamingArchitectureImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/streaming-architecture.png";
+import modernDataStackImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/modern-data-stack.png";
+import lambdaKappaDataflowImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/lambda-kappa-dataflow.png";
+import iotDataMeshImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/Iot-data-mesh.png";
+
+
+
 export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "data-engineering-described": {
     title: "1. Understanding the Data Engineering Discipline",
@@ -2724,7 +2740,7 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
         },
         {
           "kind": "image",
-          "src": "/placeholder.png",
+          "src": enterpriseArchImg,
           "alt": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture.",
           "caption": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture."
         },
@@ -2746,6 +2762,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "image",
+          "src": dataArchPatternsImg,
+          "alt": "Data Architecture Patterns",
+          "caption": "Data Architecture Patterns"
+        },
+        {
           "kind": "prose",
           "heading": "Operational versus technical architecture",
           "body": [
@@ -2764,6 +2786,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "If application, analytics, and data teams work separately without clear contracts, the company may create disconnected systems and conflicting definitions.",
             "Healthy communication, shared ownership, and documented interfaces improve both the organization and the architecture."
           ]
+        },
+        {
+          "kind": "image",
+          "src": conwayLawImg,
+          "alt": "Conway\'s Law showing alignment between teams and software architecture.",
+          "caption": "Conway\'s Law"
         },
         {
           "kind": "list",
@@ -2823,6 +2851,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "A good platform is not just fast. It is secure, maintainable, recoverable, cost-aware, and able to evolve.",
             "Use these principles when reviewing a design."
           ]
+        },
+        {
+          "kind": "image",
+          "src": principlesForReliableSystemsImg,
+          "alt": "Nine principles for reliable systems",
+          "caption": "Principles for Reliable Systems"
         },
         {
           "kind": "list",
@@ -2934,6 +2968,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "image",
+          "src": awsVsGcpPrinciplesImg,
+          "alt": "AWS vs GCP Well-Architected Principles",
+          "caption": "Well-Architected Frameworks"
+        },
+        {
           "kind": "takeaways",
           "items": [
             "Good architecture plans for failure and change.",
@@ -2973,6 +3013,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "As an organization grows, one application and one database cannot own every responsibility forever.",
             "A modular system gives teams clear boundaries while allowing data to move safely between them."
           ]
+        },
+        {
+          "kind": "image",
+          "src": designingModularEventDrivenSystemsImg,
+          "alt": "Coupled vs decoupled systems",
+          "caption": "Designing Modular and Event-Driven Systems"
         },
         {
           "kind": "list",
@@ -3079,9 +3125,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
-          "kind": "code",
-          "code": "Order placed\n   \u2193\nOrder event\n   \u2193\nInventory update | customer message | analytics pipeline"
+          "kind": "image",
+          "src": eventDrivenSystemsImg,
+          "alt": "Event-driven architecture diagram",
+          "caption": "Event-Driven Systems"
         },
+
         {
           "kind": "prose",
           "body": [
@@ -3146,21 +3195,30 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "image",
+          "src": dataPlatformPatternsImg,
+          "alt": "Data Platform Patterns",
+          "caption": "Data Platform Patterns"
+        },
+        {
           "kind": "prose",
           "heading": "Batch architecture",
           "body": [
             "Batch systems process accumulated data on a schedule."
           ]
         },
-        {
-          "kind": "code",
-          "code": "Source systems\n   \u2193\nNightly ingestion\n   \u2193\nValidation and transformation\n   \u2193\nCurated tables\n   \u2193\nMorning dashboard"
-        },
+
         {
           "kind": "prose",
           "body": [
             "Batch is often cheaper and easier to debug than streaming."
           ]
+        },
+        {
+          "kind": "image",
+          "src": batchArchitectureImg,
+          "alt": "Batch architecture diagram",
+          "caption": "Batch Architecture"
         },
         {
           "kind": "prose",
@@ -3169,6 +3227,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "Streaming systems process events continuously as they arrive.",
             "Use streaming when fresh data creates real value, such as fraud detection, live inventory, device monitoring, or operational alerts."
           ]
+        },
+        {
+          "kind": "image",
+          "src": streamingArchitectureImg,
+          "alt": "Streaming architecture diagram",
+          "caption": "Streaming Architecture"
         },
         {
           "kind": "list",
@@ -3232,6 +3296,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "image",
+          "src": modernDataStackImg,
+          "alt": "Modern data stack diagram",
+          "caption": "Modern Data Stack"
+        },
+        {
           "kind": "prose",
           "body": [
             "The goal is not to collect more tools. It is to make delivery and self-service easier."
@@ -3247,12 +3317,24 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         },
         {
+          "kind": "image",
+          "src": lambdaKappaDataflowImg,
+          "alt": "Lambda, Kappa, and Dataflow architecture diagram",
+          "caption": "Lambda, Kappa, and Dataflow"
+        },
+        {
           "kind": "prose",
           "heading": "IoT and data mesh",
           "body": [
             "**IoT architecture** handles data from devices such as sensors, cameras, and vehicles. It must account for intermittent connectivity, device identity, and large event volumes.",
             "**Data mesh** is an organizational approach where domains own and publish their data as products, supported by self-service infrastructure and shared governance."
           ]
+        },
+        {
+          "kind": "image",
+          "src": iotDataMeshImg,
+          "alt": "IoT and Data Mesh diagram",
+          "caption": "IoT and Data Mesh"
         },
         {
           "kind": "takeaways",
