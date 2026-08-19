@@ -67,6 +67,8 @@ import streamingArchitectureImg from "@/images/data-engineering-fundamentals/fou
 import modernDataStackImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/modern-data-stack.png";
 import lambdaKappaDataflowImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/lambda-kappa-dataflow.png";
 import iotDataMeshImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/Iot-data-mesh.png";
+import warehouseLakeLakehouseImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/warehouse-lake-lakehouse.png";
+
 
 
 
@@ -3277,6 +3279,12 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "A lakehouse combines flexible object storage with stronger table management and governance.",
             "It can support analytics and machine learning workloads from the same broad platform."
           ]
+        },
+        {
+          "kind": "image",
+          "src": warehouseLakeLakehouseImg,
+          "alt": "Comparison of Data Warehouse, Data Lake, and Data Lakehouse",
+          "caption": "Warehouse vs Lake vs Lakehouse"
         },
         {
           "kind": "list",
