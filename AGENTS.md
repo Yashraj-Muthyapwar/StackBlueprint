@@ -27,3 +27,6 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
   * Standard side headers.
   * Appropriate logos matching the UI system.
 * **Goal**: The layout, feel, and functionality must be perfectly uniform across all tracks in the application.
+
+### 4. Navigation & Visibility
+* **Roadmap & Sidebar Updates**: Whenever you are asked to add, create, or rewrite a lesson (from any module or track), you MUST automatically check and update `src/lessons/roadmap.ts` and `src/components/app-sidebar.tsx` (if required) to ensure the new or modified content is visible and properly linked in the global navigation structure.
