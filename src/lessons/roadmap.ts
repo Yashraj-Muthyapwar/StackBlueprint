@@ -965,6 +965,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "3.2 Principles for Reliable and Scalable Systems", slug: "principles-for-reliable-and-scalable-systems", path: "/data-engineering/designing-scalable-data-platforms/principles-for-reliable-and-scalable-systems", icon: Layers },
               { title: "3.3 Designing Modular and Event-Driven Systems", slug: "designing-modular-and-event-driven-systems", path: "/data-engineering/designing-scalable-data-platforms/designing-modular-and-event-driven-systems", icon: Layers },
               { title: "3.4 Batch, Streaming, and Modern Data Platform Patterns", slug: "batch-streaming-and-modern-data-platform-patterns", path: "/data-engineering/designing-scalable-data-platforms/batch-streaming-and-modern-data-platform-patterns", icon: Layers },
+              { title: "3.5 A Complete Example: Designing a Scalable Retail Data Platform", slug: "a-complete-example", path: "/data-engineering/designing-scalable-data-platforms/a-complete-example", icon: Layers },
             ],
           },
           {
