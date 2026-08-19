@@ -3371,6 +3371,386 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           ]
         }
       ]
+    },
+    {
+      "slug": "a-complete-example",
+      "title": "3.5 A Complete Example: Designing a Scalable Retail Data Platform",
+      "subtitle": "Bring together the architecture concepts from Lessons 3.1 to 3.4 by designing a practical platform for an online retailer.",
+      "sections": [
+        {
+          "kind": "prose",
+          "heading": "Why this matters",
+          "body": [
+            "Architecture ideas become useful when you can apply them to a real problem.",
+            "This lesson follows a fictional retailer, **Northstar Retail**, as it designs a platform for analytics, operational reporting, and growing data volume."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "The business problem",
+          "body": [
+            "Northstar Retail sells products through a website and mobile app.",
+            "It needs to answer these questions:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "What were yesterday’s sales by product and region?",
+            "Which products are close to being out of stock?",
+            "Which customers return products most often?",
+            "Are payments failing right now?",
+            "Can analysts trust the revenue dashboard?"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "The current situation is messy:"
+          ]
+        },
+        {
+          "kind": "list",
+          "items": [
+            "Orders live in the application database.",
+            "Inventory lives in a separate system.",
+            "Refunds are exported manually every week.",
+            "Analysts run large queries against the production database.",
+            "Different teams use different definitions of revenue."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Step 1: Define the operational requirements",
+          "body": [
+            "Before choosing tools, the team agrees on the outcomes."
+          ]
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Need",
+            "Requirement"
+          ],
+          "rows": [
+            [
+              "Daily revenue dashboard",
+              "Ready by 8 AM each day"
+            ],
+            [
+              "Inventory updates",
+              "Available within five minutes"
+            ],
+            [
+              "Payment failure alerts",
+              "Visible within one minute"
+            ],
+            [
+              "Historical analysis",
+              "Keep order history for at least three years"
+            ],
+            [
+              "Access",
+              "Analysts should not query production databases"
+            ],
+            [
+              "Reliability",
+              "A failed pipeline must alert the data team"
+            ]
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "This is the operational architecture. It explains what the business needs."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Step 2: Design the technical architecture",
+          "body": [
+            "The technical architecture explains how the platform will deliver those outcomes."
+          ]
+        },
+        {
+          "kind": "code",
+          "code": "Website and mobile app\n        ↓\nOrders, payments, inventory, refunds\n        ↓\nEvent stream and scheduled ingestion\n        ↓\nRaw storage\n        ↓\nValidation and transformation\n        ↓\nCurated analytics tables\n        ↓\nDashboards, alerts, and business tools"
+        },
+        {
+          "kind": "prose",
+          "heading": "Step 3: Define domains and ownership",
+          "body": [
+            "Northstar separates responsibilities by business domain."
+          ]
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Domain",
+            "Owns",
+            "Example service"
+          ],
+          "rows": [
+            [
+              "Sales",
+              "Orders and product sales",
+              "Order service"
+            ],
+            [
+              "Payments",
+              "Payment approvals and failures",
+              "Payment service"
+            ],
+            [
+              "Inventory",
+              "Product availability",
+              "Inventory service"
+            ],
+            [
+              "Customer Experience",
+              "Returns and support",
+              "Returns service"
+            ],
+            [
+              "Data Platform",
+              "Shared pipelines and trusted models",
+              "Analytics platform"
+            ]
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "Each domain owns the meaning and quality of the data it creates.",
+            "The data platform team does not redefine what an “order” means alone. It works with the sales domain to create a documented contract."
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Step 4: Choose batch and streaming where each fits",
+          "body": [
+            "Northstar does not use streaming for everything.",
+            "**Batch workloads**"
+          ],
+          "items": [
+            "Daily sales dashboard",
+            "Weekly refund analysis",
+            "Monthly customer-retention reporting",
+            "Historical revenue models"
+          ]
+        },
+        {
+          "kind": "list",
+          "body": [
+            "These run on a schedule because waiting until morning is acceptable.",
+            "**Streaming workloads**"
+          ],
+          "items": [
+            "Payment failure alerts",
+            "Inventory updates",
+            "Fraud signals",
+            "Live operational monitoring"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "These need fast updates because delayed data can affect customers or revenue."
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Step 5: Select the data platform pattern",
+          "body": [
+            "Northstar uses a lakehouse-style design."
+          ],
+          "items": [
+            "Raw events and files land in object storage.",
+            "Curated tables hold validated, business-ready data.",
+            "Analysts query trusted tables instead of raw files.",
+            "Data scientists can access historical data without copying it into another platform."
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "This design supports both batch reporting and streaming use cases while keeping storage flexible."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Step 6: Design for failure",
+          "body": [
+            "The team assumes failures will happen."
+          ]
+        },
+        {
+          "kind": "table",
+          "headers": [
+            "Failure",
+            "Design response"
+          ],
+          "rows": [
+            [
+              "Payment service is temporarily unavailable",
+              "Retry safely and alert the owner"
+            ],
+            [
+              "An event arrives twice",
+              "Use an event ID to prevent duplicate processing"
+            ],
+            [
+              "Inventory schema changes",
+              "Validate the schema before loading"
+            ],
+            [
+              "Daily pipeline misses 8 AM",
+              "Alert the data team and delay dashboard refresh"
+            ],
+            [
+              "Transformation fails",
+              "Keep the previous trusted dashboard data available"
+            ]
+          ]
+        },
+        {
+          "kind": "list",
+          "body": [
+            "The daily dashboard has:"
+          ],
+          "items": [
+            "**RTO:** Four hours",
+            "**RPO:** One day of acceptable data loss"
+          ]
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "The payment-failure alert has stricter expectations because it supports a live business process."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "Step 7: Keep the architecture loosely coupled",
+          "body": [
+            "The order service publishes an `OrderPlaced` event.",
+            "It does not directly write into analytics tables or the inventory database.",
+            "Other systems can subscribe to that event:"
+          ]
+        },
+        {
+          "kind": "code",
+          "code": "OrderPlaced event\n      ↓\nInventory service updates stock\n      ↓\nAnalytics pipeline records sales\n      ↓\nCustomer service sends confirmation\n      ↓\nFraud service evaluates risk"
+        },
+        {
+          "kind": "prose",
+          "body": [
+            "This lets teams improve their systems independently."
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Step 8: Apply the principles of good architecture",
+          "body": [
+            "Northstar uses these principles:"
+          ],
+          "items": [
+            "**Common components:** Shared storage, orchestration, monitoring, and metadata catalog.",
+            "**Scalability:** Compute can increase during large sales events.",
+            "**Security:** Analysts use curated tables with role-based access.",
+            "**Reversibility:** The team pilots a new streaming pipeline with inventory before moving payments.",
+            "**FinOps:** The team tracks query and compute cost by workload.",
+            "**Continuous architecture:** The platform is reviewed as business needs change."
+          ]
+        },
+        {
+          "kind": "prose",
+          "heading": "The final architecture",
+          "body": []
+        },
+        {
+          "kind": "code",
+          "code": "Sales, Payments, Inventory, Returns\n                ↓\n       Events and scheduled extracts\n                ↓\n      Raw data in object storage\n                ↓\n Validation, quality checks, transformations\n                ↓\n Curated sales, inventory, and customer models\n          ↓                     ↓\n Dashboards and reports    Live alerts and apps"
+        },
+        {
+          "kind": "list",
+          "heading": "Architecture trade-offs",
+          "body": [
+            "Northstar makes deliberate trade-offs:"
+          ],
+          "items": [
+            "It uses batch processing for daily reports because streaming would add unnecessary cost.",
+            "It uses streaming for payment failures because waiting until tomorrow is not acceptable.",
+            "It starts with a small number of shared components instead of many specialized tools.",
+            "It keeps raw data for investigation but limits access to sensitive fields.",
+            "It uses managed services where possible so the team can focus on data products instead of infrastructure maintenance."
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Common mistakes to avoid",
+          "items": [
+            "Using real-time pipelines for every use case.",
+            "Allowing analysts to query production systems.",
+            "Creating a separate copy of the same data for every team.",
+            "Building tightly coupled pipelines that depend on another team’s database.",
+            "Ignoring failure handling until the first outage.",
+            "Choosing tools before agreeing on the business requirement."
+          ]
+        },
+        {
+          "kind": "takeaways",
+          "items": [
+            "Start architecture with business requirements.",
+            "Separate domain ownership from shared platform responsibilities.",
+            "Use batch and streaming only where each creates value.",
+            "Plan for failure with validation, retries, alerts, and recovery targets.",
+            "Prefer loosely coupled systems and reversible decisions.",
+            "A scalable platform is not one giant tool. It is a set of clear, well-connected responsibilities."
+          ]
+        },
+        {
+          "kind": "quiz",
+          "questions": [
+            {
+              "id": "retail-platform-quiz-1",
+              "question": "Why does Northstar use both batch and streaming?",
+              "options": [
+                "Batch is sufficient for scheduled reporting, while streaming is needed for fast operational actions such as payment failure alerts and inventory updates.",
+                "Because they wanted to try all available technologies.",
+                "Streaming is too cheap and batch is too expensive.",
+                "Batch is for payments and streaming is for historical reports."
+              ],
+              "correctIndex": 0,
+              "explanation": "Batch handles scheduled reporting cost-effectively, while streaming is for actions needing immediate response."
+            },
+            {
+              "id": "retail-platform-quiz-2",
+              "question": "Why does the order service publish an event instead of writing directly to analytics tables?",
+              "options": [
+                "Events keep systems loosely coupled, allowing downstream teams and services to evolve independently.",
+                "It is faster to write an event.",
+                "Analytics tables cannot handle direct writes.",
+                "It saves storage space."
+              ],
+              "correctIndex": 0,
+              "explanation": "Events decouple the producer from the consumers, so systems can be updated independently."
+            },
+            {
+              "id": "retail-platform-quiz-3",
+              "question": "What makes the platform scalable?",
+              "options": [
+                "Shared storage, independent compute, modular services, event-based communication, and the ability to increase resources when workloads grow.",
+                "Buying the most expensive software available.",
+                "Keeping all data in a single massive database.",
+                "Having a large team manually manage queries."
+              ],
+              "correctIndex": 0,
+              "explanation": "Scalability comes from separating storage from compute, loose coupling via events, and elasticity."
+            }
+          ]
+        }
+      ]
     }
   ]
 },
