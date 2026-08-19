@@ -3619,135 +3619,207 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
     {
       "slug": "security-compliance-and-governance-by-design",
       "title": "4.3 Security, Compliance, and Governance by Design",
-      "subtitle": "Learn how to make data platforms safe, explainable, and compliant from the start.",
+
+      "subtitle": "Learn how to design data systems that can protect sensitive data, meet changing requirements, and prove how data is handled.",
       "sections": [
         {
           "kind": "prose",
           "heading": "Why this matters",
           "body": [
-            "Security and compliance cannot be added at the end.",
-            "If a team cannot explain where sensitive data came from, who can access it, and when it should be deleted, the platform is incomplete."
+            "Compliance is not a document added after a platform is built. It affects where data lives, who can access it, how long it is retained, and how it can be deleted.",
+            "A platform that cannot locate personal data or remove it safely will struggle to meet privacy obligations."
           ]
         },
         {
           "kind": "list",
-          "heading": "Classify data",
+          "heading": "Start by understanding the data",
           "body": [
-            "Identify the sensitivity of data early.",
+            "Not all data has the same risk.",
+            "Personal data is information that can identify a person directly or indirectly.",
             "Examples:"
           ],
           "items": [
-            "Public data",
-            "Internal business data",
-            "Confidential customer data",
-            "Personally identifiable information",
-            "Financial or health data"
+            "Name",
+            "Email address",
+            "Phone number",
+            "Address",
+            "Government identifier",
+            "Device identifier",
+            "Location history",
+            "Payment details"
           ]
         },
         {
           "kind": "prose",
           "body": [
-            "Classification helps determine access, encryption, retention, and monitoring requirements."
+            "Classify data when it enters the platform. This helps determine access controls, retention periods, storage location, and required protections."
           ]
         },
         {
           "kind": "list",
-          "heading": "Use least privilege",
+          "heading": "Compliance requirements vary",
           "body": [
-            "Give users and systems only the access required for their current task.",
-            "Examples:"
+            "Requirements can differ by:"
           ],
           "items": [
-            "An analyst can query approved reporting tables.",
-            "A pipeline can write only to its assigned storage path.",
-            "A contractor receives time-limited access."
+            "Country or region",
+            "Industry",
+            "Customer contract",
+            "Type of data",
+            "Business role"
           ]
         },
         {
           "kind": "prose",
           "body": [
-            "Avoid broad admin permissions."
+            "For example, privacy regulations such as GDPR may apply to personal data. Healthcare, financial, and public-sector organizations may also face additional requirements.",
+            "Do not assume one policy works everywhere. Involve legal, privacy, security, and compliance teams early."
           ]
         },
         {
           "kind": "list",
-          "heading": "Protect data in transit and at rest",
+          "heading": "Architect for the full data lifecycle",
           "body": [
-            "Use encryption:"
+            "Compliance should be considered at every stage:",
+            "**Collect → Classify → Store → Use → Share → Retain → Delete**",
+            "Ask these questions:"
           ],
           "items": [
-            "**In transit:** While data moves between systems.",
-            "**At rest:** While data is stored."
+            "Do we need to collect this data at all?",
+            "Where is it stored and processed?",
+            "Who can access it?",
+            "Which downstream tables, files, models, or dashboards contain it?",
+            "How long should it be retained?",
+            "Can it be deleted when required?",
+            "Can we prove what happened through audit logs?"
           ]
         },
         {
           "kind": "prose",
+          "heading": "Design for deletion",
           "body": [
-            "Also use secure secrets management, network controls, data masking, and audit logs."
+            "A user may request deletion of personal data where applicable.",
+            "That request can be difficult if the data has spread across raw storage, warehouse tables, feature stores, dashboards, backups, and exports.",
+            "Use data lineage to understand where personal data travels.",
+            "A deletion workflow may look like this:"
+          ]
+        },
+        {
+          "kind": "code",
+          "code": "Deletion request\n   ↓\nLocate customer identifier\n   ↓\nFind downstream datasets through lineage\n   ↓\nDelete or anonymize permitted copies\n   ↓\nRecord the action in an audit log"
+        },
+        {
+          "kind": "prose",
+          "heading": "Use loosely coupled components",
+          "body": [
+            "Regulations and business policies change.",
+            "Loosely coupled systems make those changes easier. For example, a retention-policy service or deletion workflow can be updated without rewriting every ingestion pipeline.",
+            "Avoid placing compliance logic in one undocumented script or embedding it separately in every system."
           ]
         },
         {
           "kind": "list",
-          "heading": "Governance and data management",
+          "heading": "Core security controls",
           "body": [
-            "Governance helps people find, understand, and trust data.",
-            "Important practices include:"
+            "Use controls that protect data throughout the platform:"
           ],
           "items": [
-            "Clear ownership",
+            "Least-privilege access",
+            "Role-based permissions",
+            "Temporary access for sensitive tasks",
+            "Encryption in transit and at rest",
+            "Secrets management",
+            "Data masking or tokenization",
+            "Secure network controls",
+            "Audit logs",
+            "Regular access reviews"
+          ]
+        },
+        {
+          "kind": "list",
+          "heading": "Governance creates trust",
+          "body": [
+            "Governance helps teams understand and use data safely.",
+            "Key practices include:"
+          ],
+          "items": [
+            "Named data owners",
+            "Clear definitions",
             "Metadata and documentation",
             "Data lineage",
-            "Quality checks",
+            "Data quality checks",
             "Retention rules",
             "Privacy policies",
-            "Access reviews"
+            "Incident response procedures"
           ]
         },
         {
           "kind": "list",
-          "heading": "Compliance as an architecture input",
+          "heading": "A practical example",
           "body": [
-            "Compliance requirements can affect:"
+            "A healthcare analytics platform receives patient appointment data.",
+            "The architecture should:"
           ],
           "items": [
-            "Cloud region selection",
-            "Storage location",
-            "Access design",
-            "Data retention",
-            "Deletion workflows",
-            "Audit requirements",
-            "Vendor selection"
+            "Classify patient data as sensitive.",
+            "Limit access to approved roles.",
+            "Encrypt data during transfer and storage.",
+            "Keep audit records of access.",
+            "Apply retention rules.",
+            "Track where patient identifiers flow.",
+            "Support deletion or anonymization when policy requires it.",
+            "Keep healthcare compliance stakeholders involved in design changes."
           ]
         },
         {
-          "kind": "prose",
-          "body": [
-            "Bring security and compliance stakeholders into architecture discussions early."
+          "kind": "list",
+          "heading": "Common mistakes",
+          "items": [
+            "Collecting personal data without a clear purpose.",
+            "Giving every analyst broad access to raw data.",
+            "Storing sensitive data in every downstream table.",
+            "Keeping data forever because no retention rule exists.",
+            "Treating deletion as a manual task.",
+            "Ignoring regional and industry-specific requirements.",
+            "Adding compliance work only before launch."
           ]
         },
         {
           "kind": "takeaways",
           "items": [
-            "Security begins with understanding the data.",
-            "Least privilege reduces the impact of mistakes.",
-            "Governance creates trust and discoverability.",
-            "Compliance requirements should guide design choices early."
+            "Compliance is an architecture concern, not a final checklist.",
+            "Classify personal and sensitive data early.",
+            "Design for access control, retention, auditability, and deletion.",
+            "Requirements can vary by region, industry, and contract.",
+            "Loose coupling helps the platform adapt as policies change."
           ]
         },
         {
           "kind": "quiz",
           "questions": [
             {
-              "id": "security-compliance-and-governance-by-design-quiz",
-              "question": "What does least privilege mean?",
+              "id": "security-compliance-and-governance-by-design-quiz-1",
+              "question": "Why is data lineage important for compliance?",
               "options": [
-                "Granting only the minimum access required for a task.",
-                "Option 2",
-                "Option 3",
-                "Option 4"
+                "It shows where sensitive data came from, where it moved, and which downstream systems may need updates or deletion.",
+                "It automatically encrypts data.",
+                "It removes the need for retention rules.",
+                "It compresses raw data for faster storage."
               ],
               "correctIndex": 0,
-              "explanation": "Granting only the minimum access required for a task."
+              "explanation": "It shows where sensitive data came from, where it moved, and which downstream systems may need updates or deletion."
+            },
+            {
+              "id": "security-compliance-and-governance-by-design-quiz-2",
+              "question": "Why do loosely coupled components help with compliance?",
+              "options": [
+                "They make it easier to update policies, retention workflows, or deletion processes without rebuilding the entire platform.",
+                "They make data lineage unnecessary.",
+                "They prevent unauthorized users from running SQL queries.",
+                "They automatically delete personal data after 30 days."
+              ],
+              "correctIndex": 0,
+              "explanation": "They make it easier to update policies, retention workflows, or deletion processes without rebuilding the entire platform."
             }
           ]
         }
