@@ -76,6 +76,38 @@ import northstarRetailDomainOwnershipImg from "@/images/data-engineering-fundame
 import northstarRetailLooselyCoupledImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/northstar-retail-losely-coupled.png";
 import northstarRetailFinalArchImg from "@/images/data-engineering-fundamentals/foundations/Designing_Scalable_Data_Platforms/northstar-retail-final-architecture.png";
 
+import startWithProblemImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/start-with-problem.png";
+import decisionScorecardImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/decision-scorecard.png";
+import decisionsReversibleImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/decisions-reversible.png";
+
+import startWithLocationImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/start-with-location.png";
+import computeWorkloadImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/compute-workload.png";
+import separateStorageComputeImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/separate-storage-compute.png";
+
+import dataClassificationImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/data-classification.png";
+import designForDeletionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/design-for-deletion.png";
+import architectFullDataLifecycleImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/architect-full-data-lifecycle.png";
+import undercurrentsGuideDecisionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/undercurrents-guide-decision.png";
+
+import costToBusinessImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/cost-to-business.png";
+import tcoImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/TCO.png";
+import finopsInPracticeImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/finops-in-practice.png";
+import greenfieldBrownfieldImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/greenfield-brownfield-projects.png";
+import avoidBigBangImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/avoid-big-bang-migrations.png";
+import continuousArchitectureImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/continuous-architecture.png";
+import hierarchyOfNeedsImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/hierarchy-of-needs.png";
+import functionalNfrImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/functional-nfr.png";
+import requirementsGatheringImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/requirements-gathering.png";
+import documentTheRequirementImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/document-the-requirement.png";
+import recommendationSystemImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/recommendation-system.png";
+import recommendationSystemExampleImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/recommendation-system-example.png";
+import workWithSourceSystemsImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/work-with-source-systems.png";
+import scopeTimeCostImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/scope-time-cost.png";
+import mapAwsServicesImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/map-aws-services.png";
+import streamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/streaming-option.png";
+import rightMentalModelImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/right-mental-model.png";
+import dataEngineerRoleImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/data-engineer-role.png";
+
 
 
 
@@ -3727,81 +3759,23 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "list",
-            "heading": "Start with the problem",
-            "body": [
-              "Before evaluating a tool, define:"
-            ],
-            "items": [
-              "The business outcome",
-              "Users and their needs",
-              "Data sources and formats",
-              "Required freshness",
-              "Expected data volume",
-              "Reliability expectations",
-              "Security and compliance constraints",
-              "Team skills",
-              "Budget",
-              "Existing systems"
-            ]
+            "kind": "image",
+            "src": startWithProblemImg,
+            "alt": "Start with the problem",
+            "caption": "Start with the problem"
           },
           {
             "kind": "prose",
+            "heading": "Decision Scorecards and Shared Components",
             "body": [
-              "Example:",
-              "> The analytics team needs a daily sales model ready by 8 AM. It must combine order, refund, and product data. The team needs an alert if the model fails.",
-              "This is more useful than asking, 'Which transformation tool is best?'"
+              "Evaluating platforms with a decision scorecard balances criteria like security, reliability, and cost to identify the best tool fit. Pairing this framework with common infrastructure components accelerates development across engineering and analytics teams without imposing rigid constraints."
             ]
           },
           {
-            "kind": "prose",
-            "heading": "Use a decision scorecard",
-            "body": [
-              "Evaluate each option against the same criteria."
-            ]
-          },
-          {
-            "kind": "table",
-            "headers": [
-              "Area",
-              "Questions to ask"
-            ],
-            "rows": [
-              ["Business fit", "Does it solve the actual problem?"],
-              ["Team fit", "Can the team build and operate it?"],
-              ["Integration", "Does it work with existing systems?"],
-              ["Reliability", "Does it support monitoring, retries, and recovery?"],
-              ["Security", "Can access, secrets, and audit logs be managed safely?"],
-              ["Governance", "Does it support ownership, lineage, and quality needs?"],
-              ["Cost", "What is its total cost of ownership?"],
-              ["Exit path", "Can the team migrate later if needed?"]
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Choose common components wisely",
-            "body": [
-              "Prefer shared building blocks when they reduce repeated work across teams."
-            ]
-          },
-          {
-            "kind": "list",
-            "body": [
-              "Examples:"
-            ],
-            "items": [
-              "Shared object storage",
-              "Shared orchestration",
-              "Shared monitoring",
-              "Shared identity and access management",
-              "Shared metadata catalog"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "A common component should make teams faster. It should not force every team into one unsuitable solution."
-            ]
+            "kind": "image",
+            "src": decisionScorecardImg,
+            "alt": "Decision Scorecards and Shared Components",
+            "caption": "Decision Scorecards and Shared Components"
           },
           {
             "kind": "prose",
@@ -3854,14 +3828,16 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           },
           {
             "kind": "prose",
-            "heading": "Make uncertain decisions reversible",
+            "heading": "Make Uncertain Decisions Reversible",
             "body": [
-              "Run a small proof of value before a major migration."
+              "Testing small workloads through a targeted pilot minimizes risk before committing to large-scale migrations. By evaluating real-world value, cost, and reliability upfront, teams can confidently decide whether to adopt, adapt, or reject a platform choice."
             ]
           },
           {
-            "kind": "code",
-            "code": "Requirements\n    ↓\nShortlist options\n    ↓\nPilot with one workload\n    ↓\nMeasure value, reliability, and cost\n    ↓\nAdopt, adapt, or reject"
+            "kind": "image",
+            "src": decisionsReversibleImg,
+            "alt": "Make Uncertain Decisions Reversible",
+            "caption": "Make Uncertain Decisions Reversible"
           },
           {
             "kind": "list",
@@ -3916,28 +3892,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "list",
-            "heading": "Start with location",
-            "body": [
-              "Data location matters because moving data takes time and money.",
-              "Consider:"
-            ],
-            "items": [
-              "Where source systems run",
-              "Where users are located",
-              "Required cloud regions",
-              "Data residency requirements",
-              "Network latency",
-              "Data transfer cost",
-              "Disaster recovery needs",
-              "Existing infrastructure"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "Example: If customer data must remain in a particular region, storage, processing, backups, and downstream systems may need to stay in that region too."
-            ]
+            "kind": "image",
+            "src": startWithLocationImg,
+            "alt": "Start with location",
+            "caption": "Start with location"
           },
           {
             "kind": "prose",
@@ -3968,42 +3926,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "prose",
-            "heading": "Virtual machines",
-            "body": [
-              "Virtual machines offer high control. They can suit stable workloads that run continuously.",
-              "The trade-off is operational work. The team manages patching, capacity, operating systems, and scaling."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Containers",
-            "body": [
-              "Containers package an application and dependencies consistently.",
-              "They are useful when teams need portable services across development, testing, and production environments.",
-              "The trade-off is that containers still require scheduling, networking, monitoring, and scaling."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Serverless",
-            "body": [
-              "Serverless compute runs code in response to an event or request.",
-              "It is useful for:"
-            ],
-            "items": [
-              "File processing",
-              "Event handlers",
-              "Small ingestion tasks",
-              "Scheduled automation",
-              "Intermittent workloads"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "It reduces infrastructure management, but it may have execution limits and usage-based costs."
-            ]
+            "kind": "image",
+            "src": computeWorkloadImg,
+            "alt": "Servers, containers, and serverless",
+            "caption": "Servers, containers, and serverless"
           },
           {
             "kind": "prose",
@@ -4013,8 +3939,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "code",
-            "code": "Shared object storage\n        ↓\nAnalytics queries | ETL jobs | Machine learning | Streaming jobs"
+            "kind": "image",
+            "src": separateStorageComputeImg,
+            "alt": "Separate storage and compute",
+            "caption": "Separate storage and compute"
           },
           {
             "kind": "prose",
@@ -4075,63 +4003,41 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "list",
-            "heading": "Start with data classification",
-            "body": [
-              "Not all data carries the same risk.",
-              "Classify data when it enters the platform.",
-              "Examples:"
-            ],
-            "items": [
-              "Public data",
-              "Internal business data",
-              "Confidential data",
-              "Personal data",
-              "Sensitive personal data",
-              "Financial or health-related data"
-            ]
+            "kind": "image",
+            "src": dataClassificationImg,
+            "alt": "Start with data classification",
+            "caption": "Start with data classification"
           },
           {
             "kind": "prose",
             "body": [
-              "Personal data may include a name, email address, device identifier, location history, or payment detail.",
-              "Classification drives access, masking, retention, encryption, and monitoring rules."
+              "**Personal data** may include a **name**, **email address**, **device identifier**, **location history**, or **payment detail**.",
+              "Classification drives **access**, **masking**, **retention**, **encryption**, and **monitoring rules**."
             ]
           },
           {
-            "kind": "list",
-            "heading": "Architect for the full data lifecycle",
-            "body": [
-              "Compliance should be considered throughout the lifecycle.",
-              "```text\nCollect → Classify → Store → Use → Share → Retain → Delete\n```",
-              "For every sensitive dataset, ask:"
-            ],
-            "items": [
-              "Why are we collecting it?",
-              "Where is it stored and processed?",
-              "Who can access it?",
-              "Which downstream datasets contain it?",
-              "How long should it be retained?",
-              "Can it be deleted or anonymized when required?",
-              "Do audit logs show what happened?"
-            ]
+            "kind": "image",
+            "src": architectFullDataLifecycleImg,
+            "alt": "Architect for the full data lifecycle",
+            "caption": "Architect for the full data lifecycle"
           },
           {
             "kind": "prose",
             "heading": "Design for deletion and policy changes",
             "body": [
-              "Personal data may appear in raw files, warehouse tables, dashboards, machine learning features, exports, and backups.",
-              "Use lineage to trace where it moves."
+              "Personal data may appear in raw files, warehouse tables, dashboards, machine learning features, exports, and backups. **Use lineage to trace where it moves**."
             ]
           },
           {
-            "kind": "code",
-            "code": "Deletion request\n       ↓\nLocate customer identifier\n       ↓\nFind downstream datasets through lineage\n       ↓\nDelete or anonymize permitted copies\n       ↓\nRecord the action in an audit log"
+            "kind": "image",
+            "src": designForDeletionImg,
+            "alt": "Design for deletion",
+            "caption": "Design for deletion"
           },
           {
             "kind": "prose",
             "body": [
-              "Loosely coupled components make policy changes easier. A retention or deletion workflow can be updated without rewriting every pipeline."
+              "**Loosely coupled components** make policy changes easier. A **retention or deletion workflow** can be updated without rewriting every pipeline."
             ]
           },
           {
@@ -4175,38 +4081,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             "body": []
           },
           {
-            "kind": "table",
-            "headers": [
-              "Undercurrent",
-              "Question to ask"
-            ],
-            "rows": [
-              ["Security", "Does the tool protect access, secrets, and sensitive data?"],
-              ["Data management", "Does it support ownership, lineage, quality, and governance?"],
-              ["DataOps", "Can it be automated, monitored, and recovered?"],
-              ["Architecture", "Does it fit the wider platform and allow future change?"],
-              ["Orchestration", "Can dependencies, retries, and schedules be coordinated?"],
-              ["Software engineering", "Can it be tested, version-controlled, and deployed safely?"]
-            ]
-          },
-          {
-            "kind": "table",
-            "heading": "SLA, SLO, and SLT",
-            "body": [
-              "Technology decisions should match the service level that the business needs.",
-              "**SLA:** An agreed service commitment.",
-              "**SLO:** An internal reliability objective.",
-              "**SLT:** The specific measurable target used to judge that objective."
-            ],
-            "headers": [
-              "Item",
-              "Example"
-            ],
-            "rows": [
-              ["SLA", "Revenue dashboard is available each business day."],
-              ["SLO", "The dashboard refresh succeeds on at least 99.5% of scheduled runs."],
-              ["SLT", "The refresh completes by 8 AM Central Time."]
-            ]
+            "kind": "image",
+            "src": undercurrentsGuideDecisionImg,
+            "alt": "The undercurrents affect every decision",
+            "caption": "The undercurrents affect every decision"
           },
           {
             "kind": "list",
@@ -4262,73 +4140,49 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "list",
-            "heading": "Connect cost to business value",
-            "body": [
-              "Cost optimization does not mean choosing the cheapest option.",
-              "It means spending appropriately for the value a system creates.",
-              "Examples:",
-              "A low-cost daily report may be enough for finance.",
-              "A higher-cost payment-failure alert can be worthwhile because it protects revenue.",
-              "A large server running all day is wasteful if the pipeline runs for forty minutes.",
-              "Ask:"
-            ],
-            "items": [
-              "What business outcome does this workload support?",
-              "How often does it need to run?",
-              "Who uses the output?",
-              "What is the cost per useful result?",
-              "What happens if it is delayed or unavailable?"
-            ]
+            "kind": "image",
+            "src": costToBusinessImg,
+            "alt": "Connect cost to business value",
+            "caption": "Connect cost to business value"
           },
           {
-            "kind": "list",
+            "kind": "prose",
             "heading": "Total cost of ownership",
-            "body": [
-              "The cost of a data platform includes more than cloud usage.",
-              "Consider:"
-            ],
-            "items": [
-              "Compute",
-              "Storage",
-              "Data transfer",
-              "Licensing and subscriptions",
-              "Support plans",
-              "Engineering time",
-              "Training",
-              "Monitoring and maintenance",
-              "Downtime and recovery",
-              "Future migration and exit costs"
-            ]
+            "body": []
           },
           {
-            "kind": "list",
+            "kind": "image",
+            "src": tcoImg,
+            "alt": "Total cost of ownership",
+            "caption": "Total cost of ownership"
+          },
+          {
+            "kind": "prose",
             "heading": "FinOps in practice",
-            "body": [
-              "FinOps helps engineering, finance, and business teams make informed cloud-spending decisions.",
-              "```text\nMeasure cost\n    ↓\nConnect cost to workload and business value\n    ↓\nFind waste or unexpected growth\n    ↓\nOptimize safely\n    ↓\nMeasure again\n```",
-              "Useful practices:"
-            ],
-            "items": [
-              "Tag costs by team, pipeline, and product.",
-              "Set budgets and cost alerts.",
-              "Track storage growth.",
-              "Monitor expensive queries.",
-              "Shut down idle compute.",
-              "Review failed jobs and unnecessary reruns.",
-              "Compare cost with business value."
-            ]
+            "body": []
+          },
+          {
+            "kind": "image",
+            "src": finopsInPracticeImg,
+            "alt": "FinOps in practice",
+            "caption": "FinOps in practice"
           },
           {
             "kind": "prose",
             "heading": "Greenfield and brownfield projects",
             "body": [
-              "A **greenfield project** starts with few existing constraints.",
+              "A **greenfield** project starts with few existing constraints.",
               "Example: Building analytics for a new product.",
-              "A **brownfield project** improves existing systems that people already depend on.",
+              "A **brownfield** project improves existing systems that people already depend on.",
               "Example: Replacing spreadsheet reporting while the business still uses it every day.",
               "Most real data engineering work is brownfield work."
             ]
+          },
+          {
+            "kind": "image",
+            "src": greenfieldBrownfieldImg,
+            "alt": "Greenfield and brownfield projects",
+            "caption": "Greenfield and brownfield projects"
           },
           {
             "kind": "prose",
@@ -4339,8 +4193,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "code",
-            "code": "Current system\n      ↓\nBuild one replacement component\n      ↓\nRun old and new outputs together\n      ↓\nValidate data, reliability, and cost\n      ↓\nMove users gradually\n      ↓\nRetire the old component"
+            "kind": "image",
+            "src": avoidBigBangImg,
+            "alt": "Avoid big-bang migrations",
+            "caption": "Avoid big-bang migrations"
           },
           {
             "kind": "list",
@@ -4357,32 +4213,15 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             ]
           },
           {
-            "kind": "list",
-            "heading": "Continuous architecture",
-            "body": [
-              "Architecture is never finished.",
-              "Review the platform when:"
-            ],
-            "items": [
-              "Data volume grows",
-              "Costs rise unexpectedly",
-              "A major outage occurs",
-              "A new regulation appears",
-              "A new source system is added",
-              "Existing tools create too much operational work"
-            ]
+            "kind": "prose",
+            "heading": "Continue architectural improvement",
+            "body": []
           },
           {
-            "kind": "list",
-            "heading": "Record important decisions",
-            "body": [],
-            "items": [
-              "What problem did we solve?",
-              "Which options did we consider?",
-              "Why did we choose this approach?",
-              "What assumptions did we make?",
-              "When should the decision be reviewed?"
-            ]
+            "kind": "image",
+            "src": continuousArchitectureImg,
+            "alt": "Continuous architecture",
+            "caption": "Continuous architecture"
           },
           {
             "kind": "list",
@@ -4420,6 +4259,263 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 ],
                 "correctIndex": 0,
                 "explanation": "They reduce risk, allow validation at each step, and make rollback possible."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        slug: "translating-requirements-into-architecture",
+        title: "4.5 Translating Requirements into Architecture",
+        subtitle: "Learn how to turn a business request into clear requirements, a practical data architecture, and an appropriate batch or streaming implementation.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Stakeholders rarely ask for a data pipeline.",
+              "They ask for outcomes:"
+            ]
+          },
+          {
+            kind: "list",
+            items: [
+              "“Help us keep customers.”",
+              "“Show us demand spikes.”",
+              "“Recommend better products.”",
+              "“Detect fraud quickly.”"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Your job as a data engineer is to translate those requests into systems that can be built, operated, measured, and improved."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "1. Start with the hierarchy of needs",
+            body: [
+              "A good architecture begins with the business, not the technology."
+            ]
+          },
+          {
+            kind: "image",
+            src: hierarchyOfNeedsImg,
+            alt: "Hierarchy of Needs",
+            caption: "Business goals → Stakeholder needs → System requirements → Architecture and technology choices"
+          },
+          {
+            kind: "prose",
+            heading: "2. Functional and non-functional requirements",
+            body: []
+          },
+          {
+            kind: "prose",
+            body: [
+              "A dashboard chart or metric is not automatically a requirement for the data engineer. It may be a data scientist’s or analyst’s responsibility. The data engineer’s requirement is to serve trusted, timely data that makes the chart possible."
+            ]
+          },
+          {
+            kind: "image",
+            src: functionalNfrImg,
+            alt: "Analytics dashboard requirements",
+            caption: "Highlighting freshness, quality checks, and schema-change adaptability."
+          },
+          {
+            kind: "prose",
+            heading: "3. Gather requirements before designing",
+            body: [
+              "Requirements gathering is a conversation, not a form to complete once."
+            ]
+          },
+          {
+            kind: "image",
+            src: requirementsGatheringImg,
+            alt: "Key Elements of Requirements Gathering",
+            caption: "Present each question as a step in a discovery conversation."
+          },
+          {
+            kind: "prose",
+            heading: "4. Use the right mental model",
+            body: [
+              "Use the right mental model to break down a complex request",
+            ]
+          },
+          {
+            kind: "image",
+            src: rightMentalModelImg,
+            alt: "Use the right mental model",
+            caption: "Use the right mental model to break down a complex request."
+          },
+          {
+            kind: "prose",
+            heading: "5. Document the requirement",
+            body: [
+              "A short requirements document avoids assumptions and gives the team a shared reference."
+            ]
+          },
+          {
+            kind: "image",
+            src: documentTheRequirementImg,
+            alt: "Documenting Requirements",
+            caption: "Business Goals at the top, Stakeholder Needs in the middle, and Requirements at the bottom."
+          },
+          {
+            kind: "prose",
+            heading: "6. Complete example: a recommendation system",
+            body: [
+              "An e-commerce company wants to increase customer retention by recommending relevant products.",
+              "This use case needs two pipelines because model training and live recommendations have different requirements.",
+            ]
+          },
+          {
+            kind: "image",
+            src: recommendationSystemImg,
+            alt: "Recommender system requirement",
+            caption: "The model output returning to the sales platform, and the fallback path to popular products."
+          },
+          {
+            kind: "prose",
+            heading: "7. Work safely with source systems",
+            body: [
+              "Do not overload the production database with analytical queries."
+            ]
+          },
+          {
+            kind: "image",
+            src: workWithSourceSystemsImg,
+            alt: "Read replica and notification path",
+            caption: "A read replica visual including the notification path for outages and schema changes."
+          },
+          {
+            kind: "prose",
+            heading: "8. Manage scope, timeline, and cost",
+            body: [
+              "Balancing scope, timeline, and cost requires making trade-offs visible and prioritizing incremental value. Delivering an initial release with a limited scope allows teams to validate core features quickly while maintaining open communication with stakeholders to guide future expansion."
+            ]
+          },
+          {
+            kind: "image",
+            src: scopeTimeCostImg,
+            alt: "The Iron Triangle",
+            caption: "Managing the trade-offs between scope, timeline, and cost."
+          },
+          {
+            kind: "prose",
+            heading: "9. Map architecture to AWS services",
+            body: [
+              "Choose services after understanding the requirement."
+            ]
+          },
+          {
+            kind: "image",
+            src: mapAwsServicesImg,
+            alt: "EMR versus Glue",
+            caption: "EMR provides more control, while Glue provides more convenience."
+          },
+          {
+            kind: "prose",
+            heading: "10. Choose the right streaming option",
+            body: [
+              "Selecting an AWS streaming service depends on balancing control, operational overhead, and workload type."
+            ]
+          },
+          {
+            kind: "image",
+            src: streamingOptionImg,
+            alt: "Streaming options comparison",
+            caption: "MSK for control, Kinesis Data Streams for convenience, and Firehose for delivery."
+          },
+          {
+            kind: "prose",
+            heading: "11. The data engineer’s role",
+            body: [
+              "A data engineer builds and maintains the core infrastructure powering end-to-end analytics and machine learning applications."
+            ]
+          },
+          {
+            kind: "image",
+            src: dataEngineerRoleImg,
+            alt: "The data engineer's role",
+            caption: "Core responsibilities of the data engineer."
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "Starting with a tool instead of a business goal.",
+              "Treating dashboard features as the data engineer’s only requirement.",
+              "Calling everything “real-time” without defining an actual latency target.",
+              "Querying production databases directly for analytics.",
+              "Using streaming when scheduled batch processing is sufficient.",
+              "Using Lambda for workloads that exceed its runtime or resource limits.",
+              "Skipping fallback behavior for customer-facing systems.",
+              "Failing to document assumptions and ownership."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Start with business goals and stakeholder actions.",
+              "Translate needs into functional and non-functional requirements.",
+              "Document requirements before choosing tools.",
+              "Use batch for scheduled historical processing and streaming for low-latency action.",
+              "Design graceful fallback behavior for customer-facing systems.",
+              "Make scope, timeline, and cost trade-offs visible.",
+              "Select AWS services only after the architecture and workload needs are clear."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "translating-requirements-quiz-1",
+                question: "What is the difference between functional and non-functional requirements?",
+                options: [
+                  "Functional requirements describe what the system must do. Non-functional requirements describe how well it must do it.",
+                  "Functional requirements apply only to batch systems. Non-functional requirements apply only to streaming systems.",
+                  "Functional requirements are about cost. Non-functional requirements are about scale.",
+                  "There is no difference."
+                ],
+                correctIndex: 0,
+                explanation: "Functional requirements describe what the system must do. Non-functional requirements describe how well it must do it, including latency, reliability, scalability, security, and cost."
+              },
+              {
+                id: "translating-requirements-quiz-2",
+                question: "Why does the recommender system need both batch and streaming pipelines?",
+                options: [
+                  "Because Kafka requires a batch pipeline to function.",
+                  "Batch prepares historical training data for the model. Streaming uses recent customer behavior to return timely recommendations.",
+                  "Batch is for marketing, streaming is for finance.",
+                  "AWS does not allow doing both in one pipeline."
+                ],
+                correctIndex: 1,
+                explanation: "Batch prepares historical training data for the model. Streaming uses recent customer behavior to return timely recommendations."
+              },
+              {
+                id: "translating-requirements-quiz-3",
+                question: "Why should the data team use a read replica or controlled extract?",
+                options: [
+                  "It reduces the risk that analytics and machine learning workloads will slow down the production database.",
+                  "It makes the data instantly available everywhere without latency.",
+                  "Read replicas automatically format the data for machine learning models.",
+                  "It is a strict requirement for AWS Glue."
+                ],
+                correctIndex: 0,
+                explanation: "It reduces the risk that analytics and machine learning workloads will slow down the production database."
+              },
+              {
+                id: "translating-requirements-quiz-4",
+                question: "When might Amazon MSK be a better fit than Kinesis Data Streams?",
+                options: [
+                  "When the team needs a fully managed service with absolutely no operational overhead.",
+                  "When the team is doing simple batch ETL processing.",
+                  "When a team needs Kafka compatibility and is willing to accept more complexity in return for greater control.",
+                  "When only dealing with XML format data."
+                ],
+                correctIndex: 2,
+                explanation: "When a team needs Kafka compatibility and is willing to accept more complexity in return for greater control."
               }
             ]
           }
