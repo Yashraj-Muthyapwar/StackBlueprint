@@ -107,6 +107,10 @@ import mapAwsServicesImg from "@/images/data-engineering-fundamentals/foundation
 import streamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/streaming-option.png";
 import rightMentalModelImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/right-mental-model.png";
 import dataEngineerRoleImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/data-engineer-role.png";
+import mapAzureServicesImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/Azure-services.png";
+import mapGcpServicesImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/gcp-services.png";
+import azureStreamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/azure-streaming-option.png";
+import gcpStreamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/gcp-streaming-option.png";
 
 
 
@@ -4374,6 +4378,7 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             src: recommendationSystemImg,
             alt: "Recommender system requirement",
             caption: "The model output returning to the sales platform, and the fallback path to popular products."
+
           },
           {
             kind: "prose",
@@ -4403,29 +4408,57 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
           },
           {
             kind: "prose",
-            heading: "9. Map architecture to AWS services",
+            heading: "9. Map architecture to Cloud Services",
             body: [
               "Choose services after understanding the requirement."
             ]
           },
           {
-            kind: "image",
-            src: mapAwsServicesImg,
-            alt: "EMR versus Glue",
-            caption: "EMR provides more control, while Glue provides more convenience."
+            kind: "image-carousel",
+            images: [
+              {
+                src: mapAzureServicesImg,
+                alt: "Azure Services",
+                caption: "Mapping architecture to Azure data services."
+              },
+              {
+                src: mapAwsServicesImg,
+                alt: "EMR versus Glue",
+                caption: "EMR provides more control, while Glue provides more convenience."
+              },
+              {
+                src: mapGcpServicesImg,
+                alt: "Google Cloud Services",
+                caption: "Mapping architecture to Google Cloud data services."
+              }
+            ]
           },
           {
             kind: "prose",
             heading: "10. Choose the right streaming option",
             body: [
-              "Selecting an AWS streaming service depends on balancing control, operational overhead, and workload type."
+              "Selecting a streaming service depends on balancing control, operational overhead, and workload type."
             ]
           },
           {
-            kind: "image",
-            src: streamingOptionImg,
-            alt: "Streaming options comparison",
-            caption: "MSK for control, Kinesis Data Streams for convenience, and Firehose for delivery."
+            kind: "image-carousel",
+            images: [
+              {
+                src: azureStreamingOptionImg,
+                alt: "Azure Streaming Options",
+                caption: "Azure services for event streaming and delivery."
+              },
+              {
+                src: streamingOptionImg,
+                alt: "Streaming options comparison",
+                caption: "MSK for control, Kinesis Data Streams for convenience, and Firehose for delivery."
+              },
+              {
+                src: gcpStreamingOptionImg,
+                alt: "Google Cloud Streaming Options",
+                caption: "Google Cloud services for event streaming and delivery."
+              }
+            ]
           },
           {
             kind: "prose",
