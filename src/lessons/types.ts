@@ -133,6 +133,7 @@ export type Section =
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "terminal-animation"; command: string; output: string; buttonLabel?: string; caption?: string }
   | { kind: "docker-run-under-the-hood" }
