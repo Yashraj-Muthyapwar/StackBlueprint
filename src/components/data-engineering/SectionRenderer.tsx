@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import type { Section } from "@/lessons/types";
-import { AlertTriangle, CheckCircle2, Info, Brain, ArrowRight } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Brain, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 
 function InteractivePipelineFlow({ steps }: { steps: { title: string; description: string }[] }) {
@@ -70,6 +71,8 @@ function parseInlineMarkdown(text: string) {
     return part;
   });
 }
+
+
 
 export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
   switch (section.kind) {
@@ -180,6 +183,25 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       );
     }
 
+    case "code":
+      return (
+        <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
+          <div className="flex items-center gap-1.5 border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5">
+            <div className="size-2.5 rounded-full bg-rose-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-amber-500/80 shadow-sm" />
+            <div className="size-2.5 rounded-full bg-emerald-500/80 shadow-sm" />
+            {section.caption ? (
+              <span className="ml-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {section.caption}
+              </span>
+            ) : null}
+          </div>
+          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
+            <code>{section.code}</code>
+          </pre>
+        </figure>
+      );
+
     case "diagram":
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
@@ -207,6 +229,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           ) : null}
         </figure>
       );
+
+    case "image-carousel":
+      return <ImageCarousel images={section.images} />;
 
     case "analogy":
       return (
