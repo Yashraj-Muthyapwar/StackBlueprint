@@ -3,6 +3,7 @@ import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
 import { Quiz } from "@/components/lesson/Quiz";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -250,6 +251,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </figure>
       );
 
+    case "image-carousel":
+      return <ImageCarousel images={section.images} />;
+
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
 
@@ -285,7 +289,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           </ul>
         </section>
       );
-      
+
     case "quiz":
       return <Quiz data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }} onActiveChange={onQuizActiveChange} />;
   }
