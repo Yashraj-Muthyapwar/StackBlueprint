@@ -978,6 +978,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "4.2 Cloud, Infrastructure, and Deployment Models", slug: "cloud-infrastructure-and-deployment-models", path: "/data-engineering/selecting-the-right-data-technologies/cloud-infrastructure-and-deployment-models", icon: Settings },
               { title: "4.3 Security, Compliance, and Governance by Design", slug: "security-compliance-and-governance-by-design", path: "/data-engineering/selecting-the-right-data-technologies/security-compliance-and-governance-by-design", icon: Settings },
               { title: "4.4 Cost, Migration, and Continuous Architecture", slug: "cost-migration-and-continuous-architecture", path: "/data-engineering/selecting-the-right-data-technologies/cost-migration-and-continuous-architecture", icon: Settings },
+              { title: "4.5 Translating Requirements into Architecture", slug: "translating-requirements-into-architecture", path: "/data-engineering/selecting-the-right-data-technologies/translating-requirements-into-architecture", icon: Settings },
             ],
           },
         ],
