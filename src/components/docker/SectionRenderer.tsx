@@ -6,6 +6,7 @@ import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
 import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -319,6 +320,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </figure>
       );
 
+    case "image-carousel":
+      return <ImageCarousel images={section.images} />;
+
     case "animation":
       return (
         <LessonAnimation
@@ -366,6 +370,45 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
             ))}
+          </ul>
+        </section>
+      );
+
+    case "list":
+      return (
+        <section className="space-y-3">
+          {section.heading ? (
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
+              {section.heading}
+            </h2>
+          ) : null}
+          {section.body?.map((p, i) => (
+            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+              {parseInlineMarkdown(p)}
+            </p>
+          ))}
+          <ul className="list-disc space-y-0.5 pl-6 text-muted-foreground lg:text-lg !mt-1 !mb-1">
+            {section.items.map((it, i) => {
+              if (typeof it === "string") {
+                return (
+                  <li key={i} className="leading-normal">
+                    {parseInlineMarkdown(it)}
+                  </li>
+                );
+              }
+              return (
+                <li key={i} className="leading-normal">
+                  {parseInlineMarkdown(it.text)}
+                  <ul className="list-[circle] space-y-0.5 pl-6 mt-1.5">
+                    {it.subitems.map((sub, j) => (
+                      <li key={j} className="leading-normal">
+                        {parseInlineMarkdown(sub)}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              );
+            })}
           </ul>
         </section>
       );
