@@ -2,6 +2,7 @@ import type { Section } from "@/lessons/data-warehouses/foundations-content";
 import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
 import { LessonAnimation } from "@/components/data-warehouses/LessonAnimation";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 
 function highlightSql(line: string) {
   const KEYWORDS = new Set([
@@ -250,6 +251,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           ) : null}
         </figure>
       );
+
+    case "image-carousel":
+      return <ImageCarousel images={section.images} />;
 
     case "animation":
       return <LessonAnimation variant={section.variant} caption={section.caption} />;
