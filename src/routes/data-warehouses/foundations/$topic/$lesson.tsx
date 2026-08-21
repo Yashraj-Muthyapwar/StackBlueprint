@@ -46,6 +46,7 @@ function DataWarehousesLessonPage() {
     <LessonLayout
       trackTitle="Data Warehouses"
       trackPath="/data-warehouses"
+      basePath="/data-warehouses/foundations"
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
