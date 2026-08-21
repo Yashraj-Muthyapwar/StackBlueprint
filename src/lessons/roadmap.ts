@@ -697,152 +697,133 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/docker",
     blurb: "From container foundations to advanced multi-container orchestration.",
-    patterns: [
+    patterns: [],
+    sections: [
       {
-        title: "Docker & Containers",
-        slug: "what-is-docker",
-        path: "/docker/foundations/what-is-docker",
-        blurb: "Why Docker exists, how it stacks up against VMs, and how to run your first container.",
-        lessons: [
+        title: "Part I — Foundations",
+        blurb: "Master the core lifecycle of Docker: building images and running containers.",
+        patterns: [
           {
-            title: "Why Docker Exists",
-            slug: "why-docker-exists",
-            path: "/docker/foundations/what-is-docker/why-docker-exists",
-            icon: Lightbulb,
+            title: "Docker & Containers",
+            slug: "what-is-docker",
+            path: "/docker/part-1/what-is-docker",
+            blurb: "Why Docker exists, how it stacks up against VMs, and how to run your first container.",
+            lessons: [
+              { title: "Why Docker Exists", slug: "why-docker-exists", path: "/docker/part-1/what-is-docker/why-docker-exists", icon: Lightbulb },
+              { title: "Containers vs Virtual Machines", slug: "containers-vs-vms", path: "/docker/part-1/what-is-docker/containers-vs-vms", icon: Container },
+              { title: "Terminal Prerequisites", slug: "terminal-prerequisites", path: "/docker/part-1/what-is-docker/terminal-prerequisites", icon: Terminal },
+              { title: "Setting Up Docker", slug: "setting-up-docker", path: "/docker/part-1/what-is-docker/setting-up-docker", icon: Download },
+              { title: "Docker Architecture", slug: "docker-architecture", path: "/docker/part-1/what-is-docker/docker-architecture", icon: Server },
+              { title: "Your First Container", slug: "your-first-container", path: "/docker/part-1/what-is-docker/your-first-container", icon: PlayCircle },
+              { title: "Basic Docker Commands", slug: "basic-docker-commands", path: "/docker/part-1/what-is-docker/basic-docker-commands", icon: Command },
+              { title: "Docker Run Commands", slug: "docker-run-commands", path: "/docker/part-1/what-is-docker/docker-run-commands", icon: PlayCircle },
+            ],
           },
           {
-            title: "Containers vs Virtual Machines",
-            slug: "containers-vs-vms",
-            path: "/docker/foundations/what-is-docker/containers-vs-vms",
-            icon: Container,
-          },
-          {
-            title: "Terminal Prerequisites",
-            slug: "terminal-prerequisites",
-            path: "/docker/foundations/what-is-docker/terminal-prerequisites",
-            icon: Terminal,
-          },
-          {
-            title: "Setting Up Docker",
-            slug: "setting-up-docker",
-            path: "/docker/foundations/what-is-docker/setting-up-docker",
-            icon: Download,
-          },
-          {
-            title: "Docker Architecture",
-            slug: "docker-architecture",
-            path: "/docker/foundations/what-is-docker/docker-architecture",
-            icon: Server,
-          },
-          {
-            title: "Your First Container",
-            slug: "your-first-container",
-            path: "/docker/foundations/what-is-docker/your-first-container",
-            icon: PlayCircle,
-          },
-          {
-            title: "Basic Docker Commands",
-            slug: "basic-docker-commands",
-            path: "/docker/foundations/what-is-docker/basic-docker-commands",
-            icon: Command,
-          },
-          {
-            title: "Docker Run Commands",
-            slug: "docker-run-commands",
-            path: "/docker/foundations/what-is-docker/docker-run-commands",
-            icon: PlayCircle,
-          },
-        ],
+            title: "Images and Containers",
+            slug: "images-and-containers",
+            path: "/docker/part-1/images-and-containers",
+            blurb: "Master the core lifecycle of Docker: building images, running containers, and debugging running environments.",
+            lessons: [
+              { title: "What is a Docker Image?", slug: "what-is-a-docker-image", path: "/docker/part-1/images-and-containers/what-is-a-docker-image", icon: Layers },
+              { title: "Pulling and Inspecting Images", slug: "pulling-and-inspecting-images", path: "/docker/part-1/images-and-containers/pulling-and-inspecting-images", icon: Search },
+              { title: "Running Containers", slug: "running-containers", path: "/docker/part-1/images-and-containers/running-containers", icon: PlayCircle },
+              { title: "Mastering the Container Lifecycle", slug: "mastering-container-lifecycle", path: "/docker/part-1/images-and-containers/mastering-container-lifecycle", icon: Activity },
+              { title: "Passing Configuration: ARG vs. ENV", slug: "passing-configuration", path: "/docker/part-1/images-and-containers/passing-configuration", icon: Settings },
+              { title: "Debugging Containers", slug: "debugging-containers", path: "/docker/part-1/images-and-containers/debugging-containers", icon: Terminal },
+              { title: "Cleaning Up Images and Containers", slug: "cleaning-up", path: "/docker/part-1/images-and-containers/cleaning-up", icon: Trash2 },
+              { title: "Writing a Dockerfile", slug: "writing-a-dockerfile", path: "/docker/part-1/images-and-containers/writing-a-dockerfile", icon: FileCode },
+              { title: "CMD vs. ENTRYPOINT", slug: "cmd-vs-entrypoint", path: "/docker/part-1/images-and-containers/cmd-vs-entrypoint", icon: Command },
+              { title: "Image Building & Caching", slug: "image-building-caching", path: "/docker/part-1/images-and-containers/image-building-caching", icon: Wrench },
+              { title: "Publishing Images", slug: "publishing-images", path: "/docker/part-1/images-and-containers/publishing-images", icon: Upload },
+              { title: "Images & Containers Quiz", slug: "images-containers-quiz", path: "/docker/part-1/images-and-containers/images-containers-quiz", icon: HelpCircle },
+            ],
+          }
+        ]
       },
       {
-        title: "Images and Containers",
-        slug: "images-and-containers",
-        path: "/docker/foundations/images-and-containers",
-        blurb: "Master the core lifecycle of Docker: building images, running containers, and debugging running environments.",
-        lessons: [
-          {
-            title: "What is a Docker Image?",
-            slug: "what-is-a-docker-image",
-            path: "/docker/foundations/images-and-containers/what-is-a-docker-image",
-            icon: Layers,
-          },
-          {
-            title: "Pulling and Inspecting Images",
-            slug: "pulling-and-inspecting-images",
-            path: "/docker/foundations/images-and-containers/pulling-and-inspecting-images",
-            icon: Search,
-          },
-          {
-            title: "Running Containers",
-            slug: "running-containers",
-            path: "/docker/foundations/images-and-containers/running-containers",
-            icon: PlayCircle,
-          },
-          {
-            title: "Mastering the Container Lifecycle",
-            slug: "mastering-container-lifecycle",
-            path: "/docker/foundations/images-and-containers/mastering-container-lifecycle",
-            icon: Activity,
-          },
-          {
-            title: "Passing Configuration: ARG vs. ENV",
-            slug: "passing-configuration",
-            path: "/docker/foundations/images-and-containers/passing-configuration",
-            icon: Settings,
-          },
-          {
-            title: "Debugging Containers",
-            slug: "debugging-containers",
-            path: "/docker/foundations/images-and-containers/debugging-containers",
-            icon: Terminal,
-          },
-          {
-            title: "Cleaning Up Images and Containers",
-            slug: "cleaning-up",
-            path: "/docker/foundations/images-and-containers/cleaning-up",
-            icon: Trash2,
-          },
-          {
-            title: "Writing a Dockerfile",
-            slug: "writing-a-dockerfile",
-            path: "/docker/foundations/images-and-containers/writing-a-dockerfile",
-            icon: FileCode,
-          },
-          {
-            title: "CMD vs. ENTRYPOINT",
-            slug: "cmd-vs-entrypoint",
-            path: "/docker/foundations/images-and-containers/cmd-vs-entrypoint",
-            icon: Command,
-          },
-          {
-            title: "Image Building & Caching",
-            slug: "image-building-caching",
-            path: "/docker/foundations/images-and-containers/image-building-caching",
-            icon: Wrench,
-          },
-          {
-            title: "Publishing Images",
-            slug: "publishing-images",
-            path: "/docker/foundations/images-and-containers/publishing-images",
-            icon: Upload,
-          },
-          {
-            title: "Images & Containers Quiz",
-            slug: "images-containers-quiz",
-            path: "/docker/foundations/images-and-containers/images-containers-quiz",
-            icon: HelpCircle,
-          },
-        ],
-      },
-      {
-        title: "Networking & Storage",
-        slug: "networking-storage",
-        path: "/docker/foundations/networking-storage",
+        title: "Part II — Networking & Storage",
         blurb: "Connecting containers and persisting data with volumes and bind mounts.",
-        lessons: [],
+        patterns: [
+          {
+            title: "Storage & Volumes",
+            slug: "storage-volumes",
+            path: "/docker/part-2/storage-volumes",
+            blurb: "Learn how to persist state across container restarts using Volumes, Bind Mounts, and tmpfs.",
+            lessons: [
+              { title: "Why Containers are Ephemeral", slug: "ephemeral-containers", path: "/docker/part-2/storage-volumes/ephemeral-containers", icon: Trash2 },
+              { title: "Docker Volumes", slug: "docker-volumes", path: "/docker/part-2/storage-volumes/docker-volumes", icon: Database },
+              { title: "Bind Mounts", slug: "bind-mounts", path: "/docker/part-2/storage-volumes/bind-mounts", icon: Layers },
+              { title: "tmpfs Mounts", slug: "tmpfs-mounts", path: "/docker/part-2/storage-volumes/tmpfs-mounts", icon: Activity },
+            ]
+          },
+          {
+            title: "Docker Networking",
+            slug: "networking",
+            path: "/docker/part-2/networking",
+            blurb: "Communicate securely between containers and expose ports to the outside world.",
+            lessons: [
+              { title: "Networking Basics", slug: "networking-basics", path: "/docker/part-2/networking/networking-basics", icon: Globe },
+              { title: "The Bridge Network", slug: "bridge-network", path: "/docker/part-2/networking/bridge-network", icon: Server },
+              { title: "Host and None Networks", slug: "host-none-networks", path: "/docker/part-2/networking/host-none-networks", icon: Server },
+              { title: "DNS and Container Discovery", slug: "dns-discovery", path: "/docker/part-2/networking/dns-discovery", icon: Search },
+            ]
+          }
+        ]
       },
-      lockedPattern("Docker Compose", "compose", "Declarative multi-container applications and local dev environments."),
-      lockedPattern("Advanced Docker", "advanced", "Multi-stage builds, security, and registry management."),
+      {
+        title: "Part III — Orchestration",
+        blurb: "Declarative multi-container applications and local dev environments.",
+        patterns: [
+          {
+            title: "Docker Compose",
+            slug: "compose",
+            path: "/docker/part-3/compose",
+            blurb: "Define and run multi-container Docker applications using a single declarative YAML file.",
+            lessons: [
+              { title: "Introduction to Docker Compose", slug: "intro-compose", path: "/docker/part-3/compose/intro-compose", icon: FileCode },
+              { title: "Writing a docker-compose.yml", slug: "writing-compose-yml", path: "/docker/part-3/compose/writing-compose-yml", icon: FileCode },
+              { title: "Managing Multi-Container Apps", slug: "managing-apps", path: "/docker/part-3/compose/managing-apps", icon: Terminal },
+            ]
+          },
+          {
+            title: "Orchestration Intro",
+            slug: "orchestration-intro",
+            path: "/docker/part-3/orchestration-intro",
+            blurb: "When Docker Compose isn't enough: a gentle introduction to Swarm and Kubernetes.",
+            lessons: [
+              { title: "Docker Swarm Basics", slug: "swarm-basics", path: "/docker/part-3/orchestration-intro/swarm-basics", icon: Layers },
+              { title: "Why Kubernetes Exists", slug: "why-k8s", path: "/docker/part-3/orchestration-intro/why-k8s", icon: Lightbulb },
+            ]
+          }
+        ]
+      },
+      {
+        title: "Part IV — Production & Advanced",
+        blurb: "Multi-stage builds, security, and registry management.",
+        patterns: [
+          {
+            title: "Advanced Image Building",
+            slug: "advanced-images",
+            path: "/docker/part-4/advanced-images",
+            blurb: "Optimize image sizes and build times with multi-stage builds and deep caching strategies.",
+            lessons: [
+              { title: "Multi-Stage Builds", slug: "multi-stage-builds", path: "/docker/part-4/advanced-images/multi-stage-builds", icon: Layers },
+              { title: "Minimizing Image Size", slug: "minimizing-size", path: "/docker/part-4/advanced-images/minimizing-size", icon: ArrowLeftRight },
+            ]
+          },
+          {
+            title: "Docker Security",
+            slug: "security",
+            path: "/docker/part-4/security",
+            blurb: "Run containers safely with Rootless mode, image scanning, and user namespaces.",
+            lessons: [
+              { title: "Running as Non-Root", slug: "non-root", path: "/docker/part-4/security/non-root", icon: ShieldAlert },
+              { title: "Image Scanning", slug: "image-scanning", path: "/docker/part-4/security/image-scanning", icon: Search },
+            ]
+          }
+        ]
+      }
     ],
   },
   {
