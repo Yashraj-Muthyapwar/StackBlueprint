@@ -6,6 +6,7 @@ import { LessonCompleteButton } from "./LessonCompleteButton";
 export interface LessonLayoutProps {
   trackTitle: string;
   trackPath: string;
+  basePath?: string;
   topic: {
     slug: string;
     title: string;
@@ -31,6 +32,7 @@ export interface LessonLayoutProps {
 export function LessonLayout({
   trackTitle,
   trackPath,
+  basePath,
   topic,
   lesson,
   children,
@@ -43,6 +45,7 @@ export function LessonLayout({
   isPlaceholder = false,
 }: LessonLayoutProps) {
   const [isQuizActive, setIsQuizActive] = useState(false);
+  const effectiveBasePath = basePath || trackPath;
   const idx = topic.lessons?.findIndex((x) => x.slug === lesson.slug) ?? -1;
   const prev = idx > 0 ? topic.lessons![idx - 1] : undefined;
   const next = idx < (topic.lessons?.length ?? 0) - 1 ? topic.lessons![idx + 1] : undefined;
@@ -64,7 +67,7 @@ export function LessonLayout({
           </Link>
           <ChevronRight className="size-3" />
           <Link
-            to={(topic.path || `${trackPath}/$topic`) as any}
+            to={(topic.path || `${effectiveBasePath}/$topic`) as any}
             params={topic.path ? undefined : { topic: topic.slug } as any}
             className="hover:text-foreground"
           >
@@ -147,7 +150,7 @@ export function LessonLayout({
           <nav className="mt-14 flex flex-col gap-3 border-t border-hairline pt-6 sm:flex-row sm:items-center sm:justify-between">
             {prev ? (
               <Link
-                to={(prev.path || `${trackPath}/$topic/$lesson`) as any}
+                to={(prev.path || `${effectiveBasePath}/$topic/$lesson`) as any}
                 params={prev.path ? undefined : { topic: topic.slug, lesson: prev.slug } as any}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
@@ -174,7 +177,7 @@ export function LessonLayout({
 
             {next ? (
               <Link
-                to={(next.path || `${trackPath}/$topic/$lesson`) as any}
+                to={(next.path || `${effectiveBasePath}/$topic/$lesson`) as any}
                 params={next.path ? undefined : { topic: topic.slug, lesson: next.slug } as any}
                 className="group inline-flex items-center gap-2 rounded-lg border border-hairline/70 px-4 py-3 text-right transition-colors hover:border-mint/40 hover:bg-surface/60"
               >
