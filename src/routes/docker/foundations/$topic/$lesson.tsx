@@ -52,6 +52,7 @@ function DockerLessonPage() {
     <LessonLayout
       trackTitle="Docker"
       trackPath="/docker"
+      basePath="/docker/foundations"
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
