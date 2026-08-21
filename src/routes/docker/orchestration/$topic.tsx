@@ -1,7 +1,7 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
 
-export const Route = createFileRoute("/docker/foundations/$topic")({
+export const Route = createFileRoute("/docker/orchestration/$topic")({
   head: ({ params }) => {
     const cat = CATEGORY_BY_SLUG["docker"];
     const t = cat?.patterns.find((p) => p.slug === params.topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === params.topic);

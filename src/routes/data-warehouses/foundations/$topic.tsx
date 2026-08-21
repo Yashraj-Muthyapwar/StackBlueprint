@@ -1,15 +1,16 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { FOUNDATION_TOPICS } from "@/lessons/data-warehouses/foundations-content";
+import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
 
 export const Route = createFileRoute("/data-warehouses/foundations/$topic")({
   head: ({ params }) => {
-    const t = FOUNDATION_TOPICS[params.topic];
-    if (!t) return { meta: [{ title: "Foundations — Data Warehouses" }] };
+    const cat = CATEGORY_BY_SLUG["data-warehouses"];
+    const t = cat?.patterns.find((p) => p.slug === params.topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === params.topic);
+    if (!t) return { meta: [{ title: "Topic — Data Warehouses" }] };
     return {
       meta: [
-        { title: `${t.title} — Data Warehouses Foundations` },
+        { title: `${t.title} — Data Warehouses` },
         { name: "description", content: t.blurb },
-        { property: "og:title", content: `${t.title} — Data Warehouses Foundations` },
+        { property: "og:title", content: `${t.title} — Data Warehouses` },
         { property: "og:description", content: t.blurb },
       ],
     };
