@@ -57,6 +57,7 @@ function LessonPage() {
     <LessonLayout
       trackTitle="Web Scraping"
       trackPath="/web-scraping"
+      basePath="/web-scraping/foundations"
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
