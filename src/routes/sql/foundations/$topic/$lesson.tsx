@@ -57,6 +57,7 @@ function LessonPage() {
     <LessonLayout
       trackTitle="SQL Mastery"
       trackPath="/sql"
+      basePath="/sql/foundations"
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
