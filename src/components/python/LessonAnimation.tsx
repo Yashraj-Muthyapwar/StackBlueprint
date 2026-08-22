@@ -7,8 +7,12 @@ import { STAGES_REGISTRY, type AnyVariant } from "./animation-stages";
 
 import { FileBasicsCustomAnimation } from "./file_handling/FileBasicsCustomAnimation";
 import { WorkingWithPathsCustomAnimation } from "./file_handling/WorkingWithPathsCustomAnimation";
+import { ReadingFilesCustomAnimation } from "./file_handling/ReadingFilesCustomAnimation";
+import { WritingFilesCustomAnimation } from "./file_handling/WritingFilesCustomAnimation";
+import { FileModesCustomAnimation } from "./file_handling/FileModesCustomAnimation";
+import { FileMethodsCustomAnimation } from "./file_handling/FileMethodsCustomAnimation";
 
-export type AnimationVariant = AnyVariant;
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods";
 
 export function LessonAnimation({
   variant,
@@ -32,8 +36,16 @@ export function LessonAnimation({
               <FileBasicsCustomAnimation />
             ) : variant === "working-with-paths" ? (
               <WorkingWithPathsCustomAnimation />
+            ) : variant === "reading-files" ? (
+              <ReadingFilesCustomAnimation />
+            ) : variant === "writing-files" ? (
+              <WritingFilesCustomAnimation />
+            ) : variant === "file-modes" ? (
+              <FileModesCustomAnimation />
+            ) : variant === "file-methods" ? (
+              <FileMethodsCustomAnimation />
             ) : (
-              <AnimationStage variant={variant} />
+              <AnimationStage variant={variant as AnyVariant} />
             )}
           </div>
         </ClientOnly>
@@ -42,7 +54,7 @@ export function LessonAnimation({
   );
 }
 
-function AnimationStage({ variant }: { variant: AnimationVariant }) {
+function AnimationStage({ variant }: { variant: AnyVariant }) {
   const stages = STAGES_REGISTRY[variant];
   const total = useMemo(() => totalSteps(stages), [stages]);
   const [step, setStep] = useState(0);
