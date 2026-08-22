@@ -2,6 +2,8 @@ import { type LessonContent } from "@/lessons/types";
 
 import howItWorksImg from "@/images/python/intermediate/file_handling/how-python-works-with-file.png";
 import filePathsImg from "@/images/python/intermediate/file_handling/file-paths.png";
+import fileReadImg from "@/images/python/intermediate/file_handling/file-read.png";
+import fileWriteImg from "@/images/python/intermediate/file_handling/file-write.png";
 
 export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "file-handling": {
@@ -313,13 +315,240 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
         slug: "reading-files",
         title: "Reading Files",
         subtitle: "Read text without wasting memory.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Once a file is open in 'r' (read) mode, you need to pull its contents into Python's memory to actually use it.",
+              "Files can be tiny, or they can be massive log files gigabytes in size. Python gives you different methods to read them so you don't crash your computer trying to load a massive file all at once."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "reading-files",
+            caption: "Reading strategies"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Python reads files sequentially. As it reads, it moves a hidden cursor forward. You can read the whole thing at once, one line at a time, or grab all lines into a list."
+            ]
+          },
+          {
+            kind: "image",
+            src: fileReadImg,
+            alt: "Reading methods in Python",
+            caption: "Reading files in Python moves the cursor"
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Read the entire file"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read everything into one giant string\n    content = file.read()\n    print(content)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`read()` is the easiest, but it's dangerous for massive files. If `poem.txt` was 100GB, this would crash your computer.",
+              "### 2. Read one line"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read one line, then stop\n    first_line = file.readline()\n    second_line = file.readline()\n    print(first_line, end='')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`readline()` pulls just the next line and stops. Notice we used `end=''` in the `print()` function. `readline()` keeps the newline character (`\\n`) at the end of the string, and `print()` adds its own newline, resulting in double spacing if we don't suppress it.",
+              "### 3. Read into a list"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read all lines into a list\n    lines = file.readlines()\n    \n    for line in lines:\n        print(line, end='')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`readlines()` returns a list where each element is a line from the file. It's useful if you need to access a specific line quickly (e.g., `lines[5]`), but it still loads the whole file into memory."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "The absolute best, \"Pythonic\" way to read a file line-by-line is to loop over the file object directly. This is memory-efficient and very readable, as Python only loads one line into memory at a time."
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r') as file:\n    for line in file:\n        print(line, end='')"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Using `read()` on massive files:** It will crash your program by exhausting your system's RAM. Loop over the file object instead.\n\n**Double spacing output:** Forgetting that each line from a file usually ends with `\\n`. Use `strip()` or `print(line, end='')` to prevent double newlines."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "`read()` returns one massive string.",
+              "`readline()` reads one line at a time.",
+              "`readlines()` returns a list of strings.",
+              "Looping directly over the file object is the most memory-efficient approach."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "rf-1",
+                question: "Which method is the safest for reading a 10GB log file?",
+                options: [
+                  "file.read()",
+                  "file.readlines()",
+                  "for line in file:"
+                ],
+                correctIndex: 2,
+                explanation: "Looping directly over the file object only loads one line into memory at a time, making it safe for massive files."
+              },
+              {
+                id: "rf-2",
+                question: "Why might `print(file.readline())` produce double-spaced output?",
+                options: [
+                  "Because readline() skips every other line",
+                  "Because the string contains a '\\n' and print() adds another",
+                  "Because print() automatically formats text blocks"
+                ],
+                correctIndex: 1,
+                explanation: "readline() returns the string exactly as it is in the file, including the trailing newline character."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "writing-files",
         title: "Writing Files",
         subtitle: "Write and append text.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "When saving data, you must be careful not to accidentally destroy existing data. Python requires you to explicitly state your intentions: are you starting fresh, or adding to what's already there?"
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "writing-files",
+            caption: "Writing vs Appending"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "To change a file, you open it in either write (`'w'`) or append (`'a'`) mode. In both modes, you use the `.write()` method to insert text."
+            ]
+          },
+          {
+            kind: "image",
+            src: fileWriteImg,
+            alt: "Writing vs Appending",
+            caption: "Difference between Write ('w') and Append ('a') modes"
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Write mode ('w')"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('log.txt', 'w', encoding='utf-8') as file:\n    file.write('Booting up...\\n')\n    file.write('System online.\\n')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Write mode (`'w'`)** is destructive. If `log.txt` already exists, Python immediately wipes it completely blank before writing. If it doesn't exist, Python creates it.",
+              "Notice the manual `\\n`. Unlike `print()`, `.write()` does not automatically start a new line. If you forget `\\n`, your text will squash together.",
+              "### 2. Append mode ('a')"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('log.txt', 'a', encoding='utf-8') as file:\n    file.write('User logged in.\\n')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Append mode (`'a'`)** is safe. It opens the file, leaves the existing contents completely alone, and moves the hidden cursor to the very end of the file. Any new text is added after the old text."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "If you already have a list of strings, you can use `file.writelines(my_list)` instead of writing a loop to add them all at once."
+            ]
+          },
+          {
+            kind: "code",
+            code: "lines_to_add = ['Apple\\n', 'Orange\\n']\nwith open('fruits.txt', 'a', encoding='utf-8') as file:\n    file.writelines(lines_to_add)"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Accidentally wiping data:** Opening a file in `'w'` mode when you meant to add to it. Always double-check if you should use `'a'` instead.\n\n**Squashed text:** Forgetting that `.write()` and `.writelines()` do not add newlines automatically. You must manually include `\\n`."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "`'w'` mode overwrites existing files completely.",
+              "`'a'` mode adds data to the end of existing files.",
+              "The `.write()` method does NOT add newlines automatically."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "wf-1",
+                question: "What happens if you open an existing file in 'w' mode?",
+                options: [
+                  "The file is wiped clean",
+                  "An error is thrown",
+                  "Data is added to the end",
+                  "The file is locked and cannot be changed"
+                ],
+                correctIndex: 0,
+                explanation: "Write mode ('w') is destructive and immediately truncates (wipes) the file."
+              },
+              {
+                id: "wf-2",
+                question: "What will `file.write('A'); file.write('B')` output to the file?",
+                options: [
+                  "A on line 1, B on line 2",
+                  "AB",
+                  "A B"
+                ],
+                correctIndex: 1,
+                explanation: ".write() does not automatically add spaces or newlines, so they are joined together."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "file-modes",
