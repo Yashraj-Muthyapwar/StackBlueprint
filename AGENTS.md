@@ -19,6 +19,7 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
   * A Quiz section should be added if appropriate for the lesson content, though it can be skipped if not applicable.
   * If a quiz is present, it MUST ALWAYS be placed at the very end of the lesson content (i.e., AFTER the Key Takeaways section).
   * You MUST ALWAYS add a button to mark the lesson as completed at the end of the lesson, regardless of whether a quiz is present.
+* **Placeholders**: If a lesson is just a placeholder (i.e., its content is coming soon), its `sections` array MUST be completely empty (`sections: []`). Do NOT add prose sections that say "Placeholder...". This ensures the global `LessonLayout` correctly intercepts the state and renders the stylized "Lesson Content Coming Soon" UI.
 
 ### 3. Track Creation
 * **Design Uniformity**: When creating a new learning track, you must strictly follow the design and layout patterns of existing tracks (e.g., the Data Engineering track, typically at `/data-engineering`).
