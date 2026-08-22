@@ -12,7 +12,7 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
 * **Content Quality**: 
   * The lesson content must be perfect, 100% free from plagiarism, and strictly avoid "AI Slop" or generic filler text.
   * Do NOT use em dashes in the lesson text.
-* **Images**: Whenever an image is included in a lesson, you must use the project's main image component (e.g., the zoomable image component) to enable the standard on-click expansion effect.
+* **Images**: Whenever an image is included in a lesson, you must use the project's main image component (e.g., the zoomable image component) to enable the standard on-click expansion effect. **You MUST also always include a descriptive `caption` string alongside every `image` block.**
 * **Multiple Images**: When a single lesson section needs to display multiple related images, you MUST use the `image-carousel` section type to combine them into a single slider component for a uniform UX. Do NOT stack multiple separate `image` kinds consecutively.
 * **Key Takeaways**: Every lesson must end with a clearly defined "Key Takeaways" section.
 * **Quizzes & Completion**: 
