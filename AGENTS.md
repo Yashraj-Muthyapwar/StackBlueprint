@@ -29,5 +29,9 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
   * Appropriate logos matching the UI system.
 * **Goal**: The layout, feel, and functionality must be perfectly uniform across all tracks in the application.
 
-### 4. Navigation & Visibility
-* **Roadmap & Sidebar Updates**: Whenever you are asked to add, create, or rewrite a lesson (from any module or track), you MUST automatically check and update `src/lessons/roadmap.ts` and `src/components/app-sidebar.tsx` (if required) to ensure the new or modified content is visible and properly linked in the global navigation structure.
+### 4. Navigation, Visibility & Registration Checklist
+Whenever you are asked to add, create, or rewrite a lesson (from any module or track), you MUST automatically complete the following checklist to ensure the new content is visible, routes correctly, and renders perfectly:
+- [ ] **Global Roadmap (`src/lessons/roadmap.ts`)**: Update the roadmap array with the new lesson slug, title, and exact `path` (e.g. `path: "/python/file-handling/file-basics"`). This powers the global sidebar navigation.
+- [ ] **Track Index (`src/routes/[track-name]/index.tsx`)**: If the track has a local `[TRACK]_SECTIONS` registry, you MUST update it with the new lesson and **ensure the `path` attribute is included**. Missing the `path` attribute will break the module cards and breadcrumb navigation (`track > module > 01 / 10`).
+- [ ] **Content Registry (`src/lessons/[track-name]/[module]-content.ts`)**: Add the lesson content ensuring `slug` and structure matches the roadmap.
+- [ ] **Section Renderer (`src/components/[track-name]/SectionRenderer.tsx`)**: Ensure the track's `SectionRenderer` properly implements all required section types used in your content (especially `quiz`, `image-carousel`, `takeaways`). Do not assume they are implemented by default; verify and add them if they are missing.
