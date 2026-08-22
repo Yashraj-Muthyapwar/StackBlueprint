@@ -169,89 +169,67 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
         slug: "working-with-paths",
         title: "Working with Paths",
         subtitle: "Build file locations cleanly and cross-platform without guessing the folder.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for working-with-paths."] }
-        ]
+        sections: []
       },
       {
         slug: "reading-files",
         title: "Reading Files",
         subtitle: "Read text without wasting memory.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for reading-files."] }
-        ]
+        sections: []
       },
       {
         slug: "writing-files",
         title: "Writing Files",
         subtitle: "Write and append text.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for writing-files."] }
-        ]
+        sections: []
       },
       {
         slug: "file-modes",
         title: "File Modes",
         subtitle: "Choose the right file mode.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for file-modes."] }
-        ]
+        sections: []
       },
       {
         slug: "file-methods",
         title: "File Methods",
         subtitle: "Control the file cursor.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for file-methods."] }
-        ]
+        sections: []
       },
       {
         slug: "pathlib-module",
         title: "Pathlib Module",
         subtitle: "Use modern Path objects.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for pathlib-module."] }
-        ]
+        sections: []
       },
       {
         slug: "os-module",
         title: "OS Module",
         subtitle: "Inspect folders with os.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for os-module."] }
-        ]
+        sections: []
       },
       {
         slug: "working-with-csv",
         title: "Working with CSV",
         subtitle: "Exchange rows with CSV.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for working-with-csv."] }
-        ]
+        sections: []
       },
       {
         slug: "working-with-json",
         title: "Working with JSON",
         subtitle: "Save structured data as JSON.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for working-with-json."] }
-        ]
+        sections: []
       },
       {
         slug: "pickle-module",
         title: "Pickle Module",
         subtitle: "Cache Python objects with pickle.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for pickle-module."] }
-        ]
+        sections: []
       },
       {
         slug: "shutil-module",
         title: "Shutil Module",
         subtitle: "Copy, move, and archive files.",
-        sections: [
-          { kind: "prose", body: ["Placeholder for shutil-module."] }
-        ]
+        sections: []
       }
     ]
   }
