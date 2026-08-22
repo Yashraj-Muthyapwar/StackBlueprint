@@ -1,6 +1,7 @@
 import { type LessonContent } from "@/lessons/types";
 
 import howItWorksImg from "@/images/python/intermediate/file_handling/how-python-works-with-file.png";
+import filePathsImg from "@/images/python/intermediate/file_handling/file-paths.png";
 
 export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "file-handling": {
@@ -190,6 +191,12 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
               "A relative path starts from the current working directory, the folder where the command was run. `data/contacts.txt` is relative. An absolute path starts at the filesystem root, such as `/Users/sam/project/data/contacts.txt` on macOS or Linux.",
               "For new code, use `pathlib.Path`. Its `/` operator joins path parts using the correct separator for the operating system."
             ]
+          },
+          {
+            kind: "image",
+            src: filePathsImg,
+            alt: "Absolute vs Relative Paths",
+            caption: "Visual breakdown of path components."
           },
           {
             kind: "prose",
