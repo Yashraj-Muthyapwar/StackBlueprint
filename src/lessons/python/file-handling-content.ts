@@ -169,7 +169,138 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
         slug: "working-with-paths",
         title: "Working with Paths",
         subtitle: "Build file locations cleanly and cross-platform without guessing the folder.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "`open(\"contacts.txt\")` works only when Python looks in the folder you expect. A path is the address that tells Python where a file or folder lives.",
+              "Good paths make a script work on another computer and make its data folder easy to find. Hand-building addresses with slashes is fragile, so Python provides path tools."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "working-with-paths",
+            caption: "Absolute vs Relative Paths"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "A relative path starts from the current working directory, the folder where the command was run. `data/contacts.txt` is relative. An absolute path starts at the filesystem root, such as `/Users/sam/project/data/contacts.txt` on macOS or Linux.",
+              "For new code, use `pathlib.Path`. Its `/` operator joins path parts using the correct separator for the operating system."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. See where Python starts"
+            ]
+          },
+          {
+            kind: "code",
+            code: "from pathlib import Path\n\nprint(Path.cwd())"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Path.cwd()` returns the current working directory. If Python cannot find a relative file, print this value before changing the path.",
+              "### 2. Build a path from parts"
+            ]
+          },
+          {
+            kind: "code",
+            code: "from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\nprint(contacts_path)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "This creates a `Path` object for `data/contacts.txt`. It does not create a folder or file yet. The `/` here joins locations; it is not division.",
+              "### 3. Create the parent folder before writing"
+            ]
+          },
+          {
+            kind: "code",
+            code: "data_folder.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Ada Reed\\n\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`mkdir()` creates the folder. `exist_ok=True` means the code does not fail if `data` is already there. `Path.open()` is the path-based form of `open()`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Move your previous `contacts.txt` into a `data` folder with this focused script:"
+            ]
+          },
+          {
+            kind: "code",
+            code: "from pathlib import Path\n\nproject = Path.cwd()\ncontacts_path = project / \"data\" / \"contacts.txt\"\ncontacts_path.parent.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Mika Patel\\nJordan Kim\\n\")\n\nprint(f\"Saved to: {contacts_path.resolve()}\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`parent` is the containing folder. `resolve()` prints an absolute version of the location, which is helpful when you need to inspect the result."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Joining strings with `/`:** It can produce awkward or platform-specific paths. Join `Path` parts with `/` instead.\n\n**Assuming the script's folder is the working folder:** They can differ. Check `Path.cwd()` when a relative path fails.\n\n**Creating only the file path:** A file cannot be written inside a folder that does not exist. Create its parent first."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Paths are file addresses.",
+              "Relative paths depend on the current working directory.",
+              "`Path` joins and opens locations cleanly across operating systems."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "wp-1",
+                question: "Is `data/contacts.txt` relative or absolute?",
+                options: [
+                  "Relative",
+                  "Absolute"
+                ],
+                correctIndex: 0,
+                explanation: "It doesn't start from the root directory, so it's a relative path starting from the current working directory."
+              },
+              {
+                id: "wp-2",
+                question: "Does `Path(\"data\") / \"contacts.txt\"` create a file?",
+                options: [
+                  "Yes, it creates a file named contacts.txt inside data",
+                  "No, it only describes a location",
+                  "Yes, if the data folder already exists",
+                  "No, but it creates the data folder"
+                ],
+                correctIndex: 1,
+                explanation: "Creating a Path object only builds a representation of the path, it doesn't touch the file system."
+              },
+              {
+                id: "wp-3",
+                question: "Which call reveals where relative paths begin?",
+                options: [
+                  "Path.start()",
+                  "Path.root()",
+                  "Path.home()",
+                  "Path.cwd()"
+                ],
+                correctIndex: 3,
+                explanation: "`Path.cwd()` returns the Current Working Directory, which is the starting point for relative paths."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "reading-files",
