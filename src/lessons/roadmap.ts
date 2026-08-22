@@ -37,6 +37,7 @@ import {
   LockKeyhole,
   Bot,
   GitBranch,
+  FileText,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -349,11 +350,17 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/sql",
     blurb: "From joins to query plans — write SQL that scales with your data.",
-    patterns: [
-      lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
-      lockedPattern("Window Functions", "window-functions", "ROW_NUMBER, RANK, LAG/LEAD, framed aggregates — analytics inside SQL."),
-      lockedPattern("CTEs", "ctes", "Common Table Expressions and recursive CTEs for readable, layered queries."),
-      lockedPattern("Optimization", "optimization", "Reading EXPLAIN plans, indexing strategy, and rewriting hot queries."),
+    patterns: [],
+    sections: [
+      {
+        title: "SQL Fundamentals",
+        patterns: [
+          lockedPattern("Joins", "joins", "Inner, outer, semi, anti, self — pick the right join for the shape of your data."),
+          lockedPattern("Window Functions", "window-functions", "ROW_NUMBER, RANK, LAG/LEAD, framed aggregates — analytics inside SQL."),
+          lockedPattern("CTEs", "ctes", "Common Table Expressions and recursive CTEs for readable, layered queries."),
+          lockedPattern("Optimization", "optimization", "Reading EXPLAIN plans, indexing strategy, and rewriting hot queries."),
+        ],
+      }
     ],
   },
   {
@@ -363,22 +370,28 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/system-design",
     blurb: "Design systems that survive scale, failure, and traffic spikes.",
-    patterns: [
-      lockedPattern("Getting Started", "getting-started", "Introduction to system design and the interview delivery framework."),
-      lockedPattern("Networking & Protocols", "networking-protocols", "Understand how data travels across the web (OSI, TCP, DNS)."),
-      lockedPattern("Core Concepts & Metrics", "core-metrics", "Measuring performance: Availability, Scalability, and SLAs."),
-      lockedPattern("Databases & DBMS", "databases", "Choosing the right storage: SQL vs NoSQL, OLAP vs OLTP, ACID."),
-      lockedPattern("Scaling Data", "scaling-data", "Distributing data: Replication, Partitioning, Sharding, Consistent Hashing."),
-      lockedPattern("Caching & Content Delivery", "caching", "Reducing latency with caching strategies and CDNs."),
-      lockedPattern("Advanced Data Structures", "data-structures", "Specialized structures like Bloom Filters and Quad Trees."),
-      lockedPattern("Architectural Styles", "architectural-styles", "Monoliths, Microservices, Event-Driven, and Serverless."),
-      lockedPattern("APIs & Security", "apis-security", "REST, GraphQL, gRPC, API Gateways, and OAuth2/JWT."),
-      lockedPattern("Communication Patterns", "communication-patterns", "WebSockets, Message Queues, Pub/Sub, and CDC."),
-      lockedPattern("Distributed Systems", "distributed-systems", "Trading off consistency, availability, and latency."),
-      lockedPattern("System Tradeoffs", "system-tradeoffs", "Balancing constraints: CAP Theorem, Consistency, and Scaling."),
-      lockedPattern("Resilience & Security", "resilience-security", "Circuit Breakers, Chaos Engineering, and Disaster Recovery."),
-      lockedPattern("Big Data Processing", "big-data", "Batch vs Stream Processing, MapReduce, and Data Lakes."),
-      lockedPattern("Case Studies (Capstone)", "case-studies", "Design real-world apps like Twitter, URL Shorteners, and Netflix."),
+    patterns: [],
+    sections: [
+      {
+        title: "System Design Fundamentals",
+        patterns: [
+          lockedPattern("Getting Started", "getting-started", "Introduction to system design and the interview delivery framework."),
+          lockedPattern("Networking & Protocols", "networking-protocols", "Understand how data travels across the web (OSI, TCP, DNS)."),
+          lockedPattern("Core Concepts & Metrics", "core-metrics", "Measuring performance: Availability, Scalability, and SLAs."),
+          lockedPattern("Databases & DBMS", "databases", "Choosing the right storage: SQL vs NoSQL, OLAP vs OLTP, ACID."),
+          lockedPattern("Scaling Data", "scaling-data", "Distributing data: Replication, Partitioning, Sharding, Consistent Hashing."),
+          lockedPattern("Caching & Content Delivery", "caching", "Reducing latency with caching strategies and CDNs."),
+          lockedPattern("Advanced Data Structures", "data-structures", "Specialized structures like Bloom Filters and Quad Trees."),
+          lockedPattern("Architectural Styles", "architectural-styles", "Monoliths, Microservices, Event-Driven, and Serverless."),
+          lockedPattern("APIs & Security", "apis-security", "REST, GraphQL, gRPC, API Gateways, and OAuth2/JWT."),
+          lockedPattern("Communication Patterns", "communication-patterns", "WebSockets, Message Queues, Pub/Sub, and CDC."),
+          lockedPattern("Distributed Systems", "distributed-systems", "Trading off consistency, availability, and latency."),
+          lockedPattern("System Tradeoffs", "system-tradeoffs", "Balancing constraints: CAP Theorem, Consistency, and Scaling."),
+          lockedPattern("Resilience & Security", "resilience-security", "Circuit Breakers, Chaos Engineering, and Disaster Recovery."),
+          lockedPattern("Big Data Processing", "big-data", "Batch vs Stream Processing, MapReduce, and Data Lakes."),
+          lockedPattern("Case Studies (Capstone)", "case-studies", "Design real-world apps like Twitter, URL Shorteners, and Netflix."),
+        ],
+      }
     ],
   },
   {
@@ -471,34 +484,40 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/web-scraping",
     blurb: "Extracting data from the web using HTML parsing, headless browsers, and scalable crawlers.",
-    patterns: [
+    patterns: [],
+    sections: [
       {
-        title: "HTTP Foundations",
-        slug: "http-foundations",
-        path: "/web-scraping/foundations/http-foundations",
-        blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
-        lessons: [
-          { title: "How the Web Works", slug: "how-the-web-works", path: "/web-scraping/foundations/http-foundations/how-the-web-works", icon: Globe },
-          { title: "HTTP Methods & Status Codes", slug: "http-methods-and-status-codes", path: "/web-scraping/foundations/http-foundations/http-methods-and-status-codes", icon: ShieldAlert },
-          { title: "Headers & Cookies", slug: "headers-and-cookies", path: "/web-scraping/foundations/http-foundations/headers-and-cookies", icon: LockKeyhole },
-          { title: "The Document Object Model (DOM)", slug: "the-dom", path: "/web-scraping/foundations/http-foundations/the-dom", icon: Search },
-          { title: "Developer Tools (Inspecting Elements)", slug: "developer-tools", path: "/web-scraping/foundations/http-foundations/developer-tools", icon: Wrench },
-          { title: "Client-Side vs Server-Side Rendering", slug: "dynamic-vs-static-content", path: "/web-scraping/foundations/http-foundations/dynamic-vs-static-content", icon: Layers },
-        ],
-      },
-      {
-        title: "Static Scraping",
-        slug: "static-scraping",
-        path: "/web-scraping/foundations/static-scraping",
-        blurb: "Fetch raw HTML and parse it efficiently to extract exactly what you need.",
-        lessons: [
-          { title: "Your First Request", slug: "your-first-request", path: "/web-scraping/foundations/static-scraping/your-first-request", icon: Search },
-          { title: "Parsing HTML with BeautifulSoup", slug: "parsing-html-beautifulsoup", path: "/web-scraping/foundations/static-scraping/parsing-html-beautifulsoup", icon: Search },
-          { title: "CSS Selectors in Practice", slug: "css-selectors", path: "/web-scraping/foundations/static-scraping/css-selectors", icon: Search },
-          { title: "XPath and lxml", slug: "xpath-and-lxml", path: "/web-scraping/foundations/static-scraping/xpath-and-lxml", icon: Search },
-          { title: "Extracting Text and Attributes", slug: "extracting-text-attributes", path: "/web-scraping/foundations/static-scraping/extracting-text-attributes", icon: Search },
-          { title: "Following Pagination", slug: "following-pagination", path: "/web-scraping/foundations/static-scraping/following-pagination", icon: Search },
-        ],
+        title: "Web Scraping Foundations",
+        patterns: [
+          {
+            title: "HTTP Foundations",
+            slug: "http-foundations",
+            path: "/web-scraping/foundations/http-foundations",
+            blurb: "Master the DOM, HTTP requests, status codes, headers, and cookies.",
+            lessons: [
+              { title: "How the Web Works", slug: "how-the-web-works", path: "/web-scraping/foundations/http-foundations/how-the-web-works", icon: Globe },
+              { title: "HTTP Methods & Status Codes", slug: "http-methods-and-status-codes", path: "/web-scraping/foundations/http-foundations/http-methods-and-status-codes", icon: ShieldAlert },
+              { title: "Headers & Cookies", slug: "headers-and-cookies", path: "/web-scraping/foundations/http-foundations/headers-and-cookies", icon: LockKeyhole },
+              { title: "The Document Object Model (DOM)", slug: "the-dom", path: "/web-scraping/foundations/http-foundations/the-dom", icon: Search },
+              { title: "Developer Tools (Inspecting Elements)", slug: "developer-tools", path: "/web-scraping/foundations/http-foundations/developer-tools", icon: Wrench },
+              { title: "Client-Side vs Server-Side Rendering", slug: "dynamic-vs-static-content", path: "/web-scraping/foundations/http-foundations/dynamic-vs-static-content", icon: Layers },
+            ],
+          },
+          {
+            title: "Static Scraping",
+            slug: "static-scraping",
+            path: "/web-scraping/foundations/static-scraping",
+            blurb: "Fetch raw HTML and parse it efficiently to extract exactly what you need.",
+            lessons: [
+              { title: "Your First Request", slug: "your-first-request", path: "/web-scraping/foundations/static-scraping/your-first-request", icon: Search },
+              { title: "Parsing HTML with BeautifulSoup", slug: "parsing-html-beautifulsoup", path: "/web-scraping/foundations/static-scraping/parsing-html-beautifulsoup", icon: Search },
+              { title: "CSS Selectors in Practice", slug: "css-selectors", path: "/web-scraping/foundations/static-scraping/css-selectors", icon: Search },
+              { title: "XPath and lxml", slug: "xpath-and-lxml", path: "/web-scraping/foundations/static-scraping/xpath-and-lxml", icon: Search },
+              { title: "Extracting Text and Attributes", slug: "extracting-text-attributes", path: "/web-scraping/foundations/static-scraping/extracting-text-attributes", icon: Search },
+              { title: "Following Pagination", slug: "following-pagination", path: "/web-scraping/foundations/static-scraping/following-pagination", icon: Search },
+            ],
+          },
+        ]
       },
       {
         title: "Cleaning & Storing",
@@ -803,16 +822,22 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/terraform",
     blurb: "Infrastructure as Code for provisioning and managing cloud resources.",
-    patterns: [
-      lockedPattern("Infrastructure as Code", "iac-fundamentals", "Why IaC, declarative vs imperative, and the core workflow."),
-      lockedPattern("Terraform Basics", "basics", "Providers, resources, data sources, and state file intro."),
-      lockedPattern("Variables & Outputs", "variables-outputs", "Parameterizing your infrastructure with locals and variables."),
-      lockedPattern("HCL Logic", "hcl-logic", "Loops, conditionals, dynamic blocks, and built-in functions."),
-      lockedPattern("Modules", "modules", "Creating and consuming reusable infrastructure components."),
-      lockedPattern("State Management", "state-management", "Remote backends, state locking, and state manipulation."),
-      lockedPattern("Environments", "workspaces-envs", "Managing dev, staging, and production with workspaces."),
-      lockedPattern("CI/CD & Automation", "ci-cd-terraform", "Automating deployments with GitHub Actions and Terraform Cloud."),
-      lockedPattern("Capstone", "capstone", "Provision a highly-available cloud architecture from scratch."),
+    patterns: [],
+    sections: [
+      {
+        title: "Terraform Fundamentals",
+        patterns: [
+          lockedPattern("Infrastructure as Code", "iac-fundamentals", "Why IaC, declarative vs imperative, and the core workflow."),
+          lockedPattern("Terraform Basics", "basics", "Providers, resources, data sources, and state file intro."),
+          lockedPattern("Variables & Outputs", "variables-outputs", "Parameterizing your infrastructure with locals and variables."),
+          lockedPattern("HCL Logic", "hcl-logic", "Loops, conditionals, dynamic blocks, and built-in functions."),
+          lockedPattern("Modules", "modules", "Creating and consuming reusable infrastructure components."),
+          lockedPattern("State Management", "state-management", "Remote backends, state locking, and state manipulation."),
+          lockedPattern("Environments", "workspaces-envs", "Managing dev, staging, and production with workspaces."),
+          lockedPattern("CI/CD & Automation", "ci-cd-terraform", "Automating deployments with GitHub Actions and Terraform Cloud."),
+          lockedPattern("Capstone", "capstone", "Provision a highly-available cloud architecture from scratch."),
+        ],
+      }
     ],
   },
   {
@@ -822,32 +847,75 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/git-github",
     blurb: "Version control, branching strategies, and collaboration workflows.",
-    patterns: [
-      lockedPattern("Git Fundamentals", "git-fundamentals", "Commits, history, and the working tree."),
-      lockedPattern("Branching & Merging", "branching-merging", "Parallel development and combining work with merges."),
-      lockedPattern("Remotes & Collaboration", "remotes", "Working with remote repositories and fetch vs pull."),
-      lockedPattern("Rewriting History", "rewriting-history", "Interactive rebase, amend, and squashing commits."),
-      lockedPattern("Undoing Mistakes", "undoing-things", "Resetting, reverting, and using the reflog."),
-      lockedPattern("Detective Work", "detective-work", "Finding bugs with git bisect and git blame."),
-      lockedPattern("Pull Requests & Review", "pull-requests", "Collaborating on code with branch protection and CODEOWNERS."),
-      lockedPattern("GitHub Actions", "github-actions", "Automating tests and deployments with CI/CD pipelines."),
-      lockedPattern("Team Workflows", "workflows", "GitHub Flow, GitFlow, and trunk-based development strategies."),
-      lockedPattern("Capstone", "capstone", "Simulate a real-world team project: branching, reviewing, and releasing."),
+    patterns: [],
+    sections: [
+      {
+        title: "Git Fundamentals",
+        patterns: [
+          lockedPattern("Git Fundamentals", "git-fundamentals", "Commits, history, and the working tree."),
+          lockedPattern("Branching & Merging", "branching-merging", "Parallel development and combining work with merges."),
+          lockedPattern("Remotes & Collaboration", "remotes", "Working with remote repositories and fetch vs pull."),
+          lockedPattern("Rewriting History", "rewriting-history", "Interactive rebase, amend, and squashing commits."),
+          lockedPattern("Undoing Mistakes", "undoing-things", "Resetting, reverting, and using the reflog."),
+          lockedPattern("Detective Work", "detective-work", "Finding bugs with git bisect and git blame."),
+          lockedPattern("Pull Requests & Review", "pull-requests", "Collaborating on code with branch protection and CODEOWNERS."),
+          lockedPattern("GitHub Actions", "github-actions", "Automating tests and deployments with CI/CD pipelines."),
+          lockedPattern("Team Workflows", "workflows", "GitHub Flow, GitFlow, and trunk-based development strategies."),
+          lockedPattern("Capstone", "capstone", "Simulate a real-world team project: branching, reviewing, and releasing."),
+        ],
+      }
     ],
   },
   {
     title: "Python",
     slug: "python",
     icon: pythonLogo,
-    locked: true,
+    locked: false,
     overviewPath: "/python",
     blurb: "Master Python from basic syntax to advanced asynchronous programming.",
-    patterns: [
-      lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
-      lockedPattern("Data Structures", "data-structures", "Lists, dictionaries, sets, and tuples."),
-      lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
-      lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
-      lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
+    patterns: [],
+    sections: [
+      {
+        title: "1. Foundations",
+        patterns: [
+          lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
+          lockedPattern("Data Structures", "data-structures", "Lists, dictionaries, sets, and tuples."),
+        ]
+      },
+      {
+        title: "2. Intermediate Concepts",
+        patterns: [
+          lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
+          lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
+          {
+            slug: "file-handling",
+            title: "File Handling",
+            blurb: "Read and write text, CSV, and JSON files in Python.",
+            locked: false,
+            path: "/python/file-handling",
+            lessons: [
+              { slug: "file-basics", title: "File Basics", icon: FileText, path: "/python/file-handling/file-basics" },
+              { slug: "working-with-paths", title: "Working with Paths", icon: FileText, path: "/python/file-handling/working-with-paths" },
+              { slug: "reading-files", title: "Reading Files", icon: FileText, path: "/python/file-handling/reading-files" },
+              { slug: "writing-files", title: "Writing Files", icon: FileText, path: "/python/file-handling/writing-files" },
+              { slug: "file-modes", title: "File Modes", icon: FileText, path: "/python/file-handling/file-modes" },
+              { slug: "file-methods", title: "File Methods", icon: FileText, path: "/python/file-handling/file-methods" },
+              { slug: "pathlib-module", title: "Pathlib Module", icon: FileText, path: "/python/file-handling/pathlib-module" },
+              { slug: "os-module", title: "OS Module", icon: FileText, path: "/python/file-handling/os-module" },
+              { slug: "working-with-csv", title: "Working with CSV", icon: FileText, path: "/python/file-handling/working-with-csv" },
+              { slug: "working-with-json", title: "Working with JSON", icon: FileText, path: "/python/file-handling/working-with-json" },
+              { slug: "pickle-module", title: "Pickle Module", icon: FileText, path: "/python/file-handling/pickle-module" },
+              { slug: "shutil-module", title: "Shutil Module", icon: FileText, path: "/python/file-handling/shutil-module" },
+            ],
+          },
+        ]
+      },
+      {
+        title: "3. Advanced Python",
+        patterns: [
+          lockedPattern("Advanced Python", "advanced", "Decorators, generators, and context managers."),
+        ],
+      }
     ],
   },
   {
@@ -857,10 +925,16 @@ export const roadmap: RoadmapCategory[] = [
     locked: false,
     overviewPath: "/pandas",
     blurb: "Master data manipulation and analysis with Pandas.",
-    patterns: [
-      lockedPattern("DataFrames & Series", "dataframes-series", "Core Pandas data structures and basic operations."),
-      lockedPattern("Data Cleaning", "data-cleaning", "Handling missing values, duplicates, and data types."),
-      lockedPattern("Data Aggregation", "data-aggregation", "Group by, merge, join, and pivot tables."),
+    patterns: [],
+    sections: [
+      {
+        title: "Pandas Fundamentals",
+        patterns: [
+          lockedPattern("DataFrames & Series", "dataframes-series", "Core Pandas data structures and basic operations."),
+          lockedPattern("Data Cleaning", "data-cleaning", "Handling missing values, duplicates, and data types."),
+          lockedPattern("Data Aggregation", "data-aggregation", "Group by, merge, join, and pivot tables."),
+        ],
+      }
     ],
   },
   {
