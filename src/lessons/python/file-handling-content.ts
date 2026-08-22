@@ -554,13 +554,225 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
         slug: "file-modes",
         title: "File Modes",
         subtitle: "Choose the right file mode.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "We've seen 'r', 'w', and 'a'. But Python supports even more modes for specific tasks, like safely creating new files or reading and writing at the same time."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "file-modes",
+            caption: "Common File Modes"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Python provides specific modes to precisely control what you can do with a file. You can also combine modes using the `+` or `b` modifiers."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Exclusive Create ('x')"
+            ]
+          },
+          {
+            kind: "code",
+            code: "try:\n    with open('important.txt', 'x') as file:\n        file.write('First!')\nexcept FileExistsError:\n    print('File already exists!')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `'x'` mode is exactly like `'w'`, except it is strictly safe. If the file already exists, it intentionally crashes instead of silently wiping your data.",
+              "### 2. The Plus Modifier ('+') "
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('log.txt', 'r+') as file:\n    content = file.read() # We can read\n    file.write('\\nDone.') # AND we can write!"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Adding `+` to any mode grants the missing capability. `'r+'` gives you Read + Write without truncating. `'w+'` gives you Write + Read, but it truncates the file first.",
+              "### 3. Binary Mode ('b')"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('photo.jpg', 'rb') as file:\n    bytes = file.read(10)\n    print(bytes) # b'\\xff\\xd8\\xff\\xe0\\x00\\x10JFIF'"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Text mode (`'t'`, the default) assumes the file is human-readable text. Binary mode (`'b'`) reads raw bytes. You must use `'b'` for images, PDFs, audio, and zip files."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Copying an image file requires opening the source in `'rb'` and the destination in `'wb'`:"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('source.png', 'rb') as src:\n    with open('copy.png', 'wb') as dest:\n        dest.write(src.read())"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Using 'w' instead of 'x':** If you want to create a new file but absolutely do not want to destroy existing data, always use `'x'`.\n\n**Reading non-text as text:** Opening a JPG without `'b'` will cause Python to crash with a `UnicodeDecodeError` because it tries to decode raw pixels into text."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "`'x'` is a safer `'w'` that fails if the file exists.",
+              "The `+` modifier allows both reading and writing.",
+              "`'b'` is mandatory when working with non-text files like images."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "fm-1",
+                question: "Which mode should you use to open a PDF file to read its contents?",
+                options: [
+                  "'r'",
+                  "'rb'",
+                  "'rt'",
+                  "'r+'"
+                ],
+                correctIndex: 1,
+                explanation: "PDFs are binary files, not plain text, so you must use 'rb' (Read Binary)."
+              },
+              {
+                id: "fm-2",
+                question: "What is the difference between 'w' and 'x'?",
+                options: [
+                  "'x' is for executable files",
+                  "'w' creates a file, 'x' does not",
+                  "'w' overwrites existing files, 'x' crashes if the file exists"
+                ],
+                correctIndex: 2,
+                explanation: "Exclusive creation ('x') is a safe alternative to 'w' that prevents accidental data loss."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "file-methods",
         title: "File Methods",
         subtitle: "Control the file cursor.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "When you read or write, Python moves a hidden cursor forward. If you read a file, and then try to read it again, you get nothing—because the cursor is already at the end. You need a way to control it."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "file-methods",
+            caption: "Controlling the Cursor"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Every open file object has a cursor pointing to a specific byte index. Use `tell()` to find out where you are, and `seek()` to jump anywhere you want."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Find your location with tell()"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r') as file:\n    print(file.tell()) # 0\n    file.read(5)\n    print(file.tell()) # 5"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`tell()` returns an integer representing your current byte position from the beginning of the file.",
+              "### 2. Move your location with seek()"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('poem.txt', 'r') as file:\n    content = file.read()\n    \n    file.seek(0) # Rewind to the very beginning!\n    \n    read_again = file.read()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`seek(offset)` jumps the cursor to the byte at `offset`. `seek(0)` is incredibly common to \"rewind\" a file so you can process it a second time."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "If you want to read just a specific chunk from the middle of a massive file without loading the whole thing, you can use `seek()`:"
+            ]
+          },
+          {
+            kind: "code",
+            code: "with open('huge_data.bin', 'rb') as file:\n    file.seek(1024) # Skip the first 1024 bytes (e.g. a header)\n    chunk = file.read(256) # Read the next 256 bytes\n    print(chunk)"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Reading an empty string:** Wondering why `file.read()` returns nothing? You probably already read the file, and the cursor is stuck at the end. Use `seek(0)` to fix it."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "`tell()` returns the current byte position of the cursor.",
+              "`seek(offset)` moves the cursor to a specific byte index.",
+              "`seek(0)` is used to \"rewind\" a file back to the start."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "fmet-1",
+                question: "If you run `file.read(10)`, what will `file.tell()` return immediately after?",
+                options: [
+                  "0",
+                  "10",
+                  "An error"
+                ],
+                correctIndex: 1,
+                explanation: "The read(10) method reads 10 bytes and advances the cursor exactly 10 bytes forward."
+              },
+              {
+                id: "fmet-2",
+                question: "How do you read a file a second time in the same 'with' block?",
+                options: [
+                  "Just call read() again",
+                  "Close and reopen the file",
+                  "Call file.seek(0) to rewind, then call read()"
+                ],
+                correctIndex: 2,
+                explanation: "seek(0) jumps the cursor back to the beginning, allowing you to re-read the file without reopening it."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "pathlib-module",
