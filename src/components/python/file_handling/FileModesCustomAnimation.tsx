@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, HardDrive, FileText, Lock, ShieldAlert, Cpu } from "lucide-react";
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, HardDrive, FileText, Lock, ShieldAlert, Cpu, ListPlus } from "lucide-react";
 
 export function FileModesCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const totalSteps = 4;
+  const totalSteps = 5;
 
   useEffect(() => {
     if (!playing) return;
@@ -27,8 +27,9 @@ export function FileModesCustomAnimation() {
         <AnimatePresence mode="wait">
           {step === 0 && <Step1Read key="step1" />}
           {step === 1 && <Step2WriteExclusive key="step2" />}
-          {step === 2 && <Step3Plus key="step3" />}
-          {step === 3 && <Step4Binary key="step4" />}
+          {step === 2 && <Step3Append key="step3" />}
+          {step === 3 && <Step4Plus key="step4" />}
+          {step === 4 && <Step5Binary key="step5" />}
         </AnimatePresence>
       </div>
       
@@ -59,8 +60,10 @@ export function FileModesCustomAnimation() {
 function Step1Read() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-sky-500/30 bg-sky-500/5 font-mono text-[13px] shadow-sm w-full max-w-md text-center">
-        open('data.txt', <span className="text-sky-400 font-bold">'r'</span>)
+      <div className="mb-8 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Read existing data</span><br/>
+        <span className="text-mint font-medium">with</span> <span className="text-blue-400">open</span>(<span className="text-amber">'data.txt'</span>, <span className="text-sky-500 font-bold">'r'</span>) <span className="text-mint font-medium">as</span> file:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;content = file.<span className="text-blue-400">read</span>()
       </div>
       
       <div className="flex justify-center gap-6 w-full max-w-2xl">
@@ -87,8 +90,10 @@ function Step1Read() {
 function Step2WriteExclusive() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 font-mono text-[13px] shadow-sm w-full max-w-md text-center">
-        open('data.txt', <span className="text-rose-400 font-bold">'w'</span>) vs open('data.txt', <span className="text-amber font-bold">'x'</span>)
+      <div className="mb-8 p-4 rounded-xl border border-rose-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># 'w' wipes it, 'x' crashes if exists</span><br/>
+        <span className="text-mint font-medium">with</span> <span className="text-blue-400">open</span>(<span className="text-amber">'data.txt'</span>, <span className="text-rose-500 font-bold">'w'</span>) <span className="text-mint font-medium">as</span> file:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;file.<span className="text-blue-400">write</span>(<span className="text-amber">'New data'</span>)
       </div>
       
       <div className="flex gap-4 w-full max-w-3xl">
@@ -114,13 +119,44 @@ function Step2WriteExclusive() {
   )
 }
 
-function Step3Plus() {
+function Step3Append() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-violet/30 bg-violet/5 font-mono text-[13px] shadow-sm w-full max-w-md text-center flex justify-center items-center gap-4">
-        <span><span className="text-violet font-bold">'r+'</span> (Read & Write)</span>
-        <span className="text-muted-foreground/40">|</span>
-        <span><span className="text-violet font-bold">'w+'</span> (Write & Read)</span>
+      <div className="mb-8 p-4 rounded-xl border border-emerald-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Add to the end of the file</span><br/>
+        <span className="text-mint font-medium">with</span> <span className="text-blue-400">open</span>(<span className="text-amber">'data.txt'</span>, <span className="text-emerald-500 font-bold">'a'</span>) <span className="text-mint font-medium">as</span> file:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;file.<span className="text-blue-400">write</span>(<span className="text-amber">'More data\\n'</span>)
+      </div>
+      
+      <div className="flex justify-center gap-6 w-full max-w-2xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><ListPlus className="size-4" /> Append Mode ('a')</h4>
+           
+           <div className="flex flex-wrap gap-2 justify-center mb-6">
+             <span className="px-2 py-1 rounded bg-surface-2 text-muted-foreground/50 text-[11px] font-mono border border-hairline line-through">CAN READ</span>
+             <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[11px] font-mono border border-emerald-500/30">CAN WRITE</span>
+           </div>
+
+           <div className="text-sm text-muted-foreground/90 space-y-3 text-center">
+             <p>The cursor starts at the <strong>end</strong> of the file.</p>
+             <div className="flex items-center justify-center text-emerald-600 gap-1.5 text-xs bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 mt-4">
+               Creates file if it does not exist, never truncates.
+             </div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function Step4Plus() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-8 p-4 rounded-xl border border-violet/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Read AND Write</span><br/>
+        <span className="text-mint font-medium">with</span> <span className="text-blue-400">open</span>(<span className="text-amber">'data.txt'</span>, <span className="text-violet font-bold">'r+'</span>) <span className="text-mint font-medium">as</span> file:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;content = file.<span className="text-blue-400">read</span>()<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;file.<span className="text-blue-400">write</span>(<span className="text-amber">'\\nAppended'</span>)
       </div>
       
       <div className="flex justify-center gap-6 w-full max-w-2xl">
@@ -134,8 +170,12 @@ function Step3Plus() {
            </div>
 
            <div className="text-sm text-muted-foreground/90 space-y-3 text-center">
-             <p>Adding <code className="text-violet bg-violet/10 px-1 rounded">+</code> to any mode adds the missing capability.</p>
-             <p className="text-xs"><code>'r+'</code> reads and writes without truncating.<br/><code>'w+'</code> reads and writes but truncates first.</p>
+             <p>Adding <code className="text-violet bg-violet/10 px-1 rounded">+</code> to any mode grants the missing capability.</p>
+             <p className="text-xs">
+               <code>'r+'</code> reads/writes at beginning.<br/>
+               <code>'w+'</code> reads/writes, but wipes first.<br/>
+               <code>'a+'</code> appends/reads, cursor stuck at end.
+             </p>
            </div>
         </div>
       </div>
@@ -143,11 +183,13 @@ function Step3Plus() {
   )
 }
 
-function Step4Binary() {
+function Step5Binary() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 font-mono text-[13px] shadow-sm w-full max-w-md text-center">
-        open('image.jpg', <span className="text-emerald-400 font-bold">'rb'</span>)
+      <div className="mb-8 p-4 rounded-xl border border-cyan-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Read raw bytes</span><br/>
+        <span className="text-mint font-medium">with</span> <span className="text-blue-400">open</span>(<span className="text-amber">'image.jpg'</span>, <span className="text-cyan-500 font-bold">'rb'</span>) <span className="text-mint font-medium">as</span> file:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;pixels = file.<span className="text-blue-400">read</span>()
       </div>
       
       <div className="flex gap-4 w-full max-w-3xl">
@@ -159,9 +201,9 @@ function Step4Binary() {
            <p className="text-xs text-muted-foreground/80 text-center">Default. Decodes bytes into strings using an encoding (like UTF-8).</p>
         </div>
 
-        <div className="flex-1 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Cpu className="size-4" /> Binary Mode ('b')</h4>
-           <div className="p-3 bg-surface border border-emerald-500/20 rounded font-mono text-[10px] text-emerald-500 mb-4 w-full text-center tracking-widest break-words leading-relaxed">
+        <div className="flex-1 p-5 rounded-2xl bg-cyan-500/5 border border-cyan-500/20 flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-cyan-500 mb-4 font-bold flex items-center gap-2"><Cpu className="size-4" /> Binary Mode ('b')</h4>
+           <div className="p-3 bg-surface border border-cyan-500/20 rounded font-mono text-[10px] text-cyan-500 mb-4 w-full text-center tracking-widest break-words leading-relaxed">
              48 65 6c 6c 6f 2c 20 57 6f 72 6c 64 21 0a
            </div>
            <p className="text-xs text-muted-foreground/90 text-center">Raw bytes. Essential for non-text files like <strong>images, PDFs, or zips</strong>.</p>
