@@ -4,6 +4,8 @@ import howItWorksImg from "@/images/python/intermediate/file_handling/how-python
 import filePathsImg from "@/images/python/intermediate/file_handling/file-paths.png";
 import fileReadImg from "@/images/python/intermediate/file_handling/file-read.png";
 import fileWriteImg from "@/images/python/intermediate/file_handling/file-write.png";
+import fileModesImg from "@/images/python/intermediate/file_handling/file-modes.png";
+import fileMethodsImg from "@/images/python/intermediate/file_handling/file-methods.png";
 
 export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "file-handling": {
@@ -575,6 +577,12 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
+            kind: "image",
+            src: fileModesImg,
+            alt: "Summary of common file modes",
+            caption: "A quick reference table of file modes"
+          },
+          {
             kind: "prose",
             heading: "Step-by-step",
             body: [
@@ -691,6 +699,12 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             body: [
               "Every open file object has a cursor pointing to a specific byte index. Use `tell()` to find out where you are, and `seek()` to jump anywhere you want."
             ]
+          },
+          {
+            kind: "image",
+            src: fileMethodsImg,
+            alt: "File cursor control with seek and tell",
+            caption: "Using seek and tell to manipulate the cursor"
           },
           {
             kind: "prose",
