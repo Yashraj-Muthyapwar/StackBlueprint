@@ -276,7 +276,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return <ImageCarousel images={section.images} />;
 
     case "animation":
-      return <LessonAnimation variant={section.variant} caption={section.caption} />;
+      return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
 
     case "analogy":
       return (

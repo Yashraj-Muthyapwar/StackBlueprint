@@ -5,7 +5,8 @@ import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { MultiStage, totalSteps, locate } from "@/components/lesson/MultiStage";
 import { STAGES_REGISTRY, type AnyVariant } from "./animation-stages";
 
-import { FileBasicsCustomAnimation } from "./FileBasicsCustomAnimation";
+import { FileBasicsCustomAnimation } from "./file_handling/FileBasicsCustomAnimation";
+import { WorkingWithPathsCustomAnimation } from "./file_handling/WorkingWithPathsCustomAnimation";
 
 export type AnimationVariant = AnyVariant;
 
@@ -29,6 +30,8 @@ export function LessonAnimation({
           <div className="w-full min-w-0 flex justify-center">
             {variant === "file-basics" ? (
               <FileBasicsCustomAnimation />
+            ) : variant === "working-with-paths" ? (
+              <WorkingWithPathsCustomAnimation />
             ) : (
               <AnimationStage variant={variant} />
             )}

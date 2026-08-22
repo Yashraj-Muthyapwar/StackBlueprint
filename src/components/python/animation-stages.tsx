@@ -285,10 +285,98 @@ const fileBasics: Stage[] = [
   },
 ];
 
+const workingWithPaths: Stage[] = [
+  {
+    name: "1. Absolute vs Relative Paths",
+    blurb: "Paths tell Python where a file lives",
+    sql: [
+      "Absolute: /Users/sam/project/data/contacts.txt",
+      "Relative: data/contacts.txt",
+    ],
+    table: {
+      name: "Path Types",
+      cols: ["type", "description"],
+      rows: [
+        r(1, "Absolute", "Starts at the root of the filesystem"),
+        r(2, "Relative", "Starts from Current Working Directory"),
+      ],
+    },
+    steps: [
+      st([0, 1], "kept", "Absolute paths are rigid. Relative paths are flexible and work on any computer if the project structure is the same.", { noteTone: "violet" }),
+    ],
+  },
+  {
+    name: "2. The Current Working Directory",
+    blurb: "Where does a relative path start?",
+    sql: [
+      "from pathlib import Path",
+      "",
+      "print(Path.cwd())",
+    ],
+    table: {
+      name: "Environment",
+      cols: ["location", "path"],
+      rows: [
+        r(1, "CWD", "/Users/sam/project"),
+      ],
+    },
+    steps: [
+      st([2], "kept", "Path.cwd() reveals the folder from where you ran the Python script. If relative paths fail, this is the first thing to check.", { noteTone: "mint" }),
+    ],
+  },
+  {
+    name: "3. Building Paths with Pathlib",
+    blurb: "Joining path parts safely",
+    sql: [
+      "from pathlib import Path",
+      "",
+      "data_folder = Path('data')",
+      "contacts_path = data_folder / 'contacts.txt'",
+      "print(contacts_path)",
+    ],
+    table: {
+      name: "Path Objects",
+      cols: ["object", "value"],
+      rows: [
+        r(1, "data_folder", "data"),
+        r(2, "contacts_path", "data/contacts.txt"),
+      ],
+    },
+    steps: [
+      st([2], "kept", "Path('data') creates a Path object representing the folder location."),
+      st([3], (row) => row.key === 2 ? "added" : "kept", "The '/' operator joins Path parts using the correct separator for the OS (like '\\' on Windows and '/' on Mac/Linux).", { noteTone: "mint" }),
+    ],
+  },
+  {
+    name: "4. Creating Folders",
+    blurb: "Make sure the folder exists before writing",
+    sql: [
+      "contacts_path = Path.cwd() / 'data' / 'contacts.txt'",
+      "contacts_path.parent.mkdir(exist_ok=True)",
+      "",
+      "with contacts_path.open('w') as file:",
+      "    file.write('Ada Reed\\n')",
+    ],
+    table: {
+      name: "File System",
+      cols: ["action", "result"],
+      rows: [
+        r(1, "mkdir()", "Creates 'data' folder"),
+        r(2, "open('w')", "Creates 'contacts.txt'"),
+      ],
+    },
+    steps: [
+      st([1], "kept", "contacts_path.parent gets the 'data' folder part. mkdir(exist_ok=True) creates it if it doesn't exist.", { noteTone: "violet" }),
+      st([3, 4], (row) => row.key === 2 ? "added" : "kept", "Now we can safely open the file for writing because its parent folder definitely exists.", { noteTone: "mint" }),
+    ],
+  }
+];
+
 export const STAGES_REGISTRY = {
   "file-io": fileIo,
   "context-manager": contextManager,
   "file-basics": fileBasics,
+  "working-with-paths": workingWithPaths,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
