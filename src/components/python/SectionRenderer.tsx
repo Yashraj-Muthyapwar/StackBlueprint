@@ -232,9 +232,13 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             {section.title && <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>}
-            <p className="mt-1 text-sm leading-relaxed text-foreground/85">
-              {parseInlineMarkdown(section.body || "")}
-            </p>
+            <div className="mt-1 space-y-2 text-sm leading-relaxed text-foreground/85">
+              {(section.body || "").split("\n").filter(Boolean).map((paragraph, i) => (
+                <p key={i} className={paragraph.startsWith("- ") ? "ml-4 list-item list-disc" : ""}>
+                  {parseInlineMarkdown(paragraph.replace(/^- /, ''))}
+                </p>
+              ))}
+            </div>
           </div>
         </aside>
       );
