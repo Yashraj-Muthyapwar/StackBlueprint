@@ -895,9 +895,16 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "prose",
+            body: [
+              "### 6. Traverse recursively with os.walk()",
+              "`os.walk()` is incredibly powerful for recursive operations. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, directories, and files at each step."
+            ]
+          },
+          {
+            kind: "prose",
             heading: "A simple example",
             body: [
-              "`os.walk()` is incredibly powerful for recursive operations. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, directories, and files at each step."
+              "Let's combine everything we've learned into one robust script. This script dynamically reads a project path, safely builds the directory structure, creates dummy files, searches them with `os.walk()`, and finally cleans up."
             ]
           },
           {
