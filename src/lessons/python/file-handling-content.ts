@@ -707,7 +707,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "When you read or write, Python moves a hidden cursor forward. If you read a file, and then try to read it again, you get nothing—because the cursor is already at the end. You need a way to control it."
+              "When you read or write, Python moves a hidden cursor forward. If you read a file, and then try to read it again, you get nothing because the cursor is already at the end. You need a way to control it."
             ]
           },
           {
@@ -819,8 +819,8 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Sometimes you need to know what's inside a folder to process a hundred images or find a specific configuration file. The `os` module lets you inspect and traverse your file system.",
-              "Furthermore, production scripts run across different environments (laptops, testing, servers). Hard-coded paths make your code brittle. The `os` module allows your scripts to read configurations dynamically and build dependable paths safely."
+              "Sometimes you need to know what’s inside a folder. For example, you may need to process hundreds of images or locate a specific configuration file. The `os` module lets you inspect directories, navigate through folders, and work with files programmatically.",
+              "Production scripts also run across different environments such as laptops, testing machines, and servers. Hard-coded paths break easily when environments change, so using dynamic configurations and safely constructed paths helps keep your code portable, reliable, and production-ready."
             ]
           },
           {
@@ -832,8 +832,8 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             kind: "prose",
             heading: "The core idea",
             body: [
-              "The `os` module provides low-level tools to list folder contents (`listdir`), check properties (`os.path.isfile`), and recursively search through entire directory trees (`walk`).",
-              "It also acts as the bridge to the operating system, allowing you to read environment variables (`os.getenv`), safely create nested directories (`makedirs`), and manage file deletions."
+              "The `os` module provides essential tools for interacting with the operating system. You can list folder contents with `listdir`, check whether a path points to a file with `os.path.isfile`, and recursively search through directory trees with `walk`.",
+              "Beyond file and directory operations, it also lets your programs work with their environment. You can read environment variables with `os.getenv`, create nested directories with `makedirs`, and manage files and directories programmatically."
             ]
           },
           {
