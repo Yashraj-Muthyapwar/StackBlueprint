@@ -23,7 +23,7 @@ export function OSModuleCustomAnimation() {
 
   return (
     <div className="flex flex-col relative z-10 w-full">
-      <div className="relative px-4 py-8 lg:px-8 lg:py-10 min-h-[460px] flex flex-col items-center justify-start w-full">
+      <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {step === 0 && <Step1ListDir key="step1" />}
           {step === 1 && <Step2IsFile key="step2" />}
