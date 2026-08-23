@@ -11,8 +11,9 @@ import { ReadingFilesCustomAnimation } from "./file_handling/ReadingFilesCustomA
 import { WritingFilesCustomAnimation } from "./file_handling/WritingFilesCustomAnimation";
 import { FileModesCustomAnimation } from "./file_handling/FileModesCustomAnimation";
 import { FileMethodsCustomAnimation } from "./file_handling/FileMethodsCustomAnimation";
+import { OSModuleCustomAnimation } from "./file_handling/OSModuleCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module";
 
 export function LessonAnimation({
   variant,
@@ -44,6 +45,8 @@ export function LessonAnimation({
               <FileModesCustomAnimation />
             ) : variant === "file-methods" ? (
               <FileMethodsCustomAnimation />
+            ) : variant === "os-module" ? (
+              <OSModuleCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
