@@ -173,27 +173,27 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
       {
         slug: "working-with-paths",
         title: "Working with Paths",
-        subtitle: "Build file locations cleanly and cross-platform without guessing the folder.",
+        subtitle: "Build, inspect, create, and find file locations without guessing which folder Python is using.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "`open(\"contacts.txt\")` works only when Python looks in the folder you expect. A path is the address that tells Python where a file or folder lives.",
-              "Good paths make a script work on another computer and make its data folder easy to find. Hand-building addresses with slashes is fragile, so Python provides path tools."
+              "Good paths make a script work on another computer and make its data folder easy to find. `pathlib` gives you one readable tool for building paths, checking them, and finding files."
             ]
           },
           {
             kind: "animation",
             variant: "working-with-paths",
-            caption: "Absolute vs Relative Paths"
+            caption: "Pathlib Basics"
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
               "A relative path starts from the current working directory, the folder where the command was run. `data/contacts.txt` is relative. An absolute path starts at the filesystem root, such as `/Users/sam/project/data/contacts.txt` on macOS or Linux.",
-              "For new code, use `pathlib.Path`. Its `/` operator joins path parts using the correct separator for the operating system."
+              "For new code, use `pathlib.Path`. Its `/` operator joins path parts using the correct separator for the operating system. A `Path` is only an address until you call a method that reads, writes, or creates something there."
             ]
           },
           {
@@ -206,70 +206,80 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             kind: "prose",
             heading: "Step-by-step",
             body: [
-              "### 1. See where Python starts"
+              "### 1. See where Python starts and build a path"
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: "from pathlib import Path\n\nprint(Path.cwd())"
           },
           {
             kind: "prose",
             body: [
-              "`Path.cwd()` returns the current working directory. If Python cannot find a relative file, print this value before changing the path.",
-              "### 2. Build a path from parts"
+              "`Path.cwd()` returns the current working directory. If Python cannot find a relative file, print this value before changing the path. Build an address from parts instead of joining strings yourself:"
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: "from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\nprint(contacts_path)"
           },
           {
             kind: "prose",
             body: [
               "This creates a `Path` object for `data/contacts.txt`. It does not create a folder or file yet. The `/` here joins locations; it is not division.",
-              "### 3. Create the parent folder before writing"
+              "### 2. Create and inspect a workspace"
             ]
           },
           {
-            kind: "code",
-            code: "data_folder.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Ada Reed\\n\")"
+            kind: "interactive-code",
+            code: "from pathlib import Path\n\nworkspace = Path(\"contact_workspace\")\nexports = workspace / \"exports\"\nexports.mkdir(parents=True, exist_ok=True)\n\nreport = exports / \"contacts-august.txt\"\nprint(report.name)\nprint(report.stem)\nprint(report.suffix)\nprint(report.exists())"
           },
           {
             kind: "prose",
             body: [
-              "`mkdir()` creates the folder. `exist_ok=True` means the code does not fail if `data` is already there. `Path.open()` is the path-based form of `open()`."
+              "`parents=True` creates missing folders in the middle of a path. `exist_ok=True` lets you rerun the script without an error when the folders already exist. `name`, `stem`, `suffix`, and `parent` reveal useful parts of a path; `exists()` checks whether anything is already at that address.",
+              "### 3. Create a file and find matching files"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\n\ndata_folder.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Ada Reed\\n\")\n\nfor text_file in Path(\".\").rglob(\"*.txt\"):\n    print(text_file)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Path.open()` is the path-based form of `open()`. The `*.txt` pattern means any filename ending in `.txt`. `rglob()` searches the current folder and every nested folder. Use `glob(\"*.txt\")` when you only want the direct contents of one folder."
             ]
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "Move your previous `contacts.txt` into a `data` folder with this focused script:"
+              "Create three small exports, then list their names:"
             ]
           },
           {
-            kind: "code",
-            code: "from pathlib import Path\n\nproject = Path.cwd()\ncontacts_path = project / \"data\" / \"contacts.txt\"\ncontacts_path.parent.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Mika Patel\\nJordan Kim\\n\")\n\nprint(f\"Saved to: {contacts_path.resolve()}\")"
+            kind: "interactive-code",
+            code: "from pathlib import Path\n\nexports = Path(\"contact_workspace/exports\")\nexports.mkdir(parents=True, exist_ok=True)\n\nfor month in [\"june\", \"july\", \"august\"]:\n    (exports / f\"contacts-{month}.txt\").write_text(\n        \"Practice contact export\\n\", encoding=\"utf-8\"\n    )\n\nfor file_path in sorted(exports.glob(\"contacts-*.txt\")):\n    print(file_path.name)\n    print(file_path.resolve())"
           },
           {
             kind: "prose",
             body: [
-              "`parent` is the containing folder. `resolve()` prints an absolute version of the location, which is helpful when you need to inspect the result."
+              "`write_text()` is a compact helper for a small text file. The final loop uses `glob()` to list only files beginning with `contacts-`. Print `file_path.resolve()` if you need to see the absolute location of a result."
             ]
           },
           {
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "**Joining strings with `/`:** It can produce awkward or platform-specific paths. Join `Path` parts with `/` instead.\n\n**Assuming the script's folder is the working folder:** They can differ. Check `Path.cwd()` when a relative path fails.\n\n**Creating only the file path:** A file cannot be written inside a folder that does not exist. Create its parent first."
+            body: "**Joining strings with \"/\":** It can produce awkward or platform-specific paths. Join `Path` parts with `/` instead.\n\n**Assuming the script's folder is the working folder:** They can differ. Check `Path.cwd()` when a relative path fails.\n\n**Using `glob()` when files are nested:** `glob()` searches one folder level. Use `rglob()` when subfolders should be included.\n\n**Treating `Path` as file contents:** A `Path` is an address. Call `read_text()`, `open()`, or another method to access the file."
           },
           {
             kind: "takeaways",
             items: [
               "Paths are file addresses.",
               "Relative paths depend on the current working directory.",
-              "`Path` joins and opens locations cleanly across operating systems."
+              "`Path` joins, inspects, opens, and searches locations cleanly across operating systems."
             ]
           },
           {
@@ -308,6 +318,18 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
                 ],
                 correctIndex: 3,
                 explanation: "`Path.cwd()` returns the Current Working Directory, which is the starting point for relative paths."
+              },
+              {
+                id: "wp-4",
+                question: "Which method searches nested folders?",
+                options: [
+                  "glob()",
+                  "rglob()",
+                  "search()",
+                  "find()"
+                ],
+                correctIndex: 1,
+                explanation: "`rglob()` recursively searches the current directory and all subdirectories."
               }
             ]
           }
@@ -789,22 +811,206 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
         ]
       },
       {
-        slug: "pathlib-module",
-        title: "Pathlib Module",
-        subtitle: "Use modern Path objects.",
-        sections: []
-      },
-      {
         slug: "os-module",
         title: "OS Module",
         subtitle: "Inspect folders with os.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Sometimes you need to know what's inside a folder—whether to process a hundred images, clean up old logs, or find a specific configuration file. The `os` module lets you inspect and traverse your file system."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "os-module",
+            caption: "Inspecting the File System"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "The `os` module provides low-level tools to list folder contents (`listdir`), check properties (`os.path.isfile`), and recursively search through entire directory trees (`walk`)."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. List immediate children",
+              "`os.listdir()` returns a list of all files and folders directly inside a directory."
+            ]
+          },
+          {
+            kind: "code",
+            code: "import os\n\ncontents = os.listdir('.')\nprint(contents) # ['main.py', 'data', 'README.md']"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 2. Check if it's a file or folder",
+              "`listdir` just gives you strings. You often need to use `os.path.isfile()` or `os.path.isdir()` to figure out what those strings represent."
+            ]
+          },
+          {
+            kind: "code",
+            code: "import os\n\nfor item in os.listdir('.'):\n    if os.path.isdir(item):\n        print(f'{item} is a folder!')"
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "`os.walk()` is incredibly powerful. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, the directories, and the files at each step."
+            ]
+          },
+          {
+            kind: "code",
+            code: "import os\n\nfor root, dirs, files in os.walk('.'):\n    for file in files:\n        if file.endswith('.txt'):\n            # Print the absolute path to every .txt file\n            print(os.path.join(root, file))"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Modifying lists during os.walk():** If you modify the `dirs` list directly (like `dirs.remove('secret_folder')`), `os.walk()` will skip that folder. This is a neat trick, but can cause bugs if done accidentally!"
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "`os.listdir()` lists immediate children.",
+              "`os.path` contains helpers like `.isfile()` and `.isdir()`.",
+              "`os.walk()` traverses an entire directory tree recursively."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "os-1",
+                question: "What does os.walk() return on each iteration?",
+                options: [
+                  "Just a list of files",
+                  "A tuple of (root_path, directories_list, files_list)",
+                  "A file object"
+                ],
+                correctIndex: 1,
+                explanation: "os.walk() yields a 3-tuple containing the current root directory path, a list of folders in it, and a list of files in it."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "working-with-csv",
         title: "Working with CSV",
         subtitle: "Exchange rows with CSV.",
-        sections: []
+        sections: [
+          {
+            kind: "prose",
+            body: [
+              "**One-line promise:** Read, write, and manipulate spreadsheet data without manual string splitting.",
+              "**Estimated time:** 20 minutes",
+              "**Prerequisites:** Lesson 1, Lesson 2.",
+              "## Why this matters",
+              "Comma-Separated Values (CSV) is the universal language of data export. Whether you're downloading a bank statement, exporting a database table, or sharing contacts, the data is likely in CSV format.",
+              "While you *could* read a CSV file using `.split(',')`, dealing with commas inside quotes, varied line endings, and empty fields quickly becomes a nightmare. Python's built-in `csv` module handles all these edge cases seamlessly, letting you focus on the actual data."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "## The core idea",
+              "The `csv` module acts as a translator between raw text lines and Python lists or dictionaries. ",
+              "When reading, a `csv.reader` takes a file object and yields each row as a list of strings. When writing, a `csv.writer` takes lists of strings and formats them safely with commas and quotes."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "## Step-by-step",
+              "### 1. Reading basic CSV files",
+              "To read a CSV, open the file normally and pass it to `csv.reader`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            caption: "READING CSV AS LISTS",
+            code: "import csv\nfrom pathlib import Path\n\n# Create a mock CSV for our example\ncsv_path = Path(\"mock_data.csv\")\ncsv_path.write_text(\"name,age,city\\nAlice,28,New York\\nBob,34,Chicago\", encoding=\"utf-8\")\n\nwith csv_path.open(\"r\", encoding=\"utf-8\") as file:\n    reader = csv.reader(file)\n    for row in reader:\n        print(row)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The reader returns each row as a list. Notice that all values are strings (e.g., `'28'`), even if they look like numbers. You must convert them manually if you need integers.",
+              "### 2. Reading with DictReader",
+              "If your CSV has a header row (like `name,age,city`), `csv.DictReader` is much more convenient. It uses the first row as dictionary keys."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            caption: "READING WITH DICTREADER",
+            code: "import csv\nfrom pathlib import Path\n\nwith Path(\"mock_data.csv\").open(\"r\", encoding=\"utf-8\") as file:\n    reader = csv.DictReader(file)\n    for row in reader:\n        print(f\"{row['name']} lives in {row['city']}\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 3. Writing CSV files",
+              "To write data, open a file in `\"w\"` mode. You MUST include `newline=''` when opening the file for the `csv` module; otherwise, Windows might insert extra blank lines between your rows."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            caption: "WRITING CSV",
+            code: "import csv\nfrom pathlib import Path\n\noutput_path = Path(\"output.csv\")\ndata = [\n    [\"product\", \"price\", \"stock\"],\n    [\"Laptop\", 1200, 50],\n    [\"Mouse\", 25, 200]\n]\n\n# newline='' is strictly required for the csv module\nwith output_path.open(\"w\", encoding=\"utf-8\", newline=\"\") as file:\n    writer = csv.writer(file)\n    writer.writerows(data)\n\nprint(\"Written successfully! File contents:\")\nprint(output_path.read_text(encoding=\"utf-8\"))"
+          },
+          {
+            kind: "prose",
+            body: [
+              "## Common mistakes",
+              "- **Forgetting `newline=''` when writing.** This causes double-spaced rows on Windows machines.",
+              "- **Not specifying an encoding.** Always use `encoding=\"utf-8\"` to prevent crashing when encountering special characters like accents or emojis.",
+              "- **Assuming numbers are parsed.** The `csv` module always returns strings. You must cast them using `int()` or `float()` yourself.",
+              "- **Trying to read the file twice.** A reader consumes the file. If you need to read it again, you must `file.seek(0)` or reopen the file."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Never parse CSV files manually with `.split(',')`; always use the built-in `csv` module.",
+              "Use `csv.reader` and `csv.writer` to handle rows as lists.",
+              "Use `csv.DictReader` and `csv.DictWriter` to handle rows as dictionaries, automatically mapping the header row.",
+              "Always open CSV files with `newline=''` when writing to prevent cross-platform line ending bugs."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "csv-vs-split",
+                question: "Why should you use the `csv` module instead of `line.split(',')`?",
+                options: [
+                  "Because .split() cannot handle commas inside quoted values.",
+                  "Because the csv module is much faster.",
+                  "Because .split() removes all numbers.",
+                  "Because .split() cannot read files."
+                ],
+                correctIndex: 0,
+                explanation: "Values in CSVs are often wrapped in quotes (e.g., `\"Smith, John\"`). `.split(',')` will blindly split on that inner comma, breaking the data. The `csv` module handles this correctly."
+              },
+              {
+                id: "csv-types",
+                question: "When using `csv.reader`, what data type are the numbers in the returned rows?",
+                options: [
+                  "Strings",
+                  "Integers",
+                  "Floats",
+                  "It depends on the CSV column"
+                ],
+                correctIndex: 0,
+                explanation: "The standard `csv` module does not automatically detect or cast data types. Every field is returned as a string."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "working-with-json",
