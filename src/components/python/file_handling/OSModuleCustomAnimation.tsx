@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Folder, FileText, File, ListTree, Search, Eye } from "lucide-react";
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Folder, FileText, File, ListTree, Search, Eye, Server, Laptop, Database, Key, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
 
 export function OSModuleCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const totalSteps = 3;
+  const totalSteps = 7;
 
   useEffect(() => {
     if (!playing) return;
@@ -28,6 +28,10 @@ export function OSModuleCustomAnimation() {
           {step === 0 && <Step1ListDir key="step1" />}
           {step === 1 && <Step2IsFile key="step2" />}
           {step === 2 && <Step3Walk key="step3" />}
+          {step === 3 && <Step4Deploy key="step4" />}
+          {step === 4 && <Step5Path key="step5" />}
+          {step === 5 && <Step6Makedirs key="step6" />}
+          {step === 6 && <Step7Remove key="step7" />}
         </AnimatePresence>
       </div>
       
@@ -167,6 +171,152 @@ function Step3Walk() {
              <div>./project ['src'] ['README.md']</div>
              <div>./project/src ['utils'] ['main.py']</div>
              <div>./project/src/utils [] ['helper.py']</div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function Step4Deploy() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-8 p-4 rounded-xl border border-amber/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Safe deployment configuration</span><br/>
+        <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
+        export_dir = os.<span className="text-blue-400">getenv</span>(<span className="text-amber">"EXPORT_DIR"</span>, <span className="text-amber">"data"</span>)
+      </div>
+      
+      <div className="flex gap-4 w-full max-w-3xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-amber mb-4 font-bold flex items-center gap-2"><Laptop className="size-4" /> Local Run</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
+               No EXPORT_DIR set
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="px-3 py-1 rounded-full bg-amber/20 text-amber font-mono text-xs font-bold border border-amber/30">
+               Uses default: "data"
+             </motion.div>
+           </div>
+        </div>
+
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Server className="size-4" /> Production</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-emerald-500 font-mono text-sm justify-center font-bold">
+               EXPORT_DIR="/var/exports"
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-500 font-mono text-xs font-bold border border-emerald-500/30">
+               Uses: "/var/exports"
+             </motion.div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function Step5Path() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Path resolution matters</span><br/>
+        <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
+        <span className="text-mint font-medium">print</span>(os.path.<span className="text-blue-400">abspath</span>(<span className="text-amber">"data"</span>))
+      </div>
+      
+      <div className="flex justify-center gap-6 w-full max-w-2xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm relative">
+           <h4 className="text-xs uppercase tracking-widest text-sky-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Folder className="size-4" /> Running from different locations</h4>
+           
+           <div className="flex flex-col gap-4 mt-2">
+             <div className="flex flex-col gap-1">
+               <span className="text-muted-foreground text-xs uppercase">Terminal 1 (cwd: /Users/sam/project)</span>
+               <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="p-2 bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded border border-sky-500/20">
+                 /Users/sam/project/data
+               </motion.div>
+             </div>
+             
+             <div className="flex flex-col gap-1">
+               <span className="text-muted-foreground text-xs uppercase">Terminal 2 (cwd: /tmp)</span>
+               <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="p-2 bg-rose-500/10 text-rose-500 rounded border border-rose-500/20">
+                 /tmp/data <span className="text-[10px] ml-2 uppercase font-bold opacity-70">(Likely incorrect)</span>
+               </motion.div>
+             </div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function Step6Makedirs() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Idempotent directory creation</span><br/>
+        os.<span className="text-blue-400">makedirs</span>(<span className="text-amber">"data/exports"</span>, exist_ok=<span className="text-purple-400">True</span>)
+      </div>
+      
+      <div className="flex gap-4 w-full max-w-3xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Play className="size-4" /> Run 1</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="text-muted-foreground font-mono text-sm">
+               Directory does not exist
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-500 font-mono text-xs font-bold border border-emerald-500/30">
+               <CheckCircle2 className="size-3" /> Created "data/exports"
+             </motion.div>
+           </div>
+        </div>
+
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-blue-500 mb-4 font-bold flex items-center gap-2"><Play className="size-4" /> Run 2</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="text-muted-foreground font-mono text-sm">
+               Directory already exists
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-500 font-mono text-xs font-bold border border-blue-500/30">
+               <CheckCircle2 className="size-3" /> Safely ignored (No-op)
+             </motion.div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+function Step7Remove() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-rose-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-mint font-medium">try</span>:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;os.<span className="text-blue-400">remove</span>(<span className="text-amber">"contacts.tmp"</span>)<br/>
+        <span className="text-mint font-medium">except</span> <span className="text-blue-400">FileNotFoundError</span>:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-mint font-medium">pass</span> <span className="text-muted-foreground"># Already clean</span>
+      </div>
+      
+      <div className="flex justify-center gap-6 w-full max-w-2xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm relative">
+           <h4 className="text-xs uppercase tracking-widest text-rose-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Trash2 className="size-4" /> Safe Cleanup</h4>
+           
+           <div className="flex flex-col gap-3 mt-2">
+             <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-3 p-3 bg-surface-2 rounded border border-hairline">
+               <div className="p-2 rounded-full bg-rose-500/20 text-rose-500"><AlertCircle className="size-4" /></div>
+               <div>
+                 <div className="font-bold">File exists</div>
+                 <div className="text-xs text-muted-foreground">os.remove() deletes the file.</div>
+               </div>
+             </motion.div>
+             
+             <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="flex items-center gap-3 p-3 bg-surface-2 rounded border border-hairline">
+               <div className="p-2 rounded-full bg-emerald-500/20 text-emerald-500"><CheckCircle2 className="size-4" /></div>
+               <div>
+                 <div className="font-bold">File does not exist</div>
+                 <div className="text-xs text-muted-foreground">Catches exception, script continues safely.</div>
+               </div>
+             </motion.div>
            </div>
         </div>
       </div>
