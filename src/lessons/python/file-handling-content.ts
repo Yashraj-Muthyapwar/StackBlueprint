@@ -813,25 +813,27 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
       {
         slug: "os-module",
         title: "OS Module",
-        subtitle: "Inspect folders with os.",
+        subtitle: "Inspect folders and configure paths safely.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Sometimes you need to know what's inside a folder whether to process a hundred images, clean up old logs, or find a specific configuration file. The `os` module lets you inspect and traverse your file system."
+              "Sometimes you need to know what's inside a folder to process a hundred images or find a specific configuration file. The `os` module lets you inspect and traverse your file system.",
+              "Furthermore, production scripts run across different environments (laptops, testing, servers). Hard-coded paths make your code brittle. The `os` module allows your scripts to read configurations dynamically and build dependable paths safely."
             ]
           },
           {
             kind: "animation",
             variant: "os-module",
-            caption: "Inspecting the File System"
+            caption: "Inspecting the File System & Production Safety"
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
-              "The `os` module provides low-level tools to list folder contents (`listdir`), check properties (`os.path.isfile`), and recursively search through entire directory trees (`walk`)."
+              "The `os` module provides low-level tools to list folder contents (`listdir`), check properties (`os.path.isfile`), and recursively search through entire directory trees (`walk`).",
+              "It also acts as the bridge to the operating system, allowing you to read environment variables (`os.getenv`), safely create nested directories (`makedirs`), and manage file deletions."
             ]
           },
           {
@@ -843,8 +845,8 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
-            code: "import os\n\ncontents = os.listdir('.')\nprint(contents) # ['main.py', 'data', 'README.md']"
+            kind: "interactive-code",
+            code: "import os\n\ncontents = os.listdir('.')\nprint(contents)"
           },
           {
             kind: "prose",
@@ -854,32 +856,68 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: "import os\n\nfor item in os.listdir('.'):\n    if os.path.isdir(item):\n        print(f'{item} is a folder!')"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 3. Build locations from configuration",
+              "`os.environ` maps environment-variable names to strings. Use `os.getenv()` when a setting has a safe default.",
+              "`os.path.join()` combines path parts using the platform separator, and `os.path.abspath()` resolves it from the current working directory."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "import os\n\nexport_dir = os.getenv(\"EXPORT_DIR\", \"data\")\nreport_path = os.path.join(export_dir, \"contacts.csv\")\n\nprint(os.path.abspath(report_path))"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 4. Create directories safely",
+              "`os.makedirs()` creates every missing folder in a nested path. With `exist_ok=True`, it successfully ignores the operation if the directory already exists, making your script perfectly safe to rerun."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "import os\n\nexport_dir = os.getenv(\"EXPORT_DIR\", \"data/exports\")\nos.makedirs(export_dir, exist_ok=True)\n\nreport_path = os.path.join(export_dir, \"contacts.csv\")\nif os.path.exists(report_path):\n    print(\"A previous report will be replaced.\")\nelse:\n    print(\"A new report will be created.\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 5. Delete files explicitly",
+              "`os.remove()` deletes a file, not a directory. Catching `FileNotFoundError` makes cleanup safe to rerun. Never use broad deletions without careful validation."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "import os\n\n# Simulating a file creation\nopen(\"contacts.tmp\", \"w\").close()\n\ntry:\n    os.remove(\"contacts.tmp\")\n    print(\"Removed temporary file.\")\nexcept FileNotFoundError:\n    print(\"No temporary file to remove.\")"
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "`os.walk()` is incredibly powerful. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, the directories, and the files at each step."
+              "`os.walk()` is incredibly powerful for recursive operations. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, directories, and files at each step."
             ]
           },
           {
-            kind: "code",
-            code: "import os\n\nfor root, dirs, files in os.walk('.'):\n    for file in files:\n        if file.endswith('.txt'):\n            # Print the absolute path to every .txt file\n            print(os.path.join(root, file))"
+            kind: "interactive-code",
+            code: "import os\n\n# 1. Configuration and Paths\nos.environ[\"PROJECT_DIR\"] = \"demo_project\"\nbase_dir = os.getenv(\"PROJECT_DIR\")\nutils_dir = os.path.join(base_dir, \"src\", \"utils\")\n\n# 2. Safely create nested directories\nos.makedirs(utils_dir, exist_ok=True)\n\n# 3. Create dummy files\nfile_paths = [\n    os.path.join(base_dir, \"README.md\"),\n    os.path.join(base_dir, \"src\", \"main.py\"),\n    os.path.join(utils_dir, \"helper.py\")\n]\nfor p in file_paths:\n    with open(p, \"w\") as f: f.write(\"\")\n\nprint(f\"Created project at: {os.path.abspath(base_dir)}\\n\")\n\n# 4. Traverse with os.walk()\nprint(\"--- Searching for .py files ---\")\nfor root, dirs, files in os.walk(base_dir):\n    for file in files:\n        if file.endswith(\".py\"):\n            full_path = os.path.join(root, file)\n            print(f\"Found: {full_path}\")\n\n# 5. Cleanup\nprint(\"\\n--- Cleanup ---\")\nfor p in file_paths:\n    os.remove(p)\nprint(\"Files deleted successfully.\")"
           },
           {
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "**Modifying lists during os.walk():** If you modify the `dirs` list directly (like `dirs.remove('secret_folder')`), `os.walk()` will skip that folder. This is a neat trick, but can cause bugs if done accidentally!"
+            body: "**Modifying lists during os.walk():** If you modify the `dirs` list directly, `os.walk()` will skip that folder, which can cause bugs if done accidentally.\n**Hard-coding secrets:** Keep per-environment configuration (like API keys) outside the source code using `os.getenv`.\n**Expecting abspath() to find the script folder:** It resolves from the current working directory, not necessarily where the script is located."
           },
           {
             kind: "takeaways",
             items: [
-              "`os.listdir()` lists immediate children.",
-              "`os.path` contains helpers like `.isfile()` and `.isdir()`.",
-              "`os.walk()` traverses an entire directory tree recursively."
+              "`os.listdir()` lists immediate children, while `os.walk()` traverses an entire directory tree recursively.",
+              "`os.path` contains critical helpers like `.isfile()`, `.isdir()`, and `.join()`.",
+              "Environment variables let the same code run with different deployment configurations without changing code.",
+              "`makedirs(..., exist_ok=True)` makes directory setup dependable and repeatable.",
+              "Safe cleanup uses precise paths, narrow operations, and exception handling rather than assumptions."
             ]
           },
           {
@@ -895,6 +933,28 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
                 ],
                 correctIndex: 1,
                 explanation: "os.walk() yields a 3-tuple containing the current root directory path, a list of folders in it, and a list of files in it."
+              },
+              {
+                id: "os-prod-1",
+                question: "When should you use os.getenv(\"NAME\", default)?",
+                options: [
+                  "When the environment variable is strictly required.",
+                  "When a missing value has a safe default.",
+                  "To securely write a value to the environment."
+                ],
+                correctIndex: 1,
+                explanation: "getenv() is perfect for optional configuration since it falls back to the default if the key is missing."
+              },
+              {
+                id: "os-prod-2",
+                question: "What does os.makedirs(\"data/exports\", exist_ok=True) do on a second run?",
+                options: [
+                  "Raises a FileExistsError.",
+                  "Deletes and recreates the directory.",
+                  "It succeeds without changing the existing directory."
+                ],
+                correctIndex: 2,
+                explanation: "exist_ok=True makes the directory creation idempotent, so it safely ignores existing directories without failing."
               }
             ]
           }
