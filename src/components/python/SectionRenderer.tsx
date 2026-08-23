@@ -4,6 +4,7 @@ import { LessonAnimation } from "./LessonAnimation";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
+import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
 
 function highlightPython(line: string) {
   const KEYWORDS = new Set([
@@ -157,6 +158,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
         </figure>
       );
     }
+
+    case "interactive-code":
+      return <InteractivePythonBlock initialCode={section.code} caption={section.caption} />;
 
     case "table":
       return (
