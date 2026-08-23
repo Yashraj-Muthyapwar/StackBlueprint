@@ -819,7 +819,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Sometimes you need to know what's inside a folder—whether to process a hundred images, clean up old logs, or find a specific configuration file. The `os` module lets you inspect and traverse your file system."
+              "Sometimes you need to know what's inside a folder whether to process a hundred images, clean up old logs, or find a specific configuration file. The `os` module lets you inspect and traverse your file system."
             ]
           },
           {
