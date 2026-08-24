@@ -810,7 +810,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           }
         ]
       },
-            {
+      {
         slug: "os-module",
         title: "OS Module",
         subtitle: "Master Filesystem Workflows with os.",
@@ -1013,69 +1013,63 @@ shutil.rmtree(workspace)`
             kind: "prose",
             heading: "A simple example",
             body: [
-              "This complete workflow expands a workspace from the environment, creates and scans files, inspects a config file, secures it, performs an atomic update, traverses the tree, and removes only the workspace it created."
+              "This small file-processing workflow puts the main OS concepts together: it creates a workspace, builds paths, creates and inspects files, recursively explores the directory tree, reads an environment variable, moves a processed file, and cleans up the workspace."
             ]
+          },
+          {
+            kind: "callout",
+            tone: "info",
+            title: "Memorize this workflow, not every function.",
+            body: "**CREATE → WRITE → INSPECT → WALK → MOVE → CONFIG → CLEAN UP**\n\nThese are the OS/file-system patterns you'll repeatedly encounter when Python works with real files and directories."
           },
           {
             kind: "interactive-code",
             code: `import os
 import shutil
 
-starting_directory = os.getcwd()
-os.environ["PROJECT_DIR"] = os.path.join(starting_directory, "stackblueprint_os_lab")
-workspace = os.path.abspath(os.path.expandvars("$PROJECT_DIR"))
-home_directory = os.path.expanduser("~")
+# A small file-processing workspace
+workspace = "stackblueprint_os_lab"
+input_dir = os.path.join(workspace, "input")
+output_dir = os.path.join(workspace, "output")
 
-if os.path.basename(workspace) != "stackblueprint_os_lab":
-    raise RuntimeError("Refusing to use an unexpected workspace path.")
+# CREATE — make the folders we need
+os.makedirs(input_dir, exist_ok=True)
+os.makedirs(output_dir, exist_ok=True)
 
-config_directory = os.path.join(workspace, "config")
-logs_directory = os.path.join(workspace, "logs")
-empty_leaf = os.path.join(workspace, "temporary", "empty")
-os.makedirs(config_directory, exist_ok=True)
-os.makedirs(logs_directory, exist_ok=True)
-os.makedirs(empty_leaf, exist_ok=True)
+# WRITE — create a few sample files
+for filename in ["customers.csv", "orders.csv", "products.csv"]:
+    path = os.path.join(input_dir, filename)
 
-try:
-    os.chdir(workspace)
-    config_path = os.path.join("config", "settings.json")
-    temporary_config = os.path.join("config", "settings.tmp")
-    log_path = os.path.join("logs", "run.log")
-    archived_log = os.path.join("logs", "run-archived.log")
+    with open(path, "w", encoding="utf-8") as file:
+        file.write("sample data\\n")
 
-    with open(temporary_config, "w", encoding="utf-8") as file:
-        file.write('{"version": 1, "export_folder": "data"}\\n')
-    os.replace(temporary_config, config_path)
+# INSPECT — work with paths and file information
+for entry in os.scandir(input_dir):
+    print(
+        entry.name,
+        "| file:", entry.is_file(),
+        "| size:", entry.stat().st_size, "bytes"
+    )
 
-    with open(log_path, "w", encoding="utf-8") as file:
-        file.write("Contact export completed\\n")
-    os.rename(log_path, archived_log)
+# WALK — recursively find every file in the workspace
+print("\\nAll files:")
+for root, _, files in os.walk(workspace):
+    for filename in files:
+        print(os.path.join(root, filename))
 
-    os.chmod(config_path, 0o600)
-    head, tail = os.path.split(config_path)
-    root, extension = os.path.splitext(tail)
-    metadata = os.stat(config_path)
+# MOVE — simulate processing a file
+source = os.path.join(input_dir, "customers.csv")
+destination = os.path.join(output_dir, "customers.csv")
 
-    print(f"Path pieces: {head}, {root}, {extension}")
-    print(f"Name/parent: {os.path.basename(config_path)}, {os.path.dirname(config_path)}")
-    print(f"Exists/file/directory: {os.path.exists(config_path)}, {os.path.isfile(config_path)}")
-    print(f"Stat: {metadata.st_size}, {metadata.st_mtime}, {oct(metadata.st_mode & 0o777)}")
+os.replace(source, destination)
 
-    with os.scandir("config") as entries:
-        for entry in entries:
-            print(f"Scanned: {entry.name}, file={entry.is_file()}, size={entry.stat().st_size}")
+# ENVIRONMENT — read configuration supplied by the system
+environment = os.getenv("APP_ENV", "development")
+print("\\nEnvironment:", environment)
 
-    for folder, _, filenames in os.walk(workspace):
-        for filename in filenames:
-            print(f"Walked: {os.path.join(folder, filename)}")
-finally:
-    os.chdir(starting_directory)
-
-os.unlink(os.path.join(workspace, archived_log))
-os.unlink(os.path.join(workspace, config_path))
-os.removedirs(empty_leaf)
+# CLEAN UP — remove the workspace created by this example
 shutil.rmtree(workspace)
-print(f"Workspace removed: {not os.path.exists(workspace)}")`
+print("Workspace removed:", not os.path.exists(workspace))`
           },
           {
             kind: "takeaways",
@@ -1117,196 +1111,17 @@ print(f"Workspace removed: {not os.path.exists(workspace)}")`
       },
 
             {
-        slug: "working-with-csv",
-        title: "Working with CSV",
-        subtitle: "Exchange rows with CSV.",
-        sections: [
-          {
-            kind: "prose",
-            heading: "Why this matters",
-            body: [
-              "CSV is a common handoff format for spreadsheets, databases, and vendor tools. It is simple enough to open in a text editor, but real values can contain commas, quotes, or line breaks. Let Python's \`csv\` module handle those details.",
-              "Production CSV work also needs a clear file contract: expected columns, encoding, newline handling, and a useful failure when input is malformed."
-            ]
-          },
-          {
-            kind: "animation",
-            variant: "working-with-csv",
-            caption: "CSV Validation & Safe Exports"
-          },
-          {
-            kind: "prose",
-            heading: "The core idea",
-            body: [
-              "\`csv.DictWriter\` writes dictionaries using a declared column order. \`csv.DictReader\` reads a header row and returns each record as a dictionary. Always open a CSV file with \`newline=\"\"\` and a deliberate encoding such as UTF-8.",
-              "CSV contains text. Validate and convert values after reading it. For example, an email column may be empty, and a numeric-looking value is still a string until your code turns it into a number."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "Step-by-step",
-            body: [
-              "### 1. Create a complete CSV fixture"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `import csv
-from pathlib import Path
-
-path = Path("data/contacts.csv")
-path.parent.mkdir(parents=True, exist_ok=True)
-
-fieldnames = ["name", "email", "note"]
-contacts = [
-    {"name": "Ari Stone", "email": "ari@example.test", "note": "Met at the library"},
-    {"name": "Lee Park", "email": "lee@example.test", "note": "Calls, not email"},
-]
-
-with path.open("w", newline="", encoding="utf-8") as file:
-    writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction="raise")
-    writer.writeheader()
-    writer.writerows(contacts)
-
-print(f"Created: {path.resolve()}")`
-          },
-          {
-            kind: "prose",
-            body: [
-              "The code creates \`data\` before writing the file, so it can run from a new browser session. \`extrasaction=\"raise\"\` catches an unexpected dictionary key instead of quietly dropping it. The \`csv\` module quotes Lee's comma-containing note correctly.",
-              "### 2. Read and validate the file contract"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `import csv
-from pathlib import Path
-
-path = Path("data/contacts.csv")
-
-required_fields = {"name", "email", "note"}
-with path.open(newline="", encoding="utf-8") as file:
-    reader = csv.DictReader(file)
-    if reader.fieldnames is None or set(reader.fieldnames) != required_fields:
-        raise ValueError("CSV must contain name, email, and note columns.")
-
-    for line_number, contact in enumerate(reader, start=2):
-        if not contact["email"]:
-            raise ValueError(f"Missing email on CSV line {line_number}.")
-        print(contact["name"], contact["email"])`
-          },
-          {
-            kind: "prose",
-            body: [
-              "It checks the header and the one required value for this small contact export. In production, define the contract with the team or system that supplies the file, rather than guessing its columns.",
-              "### 3. Read rows as a stream and report parse failures"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `import csv
-from pathlib import Path
-
-path = Path("data/contacts.csv")
-
-try:
-    with path.open(newline="", encoding="utf-8") as file:
-        reader = csv.DictReader(file, strict=True)
-        for contact in reader:
-            print(contact["name"])
-except csv.Error as error:
-    raise ValueError(f"Could not parse {path}: {error}") from error`
-          },
-          {
-            kind: "prose",
-            body: [
-              "\`DictReader\` yields one row at a time, so this pattern can handle a large export without loading every record into memory. \`strict=True\` asks the parser to report malformed CSV rather than accepting it quietly."
-            ]
-          },
-          {
-            kind: "prose",
-            heading: "A simple example",
-            body: [
-              "Write a new export to a temporary file, then replace the final file only after the write finishes:"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `import csv
-from pathlib import Path
-
-output_path = Path("data/contacts.csv")
-output_path.parent.mkdir(parents=True, exist_ok=True)
-temporary_path = output_path.with_suffix(".tmp")
-
-contacts = [
-    {"name": "Ari Stone", "email": "ari@example.test", "note": "Practice export"},
-]
-
-with temporary_path.open("w", newline="", encoding="utf-8") as file:
-    writer = csv.DictWriter(file, fieldnames=["name", "email", "note"])
-    writer.writeheader()
-    writer.writerows(contacts)
-
-temporary_path.replace(output_path)
-
-with output_path.open(newline="", encoding="utf-8") as file:
-    print(list(csv.DictReader(file)))`
-          },
-          {
-            kind: "prose",
-            body: [
-              "The temporary file is fully written before \`replace()\` puts it at the final path. This reduces the chance that a reader sees a half-written export."
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Treat a CSV's headers and required values as a contract.",
-              "Open CSV files with UTF-8 and \`newline=\"\"\`.",
-              "Write a complete temporary export before replacing the final path."
-            ]
-          },
-          {
-            kind: "quiz",
-            questions: [
-              {
-                id: "csv-1",
-                question: "What creates a CSV header row?",
-                options: ["writer.writeheader()", "csv.headers()", "DictWriter automatically writes them"],
-                correctIndex: 0,
-                explanation: "writer.writeheader() explicitly writes the column names from fieldnames to the file."
-              },
-              {
-                id: "csv-2",
-                question: "Why use newline=\"\" when opening a CSV file?",
-                options: ["It removes all newlines from the file", "It lets the csv module handle CSV line endings correctly", "It makes the file read faster"],
-                correctIndex: 1,
-                explanation: "It lets the csv module handle CSV line endings correctly, preventing extra blank lines on Windows."
-              },
-              {
-                id: "csv-3",
-                question: "What does DictReader return for each row?",
-                options: ["A string of comma-separated values", "A list of strings", "A dictionary keyed by the header names"],
-                correctIndex: 2,
-                explanation: "A dictionary keyed by the header names, allowing you to access columns by name."
-              }
-            ]
-          }
-        ]
-      },
-
-            {
         slug: "working-with-json",
         title: "Working with JSON",
-        subtitle: "Safely load and validate configuration data.",
+        subtitle: "Safely load, validate, update, and stream JSON data.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "JSON is a readable format for settings, web responses, and nested application data. It is a good fit for non-secret configuration such as an export folder or selected columns.",
-              "Treat a JSON file as input from outside your program, even when you created it. It can be missing, malformed, or have the wrong shape."
+              "JSON is the common language of web APIs, configuration files, data exports, and messages between services. A Python program might load application settings from JSON in the morning, receive an API response at noon, and write a JSON export in the afternoon.",
+              "JSON is readable and language-neutral, but a JSON file is still external input. It can be missing, malformed, truncated after a failed write, or syntactically valid while having the wrong structure. Reliable code distinguishes those cases, validates data at the boundary, and writes important updates safely.",
+              "Use JSON for non-secret structured data such as settings, report metadata, and API payloads. Do not store passwords, API keys, database URLs, or access tokens in committed JSON files. Keep secrets in environment variables or a managed secret store."
             ]
           },
           {
@@ -1318,15 +1133,86 @@ with output_path.open(newline="", encoding="utf-8") as file:
             kind: "prose",
             heading: "The core idea",
             body: [
-              "\`json.dump()\` writes a Python value to an open file, and \`json.load()\` reads one back. The string-based counterparts are \`dumps()\` and \`loads()\`.",
-              "JSON can represent objects, lists, strings, numbers, booleans, and null. It cannot safely hold secrets by itself. Keep API keys, passwords, and database URLs in environment variables or a managed secret store."
+              "Python's standard-library `json` module translates between JSON text and ordinary Python values."
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["JSON", "Python after decoding", "Notes"],
+            rows: [
+              ["object", "`dict`", "JSON object keys are always strings."],
+              ["array", "`list`", "A JSON array always becomes a list, not a tuple."],
+              ["string", "`str`", "Unicode text is supported."],
+              ["number without a decimal point", "`int`", "Python integers have arbitrary precision."],
+              ["number with a decimal point or exponent", "`float`", "Use `Decimal` when exact money values matter."],
+              ["`true` / `false`", "`True` / `False`", "JSON uses lowercase; Python uses capitalized names."],
+              ["`null`", "`None`", "Represents an intentional missing value."]
             ]
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
             body: [
-              "### 1. Create a versioned settings file"
+              "The four core functions differ only by where text comes from or goes to:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["You have / need", "Parse JSON into Python", "Encode Python as JSON"],
+            rows: [
+              ["A string", "`json.loads(text)`", "`json.dumps(data)` returns a string"],
+              ["An open text file", "`json.load(file)`", "`json.dump(data, file)` writes to the file"]
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "`loads` means “load string,” and `dumps` means “dump string.”",
+              "### 1. Start with JSON text",
+              "Use `json.loads()` when JSON already lives in a string, such as an HTTP response body. Once parsed, work with normal Python dictionaries and lists."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+
+# Imagine this came from an API response.
+json_text = '{"name": "Ari Stone", "age": 28, "active": true}'
+
+# Convert JSON text to a Python object.
+data = json.loads(json_text)
+
+print(data)
+print(data["name"])
+print(type(data))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "JSON is stricter than Python syntax: object keys and strings use double quotes, booleans are `true` and `false`, and the null value is `null`. Do not use `eval()` to parse JSON; `json.loads()` is designed for this format and reports useful parse errors.",
+              "Use `json.dumps()` when you need JSON text in memory:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+
+data = {
+    "name": "Ari Stone",
+    "age": 28,
+    "active": True,
+}
+
+# Convert a Python object to JSON text.
+json_text = json.dumps(data, indent=2)
+
+print(json_text)
+print(type(json_text))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 2. Read and write a JSON file",
+              "Use `json.dump()` and `json.load()` with an open text file. Specify `encoding=\"utf-8\"` so names and other non-ASCII text are handled consistently across operating systems."
             ]
           },
           {
@@ -1334,7 +1220,7 @@ with output_path.open(newline="", encoding="utf-8") as file:
             code: `import json
 from pathlib import Path
 
-path = Path("data/settings.json")
+path = Path("json_lab/settings.json")
 path.parent.mkdir(parents=True, exist_ok=True)
 
 settings = {
@@ -1346,13 +1232,54 @@ settings = {
 with path.open("w", encoding="utf-8") as file:
     json.dump(settings, file, indent=2, ensure_ascii=False, sort_keys=True)
 
-print(path.read_text(encoding="utf-8"))`
+with path.open(encoding="utf-8") as file:
+    loaded_settings = json.load(file)
+
+print(loaded_settings["export_folder"])`
           },
           {
             kind: "prose",
             body: [
-              "The code creates \`data\` and writes the JSON before reading it back for display. \`indent=2\` makes the file reviewable; \`sort_keys=True\` makes its order stable in diffs.",
-              "### 2. Load and validate the expected shape"
+              "A regular JSON file contains one complete value: one object, one array, one string, and so on. `json.load()` reads and parses that entire value in memory, so it is a great fit for settings and small to medium documents. Use JSON Lines later in this lesson when records are too large to load all at once.",
+              "### 3. Choose readable or compact output",
+              "Formatting is a choice based on the reader. Use indented output for configuration that people review. Use compact output for a network payload or a space-sensitive field."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+
+customer = {
+    "name": "Ana García",
+    "status": "active",
+    "contact_count": 12,
+}
+
+pretty = json.dumps(customer, indent=2, sort_keys=True, ensure_ascii=False)
+compact = json.dumps(customer, separators=(",", ":"), sort_keys=True, ensure_ascii=False)
+
+print(pretty)
+print(compact)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`indent=2` adds whitespace for people. `sort_keys=True` produces a stable key order, which makes diffs and tests easier to read. `separators=(\",\", \":\")` removes optional spaces. `ensure_ascii=False` keeps UTF-8 characters readable instead of escaping them.",
+              "Python can encode `NaN`, `Infinity`, and `-Infinity` by default even though strict JSON consumers may reject them. Use `allow_nan=False` when you need standards-compliant JSON:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+
+json_text = json.dumps({"score": 9.5}, allow_nan=False)
+print(json_text)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 4. Handle missing files, bad JSON, and wrong shapes",
+              "Different failures need different responses. A missing file may mean “use defaults.” Malformed JSON needs an error the user can fix. Valid JSON with the wrong structure needs validation before the program uses it."
             ]
           },
           {
@@ -1360,28 +1287,46 @@ print(path.read_text(encoding="utf-8"))`
             code: `import json
 from pathlib import Path
 
-path = Path("data/settings.json")
 
-try:
-    with path.open(encoding="utf-8") as file:
-        settings = json.load(file)
-except json.JSONDecodeError as error:
-    raise ValueError(f"Invalid JSON in {path}: {error.msg}") from error
+def validate_settings(value: object) -> dict:
+    if not isinstance(value, dict):
+        raise ValueError("Settings must be a JSON object.")
 
-if not isinstance(settings, dict):
-    raise ValueError("Settings must be a JSON object.")
-if settings.get("version") != 1:
-    raise ValueError("Unsupported settings version.")
-if not isinstance(settings.get("columns"), list):
-    raise ValueError("Settings columns must be a list.")
+    if type(value.get("version")) is not int or value["version"] != 1:
+        raise ValueError("Settings must use version 1.")
 
-print(settings["export_folder"])`
+    if not isinstance(value.get("export_folder"), str):
+        raise ValueError("Settings export_folder must be a string.")
+
+    columns = value.get("columns")
+    if not isinstance(columns, list) or not all(isinstance(column, str) for column in columns):
+        raise ValueError("Settings columns must be a list of strings.")
+
+    return value
+
+
+def load_settings(path: Path) -> dict:
+    try:
+        with path.open(encoding="utf-8") as file:
+            return validate_settings(json.load(file))
+    except FileNotFoundError:
+        return {
+            "version": 1,
+            "export_folder": "data/exports",
+            "columns": ["name", "email"],
+        }
+    except json.JSONDecodeError as error:
+        raise ValueError(
+            f"Invalid JSON in {path} at line {error.lineno}, column {error.colno}: {error.msg}"
+        ) from error`
           },
           {
             kind: "prose",
             body: [
-              "Loading only proves the text is valid JSON. Validation confirms it has the structure your program expects. Keep error messages useful, but do not include sensitive values.",
-              "### 3. Replace a settings file after a complete write"
+              "`json.JSONDecodeError` includes `msg`, `lineno`, `colno`, and `pos`, so a useful message can point directly to the broken location. Do not silently overwrite a malformed settings file with defaults; that hides the problem and can destroy recoverable information.",
+              "The `type(... ) is int` check intentionally rejects `True` and `False`, because Python considers booleans instances of `int`. Validate as deeply as your program needs: required keys, types, version, allowed values, and nested records.",
+              "### 5. Write complete updates, then replace the old file",
+              "Writing directly to an existing configuration file can leave a partial document if the process stops while writing. For an important local file, write the entire new document to a temporary file in the same folder, then replace the final file."
             ]
           },
           {
@@ -1389,98 +1334,800 @@ print(settings["export_folder"])`
             code: `import json
 from pathlib import Path
 
-path = Path("data/settings.json")
 
-with path.open(encoding="utf-8") as file:
-    settings = json.load(file)
+def write_json_atomically(path: Path, data: object) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_name(f".{path.name}.tmp")
 
-settings["columns"].append("email")
-temporary_path = path.with_suffix(".tmp")
+    try:
+        with temporary_path.open("w", encoding="utf-8") as file:
+            json.dump(
+                data,
+                file,
+                indent=2,
+                ensure_ascii=False,
+                sort_keys=True,
+                allow_nan=False,
+            )
+            file.flush()
 
-with temporary_path.open("w", encoding="utf-8") as file:
-    json.dump(settings, file, indent=2, ensure_ascii=False, sort_keys=True)
+        temporary_path.replace(path)
+    except Exception:
+        temporary_path.unlink(missing_ok=True)
+        raise
 
-temporary_path.replace(path)
 
-with path.open(encoding="utf-8") as file:
-    print(json.load(file))`
+write_json_atomically(
+    Path("json_lab/settings.json"),
+    {"version": 1, "export_folder": "data/exports", "columns": ["name", "email"]},
+)`
           },
           {
             kind: "prose",
             body: [
-              "This example writes the update to a temporary path before replacing the final path. Keep the temporary file in the same folder so the replacement uses the same filesystem."
+              "Keep the temporary file beside the destination so the replacement stays on the same filesystem. `Path.replace()` deliberately overwrites the destination, so use it only with a precise, controlled path. Atomic replacement prevents partial visibility; durable writes and multi-process coordination require additional platform-specific work.",
+              "### 6. Convert Python-only values deliberately",
+              "JSON cannot directly encode `datetime`, `Decimal`, `Path`, `set`, bytes, functions, or custom class instances. Convert each one into a documented JSON-friendly representation."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from datetime import datetime
+from decimal import Decimal
+from pathlib import Path
+
+
+def serialize_unknown(value: object):
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, Decimal):
+        return str(value)
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, set):
+        return sorted(value)
+    raise TypeError(f"Cannot encode {type(value).__name__} as JSON")
+
+
+report = {
+    "generated_at": datetime(2026, 8, 24, 9, 30),
+    "total": Decimal("89.97"),
+    "source_file": Path("data/contacts.csv"),
+    "tags": {"priority", "reviewed"},
+}
+
+print(json.dumps(report, default=serialize_unknown, indent=2, sort_keys=True))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`default=` is called only for values the encoder does not already understand. It must return something JSON can encode or raise `TypeError`. Converting a `Decimal` to a string preserves its exact value; converting it to a float can introduce rounding error.",
+              "For a small number of special values, a `default` function is the clearest option. For a reusable project-wide policy, subclass `json.JSONEncoder` and override `default()`. For custom classes, a `to_dict()` method that returns plain JSON-friendly data usually keeps the format easiest to understand.",
+              "### 7. Decode special values only when you control the format",
+              "When you own both the writer and reader, `object_hook` can convert selected decoded objects. For exact decimal prices, `parse_float=Decimal` converts JSON decimal numbers before they become floats."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from datetime import datetime
+from decimal import Decimal
+
+
+def parse_known_dates(value: dict) -> dict:
+    if value.get("_type") == "export_event" and isinstance(value.get("created_at"), str):
+        value["created_at"] = datetime.fromisoformat(value["created_at"])
+    return value
+
+
+event_text = '{"_type": "export_event", "created_at": "2026-08-24T09:30:00", "total": 89.97}'
+event = json.loads(event_text, object_hook=parse_known_dates, parse_float=Decimal)
+
+print(type(event["created_at"]).__name__)
+print(type(event["total"]).__name__)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`object_hook` runs for every decoded JSON object, from inner objects outward. A `_type` field is your own convention, not a JSON feature. Keep hooks narrow and use them only for data formats you control; for untrusted input, plain dictionaries plus explicit validation are easier to audit.",
+              "### 8. Stream record collections with JSON Lines",
+              "Regular JSON is one complete document, so a large array must be loaded as a whole. JSON Lines (also called NDJSON or `.jsonl`) stores one self-contained JSON value per line. It is a strong choice for logs, append-only events, and large exports."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from pathlib import Path
+
+path = Path("json_lab/contact-events.jsonl")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+events = [
+    {"event": "export_started", "count": 0},
+    {"event": "export_finished", "count": 3},
+]
+
+with path.open("w", encoding="utf-8") as file:
+    for event in events:
+        file.write(json.dumps(event, separators=(",", ":")) + "\n")
+
+with path.open(encoding="utf-8") as file:
+    for line in file:
+        line = line.strip()
+        if line:
+            print(json.loads(line))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Process each line immediately instead of appending every record to a list when the file is large. JSON Lines is not a single valid JSON array, so use it for independent records—not for one configuration object that people edit by hand."
             ]
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "This complete configuration workflow writes default settings, loads them, validates them, and then prints one approved value:"
+              "This complete workflow creates a clean browser-safe workspace, writes default settings, loads and validates them, makes a safe update, and records an audit event as JSON Lines."
             ]
           },
           {
             kind: "interactive-code",
             code: `import json
+from datetime import datetime
 from pathlib import Path
 
-path = Path("data/contact_settings.json")
-path.parent.mkdir(parents=True, exist_ok=True)
 
-defaults = {
+def validate_settings(settings):
+    """
+    JSON syntax can be valid while the application's data is wrong.
+    Check that the configuration has the structure we expect.
+    """
+    if not isinstance(settings, dict):
+        raise ValueError("Settings must be a JSON object.")
+
+    if settings.get("version") != 1:
+        raise ValueError("Unsupported settings version.")
+
+    if not isinstance(settings.get("export_folder"), str):
+        raise ValueError("export_folder must be a string.")
+
+    if not isinstance(settings.get("columns"), list):
+        raise ValueError("columns must be a list.")
+
+    if not all(isinstance(column, str) for column in settings["columns"]):
+        raise ValueError("columns must contain strings.")
+
+    return settings
+
+
+def save_json(path, data):
+    """
+    Write the complete JSON to a temporary file first,
+    then replace the real file.
+    """
+    temp_path = path.with_name(f".{path.name}.tmp")
+
+    with temp_path.open("w", encoding="utf-8") as file:
+        json.dump(
+            data,
+            file,
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+
+    temp_path.replace(path)
+
+
+# 1. Set up
+# Create the workspace used by our small application.
+workspace = Path("json_lab")
+settings_path = workspace / "contact_settings.json"
+events_path = workspace / "events.jsonl"
+
+workspace.mkdir(exist_ok=True)
+
+# Pyodide can keep files between runs, so start clean.
+for path in (settings_path, events_path):
+    path.unlink(missing_ok=True)
+
+
+# 2. Create default settings
+# This is a normal Python dictionary.
+settings = {
     "version": 1,
     "export_folder": "data/exports",
-    "include_notes": True,
+    "columns": ["name", "email"],
 }
 
-with path.open("w", encoding="utf-8") as file:
-    json.dump(defaults, file, indent=2, sort_keys=True)
+# Python object -> JSON file
+save_json(settings_path, settings)
 
-with path.open(encoding="utf-8") as file:
-    settings = json.load(file)
 
-if settings.get("version") != 1 or not isinstance(settings.get("include_notes"), bool):
-    raise ValueError("Settings file has an unsupported format.")
+# 3. Load and validate
+# JSON file -> Python dictionary
 
-print(f"Exports will go to: {settings['export_folder']}")`
+try:
+    with settings_path.open(encoding="utf-8") as file:
+        settings = validate_settings(json.load(file))
+except json.JSONDecodeError as error:
+    raise ValueError(f"Invalid JSON: {error.msg}") from error
+
+
+# 4. Update and save
+# After json.load(), this is just a normal Python dictionary.
+if "phone" not in settings["columns"]:
+    settings["columns"].append("phone")
+
+    # Save the updated configuration safely.
+    save_json(settings_path, settings)
+
+
+# 5. Record what happened
+# JSONL is useful for independent events that can be appended.
+event = {
+    "event": "settings_updated",
+    "created_at": datetime.now().isoformat(timespec="seconds"),
+    "column_count": len(settings["columns"]),
+}
+
+# Python dictionary -> JSON text -> one JSONL record
+with events_path.open("a", encoding="utf-8") as file:
+    file.write(json.dumps(event, separators=(",", ":")) + "\n")
+
+
+# 6. Use the approved configuration
+print("Export folder:", settings["export_folder"])
+print("Columns:", settings["columns"])
+print("Event:", event)`
           },
           {
-            kind: "prose",
-            body: [
-              "In an application, you might write defaults only on first run and preserve existing user settings."
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "JSON works well for readable, non-secret structured configuration.",
-              "Loading and validating are separate steps.",
-              "Use a temporary file before replacing an existing config."
-            ]
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Confusing `load()` with `loads()`:** `load()` reads an open file; `loads()` parses a string. The `dump` functions follow the same file-versus-string pattern.\n\n**Using Python syntax inside JSON:** JSON needs double-quoted keys and strings, lowercase `true`/`false`, and `null` instead of `None`.\n\n**Treating valid JSON as valid configuration:** Parse errors and schema errors are different. Check required keys, types, versions, and nested values after loading.\n\n**Silently overwriting malformed JSON with defaults:** Surface the error so the source file can be fixed or recovered.\n\n**Writing an important final file directly:** Write a complete temporary file, then replace the controlled destination.\n\n**Encoding Python-only objects by accident:** Convert `datetime`, `Decimal`, `Path`, and `set` to an explicit JSON representation.\n\n**Loading a huge record collection as one array:** Use JSON Lines or a streaming parser when you need bounded memory.\n\n**Storing secrets in JSON:** Use environment variables or a secret manager for credentials."
           },
           {
             kind: "quiz",
             questions: [
               {
-                id: "json-1",
+                id: "json-v3-1",
+                question: "Which function parses JSON from a string?",
+                options: ["json.load()", "json.loads()", "json.parse()"],
+                correctIndex: 1,
+                explanation: "json.loads() parses JSON from a string (the 's' stands for string)."
+              },
+              {
+                id: "json-v3-2",
                 question: "Which function writes JSON to an open file?",
                 options: ["json.dump()", "json.dumps()", "json.write()"],
                 correctIndex: 0,
-                explanation: "json.dump() writes to an open file, while json.dumps() returns a string."
+                explanation: "json.dump() serializes a Python object directly into an open file."
               },
               {
-                id: "json-2",
-                question: "Which exception identifies malformed JSON?",
-                options: ["ValueError", "json.JSONDecodeError", "SyntaxError"],
+                id: "json-v3-3",
+                question: "What Python type does a JSON array become?",
+                options: ["tuple", "list", "set", "array"],
                 correctIndex: 1,
-                explanation: "json.JSONDecodeError is raised when json.load() fails to parse the string."
+                explanation: "JSON arrays are always decoded into Python lists."
               },
               {
-                id: "json-3",
-                question: "Why is it important to validate JSON after loading it?",
-                options: ["Because loading doesn't check if the JSON matches your expected schema/types.", "Because loading doesn't parse it into Python objects.", "Because load() returns a string."],
+                id: "json-v3-4",
+                question: "Which exception identifies malformed JSON?",
+                options: ["json.JSONDecodeError", "ValueError", "SyntaxError"],
                 correctIndex: 0,
-                explanation: "load() only verifies it is valid JSON. It does not check if it has the right keys or value types (e.g., list vs dict) your program needs."
+                explanation: "json.JSONDecodeError includes details about the exact line and column where parsing failed."
+              },
+              {
+                id: "json-v3-5",
+                question: "Why validate after parsing?",
+                options: ["Parsing doesn't create Python objects", "Valid JSON can still have missing keys or incorrect value types", "Parsing only reads strings"],
+                correctIndex: 1,
+                explanation: "Syntax validation is not schema validation. You still need to ensure the structure meets your program's needs."
+              },
+              {
+                id: "json-v3-6",
+                question: "Which option makes JSON readable for a human reviewer?",
+                options: ["indent=2", "readable=True", "separators=(',', ':')"],
+                correctIndex: 0,
+                explanation: "indent=2 formats the JSON string with 2-space indentation and newlines."
+              },
+              {
+                id: "json-v3-7",
+                question: "Which option preserves readable Unicode characters?",
+                options: ["encoding='utf-8'", "ensure_ascii=False", "unicode=True"],
+                correctIndex: 1,
+                explanation: "ensure_ascii=False prevents json.dumps() from escaping characters into \\uXXXX sequences."
+              },
+              {
+                id: "json-v3-8",
+                question: "When is JSON Lines a better fit than a regular JSON array?",
+                options: ["For large or append-only independent records", "When formatting for human review", "When creating small configuration files"],
+                correctIndex: 0,
+                explanation: "JSON Lines keeps memory usage low by allowing you to process one record at a time, making it ideal for large datasets or logs."
               }
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "JSON is a portable text format for structured, non-secret data.",
+              "`load`/`dump` work with files; `loads`/`dumps` work with strings.",
+              "Use UTF-8 and choose pretty or compact output deliberately.",
+              "Parsing, validation, and safe writing are separate responsibilities.",
+              "Convert Python-only values into a documented JSON shape.",
+              "Use JSON Lines for large independent records; use a regular JSON document for small configuration trees."
+            ]
+          }
+        ]
+      },
+
+
+
+
+      {
+        slug: "working-with-csv",
+        title: "Working with CSV",
+        subtitle: "Exchange rows with CSV.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "CSV is the handoff format used by spreadsheets, accounting systems, supplier catalogs, database exports, and reporting tools. It looks simple, but real CSV contains commas, quotes, embedded line breaks, missing values, different encodings, and columns that change over time.",
+              "Production CSV code needs more than \"read rows and write rows.\" It needs a contract: expected headers, encoding, delimiter, quoting behavior, required values, numeric conversion, and a clear policy for bad input. These are the same concerns that appear in data-import systems, ETL jobs, and interview questions about scalable data processing."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "working-with-csv",
+            caption: "Robust CSV Parsing & Pipelines"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Never parse CSV with `line.split(\",\")`. A comma, quote, or newline can be part of a field. Python's built-in `csv` module implements the CSV rules for you."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+import io
+
+raw = '"Anker, Wireless Mouse",29.99,"She said ""great mouse"""'
+
+print(raw.split(","))
+
+reader = csv.reader(io.StringIO(raw))
+print(next(reader))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The manual split returns the wrong number of pieces. `csv.reader` returns three complete fields and unescapes the inner quotation marks.",
+              "Use the `csv` interface that matches your data:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["Task", "Best tool", "Result"],
+            rows: [
+              ["Read positional rows", "`csv.reader`", "Each row is a `list[str]`."],
+              ["Write positional rows", "`csv.writer`", "Write lists or tuples with `writerow()` / `writerows()`."],
+              ["Read header-based records", "`csv.DictReader`", "Each row is a dictionary keyed by the header."],
+              ["Write declared columns", "`csv.DictWriter`", "Write dictionaries in a chosen column order."]
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "CSV has no native types: every field arrives as text. Convert and validate values after reading. Always open CSV files with `newline=\"\"` and an explicit encoding. `newline=\"\"` lets the `csv` module manage row endings correctly and avoids extra blank rows on Windows.",
+              "### 1. Read rows and convert types deliberately",
+              "`csv.reader` is a good fit when a file has a fixed positional layout. It streams one row at a time, which keeps memory use low even for large files."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from decimal import Decimal
+from pathlib import Path
+
+path = Path("csv_lab/products.csv")
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text(
+    'product_id,name,price,stock\\n'
+    'P001,"Wireless Mouse",29.99,42\\n'
+    'P002,"USB-C Hub, Pro",24.50,7\\n',
+    encoding="utf-8",
+)
+
+with path.open(newline="", encoding="utf-8") as file:
+    reader = csv.reader(file)
+    header = next(reader)
+    print("Columns:", header)
+
+    inventory_value = Decimal("0")
+    for line_number, row in enumerate(reader, start=2):
+        if len(row) != 4:
+            raise ValueError(f"Line {line_number} must have 4 columns.")
+
+        product_id, name, price_text, stock_text = row
+        try:
+            price = Decimal(price_text)
+            stock = int(stock_text)
+        except (ValueError, ArithmeticError) as error:
+            raise ValueError(f"Invalid price or stock on line {line_number}.") from error
+
+        inventory_value += price * stock
+        print(product_id, name, price, stock)
+
+print(f"Inventory value: \${inventory_value:.2f}")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Every CSV field is text when it is read. Convert IDs, counts, dates, booleans, and prices explicitly. `Decimal` avoids the rounding surprises of binary floating-point values when the data represents money.",
+              "Do not call `list(reader)` for an import that might be large. Iterate over `reader` directly so memory stays proportional to one row plus the state your transformation needs.",
+              "### 2. Read named columns with a strict contract",
+              "`csv.DictReader` maps each row to the field names in the header. This is safer and more readable than `row[2]`, especially when a supplier changes column order."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from pathlib import Path
+
+path = Path("csv_lab/contacts.csv")
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text(
+    "name,email,note\\n"
+    'Ari Stone,ari@example.test,"Met at the library"\\n',
+    encoding="utf-8",
+)
+
+expected_fields = ["name", "email", "note"]
+missing_value = object()
+
+with path.open(newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(
+        file,
+        restkey="_extra_fields",
+        restval=missing_value,
+        strict=True,
+    )
+
+    if reader.fieldnames != expected_fields:
+        raise ValueError(f"Expected header {expected_fields}, got {reader.fieldnames}.")
+
+    for line_number, contact in enumerate(reader, start=2):
+        if contact.get("_extra_fields"):
+            raise ValueError(f"Line {line_number} has extra fields.")
+        if any(contact[field] is missing_value for field in expected_fields):
+            raise ValueError(f"Line {line_number} has too few fields.")
+        if not contact["name"].strip() or not contact["email"].strip():
+            raise ValueError(f"Line {line_number} needs a name and email.")
+
+        print(contact["name"], contact["email"])`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`restkey` captures surplus columns instead of silently dropping them. `restval` marks missing columns. For an exact import contract, compare `reader.fieldnames` to the ordered expected list; if your contract allows extra columns or any order, validate that policy explicitly instead.",
+              "`strict=True` asks the parser to raise `csv.Error` for malformed quoting. It does not replace schema validation, because a perfectly valid CSV row can still be missing a required business value.",
+              "### 3. Write a spreadsheet-ready export",
+              "`csv.DictWriter` writes dictionaries using a declared field order. `writeheader()` creates the header row; `extrasaction=\"raise\"` catches unexpected keys instead of silently omitting data."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from pathlib import Path
+
+path = Path("csv_lab/contact_export.csv")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+fieldnames = ["name", "email", "note"]
+contacts = [
+    {"name": "Ari Stone", "email": "ari@example.test", "note": "Practice export"},
+    {"name": "Lee Park", "email": "lee@example.test", "note": "Calls, not email"},
+]
+
+with path.open("w", newline="", encoding="utf-8") as file:
+    writer = csv.DictWriter(
+        file,
+        fieldnames=fieldnames,
+        extrasaction="raise",
+        lineterminator="\\n",
+    )
+    writer.writeheader()
+    writer.writerows(contacts)
+
+print(path.read_text(encoding="utf-8"))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The writer quotes comma-containing text and escapes embedded quotes automatically. `fieldnames` controls output order, not the order in which each dictionary was built. For a user-facing report, format values before writing: for example, use `f\"{total:.2f}\"` for a two-decimal currency value.",
+              "For a CSV that people will open directly in older Windows Excel, use `encoding=\"utf-8-sig\"` on write. It adds a UTF-8 byte-order mark that helps Excel recognize non-ASCII characters. For most APIs, databases, and new files, plain `utf-8` is the best default.",
+              "### 4. Adapt to delimiters, dialects, and unknown files",
+              "CSV is a family of formats. A supplier may send a semicolon-separated file because commas are used as decimal marks, or a tab-separated file from a legacy system. Pin the format for known partners."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from decimal import Decimal
+from pathlib import Path
+
+path = Path("csv_lab/eu_products.csv")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+with path.open("w", newline="", encoding="utf-8") as file:
+    writer = csv.writer(file, delimiter=";", quotechar='"')
+    writer.writerow(["product_id", "name", "price"])
+    writer.writerow(["P001", "Wireless Mouse", "19,99"])
+
+with path.open(newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file, delimiter=";")
+    for row in reader:
+        price = Decimal(row["price"].replace(",", "."))
+        print(row["name"], price)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`csv.Sniffer` can guess a delimiter and whether a header is present, but it is a heuristic. Use it for one-off, user-uploaded files after giving the user a chance to confirm the result; do not use it as the source of truth for a known production feed."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+
+sample = "product_id;name;price\\nP001;Mouse;19,99\\nP002;Hub;24,50\\n"
+sniffer = csv.Sniffer()
+dialect = sniffer.sniff(sample, delimiters=",;\\t|")
+
+print(repr(dialect.delimiter))
+print(sniffer.has_header(sample))  # A hint, not a guarantee.`
+          },
+          {
+            kind: "prose",
+            body: [
+              "For a reusable partner format, register a dialect once with `csv.register_dialect()`. Most pipelines should keep the default `QUOTE_MINIMAL`; it quotes only fields that need it. Avoid `QUOTE_NONNUMERIC` for business data because it converts every unquoted number to `float`, including integer-looking values.",
+              "### 5. Protect spreadsheet users and report bad rows",
+              "CSV is plain text, but spreadsheet software may treat a cell beginning with `=`, `+`, `-`, or `@` as a formula. If untrusted text will be exported for people to open in Excel or similar tools, neutralize those values before writing."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `def spreadsheet_safe(value: object) -> str:
+    text = str(value)
+    if text.startswith(("=", "+", "-", "@")):
+        return "'" + text
+    return text
+
+print(spreadsheet_safe("=HYPERLINK(\\"https://example.test\\")"))
+print(spreadsheet_safe("Normal note"))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Apply this at the spreadsheet-export boundary, not when importing or storing the original value. Preserve the source data internally and make the output policy explicit.",
+              "For imports, keep a line number, record a reason for rejection, and decide whether the job should stop on the first invalid row or continue while collecting rejected rows. Critical financial or identity imports often fail closed; exploratory uploads may produce a reject report for the user.",
+              "### 6. Write complete exports, then replace the old file",
+              "An export should not appear at its final name until it is complete. Write it to a temporary file in the same folder and replace the destination after the writer closes successfully."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from pathlib import Path
+
+
+def write_csv_atomically(path: Path, fieldnames: list[str], rows: list[dict]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_name(f".{path.name}.tmp")
+
+    try:
+        with temporary_path.open("w", newline="", encoding="utf-8") as file:
+            writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction="raise", lineterminator="\\n")
+            writer.writeheader()
+            writer.writerows(rows)
+            file.flush()
+        temporary_path.replace(path)
+    except Exception:
+        temporary_path.unlink(missing_ok=True)
+        raise
+
+write_csv_atomically(
+    Path("csv_lab/contacts.csv"),
+    ["name", "email"],
+    [{"name": "Ari Stone", "email": "ari@example.test"}],
+)
+print("Safely replaced contacts.csv!")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The temporary file must live beside the final file so replacement happens on the same filesystem. This prevents readers from seeing a partially written final export, but it does not provide multi-process locking or guaranteed durability after a power loss."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "This example creates a product catalog and review feed, validates their headers and values, aggregates ratings, and atomically writes a product summary."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from collections import defaultdict
+from decimal import Decimal
+from pathlib import Path
+
+
+PRODUCT_FIELDS = ["product_id", "name", "price"]
+REVIEW_FIELDS = ["product_id", "rating"]
+SUMMARY_FIELDS = [
+    "product_id",
+    "name",
+    "price",
+    "review_count",
+    "average_rating",
+]
+
+
+def validate_header(reader, expected_fields, path):
+    if reader.fieldnames != expected_fields:
+        raise ValueError(
+            f"{path} must have columns {expected_fields}"
+        )
+
+
+def write_csv(path, fieldnames, rows):
+    """Write a complete CSV before replacing the final file."""
+    temp_path = path.with_name(f".{path.name}.tmp")
+
+    with temp_path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(
+            file,
+            fieldnames=fieldnames,
+            extrasaction="raise",
+            lineterminator="\\n",
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    temp_path.replace(path)
+
+
+# 1. CREATE INPUT FILES
+workspace = Path("csv_lab")
+workspace.mkdir(exist_ok=True)
+
+products_path = workspace / "products.csv"
+reviews_path = workspace / "reviews.csv"
+summary_path = workspace / "product_summary.csv"
+
+products = [
+    {"product_id": "P001", "name": "Wireless Mouse", "price": "29.99"},
+    {"product_id": "P002", "name": "Mechanical Keyboard", "price": "89.99"},
+    {"product_id": "P003", "name": "USB-C Hub, Pro", "price": "24.50"},
+]
+
+reviews = [
+    {"product_id": "P001", "rating": "5"},
+    {"product_id": "P001", "rating": "4"},
+    {"product_id": "P002", "rating": "5"},
+]
+
+write_csv(products_path, PRODUCT_FIELDS, products)
+write_csv(reviews_path, REVIEW_FIELDS, reviews)
+
+
+# 2. READ REVIEWS AS A STREAM
+ratings = defaultdict(lambda: [0, 0])
+
+with reviews_path.open(newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file, strict=True)
+    validate_header(reader, REVIEW_FIELDS, reviews_path)
+
+    for row in reader:
+        rating = int(row["rating"])
+
+        if not 1 <= rating <= 5:
+            raise ValueError("Rating must be between 1 and 5.")
+
+        ratings[row["product_id"]][0] += rating
+        ratings[row["product_id"]][1] += 1
+
+
+# 3. READ PRODUCTS + JOIN THE DATA
+summary = []
+
+with products_path.open(newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file, strict=True)
+    validate_header(reader, PRODUCT_FIELDS, products_path)
+
+    for row in reader:
+        price = Decimal(row["price"])
+        total, count = ratings.get(row["product_id"], [0, 0])
+
+        average = Decimal(total) / count if count else Decimal("0")
+
+        summary.append({
+            "product_id": row["product_id"],
+            "name": row["name"],
+            "price": f"{price:.2f}",
+            "review_count": count,
+            "average_rating": f"{average:.2f}",
+        })
+
+
+# 4. WRITE THE FINAL EXPORT SAFELY
+write_csv(summary_path, SUMMARY_FIELDS, summary)
+
+print(summary_path.read_text(encoding="utf-8"))`
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "**Splitting lines with `split(\",\")`:** Quoted commas, quotes, and embedded newlines make this unreliable. Use `csv.reader` or `csv.DictReader`.\n\n**Skipping `newline=\"\"`:** The `csv` module needs direct control over line endings; skipping it can create blank rows on Windows.\n\n**Assuming CSV has types:** Every field starts as text. Convert and validate it deliberately.\n\n**Trusting the header without checking it:** A reordered, missing, duplicate, or extra column can corrupt an import silently.\n\n**Using floats for currency:** Use `Decimal` when exact arithmetic or stable two-decimal output matters.\n\n**Letting `Sniffer` define a known feed:** It can guess incorrectly. Pin delimiter, quoting, encoding, and headers in the contract.\n\n**Writing directly to a final export:** A crash can leave a partial CSV. Write a complete sibling temp file first, then replace it.\n\n**Ignoring formula injection:** Text beginning with `=`, `+`, `-`, or `@` can behave as a formula in spreadsheet software."
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "csv-v3-1",
+                question: "Why should CSV not be parsed with split(',')?",
+                options: ["It uses too much memory", "Fields can contain quoted commas, quotation marks, and newlines", "It cannot parse UTF-8 characters"],
+                correctIndex: 1,
+                explanation: "Manual splitting fails when the comma is inside quotes, or when a field contains a newline."
+              },
+              {
+                id: "csv-v3-2",
+                question: "Why use newline='' when opening a CSV file?",
+                options: ["It removes extra whitespace", "It lets the csv module handle CSV record endings correctly", "It increases read performance"],
+                correctIndex: 1,
+                explanation: "The csv module needs direct control over newlines, otherwise Windows writes extra blank rows."
+              },
+              {
+                id: "csv-v3-3",
+                question: "What type does DictReader give each row?",
+                options: ["A list of strings", "A dictionary keyed by header names", "A Pandas DataFrame"],
+                correctIndex: 1,
+                explanation: "DictReader maps the first row (the header) to dictionary keys for all subsequent rows."
+              },
+              {
+                id: "csv-v3-4",
+                question: "What type does every CSV field have before conversion?",
+                options: ["float or int", "str", "bytes"],
+                correctIndex: 1,
+                explanation: "CSV is a purely text format. Everything arrives as strings."
+              },
+              {
+                id: "csv-v3-5",
+                question: "What is the time complexity of a hash-map CSV join?",
+                options: ["O(n * m)", "O(n + m)", "O(1)"],
+                correctIndex: 1,
+                explanation: "Building the map takes O(n), and scanning the second file takes O(m), making the average time O(n + m)."
+              }
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Use Python's `csv` module, never manual string splitting.",
+              "Treat headers, encoding, delimiter, and row values as a declared data contract.",
+              "Open CSV files with UTF-8 and `newline=\"\"`.",
+              "Stream rows, convert types at the boundary, and report bad rows with useful context.",
+              "Write important exports to a temporary sibling file and replace the final file only when complete.",
+              "Use `DictReader` and `DictWriter` for readable header-driven pipelines, and choose joining strategies based on data size."
             ]
           }
         ]
