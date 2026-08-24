@@ -179,7 +179,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                       key={i}
                       className="border-b border-hairline px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em]"
                     >
-                      {h}
+                      {parseInlineMarkdown(h)}
                     </th>
                   ))}
                 </tr>
@@ -195,7 +195,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                           (ci === 0 ? "font-medium text-foreground" : "text-muted-foreground")
                         }
                       >
-                        {cell}
+                        {parseInlineMarkdown(String(cell))}
                       </td>
                     ))}
                   </tr>
