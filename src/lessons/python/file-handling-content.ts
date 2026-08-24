@@ -54,7 +54,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]"
+            code: `from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]`
           },
           {
             kind: "prose",
@@ -71,7 +71,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")"
+            code: `with open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")`
           },
           {
             kind: "prose",
@@ -88,7 +88,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    saved_contacts = file.read()\n\nprint(saved_contacts)"
+            code: `with open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    saved_contacts = file.read()\n\nprint(saved_contacts)`
           },
           {
             kind: "prose",
@@ -105,7 +105,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]\n\nwith open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")\n\nwith open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    print(file.read())"
+            code: `from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]\n\nwith open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")\n\nwith open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    print(file.read())`
           },
           {
             kind: "prose",
@@ -211,7 +211,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "interactive-code",
-            code: "from pathlib import Path\n\nprint(Path.cwd())"
+            code: `from pathlib import Path\n\nprint(Path.cwd())`
           },
           {
             kind: "prose",
@@ -221,7 +221,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "interactive-code",
-            code: "from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\nprint(contacts_path)"
+            code: `from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\nprint(contacts_path)`
           },
           {
             kind: "prose",
@@ -232,7 +232,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "interactive-code",
-            code: "from pathlib import Path\n\nworkspace = Path(\"contact_workspace\")\nexports = workspace / \"exports\"\nexports.mkdir(parents=True, exist_ok=True)\n\nreport = exports / \"contacts-august.txt\"\nprint(report.name)\nprint(report.stem)\nprint(report.suffix)\nprint(report.exists())"
+            code: `from pathlib import Path\n\nworkspace = Path(\"contact_workspace\")\nexports = workspace / \"exports\"\nexports.mkdir(parents=True, exist_ok=True)\n\nreport = exports / \"contacts-august.txt\"\nprint(report.name)\nprint(report.stem)\nprint(report.suffix)\nprint(report.exists())`
           },
           {
             kind: "prose",
@@ -243,7 +243,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "interactive-code",
-            code: "from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\n\ndata_folder.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Ada Reed\\n\")\n\nfor text_file in Path(\".\").rglob(\"*.txt\"):\n    print(text_file)"
+            code: `from pathlib import Path\n\ndata_folder = Path(\"data\")\ncontacts_path = data_folder / \"contacts.txt\"\n\ndata_folder.mkdir(exist_ok=True)\n\nwith contacts_path.open(\"w\", encoding=\"utf-8\") as file:\n    file.write(\"Ada Reed\\n\")\n\nfor text_file in Path(\".\").rglob(\"*.txt\"):\n    print(text_file)`
           },
           {
             kind: "prose",
@@ -260,7 +260,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "interactive-code",
-            code: "from pathlib import Path\n\nexports = Path(\"contact_workspace/exports\")\nexports.mkdir(parents=True, exist_ok=True)\n\nfor month in [\"june\", \"july\", \"august\"]:\n    (exports / f\"contacts-{month}.txt\").write_text(\n        \"Practice contact export\\n\", encoding=\"utf-8\"\n    )\n\nfor file_path in sorted(exports.glob(\"contacts-*.txt\")):\n    print(file_path.name)\n    print(file_path.resolve())"
+            code: `from pathlib import Path\n\nexports = Path(\"contact_workspace/exports\")\nexports.mkdir(parents=True, exist_ok=True)\n\nfor month in [\"june\", \"july\", \"august\"]:\n    (exports / f\"contacts-{month}.txt\").write_text(\n        \"Practice contact export\\n\", encoding=\"utf-8\"\n    )\n\nfor file_path in sorted(exports.glob(\"contacts-*.txt\")):\n    print(file_path.name)\n    print(file_path.resolve())`
           },
           {
             kind: "prose",
@@ -375,7 +375,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read everything into one giant string\n    content = file.read()\n    print(content)"
+            code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read everything into one giant string\n    content = file.read()\n    print(content)`
           },
           {
             kind: "prose",
@@ -386,7 +386,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read one line, then stop\n    first_line = file.readline()\n    second_line = file.readline()\n    print(first_line, end='')"
+            code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read one line, then stop\n    first_line = file.readline()\n    second_line = file.readline()\n    print(first_line, end='')`
           },
           {
             kind: "prose",
@@ -397,7 +397,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read all lines into a list\n    lines = file.readlines()\n    \n    for line in lines:\n        print(line, end='')"
+            code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read all lines into a list\n    lines = file.readlines()\n    \n    for line in lines:\n        print(line, end='')`
           },
           {
             kind: "prose",
@@ -414,7 +414,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r') as file:\n    for line in file:\n        print(line, end='')"
+            code: `with open('poem.txt', 'r') as file:\n    for line in file:\n        print(line, end='')`
           },
           {
             kind: "callout",
@@ -499,7 +499,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('log.txt', 'w', encoding='utf-8') as file:\n    file.write('Booting up...\\n')\n    file.write('System online.\\n')"
+            code: `with open('log.txt', 'w', encoding='utf-8') as file:\n    file.write('Booting up...\\n')\n    file.write('System online.\\n')`
           },
           {
             kind: "prose",
@@ -511,7 +511,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('log.txt', 'a', encoding='utf-8') as file:\n    file.write('User logged in.\\n')"
+            code: `with open('log.txt', 'a', encoding='utf-8') as file:\n    file.write('User logged in.\\n')`
           },
           {
             kind: "prose",
@@ -528,7 +528,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "lines_to_add = ['Apple\\n', 'Orange\\n']\nwith open('fruits.txt', 'a', encoding='utf-8') as file:\n    file.writelines(lines_to_add)"
+            code: `lines_to_add = ['Apple\\n', 'Orange\\n']\nwith open('fruits.txt', 'a', encoding='utf-8') as file:\n    file.writelines(lines_to_add)`
           },
           {
             kind: "callout",
@@ -613,7 +613,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "try:\n    with open('important.txt', 'x') as file:\n        file.write('First!')\nexcept FileExistsError:\n    print('File already exists!')"
+            code: `try:\n    with open('important.txt', 'x') as file:\n        file.write('First!')\nexcept FileExistsError:\n    print('File already exists!')`
           },
           {
             kind: "prose",
@@ -624,7 +624,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('log.txt', 'r+') as file:\n    content = file.read() # We can read\n    file.write('\\nDone.') # AND we can write!"
+            code: `with open('log.txt', 'r+') as file:\n    content = file.read() # We can read\n    file.write('\\nDone.') # AND we can write!`
           },
           {
             kind: "prose",
@@ -635,7 +635,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('photo.jpg', 'rb') as file:\n    bytes = file.read(10)\n    print(bytes) # b'\\xff\\xd8\\xff\\xe0\\x00\\x10JFIF'"
+            code: `with open('photo.jpg', 'rb') as file:\n    bytes = file.read(10)\n    print(bytes) # b'\\xff\\xd8\\xff\\xe0\\x00\\x10JFIF'`
           },
           {
             kind: "prose",
@@ -652,7 +652,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('source.png', 'rb') as src:\n    with open('copy.png', 'wb') as dest:\n        dest.write(src.read())"
+            code: `with open('source.png', 'rb') as src:\n    with open('copy.png', 'wb') as dest:\n        dest.write(src.read())`
           },
           {
             kind: "callout",
@@ -737,7 +737,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r') as file:\n    print(file.tell()) # 0\n    file.read(5)\n    print(file.tell()) # 5"
+            code: `with open('poem.txt', 'r') as file:\n    print(file.tell()) # 0\n    file.read(5)\n    print(file.tell()) # 5`
           },
           {
             kind: "prose",
@@ -748,7 +748,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('poem.txt', 'r') as file:\n    content = file.read()\n    \n    file.seek(0) # Rewind to the very beginning!\n    \n    read_again = file.read()"
+            code: `with open('poem.txt', 'r') as file:\n    content = file.read()\n    \n    file.seek(0) # Rewind to the very beginning!\n    \n    read_again = file.read()`
           },
           {
             kind: "prose",
@@ -765,7 +765,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           },
           {
             kind: "code",
-            code: "with open('huge_data.bin', 'rb') as file:\n    file.seek(1024) # Skip the first 1024 bytes (e.g. a header)\n    chunk = file.read(256) # Read the next 256 bytes\n    print(chunk)"
+            code: `with open('huge_data.bin', 'rb') as file:\n    file.seek(1024) # Skip the first 1024 bytes (e.g. a header)\n    chunk = file.read(256) # Read the next 256 bytes\n    print(chunk)`
           },
           {
             kind: "callout",
@@ -810,121 +810,281 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
           }
         ]
       },
-      {
+            {
         slug: "os-module",
         title: "OS Module",
-        subtitle: "Inspect folders and configure paths safely.",
+        subtitle: "Master Filesystem Workflows with os.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Sometimes you need to know what’s inside a folder. For example, you may need to process hundreds of images or locate a specific configuration file. The `os` module lets you inspect directories, navigate through folders, and work with files programmatically.",
-              "Production scripts also run across different environments such as laptops, testing machines, and servers. Hard-coded paths break easily when environments change, so using dynamic configurations and safely constructed paths helps keep your code portable, reliable, and production-ready."
+              "Programs need to prepare folders, locate files, inspect what is already there, and remove temporary results. These tasks become harder when the same code runs on a laptop, in CI, or on a server with different paths and configuration.",
+              "Python's \`os\` and \`os.path\` modules provide a portable, string-based interface to the operating system. \`shutil\` handles higher-level directory operations such as removing an entire controlled workspace."
             ]
           },
           {
             kind: "animation",
             variant: "os-module",
-            caption: "Inspecting the File System & Production Safety"
+            caption: "Workspace Management"
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
-              "The `os` module provides essential tools for interacting with the operating system. You can list folder contents with `listdir`, check whether a path points to a file with `os.path.isfile`, and recursively search through directory trees with `walk`.",
-              "Beyond file and directory operations, it also lets your programs work with their environment. You can read environment variables with `os.getenv`, create nested directories with `makedirs`, and manage files and directories programmatically."
+              "Treat a path as data until you intentionally act on it. Build a path with \`os.path.join()\`, inspect it with \`os.path\` or \`os.stat()\`, then perform a narrow operation with clear error handling.",
+              "Use environment variables for deployment-specific configuration, such as a workspace location. Do not put passwords, API keys, or machine-specific absolute paths in source code."
+            ]
+          },
+          {
+            kind: "table",
+            caption: "os and pathlib reference",
+            headers: ["Task", "os / os.path", "pathlib.Path"],
+            rows: [
+              ["Current directory", "\`os.getcwd()\`", "\`Path.cwd()\`"],
+              ["List immediate children", "\`os.listdir(path)\`", "\`Path(path).iterdir()\`"],
+              ["Check whether a path exists", "\`os.path.exists(path)\`", "\`Path(path).exists()\`"],
+              ["Join path parts", "\`os.path.join(folder, name)\`", "\`Path(folder) / name\`"],
+              ["Get a file extension", "\`os.path.splitext(path)[1]\`", "\`Path(path).suffix\`"],
+              ["Create a directory tree", "\`os.makedirs(path, exist_ok=True)\`", "\`Path(path).mkdir(parents=True, exist_ok=True)\`"],
+              ["Get file size", "\`os.path.getsize(path)\`", "\`Path(path).stat().st_size\`"],
+              ["Find recursive matches", "\`os.walk(path)\` plus filtering", "\`Path(path).rglob(\"*.csv\")\`"]
             ]
           },
           {
             kind: "prose",
             heading: "Step-by-step",
             body: [
-              "### 1. List immediate children",
-              "`os.listdir()` returns a list of all files and folders directly inside a directory."
+              "### 1. Resolve configured paths and navigate carefully",
+              "\`os.environ\` is a mapping of environment-variable names to strings. Use \`os.getenv()\` when a missing setting has a safe default. \`expandvars()\` expands \`$VARIABLE\` references, and \`expanduser()\` expands \`~\` to the current user's home directory."
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\ncontents = os.listdir('.')\nprint(contents)"
+            code: `import os
+
+starting_directory = os.getcwd()
+os.environ.setdefault("PROJECT_DIR", "os_lab_navigation")
+
+workspace = os.path.abspath(os.path.expandvars("$PROJECT_DIR"))
+home_directory = os.path.expanduser("~")
+config_path = os.path.join(workspace, "config", "settings.json")
+
+os.makedirs(workspace, exist_ok=True)
+
+try:
+    os.chdir(workspace)
+    print(f"Working in: {os.getcwd()}")
+    print(f"Home: {home_directory}")
+    print(f"Config path: {config_path}")
+finally:
+    os.chdir(starting_directory)`
           },
           {
             kind: "prose",
             body: [
-              "### 2. Check if it's a file or folder",
-              "`listdir` just gives you strings. You often need to use `os.path.isfile()` or `os.path.isdir()` to figure out what those strings represent."
+              "\`os.chdir()\` changes how every later relative path is interpreted. Save and restore the original directory with \`try\`/\`finally\` whenever a script must change it.",
+              "### 2. Create, scan, traverse, and remove empty directories",
+              "\`os.makedirs(path, exist_ok=True)\` creates missing parent directories. \`os.scandir()\` yields \`DirEntry\` objects; their \`is_file()\`, \`is_dir()\`, and \`stat()\` methods can use cached information, making them efficient when you need metadata while iterating."
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\nfor item in os.listdir('.'):\n    if os.path.isdir(item):\n        print(f'{item} is a folder!')"
+            code: `import os
+
+workspace = os.path.abspath("os_lab_directories")
+reports = os.path.join(workspace, "reports", "daily")
+empty_leaf = os.path.join(workspace, "temporary", "empty")
+os.makedirs(reports, exist_ok=True)
+os.makedirs(empty_leaf, exist_ok=True)
+
+report_path = os.path.join(reports, "contact-report.txt")
+with open(report_path, "w", encoding="utf-8") as file:
+    file.write("Contacts processed: 2\\n")
+
+with os.scandir(reports) as entries:
+    for entry in entries:
+        print(entry.name, entry.is_file(), entry.stat().st_size)
+
+for folder, directories, filenames in os.walk(workspace):
+    for filename in filenames:
+        print(f"Walked: {os.path.join(folder, filename)}")
+
+os.removedirs(empty_leaf)`
           },
           {
             kind: "prose",
             body: [
-              "### 3. Build locations from configuration",
-              "`os.environ` maps environment-variable names to strings. Use `os.getenv()` when a setting has a safe default.",
-              "`os.path.join()` combines path parts using the platform separator, and `os.path.abspath()` resolves it from the current working directory."
+              "\`os.walk()\` yields a directory path, a list of subdirectory names, and a list of filenames. \`os.removedirs(path)\` removes an empty leaf directory, then tries to remove its empty parents.",
+              "### 3. Decompose paths and inspect metadata"
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\nexport_dir = os.getenv(\"EXPORT_DIR\", \"data\")\nreport_path = os.path.join(export_dir, \"contacts.csv\")\n\nprint(os.path.abspath(report_path))"
+            code: `import os
+
+workspace = os.path.abspath("os_lab_inspection")
+os.makedirs(workspace, exist_ok=True)
+report_path = os.path.join(workspace, "contacts.csv")
+
+with open(report_path, "w", encoding="utf-8") as file:
+    file.write("name,email\\nAri Stone,ari@example.test\\n")
+
+head, tail = os.path.split(report_path)
+root, extension = os.path.splitext(tail)
+metadata = os.stat(report_path)
+
+print(f"Exists/file/directory: {os.path.exists(report_path)}, "
+      f"{os.path.isfile(report_path)}, {os.path.isdir(workspace)}")
+print(f"Split: {head}, {tail}, {root}, {extension}")
+print(f"Name/parent: {os.path.basename(report_path)}, {os.path.dirname(report_path)}")
+print(f"Size: {os.path.getsize(report_path)} bytes")
+print(f"Stat mode/size/modified: {metadata.st_mode}, {metadata.st_size}, {metadata.st_mtime}")`
           },
           {
             kind: "prose",
             body: [
-              "### 4. Create directories safely",
-              "`os.makedirs()` creates every missing folder in a nested path. With `exist_ok=True`, it successfully ignores the operation if the directory already exists, making your script perfectly safe to rerun."
+              "\`getsize()\`, \`getmtime()\`, and \`getctime()\` return a size in bytes and timestamps in seconds. \`os.stat()\` returns one \`stat_result\` with fields including \`st_mode\`, \`st_size\`, and \`st_mtime\`.",
+              "### 4. Secure and update files predictably",
+              "On POSIX systems, octal permission modes describe owner, group, and others (e.g., \`0o644\` for normal files, \`0o755\` for executables, \`0o600\` for private files)."
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\nexport_dir = os.getenv(\"EXPORT_DIR\", \"data/exports\")\nos.makedirs(export_dir, exist_ok=True)\n\nreport_path = os.path.join(export_dir, \"contacts.csv\")\nif os.path.exists(report_path):\n    print(\"A previous report will be replaced.\")\nelse:\n    print(\"A new report will be created.\")"
+            code: `import os
+
+workspace = os.path.abspath("os_lab_updates")
+os.makedirs(workspace, exist_ok=True)
+
+temporary_config = os.path.join(workspace, "settings.tmp")
+config_path = os.path.join(workspace, "settings.json")
+draft_log = os.path.join(workspace, "run.log")
+archived_log = os.path.join(workspace, "run-archived.log")
+
+with open(temporary_config, "w", encoding="utf-8") as file:
+    file.write('{"version": 1}\\n')
+os.replace(temporary_config, config_path)
+
+with open(draft_log, "w", encoding="utf-8") as file:
+    file.write("Contact export completed\\n")
+os.rename(draft_log, archived_log)
+
+os.chmod(config_path, 0o600)
+permissions = os.stat(config_path).st_mode & 0o777
+print(f"Private config mode: {oct(permissions)}")`
           },
           {
             kind: "prose",
             body: [
-              "### 5. Delete files explicitly",
-              "`os.remove()` deletes a file, not a directory. Catching `FileNotFoundError` makes cleanup safe to rerun. Never use broad deletions without careful validation."
+              "\`os.replace(source, destination)\` is the right choice when your code deliberately replaces an existing destination.",
+              "### 5. Delete narrowly and deliberately"
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\n# Simulating a file creation\nopen(\"contacts.tmp\", \"w\").close()\n\ntry:\n    os.remove(\"contacts.tmp\")\n    print(\"Removed temporary file.\")\nexcept FileNotFoundError:\n    print(\"No temporary file to remove.\")"
+            code: `import os
+import shutil
+
+workspace = os.path.abspath("os_lab_cleanup")
+empty_directory = os.path.join(workspace, "empty")
+temporary_file = os.path.join(workspace, "contacts.tmp")
+os.makedirs(empty_directory, exist_ok=True)
+
+with open(temporary_file, "w", encoding="utf-8") as file:
+    file.write("temporary data\\n")
+
+os.unlink(temporary_file)
+os.rmdir(empty_directory)
+
+with open(os.path.join(workspace, "final.tmp"), "w", encoding="utf-8") as file:
+    file.write("more temporary data\\n")
+os.remove(os.path.join(workspace, "final.tmp"))
+
+shutil.rmtree(workspace)`
           },
           {
             kind: "prose",
             body: [
-              "### 6. Traverse recursively with os.walk()",
-              "`os.walk()` is incredibly powerful for recursive operations. It visits a folder, then visits all its sub-folders, and their sub-folders, yielding the path, directories, and files at each step."
+              "\`shutil.rmtree()\` recursively removes a directory tree, including its contents, so use it only with a precise, controlled path.",
+              "Avoid broad paths, unvalidated user input, and current-directory shortcuts such as \`\".\"\` in cleanup code."
             ]
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "Let's combine everything we've learned into one robust script. This script dynamically reads a project path, safely builds the directory structure, creates dummy files, searches them with `os.walk()`, and finally cleans up."
+              "This complete workflow expands a workspace from the environment, creates and scans files, inspects a config file, secures it, performs an atomic update, traverses the tree, and removes only the workspace it created."
             ]
           },
           {
             kind: "interactive-code",
-            code: "import os\n\n# 1. Configuration and Paths\nos.environ[\"PROJECT_DIR\"] = \"demo_project\"\nbase_dir = os.getenv(\"PROJECT_DIR\")\nutils_dir = os.path.join(base_dir, \"src\", \"utils\")\n\n# 2. Safely create nested directories\nos.makedirs(utils_dir, exist_ok=True)\n\n# 3. Create dummy files\nfile_paths = [\n    os.path.join(base_dir, \"README.md\"),\n    os.path.join(base_dir, \"src\", \"main.py\"),\n    os.path.join(utils_dir, \"helper.py\")\n]\nfor p in file_paths:\n    with open(p, \"w\") as f: f.write(\"\")\n\nprint(f\"Created project at: {os.path.abspath(base_dir)}\\n\")\n\n# 4. Traverse with os.walk()\nprint(\"--- Searching for .py files ---\")\nfor root, dirs, files in os.walk(base_dir):\n    for file in files:\n        if file.endswith(\".py\"):\n            full_path = os.path.join(root, file)\n            print(f\"Found: {full_path}\")\n\n# 5. Cleanup\nprint(\"\\n--- Cleanup ---\")\nfor p in file_paths:\n    os.remove(p)\nprint(\"Files deleted successfully.\")"
-          },
-          {
-            kind: "callout",
-            tone: "warn",
-            title: "Common mistakes",
-            body: "**Modifying lists during os.walk():** If you modify the `dirs` list directly, `os.walk()` will skip that folder, which can cause bugs if done accidentally.\n**Hard-coding secrets:** Keep per-environment configuration (like API keys) outside the source code using `os.getenv`.\n**Expecting abspath() to find the script folder:** It resolves from the current working directory, not necessarily where the script is located."
+            code: `import os
+import shutil
+
+starting_directory = os.getcwd()
+os.environ["PROJECT_DIR"] = os.path.join(starting_directory, "stackblueprint_os_lab")
+workspace = os.path.abspath(os.path.expandvars("$PROJECT_DIR"))
+home_directory = os.path.expanduser("~")
+
+if os.path.basename(workspace) != "stackblueprint_os_lab":
+    raise RuntimeError("Refusing to use an unexpected workspace path.")
+
+config_directory = os.path.join(workspace, "config")
+logs_directory = os.path.join(workspace, "logs")
+empty_leaf = os.path.join(workspace, "temporary", "empty")
+os.makedirs(config_directory, exist_ok=True)
+os.makedirs(logs_directory, exist_ok=True)
+os.makedirs(empty_leaf, exist_ok=True)
+
+try:
+    os.chdir(workspace)
+    config_path = os.path.join("config", "settings.json")
+    temporary_config = os.path.join("config", "settings.tmp")
+    log_path = os.path.join("logs", "run.log")
+    archived_log = os.path.join("logs", "run-archived.log")
+
+    with open(temporary_config, "w", encoding="utf-8") as file:
+        file.write('{"version": 1, "export_folder": "data"}\\n')
+    os.replace(temporary_config, config_path)
+
+    with open(log_path, "w", encoding="utf-8") as file:
+        file.write("Contact export completed\\n")
+    os.rename(log_path, archived_log)
+
+    os.chmod(config_path, 0o600)
+    head, tail = os.path.split(config_path)
+    root, extension = os.path.splitext(tail)
+    metadata = os.stat(config_path)
+
+    print(f"Path pieces: {head}, {root}, {extension}")
+    print(f"Name/parent: {os.path.basename(config_path)}, {os.path.dirname(config_path)}")
+    print(f"Exists/file/directory: {os.path.exists(config_path)}, {os.path.isfile(config_path)}")
+    print(f"Stat: {metadata.st_size}, {metadata.st_mtime}, {oct(metadata.st_mode & 0o777)}")
+
+    with os.scandir("config") as entries:
+        for entry in entries:
+            print(f"Scanned: {entry.name}, file={entry.is_file()}, size={entry.stat().st_size}")
+
+    for folder, _, filenames in os.walk(workspace):
+        for filename in filenames:
+            print(f"Walked: {os.path.join(folder, filename)}")
+finally:
+    os.chdir(starting_directory)
+
+os.unlink(os.path.join(workspace, archived_log))
+os.unlink(os.path.join(workspace, config_path))
+os.removedirs(empty_leaf)
+shutil.rmtree(workspace)
+print(f"Workspace removed: {not os.path.exists(workspace)}")`
           },
           {
             kind: "takeaways",
             items: [
-              "`os.listdir()` lists immediate children, while `os.walk()` traverses an entire directory tree recursively.",
-              "`os.path` contains critical helpers like `.isfile()`, `.isdir()`, and `.join()`.",
-              "Environment variables let the same code run with different deployment configurations without changing code.",
-              "`makedirs(..., exist_ok=True)` makes directory setup dependable and repeatable.",
-              "Safe cleanup uses precise paths, narrow operations, and exception handling rather than assumptions."
+              "Use environment expansion and \`os.path.join()\` instead of hard-coded machine paths.",
+              "\`scandir()\`, \`os.path\`, and \`stat()\` provide different levels of filesystem inspection.",
+              "Use \`os.replace()\` for deliberate file replacement and \`chmod()\` for POSIX permission bits.",
+              "Keep cleanup narrow: unlink known files, remove known empty directories, and reserve \`shutil.rmtree()\` for controlled workspaces.",
+              "Never change the working directory without saving and restoring it with a \`try\`/\`finally\` block."
             ]
           },
           {
@@ -932,159 +1092,400 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             questions: [
               {
                 id: "os-1",
-                question: "What does os.walk() return on each iteration?",
-                options: [
-                  "Just a list of files",
-                  "A tuple of (root_path, directories_list, files_list)",
-                  "A file object"
-                ],
+                question: "What does os.scandir() yield?",
+                options: ["Strings representing file names", "DirEntry objects that can report type information and metadata", "A list of files and folders"],
                 correctIndex: 1,
-                explanation: "os.walk() yields a 3-tuple containing the current root directory path, a list of folders in it, and a list of files in it."
+                explanation: "os.scandir() is efficient because it yields DirEntry objects that often contain cached metadata like size and file type."
               },
               {
-                id: "os-prod-1",
-                question: "When should you use os.getenv(\"NAME\", default)?",
-                options: [
-                  "When the environment variable is strictly required.",
-                  "When a missing value has a safe default.",
-                  "To securely write a value to the environment."
-                ],
-                correctIndex: 1,
-                explanation: "getenv() is perfect for optional configuration since it falls back to the default if the key is missing."
-              },
-              {
-                id: "os-prod-2",
-                question: "What does os.makedirs(\"data/exports\", exist_ok=True) do on a second run?",
-                options: [
-                  "Raises a FileExistsError.",
-                  "Deletes and recreates the directory.",
-                  "It succeeds without changing the existing directory."
-                ],
+                id: "os-2",
+                question: "Which mode limits a private file to its owner?",
+                options: ["0o755", "0o644", "0o600"],
                 correctIndex: 2,
-                explanation: "exist_ok=True makes the directory creation idempotent, so it safely ignores existing directories without failing."
+                explanation: "0o600 gives the owner read/write permissions and prevents all access for the group and others."
+              },
+              {
+                id: "os-3",
+                question: "When should you prefer os.replace() to os.rename()?",
+                options: ["When renaming directories", "When your code intentionally replaces an existing destination file", "When working on Windows only"],
+                correctIndex: 1,
+                explanation: "os.replace() safely overwrites the destination file atomically (if they are on the same filesystem), whereas os.rename() can throw an error if the destination exists on some platforms."
               }
             ]
           }
         ]
       },
-      {
+
+            {
         slug: "working-with-csv",
         title: "Working with CSV",
         subtitle: "Exchange rows with CSV.",
         sections: [
           {
             kind: "prose",
+            heading: "Why this matters",
             body: [
-              "**One-line promise:** Read, write, and manipulate spreadsheet data without manual string splitting.",
-              "**Estimated time:** 20 minutes",
-              "**Prerequisites:** Lesson 1, Lesson 2.",
-              "## Why this matters",
-              "Comma-Separated Values (CSV) is the universal language of data export. Whether you're downloading a bank statement, exporting a database table, or sharing contacts, the data is likely in CSV format.",
-              "While you *could* read a CSV file using `.split(',')`, dealing with commas inside quotes, varied line endings, and empty fields quickly becomes a nightmare. Python's built-in `csv` module handles all these edge cases seamlessly, letting you focus on the actual data."
+              "CSV is a common handoff format for spreadsheets, databases, and vendor tools. It is simple enough to open in a text editor, but real values can contain commas, quotes, or line breaks. Let Python's \`csv\` module handle those details.",
+              "Production CSV work also needs a clear file contract: expected columns, encoding, newline handling, and a useful failure when input is malformed."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "working-with-csv",
+            caption: "CSV Validation & Safe Exports"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "\`csv.DictWriter\` writes dictionaries using a declared column order. \`csv.DictReader\` reads a header row and returns each record as a dictionary. Always open a CSV file with \`newline=\"\"\` and a deliberate encoding such as UTF-8.",
+              "CSV contains text. Validate and convert values after reading it. For example, an email column may be empty, and a numeric-looking value is still a string until your code turns it into a number."
             ]
           },
           {
             kind: "prose",
+            heading: "Step-by-step",
             body: [
-              "## The core idea",
-              "The `csv` module acts as a translator between raw text lines and Python lists or dictionaries. ",
-              "When reading, a `csv.reader` takes a file object and yields each row as a list of strings. When writing, a `csv.writer` takes lists of strings and formats them safely with commas and quotes."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "## Step-by-step",
-              "### 1. Reading basic CSV files",
-              "To read a CSV, open the file normally and pass it to `csv.reader`."
-            ]
-          },
-          {
-            kind: "interactive-code",
-            caption: "READING CSV AS LISTS",
-            code: "import csv\nfrom pathlib import Path\n\n# Create a mock CSV for our example\ncsv_path = Path(\"mock_data.csv\")\ncsv_path.write_text(\"name,age,city\\nAlice,28,New York\\nBob,34,Chicago\", encoding=\"utf-8\")\n\nwith csv_path.open(\"r\", encoding=\"utf-8\") as file:\n    reader = csv.reader(file)\n    for row in reader:\n        print(row)"
-          },
-          {
-            kind: "prose",
-            body: [
-              "The reader returns each row as a list. Notice that all values are strings (e.g., `'28'`), even if they look like numbers. You must convert them manually if you need integers.",
-              "### 2. Reading with DictReader",
-              "If your CSV has a header row (like `name,age,city`), `csv.DictReader` is much more convenient. It uses the first row as dictionary keys."
+              "### 1. Create a complete CSV fixture"
             ]
           },
           {
             kind: "interactive-code",
-            caption: "READING WITH DICTREADER",
-            code: "import csv\nfrom pathlib import Path\n\nwith Path(\"mock_data.csv\").open(\"r\", encoding=\"utf-8\") as file:\n    reader = csv.DictReader(file)\n    for row in reader:\n        print(f\"{row['name']} lives in {row['city']}\")"
+            code: `import csv
+from pathlib import Path
+
+path = Path("data/contacts.csv")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+fieldnames = ["name", "email", "note"]
+contacts = [
+    {"name": "Ari Stone", "email": "ari@example.test", "note": "Met at the library"},
+    {"name": "Lee Park", "email": "lee@example.test", "note": "Calls, not email"},
+]
+
+with path.open("w", newline="", encoding="utf-8") as file:
+    writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction="raise")
+    writer.writeheader()
+    writer.writerows(contacts)
+
+print(f"Created: {path.resolve()}")`
           },
           {
             kind: "prose",
             body: [
-              "### 3. Writing CSV files",
-              "To write data, open a file in `\"w\"` mode. You MUST include `newline=''` when opening the file for the `csv` module; otherwise, Windows might insert extra blank lines between your rows."
+              "The code creates \`data\` before writing the file, so it can run from a new browser session. \`extrasaction=\"raise\"\` catches an unexpected dictionary key instead of quietly dropping it. The \`csv\` module quotes Lee's comma-containing note correctly.",
+              "### 2. Read and validate the file contract"
             ]
           },
           {
             kind: "interactive-code",
-            caption: "WRITING CSV",
-            code: "import csv\nfrom pathlib import Path\n\noutput_path = Path(\"output.csv\")\ndata = [\n    [\"product\", \"price\", \"stock\"],\n    [\"Laptop\", 1200, 50],\n    [\"Mouse\", 25, 200]\n]\n\n# newline='' is strictly required for the csv module\nwith output_path.open(\"w\", encoding=\"utf-8\", newline=\"\") as file:\n    writer = csv.writer(file)\n    writer.writerows(data)\n\nprint(\"Written successfully! File contents:\")\nprint(output_path.read_text(encoding=\"utf-8\"))"
+            code: `import csv
+from pathlib import Path
+
+path = Path("data/contacts.csv")
+
+required_fields = {"name", "email", "note"}
+with path.open(newline="", encoding="utf-8") as file:
+    reader = csv.DictReader(file)
+    if reader.fieldnames is None or set(reader.fieldnames) != required_fields:
+        raise ValueError("CSV must contain name, email, and note columns.")
+
+    for line_number, contact in enumerate(reader, start=2):
+        if not contact["email"]:
+            raise ValueError(f"Missing email on CSV line {line_number}.")
+        print(contact["name"], contact["email"])`
           },
           {
             kind: "prose",
             body: [
-              "## Common mistakes",
-              "- **Forgetting `newline=''` when writing.** This causes double-spaced rows on Windows machines.",
-              "- **Not specifying an encoding.** Always use `encoding=\"utf-8\"` to prevent crashing when encountering special characters like accents or emojis.",
-              "- **Assuming numbers are parsed.** The `csv` module always returns strings. You must cast them using `int()` or `float()` yourself.",
-              "- **Trying to read the file twice.** A reader consumes the file. If you need to read it again, you must `file.seek(0)` or reopen the file."
+              "It checks the header and the one required value for this small contact export. In production, define the contract with the team or system that supplies the file, rather than guessing its columns.",
+              "### 3. Read rows as a stream and report parse failures"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from pathlib import Path
+
+path = Path("data/contacts.csv")
+
+try:
+    with path.open(newline="", encoding="utf-8") as file:
+        reader = csv.DictReader(file, strict=True)
+        for contact in reader:
+            print(contact["name"])
+except csv.Error as error:
+    raise ValueError(f"Could not parse {path}: {error}") from error`
+          },
+          {
+            kind: "prose",
+            body: [
+              "\`DictReader\` yields one row at a time, so this pattern can handle a large export without loading every record into memory. \`strict=True\` asks the parser to report malformed CSV rather than accepting it quietly."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Write a new export to a temporary file, then replace the final file only after the write finishes:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import csv
+from pathlib import Path
+
+output_path = Path("data/contacts.csv")
+output_path.parent.mkdir(parents=True, exist_ok=True)
+temporary_path = output_path.with_suffix(".tmp")
+
+contacts = [
+    {"name": "Ari Stone", "email": "ari@example.test", "note": "Practice export"},
+]
+
+with temporary_path.open("w", newline="", encoding="utf-8") as file:
+    writer = csv.DictWriter(file, fieldnames=["name", "email", "note"])
+    writer.writeheader()
+    writer.writerows(contacts)
+
+temporary_path.replace(output_path)
+
+with output_path.open(newline="", encoding="utf-8") as file:
+    print(list(csv.DictReader(file)))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The temporary file is fully written before \`replace()\` puts it at the final path. This reduces the chance that a reader sees a half-written export."
             ]
           },
           {
             kind: "takeaways",
             items: [
-              "Never parse CSV files manually with `.split(',')`; always use the built-in `csv` module.",
-              "Use `csv.reader` and `csv.writer` to handle rows as lists.",
-              "Use `csv.DictReader` and `csv.DictWriter` to handle rows as dictionaries, automatically mapping the header row.",
-              "Always open CSV files with `newline=''` when writing to prevent cross-platform line ending bugs."
+              "Treat a CSV's headers and required values as a contract.",
+              "Open CSV files with UTF-8 and \`newline=\"\"\`.",
+              "Write a complete temporary export before replacing the final path."
             ]
           },
           {
             kind: "quiz",
             questions: [
               {
-                id: "csv-vs-split",
-                question: "Why should you use the `csv` module instead of `line.split(',')`?",
-                options: [
-                  "Because .split() cannot handle commas inside quoted values.",
-                  "Because the csv module is much faster.",
-                  "Because .split() removes all numbers.",
-                  "Because .split() cannot read files."
-                ],
+                id: "csv-1",
+                question: "What creates a CSV header row?",
+                options: ["writer.writeheader()", "csv.headers()", "DictWriter automatically writes them"],
                 correctIndex: 0,
-                explanation: "Values in CSVs are often wrapped in quotes (e.g., `\"Smith, John\"`). `.split(',')` will blindly split on that inner comma, breaking the data. The `csv` module handles this correctly."
+                explanation: "writer.writeheader() explicitly writes the column names from fieldnames to the file."
               },
               {
-                id: "csv-types",
-                question: "When using `csv.reader`, what data type are the numbers in the returned rows?",
-                options: [
-                  "Strings",
-                  "Integers",
-                  "Floats",
-                  "It depends on the CSV column"
-                ],
-                correctIndex: 0,
-                explanation: "The standard `csv` module does not automatically detect or cast data types. Every field is returned as a string."
+                id: "csv-2",
+                question: "Why use newline=\"\" when opening a CSV file?",
+                options: ["It removes all newlines from the file", "It lets the csv module handle CSV line endings correctly", "It makes the file read faster"],
+                correctIndex: 1,
+                explanation: "It lets the csv module handle CSV line endings correctly, preventing extra blank lines on Windows."
+              },
+              {
+                id: "csv-3",
+                question: "What does DictReader return for each row?",
+                options: ["A string of comma-separated values", "A list of strings", "A dictionary keyed by the header names"],
+                correctIndex: 2,
+                explanation: "A dictionary keyed by the header names, allowing you to access columns by name."
               }
             ]
           }
         ]
       },
-      {
+
+            {
         slug: "working-with-json",
         title: "Working with JSON",
-        subtitle: "Save structured data as JSON.",
-        sections: []
+        subtitle: "Safely load and validate configuration data.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "JSON is a readable format for settings, web responses, and nested application data. It is a good fit for non-secret configuration such as an export folder or selected columns.",
+              "Treat a JSON file as input from outside your program, even when you created it. It can be missing, malformed, or have the wrong shape."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "working-with-json",
+            caption: "JSON Validation & Safe Configuration"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "\`json.dump()\` writes a Python value to an open file, and \`json.load()\` reads one back. The string-based counterparts are \`dumps()\` and \`loads()\`.",
+              "JSON can represent objects, lists, strings, numbers, booleans, and null. It cannot safely hold secrets by itself. Keep API keys, passwords, and database URLs in environment variables or a managed secret store."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Create a versioned settings file"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from pathlib import Path
+
+path = Path("data/settings.json")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+settings = {
+    "version": 1,
+    "export_folder": "data/exports",
+    "columns": ["name", "email"],
+}
+
+with path.open("w", encoding="utf-8") as file:
+    json.dump(settings, file, indent=2, ensure_ascii=False, sort_keys=True)
+
+print(path.read_text(encoding="utf-8"))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The code creates \`data\` and writes the JSON before reading it back for display. \`indent=2\` makes the file reviewable; \`sort_keys=True\` makes its order stable in diffs.",
+              "### 2. Load and validate the expected shape"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from pathlib import Path
+
+path = Path("data/settings.json")
+
+try:
+    with path.open(encoding="utf-8") as file:
+        settings = json.load(file)
+except json.JSONDecodeError as error:
+    raise ValueError(f"Invalid JSON in {path}: {error.msg}") from error
+
+if not isinstance(settings, dict):
+    raise ValueError("Settings must be a JSON object.")
+if settings.get("version") != 1:
+    raise ValueError("Unsupported settings version.")
+if not isinstance(settings.get("columns"), list):
+    raise ValueError("Settings columns must be a list.")
+
+print(settings["export_folder"])`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Loading only proves the text is valid JSON. Validation confirms it has the structure your program expects. Keep error messages useful, but do not include sensitive values.",
+              "### 3. Replace a settings file after a complete write"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from pathlib import Path
+
+path = Path("data/settings.json")
+
+with path.open(encoding="utf-8") as file:
+    settings = json.load(file)
+
+settings["columns"].append("email")
+temporary_path = path.with_suffix(".tmp")
+
+with temporary_path.open("w", encoding="utf-8") as file:
+    json.dump(settings, file, indent=2, ensure_ascii=False, sort_keys=True)
+
+temporary_path.replace(path)
+
+with path.open(encoding="utf-8") as file:
+    print(json.load(file))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "This example writes the update to a temporary path before replacing the final path. Keep the temporary file in the same folder so the replacement uses the same filesystem."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "This complete configuration workflow writes default settings, loads them, validates them, and then prints one approved value:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import json
+from pathlib import Path
+
+path = Path("data/contact_settings.json")
+path.parent.mkdir(parents=True, exist_ok=True)
+
+defaults = {
+    "version": 1,
+    "export_folder": "data/exports",
+    "include_notes": True,
+}
+
+with path.open("w", encoding="utf-8") as file:
+    json.dump(defaults, file, indent=2, sort_keys=True)
+
+with path.open(encoding="utf-8") as file:
+    settings = json.load(file)
+
+if settings.get("version") != 1 or not isinstance(settings.get("include_notes"), bool):
+    raise ValueError("Settings file has an unsupported format.")
+
+print(f"Exports will go to: {settings['export_folder']}")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "In an application, you might write defaults only on first run and preserve existing user settings."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "JSON works well for readable, non-secret structured configuration.",
+              "Loading and validating are separate steps.",
+              "Use a temporary file before replacing an existing config."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "json-1",
+                question: "Which function writes JSON to an open file?",
+                options: ["json.dump()", "json.dumps()", "json.write()"],
+                correctIndex: 0,
+                explanation: "json.dump() writes to an open file, while json.dumps() returns a string."
+              },
+              {
+                id: "json-2",
+                question: "Which exception identifies malformed JSON?",
+                options: ["ValueError", "json.JSONDecodeError", "SyntaxError"],
+                correctIndex: 1,
+                explanation: "json.JSONDecodeError is raised when json.load() fails to parse the string."
+              },
+              {
+                id: "json-3",
+                question: "Why is it important to validate JSON after loading it?",
+                options: ["Because loading doesn't check if the JSON matches your expected schema/types.", "Because loading doesn't parse it into Python objects.", "Because load() returns a string."],
+                correctIndex: 0,
+                explanation: "load() only verifies it is valid JSON. It does not check if it has the right keys or value types (e.g., list vs dict) your program needs."
+              }
+            ]
+          }
+        ]
       },
+
       {
         slug: "pickle-module",
         title: "Pickle Module",
