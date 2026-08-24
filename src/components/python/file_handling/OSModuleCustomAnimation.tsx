@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Folder, FileText, File, ListTree, Search, Eye, Server, Laptop, Database, Key, Trash2, CheckCircle2, AlertCircle } from "lucide-react";
+import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Folder, FileText, File, ListTree, Search, Eye, Server, Laptop, Database, Key, Trash2, CheckCircle2, AlertCircle, FolderSearch, Clock, Hash, Lock, Replace, Terminal, ShieldAlert, Fingerprint, FolderTree } from "lucide-react";
 
 export function OSModuleCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
-  const totalSteps = 7;
+  const totalSteps = 8;
 
   useEffect(() => {
     if (!playing) return;
-    const id = window.setTimeout(() => setStep((s) => (s + 1) % totalSteps), 6000);
+    const id = window.setTimeout(() => setStep((s) => (s + 1) % totalSteps), 7000);
     return () => window.clearTimeout(id);
   }, [playing, step]);
 
@@ -25,13 +25,14 @@ export function OSModuleCustomAnimation() {
     <div className="flex flex-col relative z-10 w-full">
       <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
-          {step === 0 && <Step1ListDir key="step1" />}
-          {step === 1 && <Step2IsFile key="step2" />}
+          {step === 0 && <Step1EnvPath key="step1" />}
+          {step === 1 && <Step2ListdirVsScandir key="step2" />}
           {step === 2 && <Step3Walk key="step3" />}
-          {step === 3 && <Step4Deploy key="step4" />}
-          {step === 4 && <Step5Path key="step5" />}
-          {step === 5 && <Step6Makedirs key="step6" />}
-          {step === 6 && <Step7Remove key="step7" />}
+          {step === 3 && <Step4Makedirs key="step4" />}
+          {step === 4 && <Step5Inspect key="step5" />}
+          {step === 5 && <Step6Stat key="step6" />}
+          {step === 6 && <Step7Secure key="step7" />}
+          {step === 7 && <Step8Cleanup key="step8" />}
         </AnimatePresence>
       </div>
       
@@ -59,17 +60,60 @@ export function OSModuleCustomAnimation() {
   );
 }
 
-function Step1ListDir() {
+function Step1EnvPath() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
-        <span className="text-muted-foreground"># Get only the immediate children</span><br/>
+      <div className="mb-8 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Resolve configured paths safely</span><br/>
         <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
-        files = os.<span className="text-blue-400">listdir</span>(<span className="text-amber">'./project'</span>)<br/>
-        <span className="text-mint font-medium">print</span>(files)
+        project = os.<span className="text-blue-400">getenv</span>(<span className="text-amber">"PROJECT_DIR"</span>, <span className="text-amber">"data"</span>)<br/>
+        workspace = os.path.<span className="text-blue-400">abspath</span>(project)
       </div>
       
-      <div className="flex justify-center gap-6 w-full max-w-2xl">
+      <div className="flex gap-4 w-full max-w-3xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-amber mb-4 font-bold flex items-center gap-2"><Laptop className="size-4" /> Local Run</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
+               No PROJECT_DIR set
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="px-3 py-1 rounded-full bg-amber/20 text-amber font-mono text-xs font-bold border border-amber/30 text-center">
+               workspace = "/Users/dev/data"
+             </motion.div>
+           </div>
+        </div>
+
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Server className="size-4" /> Production</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-emerald-500 font-mono text-sm justify-center font-bold">
+               PROJECT_DIR="/var/exports"
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-500 font-mono text-xs font-bold border border-emerald-500/30 text-center">
+               workspace = "/var/exports"
+             </motion.div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Step2ListdirVsScandir() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Legacy flat iteration (just names)</span><br/>
+        names = os.<span className="text-blue-400">listdir</span>(<span className="text-amber">'./project'</span>)<br/>
+        <br/>
+        <span className="text-muted-foreground"># Modern flat iteration (fast cached metadata)</span><br/>
+        <span className="text-mint font-medium">with</span> os.<span className="text-blue-400">scandir</span>(<span className="text-amber">'./project'</span>) <span className="text-mint font-medium">as</span> entries:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-mint font-medium">for</span> entry <span className="text-mint font-medium">in</span> entries:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-mint font-medium">print</span>(entry.name, entry.is_dir())
+      </div>
+      
+      <div className="flex gap-4 w-full max-w-4xl">
+        {/* listdir */}
         <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm">
            <h4 className="text-xs uppercase tracking-widest text-sky-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><ListTree className="size-4" /> os.listdir()</h4>
            
@@ -82,59 +126,42 @@ function Step1ListDir() {
                <Folder className="size-4" /> src
              </motion.div>
              <div className="flex items-center gap-2 pl-12 py-1 text-muted-foreground/70">
-               <FileText className="size-4" /> main.py <span className="text-[10px] uppercase ml-2 font-semibold opacity-70">(Ignored)</span>
+               <FileText className="size-4" /> main.py <span className="text-[10px] uppercase ml-2 font-semibold opacity-70">(Not visited)</span>
              </div>
-             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.1 }} className="flex items-center gap-2 pl-6 py-1 rounded bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300">
-               <File className="size-4" /> config.yaml
-             </motion.div>
            </div>
            
-           <div className="mt-6 font-mono text-[11px] text-sky-700 dark:text-sky-400 p-2 bg-sky-500/10 rounded border border-sky-500/20 text-center">
-             ['README.md', 'src', 'config.yaml']
+           <div className="mt-6 font-mono text-[11px] text-sky-700 dark:text-sky-400 p-2 bg-sky-500/10 rounded border border-sky-500/20 text-center flex-1 flex items-center justify-center">
+             ['README.md', 'src']
+           </div>
+        </div>
+
+        {/* scandir */}
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm">
+           <h4 className="text-xs uppercase tracking-widest text-amber mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><FolderSearch className="size-4" /> os.scandir()</h4>
+           
+           <div className="flex flex-col gap-2">
+             <div className="flex items-center gap-2 font-bold text-amber"><Folder className="size-4" /> project</div>
+             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }} className="flex items-center justify-between pl-6 py-1 rounded bg-amber/10 border border-amber/30 text-amber">
+               <div className="flex items-center gap-2"><FileText className="size-4" /> README.md</div>
+               <span className="text-[10px] uppercase font-bold pr-2">is_dir() = False</span>
+             </motion.div>
+             <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.8 }} className="flex items-center justify-between pl-6 py-1 rounded bg-amber/10 border border-amber/30 text-amber">
+               <div className="flex items-center gap-2"><Folder className="size-4" /> src</div>
+               <span className="text-[10px] uppercase font-bold pr-2">is_dir() = True</span>
+             </motion.div>
+             <div className="flex items-center gap-2 pl-12 py-1 text-muted-foreground/70">
+               <FileText className="size-4" /> main.py <span className="text-[10px] uppercase ml-2 font-semibold opacity-70">(Not visited)</span>
+             </div>
+           </div>
+           
+           <div className="mt-6 font-mono text-[11px] text-amber p-2 text-center italic bg-amber/10 rounded border border-amber/30 flex-1 flex flex-col items-center justify-center gap-1">
+             <div>Yields DirEntry objects with fast cached metadata.</div>
+             <div className="font-bold opacity-80 not-italic">Avoids extra os.stat() calls for file types!</div>
            </div>
         </div>
       </div>
     </motion.div>
-  )
-}
-
-function Step2IsFile() {
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-rose-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
-        <span className="text-muted-foreground"># Check if a path is a file or folder</span><br/>
-        <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
-        is_file = os.path.<span className="text-blue-400">isfile</span>(<span className="text-amber">'README.md'</span>)<br/>
-        is_dir = os.path.<span className="text-blue-400">isdir</span>(<span className="text-amber">'src'</span>)
-      </div>
-      
-      <div className="flex gap-4 w-full max-w-3xl">
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-indigo-500 mb-4 font-bold flex items-center gap-2"><Eye className="size-4" /> os.path.isfile()</h4>
-           <div className="flex flex-col items-center gap-3 w-full">
-             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
-               <FileText className="size-4" /> README.md
-             </div>
-             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold border border-indigo-500/30">
-               True
-             </motion.div>
-           </div>
-        </div>
-
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Search className="size-4" /> os.path.isdir()</h4>
-           <div className="flex flex-col items-center gap-3 w-full">
-             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
-               <Folder className="size-4" /> src
-             </div>
-             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-xs font-bold border border-emerald-500/30">
-               True
-             </motion.div>
-           </div>
-        </div>
-      </div>
-    </motion.div>
-  )
+  );
 }
 
 function Step3Walk() {
@@ -175,92 +202,21 @@ function Step3Walk() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
-function Step4Deploy() {
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-8 p-4 rounded-xl border border-amber/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
-        <span className="text-muted-foreground"># Safe deployment configuration</span><br/>
-        <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
-        export_dir = os.<span className="text-blue-400">getenv</span>(<span className="text-amber">"EXPORT_DIR"</span>, <span className="text-amber">"data"</span>)
-      </div>
-      
-      <div className="flex gap-4 w-full max-w-3xl">
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-amber mb-4 font-bold flex items-center gap-2"><Laptop className="size-4" /> Local Run</h4>
-           <div className="flex flex-col items-center gap-3 w-full">
-             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
-               No EXPORT_DIR set
-             </div>
-             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="px-3 py-1 rounded-full bg-amber/20 text-amber font-mono text-xs font-bold border border-amber/30">
-               Uses default: "data"
-             </motion.div>
-           </div>
-        </div>
-
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Server className="size-4" /> Production</h4>
-           <div className="flex flex-col items-center gap-3 w-full">
-             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-emerald-500 font-mono text-sm justify-center font-bold">
-               EXPORT_DIR="/var/exports"
-             </div>
-             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-500 font-mono text-xs font-bold border border-emerald-500/30">
-               Uses: "/var/exports"
-             </motion.div>
-           </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function Step5Path() {
-  return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-6 p-4 rounded-xl border border-sky-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
-        <span className="text-muted-foreground"># Path resolution matters</span><br/>
-        <span className="text-mint font-medium">import</span> <span className="text-blue-400">os</span><br/>
-        <span className="text-mint font-medium">print</span>(os.path.<span className="text-blue-400">abspath</span>(<span className="text-amber">"data"</span>))
-      </div>
-      
-      <div className="flex justify-center gap-6 w-full max-w-2xl">
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm relative">
-           <h4 className="text-xs uppercase tracking-widest text-sky-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Folder className="size-4" /> Running from different locations</h4>
-           
-           <div className="flex flex-col gap-4 mt-2">
-             <div className="flex flex-col gap-1">
-               <span className="text-muted-foreground text-xs uppercase">Terminal 1 (cwd: /Users/sam/project)</span>
-               <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="p-2 bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded border border-sky-500/20">
-                 /Users/sam/project/data
-               </motion.div>
-             </div>
-             
-             <div className="flex flex-col gap-1">
-               <span className="text-muted-foreground text-xs uppercase">Terminal 2 (cwd: /tmp)</span>
-               <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="p-2 bg-rose-500/10 text-rose-500 rounded border border-rose-500/20">
-                 /tmp/data <span className="text-[10px] ml-2 uppercase font-bold opacity-70">(Likely incorrect)</span>
-               </motion.div>
-             </div>
-           </div>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-function Step6Makedirs() {
+function Step4Makedirs() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
       <div className="mb-6 p-4 rounded-xl border border-emerald-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
         <span className="text-muted-foreground"># Idempotent directory creation</span><br/>
-        os.<span className="text-blue-400">makedirs</span>(<span className="text-amber">"data/exports"</span>, exist_ok=<span className="text-purple-400">True</span>)
+        os.<span className="text-blue-400">makedirs</span>(<span className="text-amber">"data/exports"</span>, exist_ok=<span className="text-purple-400">True</span>)<br/>
+        os.<span className="text-blue-400">chdir</span>(<span className="text-amber">"data/exports"</span>)
       </div>
       
       <div className="flex gap-4 w-full max-w-3xl">
         <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Play className="size-4" /> Run 1</h4>
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><FolderTree className="size-4" /> Run 1</h4>
            <div className="flex flex-col items-center gap-3 w-full">
              <div className="text-muted-foreground font-mono text-sm">
                Directory does not exist
@@ -272,7 +228,7 @@ function Step6Makedirs() {
         </div>
 
         <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
-           <h4 className="font-mono text-xs uppercase tracking-widest text-blue-500 mb-4 font-bold flex items-center gap-2"><Play className="size-4" /> Run 2</h4>
+           <h4 className="font-mono text-xs uppercase tracking-widest text-blue-500 mb-4 font-bold flex items-center gap-2"><FolderTree className="size-4" /> Run 2</h4>
            <div className="flex flex-col items-center gap-3 w-full">
              <div className="text-muted-foreground font-mono text-sm">
                Directory already exists
@@ -284,42 +240,176 @@ function Step6Makedirs() {
         </div>
       </div>
     </motion.div>
-  )
+  );
 }
 
-function Step7Remove() {
+function Step5Inspect() {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
-      <div className="mb-6 p-4 rounded-xl border border-rose-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
-        <span className="text-mint font-medium">try</span>:<br/>
-        &nbsp;&nbsp;&nbsp;&nbsp;os.<span className="text-blue-400">remove</span>(<span className="text-amber">"contacts.tmp"</span>)<br/>
-        <span className="text-mint font-medium">except</span> <span className="text-blue-400">FileNotFoundError</span>:<br/>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span className="text-mint font-medium">pass</span> <span className="text-muted-foreground"># Already clean</span>
+      <div className="mb-8 p-4 rounded-xl border border-indigo-500/30 bg-surface shadow-sm w-full max-w-md text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Check identity and decompose paths</span><br/>
+        is_f = os.path.<span className="text-blue-400">isfile</span>(<span className="text-amber">'README.md'</span>)<br/>
+        is_d = os.path.<span className="text-blue-400">isdir</span>(<span className="text-amber">'src'</span>)<br/>
+        root, ext = os.path.<span className="text-blue-400">splitext</span>(<span className="text-amber">'main.py'</span>)
       </div>
       
-      <div className="flex justify-center gap-6 w-full max-w-2xl">
-        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm relative">
-           <h4 className="text-xs uppercase tracking-widest text-rose-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Trash2 className="size-4" /> Safe Cleanup</h4>
-           
-           <div className="flex flex-col gap-3 mt-2">
-             <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="flex items-center gap-3 p-3 bg-surface-2 rounded border border-hairline">
-               <div className="p-2 rounded-full bg-rose-500/20 text-rose-500"><AlertCircle className="size-4" /></div>
-               <div>
-                 <div className="font-bold">File exists</div>
-                 <div className="text-xs text-muted-foreground">os.remove() deletes the file.</div>
-               </div>
+      <div className="flex gap-4 w-full max-w-3xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-indigo-500 mb-4 font-bold flex items-center gap-2"><Eye className="size-4" /> os.path.isfile()</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
+               <FileText className="size-4" /> README.md
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.5, type: "spring" }} className="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-400 font-mono text-xs font-bold border border-indigo-500/30">
+               True
              </motion.div>
-             
-             <motion.div initial={{ x: -10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }} className="flex items-center gap-3 p-3 bg-surface-2 rounded border border-hairline">
-               <div className="p-2 rounded-full bg-emerald-500/20 text-emerald-500"><CheckCircle2 className="size-4" /></div>
-               <div>
-                 <div className="font-bold">File does not exist</div>
-                 <div className="text-xs text-muted-foreground">Catches exception, script continues safely.</div>
-               </div>
+           </div>
+        </div>
+
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col items-center shadow-sm">
+           <h4 className="font-mono text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2"><Search className="size-4" /> os.path.splitext()</h4>
+           <div className="flex flex-col items-center gap-3 w-full">
+             <div className="flex items-center gap-2 w-full p-2 border border-hairline rounded bg-surface-2 text-muted-foreground font-mono text-sm justify-center">
+               <FileText className="size-4" /> main.py
+             </div>
+             <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1, type: "spring" }} className="flex gap-1 text-xs font-mono font-bold">
+               <span className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">'main'</span>
+               <span className="px-2 py-1 rounded bg-sky-500/20 text-sky-500 border border-sky-500/30">'.py'</span>
              </motion.div>
            </div>
         </div>
       </div>
     </motion.div>
-  )
+  );
+}
+
+function Step6Stat() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-amber/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Inspect deep metadata</span><br/>
+        metadata = os.<span className="text-blue-400">stat</span>(<span className="text-amber">"config.json"</span>)<br/>
+        <span className="text-mint font-medium">print</span>(metadata.st_size, metadata.st_mtime)<br/>
+        mode = oct(metadata.st_mode & 0o777)
+      </div>
+      
+      <div className="w-full max-w-2xl bg-surface border border-hairline rounded-xl p-5 shadow-sm font-mono text-sm">
+         <h4 className="text-xs uppercase tracking-widest text-amber mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Fingerprint className="size-4" /> os.stat()</h4>
+         
+         <div className="grid grid-cols-2 gap-4">
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.2 }} className="flex items-center gap-3 p-3 bg-surface-2 border border-hairline rounded">
+               <Hash className="size-4 text-amber" />
+               <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-muted-foreground">st_size</span>
+                  <span>1024 bytes</span>
+               </div>
+            </motion.div>
+            
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 0.6 }} className="flex items-center gap-3 p-3 bg-surface-2 border border-hairline rounded">
+               <Clock className="size-4 text-sky-500" />
+               <div className="flex flex-col">
+                  <span className="text-[10px] uppercase text-muted-foreground">st_mtime</span>
+                  <span>1714521000.0</span>
+               </div>
+            </motion.div>
+            
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.0 }} className="flex items-center gap-3 p-3 bg-surface-2 border border-hairline rounded col-span-2">
+               <Lock className="size-4 text-rose-500" />
+               <div className="flex flex-col flex-1">
+                  <span className="text-[10px] uppercase text-muted-foreground">st_mode (Permissions & Type)</span>
+                  <span className="text-rose-500 font-bold">33188 <span className="text-muted-foreground font-normal ml-2"># oct(mode & 0o777) == '0o644'</span></span>
+               </div>
+            </motion.div>
+         </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Step7Secure() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-purple-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Secure & update files predictably</span><br/>
+        os.<span className="text-blue-400">chmod</span>(<span className="text-amber">"settings.json"</span>, 0o600)<br/>
+        <span className="text-muted-foreground"># Atomically swap a fully written temp file</span><br/>
+        os.<span className="text-blue-400">replace</span>(<span className="text-amber">"settings.tmp"</span>, <span className="text-amber">"settings.json"</span>)
+      </div>
+      
+      <div className="flex gap-4 w-full max-w-2xl">
+         <motion.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="flex-1 flex flex-col gap-4 p-5 rounded-2xl border border-purple-500/30 bg-purple-500/10 shadow-sm items-center justify-center text-center">
+            <Lock className="size-8 text-purple-500" />
+            <div className="font-mono text-sm">
+               <div className="font-bold text-purple-500">0o600</div>
+               <div className="text-xs text-muted-foreground mt-1 px-4">Locks access to owner only (POSIX).</div>
+            </div>
+         </motion.div>
+
+         <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline shadow-sm flex flex-col font-mono">
+            <h4 className="text-xs uppercase tracking-widest text-emerald-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Replace className="size-4" /> Atomic Update</h4>
+            <div className="flex items-center justify-between gap-4 h-full">
+               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.0 }} className="flex-1 p-3 border border-hairline bg-surface-2 rounded-xl text-center">
+                  <div className="text-[10px] text-muted-foreground">settings.tmp</div>
+                  <div className="mt-2 text-[10px] bg-amber/20 text-amber px-2 py-1 rounded inline-block font-bold">Writing...</div>
+               </motion.div>
+               
+               <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.5 }}>
+                  <ChevronRight className="size-5 text-emerald-500" />
+               </motion.div>
+
+               <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: 1.0 }} className="flex-1 p-3 border border-hairline bg-surface-2 rounded-xl text-center relative">
+                  <div className="text-[10px] text-muted-foreground">settings.json</div>
+                  <motion.div initial={{ opacity: 1 }} animate={{ opacity: 0 }} transition={{ delay: 1.8, duration: 0.1 }} className="mt-2 text-[10px] bg-rose-500/20 text-rose-500 px-2 py-1 rounded inline-block">Old</motion.div>
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8, duration: 0.1 }} className="mt-2 text-[10px] bg-emerald-500/20 text-emerald-500 px-2 py-1 rounded inline-block absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-bold shadow-md">Atomic Swap!</motion.div>
+               </motion.div>
+            </div>
+         </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function Step8Cleanup() {
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="flex flex-col items-center w-full">
+      <div className="mb-6 p-4 rounded-xl border border-rose-500/30 bg-surface shadow-sm w-full max-w-lg text-left font-mono text-[13px] leading-relaxed text-foreground">
+        <span className="text-muted-foreground"># Delete narrowly and deliberately</span><br/>
+        os.<span className="text-blue-400">unlink</span>(temporary_file) <span className="text-muted-foreground"># One file</span><br/>
+        os.<span className="text-blue-400">rmdir</span>(empty_dir) <span className="text-muted-foreground"># Fails if not empty</span><br/>
+        shutil.<span className="text-blue-400">rmtree</span>(workspace) <span className="text-muted-foreground"># Nukes everything</span>
+      </div>
+      
+      <div className="flex justify-center gap-6 w-full max-w-2xl">
+        <div className="flex-1 p-5 rounded-2xl bg-surface border border-hairline flex flex-col shadow-sm font-mono text-sm relative">
+           <h4 className="text-xs uppercase tracking-widest text-rose-500 mb-4 font-bold flex items-center gap-2 border-b border-hairline pb-2"><Trash2 className="size-4" /> Narrow vs Broad Cleanup</h4>
+           
+           <div className="flex flex-col gap-3 mt-2">
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex items-center justify-between p-3 bg-surface-2 border border-hairline rounded-xl">
+                  <div>
+                     <div className="font-bold text-sky-500 flex items-center gap-2"><FileText className="size-3"/> os.unlink(file)</div>
+                     <div className="text-[10px] text-muted-foreground mt-1">Removes a single known file.</div>
+                  </div>
+                  <div className="px-2 py-1 text-[10px] bg-sky-500/20 text-sky-500 rounded uppercase font-bold tracking-wider">Safe</div>
+               </motion.div>
+               
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex items-center justify-between p-3 bg-surface-2 border border-hairline rounded-xl">
+                  <div>
+                     <div className="font-bold text-amber flex items-center gap-2"><Folder className="size-3"/> os.rmdir(empty_dir)</div>
+                     <div className="text-[10px] text-muted-foreground mt-1">Fails safely if dir is not empty.</div>
+                  </div>
+                  <div className="px-2 py-1 text-[10px] bg-amber/20 text-amber rounded uppercase font-bold tracking-wider">Safe</div>
+               </motion.div>
+
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4 }} className="flex items-center justify-between p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl">
+                  <div>
+                     <div className="font-bold text-rose-500 flex items-center gap-2"><AlertCircle className="size-3"/> shutil.rmtree(workspace)</div>
+                     <div className="text-[10px] text-rose-400 mt-1">Nukes directory and all contents recursively.</div>
+                  </div>
+                  <div className="px-2 py-1 text-[10px] bg-rose-500/20 text-rose-500 rounded uppercase font-bold tracking-wider">Danger</div>
+               </motion.div>
+           </div>
+        </div>
+      </div>
+    </motion.div>
+  );
 }
