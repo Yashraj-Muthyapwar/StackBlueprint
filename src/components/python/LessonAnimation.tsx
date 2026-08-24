@@ -12,8 +12,10 @@ import { WritingFilesCustomAnimation } from "./file_handling/WritingFilesCustomA
 import { FileModesCustomAnimation } from "./file_handling/FileModesCustomAnimation";
 import { FileMethodsCustomAnimation } from "./file_handling/FileMethodsCustomAnimation";
 import { OSModuleCustomAnimation } from "./file_handling/OSModuleCustomAnimation";
+import { WorkingWithCSVCustomAnimation } from "./file_handling/WorkingWithCSVCustomAnimation";
+import { WorkingWithJSONCustomAnimation } from "./file_handling/WorkingWithJSONCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json";
 
 export function LessonAnimation({
   variant,
@@ -47,6 +49,10 @@ export function LessonAnimation({
               <FileMethodsCustomAnimation />
             ) : variant === "os-module" ? (
               <OSModuleCustomAnimation />
+            ) : variant === "working-with-csv" ? (
+              <WorkingWithCSVCustomAnimation />
+            ) : variant === "working-with-json" ? (
+              <WorkingWithJSONCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
