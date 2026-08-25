@@ -72,7 +72,8 @@ export function LessonLayout({
       s.body.forEach((line: any) => {
         if (typeof line === "string" && line.trim().match(/^#{2,4}\s/)) {
           const title = line.trim().replace(/^#+\s*/, "");
-          tocItems.push({ id: `section-${i}-sub-${subIndex++}`, targetId: `section-${i}`, title, index: tocItems.length });
+          const targetId = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+          tocItems.push({ id: `section-${i}-sub-${subIndex++}`, targetId, title, index: tocItems.length });
         }
       });
     }
