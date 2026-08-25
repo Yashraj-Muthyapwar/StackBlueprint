@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { LessonCompleteButton } from "./LessonCompleteButton";
+import { FloatingTOC, type TOCItem } from "./FloatingTOC";
 
 export interface LessonLayoutProps {
   trackTitle: string;
@@ -55,6 +56,28 @@ export function LessonLayout({
     (!children && (!sections || sections.length === 0)) ||
     (sections?.length === 1 && sections[0].heading === "Coming Soon");
 
+  const tocItems: TOCItem[] = [];
+  (sections || []).forEach((s, i) => {
+    let subIndex = 0;
+    
+    // 1. Top-level explicitly defined heading
+    if (s.heading) {
+      tocItems.push({ id: `section-${i}-h`, targetId: `section-${i}`, title: s.heading, index: tocItems.length });
+    }
+    
+    // 2. Headings explicitly in callouts (if they act like steps, though usually we might skip them. Let's just do body headings to be safe for now, as the user specifically mentioned steps.)
+
+    // 3. Markdown headings inside the prose/body
+    if (s.body && Array.isArray(s.body)) {
+      s.body.forEach((line: any) => {
+        if (typeof line === "string" && line.trim().match(/^#{2,4}\s/)) {
+          const title = line.trim().replace(/^#+\s*/, "");
+          tocItems.push({ id: `section-${i}-sub-${subIndex++}`, targetId: `section-${i}`, title, index: tocItems.length });
+        }
+      });
+    }
+  });
+
   return (
     <div className="px-6 pb-6 pt-10 lg:px-12 lg:pb-8 lg:pt-14">
       <div className="mx-auto max-w-3xl lg:max-w-4xl xl:max-w-5xl">
@@ -91,7 +114,7 @@ export function LessonLayout({
               i % 2 === 1 ? (
                 <code
                   key={i}
-                  className="rounded-md bg-background px-1.5 py-0.5 font-mono text-[0.85em] text-foreground ring-1 ring-inset ring-hairline"
+                  className="rounded bg-mint/10 text-mint px-1.5 py-0.5 font-mono text-[0.85em] font-medium"
                 >
                   {part}
                 </code>
@@ -122,6 +145,7 @@ export function LessonLayout({
                   {sections.map((s, i) => (
                     <div 
                       key={i} 
+                      id={`section-${i}`}
                       className={`transition-all duration-500 ${isQuizActive && s.kind !== "quiz" ? "blur-md pointer-events-none opacity-40 select-none" : ""}`}
                     >
                       {renderSection(s, setIsQuizActive)}
@@ -195,6 +219,7 @@ export function LessonLayout({
           </nav>
         </div>
       </div>
+      {tocItems.length > 0 && <FloatingTOC items={tocItems} />}
     </div>
   );
 }
