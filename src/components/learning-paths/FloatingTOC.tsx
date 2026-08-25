@@ -62,28 +62,35 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
   useEffect(() => {
     if (items.length === 0) return;
 
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-      if (visibleEntries.length > 0) {
-        // Find the TOC item that matches this targetId to set as active
-        const matchedItem = items.find(item => item.targetId === visibleEntries[0].target.id);
-        if (matchedItem) {
-          setActiveId(matchedItem.id);
+    const handleScroll = () => {
+      const headingElements = items.map(item => ({
+        item,
+        el: document.getElementById(item.targetId)
+      })).filter(x => x.el !== null);
+
+      if (headingElements.length === 0) return;
+
+      const scrollPosition = window.scrollY + 120; // Offset for navbar and padding
+
+      let currentActiveId = headingElements[0].item.id;
+      
+      for (const { item, el } of headingElements) {
+        const top = el!.getBoundingClientRect().top + window.scrollY;
+        if (top <= scrollPosition) {
+          currentActiveId = item.id;
+        } else {
+          break;
         }
       }
+
+      setActiveId(currentActiveId);
     };
 
-    const observer = new IntersectionObserver(observerCallback, {
-      rootMargin: "-20% 0px -80% 0px",
-      threshold: 0,
-    });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Trigger once on mount
+    handleScroll();
 
-    items.forEach((item) => {
-      const element = document.getElementById(item.targetId);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [items]);
 
   if (items.length === 0) return null;
@@ -115,12 +122,12 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
       onMouseLeave={() => !isDragging && setIsHovered(false)}
     >
       <div
-        className={`group flex flex-col items-end overflow-hidden rounded-2xl border border-hairline/60 bg-surface/90 shadow-lg backdrop-blur transition-all duration-500 ease-in-out ${
+        className={`group flex flex-col items-end overflow-hidden rounded-2xl border border-foreground/10 dark:border-white/10 bg-surface/95 dark:bg-white/[0.03] shadow-xl backdrop-blur-md transition-all duration-500 ease-in-out ${
           isHovered ? "w-64" : "w-12 h-12"
         }`}
       >
         <div
-          className={`flex h-12 w-full shrink-0 items-center justify-between px-3 text-muted-foreground transition-colors hover:text-foreground cursor-pointer ${
+          className={`flex h-12 w-full shrink-0 items-center justify-between px-3 transition-colors cursor-pointer ${
             isHovered ? "bg-surface/50" : ""
           } ${isDragging ? "cursor-grabbing" : "cursor-pointer"}`}
           onClick={() => !isDragging && setIsHovered(!isHovered)}
@@ -136,7 +143,7 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
             </span>
           </div>
           <div className="flex h-6 w-6 shrink-0 items-center justify-center">
-            <BookOpen className="size-4 pointer-events-none" />
+            <BookOpen className="size-4 pointer-events-none text-foreground/60 transition-colors group-hover:text-foreground" />
           </div>
         </div>
 
@@ -145,8 +152,11 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
             isHovered ? "max-h-[60vh] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="flex flex-col gap-1 p-3 pt-0">
-            {items.map((item, index) => {
+          <div className="relative flex flex-col gap-1 p-3 pt-0">
+            {/* Connecting Timeline Line */}
+            <div className="absolute bottom-6 left-[31px] top-5 w-px bg-hairline/60 -z-10" />
+            
+            {items.map((item) => {
               const isActive = activeId === item.id;
               return (
                 <button
@@ -155,20 +165,22 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
                     e.stopPropagation();
                     scrollToSection(item.targetId);
                   }}
-                  className={`group/btn relative flex w-full items-start gap-2 rounded-lg px-3 py-2 text-left text-sm transition-all ${
+                  className={`group/btn relative flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-300 ${
                     isActive
-                      ? "bg-mint/10 font-medium text-mint"
+                      ? "bg-mint/10 font-medium text-foreground"
                       : "text-muted-foreground hover:bg-surface/80 hover:text-foreground"
                   }`}
                 >
-                  <div className="flex h-5 items-center">
+                  <div className="flex h-5 w-4 shrink-0 items-center justify-center relative">
                     <div
-                      className={`h-1.5 w-1.5 rounded-full transition-all ${
-                        isActive ? "bg-mint scale-100" : "bg-muted-foreground/30 scale-75 group-hover/btn:scale-100 group-hover/btn:bg-foreground/50"
+                      className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
+                        isActive 
+                          ? "bg-mint scale-125 shadow-[0_0_8px_rgba(45,212,191,0.5)]" 
+                          : "bg-muted-foreground/40 scale-75 group-hover/btn:scale-100 group-hover/btn:bg-foreground/50"
                       }`}
                     />
                   </div>
-                  <span className="line-clamp-2 leading-tight">
+                  <span className="line-clamp-2 leading-tight transition-transform duration-300 group-hover/btn:translate-x-0.5">
                     {item.title}
                   </span>
                 </button>
