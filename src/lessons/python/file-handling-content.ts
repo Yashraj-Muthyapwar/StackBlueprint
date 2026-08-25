@@ -1537,7 +1537,6 @@ print("total:", type(event["total"]).__name__)`
             code: `import json
 from pathlib import Path
 
-
 path = Path("json_lab/contact-events.jsonl")
 path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1547,14 +1546,10 @@ events = [
     {"event": "export_finished", "count": 3},
 ]
 
-
 # WRITE: store one independent JSON record per line.
 with path.open("w", encoding="utf-8") as file:
     for event in events:
-        file.write(
-            json.dumps(event, separators=(",", ":")) + "\n"
-        )
-
+        file.write(json.dumps(event, separators=(",", ":")) + "\\n")
 
 # READ: process one record at a time instead of loading
 # the entire collection into memory.
@@ -1568,9 +1563,8 @@ with path.open(encoding="utf-8") as file:
         # Imagine doing some real processing here.
         print("Processed:", event["event"])
 
-
 # Show what was actually written to the JSONL file.
-print("\nJSONL file:")
+print("\\nJSONL file:")
 print(path.read_text(encoding="utf-8"))`
           },
           {
