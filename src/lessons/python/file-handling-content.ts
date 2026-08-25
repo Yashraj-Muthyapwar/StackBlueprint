@@ -1110,7 +1110,7 @@ print("Workspace removed:", not os.path.exists(workspace))`
         ]
       },
 
-            {
+      {
         slug: "working-with-json",
         title: "Working with JSON",
         subtitle: "Safely load, validate, update, and stream JSON data.",
@@ -1684,7 +1684,7 @@ event = {
 
 # Python dictionary -> JSON text -> one JSONL record
 with events_path.open("a", encoding="utf-8") as file:
-    file.write(json.dumps(event, separators=(",", ":")) + "\n")
+    file.write(json.dumps(event, separators=(",", ":")) + "\\n")
 
 
 # 6. Use the approved configuration
