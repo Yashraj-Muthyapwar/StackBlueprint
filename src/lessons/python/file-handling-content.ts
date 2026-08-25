@@ -1279,7 +1279,10 @@ print(json_text)`
             kind: "prose",
             body: [
               "### 4. Handle missing files, bad JSON, and wrong shapes",
-              "Different failures need different responses. A missing file may mean “use defaults.” Malformed JSON needs an error the user can fix. Valid JSON with the wrong structure needs validation before the program uses it."
+              "A JSON configuration can fail in three different ways:",
+              "- **Missing file** → the application may need to create defaults.",
+              "- **Bad JSON** → the file exists, but its syntax is invalid.",
+              "- **Wrong shape** → the JSON is valid, but its structure or values are not what the application expects."
             ]
           },
           {
@@ -1288,45 +1291,74 @@ print(json_text)`
 from pathlib import Path
 
 
-def validate_settings(value: object) -> dict:
-    if not isinstance(value, dict):
+def validate_settings(settings):
+    """Check that valid JSON also has the shape our app expects."""
+    if not isinstance(settings, dict):
         raise ValueError("Settings must be a JSON object.")
 
-    if type(value.get("version")) is not int or value["version"] != 1:
+    if type(settings.get("version")) is not int or settings["version"] != 1:
         raise ValueError("Settings must use version 1.")
 
-    if not isinstance(value.get("export_folder"), str):
-        raise ValueError("Settings export_folder must be a string.")
+    if not isinstance(settings.get("export_folder"), str):
+        raise ValueError("export_folder must be a string.")
 
-    columns = value.get("columns")
-    if not isinstance(columns, list) or not all(isinstance(column, str) for column in columns):
-        raise ValueError("Settings columns must be a list of strings.")
+    columns = settings.get("columns")
 
-    return value
+    if not isinstance(columns, list):
+        raise ValueError("columns must be a list.")
+
+    if not all(isinstance(column, str) for column in columns):
+        raise ValueError("columns must contain strings.")
+
+    return settings
 
 
-def load_settings(path: Path) -> dict:
+def load_settings(path):
     try:
+        # File → Python object
         with path.open(encoding="utf-8") as file:
-            return validate_settings(json.load(file))
+            settings = json.load(file)
+
+        # Valid JSON still needs application validation.
+        return validate_settings(settings)
+
     except FileNotFoundError:
+        # The file does not exist, so use known defaults.
         return {
             "version": 1,
             "export_folder": "data/exports",
             "columns": ["name", "email"],
         }
+
     except json.JSONDecodeError as error:
+        # The file exists, but its JSON syntax is broken.
         raise ValueError(
-            f"Invalid JSON in {path} at line {error.lineno}, column {error.colno}: {error.msg}"
-        ) from error`
+            f"Invalid JSON at line {error.lineno}, "
+            f"column {error.colno}: {error.msg}"
+        ) from error
+
+
+settings = load_settings(Path("settings.json"))
+print(settings)`
           },
           {
             kind: "prose",
             body: [
-              "`json.JSONDecodeError` includes `msg`, `lineno`, `colno`, and `pos`, so a useful message can point directly to the broken location. Do not silently overwrite a malformed settings file with defaults; that hides the problem and can destroy recoverable information.",
-              "The `type(... ) is int` check intentionally rejects `True` and `False`, because Python considers booleans instances of `int`. Validate as deeply as your program needs: required keys, types, version, allowed values, and nested records.",
+              "`json.load()` can fail because the file is missing or because its JSON syntax is invalid. Even when parsing succeeds, the resulting Python data can still have the wrong structure, so validate it before using it.",
+              "Why `type(...) is int`? Python treats `True` and `False` as instances of `int`. Using `type(value) is int` ensures the version must be an actual integer, not a boolean."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Warning",
+            body: "Do not silently replace malformed JSON with defaults. A missing file can reasonably trigger defaults, but malformed JSON may contain recoverable information and should usually be surfaced as an error."
+          },
+          {
+            kind: "prose",
+            body: [
               "### 5. Write complete updates, then replace the old file",
-              "Writing directly to an existing configuration file can leave a partial document if the process stops while writing. For an important local file, write the entire new document to a temporary file in the same folder, then replace the final file."
+              "When updating an important JSON file, avoid writing directly to the final file. If the program stops halfway through the write, the file could be left incomplete."
             ]
           },
           {
@@ -1335,12 +1367,16 @@ def load_settings(path: Path) -> dict:
 from pathlib import Path
 
 
-def write_json_atomically(path: Path, data: object) -> None:
+def write_json_safely(path, data):
+    """Write the complete JSON before replacing the real file."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary_path = path.with_name(f".{path.name}.tmp")
+
+    # Create the temporary file beside the real file.
+    temp_path = path.with_name(f".{path.name}.tmp")
 
     try:
-        with temporary_path.open("w", encoding="utf-8") as file:
+        # Python object → temporary JSON file
+        with temp_path.open("w", encoding="utf-8") as file:
             json.dump(
                 data,
                 file,
@@ -1349,25 +1385,53 @@ def write_json_atomically(path: Path, data: object) -> None:
                 sort_keys=True,
                 allow_nan=False,
             )
-            file.flush()
 
-        temporary_path.replace(path)
+        # The new file is complete, so replace the old one.
+        temp_path.replace(path)
+
     except Exception:
-        temporary_path.unlink(missing_ok=True)
+        # Remove the temporary file if something went wrong.
+        temp_path.unlink(missing_ok=True)
         raise
 
 
-write_json_atomically(
-    Path("json_lab/settings.json"),
-    {"version": 1, "export_folder": "data/exports", "columns": ["name", "email"]},
-)`
+settings = {
+    "version": 1,
+    "export_folder": "data/exports",
+    "columns": ["name", "email", "phone"],
+}
+
+settings_path = Path("json_lab/settings.json")
+
+# Write the configuration safely.
+write_json_safely(settings_path, settings)
+
+# Read it back so we can verify the result.
+with settings_path.open(encoding="utf-8") as file:
+    saved_settings = json.load(file)
+
+print("File written:", settings_path)
+print("Saved settings:")
+print(json.dumps(saved_settings, indent=2))`
           },
           {
             kind: "prose",
             body: [
-              "Keep the temporary file beside the destination so the replacement stays on the same filesystem. `Path.replace()` deliberately overwrites the destination, so use it only with a precise, controlled path. Atomic replacement prevents partial visibility; durable writes and multi-process coordination require additional platform-specific work.",
+              "The important pattern is write first, replace second. The temporary file is kept in the same directory so the replacement happens on the same filesystem. `Path.replace()` overwrites the destination, so use it only when the destination is a precise path your program controls."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "info",
+            title: "Important",
+            body: "Atomic replacement helps prevent readers from seeing a partially written file. It does not provide file locking, multi-process coordination, or guaranteed durability after a power failure."
+          },
+          {
+            kind: "prose",
+            body: [
               "### 6. Convert Python-only values deliberately",
-              "JSON cannot directly encode `datetime`, `Decimal`, `Path`, `set`, bytes, functions, or custom class instances. Convert each one into a documented JSON-friendly representation."
+              "JSON has a small set of built-in types, while Python has many more. When you need to serialize values such as `datetime` or `Decimal`, you must choose a JSON representation for them.",
+              "For example, an application might represent a timestamp as an ISO 8601 string and an exact monetary value as a string."
             ]
           },
           {
@@ -1375,37 +1439,49 @@ write_json_atomically(
             code: `import json
 from datetime import datetime
 from decimal import Decimal
-from pathlib import Path
 
 
-def serialize_unknown(value: object):
+def serialize(value):
+    """Convert Python-only values into JSON-friendly values."""
     if isinstance(value, datetime):
         return value.isoformat()
+
     if isinstance(value, Decimal):
         return str(value)
-    if isinstance(value, Path):
-        return str(value)
-    if isinstance(value, set):
-        return sorted(value)
-    raise TypeError(f"Cannot encode {type(value).__name__} as JSON")
+
+    raise TypeError(
+        f"Cannot encode {type(value).__name__} as JSON"
+    )
 
 
 report = {
-    "generated_at": datetime(2026, 8, 24, 9, 30),
+    "created_at": datetime(2026, 8, 24, 9, 30),
     "total": Decimal("89.97"),
-    "source_file": Path("data/contacts.csv"),
-    "tags": {"priority", "reviewed"},
 }
 
-print(json.dumps(report, default=serialize_unknown, indent=2, sort_keys=True))`
+# default= is called when the JSON encoder
+# encounters a value it does not understand.
+json_text = json.dumps(
+    report,
+    default=serialize,
+    indent=2,
+)
+
+print(json_text)`
           },
           {
             kind: "prose",
             body: [
-              "`default=` is called only for values the encoder does not already understand. It must return something JSON can encode or raise `TypeError`. Converting a `Decimal` to a string preserves its exact value; converting it to a float can introduce rounding error.",
-              "For a small number of special values, a `default` function is the clearest option. For a reusable project-wide policy, subclass `json.JSONEncoder` and override `default()`. For custom classes, a `to_dict()` method that returns plain JSON-friendly data usually keeps the format easiest to understand.",
-              "### 7. Decode special values only when you control the format",
-              "When you own both the writer and reader, `object_hook` can convert selected decoded objects. For exact decimal prices, `parse_float=Decimal` converts JSON decimal numbers before they become floats."
+              "The conversion is a data contract. If a `Decimal` becomes a string when written, the reader needs to know that this field represents an exact decimal amount.",
+              "`default=` is called only for values the JSON encoder does not already understand. The function must return another JSON-compatible value or raise `TypeError`.",
+              "For `Decimal`, converting to a string preserves the exact value; converting to a floating-point number can introduce rounding."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 7. Customize JSON decoding",
+              "Sometimes you want JSON values to become more specific Python types when they are decoded. For example, `parse_float=Decimal` preserves decimal values, while `object_hook` can transform a known JSON object into richer Python values."
             ]
           },
           {
@@ -1415,53 +1491,92 @@ from datetime import datetime
 from decimal import Decimal
 
 
-def parse_known_dates(value: dict) -> dict:
-    if value.get("_type") == "export_event" and isinstance(value.get("created_at"), str):
-        value["created_at"] = datetime.fromisoformat(value["created_at"])
+def parse_event(value):
+    """Convert our known event format into Python objects."""
+    if value.get("_type") == "export_event":
+        value["created_at"] = datetime.fromisoformat(
+            value["created_at"]
+        )
+
     return value
 
 
-event_text = '{"_type": "export_event", "created_at": "2026-08-24T09:30:00", "total": 89.97}'
-event = json.loads(event_text, object_hook=parse_known_dates, parse_float=Decimal)
+json_text = """
+{
+    "_type": "export_event",
+    "created_at": "2026-08-24T09:30:00",
+    "total": 89.97
+}
+"""
 
-print(type(event["created_at"]).__name__)
-print(type(event["total"]).__name__)`
+event = json.loads(
+    json_text,
+    object_hook=parse_event,
+    parse_float=Decimal,
+)
+
+print(event)
+print("created_at:", type(event["created_at"]).__name__)
+print("total:", type(event["total"]).__name__)`
           },
           {
             kind: "prose",
             body: [
-              "`object_hook` runs for every decoded JSON object, from inner objects outward. A `_type` field is your own convention, not a JSON feature. Keep hooks narrow and use them only for data formats you control; for untrusted input, plain dictionaries plus explicit validation are easier to audit.",
-              "### 8. Stream record collections with JSON Lines",
-              "Regular JSON is one complete document, so a large array must be loaded as a whole. JSON Lines (also called NDJSON or `.jsonl`) stores one self-contained JSON value per line. It is a strong choice for logs, append-only events, and large exports."
+              "`parse_float` customizes how JSON numbers are decoded, while `object_hook` can transform decoded objects. Use these techniques when you control the JSON format and have a clear data contract."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 8. Stream records with JSON Lines",
+              "Regular JSON represents one complete document, while JSON Lines (JSONL / NDJSON) stores one independent JSON value per line. This makes JSONL useful for logs, events, and large exports that can be processed one record at a time."
             ]
           },
           {
             kind: "interactive-code",
             code: `import json
 from pathlib import Path
+
 
 path = Path("json_lab/contact-events.jsonl")
 path.parent.mkdir(parents=True, exist_ok=True)
 
 events = [
     {"event": "export_started", "count": 0},
+    {"event": "contact_processed", "count": 1},
     {"event": "export_finished", "count": 3},
 ]
 
+
+# WRITE: store one independent JSON record per line.
 with path.open("w", encoding="utf-8") as file:
     for event in events:
-        file.write(json.dumps(event, separators=(",", ":")) + "\n")
+        file.write(
+            json.dumps(event, separators=(",", ":")) + "\n"
+        )
 
+
+# READ: process one record at a time instead of loading
+# the entire collection into memory.
 with path.open(encoding="utf-8") as file:
     for line in file:
-        line = line.strip()
-        if line:
-            print(json.loads(line))`
+        if not line.strip():
+            continue
+
+        event = json.loads(line)
+
+        # Imagine doing some real processing here.
+        print("Processed:", event["event"])
+
+
+# Show what was actually written to the JSONL file.
+print("\nJSONL file:")
+print(path.read_text(encoding="utf-8"))`
           },
           {
             kind: "prose",
             body: [
-              "Process each line immediately instead of appending every record to a list when the file is large. JSON Lines is not a single valid JSON array, so use it for independent records—not for one configuration object that people edit by hand."
+              "Each line is a complete JSON value, so records can be written and processed independently. This makes JSONL a useful format for logs, events, append-only data, and large collections where loading everything into memory at once is undesirable."
             ]
           },
           {
