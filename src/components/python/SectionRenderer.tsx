@@ -1,5 +1,5 @@
 import type { Section } from "@/lessons/types";
-import { AlertTriangle, CheckCircle2, Info, Brain } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, Brain, ArrowRight } from "lucide-react";
 import { LessonAnimation } from "./LessonAnimation";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
@@ -114,9 +114,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           ) : null}
           {section.body?.map((p, i) => {
             if (p.startsWith("### ")) {
+              const text = p.slice(4);
+              const targetId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
               return (
-                <h3 key={i} className="mt-4 mb-2 text-lg font-semibold tracking-tight text-foreground">
-                  {parseInlineMarkdown(p.slice(4))}
+                <h3 key={i} id={targetId} className="mt-4 mb-2 text-lg font-semibold tracking-tight text-foreground scroll-mt-24">
+                  {parseInlineMarkdown(text)}
                 </h3>
               );
             }
@@ -281,6 +283,14 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
+
+    case "mnemonic": {
+      return (
+        <p className="my-6 text-center font-mono text-[13px] font-bold uppercase tracking-[0.15em] text-foreground/80">
+          {section.text}
+        </p>
+      );
+    }
 
     case "analogy":
       return (
