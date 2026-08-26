@@ -38,6 +38,7 @@ import {
   Bot,
   GitBranch,
   FileText,
+  Box,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -886,7 +887,24 @@ export const roadmap: RoadmapCategory[] = [
         title: "2. Intermediate Concepts",
         patterns: [
           lockedPattern("Functions & Modules", "functions", "Defining functions, scope, and importing modules."),
-          lockedPattern("Object-Oriented Programming", "oop", "Classes, inheritance, and polymorphism."),
+          {
+            slug: "oop",
+            title: "Object-Oriented Programming",
+            blurb: "Classes, inheritance, and polymorphism.",
+            locked: false,
+            path: "/python/oop",
+            lessons: [
+              { slug: "classes-and-objects", title: "Classes and Objects", icon: Box, path: "/python/oop/classes-and-objects" },
+              { slug: "instance-and-class-attributes", title: "Instance and Class Attributes", icon: Box, path: "/python/oop/instance-and-class-attributes" },
+              { slug: "types-of-methods", title: "Types of Methods", icon: Box, path: "/python/oop/types-of-methods" },
+              { slug: "encapsulation", title: "Encapsulation", icon: Box, path: "/python/oop/encapsulation" },
+              { slug: "inheritance", title: "Inheritance", icon: Box, path: "/python/oop/inheritance" },
+              { slug: "polymorphism", title: "Polymorphism", icon: Box, path: "/python/oop/polymorphism" },
+              { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
+              { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
+              { slug: "special-methods", title: "Special Methods", icon: Box, path: "/python/oop/special-methods" },
+            ],
+          },
           {
             slug: "file-handling",
             title: "File Handling",
