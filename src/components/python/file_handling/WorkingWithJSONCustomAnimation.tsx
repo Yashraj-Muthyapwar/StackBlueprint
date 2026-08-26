@@ -31,16 +31,17 @@ const TOTAL_STEPS = 7;
 export function WorkingWithJSONCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || isHovered) return;
 
     const timer = window.setTimeout(() => {
       setStep((current) => (current + 1) % TOTAL_STEPS);
     }, STEP_TIME);
 
     return () => window.clearTimeout(timer);
-  }, [playing, step]);
+  }, [playing, step, isHovered]);
 
   const go = useCallback((delta: number) => {
     setPlaying(false);
@@ -48,7 +49,7 @@ export function WorkingWithJSONCustomAnimation() {
   }, []);
 
   return (
-    <div className="relative z-10 flex w-full flex-col">
+    <div className="relative z-10 flex w-full flex-col" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <div className="relative flex h-[600px] w-full min-w-0 items-center justify-center overflow-hidden px-4 py-7 lg:px-8 lg:py-9">
         <AnimatePresence mode="wait">
           {step === 0 && <DecodeScene key="decode" />}

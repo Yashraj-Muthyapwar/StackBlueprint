@@ -5,13 +5,14 @@ import { FileText, Folder, Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Te
 export function WorkingWithPathsCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const totalSteps = 6;
 
   useEffect(() => {
-    if (!playing) return;
+    if (!playing || isHovered) return;
     const id = window.setTimeout(() => setStep((s) => (s + 1) % totalSteps), 4000);
     return () => window.clearTimeout(id);
-  }, [playing, step]);
+  }, [playing, step, isHovered]);
 
   const go = useCallback(
     (delta: number) => {
@@ -22,7 +23,7 @@ export function WorkingWithPathsCustomAnimation() {
   );
 
   return (
-    <div className="flex flex-col relative z-10 w-full">
+    <div className="flex flex-col relative z-10 w-full" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {step === 0 && <Step1Paths key="step1" />}
