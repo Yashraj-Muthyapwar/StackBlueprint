@@ -16,10 +16,12 @@ export default defineConfig({
     server: { entry: "server" },
   },
   
-  // (Optional) This silences that 500kb chunk warning you saw earlier
   vite: {
     build: {
       chunkSizeWarningLimit: 1000,
+    },
+    optimizeDeps: {
+      exclude: ["@electric-sql/pglite", "@duckdb/duckdb-wasm"]
     }
   }
 });
