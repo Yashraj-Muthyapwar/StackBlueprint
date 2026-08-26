@@ -123,11 +123,16 @@ export type QuizQuestion = {
   correctIndex?: number;
   commandAnswer?: string | string[];
   explanation?: string;
+  interactiveCode?: boolean;
+  initialCode?: string;
+  testCode?: string;
+  expectedOutput?: string;
 };
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
+  | { kind: "interactive-code"; code: string; caption?: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
@@ -135,6 +140,7 @@ export type Section =
   | { kind: "image"; src: string; alt: string; caption?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
+  | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | { kind: "terminal-animation"; command: string; output: string; buttonLabel?: string; caption?: string }
   | { kind: "docker-run-under-the-hood" }
   | { kind: "ipv4-diagram" }
