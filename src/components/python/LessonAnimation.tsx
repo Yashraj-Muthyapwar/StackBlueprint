@@ -17,7 +17,9 @@ import { WorkingWithJSONCustomAnimation } from "./file_handling/WorkingWithJSONC
 import { PickleModuleCustomAnimation } from "./file_handling/PickleModuleCustomAnimation";
 import { ShutilModuleCustomAnimation } from "./file_handling/ShutilModuleCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module";
+import { ClassesAndObjectsCustomAnimation } from "./oop/ClassesAndObjectsCustomAnimation";
+
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects";
 
 export function LessonAnimation({
   variant,
@@ -59,6 +61,8 @@ export function LessonAnimation({
               <PickleModuleCustomAnimation />
             ) : variant === "shutil-module" ? (
               <ShutilModuleCustomAnimation />
+            ) : variant === "classes-and-objects" ? (
+              <ClassesAndObjectsCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
