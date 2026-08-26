@@ -145,6 +145,68 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "`__init__()` sets up an object's starting data.",
               "`self` refers to the current object."
             ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "oop-basics-1",
+                question: "What is a class in Python?",
+                options: [
+                  "A variable that stores a list of numbers",
+                  "A blueprint used for creating objects",
+                  "A function that runs automatically",
+                  "A type of loop for iterating over data"
+                ],
+                correctIndex: 1,
+                explanation: "A class acts as a blueprint or template. It defines the structure (attributes) and behavior (methods) that all objects created from it will have."
+              },
+              {
+                id: "oop-basics-2",
+                question: "What is the primary purpose of the `__init__()` method?",
+                options: [
+                  "To delete an object from memory",
+                  "To set up an object's starting data when it is created",
+                  "To print text to the screen",
+                  "To stop a program from running"
+                ],
+                correctIndex: 1,
+                explanation: "The `__init__()` method is called automatically when an object is instantiated. It is used to initialize the object's starting attributes."
+              },
+              {
+                id: "oop-basics-3",
+                question: "In the method definition `def drive(self):`, what does `self` refer to?",
+                options: [
+                  "The class itself",
+                  "The `drive` function",
+                  "The specific object that is currently calling the method",
+                  "A built-in Python module"
+                ],
+                correctIndex: 2,
+                explanation: "`self` is a reference to the current instance of the class. It allows the object to access its own attributes and other methods."
+              },
+              {
+                id: "oop-basics-4",
+                question: "Write the code to create a `BankAccount` class with an `__init__` method that accepts `owner` and `balance` parameters and assigns them to instance attributes.",
+                interactiveCode: true,
+                initialCode: "# Write your class here:\n\n",
+                testCode: "acc = BankAccount('Alice', 100)\nprint(acc.owner)\nprint(acc.balance)",
+                expectedOutput: "Alice\n100",
+                explanation: "`self` correctly references the instance, and assigning `self.owner` and `self.balance` ensures those values belong to each specific `BankAccount` instance."
+              },
+              {
+                id: "oop-basics-5",
+                question: "If we define a class `Car` and create two objects `car1 = Car()` and `car2 = Car()`, which of the following is true?",
+                options: [
+                  "`car1` and `car2` share the exact same identity in memory.",
+                  "`car1` and `car2` are separate, independent instances of the `Car` class.",
+                  "We cannot create more than one object from a single class.",
+                  "`car2` will automatically overwrite `car1`."
+                ],
+                correctIndex: 1,
+                explanation: "Classes act as blueprints. You can instantiate as many objects as you want from a single class, and each object will be a completely independent instance."
+              }
+            ]
           }
         ]
       },
