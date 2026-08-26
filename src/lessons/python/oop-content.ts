@@ -120,7 +120,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: `class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def display_details(self):\n        print(f"{self.name}: \\${self.price}")\n\nlaptop = Product("Laptop", 899)\nheadphones = Product("Headphones", 120)\n\nlaptop.display_details()\nheadphones.display_details()`
+            code: `class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def display_details(self):\n        print(f"{self.name}: \${self.price}")\n\n\nlaptop = Product("Laptop", 899)\nheadphones = Product("Headphones", 120)\n\nlaptop.display_details()\nheadphones.display_details()`
           },
           {
             kind: "prose",
