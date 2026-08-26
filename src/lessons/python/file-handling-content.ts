@@ -6,6 +6,8 @@ import fileReadImg from "@/images/python/intermediate/file_handling/file-read.pn
 import fileWriteImg from "@/images/python/intermediate/file_handling/file-write.png";
 import fileModesImg from "@/images/python/intermediate/file_handling/file-modes.png";
 import fileMethodsImg from "@/images/python/intermediate/file_handling/file-methods.png";
+import pickleOrAnotherFormatImg from "@/images/python/intermediate/file_handling/pickle-or-another-format.png";
+import pickleProductionConsiderationsImg from "@/images/python/intermediate/file_handling/pickle-production-considerations.png";
 
 export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   "file-handling": {
@@ -2245,14 +2247,565 @@ print(summary_path.read_text(encoding="utf-8"))`
       {
         slug: "pickle-module",
         title: "Pickle Module",
-        subtitle: "Cache Python objects with pickle.",
-        sections: []
+        subtitle: "Cache Trusted Python Objects with Pickle",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Programs often compute data that is expensive to rebuild: a parsed local dataset, a search index, a feature-engineering result, or the state needed to reproduce a bug. A cache lets a later run reuse that work.",
+              "Pickle is Python's built-in binary serializer. It can preserve many Python types that JSON cannot represent directly, including tuples, sets, datetime values, Decimal values, and many custom-class instances. That convenience comes with a strict security rule: unpickling data can execute arbitrary code.",
+              "Use pickle only for Python-only data from a source you fully control, such as a cache your program wrote into its own private workspace. Do not load a pickle from a user upload, email attachment, download, public model registry, HTTP request, or shared location that an attacker could modify."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "pickle-module",
+            caption: "Pickling and Unpickling"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Pickling turns a Python object graph into binary bytes. Unpickling rebuilds an equivalent Python object graph.",
+              "The `s` in `dumps` and `loads` means the result or input is an in-memory byte string. File-based functions require binary mode: `wb` for writing and `rb` for reading.",
+              "Pickle is not a portable or human-readable file format. It is Python-specific binary data, so it is a poor choice for public APIs, configuration files, spreadsheets, or long-lived cross-language contracts."
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["You have / need", "In memory", "On disk"],
+            rows: [
+              ["Convert a Python object to pickle data", "`pickle.dumps(object)` returns bytes", "`pickle.dump(object, binary_file)` writes bytes"],
+              ["Rebuild a Python object", "`pickle.loads(blob)`", "`pickle.load(binary_file)`"]
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "The security boundary",
+            body: [
+              "**Only unpickle data you trust.** Pickle `load` and `loads` are not safe parsers for untrusted input; a crafted pickle can run code while it is being loaded.",
+              "This is not a “validate it after loading” problem, because the harmful action can happen during loading. A custom `Unpickler` allowlist may reduce risk in a narrow situation, but it is not a general security boundary. The safe default is to reject untrusted pickle data and use JSON, CSV, Protocol Buffers, or another data-only format instead.",
+              "Signing a pickle with HMAC can detect tampering when the signing key is protected, but it does not make an unknown producer trustworthy. Use it only in addition to a controlled trust model."
+            ]
+          },
+
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Round-trip a Python object in memory",
+              "Use `dumps` when a trusted Python-only mechanism already transports bytes. `loads` reconstructs the original object from those bytes."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\nfrom datetime import datetime\nfrom decimal import Decimal\n\norder = {\n    "order_id": 5001,\n    "placed_at": datetime(2026, 8, 24, 9, 30),\n    "total": Decimal("89.97"),\n    "labels": {"priority", "reviewed"},\n    "coordinates": (41.8781, -87.6298),\n}\n\nblob = pickle.dumps(order)\nrestored = pickle.loads(blob)\n\nprint(type(blob).__name__)\nprint(f"Stored bytes: {len(blob)}")\nprint(type(restored["placed_at"]).__name__)\nprint(type(restored["total"]).__name__)\nprint(type(restored["labels"]).__name__)\nprint(type(restored["coordinates"]).__name__)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Pickle preserves these Python types without custom conversion. JSON needs explicit conversions for `datetime`, `Decimal`, and `set`, and JSON arrays return as lists rather than tuples.",
+              "### 2. Write and read a controlled pickle file",
+              "Use `dump` and `load` with binary files. This block creates the exact cache it later loads, so the source is controlled."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\nfrom pathlib import Path\n\nworkspace = Path("pickle_lab")\ncache_path = workspace / "contact_cache.pkl"\nworkspace.mkdir(exist_ok=True)\ncache_path.unlink(missing_ok=True)\n\ncache = {\n    "names": ["Ari Stone", "Lee Park"],\n    "processed": True,\n    "source": "contacts.csv",\n}\n\nwith cache_path.open("wb") as file:\n    pickle.dump(cache, file)\n\nwith cache_path.open("rb") as file:\n    restored_cache = pickle.load(file)  # Safe here: this script just wrote the file.\n\nprint(restored_cache)\nprint(f"Cache size: {cache_path.stat().st_size} bytes")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Binary files are not meant to be opened and edited as text. If people need to inspect, hand-edit, or exchange the data, choose JSON or CSV instead.",
+              "### 3. Know what pickle can and cannot preserve",
+              "Pickle handles built-in values, nested containers, shared references, cyclic structures, and many custom-class instances. Functions and classes are stored by their fully qualified module name, not by copying their code."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\n\ndata = {\n    "tags": {"python", "cache"},\n    "point": (10, 20),\n}\n\nrestored = pickle.loads(pickle.dumps(data))\n\nprint(type(restored["tags"]).__name__)\nprint(type(restored["point"]).__name__)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "An object tied to the current process is usually not picklable: open files, sockets, database connections, locks, generators, coroutines, lambdas, nested functions, and locally defined classes are common examples."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\n\ntry:\n    pickle.dumps(lambda number: number + 1)\nexcept (AttributeError, pickle.PicklingError, TypeError) as error:\n    print(f"Lambda cannot be pickled: {type(error).__name__}")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "If an object owns a live connection, pickle the connection settings or other durable state, not the connection itself. Define worker functions at the top level of a module when using \`multiprocessing\`, because worker processes need to import them by name.",
+              "### 4. Control the saved state of a custom object",
+              "\`__getstate__\` lets a class choose what it saves. \`__setstate__\` rebuilds derived or live state after loading. Use these hooks when an instance contains something that should not be serialized."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\n\n\nclass CachedClient:\n    def __init__(self, endpoint):\n        self.endpoint = endpoint\n        self.connection = self._connect()\n\n    def _connect(self):\n        return f"connected to {self.endpoint}"\n\n    def __getstate__(self):\n        # Save durable configuration, not the current live connection.\n        return {"endpoint": self.endpoint}\n\n    def __setstate__(self, state):\n        self.endpoint = state["endpoint"]\n        self.connection = self._connect()\n\n\nclient = CachedClient("https://api.example.test")\nrestored_client = pickle.loads(pickle.dumps(client))\n\nprint(client.connection)\nprint(restored_client.connection)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "On unpickling, \`__init__\` is usually not called. A class that depends on invariants or resources should restore them in \`__setstate__\` or another deliberate initialization path. For long-lived pickled instances, include a state version and migrate old state explicitly.",
+              "### 5. Choose a protocol when compatibility matters",
+              "Protocols describe the binary format of a pickle. Higher protocols can be more efficient but may require newer Python versions to read them. \`HIGHEST_PROTOCOL\` selects the newest protocol supported by the running interpreter."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\n\ndata = {"name": "wireless mouse", "stock": 25, "tags": ("usb", "compact")}\n\nfor protocol in range(pickle.HIGHEST_PROTOCOL + 1):\n    blob = pickle.dumps(data, protocol=protocol)\n    print(f"Protocol {protocol}: {len(blob)} bytes")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "For a short-lived local cache, the default or highest protocol is usually appropriate. Pin a protocol only when you know the oldest Python version that must read the file. Protocol 5 is the default in Python 3.14; older runtimes cannot read a pickle written with an unsupported newer protocol.",
+              "### 6. Build a trusted cache with versioning and atomic replacement",
+              "Writing directly to a final cache path can leave a corrupt partial file if the process stops mid-write. Write a complete sibling temporary file, then replace the final file. A version marker lets the program ignore a cache created by an older data shape or algorithm."
+            ]
+          },
+
+          {
+            kind: "interactive-code",
+            code: `import pickle\nfrom pathlib import Path\n\n\ndef write_trusted_cache(path, payload):\n    path.parent.mkdir(parents=True, exist_ok=True)\n    temporary_path = path.with_name(f".{path.name}.tmp")\n\n    try:\n        with temporary_path.open("wb") as file:\n            pickle.dump(payload, file, protocol=pickle.HIGHEST_PROTOCOL)\n            file.flush()\n        temporary_path.replace(path)\n    except Exception:\n        temporary_path.unlink(missing_ok=True)\n        raise\n\n\ndef read_trusted_cache(path, expected_version):\n    if not path.exists():\n        return None\n\n    # Only load a cache at this program-controlled path.\n    try:\n        with path.open("rb") as file:\n            payload = pickle.load(file)\n    except (pickle.UnpicklingError, EOFError, AttributeError, ImportError, IndexError):\n        return None\n\n    if not isinstance(payload, dict) or payload.get("cache_version") != expected_version:\n        return None\n    return payload\n\n\ncache_path = Path("pickle_lab/versioned_cache.pkl")\ncache_path.unlink(missing_ok=True)\n\nwrite_trusted_cache(cache_path, {"cache_version": 1, "names": ["Ari", "Lee"]})\nprint(read_trusted_cache(cache_path, expected_version=1))\nprint(read_trusted_cache(cache_path, expected_version=2))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Atomic replacement protects readers from seeing a half-written file. It does not coordinate two writers racing to update the same cache, and it does not make an untrusted file safe to load. Add locking or a shared cache service when multiple processes write the same key."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Production considerations",
+            body: []
+          },
+          {
+            kind: "image",
+            src: pickleProductionConsiderationsImg,
+            alt: "Production considerations",
+            caption: "Production considerations"
+          },
+          {
+            kind: "prose",
+            heading: "Pickle or another format?",
+            body: []
+          },
+          {
+            kind: "image",
+            src: pickleOrAnotherFormatImg,
+            alt: "Pickle or another format?",
+            caption: "Pickle or another format?"
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "This final example caches a product catalog. It creates useful lookup structures once, saves them as a trusted Python-only cache, then reuses that cache for the next request.",
+              "It intentionally uses only the Python standard library, so it runs in Pyodide without installing packages. The code starts with a clean browser workspace so each run visibly demonstrates both a cache miss and a cache hit."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `import pickle\nfrom pathlib import Path\n\n\nCACHE_VERSION = 1\n\n\ndef build_product_catalog():\n    \"\"\"Build lookup structures from trusted application data.\"\"\"\n    print("Building product catalog...")\n\n    products = [\n        {"id": 101, "name": "Wireless Mouse", "category": "electronics"},\n        {"id": 102, "name": "Mechanical Keyboard", "category": "electronics"},\n        {"id": 103, "name": "Office Chair", "category": "furniture"},\n    ]\n\n    # Precompute structures the application can reuse.\n    return {\n        "cache_version": CACHE_VERSION,\n        "products_by_id": {\n            product["id"]: product\n            for product in products\n        },\n        "categories": {\n            product["category"]\n            for product in products\n        },\n    }\n\n\ndef write_trusted_cache(path, data):\n    \"\"\"Write the cache completely before replacing the old file.\"\"\"\n    temporary_path = path.with_name(f".{path.name}.tmp")\n\n    try:\n        with temporary_path.open("wb") as file:\n            pickle.dump(\n                data,\n                file,\n                protocol=pickle.HIGHEST_PROTOCOL,\n            )\n\n        temporary_path.replace(path)\n\n    except Exception:\n        temporary_path.unlink(missing_ok=True)\n        raise\n\n\ndef get_product_catalog(path):\n    \"\"\"Load a valid cache or rebuild it when necessary.\"\"\"\n    if path.exists():\n        # This path belongs to this program's private lesson workspace.\n        try:\n            with path.open("rb") as file:\n                cached = pickle.load(file)\n\n            if (\n                isinstance(cached, dict)\n                and cached.get("cache_version") == CACHE_VERSION\n            ):\n                print("Catalog cache hit.")\n                return cached\n\n        except (pickle.UnpicklingError, EOFError):\n            print("Cache is invalid. Rebuilding...")\n\n    catalog = build_product_catalog()\n    write_trusted_cache(path, catalog)\n    print("Catalog cache saved.")\n    return catalog\n\n\n# 1. CREATE A CONTROLLED WORKSPACE\nworkspace = Path("pickle_lab")\nworkspace.mkdir(exist_ok=True)\n\ncache_path = workspace / "product_catalog.pkl"\n\n# Reset only for this interactive lesson so every run\n# demonstrates both a cache miss and a cache hit.\ncache_path.unlink(missing_ok=True)\n\n# 2. FIRST REQUEST: BUILD + SAVE\nfirst_catalog = get_product_catalog(cache_path)\n\n# 3. SECOND REQUEST: LOAD FROM CACHE\nsecond_catalog = get_product_catalog(cache_path)\n\n# 4. USE THE RESTORED DATA\nproduct = second_catalog["products_by_id"][102]\n\nprint("Product:", product["name"])\nprint("Categories:", sorted(second_catalog["categories"]))\nprint(\n    "Category type:",\n    type(second_catalog["categories"]).__name__,\n)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The catalog contains a dictionary keyed by integers and a set, which Pickle restores without custom encoders. The example is safe because the same script creates and controls the exact cache path before it calls \`pickle.load\`. In a real application, never accept a cache file uploaded by a user or downloaded from an unknown source; rebuild or load it only from a protected, trusted location."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: `**Loading an unknown .pkl file:** Treat it as unsafe code, not passive data. Do not load it.
+
+**Opening pickle files in text mode:** Use \`wb\` to write and \`rb\` to read.
+
+**Using pickle for shared data:** JSON, CSV, Protocol Buffers, or Parquet are usually better when another language, person, or system needs the data.
+
+**Assuming pickle stores class code:** It stores references to importable classes and functions plus instance state. Renaming or moving code can break old pickles.
+
+**Caching without a version:** A changed schema or algorithm can make an old cache incorrect even when it loads successfully.
+
+**Writing directly to the final cache:** A crash can leave a partial pickle. Write a complete sibling temporary file and replace it.
+
+**Treating a restricted unpickler as a complete defense:** It is not a substitute for keeping untrusted pickle data out of the system.`
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Pickle preserves rich Python-only object graphs as binary data.",
+              "The \`dump\` and \`load\` pair works with binary files; \`dumps\` and \`loads\` works with in-memory bytes.",
+              "Only load pickles from sources you fully control and trust.",
+              "Use cache versions, controlled paths, and atomic replacement for reliable local caches.",
+              "Pickle is convenient, not portable or safe for untrusted interchange.",
+              "Think in tradeoffs: trust, type fidelity, compatibility, memory, concurrency, and consumer needs."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "pickle-1",
+                question: "What does \`pickle.dumps\` return?",
+                options: [
+                  "A string",
+                  "A file object",
+                  "A bytes object",
+                  "A dictionary"
+                ],
+                correctIndex: 2,
+                explanation: "The 's' in dumps stands for string, but in Python 3 it returns a bytes object containing the serialized data."
+              },
+              {
+                id: "pickle-2",
+                question: "Which file modes are appropriate for pickle \`dump\` and \`load\`?",
+                options: [
+                  "'w' and 'r'",
+                  "'wb' and 'rb'",
+                  "'a' and 'r+'",
+                  "'x' and 'w'"
+                ],
+                correctIndex: 1,
+                explanation: "Pickle files are binary data, so you must use 'wb' to write and 'rb' to read."
+              },
+              {
+                id: "pickle-3",
+                question: "Why is \`pickle.load\` unsafe for user uploads?",
+                options: [
+                  "It might contain viruses",
+                  "It can take up too much memory",
+                  "A crafted pickle can execute arbitrary code during loading",
+                  "It can only be read by Python"
+                ],
+                correctIndex: 2,
+                explanation: "Unpickling allows execution of code (like calling functions). Malicious data can exploit this."
+              },
+              {
+                id: "pickle-4",
+                question: "What does a cache version protect against?",
+                options: [
+                  "Unauthorized access to the cache",
+                  "Reusing data produced by an incompatible schema or algorithm",
+                  "Disk corruption",
+                  "Network latency"
+                ],
+                correctIndex: 1,
+                explanation: "A cache version ensures that if your program's data requirements change, it will safely ignore the old, incompatible cache."
+              },
+              {
+                id: "pickle-5",
+                question: "Why write to a temporary sibling file before replacing the final cache?",
+                options: [
+                  "It compresses the data faster",
+                  "It uses less memory",
+                  "Readers never see a partially written final cache if the write is interrupted",
+                  "It bypasses file permissions"
+                ],
+                correctIndex: 2,
+                explanation: "Atomic replacement ensures that any reader opening the cache file will either see the complete old file or the complete new file, but never a corrupted half-written file."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "shutil-module",
         title: "Shutil Module",
         subtitle: "Copy, move, and archive files.",
-        sections: []
+        sections: [
+          {
+            "kind": "prose",
+            "heading": "Why this matters",
+            "body": [
+              "Programs create exports, reports, generated images, and backups. A real workflow may need to copy a completed report without changing it, move a processed upload out of an inbox, or package a folder for a teammate.",
+              "`shutil` is Python's high-level filesystem toolbox. Use `pathlib.Path` to describe and inspect locations; use `shutil` for whole-file, whole-folder, and archive actions.",
+              "Every runnable example works in a named `shutil_lab` workspace so it is easy to inspect and reset."
+            ]
+          } as const,
+          {
+            "kind": "animation",
+            "variant": "shutil-module"
+          } as const,
+          {
+            "kind": "prose",
+            "heading": "The core idea",
+            "body": []
+          } as const,
+          {
+            "kind": "table",
+            "headers": [
+              "You need to...",
+              "Prefer",
+              "Why"
+            ],
+            "rows": [
+              [
+                "Build a location or test whether it exists",
+                "`pathlib.Path`",
+                "Clear joins and readable inspection methods."
+              ],
+              [
+                "Copy a file or folder tree",
+                "`shutil`",
+                "Performs the complete copy operation."
+              ],
+              [
+                "Move a file between folders",
+                "`shutil.move()`",
+                "Can fall back to copy-then-delete across filesystems."
+              ],
+              [
+                "Make or unpack a ZIP",
+                "`shutil.make_archive()` / `shutil.unpack_archive()`",
+                "High-level archive support."
+              ],
+              [
+                "Delete one known file",
+                "`Path.unlink()`",
+                "A smaller, targeted operation."
+              ]
+            ]
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "A useful rule: `Path` answers **where?**; `shutil` performs **the large filesystem action**."
+            ]
+          } as const,
+          {
+            "kind": "prose",
+            "heading": "Copying one file",
+            "body": []
+          } as const,
+          {
+            "kind": "table",
+            "headers": [
+              "Function",
+              "Destination can be a folder?",
+              "Metadata",
+              "Good use"
+            ],
+            "rows": [
+              [
+                "`shutil.copyfile()`",
+                "No",
+                "File bytes only",
+                "An exact output filename."
+              ],
+              [
+                "`shutil.copy()`",
+                "Yes",
+                "File mode, not all metadata",
+                "A normal working copy."
+              ],
+              [
+                "`shutil.copy2()`",
+                "Yes",
+                "As much as the platform supports",
+                "A backup where timestamps matter."
+              ]
+            ]
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "`copy2()` is a strong default for a small backup. It leaves the original in place and returns the final destination."
+            ]
+          } as const,
+          {
+            "kind": "prose",
+            "heading": "Step-by-step",
+            "body": [
+              "### 1. Back up a finished support report",
+              "Before another process changes a CSV export, make a copy."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\nsource = workspace / \"exports\" / \"daily-support-report.csv\"\nbackups = workspace / \"backups\"\n\nsource.parent.mkdir(parents=True, exist_ok=True)\nbackups.mkdir(parents=True, exist_ok=True)\nsource.write_text(\n    \"ticket_id,status\\n1001,closed\\n1002,open\\n\",\n    encoding=\"utf-8\",\n)\n\n# Passing a folder keeps the original filename.\nsaved_to = Path(shutil.copy2(source, backups))\n\nprint(\"Original exists:\", source.exists())\nprint(\"Backup path:\", saved_to)\nprint(\"Same contents:\", source.read_text() == saved_to.read_text())"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "A copy is not a move: the source still exists. If the destination is a folder, the copy becomes `backups/daily-support-report.csv`.",
+              "### 2. Stage a whole folder and ignore temporary files",
+              "`copytree()` recursively copies a directory. `ignore_patterns()` keeps temporary or editor files out of a release."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\nsource = workspace / \"release_source\"\nstaging = workspace / \"release_staging\"\n\n# Reset only this exact practice workspace for a repeatable run.\nif workspace.exists():\n    shutil.rmtree(workspace)\n\n(source / \"reports\").mkdir(parents=True)\n(source / \"reports\" / \"summary.txt\").write_text(\"Tickets closed: 42\\n\")\n(source / \"reports\" / \"draft.tmp\").write_text(\"Do not publish\")\n(source / \".DS_Store\").write_text(\"Editor metadata\")\n\nshutil.copytree(\n    source,\n    staging,\n    ignore=shutil.ignore_patterns(\"*.tmp\", \".DS_Store\"),\n)\n\nfor path in sorted(staging.rglob(\"*\")):\n    print(path.relative_to(staging))"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "By default, `copytree()` expects its destination not to exist. Use `dirs_exist_ok=True` only when you deliberately want to merge into an existing folder; matching files can be overwritten.",
+              "### 3. Move an incoming file after it is processed",
+              "`move()` changes a file's location. On one filesystem it may be a fast rename; across filesystems it can copy the data and delete the source."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\nincoming = workspace / \"incoming\" / \"ticket-batch.csv\"\nprocessed = workspace / \"processed\"\n\nincoming.parent.mkdir(parents=True, exist_ok=True)\nprocessed.mkdir(parents=True, exist_ok=True)\nincoming.write_text(\"ticket_id,priority\\n1003,high\\n\", encoding=\"utf-8\")\n\nmoved_to = Path(shutil.move(incoming, processed))\n\nprint(\"Moved to:\", moved_to)\nprint(\"Source still exists:\", incoming.exists())\nprint(\"Destination exists:\", moved_to.exists())"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "Do not use `move()` when you need a backup. After it succeeds, the file is no longer at its old path.",
+              "### 4. Package reports into a ZIP and verify the result",
+              "An archive packages many files into one shareable file. Pass the archive name without `.zip`; `make_archive()` adds the extension."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\nreports = workspace / \"reports\"\narchives = workspace / \"archives\"\nrestored = workspace / \"restored\"\n\nreports.mkdir(parents=True, exist_ok=True)\narchives.mkdir(parents=True, exist_ok=True)\n(reports / \"daily.csv\").write_text(\"ticket_id,status\\n1001,closed\\n\")\n(reports / \"notes.txt\").write_text(\"Prepared for weekly handoff.\\n\")\n\narchive = shutil.make_archive(\n    base_name=str(archives / \"support-reports\"),\n    format=\"zip\",\n    root_dir=reports,\n)\n\nshutil.unpack_archive(archive, restored)\n\nprint(\"Archive:\", archive)\nprint(\"Restored files:\", [path.name for path in sorted(restored.iterdir())])"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "Only extract archives from a trusted source. A downloaded archive is input, not a harmless folder: it may contain unexpected paths or huge data.",
+              "### 5. Copy from an already-open stream",
+              "`copyfileobj()` copies between open file-like objects. It is useful when another library gives you a stream instead of a source path."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom io import BytesIO\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\ndestination = workspace / \"downloads\" / \"message.txt\"\ndestination.parent.mkdir(parents=True, exist_ok=True)\n\ndownload_stream = BytesIO(b\"Your support export is ready.\\n\")\n\nwith destination.open(\"wb\") as file:\n    shutil.copyfileobj(download_stream, file)\n\nprint(destination.read_text(encoding=\"utf-8\"))"
+          } as const,
+          {
+            "kind": "prose",
+            "heading": "Deleting a folder tree is different",
+            "body": [
+              "`shutil.rmtree(path)` permanently removes a directory and everything inside it. There is no recycle-bin step.",
+              "Use it only with a precise, application-controlled path. Never pass a user-supplied path, a broad workspace root, or an unresolved value to `rmtree()`."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\nworkspace = Path(\"shutil_lab\")\ngenerated_preview = workspace / \"generated_preview\"\ngenerated_preview.mkdir(parents=True, exist_ok=True)\n(generated_preview / \"preview.txt\").write_text(\"Temporary preview\")\n\n# This exact, application-created practice folder is the deletion boundary.\nshutil.rmtree(generated_preview)\n\nprint(\"Preview folder exists:\", generated_preview.exists())"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "In production, log the exact target, verify it belongs to a controlled parent folder, and prefer retention policies for important backups."
+            ]
+          } as const,
+          {
+            "kind": "prose",
+            "heading": "A simple example: create a shareable support-report backup",
+            "body": [
+              "This realistic daily handoff stages only publishable files, creates a ZIP, restores it into a separate check folder, and prints the result. It uses only the Python standard library."
+            ]
+          } as const,
+          {
+            "kind": "interactive-code",
+            "code": "import shutil\nfrom pathlib import Path\n\n# 1. CREATE SAMPLE APPLICATION OUTPUT\nworkspace = Path(\"shutil_lab\")\nsource = workspace / \"support_exports\"\nstaging = workspace / \"staging\"\nbackups = workspace / \"backups\"\nrestored = workspace / \"restore_check\"\n\n# Reset only this named lesson workspace for a repeatable run.\nif workspace.exists():\n    shutil.rmtree(workspace)\n\n(source / \"daily\").mkdir(parents=True)\n(source / \"daily\" / \"tickets.csv\").write_text(\n    \"ticket_id,status\\n1001,closed\\n1002,open\\n\",\n    encoding=\"utf-8\",\n)\n(source / \"daily\" / \"summary.txt\").write_text(\n    \"Open tickets: 1\\n\",\n    encoding=\"utf-8\",\n)\n(source / \"daily\" / \"draft.tmp\").write_text(\"Not ready for backup\")\nbackups.mkdir(parents=True)\n\n# 2. STAGE A CLEAN COPY\n# Temporary files do not enter the backup.\nshutil.copytree(\n    source,\n    staging,\n    ignore=shutil.ignore_patterns(\"*.tmp\"),\n)\n\n# 3. CREATE ONE SHAREABLE ZIP FILE\narchive = shutil.make_archive(\n    base_name=str(backups / \"support-export\"),\n    format=\"zip\",\n    root_dir=staging,\n)\n\n# 4. RESTORE INTO A SEPARATE CHECK FOLDER\nshutil.unpack_archive(archive, restored)\n\nrestored_files = [\n    path.relative_to(restored).as_posix()\n    for path in sorted(restored.rglob(\"*\"))\n    if path.is_file()\n]\n\nprint(\"Backup created:\", archive)\nprint(\"Restored files:\", restored_files)\nprint(\n    \"Temporary file included:\",\n    any(name.endswith(\".tmp\") for name in restored_files),\n)"
+          } as const,
+          {
+            "kind": "prose",
+            "body": [
+              "Expected result: the ZIP contains `daily/tickets.csv` and `daily/summary.txt`, but not `daily/draft.tmp`. The source remains untouched because `copytree()` made a copy instead of a move.",
+              "## Production considerations"
+            ]
+          } as const,
+          {
+            "kind": "table",
+            "headers": [
+              "Concern",
+              "Good default"
+            ],
+            "rows": [
+              [
+                "Metadata",
+                "Use `copy2()` when original timestamps matter; platforms differ in which metadata they can preserve."
+              ],
+              [
+                "Existing destinations",
+                "Let `copytree()` create a new staging folder. Use `dirs_exist_ok=True` only for an intentional merge."
+              ],
+              [
+                "Large folders",
+                "Copying and archiving take time proportional to the data size and file count. Log progress for long jobs."
+              ],
+              [
+                "Disk space",
+                "Check free space before a large copy or archive."
+              ],
+              [
+                "Archive trust",
+                "Only unpack archives from trusted sources. Establish a security policy for downloaded archives."
+              ],
+              [
+                "Deletion",
+                "Keep `rmtree()` targets narrow, known, and logged. There is no undo."
+              ]
+            ]
+          } as const,
+          {
+            "kind": "callout",
+            "tone": "warn",
+            "title": "Common mistakes",
+            "body": "- **Using `move()` when you meant `copy2()`:** A move removes the original from its old path.\\n- **Passing a folder to `copyfile()`:** It needs a destination filename. `copy()` and `copy2()` accept a destination folder.\\n- **Creating the `copytree()` destination first:** It fails by default. Let `copytree()` create it, or deliberately use `dirs_exist_ok=True`.\\n- **Archiving the wrong root:** `root_dir` controls the top-level layout inside the archive. Restore a test copy to inspect it.\\n- **Extracting unknown archives:** Treat them as untrusted input.\\n- **Calling `rmtree()` on a broad path:** Restrict deletion to a precise, application-created folder."
+          } as const,
+          {
+            "kind": "takeaways",
+            "items": [
+              "Use `Path` for locations and `shutil` for high-level copy, move, archive, and controlled deletion operations.",
+              "`copy2()` keeps the original; `move()` relocates it.",
+              "`copytree()` creates a whole-folder staging copy and can ignore unwanted files.",
+              "`make_archive()` creates a shareable archive; verify what you package.",
+              "The same code patterns work in local scripts and server jobs, but production needs stronger space, logging, trust, and deletion safeguards."
+            ]
+          } as const,
+          {
+            "kind": "quiz",
+            "questions": [
+              {
+                "id": "shutil-1",
+                "question": "Which function is a good default for a backup that should preserve timestamps where possible?",
+                "options": [
+                  "shutil.copyfile()",
+                  "shutil.copy()",
+                  "shutil.copy2()",
+                  "shutil.move()"
+                ],
+                "correctIndex": 2,
+                "explanation": "shutil.copy2() preserves as much metadata (including timestamps) as the platform supports."
+              },
+              {
+                "id": "shutil-2",
+                "question": "What happens to the source after `shutil.move()` succeeds?",
+                "options": [
+                  "It remains exactly as it was",
+                  "Its metadata is updated",
+                  "It is compressed",
+                  "It is no longer at the old path"
+                ],
+                "correctIndex": 3,
+                "explanation": "A move effectively relocates the file; whether via rename or a copy-then-delete, the source file is removed from its original path."
+              },
+              {
+                "id": "shutil-3",
+                "question": "Why is `rmtree()` treated differently from normal cleanup operations like `Path.unlink()`?",
+                "options": [
+                  "It moves files to the recycle bin",
+                  "It recursively and permanently removes everything below its target",
+                  "It only deletes empty folders",
+                  "It takes a long time to run"
+                ],
+                "correctIndex": 1,
+                "explanation": "shutil.rmtree() permanently deletes a directory and its entire contents without any recycle bin step, making it highly destructive if misused."
+              }
+            ]
+          } as const,
+        ]
       }
     ]
   }
