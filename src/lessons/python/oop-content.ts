@@ -213,8 +213,200 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "instance-and-class-attributes",
         title: "Instance and Class Attributes",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Learn when data should belong to one object and when it should be shared by every object in a class.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Not every piece of data should be stored the same way.",
+              "Some values belong to one specific object, while other values should be shared across every object created from a class. Python handles these using **instance attributes** and **class attributes**."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "instance-and-class-attributes",
+            caption: "Instance vs Class Attributes in Action"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "An **instance attribute** belongs to one specific object.",
+              "A **class attribute** belongs to the class itself and is shared by its objects.",
+              "The company name is the same for everyone, so it can be stored once as a **class attribute**.",
+              "Each employee has a different name and salary, so those values should be **instance attributes**."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Create instance attributes",
+              "Instance attributes are usually created inside `__init__()` using `self`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\nemployee1 = Employee("Maya", 70000)\nemployee2 = Employee("Leo", 82000)\n\nprint(employee1.name)\nprint(employee2.name)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Each object stores its own values. Changing one employee does not change the other."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\nemployee1 = Employee("Maya", 70000)\nemployee2 = Employee("Leo", 82000)\n\nemployee1.salary = 75000\nprint(employee1.salary)\nprint(employee2.salary)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 2. Create a class attribute",
+              "A class attribute is defined inside the class but outside methods such as `__init__()`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Employee:\n    company = "Stack Blueprint"\n\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\nemployee1 = Employee("Maya", 70000)\nemployee2 = Employee("Leo", 82000)\n\nprint(employee1.company)\nprint(employee2.company)\n\n# Python can also access the value directly through the class:\nprint(Employee.company)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "This makes sense because `company` belongs to `Employee`, not to one particular employee."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 3. Know which one to use"
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Ask one question:",
+              "**Should every object have its own value, or should the value be shared?**",
+              "Use an **instance attribute** when the ==value can differ between objects.==",
+              "Examples: `name`, `email`, `balance`, `price`, and `speed`."
+            ]
+          },
+          {
+            kind: "prose",
+            body: [
+              "Use a **class attribute** when the ==value describes the class as a whole or should have one shared default.==",
+              "Examples: `company_name`, `school_name`, `tax_rate`, and `species`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class BankAccount:\n    bank_name = "Blue Bank"\n\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self.balance = balance\n\n\nacc1 = BankAccount("Alice", 1000)\nacc2 = BankAccount("Bob", 2500)\n\nprint(f"{acc1.owner}: \${acc1.balance} ({acc1.bank_name})")\nprint(f"{acc2.owner}: \${acc2.balance} ({acc2.bank_name})")`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`owner` and `balance` belong to individual accounts.",
+              "`bank_name` is shared by every account."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine you are building the product system for an online store.",
+              "Every product has its own name, price, and stock quantity. However, every product currently uses the same sales tax rate."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    tax_rate = 0.0825\n\n    def __init__(self, name, price, stock):\n        self.name = name\n        self.price = price\n        self.stock = stock\n\n    def price_with_tax(self):\n        return round(self.price * (1 + Product.tax_rate),2)\n\nlaptop = Product("Laptop", 900, 12)\nheadphones = Product("Headphones", 100, 35)\n\nprint(laptop.price_with_tax())\nprint(headphones.price_with_tax())`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Each product has different instance data (its `name`, `price`, and `stock`).",
+              "But both use the shared class attribute: `Product.tax_rate = 0.0825`",
+              "If the store changes its tax rate, you can update the shared value:",
+              "`Product.tax_rate = 0.0925`",
+              "Both products will now use the new rate the next time `price_with_tax()` runs."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Putting every value in the class**: Object-specific data such as a customer's name or account balance should normally be instance attributes.\n- **Treating class attributes as independent values**: A class attribute is shared unless an object creates its own attribute with the same name.\n- **Changing a shared value through one object**: Prefer `ClassName.attribute` when intentionally changing class-wide data because it makes the intent clearer."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Instance attributes belong to individual objects.",
+              "Class attributes belong to the class and are shared across its objects.",
+              "Instance attributes are commonly created with `self` inside `__init__()`.",
+              "Class attributes are defined directly inside the class.",
+              "Choose between them by asking whether the value should vary between objects."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "attr-vs-class-1",
+                question: "Is `student_name` more likely to be an instance attribute or a class attribute?",
+                options: [
+                  "Instance attribute",
+                  "Class attribute"
+                ],
+                correctIndex: 0,
+                explanation: "Every student has their own unique name, so it belongs to the individual object."
+              },
+              {
+                id: "attr-vs-class-2",
+                question: "Should a shared `school_name` normally be an instance attribute or a class attribute?",
+                options: [
+                  "Instance attribute",
+                  "Class attribute"
+                ],
+                correctIndex: 1,
+                explanation: "Since the school name is shared across all students, it makes sense to store it once as a class attribute."
+              },
+              {
+                id: "attr-vs-class-3",
+                question: "In a class `Car` with `wheels = 4` and `self.brand = brand`, which attribute is shared across all cars?",
+                options: [
+                  "brand",
+                  "wheels",
+                  "Both of them",
+                  "Neither of them"
+                ],
+                correctIndex: 1,
+                explanation: "`wheels` is defined at the class level, making it a class attribute shared by all cars. `brand` is defined on `self`, meaning it's an instance attribute."
+              },
+              {
+                id: "attr-vs-class-4",
+                question: "Write the code to create a `Dog` class with a class attribute `species` set to `\"Canis\"`, and an `__init__` method that assigns an instance attribute `name`.",
+                interactiveCode: true,
+                initialCode: "# Write your class here:\n\n",
+                testCode: "dog = Dog('Buddy')\nprint(Dog.species)\nprint(dog.name)",
+                expectedOutput: "Canis\nBuddy",
+                explanation: "`species` should be defined directly inside the class, while `self.name` is assigned inside the `__init__` method."
+              },
+              {
+                id: "attr-vs-class-5",
+                question: "If you change a class attribute directly on the class (e.g., `Car.wheels = 3`), what happens?",
+                options: [
+                  "Only new objects created after the change will have 3 wheels.",
+                  "All existing objects and new objects will share the new value of 3 wheels.",
+                  "Python will throw an error because class attributes cannot be changed.",
+                  "Existing objects are deleted from memory."
+                ],
+                correctIndex: 1,
+                explanation: "Class attributes are shared by reference. Changing the value on the class itself updates it for all instances that share that attribute."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "types-of-methods",
