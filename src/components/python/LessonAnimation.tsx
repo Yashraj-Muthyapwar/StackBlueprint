@@ -14,8 +14,10 @@ import { FileMethodsCustomAnimation } from "./file_handling/FileMethodsCustomAni
 import { OSModuleCustomAnimation } from "./file_handling/OSModuleCustomAnimation";
 import { WorkingWithCSVCustomAnimation } from "./file_handling/WorkingWithCSVCustomAnimation";
 import { WorkingWithJSONCustomAnimation } from "./file_handling/WorkingWithJSONCustomAnimation";
+import { PickleModuleCustomAnimation } from "./file_handling/PickleModuleCustomAnimation";
+import { ShutilModuleCustomAnimation } from "./file_handling/ShutilModuleCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module";
 
 export function LessonAnimation({
   variant,
@@ -53,6 +55,10 @@ export function LessonAnimation({
               <WorkingWithCSVCustomAnimation />
             ) : variant === "working-with-json" ? (
               <WorkingWithJSONCustomAnimation />
+            ) : variant === "pickle-module" ? (
+              <PickleModuleCustomAnimation />
+            ) : variant === "shutil-module" ? (
+              <ShutilModuleCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
