@@ -5,13 +5,16 @@ import { Cpu, HardDrive, Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Arro
 export function PickleModuleCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const totalSteps = 11;
 
+  const STEP_DURATIONS = [4000, 3000, 3000, 4500, 4000, 5000, 5000, 6000, 4000, 5000, 6000];
+
   useEffect(() => {
-    if (!playing) return;
-    const id = window.setTimeout(() => setStep((s) => (s + 1) % totalSteps), 3500);
+    if (!playing || isHovered) return;
+    const id = window.setTimeout(() => setStep((s) => (s + 1) % totalSteps), STEP_DURATIONS[step] || 4000);
     return () => window.clearTimeout(id);
-  }, [playing, step]);
+  }, [playing, step, isHovered]);
 
   const go = useCallback(
     (delta: number) => {
@@ -22,7 +25,11 @@ export function PickleModuleCustomAnimation() {
   );
 
   return (
-    <div className="flex flex-col relative z-10 w-full">
+    <div 
+      className="flex flex-col relative z-10 w-full"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {step === 0 && <Step1Object key="step1" />}
@@ -55,8 +62,13 @@ export function PickleModuleCustomAnimation() {
             <ChevronRight className="size-3.5" />
           </button>
         </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          {step + 1} / {totalSteps}
+        <div className="flex items-center gap-4">
+          <div className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded bg-surface border border-hairline text-muted-foreground shadow-sm">
+            {step <= 4 ? "Phase 1: Basics" : step <= 7 ? "Phase 2: Security" : "Phase 3: Cache"}
+          </div>
+          <div className="font-mono text-xs text-muted-foreground">
+            {step + 1} / {totalSteps}
+          </div>
         </div>
       </div>
     </div>
@@ -76,7 +88,7 @@ function Step1Object() {
       </div>
       <div className="flex justify-center gap-16 w-full max-w-2xl">
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center relative min-w-[200px] shadow-sm">
+          <motion.div layoutId="memory-object" className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center relative min-w-[200px] shadow-sm">
              <Cpu className="size-8 text-violet mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-violet font-semibold">Memory (RAM)</span>
              
@@ -91,13 +103,13 @@ function Step1Object() {
                  <span className="text-sm font-mono text-foreground">Python Dictionary</span>
                </div>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
         <div className="flex flex-col items-center gap-3 opacity-30 saturate-0 pointer-events-none">
-          <div className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px]">
+          <motion.div layoutId="disk" className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px]">
              <HardDrive className="size-8 text-muted-foreground mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Disk</span>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-sm text-center">Python objects like dictionaries, lists, and classes live in memory. You can't write a dictionary directly to a text file.</p>
@@ -119,14 +131,14 @@ function Step2Dumps() {
       </div>
       <div className="flex justify-center gap-8 lg:gap-16 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="memory-object" className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <Cpu className="size-8 text-violet mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-violet font-semibold">Memory (Object)</span>
              <div className="mt-5 p-4 rounded-lg bg-surface border border-violet/30 shadow-sm flex flex-col items-center w-full">
                <Braces className="size-6 text-violet/70 mb-2" />
                <span className="text-sm font-mono text-foreground">Python Dictionary</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -143,7 +155,7 @@ function Step2Dumps() {
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
+          <motion.div layoutId="memory-bytes" className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
              <Cpu className="size-8 text-sky-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-sky-500 font-semibold">Memory (Bytes)</span>
              
@@ -156,7 +168,7 @@ function Step2Dumps() {
                 <Binary className="size-6 text-sky-500/70 mb-2" />
                 <span className="text-sm font-mono text-foreground">b'\\x80\\x04\\x95\\x18...'</span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center"><code className="bg-surface-2 px-1 rounded">pickle.dumps()</code> serializes (packs) the rich Python object into a raw stream of binary bytes.</p>
@@ -177,14 +189,14 @@ function Step3Loads() {
       </div>
       <div className="flex justify-center gap-8 lg:gap-16 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
+          <motion.div layoutId="memory-bytes" className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
              <Cpu className="size-8 text-sky-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-sky-500 font-semibold">Memory (Bytes)</span>
              <div className="mt-5 w-full bg-surface border border-sky-500/30 rounded shadow-inner p-4 flex flex-col items-center">
                 <Binary className="size-6 text-sky-500/70 mb-2" />
                 <span className="text-sm font-mono text-foreground">b'\\x80\\x04\\x95\\x18...'</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -201,7 +213,7 @@ function Step3Loads() {
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="memory-object" className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <Cpu className="size-8 text-violet mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-violet font-semibold">Memory (Object)</span>
              <motion.div 
@@ -213,7 +225,7 @@ function Step3Loads() {
                <Braces className="size-6 text-violet/70 mb-2" />
                <span className="text-sm font-mono text-foreground">Python Dictionary</span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center"><code className="bg-surface-2 px-1 rounded">pickle.loads()</code> takes those bytes and reconstructs an exact, independent copy of the original Python object.</p>
@@ -235,14 +247,14 @@ function Step4Dump() {
       </div>
       <div className="flex justify-center gap-8 lg:gap-16 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="memory-object" className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <Cpu className="size-8 text-violet mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-violet font-semibold">Memory</span>
              <div className="mt-5 p-4 rounded-lg bg-surface border border-violet/30 shadow-sm flex flex-col items-center w-full">
                <Braces className="size-6 text-violet/70 mb-2" />
                <span className="text-sm font-mono text-foreground">Python Dictionary</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -259,7 +271,7 @@ function Step4Dump() {
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-mint/10 border border-mint/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
+          <motion.div layoutId="disk-cache" className="p-6 rounded-2xl bg-mint/10 border border-mint/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
              <HardDrive className="size-8 text-mint mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-mint font-semibold">Disk (Cache)</span>
              
@@ -273,7 +285,7 @@ function Step4Dump() {
                 <Binary className="size-6 text-mint/70 mb-2" />
                 <span className="text-xs font-mono text-foreground/80 break-all text-center leading-tight">\\x80\\x04\\x95\\x18\\x00...</span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-sm text-center"><code className="bg-surface-2 px-1 rounded">pickle.dump()</code> does both steps at once: it serializes the object and writes the raw bytes directly to a file opened in binary write (<code className="bg-surface-2 px-1 rounded">"wb"</code>) mode.</p>
@@ -295,7 +307,7 @@ function Step5Load() {
       </div>
       <div className="flex justify-center gap-8 lg:gap-16 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-mint/10 border border-mint/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
+          <motion.div layoutId="disk-cache" className="p-6 rounded-2xl bg-mint/10 border border-mint/20 flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden">
              <HardDrive className="size-8 text-mint mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-mint font-semibold">Disk (Cache)</span>
              
@@ -304,7 +316,7 @@ function Step5Load() {
                 <Binary className="size-6 text-mint/70 mb-2" />
                 <span className="text-xs font-mono text-foreground/80 break-all text-center leading-tight">\\x80\\x04\\x95\\x18\\x00...</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -321,7 +333,7 @@ function Step5Load() {
         </div>
 
         <div className="flex flex-col items-center gap-3">
-          <div className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="memory-object" className="p-6 rounded-2xl bg-violet/10 border border-violet/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <Cpu className="size-8 text-violet mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-violet font-semibold">Memory (Object)</span>
              <motion.div 
@@ -333,7 +345,7 @@ function Step5Load() {
                <Braces className="size-6 text-violet/70 mb-2" />
                <span className="text-sm font-mono text-foreground">Python Dictionary</span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-sm text-center"><code className="bg-surface-2 px-1 rounded">pickle.load()</code> reads the binary file and reconstructs the object in one step.</p>
@@ -356,7 +368,7 @@ function Step6Payload() {
       </div>
       <div className="flex justify-center gap-12 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="attacker" className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <AlertTriangle className="size-8 text-rose-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-rose-500 font-semibold">Attacker</span>
              <motion.div 
@@ -368,14 +380,14 @@ function Step6Payload() {
                <Binary className="size-6 text-rose-500/70 mb-2" />
                <span className="text-xs font-mono text-foreground text-center">payload.pkl<br/><span className="text-muted-foreground text-[10px]">(Malicious binary data)</span></span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
         
         <div className="flex flex-col items-center gap-3 opacity-30 saturate-0 pointer-events-none relative z-10">
-          <div className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px]">
+          <motion.div layoutId="disk" className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px]">
              <Server className="size-8 text-muted-foreground mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Victim Server</span>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center">Because pickling handles rich objects, an attacker can craft a file that executes arbitrary code when unpickled.</p>
@@ -397,14 +409,14 @@ function Step7Server() {
       </div>
       <div className="flex justify-center gap-12 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="attacker" className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <AlertTriangle className="size-8 text-rose-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-rose-500 font-semibold">Attacker</span>
              <div className="mt-5 p-3 rounded-lg bg-surface border border-rose-500/30 shadow-sm flex flex-col items-center w-full">
                <Binary className="size-6 text-rose-500/70 mb-2" />
                <span className="text-xs font-mono text-foreground">payload.pkl</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -421,7 +433,7 @@ function Step7Server() {
         </div>
 
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm overflow-hidden">
+          <motion.div layoutId="victim-server" className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[200px] shadow-sm overflow-hidden">
              <Server className="size-8 text-sky-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-sky-500 font-semibold">Victim Server</span>
              
@@ -434,7 +446,7 @@ function Step7Server() {
                 <Cpu className="size-6 text-sky-500/70 mb-2" />
                 <span className="text-[10px] font-mono text-foreground bg-surface-2 px-1 rounded">pickle.loads()</span>
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center">The server receives the file and runs <code className="bg-surface-2 px-1 rounded">pickle.loads()</code> on it, wrongly assuming it's just passive data.</p>
@@ -450,30 +462,34 @@ function Step8Exploit() {
       exit={{ opacity: 0, y: -10 }}
       className="flex flex-col items-center w-full"
     >
-      <div className="mb-8 p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 font-mono text-sm shadow-sm w-full max-w-lg border-dashed">
-        <span className="text-rose-400">CRITICAL ERROR: Connection lost.</span>
-      </div>
+      <motion.div 
+        animate={{ opacity: [1, 0.8, 1, 0.5, 1], x: [-1, 2, -2, 1, 0] }}
+        transition={{ repeat: Infinity, duration: 0.2 }}
+        className="mb-8 p-4 rounded-xl border border-rose-500/50 bg-rose-500/20 font-mono text-sm shadow-[0_0_15px_rgba(244,63,94,0.5)] w-full max-w-lg border-dashed"
+      >
+        <span className="text-rose-400 font-bold">CRITICAL ERROR: Connection lost.</span>
+      </motion.div>
       <div className="flex justify-center gap-12 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3 relative z-10 opacity-30 saturate-0">
-          <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="attacker" className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex flex-col items-center min-w-[200px] shadow-sm">
              <AlertTriangle className="size-8 text-rose-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-rose-500 font-semibold">Attacker</span>
              <div className="mt-5 p-3 rounded-lg bg-surface border border-rose-500/30 shadow-sm flex flex-col items-center w-full">
                <Binary className="size-6 text-rose-500/70 mb-2" />
                <span className="text-xs font-mono text-foreground">payload.pkl</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <motion.div 
-            initial={{ backgroundColor: "rgba(14, 165, 233, 0.1)", borderColor: "rgba(14, 165, 233, 0.2)" }}
-            animate={{ backgroundColor: "rgba(244, 63, 94, 0.15)", borderColor: "rgba(244, 63, 94, 0.4)" }}
-            className="p-6 rounded-2xl flex flex-col items-center min-w-[200px] shadow-sm relative overflow-hidden border-2"
+          <motion.div layoutId="victim-server"
+            initial={{ backgroundColor: "rgba(14, 165, 233, 0.1)", borderColor: "rgba(14, 165, 233, 0.2)", boxShadow: "0 0 0 rgba(244, 63, 94, 0)" }}
+            animate={{ backgroundColor: "rgba(244, 63, 94, 0.15)", borderColor: "rgba(244, 63, 94, 0.6)", boxShadow: "0 0 40px rgba(244, 63, 94, 0.3)" }}
+            className="p-6 rounded-2xl flex flex-col items-center min-w-[200px] relative overflow-hidden border-2"
           >
              <motion.div
-               animate={{ rotate: [-2, 2, -2, 2, 0], scale: [1, 1.1, 1] }}
-               transition={{ duration: 0.5 }}
+               animate={{ rotate: [-5, 5, -5], scale: [1, 1.2, 1] }}
+               transition={{ repeat: Infinity, duration: 0.5 }}
              >
                 <Skull className="size-8 text-rose-500 mb-3" />
              </motion.div>
@@ -514,13 +530,13 @@ function Step9WriteTemp() {
       </div>
       <div className="flex justify-center gap-12 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[160px] shadow-sm">
+          <motion.div layoutId="memory-new" className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[160px] shadow-sm">
              <Cpu className="size-8 text-sky-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-sky-500 font-semibold">Memory</span>
              <div className="mt-5 p-3 rounded-lg bg-surface border border-sky-500/30 shadow-sm flex flex-col items-center w-full">
                <span className="text-xs font-mono text-foreground">new_data</span>
              </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Animated flow */}
@@ -537,7 +553,7 @@ function Step9WriteTemp() {
         </div>
 
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px] shadow-sm">
+          <motion.div layoutId="disk-dir" className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px] shadow-sm">
              <HardDrive className="size-8 text-muted-foreground mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Disk Directory</span>
              
@@ -561,7 +577,7 @@ function Step9WriteTemp() {
                     <span className="text-[9px] text-sky-500 uppercase">Writing...</span>
                  </motion.div>
              </div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center">Never write directly to your final cache path. Write to a temporary sibling file instead.</p>
@@ -583,14 +599,14 @@ function Step10Crash() {
       </div>
       <div className="flex justify-center gap-12 w-full max-w-2xl relative">
         <div className="flex flex-col items-center gap-3 relative z-10 opacity-30 saturate-0">
-          <div className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[160px] shadow-sm">
+          <motion.div layoutId="memory-new" className="p-6 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex flex-col items-center min-w-[160px] shadow-sm">
              <Cpu className="size-8 text-sky-500 mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-sky-500 font-semibold">Memory</span>
-          </div>
+          </motion.div>
         </div>
         
         <div className="flex flex-col items-center gap-3 relative z-10">
-          <div className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px] shadow-sm relative">
+          <motion.div layoutId="disk-dir" className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[200px] shadow-sm relative">
              <HardDrive className="size-8 text-muted-foreground mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Disk Directory</span>
              
@@ -603,19 +619,21 @@ function Step10Crash() {
                  </div>
                  
                  <motion.div 
-                   className="bg-rose-500/10 border border-rose-500/40 rounded p-2 flex items-center justify-between relative overflow-hidden"
+                   animate={{ x: [-2, 2, -2, 2, 0], y: [1, -1, 1, -1, 0] }}
+                   transition={{ duration: 0.4, delay: 0.5 }}
+                   className="bg-rose-500/10 border border-rose-500/40 rounded p-2 flex items-center justify-between relative overflow-hidden mt-1"
                  >
                     <div className="flex items-center gap-2 text-xs font-mono text-rose-400">
                       <Trash2 className="size-3" /> .cache.pkl.tmp
                     </div>
-                    <span className="text-[9px] text-rose-400 uppercase">Corrupted</span>
+                    <span className="text-[9px] text-rose-400 uppercase font-bold">Corrupted</span>
                     
                     {/* Strikethrough line */}
                     <motion.div 
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="absolute top-1/2 left-2 right-12 h-px bg-rose-500 origin-left"
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      animate={{ scaleX: 1.1, opacity: 1, rotate: -2 }}
+                      transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 10 }}
+                      className="absolute top-1/2 left-0 right-0 h-0.5 bg-rose-500 origin-left"
                     />
                  </motion.div>
              </div>
@@ -627,7 +645,7 @@ function Step10Crash() {
              >
                 <AlertTriangle className="size-8 text-rose-500 fill-rose-500/20" />
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center">If a crash happens mid-write, the <code className="bg-surface-2 px-1 rounded">cache.pkl</code> is safe. Only the temporary file is corrupted.</p>
@@ -653,7 +671,7 @@ function Step11Atomic() {
         </div>
         
         <div className="flex flex-col items-center gap-3 relative z-10 -ml-24">
-          <div className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[280px] shadow-sm relative">
+          <motion.div layoutId="disk-dir" className="p-6 rounded-2xl bg-surface-2/40 border border-hairline flex flex-col items-center min-w-[280px] shadow-sm relative">
              <HardDrive className="size-8 text-muted-foreground mb-3" />
              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">Disk Directory</span>
              
@@ -704,7 +722,7 @@ function Step11Atomic() {
              >
                 <ArrowLeftRight className="size-3" /> Atomic
              </motion.div>
-          </div>
+          </motion.div>
         </div>
       </div>
       <p className="mt-8 text-sm text-muted-foreground/80 max-w-md text-center">The operating system's <code className="bg-surface-2 px-1 rounded">replace()</code> swaps the file atomically. A reader will only ever see the complete old file or complete new file.</p>
