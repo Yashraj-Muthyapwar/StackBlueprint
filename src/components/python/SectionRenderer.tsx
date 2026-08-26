@@ -85,7 +85,7 @@ function highlightPython(line: string) {
 }
 
 function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
@@ -95,6 +95,9 @@ function parseInlineMarkdown(text: string) {
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return <code key={i} className="rounded bg-mint/10 text-mint px-1.5 py-0.5 font-mono text-[0.85em] font-medium">{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith('==') && part.endsWith('==')) {
+      return <span key={i} className="text-foreground">{part.slice(2, -2)}</span>;
     }
     return part;
   });
