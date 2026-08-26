@@ -1,15 +1,15 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Box, Code2, Copy, Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Fingerprint, Layers, Cpu, TerminalSquare, ArrowRight } from "lucide-react";
+import { Box, Code2, Copy, Play, Pause, RotateCcw, ChevronLeft, ChevronRight, Fingerprint, Layers, Cpu, TerminalSquare, ArrowRight, Gauge, Palette, Shield, Settings, Zap, CircleDot } from "lucide-react";
 import { CarSVG } from "./CarSVG";
 
 export function ClassesAndObjectsCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const totalSteps = 4;
+  const totalSteps = 5;
 
-  const STEP_DURATIONS = [6000, 5000, 7000, 6000];
+  const STEP_DURATIONS = [8000, 6000, 5000, 7000, 6000];
 
   useEffect(() => {
     if (!playing || isHovered) return;
@@ -33,10 +33,11 @@ export function ClassesAndObjectsCustomAnimation() {
     >
       <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[500px] overflow-hidden flex flex-col items-center justify-center w-full bg-slate-900/5 dark:bg-black/20">
         <AnimatePresence mode="wait">
-          {step === 0 && <Step0Concept key="step0" />}
-          {step === 1 && <Step1Blueprint key="step1" />}
-          {step === 2 && <Step2Objects key="step2" />}
-          {step === 3 && <Step3Methods key="step3" />}
+          {step === 0 && <Step0WhyOOP key="step0" />}
+          {step === 1 && <Step1Concept key="step1" />}
+          {step === 2 && <Step2Blueprint key="step2" />}
+          {step === 3 && <Step3Objects key="step3" />}
+          {step === 4 && <Step4Methods key="step4" />}
         </AnimatePresence>
       </div>
       
@@ -64,7 +65,7 @@ export function ClassesAndObjectsCustomAnimation() {
   );
 }
 
-function Step0Concept() {
+function Step1Concept() {
   const [selectedObj, setSelectedObj] = useState<number | null>(null);
 
   return (
@@ -208,7 +209,7 @@ function Step0Concept() {
   )
 }
 
-function Step1Blueprint() {
+function Step2Blueprint() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
@@ -262,7 +263,7 @@ function Step1Blueprint() {
   )
 }
 
-function Step2Objects() {
+function Step3Objects() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
@@ -344,7 +345,7 @@ function Step2Objects() {
   )
 }
 
-function Step3Methods() {
+function Step4Methods() {
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }} 
@@ -428,6 +429,192 @@ function Step3Methods() {
         </div>
       </div>
       <p className="mt-12 text-sm text-muted-foreground/80 max-w-xl text-center">Objects carry both their data and their capabilities. Methods act on the object's own distinct data (via <code className="bg-surface-2 px-1 rounded">self</code>).</p>
+    </motion.div>
+  )
+}
+
+function Step0WhyOOP() {
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -10 }}
+      className="flex flex-col items-center w-full h-full justify-center"
+    >
+      <div className="flex w-full max-w-[900px] gap-2 md:gap-8 items-center justify-center scale-[0.65] sm:scale-[0.8] md:scale-90 lg:scale-100 origin-center">
+        
+        {/* Left Side: Without OOP */}
+        <div className="flex flex-col items-center w-[360px] flex-shrink-0">
+           <h3 className="text-2xl font-bold text-foreground mb-1 font-mono">Without OOP</h3>
+           <p className="text-sm text-muted-foreground mb-8 text-center">Related data and functions<br/>are scattered everywhere.</p>
+           
+           <div className="relative w-full h-[320px] flex items-center justify-center">
+              {/* Perfect Lines SVG with Arrows */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-50" viewBox="0 0 360 320">
+                <defs>
+                  <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L6,3 z" fill="#94a3b8" />
+                  </marker>
+                </defs>
+                <path d="M100,60 Q140,85 178,116" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+                <path d="M260,60 Q255,85 250,116" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+                <path d="M144,150 Q155,150 163,150" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+                <path d="M180,182 Q165,200 152,226" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+                <path d="M240,182 Q245,210 248,236" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+                <path d="M100,170 Q105,195 108,226" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="4 4" markerEnd="url(#arrowhead)" />
+              </svg>
+
+              {/* Scattered Elements */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}
+                style={{ left: 70, top: 40, x: "-50%", y: "-50%" }}
+                className="absolute w-32 h-10 rounded-lg border border-orange-500 bg-surface shadow-lg text-orange-400 font-mono text-xs flex items-center justify-center whitespace-nowrap"
+              >
+                speed = 0
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
+                style={{ left: 290, top: 40, x: "-50%", y: "-50%" }}
+                className="absolute w-32 h-10 rounded-lg border border-emerald-500 bg-surface shadow-lg text-emerald-400 font-mono text-xs flex items-center justify-center whitespace-nowrap"
+              >
+                color = "blue"
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }}
+                style={{ left: 80, top: 150, x: "-50%", y: "-50%" }}
+                className="absolute w-32 h-10 rounded-lg border border-violet-500 bg-surface shadow-lg text-violet-400 font-mono text-xs flex items-center justify-center whitespace-nowrap"
+              >
+                brand = "Tesla"
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
+                style={{ left: 230, top: 150, x: "-50%", y: "-50%" }}
+                className="absolute w-32 h-16 rounded-lg border border-blue-500 bg-blue-500/10 shadow-lg flex flex-col justify-center px-4"
+              >
+                <span className="font-mono text-xs text-blue-400">def start():</span>
+                <span className="font-mono text-xs text-blue-400/50">...</span>
+                <div className="absolute -right-3 -bottom-3 p-1.5 bg-surface rounded-full shadow-md border border-hairline">
+                  <Settings className="size-5 text-blue-500" />
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }}
+                style={{ left: 100, top: 260, x: "-50%", y: "-50%" }}
+                className="absolute w-40 h-16 rounded-lg border border-amber-500 bg-amber-500/10 shadow-lg flex flex-col justify-center px-4"
+              >
+                <span className="font-mono text-xs text-amber-500">def accelerate():</span>
+                <span className="font-mono text-xs text-amber-500/50">...</span>
+                <div className="absolute -right-3 -bottom-3 p-1.5 bg-surface rounded-full shadow-md border border-hairline">
+                  <Gauge className="size-5 text-amber-500" />
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 }}
+                style={{ left: 260, top: 270, x: "-50%", y: "-50%" }}
+                className="absolute w-32 h-16 rounded-lg border border-teal-500 bg-teal-500/10 shadow-lg flex flex-col justify-center px-4"
+              >
+                <span className="font-mono text-xs text-teal-400">def brake():</span>
+                <span className="font-mono text-xs text-teal-400/50">...</span>
+                <div className="absolute -right-3 -bottom-3 p-1.5 bg-surface rounded-full shadow-md border border-hairline">
+                  <CircleDot className="size-5 text-teal-500" />
+                </div>
+              </motion.div>
+           </div>
+        </div>
+        
+        {/* Animated Arrow */}
+        <div className="flex justify-center items-center w-16 md:w-20 flex-shrink-0">
+           <motion.div 
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 1.2, type: "spring" }}
+           >
+             <div className="w-16 md:w-20 h-10 md:h-12 bg-gradient-to-r from-blue-500/0 via-blue-500/50 to-blue-500 flex items-center justify-end pr-1 rounded-r-full relative overflow-hidden" style={{ clipPath: "polygon(0 30%, 60% 30%, 60% 0, 100% 50%, 60% 100%, 60% 70%, 0 70%)" }}>
+                <motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent w-[200%]" animate={{ x: ["-100%", "100%"] }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} />
+             </div>
+           </motion.div>
+        </div>
+        
+        {/* Right Side: With OOP */}
+        <div className="flex flex-col items-center">
+           <h3 className="text-2xl font-bold text-foreground mb-1 font-mono">With OOP</h3>
+           <p className="text-sm text-muted-foreground mb-6 text-center max-w-[280px]">Everything related to a Car is grouped into one object.</p>
+           
+           <div className="flex items-center">
+             <motion.div 
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ delay: 1.5, type: "spring" }}
+               className="relative w-64 rounded-xl border-2 border-slate-700/80 bg-[#1e293b] shadow-2xl flex flex-col"
+             >
+               {/* Car Pill Header */}
+               <div className="absolute -top-6 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                 <CarSVG className="w-14 h-auto drop-shadow-md mb-1 relative z-20" color="#93c5fd" />
+                 <div className="bg-blue-600 rounded-full px-8 py-1.5 shadow-lg relative z-10 border border-blue-500">
+                   <span className="font-bold text-white text-lg tracking-wider font-mono">Car</span>
+                 </div>
+               </div>
+               
+               {/* Content */}
+               <div className="px-5 pb-5 pt-12 space-y-5">
+                  <div>
+                    <div className="text-[11px] text-blue-400 font-semibold mb-2 uppercase tracking-wider">Attributes (Data)</div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <Gauge className="size-4 text-orange-400" />
+                        <span className="font-mono text-xs text-slate-200">speed = 0</span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <Palette className="size-4 text-emerald-400" />
+                        <span className="font-mono text-xs text-slate-200">color = "blue"</span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <Shield className="size-4 text-violet-400" />
+                        <span className="font-mono text-xs text-slate-200">brand = "Tesla"</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className="text-[11px] text-blue-400 font-semibold mb-2 uppercase tracking-wider">Methods (Functions)</div>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <Settings className="size-4 text-blue-400" />
+                        <span className="font-mono text-xs text-slate-200">start()</span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <Zap className="size-4 text-amber-400" />
+                        <span className="font-mono text-xs text-slate-200">accelerate()</span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-slate-800/60 px-3 py-2 rounded-lg">
+                        <CircleDot className="size-4 text-teal-400" />
+                        <span className="font-mono text-xs text-slate-200">brake()</span>
+                      </div>
+                    </div>
+                  </div>
+               </div>
+             </motion.div>
+
+             {/* Handwritten Note safely in flow */}
+             <motion.div 
+               initial={{ opacity: 0, x: -10 }}
+               animate={{ opacity: 1, x: 0 }}
+               transition={{ delay: 2.5 }}
+               className="w-24 ml-3 flex flex-col items-start gap-1"
+             >
+               <svg className="w-8 h-8 text-blue-400 transform -rotate-[20deg]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                 <path d="M10 9l-6 6 6 6" />
+                 <path d="M20 4v7a4 4 0 0 1-4 4H4" />
+               </svg>
+               <span className="font-writing text-blue-400 text-xs leading-tight ml-1">One object.<br/>All related.<br/>Easy to manage.</span>
+             </motion.div>
+           </div>
+        </div>
+
+      </div>
     </motion.div>
   )
 }
