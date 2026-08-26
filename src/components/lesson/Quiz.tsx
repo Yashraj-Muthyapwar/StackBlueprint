@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { CheckCircle2, XCircle, ArrowRight, RefreshCcw, Sparkles, Terminal } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowRight, RefreshCcw, Sparkles, Terminal, Loader2, Lightbulb } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { cn } from "@/lib/utils"; 
+import { cn } from "@/lib/utils";
+import { InteractivePythonBlock } from "./InteractivePythonBlock"; 
 
 export type QuizQuestion = {
   id: string;
@@ -10,7 +11,59 @@ export type QuizQuestion = {
   correctIndex?: number;
   commandAnswer?: string | string[];
   explanation?: string;
+  interactiveCode?: boolean;
+  initialCode?: string;
+  testCode?: string;
+  expectedOutput?: string;
 };
+
+
+function parsePythonError(errorText: string): { coreIssue: string; hint: string } | null {
+  if (!errorText) return null;
+  
+  if (errorText.includes("TypeError") && (errorText.includes("takes no arguments") || errorText.match(/takes \d+ positional arguments/))) {
+    return {
+      coreIssue: "Your class was initialized incorrectly because Python couldn't find a valid __init__ method with the right parameters.",
+      hint: "Check your __init__ spelling (e.g. not __int__) and make sure it accepts 'self' along with any required parameters."
+    };
+  }
+  
+  if (errorText.includes("TypeError") && errorText.includes("missing") && errorText.includes("required positional argument")) {
+    return {
+      coreIssue: "Python expected an instance reference or parameter but didn't get one.",
+      hint: "Did you forget to add 'self' as the first parameter in __init__(self, ...), or did you miss a required attribute?"
+    };
+  }
+  
+  if (errorText.includes("AttributeError")) {
+    const attrMatch = errorText.match(/has no attribute '([^']+)'/);
+    if (attrMatch) {
+      const attrName = attrMatch[1];
+      return {
+        coreIssue: `The '${attrName}' attribute was never attached to the object instance.`,
+        hint: `Make sure you are assigning the parameter using self.${attrName} = ${attrName} inside __init__.`
+      };
+    }
+  }
+  
+  if (errorText.includes("SyntaxError")) {
+    const execMatch = errorText.match(/File "<exec>", line (\d+)/);
+    const lineStr = execMatch ? ` on line ${execMatch[1]}` : "";
+    return {
+      coreIssue: "We found a syntax error in your code.",
+      hint: `Check your syntax${lineStr}. Make sure you aren't missing any colons (:) or parentheses.`
+    };
+  }
+  
+  if (errorText.includes("IndentationError")) {
+    return {
+      coreIssue: "Your code has inconsistent spacing.",
+      hint: "Make sure everything inside your class and methods is indented correctly (usually 4 spaces)."
+    };
+  }
+  
+  return null;
+}
 
 export type QuizData = {
   questions: QuizQuestion[];
@@ -27,6 +80,8 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
   const [quizAttempt, setQuizAttempt] = useState(0);
   const [commandInput, setCommandInput] = useState("");
   const [isCommandCorrect, setIsCommandCorrect] = useState(false);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [evaluationOutput, setEvaluationOutput] = useState("");
 
   useEffect(() => {
     onActiveChange?.(isStarted && !isFinished);
@@ -69,6 +124,7 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
     setCommandInput("");
     setIsCommandCorrect(false);
     setIsAnswered(false);
+    setEvaluationOutput("");
     setQuizAttempt(prev => prev + 1);
     
     // Dispatch a custom event so other components (like animations) know the quiz started
@@ -84,21 +140,46 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
     }
   };
 
-  const handleCommandSubmit = () => {
-    if (!currentQuestion.commandAnswer || isAnswered) return;
-    setIsAnswered(true);
-    const normalize = (str: string) => str.trim().replace(/\s+/g, " ");
+  const handleCommandSubmit = async () => {
+    if ((!currentQuestion.commandAnswer && !currentQuestion.interactiveCode) || isAnswered || isEvaluating) return;
     
-    const answers = Array.isArray(currentQuestion.commandAnswer) 
-      ? currentQuestion.commandAnswer 
-      : [currentQuestion.commandAnswer];
-      
-    const correct = answers.some(ans => normalize(commandInput) === normalize(ans));
+    setIsEvaluating(true);
+    let correct = false;
+    let actualOutput = "";
+
+    if (currentQuestion.interactiveCode) {
+      try {
+        const { getPyodide } = await import("@/lib/pyodide-loader");
+        const pyodide = await getPyodide();
+        let out = "";
+        pyodide.setStdout({ batched: (str: string) => out += str + "\n" });
+        pyodide.setStderr({ batched: (str: string) => out += str + "\n" });
+        
+        const fullCode = commandInput + "\n\n" + (currentQuestion.testCode || "");
+        await pyodide.runPythonAsync(fullCode);
+        
+        actualOutput = out.trim();
+        correct = actualOutput === (currentQuestion.expectedOutput || "").trim();
+      } catch (e: any) {
+        actualOutput = String(e);
+        correct = false;
+      }
+      setEvaluationOutput(actualOutput);
+    } else {
+      const normalize = (str: string) => str.trim().replace(/\s+/g, " ");
+      const answers = Array.isArray(currentQuestion.commandAnswer) 
+        ? currentQuestion.commandAnswer 
+        : [currentQuestion.commandAnswer];
+      correct = answers.some(ans => normalize(commandInput) === normalize(ans!));
+    }
     
     setIsCommandCorrect(correct);
     if (correct) {
       setScore((s) => s + 1);
     }
+    
+    setIsEvaluating(false);
+    setIsAnswered(true);
   };
 
   const handleNext = () => {
@@ -108,6 +189,7 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
       setCommandInput("");
       setIsCommandCorrect(false);
       setIsAnswered(false);
+      setEvaluationOutput("");
     } else {
       setIsFinished(true);
     }
@@ -194,23 +276,70 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
         {currentQuestion.question}
       </h3>
 
-      {currentQuestion.commandAnswer ? (
+      {currentQuestion.interactiveCode ? (
+        <InteractivePythonBlock
+          initialCode={currentQuestion.initialCode || ""}
+          onChange={(code) => setCommandInput(code)}
+          hideRunButton={true}
+          hideOutput={true}
+          className="my-0 border-hairline/60"
+          customFooterAction={
+            !isAnswered && (
+              <button
+                onClick={handleCommandSubmit}
+                disabled={!commandInput.trim() || isEvaluating}
+                className="h-7 px-3 text-xs inline-flex items-center gap-1.5 rounded bg-mint hover:bg-mint/90 font-bold text-slate-900 shadow-[0_0_12px_rgba(110,231,183,0.3)] transition-all disabled:pointer-events-none disabled:opacity-50"
+              >
+                {isEvaluating ? <Loader2 className="size-3.5 animate-spin" /> : "Submit"}
+                {!isEvaluating && <ArrowRight className="size-3.5" />}
+              </button>
+            )
+          }
+        />
+      ) : currentQuestion.commandAnswer ? (
         <div className="flex flex-col gap-4">
           <div className="relative">
-            <Terminal className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <input 
-              type="text" 
-              value={commandInput}
-              onChange={(e) => setCommandInput(e.target.value)}
-              disabled={isAnswered}
-              placeholder="Type your command here..."
-              className="w-full rounded-lg border border-hairline bg-surface-2 py-3 pl-10 pr-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !isAnswered && commandInput.trim()) {
-                  handleCommandSubmit();
-                }
-              }}
-            />
+            {(() => {
+              const ansStr = Array.isArray(currentQuestion.commandAnswer) ? currentQuestion.commandAnswer[0] : currentQuestion.commandAnswer;
+              const isMultiline = ansStr && ansStr.includes("\n");
+              
+              if (isMultiline) {
+                return (
+                  <textarea
+                    value={commandInput}
+                    onChange={(e) => setCommandInput(e.target.value)}
+                    disabled={isAnswered}
+                    placeholder="Type your code here (Ctrl+Enter to submit)..."
+                    rows={6}
+                    className="w-full rounded-lg border border-hairline bg-surface-2 py-3 px-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50 resize-y"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && !isAnswered && commandInput.trim()) {
+                        handleCommandSubmit();
+                      }
+                    }}
+                  />
+                );
+              }
+              
+              return (
+                <>
+                  <Terminal className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <input 
+                    type="text" 
+                    value={commandInput}
+                    onChange={(e) => setCommandInput(e.target.value)}
+                    disabled={isAnswered}
+                    placeholder="Type your command here..."
+                    className="w-full rounded-lg border border-hairline bg-surface-2 py-3 pl-10 pr-4 text-sm font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !isAnswered && commandInput.trim()) {
+                        handleCommandSubmit();
+                      }
+                    }}
+                  />
+                </>
+              );
+            })()}
           </div>
           {!isAnswered && (
             <button
@@ -281,20 +410,46 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
             className="overflow-hidden"
           >
             <div className={`rounded-lg border p-4 ${
-              (currentQuestion.commandAnswer ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect))
+              ((currentQuestion.commandAnswer || currentQuestion.interactiveCode) ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect))
                 ? "border-mint/30 bg-mint/5 text-mint" 
-                : "border-rose-500/30 bg-rose-500/5 text-rose-500"
+                : currentQuestion.interactiveCode ? "border-amber-500/30 bg-amber-500/5 text-amber-500" : "border-rose-500/30 bg-rose-500/5 text-rose-500"
             }`}>
               <p className="text-sm font-medium mb-1">
-                {(currentQuestion.commandAnswer ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect)) ? "Correct!" : "Incorrect."}
+                {((currentQuestion.commandAnswer || currentQuestion.interactiveCode) ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect)) ? "Correct!" : currentQuestion.interactiveCode ? "Needs Revision" : "Incorrect."}
               </p>
               {currentQuestion.commandAnswer && !isCommandCorrect && (
                 <p className="mb-2 text-sm font-mono text-rose-500">
                   Expected: {Array.isArray(currentQuestion.commandAnswer) ? currentQuestion.commandAnswer[0] : currentQuestion.commandAnswer}
                 </p>
               )}
-              {currentQuestion.explanation && (
-                <p className="text-sm opacity-90 leading-relaxed">
+              {currentQuestion.interactiveCode && !isCommandCorrect ? (() => {
+                const friendlyError = parsePythonError(evaluationOutput);
+                return (
+                  <div className="mt-2 space-y-4">
+                    {friendlyError ? (
+                      <>
+                        <p className="text-sm text-rose-700 dark:text-rose-400 font-medium leading-relaxed">
+                          {friendlyError.coreIssue}
+                        </p>
+                        <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-3 text-amber-700 dark:text-amber-400">
+                          <Lightbulb className="size-5 shrink-0 mt-0.5" />
+                          <p className="text-sm leading-relaxed">{friendlyError.hint}</p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="mb-2 text-sm font-mono text-rose-500 whitespace-pre-wrap">
+                          <span className="font-bold">Expected output:</span><br/>{currentQuestion.expectedOutput || "None"}
+                        </p>
+                        <p className="mb-2 text-sm font-mono text-rose-500 whitespace-pre-wrap">
+                          <span className="font-bold">Your code produced:</span><br/>{evaluationOutput || "No output"}
+                        </p>
+                      </>
+                    )}
+                  </div>
+                );
+              })() : currentQuestion.explanation && (
+                <p className="text-sm opacity-90 leading-relaxed mt-2">
                   {currentQuestion.explanation}
                 </p>
               )}
@@ -321,6 +476,8 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
   const [commandAnswers, setCommandAnswers] = useState<Record<number, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [evaluationOutputs, setEvaluationOutputs] = useState<Record<number, string>>({});
 
   const [shuffledQuestions] = useState(() => {
     return data.questions.map((q) => {
@@ -359,10 +516,33 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
     return answers.some((ans: string) => normalize(val || "") === normalize(ans));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setIsEvaluating(true);
     let calculatedScore = 0;
-    shuffledQuestions.forEach((q, idx) => {
-      if (q.commandAnswer) {
+    const newOutputs: Record<number, string> = {};
+
+    for (let idx = 0; idx < shuffledQuestions.length; idx++) {
+      const q = shuffledQuestions[idx];
+      if (q.interactiveCode) {
+        try {
+          const { getPyodide } = await import("@/lib/pyodide-loader");
+          const pyodide = await getPyodide();
+          let out = "";
+          pyodide.setStdout({ batched: (str: string) => out += str + "\n" });
+          pyodide.setStderr({ batched: (str: string) => out += str + "\n" });
+          
+          const fullCode = (commandAnswers[idx] || q.initialCode || "") + "\n\n" + (q.testCode || "");
+          await pyodide.runPythonAsync(fullCode);
+          
+          const actualOutput = out.trim();
+          newOutputs[idx] = actualOutput;
+          if (actualOutput === (q.expectedOutput || "").trim()) {
+            calculatedScore++;
+          }
+        } catch (e: any) {
+          newOutputs[idx] = String(e);
+        }
+      } else if (q.commandAnswer) {
         if (isCommandCorrect(q, commandAnswers[idx])) calculatedScore++;
       } else {
         const selected = selectedAnswers[idx];
@@ -370,8 +550,11 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
           calculatedScore++;
         }
       }
-    });
+    }
+
+    setEvaluationOutputs(newOutputs);
     setScore(calculatedScore);
+    setIsEvaluating(false);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
@@ -384,7 +567,7 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
   };
 
   const allAnswered = shuffledQuestions.every((q, i) => 
-    q.commandAnswer ? (commandAnswers[i] || "").trim() !== "" : selectedAnswers[i] !== undefined
+    (q.commandAnswer || q.interactiveCode) ? (commandAnswers[i] !== undefined || (q.interactiveCode && q.initialCode)) : selectedAnswers[i] !== undefined
   );
 
   return (
@@ -413,18 +596,48 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
                   {q.question}
                 </h3>
 
-                {q.commandAnswer ? (
+                {q.interactiveCode ? (
+                  <InteractivePythonBlock
+                    initialCode={q.initialCode || ""}
+                    onChange={(code) => handleCommandChange(qIndex, code)}
+                    hideRunButton={true}
+                    hideOutput={true}
+                    className="my-0 border-hairline/60"
+                  />
+                ) : q.commandAnswer ? (
                   <div className="flex flex-col gap-4">
                     <div className="relative">
-                      <Terminal className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
-                      <input 
-                        type="text" 
-                        value={commandAnswers[qIndex] || ""}
-                        onChange={(e) => handleCommandChange(qIndex, e.target.value)}
-                        disabled={isSubmitted}
-                        placeholder="Type your command here..."
-                        className="w-full rounded-lg border border-hairline bg-transparent py-3 pl-12 pr-6 text-base font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50"
-                      />
+                      {(() => {
+                        const ansStr = Array.isArray(q.commandAnswer) ? q.commandAnswer[0] : q.commandAnswer;
+                        const isMultiline = ansStr && ansStr.includes("\n");
+                        
+                        if (isMultiline) {
+                          return (
+                            <textarea 
+                              value={commandAnswers[qIndex] || ""}
+                              onChange={(e) => handleCommandChange(qIndex, e.target.value)}
+                              disabled={isSubmitted}
+                              placeholder="Type your code here..."
+                              rows={6}
+                              className="w-full rounded-lg border border-hairline bg-transparent py-3 px-4 text-base font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50 resize-y"
+                            />
+                          );
+                        }
+                        
+                        return (
+                          <>
+                            <Terminal className="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground" />
+                            <input 
+                              type="text" 
+                              value={commandAnswers[qIndex] || ""}
+                              onChange={(e) => handleCommandChange(qIndex, e.target.value)}
+                              disabled={isSubmitted}
+                              placeholder="Type your command here..."
+                              className="w-full rounded-lg border border-hairline bg-transparent py-3 pl-12 pr-6 text-base font-mono text-foreground placeholder:text-muted-foreground focus:border-mint focus:outline-none focus:ring-1 focus:ring-mint disabled:opacity-50"
+                            />
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 ) : (
@@ -482,24 +695,50 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
                       className="overflow-hidden"
                     >
                       <div className={cn("rounded-lg border p-5", 
-                        (q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || "") : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect))
+                        (q.interactiveCode ? (evaluationOutputs[qIndex] === (q.expectedOutput || '').trim()) : q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || '') : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect))
                           ? "border-mint/20 bg-mint/5" 
-                          : "border-rose-500/20 bg-rose-500/5"
+                          : q.interactiveCode ? "border-amber-500/20 bg-amber-500/5" : "border-rose-500/20 bg-rose-500/5"
                       )}>
                         <p className={cn("text-base font-medium mb-2",
-                          (q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || "") : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect))
+                          (q.interactiveCode ? (evaluationOutputs[qIndex] === (q.expectedOutput || '').trim()) : q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || '') : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect))
                             ? "text-mint"
-                            : "text-rose-500"
+                            : q.interactiveCode ? "text-amber-500" : "text-rose-500"
                         )}>
-                          {(q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || "") : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect)) ? "Correct" : "Incorrect"}
+                          {(q.interactiveCode ? (evaluationOutputs[qIndex] === (q.expectedOutput || '').trim()) : q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || '') : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect)) ? "Correct" : q.interactiveCode ? "Needs Revision" : "Incorrect"}
                         </p>
                         {q.commandAnswer && !isCommandCorrect(q, commandAnswers[qIndex] || "") && (
                           <p className="mb-4 text-sm font-mono text-rose-500">
                             Expected: {Array.isArray(q.commandAnswer) ? q.commandAnswer[0] : q.commandAnswer}
                           </p>
                         )}
-                        {q.explanation && (
-                          <p className="text-sm leading-relaxed text-muted-foreground">
+                        {q.interactiveCode && evaluationOutputs[qIndex] !== undefined && evaluationOutputs[qIndex] !== (q.expectedOutput || "").trim() ? (() => {
+                          const friendlyError = parsePythonError(evaluationOutputs[qIndex]);
+                          return (
+                            <div className="mt-2 space-y-4">
+                              {friendlyError ? (
+                                <>
+                                  <p className="text-sm text-rose-700 dark:text-rose-400 font-medium leading-relaxed">
+                                    {friendlyError.coreIssue}
+                                  </p>
+                                  <div className="flex items-start gap-3 rounded-lg bg-amber-500/10 border border-amber-500/20 p-3 text-amber-700 dark:text-amber-400">
+                                    <Lightbulb className="size-5 shrink-0 mt-0.5" />
+                                    <p className="text-sm leading-relaxed">{friendlyError.hint}</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <p className="mb-2 text-sm font-mono text-rose-500 whitespace-pre-wrap">
+                                    <span className="font-bold">Expected output:</span><br/>{q.expectedOutput || "None"}
+                                  </p>
+                                  <p className="mb-2 text-sm font-mono text-rose-500 whitespace-pre-wrap">
+                                    <span className="font-bold">Your code produced:</span><br/>{evaluationOutputs[qIndex] || "No output"}
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                          );
+                        })() : q.explanation && (
+                          <p className="text-sm leading-relaxed text-muted-foreground mt-2">
                             {q.explanation}
                           </p>
                         )}
@@ -517,10 +756,10 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
         <div className="mt-16 flex justify-center pt-8">
           <button
             onClick={handleSubmit}
-            disabled={!allAnswered}
+            disabled={!allAnswered || isEvaluating}
             className="inline-flex items-center gap-3 rounded-full bg-mint px-10 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-mint/20 transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
           >
-            Submit Exam
+            {isEvaluating ? "Evaluating..." : "Submit Exam"}
             <ArrowRight className="size-5" />
           </button>
         </div>
