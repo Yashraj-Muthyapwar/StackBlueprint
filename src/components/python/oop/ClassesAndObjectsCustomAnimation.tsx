@@ -7,9 +7,9 @@ export function ClassesAndObjectsCustomAnimation() {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const totalSteps = 3;
+  const totalSteps = 4;
 
-  const STEP_DURATIONS = [5000, 7000, 6000];
+  const STEP_DURATIONS = [6000, 5000, 7000, 6000];
 
   useEffect(() => {
     if (!playing || isHovered) return;
@@ -33,9 +33,10 @@ export function ClassesAndObjectsCustomAnimation() {
     >
       <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[500px] overflow-hidden flex flex-col items-center justify-center w-full bg-slate-900/5 dark:bg-black/20">
         <AnimatePresence mode="wait">
-          {step === 0 && <Step1Blueprint key="step0" />}
-          {step === 1 && <Step2Objects key="step1" />}
-          {step === 2 && <Step3Methods key="step2" />}
+          {step === 0 && <Step0Concept key="step0" />}
+          {step === 1 && <Step1Blueprint key="step1" />}
+          {step === 2 && <Step2Objects key="step2" />}
+          {step === 3 && <Step3Methods key="step3" />}
         </AnimatePresence>
       </div>
       
@@ -61,6 +62,150 @@ export function ClassesAndObjectsCustomAnimation() {
       </div>
     </div>
   );
+}
+
+function Step0Concept() {
+  const [selectedObj, setSelectedObj] = useState<number | null>(null);
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: -10 }}
+      className="flex flex-col items-center w-full h-full justify-center"
+    >
+      <div className="flex w-full max-w-4xl gap-16 items-center justify-center">
+        
+        {/* Class (Blueprint) */}
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-center">
+             <h3 className="font-mono text-xl text-foreground font-light mb-1">The Class</h3>
+             <p className="text-xs text-muted-foreground uppercase tracking-widest">The Blueprint</p>
+          </div>
+          
+          <motion.div className="w-56 aspect-[4/5] rounded-3xl border border-blue-500/40 bg-gradient-to-br from-blue-500/10 to-transparent shadow-[0_0_40px_rgba(59,130,246,0.15)] backdrop-blur-md p-6 flex flex-col items-center justify-center relative overflow-hidden">
+            <Layers className="size-8 text-blue-400 absolute top-6 left-6 z-20" />
+            
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none pb-8">
+              <CarSVG className="w-44 h-auto opacity-30 text-blue-400 drop-shadow-sm" />
+            </div>
+            
+            <div className="w-full space-y-2 mt-auto z-10 mb-2">
+               <div className="w-full flex items-center justify-between px-2 py-1.5 border border-dashed border-blue-500/30 rounded bg-blue-500/5 backdrop-blur-md">
+                  <span className="font-mono text-[10px] text-blue-400/70">color:</span>
+                  <span className="font-mono text-[10px] text-blue-400/30">____</span>
+               </div>
+            </div>
+            <div className="font-mono text-[10px] text-blue-400/80 z-10">Defines shape & features</div>
+          </motion.div>
+        </div>
+        
+        {/* Animated Arrow Line */}
+        <div className="flex flex-col items-center justify-center relative w-16 h-32">
+           <svg className="w-full h-full absolute" viewBox="0 0 100 100" preserveAspectRatio="none">
+             <motion.path 
+               d="M 10 50 L 90 50" 
+               stroke="currentColor" 
+               strokeWidth="2" 
+               strokeDasharray="5,5" 
+               fill="none" 
+               className="text-muted-foreground/30"
+             />
+             <motion.path 
+               d="M 10 50 L 90 50" 
+               stroke="currentColor" 
+               strokeWidth="2" 
+               strokeDasharray="5,5" 
+               fill="none" 
+               className="text-blue-400"
+               animate={{ strokeDashoffset: [-20, 0] }}
+               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+             />
+             <path d="M 85 45 L 95 50 L 85 55 Z" fill="currentColor" className="text-muted-foreground/30" />
+           </svg>
+           <div className="bg-surface-2/80 backdrop-blur-sm px-2 py-1 rounded text-[10px] font-mono text-muted-foreground z-10 border border-hairline mt-10">Instantiates</div>
+        </div>
+
+        {/* Objects (Real Things) */}
+        <div className="flex flex-col items-center gap-6">
+          <div className="text-center">
+             <h3 className="font-mono text-xl text-foreground font-light mb-1">The Objects</h3>
+             <p className="text-xs text-muted-foreground uppercase tracking-widest">The Real Things</p>
+          </div>
+          
+          <div className="relative w-64 h-72 flex items-center justify-center">
+             {/* Object 1 */}
+             <motion.div 
+               layoutId="obj1"
+               initial={{ x: -40, y: -40, opacity: 0, scale: 0.8 }}
+               animate={{ 
+                 x: -40, 
+                 y: -40, 
+                 opacity: (selectedObj !== null && selectedObj !== 1) ? 0.6 : 1, 
+                 scale: selectedObj === 1 ? 1.1 : (selectedObj !== null ? 0.95 : 1),
+                 zIndex: selectedObj === 1 ? 50 : 10
+               }}
+               transition={{ delay: selectedObj === null ? 0.5 : 0, type: "spring", bounce: 0.4 }}
+               onMouseEnter={() => setSelectedObj(1)}
+               onMouseLeave={() => setSelectedObj(null)}
+               className="absolute w-36 aspect-[4/5] rounded-2xl border border-rose-500/30 bg-surface shadow-2xl backdrop-blur-md flex flex-col items-center p-4 cursor-pointer hover:border-rose-500/80 transition-colors"
+             >
+                <div className="font-mono text-[9px] text-rose-400/80 uppercase tracking-widest mb-auto w-full text-center">Object A</div>
+                <CarSVG className="w-full h-auto drop-shadow-md my-auto" color="#f43f5e" />
+                <div className="w-full mt-auto bg-rose-500/10 border border-rose-500/20 rounded py-1 text-center font-mono text-[9px] text-rose-400">color: "red"</div>
+             </motion.div>
+
+             {/* Object 2 */}
+             <motion.div 
+               layoutId="obj2"
+               initial={{ x: 0, y: 0, opacity: 0, scale: 0.8 }}
+               animate={{ 
+                 x: 0, 
+                 y: 0, 
+                 opacity: (selectedObj !== null && selectedObj !== 2) ? 0.6 : 1, 
+                 scale: selectedObj === 2 ? 1.1 : (selectedObj !== null ? 0.95 : 1),
+                 zIndex: selectedObj === 2 ? 50 : 20
+               }}
+               transition={{ delay: selectedObj === null ? 0.8 : 0, type: "spring", bounce: 0.4 }}
+               onMouseEnter={() => setSelectedObj(2)}
+               onMouseLeave={() => setSelectedObj(null)}
+               className="absolute w-36 aspect-[4/5] rounded-2xl border border-emerald-500/30 bg-surface shadow-2xl backdrop-blur-md flex flex-col items-center p-4 cursor-pointer hover:border-emerald-500/80 transition-colors"
+             >
+                <div className="font-mono text-[9px] text-emerald-400/80 uppercase tracking-widest mb-auto w-full text-center">Object B</div>
+                <CarSVG className="w-full h-auto drop-shadow-md my-auto" color="#10b981" />
+                <div className="w-full mt-auto bg-emerald-500/10 border border-emerald-500/20 rounded py-1 text-center font-mono text-[9px] text-emerald-400">color: "green"</div>
+             </motion.div>
+
+             {/* Object 3 */}
+             <motion.div 
+               layoutId="obj3"
+               initial={{ x: 40, y: 40, opacity: 0, scale: 0.8 }}
+               animate={{ 
+                 x: 40, 
+                 y: 40, 
+                 opacity: (selectedObj !== null && selectedObj !== 3) ? 0.6 : 1, 
+                 scale: selectedObj === 3 ? 1.1 : (selectedObj !== null ? 0.95 : 1),
+                 zIndex: selectedObj === 3 ? 50 : 30
+               }}
+               transition={{ delay: selectedObj === null ? 1.1 : 0, type: "spring", bounce: 0.4 }}
+               onMouseEnter={() => setSelectedObj(3)}
+               onMouseLeave={() => setSelectedObj(null)}
+               className="absolute w-36 aspect-[4/5] rounded-2xl border border-amber/30 bg-surface shadow-2xl backdrop-blur-md flex flex-col items-center p-4 cursor-pointer hover:border-amber/80 transition-colors"
+             >
+                <div className="font-mono text-[9px] text-amber/80 uppercase tracking-widest mb-auto w-full text-center">Object C</div>
+                <CarSVG className="w-full h-auto drop-shadow-md my-auto" color="#fbbf24" />
+                <div className="w-full mt-auto bg-amber/10 border border-amber/20 rounded py-1 text-center font-mono text-[9px] text-amber">color: "yellow"</div>
+             </motion.div>
+          </div>
+        </div>
+
+      </div>
+      <p className="mt-12 text-sm text-muted-foreground/80 max-w-lg text-center">
+        {selectedObj === null ? "Hover over an object card to isolate it! " : ""}
+        Before looking at code, remember the core concept: A <strong className="text-foreground">Class</strong> is just a blueprint. An <strong className="text-foreground">Object</strong> is the actual thing built from it.
+      </p>
+    </motion.div>
+  )
 }
 
 function Step1Blueprint() {
