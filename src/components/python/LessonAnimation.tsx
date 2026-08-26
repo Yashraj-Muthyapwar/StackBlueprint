@@ -18,8 +18,9 @@ import { PickleModuleCustomAnimation } from "./file_handling/PickleModuleCustomA
 import { ShutilModuleCustomAnimation } from "./file_handling/ShutilModuleCustomAnimation";
 
 import { ClassesAndObjectsCustomAnimation } from "./oop/ClassesAndObjectsCustomAnimation";
+import { InstanceAndClassAttributesCustomAnimation } from "./oop/InstanceAndClassAttributesCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes";
 
 export function LessonAnimation({
   variant,
@@ -63,6 +64,8 @@ export function LessonAnimation({
               <ShutilModuleCustomAnimation />
             ) : variant === "classes-and-objects" ? (
               <ClassesAndObjectsCustomAnimation />
+            ) : variant === "instance-and-class-attributes" ? (
+              <InstanceAndClassAttributesCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
