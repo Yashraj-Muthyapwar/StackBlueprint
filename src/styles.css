@@ -153,11 +153,16 @@
     background: color-mix(in oklab, var(--mint) 35%, transparent);
     color: var(--foreground);
   }
+  code, pre {
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
 }
 
 @utility font-mono {
   font-family: var(--font-mono);
-  font-feature-settings: "calt", "liga", "zero";
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0, "zero" 1;
 }
 
 @utility grid-bg {
