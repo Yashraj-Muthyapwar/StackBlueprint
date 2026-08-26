@@ -122,6 +122,15 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                 </h3>
               );
             }
+            if (p.startsWith("## ")) {
+              const text = p.slice(3);
+              const targetId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+              return (
+                <h2 key={i} id={targetId} className="mt-6 mb-3 text-xl font-semibold tracking-tight text-foreground scroll-mt-24">
+                  {parseInlineMarkdown(text)}
+                </h2>
+              );
+            }
             return (
               <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
                 {parseInlineMarkdown(p)}
