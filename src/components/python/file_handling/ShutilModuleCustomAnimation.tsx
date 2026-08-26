@@ -5,7 +5,7 @@ import {
   Archive, ShieldAlert, FileType2, Search,
   Trash2, Replace, Lock, CheckCircle2,
   AlertTriangle, Copy, FastForward,
-  Cpu, FileDown, Box, ArchiveRestore, Sparkles, XCircle, RotateCcw
+  Cpu, FileDown, Box, ArchiveRestore, Sparkles, XCircle, RotateCcw, Database
 } from "lucide-react";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 
