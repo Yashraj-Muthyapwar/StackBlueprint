@@ -51,14 +51,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: [
               "`Car` is the class name.",
               "`pass` means there is nothing inside the class yet. Python allows the class to exist without giving it any behavior.",
-              "Python class names usually follow PascalCase: `Car`, `BankAccount`, `ShoppingCart`."
+              "Python class names usually follow **PascalCase**: `Car`, `BankAccount`, `ShoppingCart`."
             ]
           },
           {
             kind: "prose",
             body: [
               "### 2. Create objects from the class",
-              "You create an object by calling the class."
+              "You create (or **instantiate**) an object by calling the class. The created object is called an **instance**."
             ]
           },
           {
@@ -94,7 +94,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "### 4. Add behavior with methods",
-              "A method is a function defined inside a class."
+              "A **method** is a **function** defined inside a class."
             ]
           },
           {
@@ -104,16 +104,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "When you write `car1.drive()`, Python uses `car1` as `self` inside the method.",
-              "A useful mental model is:\n`car1.drive()  ↓  Car.drive(car1)`",
-              "You normally use the shorter `car1.drive()` form."
+              "When you write `car1.drive()`, Python automatically passes the `car1` object as the `self` parameter.",
+              "Behind the scenes, Python translates: `car1.drive()` → `Car.drive(car1)`.",
+              "You will always use the shorter `car1.drive()` form, but this explains why `self` is required in the method definition!"
             ]
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "Imagine you are building an online shopping system. The store needs to keep track of many products.",
+              "Imagine you are building an **online shopping system**. The store needs to keep track of many products.",
               "Every product has information such as a name and price. Products may also need actions such as displaying their details.",
               "You can represent this with a `Product` class:"
             ]
