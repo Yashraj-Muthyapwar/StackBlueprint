@@ -55,7 +55,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]`
           },
           {
@@ -72,7 +72,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")`
           },
           {
@@ -89,7 +89,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    saved_contacts = file.read()\n\nprint(saved_contacts)`
           },
           {
@@ -106,7 +106,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `from faker import Faker\n\nfake = Faker()\ncontacts = [fake.name() for _ in range(3)]\n\nwith open(\"contacts.txt\", \"w\", encoding=\"utf-8\") as file:\n    for name in contacts:\n        file.write(name + \"\\n\")\n\nwith open(\"contacts.txt\", \"r\", encoding=\"utf-8\") as file:\n    print(file.read())`
           },
           {
@@ -376,7 +376,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read everything into one giant string\n    content = file.read()\n    print(content)`
           },
           {
@@ -387,7 +387,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read one line, then stop\n    first_line = file.readline()\n    second_line = file.readline()\n    print(first_line, end='')`
           },
           {
@@ -398,7 +398,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r', encoding='utf-8') as file:\n    # Read all lines into a list\n    lines = file.readlines()\n    \n    for line in lines:\n        print(line, end='')`
           },
           {
@@ -415,7 +415,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r') as file:\n    for line in file:\n        print(line, end='')`
           },
           {
@@ -500,7 +500,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('log.txt', 'w', encoding='utf-8') as file:\n    file.write('Booting up...\\n')\n    file.write('System online.\\n')`
           },
           {
@@ -512,7 +512,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('log.txt', 'a', encoding='utf-8') as file:\n    file.write('User logged in.\\n')`
           },
           {
@@ -529,7 +529,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `lines_to_add = ['Apple\\n', 'Orange\\n']\nwith open('fruits.txt', 'a', encoding='utf-8') as file:\n    file.writelines(lines_to_add)`
           },
           {
@@ -614,7 +614,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `try:\n    with open('important.txt', 'x') as file:\n        file.write('First!')\nexcept FileExistsError:\n    print('File already exists!')`
           },
           {
@@ -625,7 +625,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('log.txt', 'r+') as file:\n    content = file.read() # We can read\n    file.write('\\nDone.') # AND we can write!`
           },
           {
@@ -636,7 +636,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('photo.jpg', 'rb') as file:\n    bytes = file.read(10)\n    print(bytes) # b'\\xff\\xd8\\xff\\xe0\\x00\\x10JFIF'`
           },
           {
@@ -653,7 +653,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('source.png', 'rb') as src:\n    with open('copy.png', 'wb') as dest:\n        dest.write(src.read())`
           },
           {
@@ -738,7 +738,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r') as file:\n    print(file.tell()) # 0\n    file.read(5)\n    print(file.tell()) # 5`
           },
           {
@@ -749,7 +749,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('poem.txt', 'r') as file:\n    content = file.read()\n    \n    file.seek(0) # Rewind to the very beginning!\n    \n    read_again = file.read()`
           },
           {
@@ -766,7 +766,7 @@ export const FILE_HANDLING_TOPICS: Record<string, { title: string; slug: string;
             ]
           },
           {
-            kind: "code",
+            kind: "interactive-code",
             code: `with open('huge_data.bin', 'rb') as file:\n    file.seek(1024) # Skip the first 1024 bytes (e.g. a header)\n    chunk = file.read(256) # Read the next 256 bytes\n    print(chunk)`
           },
           {
