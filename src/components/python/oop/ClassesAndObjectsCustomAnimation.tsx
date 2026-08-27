@@ -31,7 +31,7 @@ export function ClassesAndObjectsCustomAnimation() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[500px] overflow-hidden flex flex-col items-center justify-center w-full bg-slate-900/5 dark:bg-black/20">
+      <div className="relative px-4 py-8 lg:px-8 lg:py-10 h-[500px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {step === 0 && <Step0WhyOOP key="step0" />}
           {step === 1 && <Step1Concept key="step1" />}
