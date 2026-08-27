@@ -80,3 +80,16 @@ When creating or editing lessons in this project (specifically in `file-handling
 ## 6. Lesson Verification & UI/UX Consistency
 - Automatically verify that any newly added lesson is correctly linked in all relevant structural files (e.g., `LESSON_STRUCTURE.md`, routing files, sidebar/navbar components, or configuration files like `oop-content.ts`).
 - Ensure consistent UI/UX flow: check that 'Next'/'Previous' lesson links operate correctly and that the new lesson aligns visually and structurally with the rest of the Python track.
+
+## 7. Common Mistakes Section
+- When adding a "Common mistakes" section to a lesson, **always** use the `callout` kind with `tone: "warn"` instead of a standard `prose` block.
+- This ensures visual consistency across all lessons by rendering the common mistakes in the standard yellow warning box.
+- **Example**:
+  ```json
+  {
+    "kind": "callout",
+    "tone": "warn",
+    "title": "Common mistakes",
+    "body": "- **Mistake 1**: Explanation...\n- **Mistake 2**: Explanation..."
+  }
+  ```
