@@ -20,8 +20,9 @@ import { ShutilModuleCustomAnimation } from "./file_handling/ShutilModuleCustomA
 import { ClassesAndObjectsCustomAnimation } from "./oop/ClassesAndObjectsCustomAnimation";
 import { InstanceAndClassAttributesCustomAnimation } from "./oop/InstanceAndClassAttributesCustomAnimation";
 import { TypesOfMethodsCustomAnimation } from "./oop/TypesOfMethodsCustomAnimation";
+import { EncapsulationCustomAnimation } from "./oop/EncapsulationCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation";
 
 export function LessonAnimation({
   variant,
@@ -69,6 +70,8 @@ export function LessonAnimation({
               <InstanceAndClassAttributesCustomAnimation />
             ) : variant === "types-of-methods" ? (
               <TypesOfMethodsCustomAnimation />
+            ) : variant === "encapsulation" ? (
+              <EncapsulationCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
