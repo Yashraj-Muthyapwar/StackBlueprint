@@ -62,9 +62,6 @@ When creating or editing lessons in this project (specifically in `file-handling
       </button>
     </div>
     <div className="flex items-center gap-4">
-      <div className="text-[10px] font-mono font-bold uppercase tracking-widest px-2 py-1 rounded bg-surface border border-hairline text-muted-foreground shadow-sm">
-        Phase: {getPhaseName()}
-      </div>
       <div className="font-mono text-xs text-muted-foreground">
         {step + 1} / {totalSteps}
       </div>
