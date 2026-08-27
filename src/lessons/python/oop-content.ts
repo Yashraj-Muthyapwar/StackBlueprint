@@ -412,7 +412,6 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         slug: "types-of-methods",
         title: "Instance, Class, and Static Methods",
         subtitle: "The Three Types of Methods",
-        oneLiner: "Learn the three main types of Python methods and when each one should be used.",
         estimatedTime: 15,
         sections: [
           {
@@ -585,8 +584,174 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "encapsulation",
         title: "Encapsulation",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Protecting Object Data",
+        estimatedTime: 15,
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Objects often contain data that should not be changed carelessly.",
+              "For example, a bank account balance should not become negative because another part of the program directly assigns an invalid value. Encapsulation helps you keep data and the rules for changing that data inside the class."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "encapsulation",
+            caption: "Encapsulation and Data Protection"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Encapsulation means keeping related data and behavior together while controlling how the data is accessed or modified.",
+              "Instead of letting outside code change important attributes directly, the class can provide methods or properties that apply rules first.",
+              "Python does not enforce access restrictions in exactly the same way as languages such as Java or C++. Instead, it uses naming conventions and features such as properties.",
+              "### 1. Understand public attributes",
+              "A normal Python attribute is public."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self.balance = balance\n\naccount = BankAccount("Maya", 1000)\n\n# Outside code can read or change balance directly\naccount.balance = -500\nprint(account.balance)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Python accepts the change even though a negative balance might violate the rules of your application.",
+              "This is where controlled access becomes useful.",
+              "### 2. Use a leading underscore for internal attributes",
+              "Python developers often use a single underscore to show that an attribute is intended for internal use."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        # The underscore means internal use\n        self._balance = balance\n\naccount = BankAccount("Maya", 1000)\naccount._balance = -500\nprint(account._balance)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The underscore in `_balance` communicates: *\"This is an internal implementation detail. Avoid changing it directly.\"*",
+              "It does not make the attribute physically inaccessible (as seen in the code above). The underscore is a **convention** that asks other programmers to treat the value carefully.",
+              "### 3. Control changes with methods",
+              "Instead of changing `_balance` directly, provide methods that enforce your rules."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self._balance = balance\n\n    def deposit(self, amount):\n        if amount > 0:\n            self._balance += amount\n\n    def withdraw(self, amount):\n        if 0 < amount <= self._balance:\n            self._balance -= amount\n\naccount = BankAccount("Maya", 1000)\naccount.deposit(200)\naccount.withdraw(300)\nprint(account._balance)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "Now outside code can interact with the account safely. The class decides what counts as a valid deposit or withdrawal.",
+              "### 4. Use a property for controlled attribute access",
+              "Sometimes you want users of the class to read an attribute naturally while still controlling what happens behind the scenes. Python provides the `@property` decorator for this."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self._balance = balance\n\n    @property\n    def balance(self):\n        return self._balance\n\naccount = BankAccount("Maya", 1000)\n# We read it like an attribute, but it calls the method\nprint(account.balance)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "It looks like normal attribute access, but Python actually calls the `balance()` method.",
+              "Because no setter has been defined, this assignment is **not** allowed: `account.balance = -500`",
+              "### 5. Add a setter when controlled assignment is needed",
+              "A property can also define rules for assigning a new value."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self._price = price\n\n    @property\n    def price(self):\n        return self._price\n\n    @price.setter\n    def price(self, value):\n        if value >= 0:\n            self._price = value\n        else:\n            print("Error: Price cannot be negative.")\n\nproduct = Product("Laptop", 900)\nproduct.price = 850\nprint(product.price)\n\nproduct.price = -100\nprint(product.price)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "The setter checks the value before updating `_price`.",
+              "The important part is that the validation rule lives inside `Product`. Other parts of the application do not need to remember how to validate a product price every time they change it."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Thinking `_attribute` is private**: A leading underscore is a convention. Python still allows direct access.\n- **Using properties for every attribute**: Use them when you need validation, calculated values, or controlled access. Normal attributes are fine for simple data.\n- **Putting validation outside the class**: If the rule belongs to the object's data, keeping it inside the class makes the rule easier to maintain.\n- **Creating unnecessary getters and setters**: Python properties let you keep natural attribute syntax without writing Java-style methods such as `get_price()` for every value."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Encapsulation keeps data and the rules for working with that data inside a class.",
+              "A leading underscore marks an attribute as intended for internal use.",
+              "Methods can control how object state changes.",
+              "`@property` provides controlled access while keeping normal attribute syntax.",
+              "Property setters can validate values before storing them."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "encapsulation-1",
+                question: "What does encapsulation help you control?",
+                options: [
+                  "The memory usage of the class instances.",
+                  "How the data inside a class is accessed and modified.",
+                  "The speed at which the methods execute.",
+                  "How many classes can inherit from the base class."
+                ],
+                correctIndex: 1,
+                explanation: "Encapsulation groups data and behavior together, allowing you to define rules for how that data can be accessed or changed."
+              },
+              {
+                id: "encapsulation-2",
+                question: "Does `_balance` prevent outside code from accessing the attribute?",
+                options: [
+                  "Yes, it makes the attribute completely hidden.",
+                  "No, it is just a naming convention that indicates it should be treated as internal.",
+                  "Yes, it throws an error if accessed directly.",
+                  "No, but it makes the attribute read-only."
+                ],
+                correctIndex: 1,
+                explanation: "Python does not strictly enforce private attributes. The leading underscore is a convention used by programmers."
+              },
+              {
+                id: "encapsulation-3",
+                question: "What does the `@property` decorator allow you to do?",
+                options: [
+                  "Define an attribute that belongs to the class instead of the instance.",
+                  "Prevent the class from being inherited.",
+                  "Access a method like it was a regular attribute, hiding the underlying logic.",
+                  "Automatically generate setter methods."
+                ],
+                correctIndex: 2,
+                explanation: "`@property` turns a method into a \"getter\", so you can call `obj.value` instead of `obj.value()`."
+              },
+              {
+                id: "encapsulation-4",
+                question: "Why is it generally better to put validation inside a property setter instead of checking values before assignment in outside code?",
+                options: [
+                  "Because it is required by the Python language specification.",
+                  "Because it keeps the validation logic centralized in the class, meaning outside code doesn't have to remember the rules.",
+                  "Because it makes the program run significantly faster.",
+                  "Because setters are the only way to assign values in Python."
+                ],
+                correctIndex: 1,
+                explanation: "Centralizing logic inside the class (encapsulation) prevents duplicate code and ensures rules are consistently applied everywhere."
+              },
+              {
+                id: "encapsulation-5",
+                question: "Add validation so the following `Person` class does not allow a negative age. Create a property `age` and a setter that assigns the value if it's `>= 0`, or prints 'Invalid age' if negative.",
+                interactiveCode: true,
+                initialCode: "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self._age = age\n\n    # 1. Add the @property decorator and age getter method\n\n\n    # 2. Add the @age.setter decorator and age setter method\n\n",
+                testCode: "p = Person('Alice', 25)\nprint(p.age)\np.age = 30\nprint(p.age)\np.age = -5\nprint(p.age)",
+                expectedOutput: "25\n30\nInvalid age\n30",
+                explanation: "The `@property` defines the getter, and `@age.setter` defines the setter where you perform the validation check before modifying `self._age`."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "inheritance",
