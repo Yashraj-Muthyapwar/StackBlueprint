@@ -410,9 +410,177 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       },
       {
         slug: "types-of-methods",
-        title: "Types of Methods",
-        subtitle: "Coming soon",
-        sections: []
+        title: "Instance, Class, and Static Methods",
+        subtitle: "The Three Types of Methods",
+        oneLiner: "Learn the three main types of Python methods and when each one should be used.",
+        estimatedTime: 15,
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Methods define what objects and classes can do. But not every method needs access to the same kind of data.",
+              "Python gives you three common method types: **instance methods**, **class methods**, and **static methods**. Choosing the right one makes your classes easier to understand and maintain."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "types-of-methods",
+            caption: "Method Types"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "The difference between the three method types comes down to what information the method needs.",
+              "An **instance method** works with object-specific data.",
+              "A **class method** works with class-level data.",
+              "A **static method** belongs logically to the class, but does not need access to either an object or the class itself.",
+              "### 1. Use an instance method for object data",
+              "An instance method is the method type you have already been using. Its first parameter is usually `self`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def display_details(self):\n        print(f"{self.name}: \${self.price}")\n\nlaptop = Product("Laptop", 900)\nlaptop.display_details()`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`display_details()` needs the current product's `name` and `price`, so it should be an instance method.",
+              "When you call `laptop.display_details()`, Python automatically passes `laptop` as `self`.",
+              "### 2. Use a class method for class-level behavior",
+              "A class method works with the class rather than one specific object.",
+              "Add `@classmethod` above the method and use `cls` as the first parameter."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    tax_rate = 0.08\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\nProduct.update_tax_rate(0.09)\nprint(Product.tax_rate)`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`cls` refers to the class that called the method. This is similar to how `self` refers to an object.",
+              "Use class methods when the behavior needs class attributes or should affect the class as a whole.",
+              "### 3. Use a static method for related utility logic",
+              "Sometimes a function belongs conceptually to a class but does not need any object or class data.",
+              "Use `@staticmethod` for this case."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nprint(Product.is_valid_price(100))\nprint(Product.is_valid_price(-20))`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`is_valid_price()` only checks the value it receives. It does not use `self` or `cls`.",
+              "That makes it a good fit for a static method.",
+              "### 4. Choose the method based on what it needs",
+              "A simple decision process is:"
+            ]
+          },
+          {
+            kind: "table",
+            headers: ["Method", "Needs", "First parameter"],
+            rows: [
+              ["**Instance method**", "Object data", "`self`"],
+              ["**Class method**", "Class data", "`cls`"],
+              ["**Static method**", "Neither", "None"]
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine you are building the product system for an online store. The store needs to:",
+              "1. calculate the final price of one product",
+              "2. update a tax rate shared by every product",
+              "3. check whether a supplied price is valid",
+              "These responsibilities fit the three method types naturally."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Product:\n    tax_rate = 0.08\n\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def final_price(self):\n        return self.price * (1 + Product.tax_rate)\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nlaptop = Product("Laptop", 1000)\n\n# Instance method works with specific laptop\nprint(laptop.final_price())\n\n# Class method changes shared info\nProduct.update_tax_rate(0.10)\nprint(laptop.final_price())\n\n# Static method performs independent check\nprint(Product.is_valid_price(500))`
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Using `self` inside a class method**: Class methods receive `cls`, not an individual object.\n- **Forgetting the decorator**: `@classmethod` and `@staticmethod` tell Python how the method should behave.\n- **Making every helper a static method**: Use a static method only when the logic belongs conceptually with the class.\n- **Using a class method for object-specific data**: If the method needs `self.price` or `self.name`, it should usually be an instance method."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Instance methods use `self` and work with individual objects.",
+              "Class methods use `cls` and work with the class or shared class data.",
+              "Static methods need neither `self` nor `cls`.",
+              "Use `@classmethod` and `@staticmethod` to define the last two types.",
+              "Choose the method type based on what data the behavior actually needs."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "types-methods-1",
+                question: "Which method type should you use to update one customer's account balance?",
+                options: [
+                  "Instance method",
+                  "Class method",
+                  "Static method"
+                ],
+                correctIndex: 0,
+                explanation: "Updating one customer's account requires object-specific data, so you should use an instance method."
+              },
+              {
+                id: "types-methods-2",
+                question: "Which method type should you use to change a shared interest rate for all accounts?",
+                options: [
+                  "Instance method",
+                  "Class method",
+                  "Static method"
+                ],
+                correctIndex: 1,
+                explanation: "Changing a shared value (like a global interest rate) affects the class as a whole, which is what a class method is for."
+              },
+              {
+                id: "types-methods-3",
+                question: "Which method type could check whether an account number has the correct length without accessing any object data?",
+                options: [
+                  "Instance method",
+                  "Class method",
+                  "Static method"
+                ],
+                correctIndex: 2,
+                explanation: "If it doesn't need to read any object or class data, and just validates an input, it should be a static method."
+              },
+              {
+                id: "types-methods-4",
+                question: "What is the difference between `self` and `cls`?",
+                options: [
+                  "`self` is used for global variables, `cls` is for local variables.",
+                  "`self` refers to an individual object, while `cls` refers to the class itself.",
+                  "`self` is used in static methods, `cls` is used in instance methods.",
+                  "They are completely identical in functionality."
+                ],
+                correctIndex: 1,
+                explanation: "`self` provides access to the current instance (object), whereas `cls` provides access to the class itself."
+              },
+              {
+                id: "types-methods-5",
+                question: "Complete the `User` class by defining an instance method `get_email`, a class method `get_company`, and a static method `is_valid_email`.",
+                interactiveCode: true,
+                initialCode: "class User:\n    company = 'TechCorp'\n\n    def __init__(self, email):\n        self.email = email\n\n    # 1. Define get_email() returning self.email\n\n\n    # 2. Define get_company() returning cls.company\n\n\n    # 3. Define is_valid_email(email) checking if '@' is in email\n\n",
+                testCode: "u = User('test@example.com')\nprint(u.get_email())\nprint(User.get_company())\nprint(User.is_valid_email('hello'))\nprint(User.is_valid_email('a@b.com'))",
+                expectedOutput: "test@example.com\nTechCorp\nFalse\nTrue",
+                explanation: "An instance method uses `self`, a class method uses `@classmethod` and `cls`, and a static method uses `@staticmethod` and just the argument."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "encapsulation",
