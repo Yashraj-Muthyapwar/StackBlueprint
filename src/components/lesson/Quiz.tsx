@@ -415,8 +415,12 @@ function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?:
                 : currentQuestion.interactiveCode ? "border-amber-500/30 bg-amber-500/5 text-amber-500" : "border-rose-500/30 bg-rose-500/5 text-rose-500"
             }`}>
               <p className="text-sm font-medium mb-1">
-                {((currentQuestion.commandAnswer || currentQuestion.interactiveCode) ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect)) ? "Correct!" : currentQuestion.interactiveCode ? "Needs Revision" : "Incorrect."}
+                {((currentQuestion.commandAnswer || currentQuestion.interactiveCode) ? isCommandCorrect : (selectedOption !== null && shuffledOptions[selectedOption].isCorrect)) 
+                  ? (currentQuestion.interactiveCode ? "Code executed successfully!" : currentQuestion.commandAnswer ? "Command successful!" : "Correct!") 
+                  : currentQuestion.interactiveCode ? "Needs Revision" : "Incorrect."}
               </p>
+
+
               {currentQuestion.commandAnswer && !isCommandCorrect && (
                 <p className="mb-2 text-sm font-mono text-rose-500">
                   Expected: {Array.isArray(currentQuestion.commandAnswer) ? currentQuestion.commandAnswer[0] : currentQuestion.commandAnswer}
@@ -704,8 +708,11 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
                             ? "text-mint"
                             : q.interactiveCode ? "text-amber-500" : "text-rose-500"
                         )}>
-                          {(q.interactiveCode ? (evaluationOutputs[qIndex] === (q.expectedOutput || '').trim()) : q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || '') : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect)) ? "Correct" : q.interactiveCode ? "Needs Revision" : "Incorrect"}
+                          {(q.interactiveCode ? (evaluationOutputs[qIndex] === (q.expectedOutput || '').trim()) : q.commandAnswer ? isCommandCorrect(q, commandAnswers[qIndex] || '') : (selectedAnswers[qIndex] !== undefined && q.shuffledOptions[selectedAnswers[qIndex]].isCorrect)) 
+                            ? (q.interactiveCode ? "Code executed successfully!" : q.commandAnswer ? "Command successful!" : "Correct!") 
+                            : q.interactiveCode ? "Needs Revision" : "Incorrect."}
                         </p>
+                        
                         {q.commandAnswer && !isCommandCorrect(q, commandAnswers[qIndex] || "") && (
                           <p className="mb-4 text-sm font-mono text-rose-500">
                             Expected: {Array.isArray(q.commandAnswer) ? q.commandAnswer[0] : q.commandAnswer}
