@@ -412,7 +412,6 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         slug: "types-of-methods",
         title: "Instance, Class, and Static Methods",
         subtitle: "The Three Types of Methods",
-        estimatedTime: 15,
         sections: [
           {
             kind: "prose",
@@ -585,7 +584,6 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         slug: "encapsulation",
         title: "Encapsulation",
         subtitle: "Protecting Object Data",
-        estimatedTime: 15,
         sections: [
           {
             kind: "prose",
@@ -756,8 +754,289 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "inheritance",
         title: "Inheritance",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Reusing and Extending Behavior",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Many objects share common behavior but still need their own specialized features.",
+              "Inheritance lets you place shared logic in one class and reuse it in related classes. This reduces repeated code and gives your program a clearer structure.",
+              "Python supports several types of inheritance:",
+              "- Single inheritance",
+              "- Multiple inheritance",
+              "- Multilevel inheritance",
+              "- Hierarchical inheritance",
+              "- Hybrid inheritance"
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "inheritance",
+            caption: "Class Inheritance Flow"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Inheritance allows one class to build on another class.",
+              "The existing class is commonly called the **parent class** or **base class**. The new class is called the **child class** or **subclass**.",
+              "For example:"
+            ]
+          },
+          {
+            kind: "code",
+            language: "text",
+            code: "Employee\n├── name\n├── salary\n└── work()\n    ↓ inherited by\nDeveloper\n├── name\n├── salary\n├── work()\n└── write_code()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Developer` does not need to redefine everything already provided by `Employee`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Types of inheritance",
+            body: [
+              "Python supports five main types of inheritance."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "inheritance-types",
+            caption: "Types of Inheritance"
+          },
+          {
+            kind: "prose",
+            body: [
+              "### 1. Single inheritance",
+              "Single inheritance occurs when one child class inherits from one parent class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Now `Developer` can use both its inherited method and its own method.",
+              "This is the simplest and most common type of inheritance.",
+              "### 2. Multiple inheritance",
+              "Multiple inheritance occurs when one child class inherits from more than one parent class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Now `Presenter` inherits methods from both parent classes.",
+              "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name.",
+              "Python uses the **method resolution order**, or MRO, to decide which method to use first. You can inspect the MRO with `print(Presenter.mro())`.",
+              "### 3. Multilevel inheritance",
+              "Multilevel inheritance occurs when a class inherits from a class that already inherits from another class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`ElectricCar` can use methods from both `Car` and `Vehicle`. Each level adds more specialized behavior.",
+              "### 4. Hierarchical inheritance",
+              "Hierarchical inheritance occurs when multiple child classes inherit from the same parent class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Both child classes inherit `introduce()`. This is useful when several classes share a common foundation but need different specialized behavior.",
+              "### 5. Hybrid inheritance",
+              "Hybrid inheritance is a combination of two or more types of inheritance. For example, combining hierarchical and multiple inheritance:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`TeamLead` inherits from both `Developer` and `Designer`. Through those classes, it also receives behavior from `Employee`.",
+              "Hybrid inheritance can model complex relationships, but it should be used carefully. Complex inheritance trees can make code harder to understand and maintain."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. Create a parent class",
+              "Start with a class that contains behavior shared by several related objects."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nemployee = Employee(\"Maya\")\nemployee.introduce()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "This class will act as the parent.",
+              "### 2. Create a child class",
+              "To inherit from another class, place the parent class name inside parentheses."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nclass Developer(Employee):\n    pass\n\ndeveloper = Developer(\"Leo\")\nprint(developer.name)\ndeveloper.introduce()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Developer` now inherits from `Employee`.",
+              "Python looks in `Developer` first. If it does not find the requested method there, it can look in its parent class.",
+              "### 3. Add behavior specific to the child",
+              "A child class can add its own attributes and methods."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(f\"{self.name} is writing code.\")\n\ndeveloper = Developer(\"Leo\")\ndeveloper.introduce()\ndeveloper.write_code()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The child class extends the parent without copying its existing code.",
+              "### 4. Extend initialization with `super()`",
+              "Sometimes the child needs extra data. Suppose every employee has a name, but developers also have a programming language."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\nclass Developer(Employee):\n    def __init__(self, name, language):\n        super().__init__(name)\n        self.language = language\n\ndeveloper = Developer(\"Leo\", \"Python\")\nprint(developer.name)\nprint(developer.language)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`super()` gives you access to methods from the parent class.",
+              "Here, `super().__init__(name)` runs the parent's `__init__()` method and sets `self.name = name`. Then the child adds its own attribute: `self.language = language`.",
+              "### 5. Override inherited behavior",
+              "A child class can replace an inherited method with its own version. This is called **method overriding**."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nemployee = Employee()\ndeveloper = Developer()\n\nemployee.work()\ndeveloper.work()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Both classes have a `work()` method, but each provides behavior appropriate to that class."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Choosing the right type of inheritance",
+            body: [
+              "Use **single inheritance** when one class is a straightforward specialization of another.",
+              "Use **multiple inheritance** when a class genuinely combines independent behaviors and the relationship remains easy to understand.",
+              "Use **multilevel inheritance** when each level represents a meaningful increase in specialization.",
+              "Use **hierarchical inheritance** when several classes share the same parent but have different responsibilities.",
+              "Use **hybrid inheritance** carefully because complex class relationships can make method lookup and maintenance more difficult.",
+              "Inheritance should represent a meaningful **is-a** relationship (e.g. A Developer is an Employee). If the relationship is instead a **has-a** relationship, composition may be a better choice (e.g. A Car has an Engine)."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Repeating parent code in every child**: Put truly shared attributes and behavior in the parent class instead.\n- **Forgetting `super().__init__()`**: If the child defines its own initializer and still needs parent initialization, call the parent initializer with `super()`.\n- **Using inheritance only to avoid typing code**: Inheritance works best when there is a meaningful relationship between the classes.\n- **Assuming the child changes the parent**: Adding or overriding behavior in a child class does not modify the parent class.\n- **Using multiple inheritance without understanding MRO**: If parent classes contain overlapping methods, learn how Python chooses which method to call.\n- **Creating deep inheritance trees**: Too many levels can make code difficult to follow. Prefer simple, meaningful hierarchies.\n- **Using inheritance for a has-a relationship**: Use composition when one object contains or uses another object instead of being a specialized version of it."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Inheritance lets a child class reuse attributes and methods from a parent class.",
+              "Single inheritance uses one parent and one child.",
+              "Multiple inheritance allows one child to inherit from multiple parents.",
+              "Multilevel inheritance creates a chain of parent and child classes.",
+              "Hierarchical inheritance gives several child classes the same parent.",
+              "Hybrid inheritance combines multiple inheritance patterns.",
+              "A child class can add its own behavior without copying the parent's code.",
+              "`super()` lets a child use functionality from its parent.",
+              "Method overriding lets a child replace inherited behavior.",
+              "Use inheritance when the classes have a meaningful relationship."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "inheritance-1",
+                question: "What is single inheritance?",
+                options: [
+                  "When a child inherits from multiple parent classes.",
+                  "When multiple children inherit from a single parent class.",
+                  "When one child inherits from one parent class.",
+                  "When a parent inherits from a child class."
+                ],
+                correctIndex: 2,
+                explanation: "Single inheritance is a straightforward 1-to-1 relationship from parent to child."
+              },
+              {
+                id: "inheritance-2",
+                question: "How does multiple inheritance differ from multilevel inheritance?",
+                options: [
+                  "Multiple inheritance uses one parent, multilevel uses multiple parents.",
+                  "Multiple inheritance combines multiple parents into one child. Multilevel inheritance chains classes together (Grandparent -> Parent -> Child).",
+                  "They are the exact same thing.",
+                  "Multilevel inheritance is faster than multiple inheritance."
+                ],
+                correctIndex: 1,
+                explanation: "Multiple inheritance is parallel (combining traits), while multilevel is vertical (deepening traits)."
+              },
+              {
+                id: "inheritance-3",
+                question: "Why might a child class use `super().__init__()`?",
+                options: [
+                  "To skip calling the parent's initializer.",
+                  "To call the parent's initializer so that the parent can set up the base attributes, before the child sets up its own.",
+                  "To automatically create a new object of the parent class.",
+                  "To delete the parent object."
+                ],
+                correctIndex: 1,
+                explanation: "`super()` delegates method calls back to the parent class. Using it in `__init__` ensures the parent's setup logic runs."
+              },
+              {
+                id: "inheritance-4",
+                question: "Create a `Vehicle` class with a `move()` method that prints \"Vehicle is moving.\". Then create a `Bike` class that inherits from `Vehicle` and adds a `ring_bell()` method that prints \"Ring ring!\".",
+                interactiveCode: true,
+                initialCode: "# 1. Create the Vehicle class\n\n\n\n# 2. Create the Bike class (inherit from Vehicle)\n\n\n",
+                testCode: "bike = Bike()\nbike.move()\nbike.ring_bell()",
+                expectedOutput: "Vehicle is moving.\nRing ring!",
+                explanation: "`Bike` can use the `move()` method it inherits from `Vehicle`, and it also has its own `ring_bell()` method."
+              },
+              {
+                id: "inheritance-5",
+                question: "Create a `Flyer` class with a `fly()` method that prints \"Flying.\". Create a `Swimmer` class with a `swim()` method that prints \"Swimming.\". Then create a `Duck` class that inherits from both.",
+                interactiveCode: true,
+                initialCode: "# 1. Create Flyer and Swimmer classes\n\n\n\n\n# 2. Create Duck class (multiple inheritance)\n\n\n",
+                testCode: "duck = Duck()\nduck.fly()\nduck.swim()",
+                expectedOutput: "Flying.\nSwimming.",
+                explanation: "This is an example of Multiple Inheritance where `Duck(Flyer, Swimmer)` gets capabilities from both."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "polymorphism",
