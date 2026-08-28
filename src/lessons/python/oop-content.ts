@@ -811,13 +811,23 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             ]
           },
           {
-            kind: "interactive-code",
-            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro())"
+            kind: "code",
+            language: "python",
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\n\nclass Presenter(Writer, Speaker):\n    pass"
           },
           {
             kind: "prose",
             body: [
-              "Now `Presenter` inherits methods from both parent classes.",
+              "Now `Presenter` inherits methods from both parent classes:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "presenter = Presenter()\n\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro())"
+          },
+          {
+            kind: "prose",
+            body: [
               "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name.",
               "Python uses the **method resolution order**, or MRO, to decide which method to use first. You can inspect the MRO with `print(Presenter.mro())`.",
               "### 3. Multilevel inheritance",
