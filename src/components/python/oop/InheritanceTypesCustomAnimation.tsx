@@ -142,7 +142,10 @@ function Step1Multiple() {
             {"        "}<span className="text-muted-foreground"># ...</span>{"\n"}
             {"\n"}
             <span className="text-pink-600">class</span> <span className="text-blue-600">Presenter</span>(<span className="text-amber-600">Writer</span>, <span className="text-rose-600">Speaker</span>):{"\n"}
-            {"    "}<span className="text-pink-600">pass</span>
+            {"    "}<span className="text-pink-600">pass</span>{"\n"}
+            {"\n"}
+            <span className="text-indigo-500">print</span>(<span className="text-blue-600">Presenter</span>.mro()){"\n"}
+            <span className="text-muted-foreground"># [&lt;class 'Presenter'&gt;, &lt;class 'Writer'&gt;, &lt;class 'Speaker'&gt;, &lt;class 'object'&gt;]</span>
           </pre>
         </div>
       </div>
@@ -294,7 +297,10 @@ function Step4Hybrid() {
             {"\n"}
             <span className="text-pink-600">class</span> <span className="text-blue-600">TeamLead</span>(<span className="text-emerald-600">Developer</span>, <span className="text-purple-600">Designer</span>):{"\n"}
             {"    "}<span className="text-pink-600">def</span> <span className="text-amber-600">manage_team</span>(self):{"\n"}
-            {"        "}<span className="text-muted-foreground"># ...</span>
+            {"        "}<span className="text-muted-foreground"># ...</span>{"\n"}
+            {"\n"}
+            <span className="text-indigo-500">print</span>(<span className="text-blue-600">TeamLead</span>.mro()){"\n"}
+            <span className="text-muted-foreground"># [&lt;class 'TeamLead'&gt;, &lt;class 'Developer'&gt;, &lt;class 'Designer'&gt;, &lt;class 'Employee'&gt;, &lt;class 'object'&gt;]</span>
           </pre>
         </div>
       </div>
