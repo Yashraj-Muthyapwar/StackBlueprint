@@ -58,7 +58,7 @@ const fileIo: Stage[] = [
       ],
     },
     steps: [
-      st([0], (row) => row.key === 1 ? "kept" : row.key === 2 ? "added" : "hidden",
+      st([0], (row) => row.key === 1 ? "kept" : row.key === 2 ? "added" : "dropped",
         "Calling open() tells the OS to find 'data.txt' and prepare it for reading. The OS returns a file object (pointer).",
         { side: sidePanel("OS Level", ["• Checks file permissions", "• Locks file for reading", "• Sets cursor to beginning"], "violet", FileText) }),
     ],
