@@ -1021,11 +1021,222 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           }
         ]
       },
+
       {
         slug: "polymorphism",
         title: "Polymorphism",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Many Forms, One Interface",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Programs often perform the same kind of action on different types of data.",
+              "Python allows the same operator, function, or method name to behave differently depending on what receives it. This idea is called **polymorphism**, and it helps you write flexible code without creating separate logic for every object type."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Polymorphism means \"many forms.\"",
+              "In Python, one operation can take different forms depending on the values or objects involved.",
+              "For example, the `+` operator can add numbers:",
+              "`print(10 + 20)` \u2192 `30`",
+              "But the same operator can join strings:",
+              "`print(\"Stack\" + \"Blueprint\")` \u2192 `StackBlueprint`",
+              "The symbol is the same (`+`), but its behavior changes based on the data type."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "polymorphism",
+            caption: "Forms of Polymorphism"
+          },
+          {
+            kind: "prose",
+            heading: "Step-by-step",
+            body: [
+              "### 1. See polymorphism in the addition operator",
+              "Python operators can behave differently for different data types. Consider addition:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "print(5 + 3)\nprint(2.5 + 1.5)\nprint(\"Hello \" + \"Python\")\nprint([1, 2] + [3, 4])"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The same `+` operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved. This is **operator polymorphism**.",
+              "### 2. Understand operator overloading",
+              "Python also lets your own classes define how operators should behave. This is called **operator overloading**.",
+              "Suppose you create a `Cart` class and you want to use the `+` operator to combine two carts. Python classes can define special methods that control operator behavior. For `+`, Python uses `__add__()`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Cart:\n    def __init__(self, items):\n        self.items = items\n\n    def __add__(self, other):\n        return Cart(self.items + other.items)\n\ncart1 = Cart([\"Laptop\", \"Mouse\"])\ncart2 = Cart([\"Keyboard\"])\ncombined_cart = cart1 + cart2\n\nprint(combined_cart.items)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "When Python sees `cart1 + cart2`, you can think of it roughly as `cart1.__add__(cart2)`. The `Cart` class decides what `+` means for its objects.",
+              "Other operators have their own special methods (`-` uses `__sub__()`, `*` uses `__mul__()`, `==` uses `__eq__()`). The key idea is that classes can define how operators work with their objects.",
+              "### 3. See function polymorphism",
+              "A function can also work with different types of objects. The built-in `len()` function is a simple example."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "print(len(\"Python\"))\nprint(len([10, 20, 30]))\nprint(len({\"name\": \"Maya\", \"role\": \"Developer\"}))"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The same `len()` function works with several different data types. What it counts depends on the object: characters, list items, or dictionary keys. This is an example of **function polymorphism**.",
+              "### 4. Use class polymorphism",
+              "Different classes can define methods with the same name."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class EmailNotification:\n    def send(self):\n        print(\"Sending an email.\")\n\nclass SMSNotification:\n    def send(self):\n        print(\"Sending an SMS.\")\n\nclass PushNotification:\n    def send(self):\n        print(\"Sending a push notification.\")\n\nnotifications = [\n    EmailNotification(),\n    SMSNotification(),\n    PushNotification()\n]\n\nfor notification in notifications:\n    notification.send()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The exact same line `notification.send()` produces different behavior depending on the object. This is **class polymorphism**.",
+              "### 5. Use polymorphism with inheritance",
+              "Polymorphism commonly works together with inheritance. A parent class can define a method, and child classes can override that method."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nclass Designer(Employee):\n    def work(self):\n        print(\"Designer is creating a design.\")\n\nclass DataAnalyst(Employee):\n    def work(self):\n        print(\"Data analyst is studying data.\")\n\nemployees = [Developer(), Designer(), DataAnalyst()]\nfor employee in employees:\n    employee.work()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Every object supports the same operation (`work()`) but each subclass provides its own implementation. This combines Inheritance (sharing a common parent) and Polymorphism (each child responds differently to the same method).",
+              "### 6. Understand duck typing",
+              "Python does not always require objects to share a parent class. If an object provides the behavior your code needs, Python can often use it. This idea is known as **duck typing**."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class FileLogger:\n    def write(self, message):\n        print(f\"File: {message}\")\n\nclass DatabaseLogger:\n    def write(self, message):\n        print(f\"Database: {message}\")\n\ndef save_log(logger, message):\n    logger.write(message)\n\nsave_log(FileLogger(), \"User logged in\")\nsave_log(DatabaseLogger(), \"User logged in\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "These classes do not need a shared parent. `save_log()` cares about what the object can do (`write`), not what class it belongs to.",
+              "### A simple example",
+              "Imagine building the checkout system for an online store. Customers can pay with a credit card, PayPal, or a gift card. Each payment method performs the same general action (`pay(amount)`) but the actual process is different."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Payment:\n    def pay(self, amount):\n        print(f\"Processing ${amount}\")\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to the credit card.\")\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending ${amount} through PayPal.\")\n\nclass GiftCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Using ${amount} from the gift card balance.\")\n\ndef checkout(payment_method, amount):\n    payment_method.pay(amount)\n\ncheckout(CreditCardPayment(), 120)\ncheckout(PayPalPayment(), 80)\ncheckout(GiftCardPayment(), 25)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `checkout()` function does not contain long `if/elif` chains checking the payment type. Instead, each payment object knows how to perform its own `pay()` operation. This makes adding another payment method incredibly easy:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class StoreCreditPayment:\n    def pay(self, amount):\n        print(f\"Using ${amount} of store credit.\")\n\n# The existing checkout function already works with it!\n# checkout(StoreCreditPayment(), 40)"
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Thinking polymorphism only means method overriding**: Python also shows polymorphism through operators, functions, and duck typing.\n- **Confusing operator overloading with normal addition**: Operator overloading means defining how an operator such as `+` behaves for your own class.\n- **Thinking polymorphism requires inheritance**: Python can use polymorphic behavior between unrelated classes if they provide the expected methods.\n- **Using long type-checking chains unnecessarily**: If several objects provide the same method, let the objects handle their own behavior instead of checking their type first."
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "poly-1",
+                question: "Why can `+` work with both integers and strings?",
+                options: [
+                  "Because integers and strings inherit from the same parent.",
+                  "Because Python automatically converts everything to strings.",
+                  "Because of operator polymorphism, where `+` behaves differently based on the data type.",
+                  "Because strings contain numbers in Python."
+                ],
+                correctIndex: 2,
+                explanation: "The `+` operator has polymorphic behavior, mapping to numeric addition for ints and string concatenation for strings."
+              },
+              {
+                id: "poly-2",
+                question: "What special method lets a class define how the `+` operator behaves?",
+                options: [
+                  "`__plus__()`",
+                  "`__add__()`",
+                  "`__sum__()`",
+                  "`__combine__()`"
+                ],
+                correctIndex: 1,
+                explanation: "Python calls the `__add__()` method when the `+` operator is used on an object."
+              },
+              {
+                id: "poly-3",
+                question: "Why is `len()` an example of function polymorphism?",
+                options: [
+                  "It can only be used on strings.",
+                  "It can return different data types.",
+                  "It can be overridden by subclasses.",
+                  "It works with several different data types, counting their respective elements."
+                ],
+                correctIndex: 3,
+                explanation: "`len()` can count characters in a string, items in a list, or keys in a dictionary."
+              },
+              {
+                id: "poly-4",
+                question: "Do two classes always need the same parent class to behave polymorphically?",
+                options: [
+                  "Yes, without inheritance, polymorphism is impossible.",
+                  "No, thanks to duck typing, unrelated classes can behave polymorphically if they share the same method names."
+                ],
+                correctIndex: 1,
+                explanation: "Duck typing allows Python to focus on whether an object has the right methods, regardless of its inheritance."
+              },
+              {
+                id: "poly-tiny-task",
+                question: "Create two classes, `PDFReport` and `CSVReport`. Both should provide an `export()` method. Then create a function `export_report(report)` that calls `export()` on any report passed to it.",
+                interactiveCode: true,
+                initialCode: "# Write your classes and function here:\n\n",
+                testCode: "export_report(PDFReport())\nexport_report(CSVReport())",
+                expectedOutput: "Exporting PDF report.\nExporting CSV report.",
+                explanation: "Both classes implement `export()`, allowing `export_report` to treat them polymorphically."
+              },
+              {
+                id: "poly-bonus-task",
+                question: "Create a `Money` class that takes an `amount` in `__init__`. Define `__add__()` so two `Money` objects can be added, returning a new `Money` object with the total amount. Print the final amount.",
+                interactiveCode: true,
+                initialCode: "# Create your Money class here:\n\n",
+                testCode: "m1 = Money(100)\nm2 = Money(50)\ntotal = m1 + m2\nprint(total.amount)",
+                expectedOutput: "150",
+                explanation: "By defining `__add__(self, other)`, you taught Python how to combine two Money objects using the `+` operator."
+              }
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Polymorphism allows one operation to take different forms.",
+              "Operators such as `+` behave differently depending on their operands.",
+              "Operator overloading lets your own classes define operator behavior using special methods such as `__add__()`.",
+              "Functions such as `len()` can work with several types of objects.",
+              "Different classes can provide the same method name with different implementations.",
+              "Inheritance and method overriding are common ways to implement polymorphism.",
+              "Python's duck typing allows code to focus on an object's behavior rather than only its exact class."
+            ]
+          }
+        ]
       },
       {
         slug: "abstraction",
