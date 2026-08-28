@@ -761,13 +761,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             heading: "Why this matters",
             body: [
               "Many objects share common behavior but still need their own specialized features.",
-              "Inheritance lets you place shared logic in one class and reuse it in related classes. This reduces repeated code and gives your program a clearer structure.",
-              "Python supports several types of inheritance:",
-              "- Single inheritance",
-              "- Multiple inheritance",
-              "- Multilevel inheritance",
-              "- Hierarchical inheritance",
-              "- Hybrid inheritance"
+              "Inheritance lets you place shared logic in one class and reuse it in related classes. This reduces repeated code and gives your program a clearer structure."
             ]
           },
           {
@@ -781,25 +775,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: [
               "Inheritance allows one class to build on another class.",
               "The existing class is commonly called the **parent class** or **base class**. The new class is called the **child class** or **subclass**.",
-              "For example:"
-            ]
-          },
-          {
-            kind: "code",
-            language: "text",
-            code: "Employee\n├── name\n├── salary\n└── work()\n    ↓ inherited by\nDeveloper\n├── name\n├── salary\n├── work()\n└── write_code()"
-          },
-          {
-            kind: "prose",
-            body: [
-              "`Developer` does not need to redefine everything already provided by `Employee`."
+              "**Example:** `Developer` automatically inherits all attributes and methods from `Employee`, so you do not need to rewrite them."
             ]
           },
           {
             kind: "prose",
             heading: "Types of inheritance",
             body: [
-              "Python supports five main types of inheritance."
+              "Python supports several inheritance patterns depending on how classes relate to one another:"
             ]
           },
           {
@@ -816,7 +799,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())"
           },
           {
             kind: "prose",
@@ -829,7 +812,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()"
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro())"
           },
           {
             kind: "prose",
@@ -843,7 +826,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()"
+            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()\n\n# Inspect the Method Resolution Order (MRO)\nprint(ElectricCar.mro())"
           },
           {
             kind: "prose",
@@ -855,7 +838,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())\nprint(Designer.mro())"
           },
           {
             kind: "prose",
@@ -867,7 +850,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()\n\n# Inspect the Method Resolution Order (MRO)\nprint(TeamLead.mro())"
           },
           {
             kind: "prose",
