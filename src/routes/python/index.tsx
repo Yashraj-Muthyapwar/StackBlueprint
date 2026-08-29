@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Code2,
   Database,
   FunctionSquare,
   Box,
-  Zap,
+  GitBranch,
   FileText,
+  Zap,
+  Code2,
 } from "lucide-react";
 import pythonLogo from "@/images/logos/python-logo.png";
 import { TrackIndexLayout } from "@/components/learning-paths/TrackIndexLayout";
@@ -90,7 +91,7 @@ export const PYTHON_SECTIONS = [
           { slug: "polymorphism", title: "Polymorphism", icon: Box, path: "/python/oop/polymorphism" },
           { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
           { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
-          { slug: "special-methods", title: "Special Methods", icon: Box, path: "/python/oop/special-methods" },
+          { slug: "special-methods", title: "Special Methods", icon: Code2, path: "/python/oop/special-methods" },
         ],
       },
       {
