@@ -42,8 +42,25 @@ When creating or editing lessons in this project (specifically in `file-handling
 ## 4. Animation Creativity vs UI Consistency
 - **The Animation Content**: The actual animation inside the canvas is completely freeform. It should be highly creative, unique, and tailored specifically to whatever concept that lesson is teaching. You do NOT need to match the animation style or logic of other lessons.
 - **The Controls UI**: While the animation itself is unique, the *control bar* (Play/Pause, Prev/Next buttons, phase indicators) must visually match the standardized global design used across the site.
-- **DO NOT** use large rounded buttons, floating controls, or completely custom translucent backdrops for the control bar.
-- **DO** use a flat, consistent rectangular control bar pattern (like the one found in `PickleModuleCustomAnimation`) to ensure the user experience of clicking through steps feels identical on every lesson. Example of the standard control bar UI structure:
+- **DO NOT** use large rounded buttons, floating controls, phase tracking pills, or completely custom translucent backdrops for the control bar unless specified.
+- **DO** use a flat, consistent rectangular control bar pattern (like the one found in `EncapsulationCustomAnimation`) to ensure the user experience of clicking through steps feels identical on every lesson.
+- **Top Bar Header**: If the animation requires a top bar with a title (e.g. "ENCAPSULATION AND DATA PROTECTION"), do **NOT** build it into the animation component. Instead, add a `caption` property to the animation object in the content registry (e.g., `oop-content.ts`):
+  ```json
+  {
+    "kind": "animation",
+    "variant": "encapsulation",
+    "caption": "Encapsulation and Data Protection"
+  }
+  ```
+- **Canvas Wrapper**: The main animation canvas must use the following standard wrapper without extra padding breakpoints (`lg:px-8`) unless explicitly requested:
+  ```tsx
+  <div className="relative px-4 py-8 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
+    <AnimatePresence mode="wait">
+      {/* ... steps */}
+    </AnimatePresence>
+  </div>
+  ```
+- Example of the standard control bar UI structure:
   ```tsx
   {/* Controls */}
   <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
