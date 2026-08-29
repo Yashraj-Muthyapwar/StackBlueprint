@@ -5,6 +5,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
+import { useLocation } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
   const KEYWORDS = new Set([
@@ -103,7 +104,8 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
+export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { section: Section; onQuizActiveChange?: (active: boolean) => void; index?: number }) {
+  const location = useLocation();
   if (!section) return null;
 
   switch (section.kind) {
@@ -174,7 +176,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     }
 
     case "interactive-code":
-      return <InteractivePythonBlock initialCode={section.code} caption={section.caption} />;
+      return <InteractivePythonBlock key={`code-block-${location.pathname}-${index}`} initialCode={section.code} caption={section.caption} />;
 
     case "table":
       return (
