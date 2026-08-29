@@ -24,8 +24,9 @@ import { EncapsulationCustomAnimation } from "./oop/EncapsulationCustomAnimation
 import { InheritanceCustomAnimation } from "./oop/InheritanceCustomAnimation";
 import { InheritanceTypesCustomAnimation } from "./oop/InheritanceTypesCustomAnimation";
 import { PolymorphismCustomAnimation } from "./oop/PolymorphismCustomAnimation";
+import { AbstractionCustomAnimation } from "./oop/AbstractionCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction";
 
 export function LessonAnimation({
   variant,
@@ -81,6 +82,8 @@ export function LessonAnimation({
               <InheritanceTypesCustomAnimation />
             ) : variant === "polymorphism" ? (
               <PolymorphismCustomAnimation />
+            ) : variant === "abstraction" ? (
+              <AbstractionCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}

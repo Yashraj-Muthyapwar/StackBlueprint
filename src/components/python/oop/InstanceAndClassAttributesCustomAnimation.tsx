@@ -40,7 +40,7 @@ export function InstanceAndClassAttributesCustomAnimation() {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative px-4 py-8 h-[450px] overflow-hidden flex flex-col items-center justify-center w-full">
+      <div className="relative px-4 py-8 h-[600px] overflow-hidden flex flex-col items-center justify-center w-full">
         <AnimatePresence mode="wait">
           {step === 0 && <Step0CoreIdea key="step0" />}
           {step === 1 && <Step1InstanceAttributes key="step1" />}
