@@ -39,6 +39,7 @@ import {
   GitBranch,
   FileText,
   Box,
+  Code2,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -902,7 +903,7 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "polymorphism", title: "Polymorphism", icon: Box, path: "/python/oop/polymorphism" },
               { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
               { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
-              { slug: "special-methods", title: "Special Methods", icon: Box, path: "/python/oop/special-methods" },
+              { slug: "special-methods", title: "Special Methods", icon: Code2, path: "/python/oop/special-methods" },
             ],
           },
           {
