@@ -811,19 +811,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             ]
           },
           {
-            kind: "code",
-            language: "python",
-            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\n\nclass Presenter(Writer, Speaker):\n    pass"
-          },
-          {
-            kind: "prose",
-            body: [
-              "Now `Presenter` inherits methods from both parent classes:"
-            ]
-          },
-          {
             kind: "interactive-code",
-            code: "presenter = Presenter()\n\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro())"
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\n\nclass Presenter(Writer, Speaker):\n    pass\n\n\n# Now `Presenter` inherits methods from both parent classes:\n\npresenter = Presenter()\n\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro()) "
           },
           {
             kind: "prose",
@@ -1073,7 +1062,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "print(5 + 3)\nprint(2.5 + 1.5)\nprint(\"Hello \" + \"Python\")\nprint([1, 2] + [3, 4])"
+            code: "print(5 + 3)\nprint(2.5 + 1.5)\nprint(\"Stack\" + \"Blueprint\")\nprint([1, 2] + [3, 4])"
           },
           {
             kind: "prose",
@@ -1092,7 +1081,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "When Python sees `cart1 + cart2`, you can think of it roughly as `cart1.__add__(cart2)`. The `Cart` class decides what `+` means for its objects.",
-              "Other operators have their own special methods (`-` uses `__sub__()`, `*` uses `__mul__()`, `==` uses `__eq__()`). The key idea is that classes can define how operators work with their objects.",
+              "These special methods with double underscores on both sides are commonly called **dunder methods** (short for \"double underscore\"). They allow your custom classes to integrate seamlessly with Python's built-in operators and functions.",
+              "### Common Dunder Methods",
+              "• `__init__(self, ...)`: Automatically called when you create a new instance of a class to set up initial values.",
+              "• `__str__(self)`: Called by `print()` and `str()` to give a clean, readable text description of an object.",
+              "• `__repr__(self)`: Called to get an official, detailed string representation of an object, often used for debugging.",
+              "• `__len__(self)`: Called when you use the `len()` function on your custom object.",
+              "• `__eq__(self, other)`: Called when you check if two objects are equal using the `==` operator.",
+              "• `__add__(self, other)`: Called when you add two objects together using the `+` operator.",
               "### 3. See function polymorphism",
               "A function can also work with different types of objects. The built-in `len()` function is a simple example."
             ]
@@ -1154,10 +1150,6 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: [
               "The `checkout()` function does not contain long `if/elif` chains checking the payment type. Instead, each payment object knows how to perform its own `pay()` operation. This makes adding another payment method incredibly easy:"
             ]
-          },
-          {
-            kind: "interactive-code",
-            code: "class StoreCreditPayment:\n    def pay(self, amount):\n        print(f\"Using ${amount} of store credit.\")\n\n# The existing checkout function already works with it!\n# checkout(StoreCreditPayment(), 40)"
           },
           {
             kind: "callout",
@@ -1251,8 +1243,320 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "abstraction",
         title: "Abstraction",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Learn how abstraction lets you define what a class must do while hiding the implementation details behind a simple interface.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "In larger programs, you often care about what an object can do more than how it performs the task internally.",
+              "Abstraction helps you define a clear contract for related classes. Each class can implement the details differently while the rest of your program uses the same simple interface."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "abstraction"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Abstraction means exposing the essential behavior of an object while hiding unnecessary implementation details.",
+              "You already use abstraction every day in Python.",
+              "When you write:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "file.read()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "you do not need to know how Python communicates with the operating system, reads bytes from disk, or manages buffers.",
+              "You only need to know:",
+              "`read()` → gives me data",
+              "The parent defines the expected behavior. Child classes provide the actual implementation."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "1. Start with a shared interface",
+            body: [
+              "Suppose you are building a payment system.",
+              "Every payment type should support the same operation:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "pay(amount)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "You could start with a normal parent class and then create child classes:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Payment:\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to a credit card.\")\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending ${amount} through PayPal.\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "This creates a shared structure, but there is a problem.",
+              "Python still allows this:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Payment:\n    def pay(self, amount):\n        pass\n\npayment = Payment()\npayment.pay(100)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The base class does not actually know how to process a payment.",
+              "That is where abstract classes help."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "2. Create an abstract class with ABC",
+            body: [
+              "Python provides the `abc` module for abstraction.",
+              "ABC stands for Abstract Base Class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC\n\nclass Payment(ABC):\n    pass"
+          },
+          {
+            kind: "prose",
+            body: [
+              "By inheriting from `ABC`, you can mark methods that child classes are expected to implement.",
+              "At this point, `Payment` is an abstract base class in structure, but it still needs an abstract method."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "3. Define an abstract method",
+            body: [
+              "Use the `@abstractmethod` decorator to define behavior that child classes must provide."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`pay()` now acts as a required method.",
+              "A child class must provide its own implementation before you can create objects from it.",
+              "For example:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to a credit card.\")\n\ncard = CreditCardPayment()\ncard.pay(100)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "But this does not:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\npayment = Payment()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Python prevents direct instantiation because `Payment` still contains an abstract method."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "4. Require every child class to follow the contract",
+            body: [
+              "Now create another payment type. Both child classes satisfy the same contract."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to a credit card.\")\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending ${amount} through PayPal.\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "If a child forgets to implement `pay()`:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\nclass GiftCardPayment(Payment):\n    pass\n\n# This will fail!\ngift_card = GiftCardPayment()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Python raises a `TypeError` because the required abstract method is missing.",
+              "This is the main value of abstract methods. They make the expected behavior explicit."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "5. Combine abstraction with polymorphism",
+            body: [
+              "Abstraction and polymorphism work naturally together.",
+              "Once every payment class follows the same contract, you can write one checkout function:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to a credit card.\")\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending ${amount} through PayPal.\")\n\ndef checkout(payment_method, amount):\n    payment_method.pay(amount)\n\ncheckout(CreditCardPayment(), 120)\ncheckout(PayPalPayment(), 80)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `checkout` function only cares that the object satisfies the payment interface.",
+              "It does not care how the payment is processed internally.",
+              "This is where abstraction and polymorphism connect:",
+              "- **Abstraction**: defines the required behavior.",
+              "- **Polymorphism**: allows each class to implement that behavior differently."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "6. Add concrete methods to an abstract class",
+            body: [
+              "Abstract classes do not need to contain only abstract methods.",
+              "They can also provide shared behavior."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass Payment(ABC):\n    def validate_amount(self, amount):\n        return amount > 0\n\n    @abstractmethod\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        if not self.validate_amount(amount):\n            print(\"Invalid payment amount.\")\n            return\n        print(f\"Charging ${amount} to a credit card.\")\n\ncard = CreditCardPayment()\ncard.pay(100)\ncard.pay(-20)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "This lets the abstract base class define both required behavior and reusable shared logic."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine you are building a report-export system for a business dashboard.",
+              "Users can export reports as PDF, CSV, or Excel files.",
+              "Every exporter should provide the same operation: `export(data)`",
+              "But each format handles the export differently."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "from abc import ABC, abstractmethod\n\nclass ReportExporter(ABC):\n    @abstractmethod\n    def export(self, data):\n        pass\n\nclass PDFExporter(ReportExporter):\n    def export(self, data):\n        print(f\"Exporting '{data}' as PDF.\")\n\nclass CSVExporter(ReportExporter):\n    def export(self, data):\n        print(f\"Exporting '{data}' as CSV.\")\n\nclass ExcelExporter(ReportExporter):\n    def export(self, data):\n        print(f\"Exporting '{data}' as Excel.\")\n\ndef export_report(exporter, data):\n    exporter.export(data)\n\nexport_report(PDFExporter(), \"Sales Report\")\nexport_report(CSVExporter(), \"Sales Report\")\nexport_report(ExcelExporter(), \"Sales Report\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The rest of the dashboard only needs to know one thing: Every exporter provides `export(data)`.",
+              "It does not need to know how PDF generation differs from CSV or Excel generation. That implementation detail stays inside each exporter class.",
+              "Later, you could add:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class JSONExporter(ReportExporter):\n    def export(self, data):\n        print(f\"Exporting '{data}' as JSON.\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The existing `export_report()` function does not need to change."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Thinking abstraction means hiding all code**: Abstraction hides unnecessary implementation details from the caller. The implementation still exists inside the class.\n- **Confusing abstraction with encapsulation**: Encapsulation controls access to data. Abstraction focuses on exposing essential behavior while hiding implementation details.\n- **Creating an abstract method without implementing it in the child**: A concrete child class must implement all required abstract methods before it can be instantiated.\n- **Using abstract classes when there is only one implementation**: Abstraction is most useful when multiple related classes share a common contract.\n- **Putting every method behind @abstractmethod**: Abstract classes can also contain normal methods for shared behavior.\n- **Trying to create an object directly from an abstract class**: If the class still has abstract methods, Python prevents instantiation."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Abstraction exposes essential behavior while hiding implementation details.",
+              "Python provides abstract base classes through the `abc` module.",
+              "`ABC` is used to define an abstract base class.",
+              "`@abstractmethod` marks behavior that child classes must implement.",
+              "Abstract classes can also provide shared concrete methods.",
+              "Abstraction defines a contract, while polymorphism lets different classes fulfill that contract differently.",
+              "Abstract classes are useful when several related classes must follow the same structure."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "q1",
+                question: "What is abstraction in OOP?",
+                options: [
+                  "Exposing essential behavior while hiding implementation details.",
+                  "Controlling access to data through private variables.",
+                  "Allowing classes to inherit from multiple parents.",
+                  "Packing data and methods into a single unit."
+                ],
+                correctIndex: 0,
+                explanation: "Abstraction simplifies interaction by exposing a simple interface and hiding the complex implementation details."
+              },
+              {
+                id: "q2",
+                question: "What does ABC stand for?",
+                options: [
+                  "Automated Base Class",
+                  "Abstract Base Class",
+                  "Abstract Basic Contract",
+                  "Application Base Code"
+                ],
+                correctIndex: 1,
+                explanation: "ABC stands for Abstract Base Class, which is provided by the `abc` module."
+              },
+              {
+                id: "q3",
+                question: "What does `@abstractmethod` do?",
+                options: [
+                  "It automatically implements the method for all children.",
+                  "It marks behavior that child classes must implement.",
+                  "It prevents any class from having methods with that name.",
+                  "It makes the method run faster."
+                ],
+                correctIndex: 1,
+                explanation: "It enforces a contract by requiring child classes to provide their own implementation for the method."
+              },
+              {
+                id: "q4",
+                question: "Can an abstract class contain normal methods?",
+                options: [
+                  "Yes, it can provide shared concrete methods.",
+                  "No, it can only contain abstract methods.",
+                  "Only if the child class overrides them.",
+                  "Yes, but they must not take any arguments."
+                ],
+                correctIndex: 0,
+                explanation: "Abstract classes can mix both abstract methods (required) and concrete methods (shared behavior)."
+              },
+              {
+                id: "q5",
+                interactiveCode: true,
+                question: "Create an abstract `Notification` class with a required `send(message)` method. Then create `EmailNotification` and `SMSNotification` classes that implement `send()`.",
+                initialCode: "from abc import ABC, abstractmethod\n\n# Define Notification, EmailNotification, and SMSNotification here:\n",
+                testCode: "import sys\n\ntry:\n    # 1. Check if Notification is ABC\n    if not issubclass(Notification, ABC):\n        print(\"Notification is not an Abstract Base Class (does not inherit from ABC)\")\n        sys.exit(1)\n    \n    # 2. Check if send is abstract\n    if not 'send' in Notification.__abstractmethods__:\n        print(\"Notification must have an abstract 'send' method\")\n        sys.exit(1)\n    \n    # 3. Check implementations\n    email = EmailNotification()\n    sms = SMSNotification()\n    \n    if not hasattr(email, 'send') or not hasattr(sms, 'send'):\n        print(\"Child classes must implement send()\")\n        sys.exit(1)\n        \n    print(\"Success! You implemented the abstract base class and concrete classes correctly.\")\nexcept NameError as e:\n    print(f\"Missing definition: {e}\")\n    sys.exit(1)\nexcept TypeError as e:\n    if \"Can't instantiate abstract class\" in str(e):\n        print(f\"Error: You tried to instantiate an abstract class. Make sure all abstract methods are implemented.\\nDetails: {e}\")\n    else:\n        print(f\"Error: {e}\")\n    sys.exit(1)\nexcept Exception as e:\n    print(f\"Error: {e}\")\n    sys.exit(1)",
+                expectedOutput: "Success! You implemented the abstract base class and concrete classes correctly."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "composition",
