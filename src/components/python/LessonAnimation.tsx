@@ -26,8 +26,9 @@ import { InheritanceTypesCustomAnimation } from "./oop/InheritanceTypesCustomAni
 import { PolymorphismCustomAnimation } from "./oop/PolymorphismCustomAnimation";
 import { AbstractionCustomAnimation } from "./oop/AbstractionCustomAnimation";
 import { CompositionCustomAnimation } from "./oop/CompositionCustomAnimation";
+import { DunderMethodsCustomAnimation } from "./oop/DunderMethodsCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition";
+export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -87,6 +88,8 @@ export function LessonAnimation({
               <AbstractionCustomAnimation />
             ) : variant === "composition" ? (
               <CompositionCustomAnimation />
+            ) : variant === "special-methods" ? (
+              <DunderMethodsCustomAnimation />
             ) : (
               <AnimationStage variant={variant as AnyVariant} />
             )}
