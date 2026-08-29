@@ -1842,9 +1842,239 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "special-methods",
         title: "Special Methods",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Dunder Methods",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Built-in Python objects feel natural to use:",
+              "\`len(items)\`   \`price1 + price2\`   \`user1 == user2\`   \`print(product)\`",
+              "Your own classes can support the same style of code. Python does this through special methods, commonly called **dunder methods** because their names begin and end with double underscores.",
+              "Python's data model uses these methods to connect language syntax and built-in operations to your classes."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "special-methods",
+            caption: "The Dunder Translation Engine"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "A dunder method is a method with a name such as:",
+              "\`__init__()\`   \`__str__()\`   \`__repr__()\`   \`__len__()\`   \`__add__()\`   \`__eq__()\`",
+              "You usually do not call these methods directly. Instead, Python calls them when you use normal Python syntax.",
+              "- \`Product(...)\` → \`__init__()\`",
+              "- \`print(product)\` → \`__str__()\`",
+              "- \`repr(product)\` → \`__repr__()\`",
+              "- \`len(cart)\` → \`__len__()\`",
+              "- \`a + b\` → \`__add__()\`",
+              "- \`a == b\` → \`__eq__()\`",
+              "For example, defining \`__add__()\` lets a class decide how the \`+\` operator should behave for its objects."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "1. Initialize objects with __init__()",
+            body: [
+              "You have already used the most familiar special method:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\nproduct = Product(\"Laptop\", 900)\nprint(product)  # Output: <__main__.Product object at 0x...>"
+          },
+          {
+            kind: "prose",
+            body: [
+              "When you write \`product = Product(\"Laptop\", 900)\`, Python creates the object and then uses \`__init__()\` to initialize its state.",
+              "You should think of \`__init__()\` as the setup step for a newly created object."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "2. Make objects readable with __str__()",
+            body: [
+              "Without a custom string representation, printing an object is not very useful. Define \`__str__()\`:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def __str__(self):\n        return f\"{self.name} - ${self.price}\"\n\nproduct = Product(\"Laptop\", 900)\nprint(product)  # Output: Laptop - $900"
+          },
+          {
+            kind: "prose",
+            body: [
+              "\`__str__()\` should return a string. Python uses it for the object's readable or informal representation, including common situations such as \`str(object)\` and \`print(object)\`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "3. Add a developer representation with __repr__()",
+            body: [
+              "\`__repr__()\` also returns a string representation, but it is usually aimed at developers."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def __str__(self):\n        return f\"{self.name} - ${self.price}\"\n\n    def __repr__(self):\n        return f\"Product(name={self.name!r}, price={self.price!r})\"\n\nproduct = Product(\"Laptop\", 900)\nprint(str(product))\nprint(repr(product))"
+          },
+          {
+            kind: "prose",
+            body: [
+              "A useful mental model is:",
+              "- \`__str__()\` ↓ Readable for users",
+              "- \`__repr__()\` ↓ Useful for developers and debugging",
+              "If a class provides \`__repr__()\` but no \`__str__()\`, Python can use the representation from \`__repr__()\` where a printable string is needed."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "4. Support len() with __len__()",
+            body: [
+              "Suppose a shopping cart stores several products. Python's \`len()\` operation uses \`__len__()\`, which must return a non-negative integer."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self):\n        self.items = []\n\n    def add(self, product):\n        self.items.append(product)\n\n    def __len__(self):\n        return len(self.items)\n\ncart = ShoppingCart()\ncart.add(\"Laptop\")\ncart.add(\"Mouse\")\n\nprint(len(cart))  # Output: 2"
+          },
+          {
+            kind: "prose",
+            heading: "5. Overload operators with __add__()",
+            body: [
+              "Suppose you want two shopping carts to be combined using \`+\`.",
+              "Your class defines what \`+\` means for its objects by implementing \`__add__()\`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self, items):\n        self.items = items\n\n    def __add__(self, other):\n        return ShoppingCart(self.items + other.items)\n\ncart1 = ShoppingCart([\"Laptop\", \"Mouse\"])\ncart2 = ShoppingCart([\"Keyboard\"])\n\ncombined = cart1 + cart2\nprint(combined.items)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Conceptually, \`cart1 + cart2\` becomes \`cart1.__add__(cart2)\`.",
+              "This is operator overloading. You normally implement an operator only when the operation has a clear meaning for the class.",
+              "Common arithmetic mappings include:",
+              "- \`+\` → \`__add__()\`",
+              "- \`-\` → \`__sub__()\`",
+              "- \`*\` → \`__mul__()\`",
+              "- \`/\` → \`__truediv__()\`"
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "6. Compare objects with __eq__()",
+            body: [
+              "By default, two separate custom objects are not automatically considered equal simply because their attributes contain the same values.",
+              "You can define what equality means with \`__eq__()\`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Product:\n    def __init__(self, sku, name):\n        self.sku = sku\n        self.name = name\n\n    def __eq__(self, other):\n        return self.sku == other.sku\n\nproduct1 = Product(\"SKU100\", \"Laptop\")\nproduct2 = Product(\"SKU100\", \"Laptop Pro\")\n\n# Same SKU -> Same product\nprint(product1 == product2)  # Output: True"
+          },
+          {
+            kind: "prose",
+            heading: "7. Make objects callable with __call__()",
+            body: [
+              "A class can even make its objects behave like functions using \`__call__()\`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Discount:\n    def __init__(self, percent):\n        self.percent = percent\n\n    def __call__(self, price):\n        return price * (1 - self.percent / 100)\n\n# Create an object\nsummer_sale = Discount(20)\n\n# Call the object\nprint(summer_sale(100))  # Output: 80.0"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Instead of writing \`summer_sale.apply(100)\`, the object itself can be called. Conceptually, \`summer_sale(100)\` becomes \`summer_sale.__call__(100)\`.",
+              "This can be useful when an object represents an operation that also needs to remember configuration or state."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine you are building the shopping-cart system for an online store.",
+              "You want your custom objects to work naturally with Python."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Product:\n    def __init__(self, sku, name, price):\n        self.sku = sku\n        self.name = name\n        self.price = price\n\n    def __str__(self):\n        return f\"{self.name} - ${self.price}\"\n\n    def __repr__(self):\n        return (\n            f\"Product(sku={self.sku!r}, \"\n            f\"name={self.name!r}, price={self.price!r})\"\n        )\n\n    def __eq__(self, other):\n        if not isinstance(other, Product):\n            return NotImplemented\n        return self.sku == other.sku\n\nclass ShoppingCart:\n    def __init__(self):\n        self.items = []\n\n    def add(self, product):\n        self.items.append(product)\n\n    def __len__(self):\n        return len(self.items)\n\n    def total(self):\n        return sum(product.price for product in self.items)\n\nkeyboard = Product(\"SKU101\", \"Keyboard\", 80)\nmouse = Product(\"SKU102\", \"Mouse\", 40)\n\ncart = ShoppingCart()\ncart.add(keyboard)\ncart.add(mouse)\n\nprint(keyboard)\nprint(len(cart))\nprint(cart.total())"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The classes now work with familiar Python operations:",
+              "- \`print(product)\` ↓ \`__str__()\`",
+              "- \`repr(product)\` ↓ \`__repr__()\`",
+              "- \`product1 == product2\` ↓ \`__eq__()\`",
+              "- \`len(cart)\` ↓ \`__len__()\`",
+              "Your objects feel more like Python's built-in objects because they participate in the same data model."
+            ]
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Special methods connect your classes to Python's built-in syntax and operations.",
+              "**Dunder** means double underscore, as in \`__str__()\` and \`__len__()\`.",
+              "\`__str__()\` creates a readable representation of an object.",
+              "\`__repr__()\` creates a developer-oriented representation.",
+              "\`__len__()\` lets objects work with \`len()\`, and \`__eq__()\` defines equality between objects.",
+              "\`__add__()\` and related methods support operator overloading.",
+              "\`__call__()\` lets an object behave like a callable (like a function).",
+              "Implement special methods when they give your class natural Python behavior."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "q1",
+                question: "Which method lets `len(object)` work?",
+                options: [
+                  "__len__()",
+                  "__size__()",
+                  "__count__()",
+                  "__length__()"
+                ],
+                correctIndex: 0,
+                explanation: "Python's `len()` function automatically delegates to the `__len__()` special method."
+              },
+              {
+                id: "q2",
+                question: "What is the main difference between `__str__()` and `__repr__()`?",
+                options: [
+                  "`__str__()` is usually readable for users, while `__repr__()` is useful for developers and debugging.",
+                  "`__str__()` is for developers, while `__repr__()` is for users.",
+                  "`__str__()` returns a string, while `__repr__()` returns a byte array.",
+                  "`__str__()` handles string operations, while `__repr__()` handles representations of numbers."
+                ],
+                correctIndex: 0,
+                explanation: "`__str__()` provides a readable representation (used by `print()`), whereas `__repr__()` provides a detailed, unambiguous representation meant for developers."
+              },
+              {
+                id: "q3",
+                question: "Which method can define the behavior of `object1 + object2`?",
+                options: [
+                  "__add__()",
+                  "__plus__()",
+                  "__sum__()",
+                  "__append__()"
+                ],
+                correctIndex: 0,
+                explanation: "The `+` operator maps directly to the `__add__()` dunder method."
+              }
+            ]
+          }
+        ]
       }
+
     ]
   }
 };
