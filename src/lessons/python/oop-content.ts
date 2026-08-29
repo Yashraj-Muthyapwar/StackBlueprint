@@ -1255,7 +1255,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "animation",
-            variant: "abstraction"
+            variant: "abstraction",
+            caption: "Abstraction and Interfaces"
           },
           {
             kind: "prose",
@@ -1263,17 +1264,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: [
               "Abstraction means exposing the essential behavior of an object while hiding unnecessary implementation details.",
               "You already use abstraction every day in Python.",
-              "When you write:"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: "file.read()"
-          },
-          {
-            kind: "prose",
-            body: [
-              "you do not need to know how Python communicates with the operating system, reads bytes from disk, or manages buffers.",
+              "When you write: `file.read()` you do not need to know how Python communicates with the operating system, reads bytes from disk, or manages buffers.",
               "You only need to know:",
               "`read()` → gives me data",
               "The parent defines the expected behavior. Child classes provide the actual implementation."
@@ -1284,22 +1275,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             heading: "1. Start with a shared interface",
             body: [
               "Suppose you are building a payment system.",
-              "Every payment type should support the same operation:"
+              "Every payment type should support the same operation: `pay(amount)`. You could start with a normal parent class and then create child classes:"
             ]
           },
           {
             kind: "interactive-code",
-            code: "pay(amount)"
-          },
-          {
-            kind: "prose",
-            body: [
-              "You could start with a normal parent class and then create child classes:"
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: "class Payment:\n    def pay(self, amount):\n        pass\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging ${amount} to a credit card.\")\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending ${amount} through PayPal.\")"
+            code: "class Payment:\n    def pay(self, amount):\n        pass\n\n\nclass CreditCardPayment(Payment):\n    def pay(self, amount):\n        print(f\"Charging \${amount} to a credit card.\")\n\n\nclass PayPalPayment(Payment):\n    def pay(self, amount):\n        print(f\"Sending \${amount} through PayPal.\")\n\n\n# Using the shared interface\ncard = CreditCardPayment()\ncard.pay(100)\n\npaypal = PayPalPayment()\npaypal.pay(50)"
           },
           {
             kind: "prose",
@@ -1310,7 +1291,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "interactive-code",
-            code: "class Payment:\n    def pay(self, amount):\n        pass\n\npayment = Payment()\npayment.pay(100)"
+            code: `class Payment:\n    def pay(self, amount):\n        pass  # Does nothing!\n\n\n# Problem: Python allows instantiating the base class directly\npayment = Payment()\nresult = payment.pay(100)\n\nprint(f"Payment result: {result}")  # Prints None without doing anything`
           },
           {
             kind: "prose",
@@ -1561,8 +1542,302 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "composition",
         title: "Composition",
-        subtitle: "Coming soon",
-        sections: []
+        subtitle: "Learn how to build larger Python objects by combining smaller objects instead of forcing everything into an inheritance hierarchy.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
+              "Real applications are made of objects that work together.",
+              "An order has products. A computer has a processor. A car has an engine. Composition lets you model these relationships by placing one object inside another object.",
+              "This gives each class a focused responsibility and lets you reuse components without creating complicated inheritance trees."
+            ]
+          },
+          {
+            kind: "animation",
+            variant: "composition",
+            caption: "Object Composition"
+          },
+          {
+            kind: "prose",
+            heading: "The core idea",
+            body: [
+              "Composition means building one object using objects from other classes.",
+              "It usually represents a **has-a** relationship.",
+              "For example:",
+              "Car has an Engine. Computer has a Processor. Order has a ShoppingCart.",
+              "Consider:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Engine:\n    def start(self):\n        print(\"Engine started.\")\n\nclass Car:\n    def __init__(self):\n        self.engine = Engine()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Car` does not inherit from `Engine`.",
+              "Instead, a `Car` object contains an `Engine` object.",
+              "This is composition."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "1. Create the component class",
+            body: [
+              "Start with a class that handles one responsibility."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Engine:\n    def start(self):\n        print(\"Engine started.\")\n\n    def stop(self):\n        print(\"Engine stopped.\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Engine` knows how to manage engine-related behavior.",
+              "It does not need to know anything about the entire car."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "2. Place one object inside another",
+            body: [
+              "Now create the `Car` class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Engine:\n    def start(self):\n        print(\"Engine started.\")\n\nclass Car:\n    def __init__(self, brand):\n        self.brand = brand\n        self.engine = Engine()\n\ncar = Car(\"Toyota\")\ncar.engine.start()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The important line is `self.engine = Engine()`.",
+              "Python creates an `Engine` object and stores it inside the `Car` object.",
+              "The `Car` is the larger object. `Engine` is one of its components."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "3. Delegate work to the component",
+            body: [
+              "You may not want users of `Car` to interact with the engine directly.",
+              "The `Car` class can expose its own method:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Engine:\n    def start(self):\n        print(\"Engine started.\")\n\nclass Car:\n    def __init__(self, brand):\n        self.brand = brand\n        self.engine = Engine()\n\n    def start(self):\n        self.engine.start()\n\ncar = Car(\"Toyota\")\ncar.start()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Car.start()` passes the actual work to `Engine.start()`.",
+              "This is called **delegation**.",
+              "The outer object decides what operation should be available. The component handles the specialized work."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "4. Pass a component into another object",
+            body: [
+              "A class does not always need to create its component itself.",
+              "You can create the component first and pass it in:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Engine:\n    def start(self):\n        print(\"Gas engine started.\")\n\nclass Car:\n    def __init__(self, brand, engine):\n        self.brand = brand\n        self.engine = engine\n\n    def start(self):\n        self.engine.start()\n\nengine = Engine()\ncar = Car(\"Toyota\", engine)\ncar.start()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "This approach makes the design more flexible because `Car` is not responsible for creating a particular engine.",
+              "You could provide another compatible engine:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class ElectricMotor:\n    def start(self):\n        print(\"Electric motor started.\")\n\nclass Car:\n    def __init__(self, brand, engine):\n        self.brand = brand\n        self.engine = engine\n\n    def start(self):\n        self.engine.start()\n\nmotor = ElectricMotor()\ncar = Car(\"Tesla\", motor)\ncar.start()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `Car` behavior changes based on the component it receives."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "5. Compare composition and inheritance",
+            body: [
+              "Inheritance and composition both connect classes, but they describe different relationships.",
+              "Inheritance usually represents **is-a**.",
+              "Example: `Developer` is an `Employee`. `Dog` is an `Animal`.",
+              "Composition usually represents **has-a**.",
+              "Example: `Car` has an `Engine`. `Order` has a `ShoppingCart`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    pass\n\nclass Developer(Employee):\n    pass\n\nclass Engine:\n    pass\n\nclass Car:\n    def __init__(self):\n        self.engine = Engine()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "A useful decision rule is:",
+              "**Is A?** → Consider inheritance",
+              "**Has A?** → Consider composition"
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "6. Understand composition vs aggregation",
+            body: [
+              "You may also encounter the term **aggregation**.",
+              "Both composition and aggregation describe objects containing or using other objects. The difference is mainly about ownership and lifetime.",
+              "Consider **composition**:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Processor:\n    pass\n\nclass Computer:\n    def __init__(self):\n        self.processor = Processor()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `Computer` creates its own `Processor`. It strongly owns the processor.",
+              "With **aggregation**, the other object commonly exists independently and is supplied from outside:"
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\nclass Team:\n    def __init__(self, manager):\n        self.manager = manager\n\nmanager = Employee(\"Maya\")\nteam = Team(manager)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The `manager` could exist before the team and can continue to exist after the team is disbanded.",
+              "A useful mental model is:",
+              "- **Inheritance**: `is-a` (Developer is an Employee)",
+              "- **Composition**: `strongly has-a` (Computer has a Processor)",
+              "- **Aggregation**: `uses or contains an independent object` (Team has a Manager)",
+              "Python itself does not enforce these design meanings. They describe how you intend objects to relate to each other."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "A simple example",
+            body: [
+              "Imagine you are building the order system for an online store.",
+              "An order contains a shopping cart. The shopping cart is responsible for storing products and calculating the total.",
+              "Instead of putting all cart logic inside `Order`, create a separate class."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self):\n        self.items = []\n\n    def add_item(self, name, price):\n        self.items.append((name, price))\n\n    def calculate_total(self):\n        return sum(price for name, price in self.items)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "Now compose an `Order` using a `ShoppingCart`."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self):\n        self.items = []\n\n    def add_item(self, name, price):\n        self.items.append((name, price))\n\n    def calculate_total(self):\n        return sum(price for name, price in self.items)\n\nclass Order:\n    def __init__(self, order_id):\n        self.order_id = order_id\n        self.cart = ShoppingCart()\n\n    def add_product(self, name, price):\n        self.cart.add_item(name, price)\n\n    def checkout(self):\n        total = self.cart.calculate_total()\n        print(f\"Order {self.order_id}: ${total}\")\n\norder = Order(\"ORD-101\")\norder.add_product(\"Keyboard\", 80)\norder.add_product(\"Mouse\", 40)\norder.checkout()"
+          },
+          {
+            kind: "prose",
+            body: [
+              "`Order` handles the ordering workflow.",
+              "`ShoppingCart` handles products and totals.",
+              "The order does not need to know how the shopping cart calculates its total. It delegates that responsibility.",
+              "Later, the shopping cart could change how discounts or taxes are calculated without forcing the entire `Order` class to manage those details. That separation is one of the main reasons composition becomes valuable as applications grow."
+            ]
+          },
+          {
+            kind: "callout",
+            tone: "warn",
+            title: "Common mistakes",
+            body: "- **Using inheritance for every relationship**: Ask whether one object really is another. If it instead has another object, composition may fit better.\n- **Putting every responsibility in one class**: Break independent responsibilities into smaller classes and combine them when needed.\n- **Accessing deeply nested components everywhere**: Consider delegation methods such as `car.start()` instead of exposing `car.engine.start()` throughout the program.\n- **Confusing composition with inheritance**: Composition stores or uses another object. It does not inherit its methods automatically.\n- **Assuming composition and aggregation are enforced by Python**: Their distinction describes design intent and object ownership, not a special Python keyword.\n- **Creating unnecessary tiny classes**: Use composition when a component represents a meaningful responsibility or reusable behavior."
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Composition builds larger objects from smaller objects.",
+              "Composition usually represents a has-a relationship.",
+              "One object can store another object as an instance attribute.",
+              "Delegation lets an object pass work to one of its components.",
+              "Inheritance models is-a, while composition models has-a.",
+              "Aggregation describes a looser relationship where the contained object can exist independently.",
+              "Passing components into an object can make its behavior easier to replace or extend.",
+              "Prefer clear relationships over deep or unnecessary inheritance hierarchies."
+            ]
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "c1",
+                question: "What kind of relationship does composition usually represent?",
+                options: [
+                  "An is-a relationship",
+                  "A has-a relationship",
+                  "A parent-child relationship",
+                  "A recursive relationship"
+                ],
+                correctIndex: 1,
+                explanation: "Composition typically models a \"has-a\" relationship, like a Car has an Engine."
+              },
+              {
+                id: "c2",
+                question: "Why should `Car` contain an `Engine` instead of inherit from it?",
+                options: [
+                  "Because Python doesn't support multiple inheritance.",
+                  "Because an Engine cannot have methods.",
+                  "Because a Car is not an Engine, it has an Engine.",
+                  "Because inheritance is slower."
+                ],
+                correctIndex: 2,
+                explanation: "Inheritance represents \"is-a\". Since a Car is not an Engine, composition is the correct modeling choice."
+              },
+              {
+                id: "c3",
+                question: "What does delegation mean in composition?",
+                options: [
+                  "Passing an entire object as an argument to a function.",
+                  "Deleting an object when it's no longer needed.",
+                  "Creating an object inside a child class.",
+                  "An outer object passing work to its internal component to handle."
+                ],
+                correctIndex: 3,
+                explanation: "Delegation is when a method on the main object calls a method on its component to perform the actual work (e.g. car.start() calling self.engine.start())."
+              },
+              {
+                id: "c4",
+                question: "How does aggregation conceptually differ from composition?",
+                options: [
+                  "Aggregation represents \"is-a\", composition represents \"has-a\".",
+                  "Aggregation means the contained object exists independently and is supplied from outside.",
+                  "Aggregation only works with built-in data types.",
+                  "There is no difference in Python."
+                ],
+                correctIndex: 1,
+                explanation: "While both model \"has-a\", aggregation implies a looser relationship where the component object has its own independent lifecycle."
+              },
+              {
+                id: "c5",
+                interactiveCode: true,
+                question: "Create a `Battery` class with a `charge()` method. Then create a `Laptop` class that is passed a battery object in its `__init__`, and has a `charge()` method that delegates to the battery.",
+                initialCode: "class Battery:\n    pass\n\nclass Laptop:\n    pass\n\n# Usage:\n# battery = Battery()\n# laptop = Laptop(battery)\n# laptop.charge()",
+                testCode: "import sys\n\ntry:\n    # 1. Check Battery\n    b = Battery()\n    if not hasattr(b, 'charge'):\n        print(\"Battery is missing the 'charge' method.\")\n        sys.exit(1)\n    \n    # 2. Check Laptop takes battery in init\n    l = Laptop(b)\n    \n    if not hasattr(l, 'charge'):\n        print(\"Laptop is missing the 'charge' method.\")\n        sys.exit(1)\n    \n    # Check delegation (it should just run without crashing, or we can check stdout)\n    l.charge()\n        \n    print(\"Success! You correctly used composition and delegation.\")\nexcept TypeError as e:\n    if \"__init__() takes 1 positional argument but 2 were given\" in str(e):\n        print(\"Laptop.__init__ should accept a battery argument: __init__(self, battery)\")\n    else:\n        print(f\"Error: {e}\")\n    sys.exit(1)\nexcept NameError as e:\n    print(f\"Missing definition: {e}\")\n    sys.exit(1)\nexcept Exception as e:\n    print(f\"Error: {e}\")\n    sys.exit(1)",
+                expectedOutput: "Success! You correctly used composition and delegation."
+              }
+            ]
+          }
+        ]
       },
       {
         slug: "special-methods",
