@@ -72,7 +72,7 @@ function PythonLessonPage() {
       onToggleComplete={() => isCompleted(lessonSlug) ? markIncomplete(lessonSlug) : markComplete(lessonSlug)}
       isPlaceholder={!content}
       sections={content?.sections}
-      renderSection={(s, onQuizActiveChange) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />}
+      renderSection={(s, onQuizActiveChange, i) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} index={i} />}
     >
       {null}
     </LessonLayout>
