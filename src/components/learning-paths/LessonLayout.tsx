@@ -22,7 +22,7 @@ export interface LessonLayoutProps {
   };
   children?: React.ReactNode;
   sections?: any[];
-  renderSection?: (section: any, onQuizActiveChange: (active: boolean) => void) => React.ReactNode;
+  renderSection?: (section: any, onQuizActiveChange: (active: boolean) => void, index: number) => React.ReactNode;
   hasQuiz?: boolean;
   isCompleted: boolean;
   onToggleComplete: () => void;
@@ -149,7 +149,7 @@ export function LessonLayout({
                       id={`section-${i}`}
                       className={`transition-all duration-500 ${isQuizActive && s.kind !== "quiz" ? "blur-md pointer-events-none opacity-40 select-none" : ""}`}
                     >
-                      {renderSection(s, setIsQuizActive)}
+                      {renderSection(s, setIsQuizActive, i)}
                     </div>
                   ))}
                 </div>
