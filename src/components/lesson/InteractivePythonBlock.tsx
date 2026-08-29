@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -25,6 +25,12 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
   const [error, setError] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
   const [isLoadingPyodide, setIsLoadingPyodide] = useState(false);
+
+  useEffect(() => {
+    setCode(initialCode);
+    setOutput("");
+    setError("");
+  }, [initialCode]);
 
   const handleRun = async () => {
     if (isRunning) return;
@@ -98,7 +104,7 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
         </div>
       </div>
 
-      <div className="relative bg-slate-950 border-b border-hairline">
+      <div className="relative bg-slate-950 border-b border-hairline min-h-[120px]">
         <CodeMirror
           value={code}
           onChange={(v) => {
