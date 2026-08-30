@@ -265,22 +265,21 @@ export function SqlPlayground() {
     }
   }, [engine, dataset, reloadSchema]);
 
-  // Switching dataset also swaps the editor contents, unless the user has
-  // written something of their own.
+  // Switching dataset also swaps the editor contents to the new dataset's starter query
+  // so that the user doesn't get schema mismatch errors with old queries.
   const switchDataset = useCallback(
     (next: DatasetId) => {
       const def = getDataset(next);
       const nextEngine = def.engines.includes(engine) ? engine : def.engines[0];
-      const wasStarter = sql.trim() === starterFor(dataset, engine).trim();
 
       setDataset(next);
       setEngine(nextEngine);
       setResult(null);
       setRanSql("");
       setTab("results");
-      if (wasStarter || !sql.trim()) setSql(starterFor(next, nextEngine));
+      setSql(starterFor(next, nextEngine)); // Always reset to starter query when switching databases
     },
-    [dataset, engine, sql],
+    [engine],
   );
 
   useEffect(() => {
