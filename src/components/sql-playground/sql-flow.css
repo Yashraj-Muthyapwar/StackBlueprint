@@ -1,0 +1,2225 @@
+/* ============================================================
+   SQL FLOW LAB
+   A self-contained surface, scoped under .sqlx so nothing here
+   leaks into the rest of the app. The accent swaps with the
+   active engine: PostgreSQL steel blue, DuckDB amber.
+   ============================================================ */
+
+.sqlx {
+  --sqlx-paper: #eef1f0;
+  --sqlx-panel: #ffffff;
+  --sqlx-panel-2: #f6f8f8;
+  --sqlx-panel-3: #eceff0;
+
+  --sqlx-ink: #16232b;
+  --sqlx-ink-2: #4a5860;
+  --sqlx-ink-3: #7d8a92;
+
+  --sqlx-line: #dbe1e0;
+  --sqlx-line-2: #c6cecd;
+  --sqlx-grid: rgba(22, 35, 43, 0.045);
+  --sqlx-select: rgba(47, 93, 138, 0.18);
+
+  --sqlx-accent: #2f5d8a;
+  --sqlx-accent-ink: #ffffff;
+  --sqlx-accent-soft: #e6eef6;
+  --sqlx-accent-line: #a3bdd4;
+
+  --sqlx-ok: #1c7a68;
+  --sqlx-ok-soft: #e0f1ed;
+  --sqlx-err: #b23a30;
+  --sqlx-err-soft: #fbe9e7;
+  --sqlx-warn: #9a6413;
+  --sqlx-warn-soft: #fbf0dc;
+
+  --sqlx-scan: #2f5d8a;
+  --sqlx-join: #7a4a9c;
+  --sqlx-group: #1c7a68;
+  --sqlx-sort: #b06a1a;
+  --sqlx-limit: #4a5860;
+
+  --sqlx-mono: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, monospace;
+  --sqlx-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --sqlx-r: 10px;
+  --sqlx-shadow: 0 1px 2px rgba(22, 35, 43, 0.06), 0 8px 22px rgba(22, 35, 43, 0.05);
+
+  font-family: var(--sqlx-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--sqlx-ink);
+
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 520px;
+  border: 1px solid var(--sqlx-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sqlx-panel);
+}
+
+.sqlx[data-engine="duckdb"] {
+  --sqlx-accent: #b8830a;
+  --sqlx-accent-ink: #ffffff;
+  --sqlx-accent-soft: #f9f0d8;
+  --sqlx-accent-line: #dfc274;
+  --sqlx-select: rgba(184, 131, 10, 0.2);
+  --sqlx-scan: #b8830a;
+}
+
+.sqlx-dark {
+  --sqlx-paper: #14181d;
+  --sqlx-panel: #1a1f25;
+  --sqlx-panel-2: #20262d;
+  --sqlx-panel-3: #262d35;
+
+  --sqlx-ink: #e8edf1;
+  --sqlx-ink-2: #a8b4bd;
+  --sqlx-ink-3: #75838d;
+
+  --sqlx-line: #2c343d;
+  --sqlx-line-2: #3a444f;
+  --sqlx-grid: rgba(255, 255, 255, 0.035);
+  --sqlx-select: rgba(120, 175, 230, 0.25);
+
+  --sqlx-accent: #6fa8dc;
+  --sqlx-accent-ink: #10171e;
+  --sqlx-accent-soft: #223244;
+  --sqlx-accent-line: #3d5a75;
+
+  --sqlx-ok: #58c9ad;
+  --sqlx-ok-soft: #17332e;
+  --sqlx-err: #f0847a;
+  --sqlx-err-soft: #3a221f;
+  --sqlx-warn: #dcac5c;
+  --sqlx-warn-soft: #33291a;
+
+  --sqlx-scan: #6fa8dc;
+  --sqlx-join: #b18ad4;
+  --sqlx-group: #58c9ad;
+  --sqlx-sort: #dcac5c;
+  --sqlx-limit: #9aa6b1;
+
+  --sqlx-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 26px rgba(0, 0, 0, 0.3);
+}
+
+.sqlx-dark[data-engine="duckdb"] {
+  --sqlx-accent: #e5b74b;
+  --sqlx-accent-ink: #201704;
+  --sqlx-accent-soft: #322813;
+  --sqlx-accent-line: #6b5622;
+  --sqlx-select: rgba(229, 183, 75, 0.24);
+  --sqlx-scan: #e5b74b;
+}
+
+.sqlx *,
+.sqlx *::before,
+.sqlx *::after {
+  box-sizing: border-box;
+}
+
+.sqlx button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sqlx :focus-visible {
+  outline: 2px solid var(--sqlx-accent);
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.sqlx .spin {
+  animation: sqlx-spin 0.9s linear infinite;
+}
+@keyframes sqlx-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------- header */
+
+.sqlx-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel);
+  flex-wrap: wrap;
+}
+
+.sqlx-brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.sqlx-brand h1 {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+.sqlx-brand .sub {
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+  white-space: nowrap;
+}
+.sqlx-brand .mark {
+  display: inline-flex;
+  gap: 3px;
+  align-self: center;
+}
+.sqlx-brand .mark i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sqlx-accent);
+  animation: sqlx-pulse 2.4s infinite;
+}
+.sqlx-brand .mark i:nth-child(2) { animation-delay: 0.3s; opacity: 0.7; }
+.sqlx-brand .mark i:nth-child(3) { animation-delay: 0.6s; opacity: 0.45; }
+@keyframes sqlx-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.45; }
+  40% { transform: scale(1.35); opacity: 1; }
+}
+
+.sqlx-engines {
+  margin-left: auto;
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--sqlx-panel-2);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 999px;
+}
+.sqlx-engines button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink-2);
+  transition: background 0.16s, color 0.16s;
+}
+.sqlx-engines button:hover { color: var(--sqlx-ink); }
+.sqlx-engines button.active {
+  background: var(--sqlx-accent);
+  color: var(--sqlx-accent-ink);
+}
+.sqlx-engines .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--sqlx-ink-3);
+  box-shadow: 0 0 0 2px transparent;
+}
+.sqlx-engines .dot.ready { background: var(--sqlx-ok); }
+.sqlx-engines .dot.failed { background: var(--sqlx-err); }
+.sqlx-engines .dot.booting,
+.sqlx-engines .dot.seeding {
+  background: var(--sqlx-warn);
+  animation: sqlx-blink 1.1s ease-in-out infinite;
+}
+@keyframes sqlx-blink {
+  50% { opacity: 0.3; }
+}
+
+.sqlx-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-family: var(--sqlx-mono);
+  color: var(--sqlx-ink-3);
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--sqlx-panel-2);
+  border: 1px solid var(--sqlx-line);
+  white-space: nowrap;
+}
+.sqlx-status.ready { color: var(--sqlx-ok); }
+.sqlx-status.failed { color: var(--sqlx-err); }
+
+/* ---------------------------------------------------------- body */
+
+.sqlx-body {
+  display: grid;
+  grid-template-columns: 288px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.sqlx-aside {
+  border-right: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sqlx-main {
+  min-height: 0;
+  min-width: 0;
+  background:
+    linear-gradient(var(--sqlx-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--sqlx-grid) 1px, transparent 1px),
+    var(--sqlx-paper);
+  background-size: 24px 24px, 24px 24px, auto;
+}
+
+/* ---------------------------------------------------------- split */
+
+.sqlx-split {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  padding: 12px 14px 14px;
+  gap: 0;
+}
+.sqlx-split-pane {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sqlx-split-bar {
+  height: 12px;
+  display: grid;
+  place-items: center;
+  cursor: row-resize;
+  border: 0;
+  background: transparent;
+}
+.sqlx-split-bar span {
+  width: 46px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--sqlx-line-2);
+  transition: background 0.16s, width 0.16s;
+}
+.sqlx-split-bar:hover span,
+.sqlx-split-bar.dragging span {
+  background: var(--sqlx-accent);
+  width: 72px;
+}
+
+/* ---------------------------------------------------------- sidebar */
+
+.sqlx-side {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.sqlx-side h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--sqlx-ink-3);
+  margin: 0 0 8px;
+}
+.sqlx-side-empty {
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+  margin: 4px 0;
+}
+
+.sqlx-side-search,
+.sqlx-result-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 9px;
+  border: 1px solid var(--sqlx-line);
+  border-radius: 8px;
+  background: var(--sqlx-panel-2);
+  color: var(--sqlx-ink-3);
+}
+.sqlx-side-search input,
+.sqlx-result-search input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--sqlx-ink);
+  width: 100%;
+  min-width: 0;
+}
+.sqlx-side-search input::placeholder,
+.sqlx-result-search input::placeholder {
+  color: var(--sqlx-ink-3);
+}
+
+.sqlx-tree { display: flex; flex-direction: column; gap: 4px; }
+
+.sqlx-tbl {
+  border: 1px solid var(--sqlx-line);
+  border-radius: 8px;
+  background: var(--sqlx-panel-2);
+  overflow: hidden;
+}
+.sqlx-tbl-head {
+  display: flex;
+  align-items: stretch;
+}
+.sqlx-tbl-head .toggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  padding: 7px 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  min-width: 0;
+}
+.sqlx-tbl-head .toggle .caret {
+  color: var(--sqlx-ink-3);
+  transition: transform 0.18s;
+  flex: none;
+}
+.sqlx-tbl.open .toggle .caret { transform: rotate(90deg); }
+.sqlx-tbl-head .toggle .icon { color: var(--sqlx-accent); flex: none; }
+.sqlx-tbl-head .toggle .name {
+  font-family: var(--sqlx-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-tbl-head .toggle .rows {
+  margin-left: auto;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--sqlx-ink-3);
+  background: var(--sqlx-panel-3);
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex: none;
+}
+.sqlx-tbl-head .peek {
+  border: 0;
+  border-left: 1px solid var(--sqlx-line);
+  background: transparent;
+  padding: 0 9px;
+  color: var(--sqlx-ink-3);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+.sqlx-tbl:hover .peek { opacity: 1; }
+.sqlx-tbl-head .peek:hover { color: var(--sqlx-accent); }
+
+.sqlx-tbl .cols {
+  list-style: none;
+  margin: 0;
+  padding: 2px 0 6px;
+  border-top: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel);
+}
+.sqlx-tbl .cols li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2.5px 10px 2.5px 8px;
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-tbl .cols .glyph {
+  width: 12px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-tbl .cols li.pk .glyph { color: var(--sqlx-warn); }
+.sqlx-tbl .cols li.fk .glyph { color: var(--sqlx-accent); }
+.sqlx-tbl .cols li.pk .nm { color: var(--sqlx-ink); font-weight: 600; }
+.sqlx-tbl .cols .nm { overflow: hidden; text-overflow: ellipsis; }
+.sqlx-tbl .cols .ty {
+  margin-left: auto;
+  font-size: 10.5px;
+  color: var(--sqlx-ink-3);
+  flex: none;
+}
+
+.sqlx-examples { display: flex; flex-direction: column; gap: 14px; }
+.sqlx-ex-group .label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--sqlx-ink);
+  margin-bottom: 2px;
+}
+.sqlx-ex-group .blurb {
+  font-size: 11px;
+  color: var(--sqlx-ink-3);
+  margin: 0 0 6px;
+}
+.sqlx-ex {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  padding: 6px 9px;
+  margin-bottom: 2px;
+  transition: background 0.14s, border-color 0.14s;
+}
+.sqlx-ex:hover {
+  background: var(--sqlx-accent-soft);
+  border-color: var(--sqlx-accent-line);
+}
+.sqlx-ex .t {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.sqlx-ex .badge {
+  font-family: var(--sqlx-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sqlx-accent);
+  border: 1px solid var(--sqlx-accent-line);
+  border-radius: 999px;
+  padding: 0 5px;
+}
+.sqlx-ex .n {
+  display: block;
+  font-size: 11px;
+  color: var(--sqlx-ink-3);
+  margin-top: 1px;
+}
+
+/* ---------------------------------------------------------- editor */
+
+.sqlx-editor-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: var(--sqlx-r);
+  box-shadow: var(--sqlx-shadow);
+  overflow: hidden;
+}
+
+.sqlx-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel-2);
+  flex-wrap: wrap;
+}
+.sqlx-toolbar .file {
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+  margin-right: 2px;
+}
+.sqlx-toolbar .hint {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-toolbar kbd {
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  border: 1px solid var(--sqlx-line-2);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  background: var(--sqlx-panel);
+  color: var(--sqlx-ink-2);
+}
+
+.sqlx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--sqlx-line-2);
+  background: var(--sqlx-panel);
+  border-radius: 7px;
+  padding: 5px 11px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.sqlx-btn:hover:not(:disabled) {
+  border-color: var(--sqlx-accent);
+  color: var(--sqlx-accent);
+}
+.sqlx-btn.primary {
+  background: var(--sqlx-accent);
+  border-color: var(--sqlx-accent);
+  color: var(--sqlx-accent-ink);
+}
+.sqlx-btn.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  color: var(--sqlx-accent-ink);
+}
+.sqlx-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.sqlx-icon-btn {
+  /* Flex, not grid: a grid with three children lays them out as three rows,
+     which pushed the label and caret straight out of the button box. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: none;
+  border: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel);
+  border-radius: 6px;
+  min-width: 26px;
+  height: 26px;
+  padding: 0;
+  color: var(--sqlx-ink-2);
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.sqlx-icon-btn > svg { flex: none; }
+.sqlx-icon-btn:hover { border-color: var(--sqlx-accent); color: var(--sqlx-accent); }
+
+.sqlx-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sqlx-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sqlx-menu { position: relative; }
+.sqlx-menu-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: 420px;
+  max-width: 70vw;
+  max-height: 320px;
+  overflow: auto;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 10px;
+  box-shadow: var(--sqlx-shadow);
+  padding: 6px;
+}
+.sqlx-menu-panel .empty {
+  margin: 0;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-menu-panel .menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-menu-panel .menu-head button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-menu-panel .menu-head button:hover { color: var(--sqlx-err); }
+.sqlx-menu-panel ul { list-style: none; margin: 0; padding: 0; }
+.sqlx-menu-panel li > button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  padding: 6px 8px;
+}
+.sqlx-menu-panel li > button:hover { background: var(--sqlx-accent-soft); }
+.sqlx-menu-panel code {
+  display: block;
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  color: var(--sqlx-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-menu-panel .meta {
+  font-size: 10.5px;
+  font-family: var(--sqlx-mono);
+  color: var(--sqlx-ink-3);
+}
+.sqlx-menu-panel .meta.bad { color: var(--sqlx-err); }
+
+.sqlx-editor {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+.sqlx-editor .sqlx-cm,
+.sqlx-editor .cm-editor {
+  height: 100%;
+}
+.sqlx-editor .cm-editor { background: transparent; }
+.sqlx-editor .cm-scroller { overflow: auto; }
+
+/* ---------------------------------------------------------- tabs + panel */
+
+.sqlx-panel-wrap {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.sqlx-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 2;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.sqlx-tabs::-webkit-scrollbar { display: none; }
+.sqlx-tab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  background: transparent;
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink-3);
+  border-radius: 9px 9px 0 0;
+  white-space: nowrap;
+}
+.sqlx-tab:hover { color: var(--sqlx-ink); }
+.sqlx-tab.active {
+  background: var(--sqlx-panel);
+  border-color: var(--sqlx-line);
+  color: var(--sqlx-ink);
+}
+.sqlx-tab .pill {
+  font-family: var(--sqlx-mono);
+  font-size: 10px;
+  background: var(--sqlx-accent-soft);
+  color: var(--sqlx-accent);
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-left: 6px;
+}
+
+.sqlx-panel {
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 0 var(--sqlx-r) var(--sqlx-r) var(--sqlx-r);
+  box-shadow: var(--sqlx-shadow);
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.sqlx-panel > * { min-height: 0; }
+
+.sqlx-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 22px;
+  font-size: 13px;
+  color: var(--sqlx-ink-2);
+  max-width: 64ch;
+}
+.sqlx-empty strong { font-size: 14px; color: var(--sqlx-ink); }
+.sqlx-note {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+}
+
+/* ---------------------------------------------------------- results */
+
+.sqlx-result {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  /* The bar responds to the panel, not the window: the sidebar and the split
+     handle both change how much room it actually has. */
+  container-type: inline-size;
+  container-name: sqlx-results;
+}
+.sqlx-result-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sqlx-line);
+  font-size: 12px;
+  color: var(--sqlx-ink-2);
+  background: var(--sqlx-panel);
+  flex-wrap: wrap;
+}
+.sqlx-result-bar .stat { display: inline-flex; gap: 5px; }
+.sqlx-result-bar .stat b {
+  font-family: var(--sqlx-mono);
+  font-weight: 600;
+  color: var(--sqlx-ink);
+}
+.sqlx-result-bar .stat.matching b { color: var(--sqlx-accent); }
+.sqlx-result-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+.sqlx-result-bar .sqlx-result-search {
+  padding: 3px 8px;
+  /* Shrinks first when space is tight, and never collapses to nothing. */
+  flex: 0 1 210px;
+  min-width: 118px;
+}
+.sqlx-result-bar .stamp {
+  flex: none;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--sqlx-ink-3);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.sqlx-result-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.sqlx-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: var(--sqlx-mono);
+  font-size: 12px;
+}
+.sqlx-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--sqlx-panel-2);
+  border-bottom: 1px solid var(--sqlx-line);
+  padding: 0;
+  text-align: left;
+  white-space: nowrap;
+}
+.sqlx-table thead th.rownum {
+  width: 46px;
+  border-right: 1px solid var(--sqlx-line);
+}
+.sqlx-table thead th > button {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  width: 100%;
+  border: 0;
+  background: none;
+  padding: 7px 12px;
+  text-align: left;
+}
+.sqlx-table thead th > button:hover { background: var(--sqlx-accent-soft); }
+.sqlx-table .col-name { font-weight: 600; color: var(--sqlx-ink); }
+.sqlx-table .col-type {
+  font-size: 10px;
+  color: var(--sqlx-ink-3);
+  text-transform: lowercase;
+}
+.sqlx-table .col-sort {
+  margin-left: auto;
+  color: var(--sqlx-ink-3);
+  opacity: 0;
+  align-self: center;
+}
+.sqlx-table thead th:hover .col-sort { opacity: 0.7; }
+.sqlx-table .col-sort.on { opacity: 1; color: var(--sqlx-accent); }
+
+.sqlx-table tbody td {
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--sqlx-line);
+  white-space: nowrap;
+  max-width: 380px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-table tbody tr:hover td { background: var(--sqlx-accent-soft); }
+.sqlx-table td.rownum {
+  width: 46px;
+  text-align: right;
+  color: var(--sqlx-ink-3);
+  background: var(--sqlx-panel-2);
+  border-right: 1px solid var(--sqlx-line);
+  font-size: 11px;
+  position: sticky;
+  left: 0;
+}
+.sqlx-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.sqlx-table td.null {
+  color: var(--sqlx-ink-3);
+  font-style: italic;
+  font-size: 11px;
+}
+
+.sqlx-error {
+  margin: 14px;
+  border: 1px solid var(--sqlx-err);
+  border-left-width: 3px;
+  border-radius: 8px;
+  background: var(--sqlx-err-soft);
+  overflow: hidden;
+}
+.sqlx-error-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sqlx-err);
+  border-bottom: 1px solid color-mix(in srgb, var(--sqlx-err) 25%, transparent);
+}
+.sqlx-error-body {
+  margin: 0;
+  padding: 11px 12px;
+  font-family: var(--sqlx-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--sqlx-ink);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.sqlx-error-hint {
+  margin: 0;
+  padding: 9px 12px;
+  border-top: 1px dashed color-mix(in srgb, var(--sqlx-err) 30%, transparent);
+  font-size: 12.5px;
+  color: var(--sqlx-ink-2);
+}
+
+.sqlx-ok {
+  display: flex;
+  gap: 10px;
+  margin: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--sqlx-ok);
+  border-left-width: 3px;
+  border-radius: 8px;
+  background: var(--sqlx-ok-soft);
+  color: var(--sqlx-ok);
+  font-size: 13px;
+}
+.sqlx-ok > div { display: flex; flex-direction: column; gap: 2px; }
+.sqlx-ok span { color: var(--sqlx-ink-2); font-size: 12px; }
+
+/* ---------------------------------------------------------- pipeline */
+
+.sqlx-pipe {
+  overflow: auto;
+  padding: 16px 18px 20px;
+  flex: 1;
+  min-height: 0;
+}
+.sqlx-pipe header h3 {
+  margin: 0 0 3px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.sqlx-pipe header p {
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  color: var(--sqlx-ink-2);
+  max-width: 76ch;
+}
+.sqlx-pipe header code {
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  background: var(--sqlx-panel-2);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+.sqlx-pipe header .warn {
+  color: var(--sqlx-warn);
+  background: var(--sqlx-warn-soft);
+  border-radius: 6px;
+  padding: 6px 9px;
+  margin-top: 6px;
+}
+
+.sqlx-stages {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sqlx-stage {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.sqlx-stage.on { opacity: 1; transform: none; }
+.sqlx-stage .link {
+  display: block;
+  padding: 2px 0 2px 22px;
+  color: var(--sqlx-line-2);
+}
+.sqlx-stage .body {
+  border: 1px solid var(--sqlx-line);
+  border-left: 3px solid var(--sqlx-line-2);
+  border-radius: 8px;
+  background: var(--sqlx-panel-2);
+  padding: 9px 12px;
+}
+.sqlx-stage.grow .body { border-left-color: var(--sqlx-warn); }
+.sqlx-stage.shrink .body { border-left-color: var(--sqlx-ok); }
+.sqlx-stage.same .body { border-left-color: var(--sqlx-accent-line); }
+
+.sqlx-stage .top {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.sqlx-stage .step {
+  font-family: var(--sqlx-mono);
+  font-size: 10px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-stage .kw {
+  font-family: var(--sqlx-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sqlx-accent);
+}
+.sqlx-stage .title { font-size: 12.5px; font-weight: 600; }
+.sqlx-stage .count {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-stage .count b {
+  font-family: var(--sqlx-mono);
+  font-size: 13px;
+  color: var(--sqlx-ink);
+}
+.sqlx-stage .count em { color: var(--sqlx-ink-3); font-size: 11px; }
+.sqlx-stage .count .cols { color: var(--sqlx-ink-3); }
+.sqlx-stage.grow .count svg { color: var(--sqlx-warn); }
+.sqlx-stage.shrink .count svg { color: var(--sqlx-ok); }
+.sqlx-stage.same .count svg { color: var(--sqlx-ink-3); }
+
+.sqlx-stage .bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sqlx-panel-3);
+  margin: 7px 0 6px;
+  overflow: hidden;
+}
+.sqlx-stage .bar span {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--sqlx-accent);
+  transition: width 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.sqlx-stage.grow .bar span { background: var(--sqlx-warn); }
+.sqlx-stage.shrink .bar span { background: var(--sqlx-ok); }
+
+.sqlx-stage .why {
+  margin: 0 0 5px;
+  font-size: 12px;
+  color: var(--sqlx-ink-2);
+  max-width: 88ch;
+}
+.sqlx-stage .snip {
+  display: block;
+  font-family: var(--sqlx-mono);
+  font-size: 11px;
+  color: var(--sqlx-ink-3);
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 5px;
+  padding: 3px 7px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sqlx-pipe footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--sqlx-line);
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+  max-width: 82ch;
+}
+
+/* ---------------------------------------------------------- plan */
+
+.sqlx-plan {
+  overflow: auto;
+  padding: 16px 18px 20px;
+  flex: 1;
+  min-height: 0;
+}
+.sqlx-plan-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.sqlx-plan-head h3 { margin: 0 0 3px; font-size: 14px; font-weight: 700; }
+.sqlx-plan-head p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--sqlx-ink-2);
+  max-width: 72ch;
+}
+.sqlx-plan-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sqlx-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--sqlx-ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+.sqlx-switch span { display: inline-flex; align-items: center; gap: 5px; }
+.sqlx-switch input { accent-color: var(--sqlx-accent); }
+
+.sqlx-plan-timing {
+  display: flex;
+  gap: 16px;
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-plan-timing b { font-family: var(--sqlx-mono); color: var(--sqlx-ink); }
+
+.sqlx-plan-tree,
+.sqlx-plan-tree .children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sqlx-plan-tree { margin-top: 14px; }
+.sqlx-plan-tree .children {
+  margin-left: 18px;
+  padding-left: 14px;
+  border-left: 1px dashed var(--sqlx-line-2);
+}
+.sqlx-plan-node { margin-top: 8px; }
+.sqlx-plan-node .node {
+  border: 1px solid var(--sqlx-line);
+  border-left: 3px solid var(--sqlx-ink-3);
+  border-radius: 8px;
+  background: var(--sqlx-panel-2);
+  padding: 8px 11px;
+}
+.sqlx-plan-node .kind-scan { border-left-color: var(--sqlx-scan); }
+.sqlx-plan-node .kind-join { border-left-color: var(--sqlx-join); }
+.sqlx-plan-node .kind-group { border-left-color: var(--sqlx-group); }
+.sqlx-plan-node .kind-sort { border-left-color: var(--sqlx-sort); }
+.sqlx-plan-node .kind-limit { border-left-color: var(--sqlx-limit); }
+
+.sqlx-plan-node .node-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sqlx-plan-node .op {
+  font-family: var(--sqlx-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.sqlx-plan-node .on {
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-plan-node .flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--sqlx-warn);
+  background: var(--sqlx-warn-soft);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.sqlx-plan-node .node-metrics {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-plan-node .metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.sqlx-plan-node .metric b {
+  font-family: var(--sqlx-mono);
+  color: var(--sqlx-ink);
+  font-weight: 600;
+}
+.sqlx-plan-node .metric.actual b { color: var(--sqlx-accent); }
+
+.sqlx-plan-node .node-bar {
+  position: relative;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--sqlx-panel-3);
+  margin-top: 7px;
+  overflow: hidden;
+}
+.sqlx-plan-node .node-bar .rows,
+.sqlx-plan-node .node-bar .cost {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  border-radius: 999px;
+}
+.sqlx-plan-node .node-bar .rows { background: var(--sqlx-accent-line); }
+.sqlx-plan-node .node-bar .cost {
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--sqlx-accent);
+}
+
+.sqlx-plan-node .node-detail {
+  list-style: none;
+  margin: 7px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sqlx-plan-node .node-detail li {
+  font-family: var(--sqlx-mono);
+  font-size: 11px;
+  color: var(--sqlx-ink-2);
+  word-break: break-word;
+}
+
+.sqlx-plan-raw {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--sqlx-line);
+  border-radius: 8px;
+  background: var(--sqlx-panel-2);
+  font-family: var(--sqlx-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--sqlx-ink-2);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.sqlx-plan-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--sqlx-line);
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-plan-legend .k {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+}
+.sqlx-plan-legend .k::before {
+  content: "";
+  width: 9px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--sqlx-ink-3);
+}
+.sqlx-plan-legend .k.scan::before { background: var(--sqlx-scan); }
+.sqlx-plan-legend .k.join::before { background: var(--sqlx-join); }
+.sqlx-plan-legend .k.group::before { background: var(--sqlx-group); }
+.sqlx-plan-legend .k.sort::before { background: var(--sqlx-sort); }
+.sqlx-plan-legend .k.limit::before { background: var(--sqlx-limit); }
+.sqlx-plan-legend .hint { margin-left: auto; }
+
+/* ---------------------------------------------------------- schema map */
+
+.sqlx-map {
+  position: relative;
+  overflow: auto;
+  padding: 18px;
+  flex: 1;
+  min-height: 0;
+}
+.sqlx-map-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 0;
+  color: var(--sqlx-accent-line);
+}
+.sqlx-fk {
+  fill: none;
+  stroke: var(--sqlx-accent-line);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 4;
+  opacity: 0.85;
+  transition: opacity 0.18s, stroke 0.18s;
+  animation: sqlx-flow 1.4s linear infinite;
+}
+.sqlx-fk.dim { opacity: 0.15; animation: none; }
+.sqlx-fk.hot {
+  stroke: var(--sqlx-accent);
+  stroke-width: 2;
+  opacity: 1;
+}
+@keyframes sqlx-flow {
+  to { stroke-dashoffset: -18; }
+}
+
+.sqlx-map-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(216px, 1fr));
+  gap: 26px 44px;
+  align-items: start;
+}
+
+.sqlx-map-card {
+  border: 1px solid var(--sqlx-line);
+  border-radius: 9px;
+  background: var(--sqlx-panel);
+  box-shadow: var(--sqlx-shadow);
+  overflow: hidden;
+  transition: opacity 0.18s, border-color 0.18s, transform 0.18s;
+}
+.sqlx-map-card.dim { opacity: 0.3; }
+.sqlx-map-card.hot {
+  border-color: var(--sqlx-accent);
+  transform: translateY(-2px);
+}
+.sqlx-map-card h4 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  padding: 7px 10px;
+  background: var(--sqlx-panel-2);
+  border-bottom: 1px solid var(--sqlx-line);
+  font-family: var(--sqlx-mono);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.sqlx-map-card h4 em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-map-card ul { list-style: none; margin: 0; padding: 4px 0; }
+.sqlx-map-card li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  font-family: var(--sqlx-mono);
+  font-size: 11px;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-map-card li .glyph {
+  width: 11px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-map-card li.pk .glyph { color: var(--sqlx-warn); }
+.sqlx-map-card li.fk .glyph { color: var(--sqlx-accent); }
+.sqlx-map-card li.pk .n { color: var(--sqlx-ink); font-weight: 600; }
+.sqlx-map-card li .t { margin-left: auto; font-size: 10px; color: var(--sqlx-ink-3); }
+
+.sqlx-map-note {
+  position: relative;
+  z-index: 1;
+  margin: 22px 0 0;
+  font-size: 12px;
+  color: var(--sqlx-ink-3);
+  max-width: 80ch;
+}
+
+/* ---------------------------------------------------------- responsive */
+
+@media (max-width: 1080px) {
+  /* Stack the explorer above the workspace and let the whole body scroll.
+     Both panes need explicit heights or the grid squeezes them to nothing. */
+  .sqlx-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    overflow: auto;
+  }
+  .sqlx-aside {
+    border-right: 0;
+    border-bottom: 1px solid var(--sqlx-line);
+    height: 40vh;
+    min-height: 260px;
+  }
+  .sqlx-main {
+    height: 76vh;
+    min-height: 620px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sqlx-brand .sub { display: none; }
+  .sqlx-engines { margin-left: 0; }
+  .sqlx-toolbar .hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sqlx *,
+  .sqlx *::before,
+  .sqlx *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .sqlx-stage { opacity: 1; transform: none; }
+}
+
+/* ---------------------------------------------------------- dataset picker */
+
+.sqlx-dataset {
+  position: relative;
+}
+
+.sqlx-dataset-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel-2);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink);
+  transition: border-color 0.15s;
+}
+.sqlx-dataset-trigger:hover {
+  border-color: var(--sqlx-accent);
+}
+.sqlx-dataset-trigger .nm {
+  white-space: nowrap;
+}
+.sqlx-dataset-trigger .meta {
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--sqlx-ink-3);
+  white-space: nowrap;
+}
+
+.sqlx-dataset-menu {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  z-index: 60;
+  width: 460px;
+  max-width: min(92vw, 460px);
+  max-height: min(74vh, 640px);
+  overflow: auto;
+  padding: 8px;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 11px;
+  box-shadow: var(--sqlx-shadow);
+}
+.sqlx-dataset-menu .head {
+  margin: 2px 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--sqlx-ink-3);
+}
+
+.sqlx-dataset-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  margin-bottom: 2px;
+  transition: background 0.14s, border-color 0.14s;
+}
+.sqlx-dataset-row:hover {
+  background: var(--sqlx-accent-soft);
+  border-color: var(--sqlx-accent-line);
+}
+.sqlx-dataset-row.selected {
+  background: var(--sqlx-accent-soft);
+  border-color: var(--sqlx-accent);
+}
+
+.sqlx-dataset-item {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  padding: 8px 4px 8px 10px;
+}
+/* Runs on the other engine: still selectable, just visibly a different mode. */
+.sqlx-dataset-row.other-engine .name,
+.sqlx-dataset-row.other-engine .tagline {
+  opacity: 0.75;
+}
+
+.sqlx-dataset-item .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sqlx-dataset-item .name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.sqlx-dataset-item .level {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 1px 7px;
+  border: 1px solid var(--sqlx-line-2);
+  color: var(--sqlx-ink-3);
+}
+.sqlx-dataset-item .level.beginner {
+  color: var(--sqlx-ok);
+  border-color: color-mix(in srgb, var(--sqlx-ok) 45%, transparent);
+}
+.sqlx-dataset-item .level.intermediate {
+  color: var(--sqlx-accent);
+  border-color: var(--sqlx-accent-line);
+}
+.sqlx-dataset-item .level.advanced {
+  color: var(--sqlx-warn);
+  border-color: color-mix(in srgb, var(--sqlx-warn) 45%, transparent);
+}
+
+.sqlx-dataset-item .tagline {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-dataset-item .facts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  color: var(--sqlx-ink-3);
+  flex-wrap: wrap;
+}
+.sqlx-dataset-item .facts .free,
+.sqlx-dataset-item .facts .cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.sqlx-dataset-item .facts .free {
+  color: var(--sqlx-ok);
+}
+.sqlx-dataset-item .facts .only {
+  color: var(--sqlx-warn);
+}
+
+.sqlx-dataset-about {
+  margin-top: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--sqlx-line);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-dataset-about .title {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0 0 5px;
+  font-weight: 700;
+  color: var(--sqlx-ink);
+}
+.sqlx-dataset-about p {
+  margin: 0 0 6px;
+}
+.sqlx-dataset-about .caveat {
+  color: var(--sqlx-ink-3);
+  padding-left: 10px;
+  border-left: 2px solid var(--sqlx-line-2);
+}
+.sqlx-dataset-about a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--sqlx-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.sqlx-dataset-about a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------- load progress */
+
+.sqlx-loadbar {
+  position: relative;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--sqlx-line);
+  background: var(--sqlx-panel-2);
+  overflow: hidden;
+}
+.sqlx-loadbar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: color-mix(in srgb, var(--sqlx-accent) 20%, transparent);
+  border-right: 1px solid var(--sqlx-accent);
+  transition: width 0.35s ease;
+}
+.sqlx-loadbar em {
+  position: relative;
+  padding: 0 12px;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  font-style: normal;
+  color: var(--sqlx-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sqlx-loadfail {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--sqlx-err);
+  background: var(--sqlx-err-soft);
+  color: var(--sqlx-err);
+  font-size: 12.5px;
+}
+
+.sqlx-engines button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.sqlx-engines .dot.loading {
+  background: var(--sqlx-warn);
+  animation: sqlx-blink 1.1s ease-in-out infinite;
+}
+
+@media (max-width: 900px) {
+  .sqlx-dataset-menu {
+    width: min(92vw, 420px);
+  }
+}
+
+/* ---------------------------------------------------------- dialect badge */
+
+.sqlx-dialect-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--sqlx-warn);
+  background: var(--sqlx-warn-soft);
+  color: var(--sqlx-warn);
+  border-radius: 7px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  max-width: 340px;
+}
+.sqlx-dialect-badge span {
+  font-family: var(--sqlx-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-dialect-badge em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-left: 1px solid color-mix(in srgb, var(--sqlx-warn) 40%, transparent);
+  padding-left: 6px;
+  opacity: 0.85;
+}
+.sqlx-dialect-badge:hover {
+  filter: brightness(1.05);
+}
+
+/* ---------------------------------------------------------- export menu */
+
+.sqlx-export {
+  position: relative;
+}
+.sqlx-icon-btn.wide {
+  padding: 0 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink);
+}
+.sqlx-icon-btn.wide .caret {
+  color: var(--sqlx-ink-3);
+  margin-left: -1px;
+}
+.sqlx-icon-btn[aria-expanded="true"] {
+  border-color: var(--sqlx-accent);
+  background: var(--sqlx-accent-soft);
+  color: var(--sqlx-accent);
+}
+.sqlx-icon-btn[aria-expanded="true"] .caret { color: inherit; }
+.sqlx-export-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  min-width: 200px;
+  max-width: min(260px, calc(100vw - 32px));
+  padding: 5px;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 9px;
+  box-shadow: var(--sqlx-shadow);
+}
+.sqlx-export-menu .head {
+  margin: 2px 8px 6px;
+  font-size: 10.5px;
+  font-family: var(--sqlx-mono);
+  color: var(--sqlx-ink-3);
+}
+.sqlx-export-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 12.5px;
+  text-align: left;
+  color: var(--sqlx-ink);
+}
+.sqlx-export-menu button:hover {
+  background: var(--sqlx-accent-soft);
+  color: var(--sqlx-accent);
+}
+.sqlx-export-menu .sep {
+  height: 1px;
+  margin: 4px 8px;
+  background: var(--sqlx-line);
+}
+
+/* ---------------------------------------------------------- plan views */
+
+.sqlx-viewswitch {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  background: var(--sqlx-panel-2);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 7px;
+}
+.sqlx-viewswitch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  border-radius: 5px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-viewswitch button:hover {
+  color: var(--sqlx-ink);
+}
+.sqlx-viewswitch button.active {
+  background: var(--sqlx-accent);
+  color: var(--sqlx-accent-ink);
+}
+
+/* The graph fills the panel instead of flowing in the scrolling column. */
+.sqlx-plan.is-graph {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+.sqlx-plan-graph {
+  position: relative;
+  flex: 1;
+  min-height: 340px;
+  margin-top: 12px;
+  border: 1px solid var(--sqlx-line);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--sqlx-panel-2);
+}
+
+.sqlx-graph-surface {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+  background-image: radial-gradient(var(--sqlx-line-2) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+.sqlx-graph-surface.grabbing { cursor: grabbing; }
+
+.sqlx-graph-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.sqlx-graph-links {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+.sqlx-graph-links path {
+  fill: none;
+  stroke: var(--sqlx-accent-line);
+  stroke-width: 1.8;
+  transition: opacity 0.15s;
+}
+.sqlx-graph-links path.dim { opacity: 0.2; }
+
+.sqlx-graph-controls {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 8px;
+  box-shadow: var(--sqlx-shadow);
+}
+.sqlx-graph-controls button {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--sqlx-ink-2);
+}
+.sqlx-graph-controls button:hover {
+  background: var(--sqlx-accent-soft);
+  color: var(--sqlx-accent);
+}
+.sqlx-graph-controls .zoom {
+  padding: 0 7px 0 4px;
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  color: var(--sqlx-ink-3);
+  min-width: 42px;
+  text-align: right;
+}
+
+.sqlx-graph-hint {
+  position: absolute;
+  left: 12px;
+  bottom: 14px;
+  margin: 0;
+  font-size: 11px;
+  color: var(--sqlx-ink-3);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------- graph nodes */
+
+.sqlx-gnode {
+  position: absolute;
+  box-sizing: border-box;
+  overflow: hidden;
+  cursor: default;
+  border: 1px solid var(--sqlx-line);
+  border-top: 3px solid var(--sqlx-ink-3);
+  border-radius: 9px;
+  background: var(--sqlx-panel);
+  box-shadow: var(--sqlx-shadow);
+  padding: 8px 10px 9px;
+  font-family: var(--sqlx-sans);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.sqlx-gnode:hover { border-color: var(--sqlx-accent); }
+.sqlx-gnode.dim { opacity: 0.32; }
+.sqlx-gnode.kind-scan { border-top-color: var(--sqlx-scan); }
+.sqlx-gnode.kind-join { border-top-color: var(--sqlx-join); }
+.sqlx-gnode.kind-group { border-top-color: var(--sqlx-group); }
+.sqlx-gnode.kind-sort { border-top-color: var(--sqlx-sort); }
+.sqlx-gnode.kind-limit { border-top-color: var(--sqlx-limit); }
+
+.sqlx-gnode .gnode-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sqlx-gnode .op {
+  font-family: var(--sqlx-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sqlx-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-gnode .flag {
+  margin-left: auto;
+  display: inline-flex;
+  color: var(--sqlx-warn);
+}
+.sqlx-gnode .gnode-target {
+  font-family: var(--sqlx-mono);
+  font-size: 10.5px;
+  color: var(--sqlx-ink-3);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sqlx-gnode .gnode-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 5px;
+  font-size: 10px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-gnode .gnode-metrics span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.sqlx-gnode .gnode-metrics b {
+  font-family: var(--sqlx-mono);
+  font-weight: 600;
+  color: var(--sqlx-ink);
+}
+.sqlx-gnode .gnode-metrics .actual b { color: var(--sqlx-accent); }
+
+.sqlx-gnode .gnode-bar {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sqlx-panel-3);
+  margin-top: 6px;
+  overflow: hidden;
+}
+.sqlx-gnode .gnode-bar .rows,
+.sqlx-gnode .gnode-bar .cost {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  border-radius: 999px;
+}
+.sqlx-gnode .gnode-bar .rows { background: var(--sqlx-accent-line); }
+.sqlx-gnode .gnode-bar .cost {
+  height: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--sqlx-accent);
+}
+
+.sqlx-gnode .gnode-detail {
+  margin-top: 6px;
+  font-family: var(--sqlx-mono);
+  font-size: 9.5px;
+  line-height: 1.4;
+  color: var(--sqlx-ink-2);
+  max-height: 26px;
+  overflow: hidden;
+}
+.sqlx-gnode .gnode-detail em {
+  font-style: normal;
+  color: var(--sqlx-ink-3);
+}
+
+.sqlx-format-note {
+  font-size: 11.5px;
+  color: var(--sqlx-ink-3);
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------- results bar, by panel width */
+
+/* Roomy: everything visible. Below each step something non-essential goes. */
+@container sqlx-results (max-width: 720px) {
+  .sqlx-result-bar .stamp { display: none; }
+}
+
+@container sqlx-results (max-width: 560px) {
+  .sqlx-result-bar { gap: 10px; }
+  .sqlx-result-bar .stat.matching { display: none; }
+  .sqlx-result-bar .sqlx-result-search { flex: 1 1 120px; }
+}
+
+@container sqlx-results (max-width: 440px) {
+  /* Icon-only export. aria-label keeps it named for screen readers. */
+  .sqlx-icon-btn.wide { padding: 0 7px; }
+  .sqlx-icon-btn.wide .label { display: none; }
+  .sqlx-icon-btn.wide .caret { display: none; }
+}
+
+@container sqlx-results (max-width: 340px) {
+  .sqlx-result-bar .stat:nth-of-type(2),
+  .sqlx-result-bar .stat:nth-of-type(3) { display: none; }
+}
+
+/* Fallback for engines without container queries: key off the viewport. */
+@supports not (container-type: inline-size) {
+  @media (max-width: 900px) {
+    .sqlx-result-bar .stamp { display: none; }
+  }
+  @media (max-width: 640px) {
+    .sqlx-icon-btn.wide .label,
+    .sqlx-icon-btn.wide .caret { display: none; }
+  }
+}
+
+/* ---------------------------------------------------------- dataset download */
+
+.sqlx-dl {
+  position: relative;
+  flex: none;
+  padding: 8px 8px 0 0;
+}
+
+.sqlx-dl-trigger {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--sqlx-ink-3);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+.sqlx-dataset-row:hover .sqlx-dl-trigger {
+  border-color: var(--sqlx-line-2);
+  color: var(--sqlx-ink-2);
+}
+.sqlx-dl-trigger:hover:not(:disabled) {
+  border-color: var(--sqlx-accent);
+  background: var(--sqlx-panel);
+  color: var(--sqlx-accent);
+}
+.sqlx-dl-trigger[aria-expanded="true"] {
+  border-color: var(--sqlx-accent);
+  background: var(--sqlx-panel);
+  color: var(--sqlx-accent);
+}
+.sqlx-dl-trigger.done { color: var(--sqlx-ok); border-color: var(--sqlx-ok); }
+.sqlx-dl-trigger:disabled { cursor: progress; }
+
+.sqlx-dl-progress {
+  position: absolute;
+  right: 8px;
+  top: 34px;
+  z-index: 30;
+  width: 172px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--sqlx-line);
+  border-radius: 6px;
+  background: var(--sqlx-panel);
+  box-shadow: var(--sqlx-shadow);
+}
+.sqlx-dl-progress > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--sqlx-accent-soft);
+  transition: width 0.3s ease;
+}
+.sqlx-dl-progress em {
+  position: relative;
+  padding: 0 8px;
+  font-family: var(--sqlx-mono);
+  font-size: 9.5px;
+  font-style: normal;
+  color: var(--sqlx-ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sqlx-dl-error {
+  position: absolute;
+  right: 8px;
+  top: 34px;
+  z-index: 30;
+  width: 220px;
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid var(--sqlx-err);
+  border-radius: 6px;
+  background: var(--sqlx-err-soft);
+  color: var(--sqlx-err);
+  font-size: 10.5px;
+  line-height: 1.4;
+  box-shadow: var(--sqlx-shadow);
+}
+
+.sqlx-dl-menu {
+  position: absolute;
+  right: 0;
+  top: 34px;
+  z-index: 50;
+  width: 268px;
+  max-width: min(268px, calc(100vw - 32px));
+  padding: 6px;
+  background: var(--sqlx-panel);
+  border: 1px solid var(--sqlx-line);
+  border-radius: 10px;
+  box-shadow: var(--sqlx-shadow);
+}
+.sqlx-dl-menu .head {
+  margin: 2px 8px 6px;
+  font-size: 11px;
+  color: var(--sqlx-ink-3);
+}
+.sqlx-dl-menu .head b { color: var(--sqlx-ink); }
+.sqlx-dl-menu > button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  padding: 6px 8px;
+}
+.sqlx-dl-menu > button:hover { background: var(--sqlx-accent-soft); }
+.sqlx-dl-menu .name {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--sqlx-ink);
+}
+.sqlx-dl-menu .blurb {
+  display: block;
+  font-size: 10.5px;
+  color: var(--sqlx-ink-3);
+  margin-top: 1px;
+}
+.sqlx-dl-menu .foot {
+  margin: 6px 8px 2px;
+  padding-top: 6px;
+  border-top: 1px solid var(--sqlx-line);
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--sqlx-ink-3);
+}

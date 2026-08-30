@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, ChevronRight, Lock, Terminal, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Lock, Terminal, CheckCircle2, Database } from "lucide-react";
 import { useState } from "react";
 
 import { roadmap } from "@/lessons/roadmap";
@@ -70,6 +70,18 @@ export function AppSidebar() {
                   <Link to="/playground" onClick={closeMobile}>
                     <Terminal className="size-3.5" />
                     <span>Python Playground</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/sql-playground"}
+                  tooltip="SQL Playground"
+                >
+                  <Link to="/sql-playground" onClick={closeMobile}>
+                    <Database className="size-3.5" />
+                    <span>SQL Playground</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
