@@ -1,13 +1,37 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { QueryResult } from '../db/db-client';
 import { BarChart, Bar, Cell, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { BarChart3, LineChart as LineChartIcon, AreaChart as AreaChartIcon } from 'lucide-react';
+import { BarChart3, LineChart as LineChartIcon, AreaChart as AreaChartIcon, Download, ChevronDown, Check, Clipboard } from 'lucide-react';
 
 type ChartType = 'bar' | 'line' | 'area';
+
+function toCsv(fields: { name: string }[], rows: any[]): string {
+  const escape = (v: any) => {
+    if (v === null || v === undefined) return "";
+    const s = String(v);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  return [
+    fields.map((f) => escape(f.name)).join(","),
+    ...rows.map((r) => fields.map((f) => escape(r[f.name])).join(",")),
+  ].join("\n");
+}
 
 export function ChartVisualizer({ result, engine }: { result: QueryResult | null, engine: string }) {
   const [chartType, setChartType] = useState<ChartType>('bar');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
+  
+  React.useEffect(() => {
+    if (!exportOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!exportRef.current?.contains(e.target as Node)) setExportOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [exportOpen]);
 
   // Heuristic to pick axes
   const chartConfig = useMemo(() => {
@@ -93,6 +117,52 @@ export function ChartVisualizer({ result, engine }: { result: QueryResult | null
     ? ['#2F5D8A', '#7A4A9E', '#1D7A6B'] // Postgres Blue, Purple, Teal
     : ['#C99206', '#E25E3E', '#2A7B88']; // DuckDB Yellow, Orange, Cyan
 
+  const downloadCsv = () => {
+    if (!result) return;
+    const text = toCsv(result.fields, result.rows);
+    const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `chart-data.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setExportOpen(false);
+  };
+
+  const downloadPng = () => {
+    const svg = document.querySelector('.sqlx-result-scroll .recharts-surface') as SVGElement;
+    if (!svg) return;
+    
+    // Inline CSS variables so canvas rendering doesn't drop lines/text
+    const style = getComputedStyle(document.body);
+    let svgData = new XMLSerializer().serializeToString(svg);
+    svgData = svgData.replace(/var\(--sqlx-line\)/g, style.getPropertyValue('--sqlx-line').trim() || '#dbe1e0');
+    svgData = svgData.replace(/var\(--sqlx-ink-3\)/g, style.getPropertyValue('--sqlx-ink-3').trim() || '#7d8a92');
+    svgData = svgData.replace(/var\(--sqlx-ink\)/g, style.getPropertyValue('--sqlx-ink').trim() || '#16232b');
+    
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+      if (ctx) {
+        ctx.fillStyle = style.getPropertyValue('--sqlx-panel').trim() || '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        const pngFile = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.download = "chart.png";
+        downloadLink.href = `${pngFile}`;
+        downloadLink.click();
+      }
+    };
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+    setExportOpen(false);
+  };
+
   return (
     <div className="sqlx-result">
       {/* Chart Toolbar */}
@@ -120,13 +190,46 @@ export function ChartVisualizer({ result, engine }: { result: QueryResult | null
           <AreaChartIcon size={13} /> Area
         </button>
 
-        <div className="sqlx-result-actions">
+        <div className="sqlx-result-actions" style={{ marginLeft: 'auto' }}>
           <span className="stat">
             x-axis <b>{chartConfig.xAxisKey}</b>
           </span>
           <span className="stat">
             y-axis <b>{chartConfig.yAxisKeys.join(', ')}</b>
           </span>
+          <div className="sqlx-export" ref={exportRef}>
+            <button
+              className="sqlx-icon-btn wide"
+              onClick={() => setExportOpen((o) => !o)}
+              aria-expanded={exportOpen}
+              aria-haspopup="menu"
+              title="Download Chart or Data"
+            >
+              {copied ? <Check size={13} /> : <Download size={13} />}
+              <span className="label">Export</span>
+              <ChevronDown size={11} className="caret" />
+            </button>
+            {exportOpen && (
+              <div className="sqlx-export-menu" style={{ right: 0, left: 'auto' }}>
+                <p className="head">Download</p>
+                <button onClick={downloadPng}>
+                  <Download size={12} /> Chart as PNG
+                </button>
+                <div className="sep" />
+                <button onClick={downloadCsv}>
+                  <Download size={12} /> Data as CSV
+                </button>
+                <button onClick={() => {
+                  navigator.clipboard.writeText(toCsv(result.fields, result.rows));
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 1600);
+                  setExportOpen(false);
+                }}>
+                  <Clipboard size={12} /> Copy CSV to Clipboard
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -146,11 +249,11 @@ export function ChartVisualizer({ result, engine }: { result: QueryResult | null
               }}
               onMouseLeave={() => setActiveIndex(null)}
             >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-border)" opacity={0.5} />
-              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={{ stroke: 'var(--sqlx-border)' }} tickLine={false} tickMargin={12} />
-              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={false} tickLine={false} tickMargin={10} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-line)" opacity={0.5} />
+              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={{ stroke: 'var(--sqlx-line)' }} tickLine={false} tickMargin={12} />
+              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={false} tickLine={false} tickMargin={10} />
               <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-border)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
+                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-line)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
                 cursor={{ fill: 'transparent' }}
               />
               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '20px' }} />
@@ -168,11 +271,11 @@ export function ChartVisualizer({ result, engine }: { result: QueryResult | null
             </BarChart>
           ) : chartType === 'line' ? (
             <LineChart data={result.rows} margin={{ top: 20, right: 30, left: 10, bottom: 40 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-border)" opacity={0.5} />
-              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={{ stroke: 'var(--sqlx-border)' }} tickLine={false} tickMargin={12} />
-              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={false} tickLine={false} tickMargin={10} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-line)" opacity={0.5} />
+              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={{ stroke: 'var(--sqlx-line)' }} tickLine={false} tickMargin={12} />
+              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={false} tickLine={false} tickMargin={10} />
               <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-border)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
+                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-line)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
               />
               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '20px' }} />
               {chartConfig.yAxisKeys.map((key, i) => (
@@ -181,11 +284,11 @@ export function ChartVisualizer({ result, engine }: { result: QueryResult | null
             </LineChart>
           ) : (
             <AreaChart data={result.rows} margin={{ top: 20, right: 30, left: 10, bottom: 40 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-border)" opacity={0.5} />
-              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={{ stroke: 'var(--sqlx-border)' }} tickLine={false} tickMargin={12} />
-              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-text-dim)' }} axisLine={false} tickLine={false} tickMargin={10} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--sqlx-line)" opacity={0.5} />
+              <XAxis dataKey={chartConfig.xAxisKey} tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={{ stroke: 'var(--sqlx-line)' }} tickLine={false} tickMargin={12} />
+              <YAxis tick={{ fontSize: 12, fill: 'var(--sqlx-ink)', fontWeight: 600 }} axisLine={false} tickLine={false} tickMargin={10} />
               <Tooltip 
-                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-border)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
+                contentStyle={{ borderRadius: '8px', border: '1px solid var(--sqlx-line)', backgroundColor: 'var(--sqlx-panel)', color: 'var(--sqlx-ink)', fontSize: '13px', padding: '8px 12px', boxShadow: 'var(--sqlx-shadow)' }}
               />
               <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '12px', paddingBottom: '20px' }} />
               {chartConfig.yAxisKeys.map((key, i) => (
