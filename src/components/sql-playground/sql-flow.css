@@ -834,11 +834,17 @@
 }
 
 .sqlx-table {
-  width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   font-family: var(--sqlx-mono);
   font-size: 12px;
+  width: max-content;
+}
+.sqlx-table th,
+.sqlx-table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--sqlx-line);
+  white-space: nowrap;
 }
 .sqlx-table thead th {
   position: sticky;
