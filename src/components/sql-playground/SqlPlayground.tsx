@@ -26,11 +26,12 @@ import { SchemaExplorer } from "./explorer/SchemaExplorer";
 import { SchemaVisualizer } from "./visualizer/SchemaVisualizer";
 import { QueryFlowVisualizer } from "./visualizer/QueryFlowVisualizer";
 import { ExecutionPlanVisualizer } from "./visualizer/ExecutionPlanVisualizer";
+import { ChartVisualizer } from "./visualizer/ChartVisualizer";
 import { useIsDark } from "./useIsDark";
 
 import "./sql-flow.css";
 
-type Tab = "results" | "pipeline" | "plan" | "schema";
+type Tab = "results" | "pipeline" | "plan" | "schema" | "chart";
 
 interface HistoryEntry {
   sql: string;
@@ -351,6 +352,7 @@ export function SqlPlayground() {
       label: "Results",
       badge: result && !result.error && !result.isCommand ? String(result.rows.length) : undefined,
     },
+    { id: "chart", label: "Chart" },
     { id: "pipeline", label: "Pipeline" },
     { id: "plan", label: "Plan" },
     { id: "schema", label: "Schema map" },
@@ -640,6 +642,8 @@ export function SqlPlayground() {
                       dark={dark}
                     />
                   )}
+
+                  {tab === "chart" && <ChartVisualizer result={result} engine={engine} />}
 
                   {tab === "schema" && <SchemaVisualizer schema={schema} active />}
                 </div>
