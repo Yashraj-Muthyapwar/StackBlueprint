@@ -29,6 +29,30 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return id, name as customer_name, and country from customers.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-product-price-with-tax": {
+    id: "cycledepot-product-price-with-tax",
+    title: "Preview product prices with tax",
+    prompt:
+      "Return every product's name and price. Calculate price * 1.08 and name the result price_with_tax. The result should have 30 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-product-price-with-tax",
+    starterSql: `-- Cycle Depot price preview.
+-- Return name, price, and price * 1.08 AS price_with_tax from products.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-ready-to-sell-premium-products": {
+    id: "cycledepot-ready-to-sell-premium-products",
+    title: "Find ready-to-sell premium products",
+    prompt:
+      "Return name, price, and in_stock for products priced at least 2000 with at least 50 units in stock. The result should have 4 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-ready-to-sell-premium-products",
+    starterSql: `-- Cycle Depot inventory check.
+-- Return name, price, and in_stock for products that meet both requirements.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
