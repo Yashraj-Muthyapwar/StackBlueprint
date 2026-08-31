@@ -8,6 +8,7 @@
 
 import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 import booleanLogicImg from "@/images/sql/querying/boolean-logic-cycle-depot.png";
+import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -153,91 +154,172 @@ ORDER BY id;`,
   ],
 };
 
-// ---------- 1.2 Range & Set Filtering (IN / BETWEEN) ----------
+// ---------- 1.2 Set, Range & Array Filtering ----------
 const inBetween: LessonContent = {
   slug: "in-between",
-  title: "1.2 Range & Set Filtering (IN / BETWEEN)",
-  subtitle: "Inclusive bounds, set membership, and the OR expansion the optimizer generates.",
+  title: "1.2 Set, Range & Array Filtering",
+  subtitle: "Match a list with IN, an inclusive range with BETWEEN, exclude values with NOT IN, and read PostgreSQL arrays with @>.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Filter by a List or a Range",
       body: [
-        "IN and BETWEEN compress repeated equality checks into a single predicate the optimizer can plan as an index range scan.",
-        "IN is a hash-set probe; BETWEEN is a B-Tree seek to the low bound followed by a walk to the high bound — both ends inclusive.",
+        "Use `IN` when a value can match one item in a known list. It is clearer than writing several conditions joined with `OR`.",
+        "Use `BETWEEN` when a value must sit inside a range. Both endpoints are included, so `price BETWEEN 2000 AND 4000` keeps a price of exactly 2000 or exactly 4000.",
+      ],
+    },
+    {
+      kind: "image",
+      src: rangeSetFiltersImg,
+      alt: "Cycle Depot products flowing through IN, BETWEEN, NOT IN, and PostgreSQL array containment filters.",
+      caption: "IN checks a list, BETWEEN checks an inclusive range, NOT IN excludes a list, and PostgreSQL @> checks that an array contains requested values.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find mid-priced Road and Mountain Bikes",
+      code: `SELECT name, category, price
+FROM products
+WHERE category IN ('Road Bikes', 'Mountain Bikes')
+  AND price BETWEEN 2000 AND 4000
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "Three Cycle Depot products match both filters",
+      headers: ["name", "category", "price"],
+      rows: [
+        ["Trailhead 29 Carbon", "Mountain Bikes", "2450.00"],
+        ["Boulder Full Suspension", "Mountain Bikes", "3199.00"],
+        ["Meridian Road Carbon", "Road Bikes", "2890.00"],
       ],
     },
     {
       kind: "animation",
       variant: "q-range",
-      caption: "IN fans the row against a set probe; BETWEEN clamps it inside a range visor.",
+      caption: "Watch real Cycle Depot products pass through IN, BETWEEN, NOT IN, and a separate PostgreSQL @> array-containment example.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "Exclude Categories with NOT IN",
       body: [
-        "Source rows fan left; a yellow set chip {2,4,6} floats top-right and a green range visor [10,20] floats bottom-right.",
-        "Rows probe the set chip first (misses dim), then enter the range visor; ids inside [10,20] snap to the viewport, outliers discard.",
-        "The viewport holds rows satisfying both predicates; an overlay shows the OR-rewrite the planner generated internally.",
+        "`NOT IN` is the opposite of `IN`: it keeps rows whose value does not appear in the list. A literal list is easy to read when you know exactly which values to leave out.",
+        "Here, Cycle Depot wants higher-priced products outside the Road Bikes and Mountain Bikes categories.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "IN is set membership; BETWEEN is a closed interval",
-      code: `-- /* Phase 1: scan orders table */
-SELECT order_id, customer_id, amount
-FROM   orders
-WHERE  customer_id IN (2, 4, 6)          -- /* Phase 2a: hash-probe each row against {2,4,6} */
-  AND  amount      BETWEEN 10 AND 20;    -- /* Phase 2b: range visor — inclusive on both ends */
-
--- /* Equivalent expansion the planner generates internally */
-SELECT order_id, customer_id, amount
-FROM   orders
-WHERE (customer_id = 2 OR customer_id = 4 OR customer_id = 6)
-  AND  amount >= 10
-  AND  amount <= 20;                     -- /* Phase 3: surviving rows reach the viewport */`,
+      caption: "NOT IN: leave out two product categories",
+      code: `SELECT name, category, price
+FROM products
+WHERE category NOT IN ('Road Bikes', 'Mountain Bikes')
+  AND price >= 2000
+ORDER BY id;`,
     },
     {
       kind: "table",
-      caption: "Inclusivity at a glance",
-      headers: ["Operator", "Low bound", "High bound", "Index usage"],
+      caption: "The two remaining products",
+      headers: ["name", "category", "price"],
       rows: [
-        ["BETWEEN a AND b", "inclusive", "inclusive", "B-Tree range scan"],
-        ["x >= a AND x < b", "inclusive", "exclusive", "B-Tree range scan"],
-        ["IN (v1, v2, …)", "set match", "set match", "Bitmap index scan if list is small"],
-        ["NOT IN (v1, …, NULL)", "n/a", "n/a", "DANGER — see Logic Trap"],
-      ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [183]", "Customers Who Never Order", "Basic IN / NOT IN syntactic validation."],
-        ["Drill [1148]", "Article Views I", "Pure IN-style equality vs. distinct filtering."],
-        ["Challenge [1097]", "Game Play Analysis V", "BETWEEN range filter fused with windowed aggregation."],
+        ["Volt E-Commuter", "City Bikes", "2260.00"],
+        ["Volt E-Cargo", "City Bikes", "3890.00"],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — NOT IN with a NULL poisons the set",
-      body: "`x NOT IN (1, 2, NULL)` expands to `x<>1 AND x<>2 AND x<>NULL`. The last clause is UNKNOWN, collapsing the whole row. Strip NULLs from the inner set or rewrite as NOT EXISTS.",
+      title: "Keep NULL out of a NOT IN list",
+      body: "`value NOT IN ('Road Bikes', NULL)` is not safe. Comparing a value with NULL produces UNKNOWN, and WHERE drops UNKNOWN rows. A literal list without NULL is fine. When values come from another query and may contain NULL, use a NULL-safe approach such as NOT EXISTS later in the course.",
+    },
+    {
+      kind: "prose",
+      heading: "PostgreSQL Arrays: Contains with @>",
+      body: [
+        "PostgreSQL also has array operators. `@>` means the array on the left contains every value in the array on the right. Array order does not matter for this check.",
+        "Cycle Depot's current `products` table has no array column, so this is a self-contained PostgreSQL example using `VALUES`. It teaches the operator without pretending the production dataset stores product tags this way.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "PostgreSQL only: find products tagged road",
+      code: `WITH product_tags(name, tags) AS (
+  VALUES
+    ('Aero Sprint Pro', ARRAY['road', 'race', 'carbon']),
+    ('Gravel Runner GX', ARRAY['road', 'gravel', 'tubeless']),
+    ('City Commuter 7', ARRAY['city', 'rack'])
+)
+SELECT name, tags
+FROM product_tags
+WHERE tags @> ARRAY['road'];`,
+    },
+    {
+      kind: "table",
+      caption: "@> keeps arrays that contain the requested road tag",
+      headers: ["name", "tags"],
+      rows: [
+        ["Aero Sprint Pro", "{road,race,carbon}"],
+        ["Gravel Runner GX", "{road,gravel,tubeless}"],
+      ],
     },
     {
       kind: "callout",
       tone: "info",
-      title: "Planner impact",
-      body: "PostgreSQL converts small IN lists into a ScalarArrayOpExpr (vectorised hash probe); larger lists become an implicit VALUES join. BETWEEN on an indexed column triggers a range scan — wrapping the column in any function kills it.",
+      title: "Database-specific syntax",
+      body: "`@>` is PostgreSQL array syntax. It is not the same as IN, and it is not portable SQL. Use it only when the active database supports arrays and the column is genuinely an array.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build a premium bike range",
+      prompt: "Return name, category, and price for Road, Mountain, or City Bikes priced from 2000 to 4000, but exclude City Bikes. Use IN, NOT IN, and BETWEEN in the checked Cycle Depot exercise.",
+      tables: ["products"],
+      successCheck: "3 rows with the columns name, category, and price.",
+      href: "/sql-playground?practice=cycledepot-premium-bike-range",
     },
     {
       kind: "takeaways",
       items: [
-        "BETWEEN is inclusive on both ends — for half-open intervals use explicit >= / <.",
-        "IN compresses N equality checks into one set probe.",
-        "NOT IN + NULL silently zeroes your result set — use NOT EXISTS instead.",
-        "Wrapping the indexed column in any function kills the index scan.",
+        "IN keeps a row when its value matches one item in a list.",
+        "BETWEEN includes both endpoints. Use explicit comparisons when you need an exclusive end.",
+        "NOT IN excludes listed values, but a NULL in that list can make every comparison UNKNOWN.",
+        "PostgreSQL @> means an array contains every requested value. It is database-specific syntax, not a replacement for IN.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "range-set-in",
+          question: "Which condition keeps products in either the Road Bikes or Mountain Bikes category?",
+          options: [
+            "category BETWEEN 'Road Bikes' AND 'Mountain Bikes'",
+            "category IN ('Road Bikes', 'Mountain Bikes')",
+            "category @> ARRAY['Road Bikes', 'Mountain Bikes']",
+            "category NOT IN ('Road Bikes', 'Mountain Bikes')",
+          ],
+          correctIndex: 1,
+          explanation: "IN tests whether one value matches any value in the list.",
+        },
+        {
+          id: "range-set-between",
+          question: "Does price BETWEEN 2000 AND 4000 include a product priced exactly 4000?",
+          options: ["Yes", "No", "Only in PostgreSQL", "Only when price is an integer"],
+          correctIndex: 0,
+          explanation: "BETWEEN includes both its lower and upper bounds.",
+        },
+        {
+          id: "range-set-array",
+          question: "In PostgreSQL, what does tags @> ARRAY['road'] test?",
+          options: [
+            "Whether tags equals exactly ['road']",
+            "Whether tags contains the value road",
+            "Whether tags excludes the value road",
+            "Whether tags is sorted by road",
+          ],
+          correctIndex: 1,
+          explanation: "@> is the PostgreSQL array-contains operator: the left array must contain every value requested on the right.",
+        },
       ],
     },
   ],
