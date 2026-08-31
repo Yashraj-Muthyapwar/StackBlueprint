@@ -2,6 +2,7 @@ import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
 import sqlOperatorsImg from "@/images/sql/querying-fundamentals/sql-operators.png";
+import whereFiltersImg from "@/images/sql/querying-fundamentals/where-filters.png";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 
 const selectFrom: LessonContent = {
@@ -223,62 +224,204 @@ FROM customers;`,
 const whereLesson: LessonContent = {
   slug: "where",
   title: "WHERE Filters",
-  subtitle: "Predicates, short-circuiting, and sargable vs non-sargable conditions.",
+  subtitle: "Keep the Cycle Depot rows that match a condition, combine conditions, and handle missing values safely.",
   sections: [
     {
       kind: "prose",
-      heading: "WHERE happens before SELECT",
+      heading: "WHERE Chooses Which Rows Continue",
       body: [
-        "WHERE filters rows from the FROM relation before aggregation or projection. The predicate runs once per candidate row — a row advances only if it returns TRUE. UNKNOWN (the NULL case) drops the row too.",
+        "`WHERE` tells the database which rows to keep. After `FROM` produces the candidate rows, SQL evaluates a condition, called a **predicate**, for each row. Only rows where that predicate is `TRUE` appear in the result.",
+        "Think of WHERE as a row filter, not a column selector. `SELECT` decides which columns you see. `WHERE` decides which rows reach the result.",
+      ],
+    },
+    {
+      kind: "diagram",
+      caption: "A simplified logical order for a basic filtered query",
+      ascii: `FROM customers
+     ↓ candidate rows
+WHERE country = 'USA'
+     ↓ rows where the predicate is TRUE
+SELECT name, country
+     ↓ result columns`,
+    },
+    {
+      kind: "image",
+      src: whereFiltersImg,
+      alt: "Cycle Depot customer rows filtered by WHERE country equals USA into a smaller result table",
+      caption:
+        "WHERE checks a condition for each source row and keeps only the rows where that condition is true.",
+    },
+    {
+      kind: "prose",
+      heading: "Start with One Clear Condition",
+      body: [
+        "The smallest useful filter compares one column to one value. This query keeps every Cycle Depot customer in the USA. It returns 27 rows; the table is a four-row preview.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Operators you'll use every day",
-      code: `SELECT * FROM products
-WHERE  price BETWEEN 10 AND 50          -- inclusive range
-   AND name ILIKE 'pen%'                -- case-insensitive prefix
-   AND category_id IN (3, 5, 7)         -- set membership
-   AND deleted_at IS NULL               -- NULL check
-   AND tags @> ARRAY['featured'];       -- array contains`,
-    },
-    {
-      kind: "prose",
-      heading: "Sargable vs non-sargable",
-      body: [
-        "A predicate is sargable (Search ARGument ABLE) when the engine can use an index. Wrapping a column in a function usually breaks that — the engine must compute the function for every row instead of using the index.",
-      ],
+      caption: "Keep customers in the USA",
+      code: `SELECT name, country
+FROM customers
+WHERE country = 'USA';`,
     },
     {
       kind: "table",
-      headers: ["Non-sargable (bad)", "Sargable (good)"],
+      caption: "Four example rows from the 27 matching customers",
+      headers: ["name", "country"],
       rows: [
-        [
-          "WHERE lower(email) = 'x'",
-          "WHERE email = 'X' COLLATE \"C\"  -or-  functional index on lower(email)",
-        ],
-        [
-          "WHERE date(created_at) = '2026-06-01'",
-          "WHERE created_at >= '2026-06-01' AND created_at < '2026-06-02'",
-        ],
-        ["WHERE price + 10 > 100", "WHERE price > 90"],
-        ["WHERE name LIKE '%pen%'", "WHERE name LIKE 'pen%' (anchored left, can use btree)"],
+        ["Zane Novak", "USA"],
+        ["Ugo Mensah", "USA"],
+        ["Sami Mensah", "USA"],
+        ["Vera Doyle", "USA"],
       ],
     },
     {
       kind: "callout",
       tone: "info",
-      title: "Put selective predicates first",
-      body: "Postgres reorders predicates by selectivity, but as a habit put the cheapest and most selective predicate first — it makes EXPLAIN easier to read and intent obvious.",
+      title: "WHERE comes before SELECT aliases",
+      body: "A SELECT alias is not available inside WHERE because WHERE is evaluated earlier. For example, a price_with_tax alias cannot be used as a WHERE condition in the same query. The Logical Query Order lesson explains the complete sequence later.",
+    },
+    {
+      kind: "prose",
+      heading: "Combine Conditions with AND or OR",
+      body: [
+        "Use `AND` when every requirement must be true. Use `OR` when either requirement is enough. You learned the operators in the previous lesson; WHERE gives those true-or-false answers a job to do.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Common WHERE patterns with Cycle Depot data",
+      headers: ["Need", "Condition"],
+      rows: [
+        ["One match", "country = 'USA'"],
+        ["Both requirements", "price >= 2000 AND in_stock >= 50"],
+        ["Either alternative", "country = 'USA' OR country = 'Canada'"],
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep products that are premium-priced and ready to sell",
+      code: `SELECT name, price, in_stock
+FROM products
+WHERE price >= 2000
+  AND in_stock >= 50;`,
+    },
+    {
+      kind: "table",
+      caption: "All four products where both conditions are true",
+      headers: ["name", "price", "in_stock"],
+      rows: [
+        ["Trailhead 29 Carbon", "2450.00", "113"],
+        ["Boulder Full Suspension", "3199.00", "125"],
+        ["Meridian Road Carbon", "2890.00", "65"],
+        ["Aero Sprint Pro", "5400.00", "99"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Missing Values Need IS NULL",
+      body: [
+        "`NULL` means a value is missing or unknown. It is not the text 'NULL', and it is not equal to anything, including another NULL.",
+        "Do not write `city = NULL`. That comparison evaluates to UNKNOWN, and WHERE keeps only true rows. Use `IS NULL` to find missing values and `IS NOT NULL` to find present values.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find customers whose city is missing",
+      code: `SELECT id, name, country
+FROM customers
+WHERE city IS NULL;`,
+    },
+    {
+      kind: "table",
+      caption: "All five customers whose city is missing",
+      headers: ["id", "name", "country"],
+      rows: [
+        ["5", "Omar Doyle", "Germany"],
+        ["14", "Hana Yilmaz", "France"],
+        ["45", "Chloe Farouk", "France"],
+        ["46", "Farid Sharma", "Canada"],
+        ["47", "Elena Silva", "USA"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "A useful rule for NULL",
+      body: "WHERE keeps only TRUE. FALSE and UNKNOWN are both excluded. That is why = NULL does not find missing values, while IS NULL does.",
+    },
+    {
+      kind: "animation",
+      variant: "where-filtering",
+      caption:
+        "Watch WHERE keep true rows, AND narrow a result further, and IS NULL find the rows with a missing city",
+    },
+    {
+      kind: "playground-practice",
+      title: "Find customers without a city",
+      prompt:
+        "Return id, name, and email for every customer whose city is missing. Use IS NULL, then run the checked Cycle Depot exercise.",
+      tables: ["customers"],
+      successCheck: "5 rows with the columns id, name, and email.",
+      href: "/sql-playground?practice=cycledepot-customers-without-city",
     },
     {
       kind: "takeaways",
       items: [
-        "WHERE runs before SELECT/GROUP BY/ORDER BY.",
-        "Don't wrap indexed columns in functions — predicate becomes non-sargable.",
-        "Convert date_trunc filters to half-open ranges.",
-        "Anchored LIKE 'x%' is index-friendly; '%x%' is not.",
+        "FROM produces candidate rows, WHERE filters them, and SELECT chooses result columns.",
+        "A condition in WHERE is called a predicate. Only TRUE rows pass it.",
+        "Use =, >, and other comparison operators to write a condition.",
+        "Use AND when every condition is required, and OR when either condition is enough.",
+        "NULL means missing or unknown. Use IS NULL and IS NOT NULL, never = NULL.",
+        "FALSE and UNKNOWN rows do not pass a WHERE filter.",
+        "SELECT aliases are not available in WHERE because WHERE runs earlier.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "where1",
+          question: "What does WHERE decide in a SQL query?",
+          options: [
+            "Which columns appear in the result",
+            "Which rows continue to the result",
+            "The name of the source table",
+            "The order of result columns",
+          ],
+          correctIndex: 1,
+          explanation: "WHERE filters rows. SELECT decides which columns the surviving rows return.",
+        },
+        {
+          id: "where2",
+          question: "Which condition keeps products priced at least 2000 with at least 50 units in stock?",
+          options: [
+            "price >= 2000 OR in_stock >= 50",
+            "price >= 2000 AND in_stock >= 50",
+            "price = 2000 AND in_stock = 50",
+            "price >= 2000 NOT in_stock >= 50",
+          ],
+          correctIndex: 1,
+          explanation: "Both business requirements must be true, so the two comparisons are joined with AND.",
+        },
+        {
+          id: "where3",
+          question: "Which condition correctly finds Cycle Depot customers with no city?",
+          options: ["city = NULL", "city <> NULL", "city IS NULL", "city = 'NULL'"],
+          correctIndex: 2,
+          explanation: "NULL needs the special IS NULL test. A comparison such as city = NULL produces UNKNOWN.",
+        },
+        {
+          id: "where4",
+          question: "Which rows pass a WHERE filter?",
+          options: ["Only TRUE rows", "TRUE and FALSE rows", "TRUE and UNKNOWN rows", "Every row"],
+          correctIndex: 0,
+          explanation: "WHERE keeps TRUE rows. FALSE and UNKNOWN are excluded.",
+        },
       ],
     },
   ],
