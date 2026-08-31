@@ -20,7 +20,7 @@ import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
 // ---------- 1.1 Boolean Logic (AND / OR / NOT) ----------
 const booleanLogic: LessonContent = {
   slug: "boolean-logic",
-  title: "1.1 Boolean Logic (AND / OR / NOT)",
+  title: "Boolean Logic (AND / OR / NOT)",
   subtitle: "Combine product rules with AND, OR, and NOT, then make mixed conditions easy to read.",
   sections: [
     {
@@ -160,7 +160,7 @@ ORDER BY id;`,
 // ---------- 1.2 Set, Range & Array Filtering ----------
 const inBetween: LessonContent = {
   slug: "in-between",
-  title: "1.2 Set, Range & Array Filtering",
+  title: "Set, Range & Array Filtering",
   subtitle: "Match a list with IN, an inclusive range with BETWEEN, exclude values with NOT IN, and read PostgreSQL arrays with @>.",
   sections: [
     {
@@ -331,7 +331,7 @@ WHERE tags @> ARRAY['road'];`,
 // ---------- 1.3 Pattern Matching (LIKE / ILIKE) ----------
 const likeIlike: LessonContent = {
   slug: "like-ilike",
-  title: "1.3 Pattern Matching (LIKE / ILIKE)",
+  title: "Pattern Matching (LIKE / ILIKE)",
   subtitle: "Search Cycle Depot product names with %, _, ILIKE, NOT LIKE, and safe literal matching.",
   sections: [
     {
@@ -548,7 +548,7 @@ WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
 // ---------- 1.4 The NULL Pitfalls (Three-Valued Logic) ----------
 const nullPitfalls: LessonContent = {
   slug: "null-pitfalls",
-  title: "1.4 The NULL Pitfalls (Three-Valued Logic)",
+  title: "The NULL Pitfalls (Three-Valued Logic)",
   subtitle: "Find missing values safely and understand why UNKNOWN rows disappear from WHERE.",
   sections: [
     {
@@ -721,7 +721,7 @@ ORDER BY id;`,
 // ---------- 1.5 Writing Efficient WHERE Predicates ----------
 const sargability: LessonContent = {
   slug: "writing-efficient-where-predicates",
-  title: "1.5 Writing Efficient WHERE Predicates",
+  title: "Writing Efficient WHERE Predicates",
   subtitle: "Write index-friendly filters and use safe date ranges without changing the result you mean.",
   sections: [
     {
@@ -890,6 +890,136 @@ WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
   ],
 };
 
+// ---------- Filtering & Predicates: Final Quiz ----------
+const filteringFinalQuiz: LessonContent = {
+  slug: "filtering-predicates-quiz",
+  title: "Filtering & Predicates: Final Quiz",
+  subtitle: "Test your command of boolean logic, filter operators, NULL behavior, patterns, and efficient date predicates.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "filtering-final-boolean-parentheses",
+          question: "Why are parentheses useful in WHERE (category = 'Road Bikes' AND in_stock >= 90) OR price >= 4000?",
+          options: [
+            "They rename category.",
+            "They make the first business rule a clear unit before OR combines it with the price rule.",
+            "They remove duplicate rows.",
+            "They make SELECT run before FROM.",
+          ],
+          correctIndex: 1,
+          explanation: "Parentheses show exactly which conditions belong together, making a mixed boolean rule safer to read and change.",
+        },
+        {
+          id: "filtering-final-between",
+          question: "Which condition keeps a product priced from 2000 through 4000, including both endpoints?",
+          options: [
+            "price IN (2000, 4000)",
+            "price BETWEEN 2000 AND 4000",
+            "price > 2000 AND price < 4000",
+            "price @> ARRAY[2000, 4000]",
+          ],
+          correctIndex: 1,
+          explanation: "BETWEEN includes both its lower and upper boundary.",
+        },
+        {
+          id: "filtering-final-array",
+          question: "In PostgreSQL, what does tags @> ARRAY['road', 'carbon'] require?",
+          options: [
+            "The tags array must be exactly road and carbon in that order.",
+            "The tags array must contain road and carbon, in any order, and may contain more values.",
+            "The tags array must exclude road and carbon.",
+            "The tags column must be text, not an array.",
+          ],
+          correctIndex: 1,
+          explanation: "@> is PostgreSQL array containment: the left array contains every requested value on the right.",
+        },
+        {
+          id: "filtering-final-not-in-null",
+          question: "Why is category NOT IN ('Road Bikes', NULL) unsafe?",
+          options: [
+            "NOT IN cannot compare text.",
+            "The NULL can make non-matching comparisons UNKNOWN, which WHERE drops.",
+            "It always returns Road Bikes only.",
+            "It automatically turns NULL into an empty string.",
+          ],
+          correctIndex: 1,
+          explanation: "A NULL in a NOT IN list can turn a comparison into UNKNOWN instead of TRUE.",
+        },
+        {
+          id: "filtering-final-like-percent",
+          question: "What does name LIKE 'Volt%' match?",
+          options: [
+            "Names that contain Volt anywhere.",
+            "Names that start with Volt.",
+            "Names with exactly one character after Volt.",
+            "Only the exact name Volt.",
+          ],
+          correctIndex: 1,
+          explanation: "The trailing % means zero or more characters may follow Volt.",
+        },
+        {
+          id: "filtering-final-ilike-escape",
+          question: "Which statement about pattern matching is correct in PostgreSQL?",
+          options: [
+            "ILIKE is case-insensitive, and ESCAPE can make _ a literal underscore.",
+            "ILIKE removes duplicates, and _ means zero or more characters.",
+            "LIKE ignores case, and % matches exactly one character.",
+            "NOT LIKE is required before every ILIKE search.",
+          ],
+          correctIndex: 0,
+          explanation: "ILIKE ignores letter case. In a LIKE pattern, _ is a one-character wildcard unless an escape character makes it literal.",
+        },
+        {
+          id: "filtering-final-null-test",
+          question: "Which condition correctly finds Cycle Depot customers whose city is missing?",
+          options: ["city = NULL", "city <> NULL", "city IS NULL", "city IN (NULL)"],
+          correctIndex: 2,
+          explanation: "Normal comparisons with NULL are UNKNOWN. IS NULL is the missing-value test.",
+        },
+        {
+          id: "filtering-final-unknown",
+          question: "What happens to a row where city is NULL under WHERE city <> 'Austin'?",
+          options: [
+            "It is kept because NULL is different from Austin.",
+            "It is dropped because the comparison is UNKNOWN and WHERE keeps only TRUE.",
+            "It is converted to Austin.",
+            "It causes every row to be removed with a syntax error.",
+          ],
+          correctIndex: 1,
+          explanation: "NULL is unknown, so the comparison is UNKNOWN. WHERE drops FALSE and UNKNOWN rows.",
+        },
+        {
+          id: "filtering-final-date-range",
+          question: "Which predicate safely selects every timestamp in March 2024?",
+          options: [
+            "placed_at BETWEEN TIMESTAMP '2024-03-01 00:00:00' AND TIMESTAMP '2024-03-31 00:00:00'",
+            "DATE_TRUNC('month', placed_at) = DATE '2024-03-01'",
+            "placed_at >= TIMESTAMP '2024-03-01 00:00:00' AND placed_at < TIMESTAMP '2024-04-01 00:00:00'",
+            "placed_at = DATE '2024-03-01'",
+          ],
+          correctIndex: 2,
+          explanation: "The half-open range includes every instant after March begins and before April begins.",
+        },
+        {
+          id: "filtering-final-sargability",
+          question: "Why is order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' usually more index-friendly than DATE_TRUNC('month', order_date) = DATE '2024-03-01'?",
+          options: [
+            "It changes the result to include fewer rows.",
+            "It compares the stored date directly with boundaries instead of applying a function to each date value.",
+            "It removes the need for WHERE.",
+            "It guarantees an index scan.",
+          ],
+          correctIndex: 1,
+          explanation: "The bare-column range provides a direct search argument. The planner may then choose a suitable index, but it is not guaranteed.",
+        },
+      ],
+    },
+  ],
+};
+
 // =============================================================
 // MODULE 2: AGGREGATIONS & GROUP BY
 // =============================================================
@@ -897,7 +1027,7 @@ WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
 // ---------- 2.1 Aggregate Functions ----------
 const aggregateFns: LessonContent = {
   slug: "aggregate-functions",
-  title: "2.1 Aggregate Functions (COUNT / SUM / AVG / MIN / MAX)",
+  title: "Aggregate Functions (COUNT / SUM / AVG / MIN / MAX)",
   subtitle: "Streaming reducers, NULL skipping, and the COUNT(*) vs COUNT(col) asymmetry.",
   sections: [
     {
@@ -992,7 +1122,7 @@ FROM   orders;`,
 // ---------- 2.2 The Collapse Engine (GROUP BY) ----------
 const groupByLesson: LessonContent = {
   slug: "group-by",
-  title: "2.2 The Collapse Engine (GROUP BY)",
+  title: "The Collapse Engine (GROUP BY)",
   subtitle: "Hashing rows into per-key buckets and reducing each bucket to one output row.",
   sections: [
     {
@@ -1090,7 +1220,7 @@ GROUP  BY region, currency;`,
 // ---------- 2.3 Evaluation Filtering (HAVING) ----------
 const havingLesson: LessonContent = {
   slug: "having",
-  title: "2.3 Evaluation Filtering (HAVING)",
+  title: "Evaluation Filtering (HAVING)",
   subtitle: "HAVING filters whole buckets after aggregation — WHERE filters individual rows before.",
   sections: [
     {
@@ -1188,7 +1318,7 @@ GROUP  BY region;`,
 // ---------- 2.4 Multi-Dimensional Aggregations (GROUPING SETS) ----------
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
-  title: "2.4 Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
+  title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
   subtitle: "All subtotal permutations in one table scan — no UNION ALL required.",
   sections: [
     {
@@ -1294,7 +1424,7 @@ GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dim
 // ---------- 3.1 Core Shapes (INNER vs LEFT/RIGHT/FULL) ----------
 const innerOuter: LessonContent = {
   slug: "inner-outer",
-  title: "3.1 Core Shapes (INNER vs LEFT / RIGHT / FULL)",
+  title: "Core Shapes (INNER vs LEFT / RIGHT / FULL)",
   subtitle: "Logical Cartesian product, row preservation rules, and NULL-padding for unmatched predicates.",
   sections: [
     {
@@ -1393,7 +1523,7 @@ WHERE  o.customer_id IS NULL;                   -- /* customers who never ordere
 // ---------- 3.2 Self Joins ----------
 const selfJoins: LessonContent = {
   slug: "self-joins",
-  title: "3.2 Self Joins",
+  title: "Self Joins",
   subtitle: "Aliasing one relation as two virtual copies to walk hierarchies, adjacencies, and time-series intervals.",
   sections: [
     {
@@ -1494,7 +1624,7 @@ JOIN   people p2
 // ---------- 3.3 Filtering Joins (Semi & Anti) ----------
 const semiAnti: LessonContent = {
   slug: "semi-anti",
-  title: "3.3 Filtering Joins (Semi & Anti)",
+  title: "Filtering Joins (Semi & Anti)",
   subtitle: "EXISTS, NOT EXISTS, IN, and LEFT JOIN…IS NULL — existential checks without row multiplication.",
   sections: [
     {
@@ -1598,7 +1728,7 @@ WHERE  c.id IN (SELECT customer_id FROM orders);`,
 // ---------- 3.4 Under-the-Hood Join Algorithms ----------
 const joinAlgorithms: LessonContent = {
   slug: "join-algorithms",
-  title: "3.4 Under-the-Hood Join Algorithms",
+  title: "Under-the-Hood Join Algorithms",
   subtitle: "Nested Loop vs Hash Join vs Sort-Merge — memory, complexity, and spill-to-disk thresholds.",
   sections: [
     {
@@ -1698,7 +1828,7 @@ RESET enable_hashjoin;              -- /* always reset session knobs */`,
 // ---------- 4.1 Scalar Subqueries ----------
 const scalarSubqueries: LessonContent = {
   slug: "scalar-subqueries",
-  title: "4.1 Scalar Subqueries",
+  title: "Scalar Subqueries",
   subtitle: "Nested atomic expressions returning exactly one row, one column — used inside SELECT, WHERE, or expressions.",
   sections: [
     {
@@ -1792,7 +1922,7 @@ FROM   orders;                                       -- /* single-value lookup *
 // ---------- 4.2 Correlated Subqueries ----------
 const correlatedSubqueries: LessonContent = {
   slug: "correlated-subqueries",
-  title: "4.2 Correlated Subqueries",
+  title: "Correlated Subqueries",
   subtitle: "Inner depends on outer row — the row-by-row nested loop and its O(N²) trap.",
   sections: [
     {
@@ -1887,7 +2017,7 @@ WHERE salary > dept_avg;             -- /* one pass, no per-row re-execution */`
 // ---------- 4.3 Existence Checks (EXISTS vs IN) ----------
 const existsVsIn: LessonContent = {
   slug: "exists-vs-in",
-  title: "4.3 Existence Checks (EXISTS vs IN)",
+  title: "Existence Checks (EXISTS vs IN)",
   subtitle: "Planner rewrites, short-circuit semantics, and the NOT IN-with-NULL catastrophe.",
   sections: [
     {
@@ -1987,7 +2117,7 @@ WHERE  c.id NOT IN (
 // ---------- 4.4 Set Operations (UNION / INTERSECT / EXCEPT) ----------
 const setOps: LessonContent = {
   slug: "set-ops",
-  title: "4.4 Set Operations (UNION / INTERSECT / EXCEPT)",
+  title: "Set Operations (UNION / INTERSECT / EXCEPT)",
   subtitle: "Vertical schema concatenation, dedup overhead, and the UNION vs UNION ALL performance cliff.",
   sections: [
     {
@@ -2093,16 +2223,16 @@ LIMIT  100;`,
 export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
   filtering: {
     slug: "filtering",
-    title: "01 · Filtering & Predicates",
+    title: "Filtering & Predicates",
     category: "Querying Data",
     iconKey: "terminal",
     blurb:
       "Boolean logic, range/set filters, pattern matching, NULL semantics, and index-friendly WHERE predicates.",
-    lessons: [booleanLogic, inBetween, likeIlike, nullPitfalls, sargability],
+    lessons: [booleanLogic, inBetween, likeIlike, nullPitfalls, sargability, filteringFinalQuiz],
   },
   aggregations: {
     slug: "aggregations",
-    title: "02 · Aggregations & GROUP BY",
+    title: "Aggregations & GROUP BY",
     category: "Querying Data",
     iconKey: "database",
     blurb:
@@ -2111,7 +2241,7 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
   },
   joins: {
     slug: "joins",
-    title: "03 · Joins",
+    title: "Joins",
     category: "Querying Data",
     iconKey: "table",
     blurb:
@@ -2120,7 +2250,7 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
   },
   subqueries: {
     slug: "subqueries",
-    title: "04 · Subqueries & Set Ops",
+    title: "Subqueries & Set Ops",
     category: "Querying Data",
     iconKey: "terminal",
     blurb:
