@@ -214,6 +214,46 @@ export const CHALLENGES: ChallengeDefinition[] = [
     }
   },
   {
+    id: "cycle-depot-first-three-countries",
+    version: 1,
+    title: "Build a short country list",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "The Cycle Depot onboarding form needs the first three country choices in alphabetical order.",
+    requirements: [
+      "Use the customers table.",
+      "Return the country column only.",
+      "Remove repeated country values.",
+      "Sort alphabetically and keep the first 3 rows.",
+    ],
+    requiredTables: ["customers"],
+    hints: [
+      "Put DISTINCT immediately after SELECT to remove repeated country values.",
+      "Use ORDER BY country ASC before LIMIT 3.",
+    ],
+    solutionSql: {
+      postgres: "SELECT DISTINCT country FROM customers ORDER BY country ASC LIMIT 3;",
+      duckdb: "SELECT DISTINCT country FROM customers ORDER BY country ASC LIMIT 3;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT DISTINCT country FROM customers ORDER BY country ASC LIMIT 3;",
+        duckdb: "SELECT DISTINCT country FROM customers ORDER BY country ASC LIMIT 3;",
+      },
+      requiredColumns: ["country"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Country list complete",
+      body: "Correct. You removed repeated countries, sorted the result alphabetically, and kept the first three rows.",
+      nextConcept: "Logical query order",
+    },
+  },
+  {
     id: "cycle-depot-recent-delivered-orders",
     version: 1,
     title: "Recent delivered orders",
