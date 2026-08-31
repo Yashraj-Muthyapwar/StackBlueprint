@@ -183,6 +183,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-premium-bike-range",
+    version: 1,
+    title: "Build a premium bike range",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Build a Cycle Depot shortlist of mid-priced Road and Mountain Bikes.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly these columns: name, category, and price.",
+      "Start with the Road Bikes, Mountain Bikes, and City Bikes categories using IN.",
+      "Exclude City Bikes using NOT IN.",
+      "Keep prices from 2000 through 4000 using BETWEEN.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot premium bike range.
+-- Return name, category, and price for the qualifying products.
+-- Use IN, NOT IN, and BETWEEN in the WHERE clause.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, category, price FROM products.",
+      "Use category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') for the allowed set.",
+      "Add category NOT IN ('City Bikes') and price BETWEEN 2000 AND 4000 with AND.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+      duckdb: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+        duckdb: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+      },
+      requiredColumns: ["name", "category", "price"],
+      columnOrder: "exact",
+      rowOrder: "any",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Premium bike range complete",
+      body: "Correct. You used a set, an exclusion, and an inclusive price range to find the three matching products.",
+      nextConcept: "Pattern matching with LIKE and ILIKE",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",
