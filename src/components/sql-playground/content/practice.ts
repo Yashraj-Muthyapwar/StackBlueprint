@@ -53,6 +53,18 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name, price, and in_stock for products that meet both requirements.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-customers-without-city": {
+    id: "cycledepot-customers-without-city",
+    title: "Find customers without a city",
+    prompt:
+      "Return id, name, and email for customers whose city is missing. Use IS NULL, not = NULL. The result should have 5 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customers-without-city",
+    starterSql: `-- Cycle Depot data-quality check.
+-- Return id, name, and email for customers whose city is missing.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
