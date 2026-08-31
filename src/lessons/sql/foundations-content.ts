@@ -56,6 +56,7 @@ export type Section =
         | "select-distinct"
         | "offset-pagination"
         | "sql-comments"
+        | "sql-calculations-aliases"
         | "sql-operators"
         | "q-bool"
         | "q-range"
