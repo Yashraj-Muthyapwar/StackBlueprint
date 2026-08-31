@@ -45,6 +45,97 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-product-price-with-tax",
+    version: 1,
+    title: "Preview product prices with tax",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a price preview for the Cycle Depot merchandising team.",
+    requirements: [
+      "Use the products table.",
+      "Return every product's name and price.",
+      "Calculate price * 1.08.",
+      "Name the calculated column price_with_tax.",
+      "Return exactly these columns: name, price, and price_with_tax.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot price preview.
+-- Return name, price, and price * 1.08 AS price_with_tax from products.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, price FROM products.",
+      "Add price * 1.08 and use AS price_with_tax to name the calculated result.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, price, price * 1.08 AS price_with_tax FROM products;",
+      duckdb: "SELECT name, price, price * 1.08 AS price_with_tax FROM products;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, price, price * 1.08 AS price_with_tax FROM products;",
+        duckdb: "SELECT name, price, price * 1.08 AS price_with_tax FROM products;",
+      },
+      requiredColumns: ["name", "price", "price_with_tax"],
+      columnOrder: "exact",
+      rowOrder: "any",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Price preview complete",
+      body: "Correct. You created a calculated value for every product and gave it a clear result-column name.",
+      nextConcept: "Filter products with WHERE",
+    },
+  },
+  {
+    id: "cycle-depot-ready-to-sell-premium-products",
+    version: 1,
+    title: "Find ready-to-sell premium products",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Find products the Cycle Depot team can promote now.",
+    requirements: [
+      "Use the products table.",
+      "Return the name, price, and in_stock columns.",
+      "Keep products priced at least 2000.",
+      "Keep products with at least 50 units in stock.",
+      "Use AND so both requirements must be true.",
+      "Return exactly these columns: name, price, and in_stock.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot inventory check.
+-- Return name, price, and in_stock for products that meet both requirements.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, price, in_stock FROM products.",
+      "Add WHERE, then join price >= 2000 and in_stock >= 50 with AND.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+      duckdb: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+        duckdb: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+      },
+      requiredColumns: ["name", "price", "in_stock"],
+      columnOrder: "exact",
+      rowOrder: "any",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Promotion list complete",
+      body: "Correct. You used comparison operators and AND to keep only products that meet both business requirements.",
+      nextConcept: "More detailed WHERE filtering",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",
