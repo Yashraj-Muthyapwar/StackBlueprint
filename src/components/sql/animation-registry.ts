@@ -5,6 +5,7 @@ import { pipelineStages } from "./querying-fundamentals/logical-query-order";
 import { introSqlClientServer } from "./foundations/client-server";
 import { commentsStages, calculationAliasStages } from "./querying-fundamentals/sql-basics-comments-calculations-aliases";
 import { operatorStages } from "./querying-fundamentals/sql-operators";
+import { whereFilteringStages } from "./querying-fundamentals/where-filters";
 import { offsetStages } from "./querying-fundamentals/order-by-and-limit";
 import { queryStructureStages } from "./querying-fundamentals/query-structure";
 import { distinctStages } from "./querying-fundamentals/select-distinct";
@@ -31,6 +32,7 @@ export const STAGES_REGISTRY = {
   "commands-map": commandsMapStages, "query-structure": queryStructureStages, "select-distinct": distinctStages,
   "offset-pagination": offsetStages, "sql-comments": commentsStages,
   "sql-calculations-aliases": calculationAliasStages, "sql-operators": operatorStages,
+  "where-filtering": whereFilteringStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
