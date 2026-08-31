@@ -104,7 +104,7 @@ const sections: Section[] = [
           "Comments, calculations & aliases",
           "SQL operators",
           "WHERE filters",
-          "ORDER BY / LIMIT",
+          "DISTINCT, ORDER BY & LIMIT",
           "Logical query order",
         ],
         unlocked: true,
