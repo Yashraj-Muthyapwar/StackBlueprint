@@ -3,7 +3,8 @@ import { introHow, introQuerying, introStorage, introTypes, introWhatIs } from "
 import { algosStages, semiStages, selfStages, vennStages } from "./querying/joins";
 import { pipelineStages } from "./querying-fundamentals/logical-query-order";
 import { introSqlClientServer } from "./foundations/client-server";
-import { commentsStages, operatorsStages } from "./querying-fundamentals/sql-basics-comments-and-operators";
+import { commentsStages, calculationAliasStages } from "./querying-fundamentals/sql-basics-comments-calculations-aliases";
+import { operatorStages } from "./querying-fundamentals/sql-operators";
 import { offsetStages } from "./querying-fundamentals/order-by-and-limit";
 import { queryStructureStages } from "./querying-fundamentals/query-structure";
 import { distinctStages } from "./querying-fundamentals/select-distinct";
@@ -28,7 +29,8 @@ export const STAGES_REGISTRY = {
   "intro-what-is-db": introWhatIs, "intro-db-types": introTypes, "intro-how-db-works": introHow,
   "intro-querying": introQuerying, "intro-storage": introStorage, "intro-sql-client-server": introSqlClientServer,
   "commands-map": commandsMapStages, "query-structure": queryStructureStages, "select-distinct": distinctStages,
-  "offset-pagination": offsetStages, "sql-comments": commentsStages, "sql-operators": operatorsStages,
+  "offset-pagination": offsetStages, "sql-comments": commentsStages,
+  "sql-calculations-aliases": calculationAliasStages, "sql-operators": operatorStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
