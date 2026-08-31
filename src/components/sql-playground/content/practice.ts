@@ -77,6 +77,18 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return each customer country once, alphabetically, and keep the first three.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-road-bike-shortlist": {
+    id: "cycledepot-road-bike-shortlist",
+    title: "Build a Road Bike shortlist",
+    prompt:
+      "Return the name and price of Road Bikes only, sorted from the highest price to the lowest. Keep the first 3 rows. The result should have exactly 3 rows and two columns: name and price.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-road-bike-shortlist",
+    starterSql: `-- Cycle Depot Road Bike shortlist.
+-- Return name and price for Road Bikes, highest price first, keeping 3 rows.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
