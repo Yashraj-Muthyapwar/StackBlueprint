@@ -1,16 +1,19 @@
-import initSqlJs from "sql.js/dist/sql-wasm-browser.js";
-import type { Database, SqlJsStatic } from "sql.js";
-import sqlWasmUrl from "sql.js/dist/sql-wasm.wasm?url";
+// Use importScripts to load sql.js directly from the public directory.
+// This completely bypasses Vite/Rolldown module resolution bugs in Web Workers.
+importScripts("/sql/sql-wasm.js");
 
-let sqlite: SqlJsStatic | null = null;
-let db: Database | null = null;
+declare var initSqlJs: any;
+
+let sqlite: any = null;
+let db: any = null;
 
 self.onmessage = async (e: MessageEvent) => {
   const { id, type, payload } = e.data;
   try {
     if (!sqlite) {
       sqlite = await initSqlJs({
-        locateFile: () => sqlWasmUrl
+        // Point directly to the wasm file in the public directory
+        locateFile: (file: string) => `/sql/${file}`
       });
     }
 
@@ -26,7 +29,7 @@ self.onmessage = async (e: MessageEvent) => {
       
       let tables: string[] = [];
       if (res.length > 0) {
-        tables = res[0].values.map((v) => String(v[0]));
+        tables = res[0].values.map((v: any) => String(v[0]));
       }
       self.postMessage({ id, status: "success", tables });
     } 
