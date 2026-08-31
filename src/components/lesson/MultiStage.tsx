@@ -55,9 +55,11 @@ export type Stage = {
   name: string;
   /** One-line subtitle shown under the banner. */
   blurb?: string;
+  /** Give a deliberately wide source table the full animation width. */
+  layout?: "default" | "wide";
   sql: string[];
   /** Single source table (default layout). */
-  table?: { name: string; cols: string[]; rows: Row[] };
+  table?: { name: string; cols: string[]; rows: Row[]; columnTemplate?: string };
   /** Left source table (dual / join layout). */
   leftTable?: { name: string; cols: string[]; rows: Row[] };
   /** Right source table (dual / join layout). */
@@ -171,13 +173,17 @@ export function MiniTable({
   rows,
   states,
   highlightCols = [],
+  columnTemplate,
 }: {
   title?: string;
   cols: string[];
   rows: Row[];
   states?: (RowState | undefined)[];
   highlightCols?: number[];
+  /** Explicit widths for tables containing naturally wide fields such as email. */
+  columnTemplate?: string;
 }) {
+  const gridTemplateColumns = columnTemplate ?? `repeat(${cols.length}, minmax(0,1fr))`;
   return (
     <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-transparent shadow-sm">
       {title ? (
@@ -190,10 +196,16 @@ export function MiniTable({
       ) : null}
       <div
         className="grid border-b border-hairline bg-surface-2/40 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground"
-        style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(0,1fr))` }}
+        style={{ gridTemplateColumns }}
       >
         {cols.map((c, i) => (
-          <div key={c} className={`px-2.5 py-1.5 ${highlightCols.includes(i) ? "text-mint" : ""}`}>{c}</div>
+          <div
+            key={c}
+            className={`min-w-0 truncate px-2.5 py-1.5 ${highlightCols.includes(i) ? "text-mint" : ""}`}
+            title={c}
+          >
+            {c}
+          </div>
         ))}
       </div>
       <AnimatePresence initial={false}>
@@ -215,7 +227,7 @@ export function MiniTable({
               exit={{ opacity: 0, x: -10 }}
               transition={{ duration: 0.3 }}
               className={`grid border-b border-hairline/60 last:border-b-0 ${bg}`}
-              style={{ gridTemplateColumns: `repeat(${r.cells.length}, minmax(0,1fr))` }}
+              style={{ gridTemplateColumns }}
             >
               {r.cells.map((c, i) => {
                 const isNull = c === null;
@@ -223,12 +235,13 @@ export function MiniTable({
                 return (
                   <div
                     key={i}
-                    className={`px-2.5 py-1.5 font-mono text-[12px] ${
+                    className={`min-w-0 truncate px-2.5 py-1.5 font-mono text-[12px] ${
                       hi ? "bg-mint/15 text-mint" :
                       isNull ? "text-amber" :
                       st === "dropped" ? "text-muted-foreground line-through" :
                       "text-foreground/85"
                     }`}
+                    title={isNull ? "NULL" : String(c)}
                   >
                     {isNull ? "NULL" : String(c)}
                   </div>
@@ -305,32 +318,45 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
   const s = stages[stageIdx];
   const stepCfg = s.steps[local];
   const isDual = !!(s.leftTable && s.rightTable);
+  const panel = isDual ? (
+    <DualPanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
+  ) : (
+    <SinglePanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
+  );
+  const note = (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={`${stageIdx}-${local}-note`}
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -4 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Note tone={stepCfg.noteTone}>{stepCfg.note}</Note>
+      </motion.div>
+    </AnimatePresence>
+  );
 
   return (
     <div className="grid gap-3">
       <StageBanner stages={stages} stageIdx={stageIdx} />
+      {s.layout === "wide" ? (
+        <div className="space-y-3 min-w-0">
+          <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
+          {panel}
+          {stepCfg.side ? <div>{stepCfg.side}</div> : null}
+          {note}
+        </div>
+      ) : (
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] min-w-0">
         <div className="space-y-3 min-w-0">
           <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
-          {isDual ? (
-            <DualPanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
-          ) : (
-            <SinglePanel stage={s} step={stepCfg} stageIdx={stageIdx} local={local} />
-          )}
+          {panel}
           {stepCfg.side ? <div>{stepCfg.side}</div> : null}
         </div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${stageIdx}-${local}-note`}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Note tone={stepCfg.noteTone}>{stepCfg.note}</Note>
-          </motion.div>
-        </AnimatePresence>
+        {note}
       </div>
+      )}
     </div>
   );
 }
@@ -362,6 +388,7 @@ function SinglePanel({
           rows={baseRows}
           states={states}
           highlightCols={step.highlightCols}
+          columnTemplate={stage.table.columnTemplate}
         />
       </motion.div>
     </AnimatePresence>

@@ -121,25 +121,11 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
                     animate={{ height: water * unitHeight, opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    className="w-full overflow-hidden shadow-[0_0_14px_rgba(14,165,233,0.28)] rounded-t-[2px]"
-                    style={{ position: "absolute", bottom: val * unitHeight, zIndex: 10 }}
-                  >
-                    {/* drifting body */}
-                    <div
-                      className="water-body absolute inset-0"
-                      style={{ animationDelay: `${(i % 5) * -0.9}s` }}
-                    />
-                    {/* rippling surface highlight */}
-                    <div
-                      className="water-surface absolute top-0 left-0 h-[3px] w-[200%] opacity-70"
-                      style={{ animationDelay: `${(i % 3) * -0.8}s` }}
-                    />
-                    <div className="absolute inset-x-0 top-0 h-px bg-sky-200/80" />
-                  </motion.div>
+                    className="w-full bg-gradient-to-t from-sky-500/40 to-sky-400/70 backdrop-blur-[2px] border-t border-sky-300/80 shadow-[0_0_15px_rgba(14,165,233,0.3)] rounded-t-[2px]"
+                    style={{ position: 'absolute', bottom: val * unitHeight, zIndex: 10 }}
+                  />
                 )}
               </AnimatePresence>
-
-
               
               {/* Terrain Block */}
               <motion.div
@@ -166,23 +152,19 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
 
         {/* Pointers */}
         {pointers.map((p, i) => {
-          const sharing = pointers.filter((q) => q.index === p.index);
-          const shareIdx = sharing.findIndex((q) => q.name === p.name);
-          const offset = sharing.length > 1 ? (shareIdx - (sharing.length - 1) / 2) * 34 : 0;
-          const x = p.index * (CELL + GAP) + CELL / 2 + offset;
+          const x = p.index * (CELL + GAP) + CELL / 2;
           const color = COLOR_MAP[p.color];
           const isHighlight = step.highlight?.indices.includes(p.index);
-
+          
           return (
             <motion.div
               key={p.name}
               initial={false}
-              animate={{ x: x - 20 }} // center the 40px wide pointer
+              animate={{ x: x - 12 }} // center the 24px wide pointer
               transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
               className="absolute -bottom-20 z-40 flex flex-col items-center"
-              style={{ width: 40 }}
+              style={{ width: 24 }}
             >
-
               {/* Connection line shooting up to the terrain */}
               {isHighlight && (
                 <motion.div 
