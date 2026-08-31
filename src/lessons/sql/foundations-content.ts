@@ -58,6 +58,7 @@ export type Section =
         | "sql-comments"
         | "sql-calculations-aliases"
         | "sql-operators"
+        | "where-filtering"
         | "q-bool"
         | "q-range"
         | "q-like"
