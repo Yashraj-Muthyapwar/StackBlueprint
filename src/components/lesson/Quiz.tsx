@@ -70,6 +70,33 @@ export type QuizData = {
   isFinalQuiz?: boolean;
 };
 
+/**
+ * Final quizzes render on the server and hydrate in the browser. A random
+ * shuffle would produce different option orders in those two renders, so use
+ * the question ID to create one stable ordering instead.
+ */
+function stableOptionShuffle(question: QuizQuestion) {
+  const options = (question.options ?? []).map((text, idx) => ({
+    text,
+    isCorrect: idx === question.correctIndex,
+    originalIndex: idx,
+  }));
+
+  let seed = Array.from(question.id).reduce((hash, char) => ((hash * 31) + char.charCodeAt(0)) >>> 0, 0);
+  const next = () => {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let value = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    value = (value + Math.imul(value ^ (value >>> 7), 61 | value)) ^ value;
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+
+  for (let i = options.length - 1; i > 0; i--) {
+    const j = Math.floor(next() * (i + 1));
+    [options[i], options[j]] = [options[j], options[i]];
+  }
+  return options;
+}
+
 function NormalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: (active: boolean) => void }) {
   const [isStarted, setIsStarted] = useState(data.isFinalQuiz ? true : false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -485,17 +512,7 @@ function FinalQuiz({ data, onActiveChange }: { data: QuizData; onActiveChange?: 
 
   const [shuffledQuestions] = useState(() => {
     return data.questions.map((q) => {
-      if (!q.options) return { ...q, shuffledOptions: [] };
-      const options = q.options.map((text, idx) => ({
-        text,
-        isCorrect: idx === q.correctIndex,
-        originalIndex: idx
-      }));
-      for (let i = options.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [options[i], options[j]] = [options[j], options[i]];
-      }
-      return { ...q, shuffledOptions: options };
+      return { ...q, shuffledOptions: stableOptionShuffle(q) };
     });
   });
 
