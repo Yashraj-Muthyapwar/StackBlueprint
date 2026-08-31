@@ -1,67 +1,52 @@
 import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
-import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
+import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 
 const selectFrom: LessonContent = {
   slug: "your-first-query",
   title: "Your First Query",
-  subtitle: "Use SELECT and FROM to read data from a table.",
+  subtitle: "Read real Cycle Depot customer data with SELECT and FROM.",
   sections: [
     {
       kind: "prose",
       heading: "Asking the Database a Question",
       body: [
-        "A **query** is a request for data written in SQL. You describe the result you want, and the database decides how to find it.",
-        "Most queries begin with two clauses: `SELECT`, which chooses what to show, and `FROM`, which names where the data comes from.",
+        "A **query** is a request for data written in SQL. SQL is declarative: you describe the result you want, and the database chooses how to retrieve it.",
+        "Most queries begin with two clauses: `SELECT`, which chooses the result columns, and `FROM`, which names the source table.",
       ],
     },
     {
       kind: "image",
       src: yourFirstQueryImg,
-      alt: "Visualization of how a SELECT statement pulls columns from a table",
-      caption: "A query describes the data you want; the database engine figures out how to retrieve it",
-    },
-    {
-      kind: "table",
-      caption: "The employees table used in this lesson",
-      headers: ["employee_id", "full_name", "department", "city"],
-      rows: [
-        ["1", "Priya Sharma", "Data", "Austin"],
-        ["2", "Marcus Lee", "Data", "Denton"],
-        ["3", "Elena Ortiz", "Finance", "Tulsa"],
-        ["4", "Sam Whitfield", "Finance", "Austin"],
-      ],
+      alt: "A Cycle Depot customers table projected into a smaller query result using SELECT name, city, country FROM customers",
+      caption: "A query describes the result you want. Here, SELECT keeps every customer row but returns only name, city, and country.",
     },
     {
       kind: "prose",
       heading: "Your Smallest Useful Query",
       body: [
-        "This query asks for the `full_name` column from the `employees` table:",
+        "Start by asking for one column. This is the smallest query that can retrieve useful customer information. In the playground it returns all 60 customer names; the table below is a four-row preview.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      code: `SELECT full_name
-FROM employees;`,
+      caption: "Return every customer name",
+      code: `SELECT name
+FROM customers;`,
     },
     {
       kind: "table",
-      caption: "Query result",
-      headers: ["full_name"],
-      rows: [
-        ["Priya Sharma"],
-        ["Marcus Lee"],
-        ["Elena Ortiz"],
-        ["Sam Whitfield"],
-      ],
+      caption: "Four rows from the query result",
+      headers: ["name"],
+      rows: [["Zane Novak"], ["Boris Alvarez"], ["Priya Doyle"], ["Ugo Mensah"]],
     },
     {
       kind: "prose",
       body: [
-        "Read it like a sentence: “Select `full_name` from `employees`.”",
-        "`FROM employees` names the source table. `SELECT full_name` chooses the column shown in the result.",
+        "Read it like a sentence: “Select name from customers.”",
+        "`FROM customers` names the source table. `SELECT name` chooses the one column shown in the result.",
         "A query result is itself table-shaped: it has rows and columns, even though it is only the answer to your request.",
       ],
     },
@@ -75,13 +60,25 @@ FROM employees;`,
     {
       kind: "code",
       language: "sql",
-      code: `SELECT full_name, city, department
-FROM employees;`,
+      caption: "Choose three useful customer columns",
+      code: `SELECT name, city, country
+FROM customers;`,
+    },
+    {
+      kind: "table",
+      caption: "A four-row preview of the projected result",
+      headers: ["name", "city", "country"],
+      rows: [
+        ["Zane Novak", "Austin", "USA"],
+        ["Boris Alvarez", "Bristol", "UK"],
+        ["Priya Doyle", "Manchester", "UK"],
+        ["Ugo Mensah", "Dallas", "USA"],
+      ],
     },
     {
       kind: "animation",
       variant: "select-projection",
-      caption: "SELECT chooses which columns appear in the result",
+      caption: "Cycle Depot customers: SELECT keeps rows but projects only the columns you ask for",
     },
     {
       kind: "prose",
@@ -93,8 +90,38 @@ FROM employees;`,
     {
       kind: "code",
       language: "sql",
+      caption: "Explore every customer column, with a deterministic sample",
       code: `SELECT *
-FROM employees;`,
+FROM customers
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "SELECT * returns all seven customer columns for these four rows",
+      headers: ["id", "name", "email", "city", "country", "segment", "signup_date"],
+      rows: [
+        ["1", "Zane Novak", "zane.novak1@example.com", "Austin", "USA", "pro", "2023-01-06"],
+        [
+          "2",
+          "Boris Alvarez",
+          "boris.alvarez2@example.com",
+          "Bristol",
+          "UK",
+          "retail",
+          "2024-06-08",
+        ],
+        [
+          "3",
+          "Priya Doyle",
+          "priya.doyle3@example.com",
+          "Manchester",
+          "UK",
+          "retail",
+          "2023-01-15",
+        ],
+        ["4", "Ugo Mensah", "ugo.mensah4@example.com", "Dallas", "USA", "retail", "2023-02-10"],
+      ],
     },
     {
       kind: "callout",
@@ -114,8 +141,17 @@ FROM employees;`,
       kind: "code",
       language: "sql",
       caption: "A readable SQL statement",
-      code: `SELECT full_name, city
-FROM employees;`,
+      code: `SELECT name, city
+FROM customers;`,
+    },
+    {
+      kind: "playground-practice",
+      title: "Build a customer directory",
+      prompt:
+        "Return every customer's id, name, and country. Rename name to customer_name. Use the checked exercise in the playground to test your result.",
+      tables: ["customers"],
+      successCheck: "60 rows with the columns id, customer_name, and country.",
+      href: "/sql-playground?practice=cycledepot-customer-projection",
     },
     {
       kind: "takeaways",
@@ -132,54 +168,54 @@ FROM employees;`,
       questions: [
         {
           id: "yf1",
-          question: "Which clause determines the specific columns that are returned in the query result?",
-          options: [
-            "FROM",
-            "SELECT",
-            "WHERE",
-            "RETURN"
-          ],
+          question:
+            "Which clause determines the specific columns that are returned in the query result?",
+          options: ["FROM", "SELECT", "WHERE", "RETURN"],
           correctIndex: 1,
-          explanation: "SELECT specifies the columns to include in the result set."
+          explanation: "SELECT specifies the columns to include in the result set.",
         },
         {
           id: "yf2",
-          question: "What is the purpose of the FROM clause in a basic SQL query?",
+          question: "What is the purpose of FROM customers in a basic Cycle Depot query?",
           options: [
             "To filter rows based on a condition.",
             "To define the sorting order of the results.",
             "To specify the source table or relation.",
-            "To choose which columns to show."
+            "To choose which columns to show.",
           ],
           correctIndex: 2,
-          explanation: "FROM tells the database which table, view, or subquery you want to read data from."
+          explanation:
+            "FROM tells the database which table, view, or subquery you want to read data from.",
         },
         {
           id: "yf3",
           question: "Write the exact clause used to select every column from a table.",
           commandAnswer: ["SELECT *", "select *", "SELECT * ", "select * "],
-          explanation: "The asterisk (*) is a wildcard that means \"all columns\"."
+          explanation: 'The asterisk (*) is a wildcard that means "all columns".',
         },
         {
           id: "yf4",
-          question: "What SQL keyword is required to specify the source of the data?",
-          commandAnswer: ["FROM", "from", "From"],
-          explanation: "The FROM keyword indicates the table from which to retrieve data."
+          question: "What separates multiple column names in a SELECT list?",
+          options: ["A comma", "A semicolon", "A period", "The word AND"],
+          correctIndex: 0,
+          explanation: "Separate selected column names with commas, for example: SELECT name, city FROM customers;",
         },
         {
           id: "yf5",
-          question: "Why should you generally avoid using SELECT * in saved queries or application code?",
+          question:
+            "Why should you generally avoid using SELECT * in saved queries or application code?",
           options: [
             "It is a syntax error in most SQL databases.",
             "It is fragile to schema changes and returns unnecessary data, wasting bandwidth.",
             "It runs the query much faster than specifying column names.",
-            "It forces the database to sort the results alphabetically by column name."
+            "It forces the database to sort the results alphabetically by column name.",
           ],
           correctIndex: 1,
-          explanation: "Using SELECT * can break your application if columns are added or removed, and it wastes resources by transmitting data you might not need."
-        }
-      ]
-    }
+          explanation:
+            "Using SELECT * can break your application if columns are added or removed, and it wastes resources by transmitting data you might not need.",
+        },
+      ],
+    },
   ],
 };
 
@@ -217,8 +253,14 @@ WHERE  price BETWEEN 10 AND 50          -- inclusive range
       kind: "table",
       headers: ["Non-sargable (bad)", "Sargable (good)"],
       rows: [
-        ["WHERE lower(email) = 'x'", "WHERE email = 'X' COLLATE \"C\"  -or-  functional index on lower(email)"],
-        ["WHERE date(created_at) = '2026-06-01'", "WHERE created_at >= '2026-06-01' AND created_at < '2026-06-02'"],
+        [
+          "WHERE lower(email) = 'x'",
+          "WHERE email = 'X' COLLATE \"C\"  -or-  functional index on lower(email)",
+        ],
+        [
+          "WHERE date(created_at) = '2026-06-01'",
+          "WHERE created_at >= '2026-06-01' AND created_at < '2026-06-02'",
+        ],
         ["WHERE price + 10 > 100", "WHERE price > 90"],
         ["WHERE name LIKE '%pen%'", "WHERE name LIKE 'pen%' (anchored left, can use btree)"],
       ],
@@ -278,7 +320,8 @@ ORDER  BY deleted_at DESC NULLS LAST;`,
     {
       kind: "animation",
       variant: "offset-pagination",
-      caption: "LIMIT / OFFSET in action — pages 1 & 2, the second-highest-salary trick, and why deep OFFSET is slow",
+      caption:
+        "LIMIT / OFFSET in action — pages 1 & 2, the second-highest-salary trick, and why deep OFFSET is slow",
     },
     {
       kind: "code",
@@ -348,8 +391,7 @@ LIMIT  20;`,
 const sqlBasics: LessonContent = {
   slug: "sql-basics-comments-operators",
   title: "SQL Basics: Comments and Operators",
-  subtitle:
-    "Write readable SQL and use operators to calculate, compare, and combine conditions.",
+  subtitle: "Write readable SQL and use operators to calculate, compare, and combine conditions.",
   sections: [
     {
       kind: "prose",
@@ -363,7 +405,8 @@ const sqlBasics: LessonContent = {
       kind: "image",
       src: commentsAndOperatorsImg,
       alt: "Visualization of comments and operators in SQL",
-      caption: "Comments explain your logic, while operators perform the actual calculations and comparisons.",
+      caption:
+        "Comments explain your logic, while operators perform the actual calculations and comparisons.",
     },
     {
       kind: "prose",
@@ -510,31 +553,27 @@ WHERE (department = \Data OR department = \Finance)
           id: "sb1",
           question: "Which characters are used to start a single-line comment in SQL?",
           commandAnswer: ["--", "-- "],
-          explanation: "Two dashes (--) mark the beginning of a single-line comment."
+          explanation: "Two dashes (--) mark the beginning of a single-line comment.",
         },
         {
           id: "sb2",
           question: "How do you begin a multi-line comment in SQL?",
           commandAnswer: ["/*", "/* "],
-          explanation: "A multi-line comment starts with /* and ends with */."
+          explanation: "A multi-line comment starts with /* and ends with */.",
         },
         {
           id: "sb3",
           question: "Which of these operators is used to check if two values are NOT equal?",
-          options: [
-            "==",
-            "<>",
-            "><",
-            "!!"
-          ],
+          options: ["==", "<>", "><", "!!"],
           correctIndex: 1,
-          explanation: "<> (and often !=) is used to check for inequality in SQL."
+          explanation: "<> (and often !=) is used to check for inequality in SQL.",
         },
         {
           id: "sb4",
-          question: "What logical operator should you use if you want a row to be returned ONLY when multiple conditions are ALL true?",
+          question:
+            "What logical operator should you use if you want a row to be returned ONLY when multiple conditions are ALL true?",
           commandAnswer: ["AND", "and", "And"],
-          explanation: "The AND operator requires all combined conditions to be true."
+          explanation: "The AND operator requires all combined conditions to be true.",
         },
         {
           id: "sb5",
@@ -543,13 +582,14 @@ WHERE (department = \Data OR department = \Finance)
             "Because SQL syntax requires parentheses around all operators.",
             "To prevent the database from throwing a syntax error.",
             "Because AND is evaluated before OR, which can lead to unexpected logic if not made explicit.",
-            "Parentheses make the query execute faster."
+            "Parentheses make the query execute faster.",
           ],
           correctIndex: 2,
-          explanation: "AND has higher precedence than OR. Using parentheses clarifies your exact intended logic and avoids accidental bugs."
-        }
-      ]
-    }
+          explanation:
+            "AND has higher precedence than OR. Using parentheses clarifies your exact intended logic and avoids accidental bugs.",
+        },
+      ],
+    },
   ],
 };
 
@@ -645,27 +685,25 @@ const queryingFundamentalsQuiz: LessonContent = {
       questions: [
         {
           id: "qf1",
-          question: "Which of the following describes the correct logical execution order of a SQL query?",
+          question:
+            "Which of the following describes the correct logical execution order of a SQL query?",
           options: [
             "SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY",
             "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY",
             "FROM → GROUP BY → WHERE → SELECT → HAVING → ORDER BY",
-            "SELECT → WHERE → FROM → HAVING → GROUP BY → ORDER BY"
+            "SELECT → WHERE → FROM → HAVING → GROUP BY → ORDER BY",
           ],
           correctIndex: 1,
-          explanation: "SQL evaluates the source (FROM) first, filters rows (WHERE), groups them (GROUP BY), filters groups (HAVING), projects columns (SELECT), and finally sorts the results (ORDER BY)."
+          explanation:
+            "SQL evaluates the source (FROM) first, filters rows (WHERE), groups them (GROUP BY), filters groups (HAVING), projects columns (SELECT), and finally sorts the results (ORDER BY).",
         },
         {
           id: "qf2",
           question: "What is the result of the comparison 'amount = NULL' in SQL?",
-          options: [
-            "TRUE",
-            "FALSE",
-            "UNKNOWN",
-            "A syntax error"
-          ],
+          options: ["TRUE", "FALSE", "UNKNOWN", "A syntax error"],
           correctIndex: 2,
-          explanation: "In SQL's three-valued logic, comparing anything to NULL with '=' yields UNKNOWN. Always use 'IS NULL' or 'IS NOT NULL'."
+          explanation:
+            "In SQL's three-valued logic, comparing anything to NULL with '=' yields UNKNOWN. Always use 'IS NULL' or 'IS NOT NULL'.",
         },
         {
           id: "qf3",
@@ -674,14 +712,15 @@ const queryingFundamentalsQuiz: LessonContent = {
             "It is a syntax error in most SQL databases.",
             "It is fragile, returns unneeded columns wasting bandwidth, and cannot efficiently use covering indexes.",
             "It runs the query much faster than specifying column names.",
-            "It forces the database to sort the results alphabetically by column name."
+            "It forces the database to sort the results alphabetically by column name.",
           ],
           correctIndex: 1,
-          explanation: "Using SELECT * is fragile to schema changes and wastes resources by returning data the application might not need."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Using SELECT * is fragile to schema changes and wastes resources by returning data the application might not need.",
+        },
+      ],
+    },
+  ],
 };
 
 export const sqlQueryingFundamentalsTopic = {
