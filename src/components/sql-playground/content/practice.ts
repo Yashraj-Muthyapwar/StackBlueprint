@@ -79,6 +79,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use IN, NOT IN, and BETWEEN in the WHERE clause.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-road-product-search": {
+    id: "cycledepot-road-product-search",
+    title: "Search the Road product catalog",
+    prompt:
+      "Return name and category for product names containing road without letter-case sensitivity, but exclude any name containing Helmet. Use ILIKE and NOT LIKE. The result should have 2 rows and exactly two columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-road-product-search",
+    starterSql: `-- Cycle Depot product search.
+-- Return name and category for Road product names, excluding helmets.
+-- Use ILIKE and NOT LIKE, then order by id.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customers-without-city": {
     id: "cycledepot-customers-without-city",
     title: "Find customers without a city",

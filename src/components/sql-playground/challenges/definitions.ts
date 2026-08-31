@@ -230,6 +230,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-road-product-search",
+    version: 1,
+    title: "Search the Road product catalog",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "The merchandising team needs Road product names, but not helmets.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly the name and category columns.",
+      "Match product names containing road without letter-case sensitivity.",
+      "Exclude product names containing Helmet.",
+      "Use ILIKE and NOT LIKE.",
+      "Sort by id so the result is deterministic.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product search.
+-- Return name and category for Road product names, excluding helmets.
+-- Use ILIKE and NOT LIKE, then order by id.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, category FROM products.",
+      "Use name ILIKE '%road%' for the case-insensitive search.",
+      "Add AND name NOT LIKE '%Helmet%', then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+      duckdb: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+        duckdb: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+      },
+      requiredColumns: ["name", "category"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Road catalog search complete",
+      body: "Correct. You used a case-insensitive contains pattern and excluded the helmet match to keep the two Road Bike products.",
+      nextConcept: "NULL-aware filtering",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",
