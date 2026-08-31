@@ -1,120 +1,113 @@
-import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
-import { bucketPanel, pass, r, sidePanel, st } from "../animation-shared";
+import type { Row, Stage } from "@/components/lesson/MultiStage";
+import { pass, r, st } from "../animation-shared";
 
-// ----- pipeline -----
-const pipeOrders: Row[] = [
-  r(1, 1, "Ada", 45, "2026-06-01"),
-  r(2, 2, "Linus", 120, "2026-06-05"),
-  r(3, 3, "Ada", 80, "2026-06-10"),
-  r(4, 4, "Grace", 30, "2026-05-02"),
-  r(5, 5, "Alan", 50, "2026-06-18"),
-  r(6, 6, "Linus", 75, "2026-06-20"),
-  r(7, 7, "Bob", 105, "2026-06-15"),
+const PRODUCT_COLS = ["name", "category", "price"];
+const PRODUCT_ROWS: Row[] = [
+  r("aero", "Aero Sprint Pro", "Road Bikes", "5400.00"),
+  r("meridian", "Meridian Road Carbon", "Road Bikes", "2890.00"),
+  r("gravel", "Gravel Runner GX", "Road Bikes", "1980.00"),
+  r("trailhead", "Trailhead 29 Carbon", "Mountain Bikes", "2450.00"),
 ];
-const pipeCols = ["id", "customer", "total", "placed_at"];
+
+const ROAD_BIKES = PRODUCT_ROWS.filter((row) => row.cells[1] === "Road Bikes");
+const ROAD_BIKES_BY_PRICE = [...ROAD_BIKES].sort(
+  (left, right) => Number(right.cells[2]) - Number(left.cells[2]),
+);
+const ROAD_BIKES_PROJECTION = ROAD_BIKES.map((row) => r(String(row.key), row.cells[0], row.cells[2]));
+const ROAD_BIKES_BY_PRICE_PROJECTION = ROAD_BIKES_BY_PRICE.map((row) =>
+  r(String(row.key), row.cells[0], row.cells[2]),
+);
 
 export const pipelineStages: Stage[] = [
   {
-    name: "FROM",
-    blurb: "Resolve the source relation",
-    sql: ["SELECT customer, SUM(total) AS revenue", "FROM   orders"],
-    table: { name: "orders", cols: pipeCols, rows: pipeOrders },
+    name: "1. FROM finds the source",
+    sql: ["SELECT name, price", "FROM products"],
+    table: { name: "products", cols: PRODUCT_COLS, rows: PRODUCT_ROWS },
     steps: [
       st(
         [1],
-        "pending",
-        "Logical step 1: identify the source. No filtering yet — all 7 rows visible.",
+        "kept",
+        "FROM runs first. The database starts with product rows and their available columns.",
+        { noteTone: "neutral" },
       ),
     ],
   },
   {
-    name: "WHERE",
-    blurb: "Row-level predicate",
+    name: "2. WHERE filters rows",
     sql: [
-      "SELECT customer, SUM(total) AS revenue",
-      "FROM   orders",
-      "WHERE  placed_at >= '2026-06-01'",
+      "SELECT name, price",
+      "FROM products",
+      "WHERE category = 'Road Bikes'",
     ],
-    table: { name: "orders", cols: pipeCols, rows: pipeOrders },
+    table: { name: "products", cols: PRODUCT_COLS, rows: PRODUCT_ROWS },
     steps: [
       st(
         [2],
-        pass((r) => String(r.cells[3]) >= "2026-06-01"),
-        "Grace's May order falls away. WHERE runs BEFORE grouping, so we save work later.",
-        { highlightCols: [3] },
+        pass((row) => row.cells[1] === "Road Bikes"),
+        "WHERE runs before SELECT. It removes the Mountain Bikes row while all source columns are still available.",
+        { highlightCols: [1], noteTone: "mint" },
       ),
     ],
   },
   {
-    name: "GROUP BY",
+    name: "3. SELECT chooses columns",
     sql: [
-      "SELECT customer, SUM(total) AS revenue",
-      "FROM   orders",
-      "WHERE  placed_at >= '2026-06-01'",
-      "GROUP  BY customer",
+      "SELECT name, price",
+      "FROM products",
+      "WHERE category = 'Road Bikes'",
     ],
-    table: { name: "orders", cols: pipeCols, rows: pipeOrders },
+    table: { name: "products", cols: PRODUCT_COLS, rows: PRODUCT_ROWS },
+    steps: [
+      st(
+        [0],
+        "kept",
+        "Only after WHERE has kept the road bikes does SELECT project name and price into the result.",
+        {
+          colsOverride: ["name", "price"],
+          rowsOverride: ROAD_BIKES_PROJECTION,
+          noteTone: "violet",
+        },
+      ),
+    ],
+  },
+  {
+    name: "4. ORDER BY sorts survivors",
+    sql: [
+      "SELECT name, price",
+      "FROM products",
+      "WHERE category = 'Road Bikes'",
+      "ORDER BY price DESC",
+    ],
+    table: { name: "result", cols: ["name", "price"], rows: ROAD_BIKES_PROJECTION },
     steps: [
       st(
         [3],
-        pass((r) => String(r.cells[3]) >= "2026-06-01"),
-        "Survivors collapse into buckets by customer.",
+        "kept",
+        "ORDER BY sees the projected result and arranges the three road bikes from highest price to lowest.",
         {
-          highlightCols: [1],
-          side: bucketPanel([
-            { k: "Ada", sum: 125 },
-            { k: "Linus", sum: 195 },
-            { k: "Alan", sum: 50 },
-            { k: "Bob", sum: 105 },
-          ]),
+          colsOverride: ["name", "price"],
+          rowsOverride: ROAD_BIKES_BY_PRICE_PROJECTION,
+          noteTone: "amber",
         },
       ),
     ],
   },
   {
-    name: "HAVING",
+    name: "5. LIMIT keeps the first rows",
     sql: [
-      "SELECT customer, SUM(total) AS revenue",
-      "FROM   orders",
-      "WHERE  placed_at >= '2026-06-01'",
-      "GROUP  BY customer",
-      "HAVING SUM(total) >= 100",
+      "SELECT name, price",
+      "FROM products",
+      "WHERE category = 'Road Bikes'",
+      "ORDER BY price DESC",
+      "LIMIT 3;",
     ],
-    table: { name: "orders", cols: pipeCols, rows: pipeOrders },
+    table: { name: "result", cols: ["name", "price"], rows: ROAD_BIKES_BY_PRICE_PROJECTION },
     steps: [
       st(
         [4],
-        pass((r) => String(r.cells[3]) >= "2026-06-01"),
-        "Group-level filter — Alan's $50 bucket drops. HAVING is the only place aggregate predicates live.",
-        {
-          side: bucketPanel([
-            { k: "Ada ✓", sum: 125 },
-            { k: "Linus ✓", sum: 195 },
-            { k: "Bob ✓", sum: 105 },
-          ]),
-        },
-      ),
-    ],
-  },
-  {
-    name: "SELECT · ORDER BY · LIMIT",
-    sql: [
-      "SELECT customer, SUM(total) AS revenue",
-      "FROM   orders WHERE placed_at >= '2026-06-01'",
-      "GROUP  BY customer HAVING SUM(total) >= 100",
-      "ORDER  BY revenue DESC LIMIT 2",
-    ],
-    table: {
-      name: "result",
-      cols: ["customer", "revenue"],
-      rows: [r("lin", "Linus", 195), r("ada", "Ada", 125)],
-    },
-    steps: [
-      st(
-        [0, 3],
-        "added",
-        "Projection → sort → cap. SELECT runs LAST in the logical pipeline (but you write it first).",
-        { noteTone: "violet" },
+        "kept",
+        "LIMIT is the last step here. It keeps the first three rows after filtering, projecting, and sorting are complete.",
+        { noteTone: "mint" },
       ),
     ],
   },
