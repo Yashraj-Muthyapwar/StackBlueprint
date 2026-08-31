@@ -11,6 +11,7 @@ import booleanLogicImg from "@/images/sql/querying/boolean-logic-cycle-depot.png
 import nullThreeValuedLogicImg from "@/images/sql/querying/null-three-valued-logic-cycle-depot.png";
 import patternMatchingImg from "@/images/sql/querying/pattern-matching-cycle-depot.png";
 import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
+import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -711,6 +712,178 @@ ORDER BY id;`,
           ],
           correctIndex: 1,
           explanation: "A NULL in the list makes comparisons that do not otherwise match evaluate to UNKNOWN.",
+        },
+      ],
+    },
+  ],
+};
+
+// ---------- 1.5 Writing Efficient WHERE Predicates ----------
+const sargability: LessonContent = {
+  slug: "writing-efficient-where-predicates",
+  title: "1.5 Writing Efficient WHERE Predicates",
+  subtitle: "Write index-friendly filters and use safe date ranges without changing the result you mean.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Give the Database a Searchable Condition",
+      body: [
+        "A `WHERE` clause describes which rows you want. On a large table, the shape of that condition can also determine whether the database can use an index to find those rows quickly.",
+        "A predicate is **sargable**, short for search-argument-able, when the database can use the condition as a direct search argument. The practical habit is simple: keep an indexed column bare on one side of a comparison and put constants, parameters, or calculations on the other side.",
+      ],
+    },
+    {
+      kind: "image",
+      src: sargabilityImg,
+      alt: "A conceptual comparison of an index-friendly date range that seeks a small section of an orders-date index and a function-on-column predicate that sweeps many order rows.",
+      caption: "A range on an indexed date can give the planner a narrow place to start. Transforming the column first can hide that range from a normal index.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find the five Cycle Depot orders placed in March 2024",
+      code: `SELECT id, customer_id, order_date, status
+FROM orders
+WHERE order_date >= DATE '2024-03-01'
+  AND order_date <  DATE '2024-04-01'
+ORDER BY order_date, id;`,
+    },
+    {
+      kind: "table",
+      caption: "The five March 2024 orders, ordered by date and id",
+      headers: ["id", "customer_id", "order_date", "status"],
+      rows: [
+        ["139", "47", "2024-03-05", "delivered"],
+        ["58", "20", "2024-03-07", "delivered"],
+        ["39", "14", "2024-03-17", "returned"],
+        ["128", "44", "2024-03-21", "pending"],
+        ["83", "28", "2024-03-24", "cancelled"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-sargability",
+      caption: "Compare a March range, the same condition with DATE_TRUNC wrapped around the column, and a direct single-day lookup using real Cycle Depot orders.",
+    },
+    {
+      kind: "prose",
+      heading: "Keep the Column Plain",
+      body: [
+        "The range above lets the database compare `order_date` directly with two known boundaries. If an appropriate index exists and the planner estimates that it will save work, it can seek to March 1 and read forward until April 1.",
+        "The following query can produce the same March rows, but it applies `DATE_TRUNC` to the column before comparing it. A normal index on `order_date` stores dates, not each row's truncated month. Move the transformation to the constant side or express the request as a range instead.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Same meaning, different predicate shape",
+      code: `-- Usually less index-friendly with a normal index on order_date.
+SELECT id, customer_id, order_date, status
+FROM orders
+WHERE DATE_TRUNC('month', order_date) = DATE '2024-03-01';
+
+-- Preferred: the bare column is compared with two boundaries.
+SELECT id, customer_id, order_date, status
+FROM orders
+WHERE order_date >= DATE '2024-03-01'
+  AND order_date <  DATE '2024-04-01';`,
+    },
+    {
+      kind: "table",
+      caption: "Common WHERE predicate rewrites",
+      headers: ["Prefer", "Avoid when a normal index must help", "Why"],
+      rows: [
+        ["order_date >= start AND order_date < finish", "DATE_TRUNC('month', order_date) = start", "The range compares the stored value directly."],
+        ["price >= 2000", "price / 100 >= 20", "Calculate the boundary, not every stored price."],
+        ["name LIKE 'Volt%'", "name LIKE '%Volt%'", "A known prefix can support an ordered index range."],
+        ["id = 39", "CAST(id AS TEXT) = '39'", "Avoid converting an indexed value for comparison."],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Date Filtering Patterns",
+      body: [
+        "Cycle Depot's `orders.order_date` is a `DATE`, so one date can use equality: `order_date = DATE '2024-03-17'`. A month or reporting period is best written as a half-open range: include the start and exclude the next boundary.",
+        "For a `TIMESTAMP` column, half-open ranges are especially important. `placed_at >= TIMESTAMP '2024-03-01 00:00:00' AND placed_at < TIMESTAMP '2024-04-01 00:00:00'` keeps every instant in March. A final boundary of `2024-03-31 00:00:00` would miss almost the entire final day.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Use one inclusive start and one exclusive finish",
+      code: `-- One DATE value in Cycle Depot.
+SELECT id, order_date, status
+FROM orders
+WHERE order_date = DATE '2024-03-17';
+
+-- Template for a TIMESTAMP column such as placed_at.
+SELECT id, placed_at
+FROM orders
+WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
+  AND placed_at <  TIMESTAMP '2024-04-01 00:00:00';`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "An index is an option, not a promise",
+      body: "Sargable SQL gives the planner a usable search condition. It does not guarantee an index scan. The database still considers whether an index exists, how many rows it expects to return, table statistics, and the cost of fetching those rows. Use EXPLAIN on a realistic workload when performance matters.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not add an index only for a lesson query",
+      body: "Indexes speed some reads but cost space and make inserts, updates, and deletes more expensive. Add one because a frequent, measured workload needs it. An expression index can support a deliberate expression such as DATE_TRUNC, but rewriting a simple date filter as a range is often clearer and more broadly useful.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Find March orders with a date range",
+      prompt: "Return id, customer_id, and order_date for Cycle Depot orders placed in March 2024. Use a start boundary of March 1 and an exclusive finish boundary of April 1, then order by order_date and id.",
+      tables: ["orders"],
+      successCheck: "5 rows with the columns id, customer_id, and order_date in date order.",
+      href: "/sql-playground?practice=cycledepot-march-order-range",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Sargable predicates let the database use a condition as a direct search argument.",
+        "Keep an indexed column plain in a comparison when possible. Calculate constants or parameters instead of transforming each row's value.",
+        "For date and timestamp periods, use a half-open range: >= start and < next boundary.",
+        "An index-friendly predicate creates an opportunity, not a guarantee. The planner chooses a plan from data, indexes, and cost estimates.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "sargability-bare-column",
+          question: "Which predicate is usually more useful to a normal index on order_date?",
+          options: [
+            "DATE_TRUNC('month', order_date) = DATE '2024-03-01'",
+            "order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01'",
+            "CAST(order_date AS TEXT) LIKE '2024-03%'",
+            "LOWER(order_date) = '2024-03-01'",
+          ],
+          correctIndex: 1,
+          explanation: "The date column remains bare and the range boundaries are known constants.",
+        },
+        {
+          id: "sargability-timestamp-boundary",
+          question: "Why use < '2024-04-01 00:00:00' as a March timestamp range's end?",
+          options: [
+            "It includes every timestamp in March without guessing the final instant.",
+            "It converts timestamps to text.",
+            "It makes the database sort the table.",
+            "It excludes every order on March 31.",
+          ],
+          correctIndex: 0,
+          explanation: "The next boundary is exclusive, so every instant before April 1 is included.",
+        },
+        {
+          id: "sargability-index-promise",
+          question: "Does a sargable predicate guarantee that the database will use an index?",
+          options: ["Yes, always", "No, the planner still chooses based on cost and estimates", "Only for text columns", "Only when the result has one row"],
+          correctIndex: 1,
+          explanation: "A sargable predicate gives the planner an option. Index availability, selectivity, statistics, and cost still matter.",
         },
       ],
     },
@@ -1924,8 +2097,8 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Querying Data",
     iconKey: "terminal",
     blurb:
-      "Boolean logic, range/set filters, pattern matching, and the three-valued NULL trap that silently empties result sets.",
-    lessons: [booleanLogic, inBetween, likeIlike, nullPitfalls],
+      "Boolean logic, range/set filters, pattern matching, NULL semantics, and index-friendly WHERE predicates.",
+    lessons: [booleanLogic, inBetween, likeIlike, nullPitfalls, sargability],
   },
   aggregations: {
     slug: "aggregations",
