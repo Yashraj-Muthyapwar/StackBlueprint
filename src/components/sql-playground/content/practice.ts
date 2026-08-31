@@ -65,6 +65,18 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return id, name, and email for customers whose city is missing.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-first-three-countries": {
+    id: "cycledepot-first-three-countries",
+    title: "Build a short country list",
+    prompt:
+      "Return each customer country once, sort the result alphabetically, and keep the first three. The result should have exactly 3 rows and one column named country.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-first-three-countries",
+    starterSql: `-- Cycle Depot country picker.
+-- Return each customer country once, alphabetically, and keep the first three.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
