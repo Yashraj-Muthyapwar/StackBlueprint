@@ -14,18 +14,19 @@ import { existsStages, corrStages, scalarStages } from "./querying/subqueries";
 import { fkStages, tableBuildStages, typeStages } from "./foundations/table-design";
 import { fkDeepStages, normStages, pkStages, tableAnatomyStages } from "./foundations/relational-design";
 import { setopsStages } from "./querying/set-operations";
-import { boolStages, null3vlStages, rangeStages } from "./querying/where-filters";
+import { boolStages, rangeStages } from "./querying/where-filters";
+import { nullThreeValuedLogicStages } from "./querying/null-three-valued-logic";
 import { patternMatchingStages } from "./querying/pattern-matching";
 import { projStages } from "./querying-fundamentals/your-first-query";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
-  "q-bool": boolStages, "q-range": rangeStages, "q-like": patternMatchingStages, "q-null3vl": null3vlStages,
+  "q-bool": boolStages, "q-range": rangeStages, "q-like": patternMatchingStages, "q-null3vl": nullThreeValuedLogicStages,
   "q-aggr": aggrStages, "q-grpby": grpStages, "q-having": havingStages, "q-cube": cubeStages,
   "q-venn": vennStages, "q-self": selfStages, "q-semianti": semiStages, "q-algos": algosStages,
   "q-scalar": scalarStages, "q-corr": corrStages, "q-existsin": existsStages, "q-setops": setopsStages,
   pipeline: pipelineStages, "select-projection": projStages, "table-build": tableBuildStages,
-  "foreign-key": fkStages, "null-truth": null3vlStages, "type-sizes": typeStages,
+  "foreign-key": fkStages, "null-truth": nullThreeValuedLogicStages, "type-sizes": typeStages,
   "where-filter": boolStages, "group-by-agg": grpStages, "join-types": vennStages, "set-ops": setopsStages,
   "table-anatomy": tableAnatomyStages, "pk-anatomy": pkStages, "fk-deep": fkDeepStages, normalization: normStages,
   "intro-what-is-db": introWhatIs, "intro-db-types": introTypes, "intro-how-db-works": introHow,

@@ -1,4 +1,4 @@
-import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
+import type { Row, Stage } from "@/components/lesson/MultiStage";
 import { bucketPanel, pass, r, sidePanel, st } from "../animation-shared";
 
 // ----- q-bool: AND, OR, NOT, combined -----
@@ -253,82 +253,6 @@ export const rangeStages: Stage[] = [
         pass((r) => String(r.cells[1]).includes("road")),
         "@> reads as contains. The left-hand tags array must contain every requested value on the right, so the two products tagged road remain. Array order does not matter.",
         { highlightCols: [1], noteTone: "violet" },
-      ),
-    ],
-  },
-];
-
-// ----- q-null3vl: = NULL fails, IS NULL, NOT IN NULL, COALESCE -----
-const EMP_N: Row[] = [
-  r(1, 1, "Ada", 0),
-  r(2, 2, "Linus", 1),
-  r(3, 3, "Grace", null),
-  r(4, 4, "Bob", 2),
-  r(5, 5, "Eve", null),
-];
-const NCOLS = ["id", "name", "manager_id"];
-
-export const null3vlStages: Stage[] = [
-  {
-    name: "= NULL silently fails",
-    sql: ["SELECT id, name", "FROM   employees", "WHERE  manager_id = NULL"],
-    table: { name: "employees", cols: NCOLS, rows: EMP_N },
-    steps: [
-      st(
-        [2],
-        () => "dropped" as RowState,
-        "Every comparison with NULL returns UNKNOWN — never TRUE. ZERO rows. Beginners' #1 surprise.",
-        { highlightCols: [2], noteTone: "rose" },
-      ),
-    ],
-  },
-  {
-    name: "IS NULL is the only test",
-    sql: ["SELECT id, name", "FROM   employees", "WHERE  manager_id IS NULL"],
-    table: { name: "employees", cols: NCOLS, rows: EMP_N },
-    steps: [
-      st(
-        [2],
-        pass((r) => r.cells[2] === null),
-        "IS NULL / IS NOT NULL return TRUE/FALSE — never UNKNOWN. Grace and Eve surface.",
-        { highlightCols: [2], noteTone: "mint" },
-      ),
-    ],
-  },
-  {
-    name: "<> 1 hides NULL rows",
-    sql: ["SELECT id, name, manager_id", "FROM   employees", "WHERE  manager_id <> 1"],
-    table: { name: "employees", cols: NCOLS, rows: EMP_N },
-    steps: [
-      st(
-        [2],
-        pass((r) => (r.cells[2] === null ? false : r.cells[2] !== 1)),
-        "manager_id<>1 evaluates UNKNOWN for NULL rows → dropped. Grace and Eve vanish silently — usually a bug.",
-        { highlightCols: [2], noteTone: "amber" },
-      ),
-      st(
-        [2, 3],
-        pass((r) => (r.cells[2] === null ? true : r.cells[2] !== 1)),
-        "Add OR manager_id IS NULL — now NULL rows are explicitly included.",
-        { highlightCols: [2], rowsOverride: EMP_N, noteTone: "mint" },
-      ),
-    ],
-  },
-  {
-    name: "COALESCE in SELECT",
-    sql: ["SELECT id, name,", "       COALESCE(manager_id, -1) AS mgr", "FROM   employees"],
-    table: { name: "employees", cols: NCOLS, rows: EMP_N },
-    steps: [
-      st(
-        [1],
-        "added",
-        "COALESCE returns the first non-NULL argument. NULL manager_ids become -1 — useful for reports and ORDER BY (NULLs sort to extremes).",
-        {
-          rowsOverride: EMP_N.map((row) =>
-            r(row.key, row.cells[0]!, row.cells[1]!, row.cells[2] === null ? -1 : row.cells[2]!),
-          ),
-          colsOverride: ["id", "name", "mgr"],
-        },
       ),
     ],
   },
