@@ -136,6 +136,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-featured-products-logic",
+    version: 1,
+    title: "Build a featured product list",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a featured-products list for the Cycle Depot campaign team.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly these columns: name, category, price, and in_stock.",
+      "Keep Road Bikes with at least 90 units in stock.",
+      "Also keep products that are not Road Bikes and have a price of at least 4000.",
+      "Use AND, OR, NOT, and parentheses to make the two groups clear.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot featured products.
+-- Return name, category, price, and in_stock for either qualifying group.
+-- Use parentheses to keep each group easy to read.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, category, price, in_stock FROM products.",
+      "Your first parenthesized group is category = 'Road Bikes' AND in_stock >= 90.",
+      "Connect it with OR to a second group: NOT category = 'Road Bikes' AND price >= 4000.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+      duckdb: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+        duckdb: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+      },
+      requiredColumns: ["name", "category", "price", "in_stock"],
+      columnOrder: "exact",
+      rowOrder: "any",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Featured product list complete",
+      body: "Correct. You combined two business rules with AND, OR, and NOT to produce the right three products.",
+      nextConcept: "Range and set filtering with IN and BETWEEN",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",
