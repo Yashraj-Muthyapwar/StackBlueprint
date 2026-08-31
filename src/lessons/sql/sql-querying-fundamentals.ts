@@ -1,6 +1,7 @@
 import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
+import sqlOperatorsImg from "@/images/sql/querying-fundamentals/sql-operators.png";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 
 const selectFrom: LessonContent = {
@@ -388,162 +389,105 @@ LIMIT  20;`,
   ],
 };
 
-const sqlBasics: LessonContent = {
+const commentsCalculationsAliases: LessonContent = {
   slug: "sql-basics-comments-operators",
-  title: "SQL Basics: Comments and Operators",
-  subtitle: "Write readable SQL and use operators to calculate, compare, and combine conditions.",
+  title: "SQL Basics: Comments, Calculations, and Aliases",
+  subtitle: "Use comments, calculations, and aliases to make a Cycle Depot query clear and useful.",
   sections: [
     {
       kind: "prose",
-      heading: "Two Small Skills You Will Use Everywhere",
+      heading: "Make the Query Explain Itself",
       body: [
-        "Comments help people understand your SQL. Operators let SQL calculate values and test conditions.",
-        "These features appear in nearly every query you will write, so it is worth learning the basics before moving into filtering rows.",
+        "A useful query should be understandable when you return to it later. Comments explain a decision to the next reader. Expressions calculate a value. Aliases give that value a clear result-column name.",
+        "We will use the Cycle Depot products table to show a price before and after an 8% sales-tax calculation.",
       ],
     },
     {
       kind: "image",
       src: commentsAndOperatorsImg,
-      alt: "Visualization of comments and operators in SQL",
+      alt: "A Cycle Depot products query with a comment, an 8 percent price calculation, and the price_with_tax alias",
       caption:
-        "Comments explain your logic, while operators perform the actual calculations and comparisons.",
+        "A comment documents intent, an expression calculates a value, and AS gives the resulting column a useful name.",
     },
     {
       kind: "prose",
-      heading: "Comments Are Notes for Humans",
+      heading: "Comments Are Notes for People",
       body: [
-        "Comments explain your intent without changing the meaning of a normal query.",
-        "Use -- for a comment until the end of a line. Use /* ... */ for a comment that spans multiple lines.",
+        "A comment is ignored by the database. Use `--` for the rest of one line, or `/* ... */` for a longer note.",
+        "Comment a business decision or a surprising rule. Do not narrate SQL that already says exactly what it does.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Two ways to write comments",
-      code: `-- Show the names and cities of all employees
-SELECT full_name, city
-FROM employees;
-
-/* Use comments to explain
-   non-obvious business rules. */`,
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "Use comments sparingly",
-      body: "Comment decisions and business rules, not obvious SQL. A comment such as “select names” adds little; a comment explaining why a filter excludes certain records is useful.",
-    },
-    {
-      kind: "prose",
-      heading: "Arithmetic Operators",
-      body: [
-        "Arithmetic operators calculate new values. You can use them in SELECT to create calculated columns.",
-      ],
-    },
-    {
-      kind: "table",
-      caption: "Arithmetic operators",
-      headers: ["Operator", "Meaning", "Example"],
-      rows: [
-        ["+", "Addition", "price + 5"],
-        ["-", "Subtraction", "price - discount"],
-        ["*", "Multiplication", "price * quantity"],
-        ["/", "Division", "salary / 12"],
-        ["%", "Remainder", "10 % 3"],
-      ],
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "Calculate values in a query",
-      code: `SELECT
-  product_name,
-  price,
-  price * 1.10 AS price_with_tax
+      caption: "A comment does not change the query result",
+      code: `-- Cycle Depot price preview
+SELECT name, price
 FROM products;`,
     },
     {
+      kind: "animation",
+      variant: "sql-comments",
+      caption: "The database ignores the comment and runs the SELECT statement below it",
+    },
+    {
       kind: "prose",
-      heading: "Comparison Operators",
+      heading: "Calculate a New Value",
       body: [
-        "Comparison operators check whether one value matches, exceeds, or differs from another value. They return true or false and are the foundation of filtering with WHERE.",
+        "An expression combines values with an operator. Here, `price * 1.08` calculates the price after adding 8% tax. It does not change the stored product price.",
       ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Calculate the price with tax",
+      code: `SELECT
+  name,
+  price,
+  price * 1.08 AS price_with_tax
+FROM products;`,
     },
     {
       kind: "table",
-      caption: "Comparison operators",
-      headers: ["Operator", "Meaning"],
+      caption: "A four-product preview of the calculated result",
+      headers: ["name", "price", "price_with_tax"],
       rows: [
-        ["=", "Equal to"],
-        ["<> or !=", "Not equal to"],
-        [">", "Greater than"],
-        ["<", "Less than"],
-        [">=", "Greater than or equal to"],
-        ["<=", "Less than or equal to"],
+        ["Trailhead 29 Hardtail", "1299.00", "1402.92"],
+        ["Trailhead 29 Carbon", "2450.00", "2646.00"],
+        ["Boulder Full Suspension", "3199.00", "3454.92"],
+        ["Switchback Enduro", "4150.00", "4482.00"],
       ],
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "Compare values in a filter",
-      code: `SELECT full_name, salary
-FROM employees
-WHERE salary >= 90000;`,
     },
     {
       kind: "prose",
-      heading: "Logical Operators",
+      heading: "Use AS to Name the Result",
       body: [
-        "Logical operators combine conditions. Use AND when every condition must be true, OR when at least one condition can be true, and NOT to reverse a condition.",
+        "`AS price_with_tax` gives the calculated column a meaningful heading. The alias belongs to this query result only. It does not rename the `price` column in the products table.",
+        "Use a clear alias whenever a calculation would otherwise produce an unclear heading such as `?column?` or `price * 1.08`.",
       ],
     },
     {
-      kind: "code",
-      language: "sql",
-      caption: "Combine conditions",
-      code: `-- Both conditions must be true
-SELECT full_name, department, city
-FROM employees
-WHERE department = \Data  AND city = \Austin;
-
--- Either condition can be true
-SELECT full_name, department
-FROM employees
-WHERE department = \Data   OR department = \Finance;`,
+      kind: "animation",
+      variant: "sql-calculations-aliases",
+      caption: "The multiplication creates a new value for every product, and AS labels that value in the result",
     },
     {
-      kind: "callout",
-      tone: "warn",
-      title: "Use parentheses with AND and OR",
-      body: "AND is evaluated before OR. When you mix them, use parentheses to make your intended logic clear.",
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "Make mixed conditions clear",
-      code: `SELECT full_name, department, city
-FROM employees
-WHERE (department = \Data OR department = \Finance)
-  AND city = \Austin;`,
-    },
-    {
-      kind: "prose",
-      heading: "What Comes Next",
-      body: [
-        "You now know the basic operators. The next lessons build on them:",
-        "• Filtering Rows explains WHERE in depth.",
-        "• Condition Types covers BETWEEN, IN, LIKE, and more comparison patterns.",
-        "• NULL Explained covers missing values and why = NULL does not work.",
-      ],
+      kind: "playground-practice",
+      title: "Preview product prices with tax",
+      prompt:
+        "Return every product's name and price, then calculate price * 1.08 as price_with_tax. Use the checked Cycle Depot exercise to test the result.",
+      tables: ["products"],
+      successCheck: "30 rows with the columns name, price, and price_with_tax.",
+      href: "/sql-playground?practice=cycledepot-product-price-with-tax",
     },
     {
       kind: "takeaways",
       items: [
-        "Use -- for single-line comments and /* ... */ for multi-line comments.",
-        "Use arithmetic operators to calculate new values in SELECT.",
-        "Use comparison operators to test values in WHERE.",
-        "Use AND, OR, and NOT to combine conditions.",
-        "Use parentheses whenever mixing AND and OR.",
+        "Use -- for a short comment and /* ... */ for a longer note.",
+        "Comments are ignored by the database and do not change a query result.",
+        "Use arithmetic expressions in SELECT to calculate a value for each row.",
+        "Use AS to give a calculated result column a clear name.",
+        "Comparison and logical operators are the focus of the next lesson.",
       ],
     },
     {
@@ -563,30 +507,253 @@ WHERE (department = \Data OR department = \Finance)
         },
         {
           id: "sb3",
-          question: "Which of these operators is used to check if two values are NOT equal?",
-          options: ["==", "<>", "><", "!!"],
+          question: "What does price * 1.08 do in the Cycle Depot query?",
+          options: [
+            "Changes every stored product price permanently.",
+            "Calculates a new value for each result row.",
+            "Filters out products that cost more than 1.08.",
+            "Renames the products table.",
+          ],
           correctIndex: 1,
-          explanation: "<> (and often !=) is used to check for inequality in SQL.",
+          explanation: "The expression calculates a value in the result. It does not update the products table.",
         },
         {
           id: "sb4",
-          question:
-            "What logical operator should you use if you want a row to be returned ONLY when multiple conditions are ALL true?",
-          commandAnswer: ["AND", "and", "And"],
-          explanation: "The AND operator requires all combined conditions to be true.",
+          question: "Why use AS price_with_tax after the calculation?",
+          options: [
+            "To name the calculated result column.",
+            "To rename price in the products table.",
+            "To run the calculation before FROM.",
+            "To make the comment execute.",
+          ],
+          correctIndex: 0,
+          explanation: "AS gives a result column a readable alias without changing the source schema.",
         },
         {
           id: "sb5",
-          question: "Why is it important to use parentheses when mixing AND and OR operators?",
+          question: "Which part of this query is ignored by the database?",
           options: [
-            "Because SQL syntax requires parentheses around all operators.",
-            "To prevent the database from throwing a syntax error.",
-            "Because AND is evaluated before OR, which can lead to unexpected logic if not made explicit.",
-            "Parentheses make the query execute faster.",
+            "SELECT name",
+            "FROM products",
+            "price * 1.08",
+            "-- Cycle Depot price preview",
           ],
+          correctIndex: 3,
+          explanation: "A line beginning with -- is a comment for readers, so the database skips it.",
+        },
+      ],
+    },
+  ],
+};
+
+const sqlOperators: LessonContent = {
+  slug: "sql-operators",
+  title: "SQL Operators: Arithmetic, Comparison, and Logic",
+  subtitle:
+    "Calculate with product values, ask true-or-false questions, and combine conditions before filtering rows.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Operators Turn Values into Answers",
+      body: [
+        "An **operator** tells SQL what to do with one or more values. Arithmetic operators calculate a new value. Comparison operators ask a true-or-false question. Logical operators combine those questions.",
+        "We will use Cycle Depot product prices, costs, and stock levels. The same operator can appear in a SELECT result or inside a WHERE filter.",
+      ],
+    },
+    {
+      kind: "image",
+      src: sqlOperatorsImg,
+      alt: "Cycle Depot products flow through arithmetic, comparison, and logical SQL operators to create calculated and true-or-false result columns",
+      caption:
+        "Arithmetic produces a value, comparison produces true or false, and logic combines comparisons into one condition.",
+    },
+    {
+      kind: "prose",
+      heading: "Arithmetic Operators Calculate Values",
+      body: [
+        "Use `+`, `-`, `*`, and `/` to calculate with numeric columns. For a product, `price - cost` calculates its gross margin. As with the earlier tax calculation, this adds a value to the result without changing stored data.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Arithmetic operators",
+      headers: ["operator", "meaning", "Cycle Depot example"],
+      rows: [
+        ["+", "Addition", "price + 5.00"],
+        ["-", "Subtraction", "price - cost"],
+        ["*", "Multiplication", "price * 1.08"],
+        ["/", "Division", "price / 12"],
+        ["%", "Remainder", "in_stock % 2"],
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Calculate gross margin for every product",
+      code: `SELECT
+  name,
+  price,
+  cost,
+  price - cost AS gross_margin
+FROM products;`,
+    },
+    {
+      kind: "table",
+      caption: "A four-product preview of the arithmetic result",
+      headers: ["name", "price", "cost", "gross_margin"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1299.00", "780.00", "519.00"],
+        ["Trailhead 29 Carbon", "2450.00", "1520.00", "930.00"],
+        ["Boulder Full Suspension", "3199.00", "2010.00", "1189.00"],
+        ["Switchback Enduro", "4150.00", "2680.00", "1470.00"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Comparison Operators Ask a True-or-False Question",
+      body: [
+        "Comparison operators include `=`, `<>`, `>`, `>=`, `<`, and `<=`. Each comparison checks one row and returns `true` or `false`. Here, `price >= 2000` asks whether a product meets a premium-price threshold.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Comparison operators",
+      headers: ["operator", "meaning", "Cycle Depot example"],
+      rows: [
+        ["=", "Equal to", "country = 'USA'"],
+        ["<> or !=", "Not equal to", "category <> 'Accessories'"],
+        [">", "Greater than", "price > 2000"],
+        ["<", "Less than", "in_stock < 50"],
+        [">=", "Greater than or equal to", "price >= 2000"],
+        ["<=", "Less than or equal to", "in_stock <= 10"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "A note about missing values",
+      body: "These examples compare non-NULL values. If a comparison involves NULL, SQL can return UNKNOWN instead of true or false. The WHERE Filters lesson explains three-valued logic and IS NULL.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Show the comparison result for every product",
+      code: `SELECT
+  name,
+  price,
+  price >= 2000 AS premium
+FROM products;`,
+    },
+    {
+      kind: "table",
+      caption: "The comparison is true only for products priced at 2000 or more",
+      headers: ["name", "price", "premium"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1299.00", "false"],
+        ["Trailhead 29 Carbon", "2450.00", "true"],
+        ["Boulder Full Suspension", "3199.00", "true"],
+        ["Switchback Enduro", "4150.00", "true"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Logical Operators Combine Comparisons",
+      body: [
+        "`AND` requires both conditions to be true. `OR` requires at least one condition to be true. `NOT` reverses a condition. Parentheses make a combined condition easier to read and remove ambiguity.",
+        "A boolean expression does not remove rows on its own. Put it in `WHERE` when you want the database to keep only matching rows. The next lesson explores filtering in more depth.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Logical operators",
+      headers: ["operator", "meaning", "Cycle Depot example"],
+      rows: [
+        ["AND", "Both conditions must be true", "price >= 2000 AND in_stock >= 50"],
+        ["OR", "At least one condition must be true", "category = 'Helmets' OR category = 'Clothing'"],
+        ["NOT", "Reverses a condition", "NOT (category = 'Accessories')"],
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep products that are premium-priced and ready to sell",
+      code: `SELECT name, price, in_stock
+FROM products
+WHERE price >= 2000
+  AND in_stock >= 50;`,
+    },
+    {
+      kind: "table",
+      caption: "The four products where both conditions are true",
+      headers: ["name", "price", "in_stock"],
+      rows: [
+        ["Trailhead 29 Carbon", "2450.00", "113"],
+        ["Boulder Full Suspension", "3199.00", "125"],
+        ["Meridian Road Carbon", "2890.00", "65"],
+        ["Aero Sprint Pro", "5400.00", "99"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "sql-operators",
+      caption:
+        "The same Cycle Depot rows produce a number with arithmetic, a boolean with comparison, and one combined condition with AND",
+    },
+    {
+      kind: "playground-practice",
+      title: "Find ready-to-sell premium products",
+      prompt:
+        "Return product name, price, and in_stock for products priced at least 2000 that also have at least 50 units in stock. Use the checked Cycle Depot exercise to test the result.",
+      tables: ["products"],
+      successCheck: "4 rows with the columns name, price, and in_stock.",
+      href: "/sql-playground?practice=cycledepot-ready-to-sell-premium-products",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Arithmetic operators such as +, -, *, /, and % calculate a value.",
+        "Comparison operators such as >= and = return true or false for each row.",
+        "AND requires every combined condition to be true. OR requires at least one. NOT reverses a condition.",
+        "A boolean expression becomes a filter when you put it in WHERE.",
+        "A comparison involving NULL can return UNKNOWN. Use IS NULL to check for missing values.",
+        "Use parentheses when a combined condition would otherwise be hard to read.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "op1",
+          question: "Which expression calculates a Cycle Depot product's gross margin?",
+          options: ["price = cost", "price - cost", "price >= cost", "price AND cost"],
+          correctIndex: 1,
+          explanation: "Subtracting cost from price calculates the gross margin for each product row.",
+        },
+        {
+          id: "op2",
+          question: "What does the comparison price >= 2000 return for each product?",
+          options: ["A new stored price", "A true-or-false value", "Only matching product rows", "A product category"],
+          correctIndex: 1,
+          explanation: "A comparison evaluates to a boolean value. WHERE can then use that value to decide which rows to keep.",
+        },
+        {
+          id: "op3",
+          question: "When is A AND B true?",
+          options: ["When A is true", "When B is true", "When both A and B are true", "When either A or B is false"],
           correctIndex: 2,
-          explanation:
-            "AND has higher precedence than OR. Using parentheses clarifies your exact intended logic and avoids accidental bugs.",
+          explanation: "AND requires both sides of the expression to be true.",
+        },
+        {
+          id: "op4",
+          question: "Which WHERE clause keeps products priced at least 2000 with at least 50 units in stock?",
+          options: [
+            "WHERE price >= 2000 OR in_stock >= 50",
+            "WHERE price >= 2000 AND in_stock >= 50",
+            "WHERE price - 2000 AND in_stock - 50",
+            "WHERE NOT price >= 2000",
+          ],
+          correctIndex: 1,
+          explanation: "Both requirements must be met, so the comparisons are joined with AND.",
         },
       ],
     },
@@ -730,5 +897,13 @@ export const sqlQueryingFundamentalsTopic = {
   iconKey: "table" as const,
   blurb:
     "Every query you'll ever write starts here — and the logical execution order is the key that unlocks the rest.",
-  lessons: [selectFrom, sqlBasics, whereLesson, orderLimit, logicalOrder, queryingFundamentalsQuiz],
+  lessons: [
+    selectFrom,
+    commentsCalculationsAliases,
+    sqlOperators,
+    whereLesson,
+    orderLimit,
+    logicalOrder,
+    queryingFundamentalsQuiz,
+  ],
 };
