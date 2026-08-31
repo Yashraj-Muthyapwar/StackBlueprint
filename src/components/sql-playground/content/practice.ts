@@ -66,6 +66,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use parentheses to keep each group easy to read.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-premium-bike-range": {
+    id: "cycledepot-premium-bike-range",
+    title: "Build a premium bike range",
+    prompt:
+      "Return name, category, and price for Road, Mountain, or City Bikes priced from 2000 through 4000, but exclude City Bikes. Use IN, NOT IN, and BETWEEN. The result should have 3 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-premium-bike-range",
+    starterSql: `-- Cycle Depot premium bike range.
+-- Return name, category, and price for the qualifying products.
+-- Use IN, NOT IN, and BETWEEN in the WHERE clause.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customers-without-city": {
     id: "cycledepot-customers-without-city",
     title: "Find customers without a city",
