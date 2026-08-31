@@ -2,6 +2,8 @@ import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
 import distinctOrderLimitImg from "@/images/sql/querying-fundamentals/distinct-order-limit.png";
+import logicalQueryOrderImg from "@/images/sql/querying-fundamentals/logical-query-order.png";
+import logicalQueryOrderMnemonicImg from "@/images/sql/querying-fundamentals/logical-query-order-mnemonic.png";
 import sqlOperatorsImg from "@/images/sql/querying-fundamentals/sql-operators.png";
 import whereFiltersImg from "@/images/sql/querying-fundamentals/where-filters.png";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
@@ -1027,79 +1029,186 @@ WHERE price >= 2000
 const logicalOrder: LessonContent = {
   slug: "logical-order",
   title: "Logical Query Order",
-  subtitle:
-    "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Internalize this and SQL stops surprising you.",
+  subtitle: "SQL is written SELECT-first, but the database processes each clause in a different order.",
   sections: [
     {
       kind: "prose",
-      heading: "Written order ≠ executed order",
+      heading: "Read the Query One Way, Process It Another",
       body: [
-        "SQL is written SELECT-first but evaluated FROM-first. Knowing the real order explains every 'why can't I reference my alias here?' question you'll ever have.",
+        "You write `SELECT` first because it states the answer you want. The database starts with `FROM`, because it needs rows before it can filter, choose columns, sort, or limit them.",
+        "For the queries you have learned so far, remember this working order: `FROM` → `WHERE` → `SELECT` → `ORDER BY` → `LIMIT`.",
+      ],
+    },
+    {
+      kind: "image",
+      src: logicalQueryOrderImg,
+      alt: "A Cycle Depot products query moving through FROM, WHERE, SELECT, ORDER BY, and LIMIT to produce three Road Bikes",
+      caption: "The query is written SELECT-first, but the database starts from products, filters Road Bikes, projects two columns, sorts by price, then keeps three rows.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "List the three most expensive Road Bikes",
+      code: `SELECT name, price
+FROM products
+WHERE category = 'Road Bikes'
+ORDER BY price DESC
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption: "The exact result after every clause has run",
+      headers: ["name", "price"],
+      rows: [
+        ["Aero Sprint Pro", "5400.00"],
+        ["Meridian Road Carbon", "2890.00"],
+        ["Gravel Runner GX", "1980.00"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Follow the Rows Through Each Step",
+      body: [
+        "`FROM products` provides product rows and all their columns. `WHERE` keeps the Road Bikes while `category` is still available. `SELECT` then keeps only name and price in the result.",
+        "`ORDER BY price DESC` sorts those surviving result rows. Finally, `LIMIT 3` keeps the first three. The order matters because each clause works on the output from the earlier step.",
       ],
     },
     {
       kind: "animation",
       variant: "pipeline",
-      caption: "Watch a query flow through the 7-step pipeline",
-    },
-    {
-      kind: "diagram",
-      caption: "Logical evaluation pipeline",
-      ascii: `┌────────────┐
-│  1. FROM   │  build the source relation (tables + JOINs)
-└─────┬──────┘
-      ▼
-┌────────────┐
-│  2. WHERE  │  row-level filter (no aggregates allowed)
-└─────┬──────┘
-      ▼
-┌────────────┐
-│ 3. GROUP BY│  collapse rows into groups
-└─────┬──────┘
-      ▼
-┌────────────┐
-│ 4. HAVING  │  group-level filter (aggregates allowed)
-└─────┬──────┘
-      ▼
-┌────────────┐
-│ 5. SELECT  │  project columns + compute expressions/aliases
-└─────┬──────┘
-      ▼
-┌────────────┐
-│6. ORDER BY │  sort the projected rows (aliases now visible)
-└─────┬──────┘
-      ▼
-┌────────────┐
-│ 7. LIMIT   │  take the top N
-└────────────┘`,
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "Putting the order to work",
-      code: `SELECT  customer_id,
-        count(*)            AS order_count,    -- alias defined in SELECT
-        sum(total_cents)    AS revenue_cents
-FROM    orders
-WHERE   placed_at >= now() - INTERVAL '30 days'    -- runs before GROUP BY
-GROUP   BY customer_id                              -- collapse rows
-HAVING  count(*) >= 3                               -- filter groups
-ORDER   BY revenue_cents DESC                       -- alias visible here
-LIMIT   10;`,
+      caption: "Step through the same Cycle Depot query in the order the database logically processes it",
     },
     {
       kind: "callout",
       tone: "info",
       title: "Why aliases work in ORDER BY but not WHERE",
-      body: "SELECT runs at step 5. WHERE is step 2 — the alias doesn't exist yet. ORDER BY is step 6 — the alias has been computed. That's the whole rule.",
+      body: "An alias is created in SELECT. WHERE has already run, so it cannot see that alias. ORDER BY runs later, so it can use the alias to sort the result.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Repeat a calculation in WHERE, then use its alias in ORDER BY",
+      code: `SELECT name, price * 1.08 AS price_with_tax
+FROM products
+WHERE price * 1.08 > 3000
+ORDER BY price_with_tax DESC;`,
+    },
+    {
+      kind: "prose",
+      heading: "Putting the Order to Work",
+      body: [
+        "This Cycle Depot report stays within the core fundamentals. It finds customers with at least three delivered orders, ranks them by their delivered-order count, and keeps the first ten.",
+        "The database starts with orders, filters delivered rows, forms customer groups, removes small groups, calculates the selected result, sorts it, then limits it.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find customers with at least three delivered orders",
+      code: `SELECT
+  customer_id,
+  COUNT(*) AS order_count
+FROM orders
+WHERE status = 'delivered'
+GROUP BY customer_id
+HAVING COUNT(*) >= 3
+ORDER BY order_count DESC, customer_id ASC
+LIMIT 10;`,
+    },
+    {
+      kind: "table",
+      caption: "The first five rows of the exact 10-row result, ordered by order count and then customer ID",
+      headers: ["customer_id", "order_count"],
+      rows: [
+        ["13", "5"],
+        ["20", "5"],
+        ["45", "4"],
+        ["1", "3"],
+        ["10", "3"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Why the alias works in ORDER BY",
+      body: "`order_count` is created in SELECT and is available by the time ORDER BY runs. HAVING cannot use it here because HAVING filters groups before SELECT creates the alias.",
+    },
+    {
+      kind: "prose",
+      heading: "Later Reference: The Full SQL Order",
+      body: [
+        "The report above uses only the fundamentals. In later lessons, SQL can also use JOIN to combine tables, window functions to calculate across related rows, and DISTINCT to remove duplicate result rows.",
+        "The full reference order is FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → WINDOW FUNCTIONS → DISTINCT → ORDER BY → LIMIT. A query uses only the steps it needs.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "A Mnemonic for the Full Order",
+      body: [
+        "Use **Fred John Wrote Good Homework, So Will Dad Order Lunch?** Its first letters follow the full order: FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, WINDOW FUNCTIONS, DISTINCT, ORDER BY, LIMIT.",
+        "For this lesson, focus on the core sequence. Keep this larger map as a preview of concepts that are introduced later.",
+      ],
+    },
+    {
+      kind: "image",
+      src: logicalQueryOrderMnemonicImg,
+      alt: "Mnemonic Fred John Wrote Good Homework, So Will Dad Order Lunch mapped to the full SQL logical query order",
+      caption: "Fred John Wrote Good Homework, So Will Dad Order Lunch maps F-J-W-G-H-S-W-D-O-L to FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, WINDOW FUNCTIONS, DISTINCT, ORDER BY, and LIMIT.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build a Road Bike shortlist",
+      prompt: "Return the name and price of Road Bikes only, sorted from highest price to lowest, keeping the first three. Then run the checked Cycle Depot exercise.",
+      tables: ["products"],
+      successCheck: "3 rows with name and price: Aero Sprint Pro, Meridian Road Carbon, and Gravel Runner GX.",
+      href: "/sql-playground?practice=cycledepot-road-bike-shortlist",
     },
     {
       kind: "takeaways",
       items: [
-        "Evaluation order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
-        "WHERE filters rows; HAVING filters groups.",
-        "Aggregates are forbidden in WHERE — that's what HAVING is for.",
-        "SELECT-list aliases are visible in ORDER BY, not in WHERE/GROUP BY/HAVING.",
+        "SQL is written SELECT-first, but FROM provides the rows first.",
+        "WHERE filters source rows before SELECT chooses result columns.",
+        "GROUP BY forms one group per customer, and HAVING keeps only groups that meet an aggregate condition.",
+        "ORDER BY sorts the surviving result and LIMIT keeps the first requested rows.",
+        "SELECT aliases work in ORDER BY but not WHERE because ORDER BY runs later.",
+        "The core order for this report is FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.",
+        "Later lessons add JOIN, WINDOW FUNCTIONS, and DISTINCT to the full logical-order map.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "logical-order-1",
+          question: "Which clause runs first in a query that uses FROM, WHERE, SELECT, ORDER BY, and LIMIT?",
+          options: ["SELECT", "FROM", "WHERE", "ORDER BY"],
+          correctIndex: 1,
+          explanation: "FROM supplies the source rows before every other listed clause can work.",
+        },
+        {
+          id: "logical-order-2",
+          question: "Why can ORDER BY use price_with_tax but WHERE cannot?",
+          options: [
+            "WHERE only accepts text columns.",
+            "The alias is created in SELECT, which runs after WHERE and before ORDER BY.",
+            "ORDER BY automatically creates all aliases.",
+            "LIMIT hides aliases from WHERE.",
+          ],
+          correctIndex: 1,
+          explanation: "WHERE evaluates before SELECT creates the alias. ORDER BY evaluates after it exists.",
+        },
+        {
+          id: "logical-order-3",
+          question: "What does LIMIT do in the Road Bikes query?",
+          options: [
+            "Filters Road Bikes from products",
+            "Selects the name and price columns",
+            "Sorts prices from highest to lowest",
+            "Keeps the first three rows after sorting",
+          ],
+          correctIndex: 3,
+          explanation: "LIMIT is the final step in this query and caps the already sorted result at three rows.",
+        },
       ],
     },
   ],
