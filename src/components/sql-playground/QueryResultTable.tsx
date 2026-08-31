@@ -131,6 +131,16 @@ export function QueryResultTable({ result, engine }: { result: QueryResult; engi
     );
   }
 
+  if (result.fields.length === 0) {
+    return (
+      <div className="sqlx-empty">
+        <strong>Your query returned no columns.</strong>
+        Add one or more columns or expressions after <code>SELECT</code>, for example{" "}
+        <code>SELECT id, name FROM customers;</code>
+      </div>
+    );
+  }
+
   const shown = view.slice(0, limit);
   const truncated = view.length > shown.length;
 

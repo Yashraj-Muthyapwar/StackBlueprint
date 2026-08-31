@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Pause, Play, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { MultiStage, totalSteps, locate } from "@/components/lesson/MultiStage";
-import { STAGES_REGISTRY, type AnyVariant } from "@/components/sql/animation-stages";
+import { STAGES_REGISTRY, type AnyVariant } from "@/components/sql/animation-registry";
 
 export type AnimationVariant = AnyVariant;
 

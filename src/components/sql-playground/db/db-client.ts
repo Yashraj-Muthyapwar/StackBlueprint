@@ -150,6 +150,16 @@ export function stripNoise(sql: string): string {
     .trim();
 }
 
+/**
+ * Result metadata alone cannot tell a zero-column SELECT apart from a command:
+ * PostgreSQL accepts `SELECT FROM customers` and returns rows with no fields.
+ * Keep it in the results flow so the UI can explain the mistake instead of
+ * presenting it as a successful write operation.
+ */
+function isReadStatement(sql: string): boolean {
+  return /^(select|values|show|describe|explain|with)\b/i.test(stripNoise(sql));
+}
+
 /** Postgres type OIDs we are likely to meet, for a friendlier column header. */
 const PG_OID: Record<number, string> = {
   16: "bool",
@@ -667,13 +677,16 @@ class DBClient {
       };
     }
 
-    let last: { rows: any[]; fields: Field[]; affected?: number } | null = null;
-    let lastWithRows: { rows: any[]; fields: Field[]; affected?: number } | null = null;
+    type StatementResult = { rows: any[]; fields: Field[]; affected?: number; sql: string };
+    let last: StatementResult | null = null;
+    let lastWithRows: StatementResult | null = null;
+    let lastRead: StatementResult | null = null;
 
     for (const [index, stmt] of statements.entries()) {
       try {
-        last = await handle.exec(stmt);
+        last = { ...(await handle.exec(stmt)), sql: stmt };
         if (last.fields.length > 0) lastWithRows = last;
+        if (isReadStatement(stmt)) lastRead = last;
       } catch (e: any) {
         const message = String(e?.message ?? e);
         const range = ranges[index];
@@ -705,14 +718,14 @@ class DBClient {
       }
     }
 
-    const chosen = lastWithRows ?? last!;
+    const chosen = lastWithRows ?? lastRead ?? last!;
     return {
       rows: chosen.rows,
       fields: chosen.fields,
       executionTimeMs: performance.now() - started,
       statementCount: statements.length,
       affectedRows: chosen.affected,
-      isCommand: chosen.fields.length === 0,
+      isCommand: !isReadStatement(chosen.sql),
       sql,
     };
   }

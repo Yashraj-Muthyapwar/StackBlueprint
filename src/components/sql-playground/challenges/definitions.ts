@@ -2,6 +2,49 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "cycle-depot-customer-directory",
+    version: 1,
+    title: "Build a customer directory",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a simple customer directory for the Cycle Depot team.",
+    requirements: [
+      "Use the customers table.",
+      "Return every customer's id, name, and country.",
+      "Rename the name column to customer_name.",
+      "Return exactly these columns: id, customer_name, and country.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: `-- Cycle Depot practice: build a customer directory.
+-- Return id, name as customer_name, and country from customers.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT and list the three fields you need.",
+      "Use AS to rename name: name AS customer_name.",
+    ],
+    solutionSql: {
+      postgres: "SELECT id, name AS customer_name, country FROM customers;",
+      duckdb: "SELECT id, name AS customer_name, country FROM customers;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT id, name AS customer_name, country FROM customers;",
+        duckdb: "SELECT id, name AS customer_name, country FROM customers;",
+      },
+      requiredColumns: ["id", "customer_name", "country"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Customer directory complete",
+      body: "Correct. You selected the requested fields and used an alias to give the customer name a clearer heading.",
+      nextConcept: "Filtering customers with WHERE",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",

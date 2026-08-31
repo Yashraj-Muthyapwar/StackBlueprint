@@ -19,6 +19,7 @@ import { findDialectIssues, summariseIssues } from "./db/dialect";
 import { fetchSchema, SchemaSnapshot, toCompletionSchema } from "./db/metadata";
 import { DATASETS, DEFAULT_DATASET, getDataset, humanBytes, type DatasetId } from "./db/datasets";
 import { examplesFor, starterFor } from "./content";
+import { getPractice, type PlaygroundPractice } from "./content/practice";
 import { SqlEditor, SqlEditorHandle, type RunTarget } from "./SqlEditor";
 import { SplitPane } from "./SplitPane";
 import { DatasetPicker } from "./DatasetPicker";
@@ -38,7 +39,13 @@ import { getChallenge } from "./challenges/definitions";
 import { enforceQueryPolicy } from "./challenges/query-policy";
 import { validateResult } from "./challenges/validate";
 import { categorizeEngineError } from "./challenges/error-copy";
-import { saveProgress, getChallengeDraft, saveChallengeDraft, clearChallengeDraft, getProgress } from "./challenges/progress";
+import {
+  saveProgress,
+  getChallengeDraft,
+  saveChallengeDraft,
+  clearChallengeDraft,
+  getProgress,
+} from "./challenges/progress";
 import type { ChallengeDefinition, CheckOutcome } from "./challenges/types";
 
 import "./sql-flow.css";
@@ -95,6 +102,7 @@ export function SqlPlayground() {
    */
   const [restored, setRestored] = useState(false);
   const [resetting, setResetting] = useState(false);
+  const [practice, setPractice] = useState<PlaygroundPractice | null>(null);
   /** Bumped after a reset or dataset load so dependent views refetch. */
   const [schemaVersion, setSchemaVersion] = useState(0);
 
@@ -109,6 +117,13 @@ export function SqlPlayground() {
   }>({ isOpen: false });
 
   const active = getDataset(dataset);
+
+  // Lesson links contain a short, trusted practice ID. Keep the saved editor
+  // draft untouched until the learner explicitly chooses to load the exercise.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setPractice(getPractice(params.get("practice")));
+  }, []);
 
   // ---- persistence -----------------------------------------------------
   useEffect(() => {
@@ -141,11 +156,11 @@ export function SqlPlayground() {
 
   useEffect(() => {
     const id = setTimeout(() => {
-       if (activeChallengeId) {
-         saveChallengeDraft(activeChallengeId, engine, dataset, sql);
-       } else {
-         localStorage.setItem(SQL_KEY, sql);
-       }
+      if (activeChallengeId) {
+        saveChallengeDraft(activeChallengeId, engine, dataset, sql);
+      } else {
+        localStorage.setItem(SQL_KEY, sql);
+      }
     }, 400);
     return () => clearTimeout(id);
   }, [sql, activeChallengeId, engine, dataset]);
@@ -256,54 +271,62 @@ export function SqlPlayground() {
 
     const text = sql.trim();
     if (!text) return;
-    
+
     setRunning(true);
     setTab("results");
-    
+
     const policy = enforceQueryPolicy(text);
     if (!policy.valid) {
-      setChallengeFeedback({ state: "query-error", category: policy.category, detail: policy.detail });
+      setChallengeFeedback({
+        state: "query-error",
+        category: policy.category,
+        detail: policy.detail,
+      });
       setRunning(false);
       return;
     }
-    
-    const expectedQuery = challenge.validator.expectedSql[engine] || challenge.validator.expectedSql.postgres;
+
+    const expectedQuery =
+      challenge.validator.expectedSql[engine] || challenge.validator.expectedSql.postgres;
     if (!expectedQuery) {
       setChallengeFeedback({ state: "unavailable", message: "No expected SQL for this engine." });
       setRunning(false);
       return;
     }
-    
+
     try {
       const expectedRes = await db.runOrThrow(engine, dataset, expectedQuery);
-      
+
       const res = await db.run(engine, dataset, policy.sql);
       setResult(res);
       setRanSql(policy.sql);
-      setRunOffset(0); 
-      
+      setRunOffset(0);
+
       if (res.error) {
         const cat = categorizeEngineError(res.error);
         setChallengeFeedback({ state: "query-error", category: cat.category, detail: cat.detail });
       } else {
         const validation = validateResult(res, expectedRes, challenge.validator);
         setChallengeFeedback(validation);
-        
+
         if (validation.state === "passed") {
           const oldProg = getProgress(challenge.id);
           saveProgress(challenge.id, {
-             version: challenge.version,
-             completedAt: Date.now(),
-             attempts: (oldProg?.attempts || 0) + 1,
-             revealedHintCount: oldProg?.revealedHintCount || 0,
-             revealedSolution: oldProg?.revealedSolution || false,
-             needsReview: oldProg?.needsReview
+            version: challenge.version,
+            completedAt: Date.now(),
+            attempts: (oldProg?.attempts || 0) + 1,
+            revealedHintCount: oldProg?.revealedHintCount || 0,
+            revealedSolution: oldProg?.revealedSolution || false,
+            needsReview: oldProg?.needsReview,
           });
         }
       }
     } catch (e: any) {
-       console.error("Challenge oracle failed:", e);
-       setChallengeFeedback({ state: "unavailable", message: "The challenge configuration failed." });
+      console.error("Challenge oracle failed:", e);
+      setChallengeFeedback({
+        state: "unavailable",
+        message: "The challenge configuration failed.",
+      });
     }
     setRunning(false);
   }, [activeChallengeId, sql, engine, dataset]);
@@ -353,27 +376,30 @@ export function SqlPlayground() {
     }
   }, [engine, dataset, reloadSchema]);
 
-  const handleSelectChallenge = useCallback((challenge: ChallengeDefinition) => {
-    if (dataset !== challenge.dataset || !challenge.engines.includes(engine)) {
-      setSwitchDialog({ isOpen: true, targetChallenge: challenge });
-      return;
-    }
-    
-    setActiveChallengeId(challenge.id);
-    setChallengeFeedback(null);
-    const draft = getChallengeDraft(challenge.id, engine, dataset);
-    setSql(draft || challenge.starterSql || "");
-  }, [dataset, engine]);
+  const handleSelectChallenge = useCallback(
+    (challenge: ChallengeDefinition) => {
+      if (dataset !== challenge.dataset || !challenge.engines.includes(engine)) {
+        setSwitchDialog({ isOpen: true, targetChallenge: challenge });
+        return;
+      }
+
+      setActiveChallengeId(challenge.id);
+      setChallengeFeedback(null);
+      const draft = getChallengeDraft(challenge.id, engine, dataset);
+      setSql(draft || challenge.starterSql || "");
+    },
+    [dataset, engine],
+  );
 
   const confirmSwitch = useCallback(() => {
     const challenge = switchDialog.targetChallenge;
     if (!challenge) return;
-    
+
     setSwitchDialog({ isOpen: false });
     const nextEngine = challenge.engines.includes(engine) ? engine : challenge.engines[0];
     const draft = getChallengeDraft(challenge.id, nextEngine, challenge.dataset);
     const sqlToLoad = draft || challenge.starterSql || "";
-    
+
     switchDataset(challenge.dataset, sqlToLoad);
     setActiveChallengeId(challenge.id);
     setChallengeFeedback(null);
@@ -387,19 +413,19 @@ export function SqlPlayground() {
   }, [dataset, engine]);
 
   const handleResetChallenge = useCallback(() => {
-     if (!activeChallengeId) return;
-     const challenge = getChallenge(activeChallengeId);
-     if (!challenge) return;
-     if (window.confirm("Are you sure you want to discard your changes to this challenge?")) {
-        clearChallengeDraft(activeChallengeId, engine, dataset);
-        setSql(challenge.starterSql || "");
-        setChallengeFeedback(null);
-     }
+    if (!activeChallengeId) return;
+    const challenge = getChallenge(activeChallengeId);
+    if (!challenge) return;
+    if (window.confirm("Are you sure you want to discard your changes to this challenge?")) {
+      clearChallengeDraft(activeChallengeId, engine, dataset);
+      setSql(challenge.starterSql || "");
+      setChallengeFeedback(null);
+    }
   }, [activeChallengeId, engine, dataset]);
 
   // Switching dataset also swaps the editor contents to the new dataset's starter query
   // so that the user doesn't get schema mismatch errors with old queries.
-    const switchDataset = useCallback(
+  const switchDataset = useCallback(
     (next: DatasetId, overrideSql?: string) => {
       const def = getDataset(next);
       const nextEngine = def.engines.includes(engine) ? engine : def.engines[0];
@@ -414,7 +440,30 @@ export function SqlPlayground() {
     [engine],
   );
 
-  const handleUpload = async (file: File, tableName: string, targetChoice: "workspace" | "current") => {
+  const loadPractice = useCallback(() => {
+    if (!practice) return;
+    setDataset(practice.dataset);
+    setEngine(practice.engine);
+    const challenge = practice.challengeId ? getChallenge(practice.challengeId) : undefined;
+    if (challenge) {
+      setChallengeMode(true);
+      setActiveChallengeId(challenge.id);
+      setChallengeFeedback(null);
+      setSql(challenge.starterSql || practice.starterSql);
+    } else {
+      setSql(practice.starterSql);
+    }
+    setResult(null);
+    setRanSql("");
+    setTab("results");
+    setPractice(null);
+  }, [practice]);
+
+  const handleUpload = async (
+    file: File,
+    tableName: string,
+    targetChoice: "workspace" | "current",
+  ) => {
     let targetDataset = dataset;
     let targetEngine = engine;
 
@@ -423,7 +472,7 @@ export function SqlPlayground() {
     }
 
     await db.uploadCsv(targetEngine, targetDataset, file, tableName);
-    
+
     // Switch to the target dataset if we aren't already on it
     const previewSql = `SELECT * FROM "uploads"."${tableName}" LIMIT 50;`;
     if (dataset !== targetDataset || engine !== targetEngine) {
@@ -431,11 +480,11 @@ export function SqlPlayground() {
     } else {
       // Force schema reload
       setSchemaVersion((v) => v + 1);
-      
+
       // Auto-populate query editor with starter
       setSql(previewSql);
       setTab("results");
-      
+
       // Automatically run the preview
       setTimeout(() => run(previewSql), 100);
     }
@@ -518,88 +567,112 @@ export function SqlPlayground() {
 
   return (
     <div className={`sqlx ${dark ? "sqlx-dark" : ""}`} data-engine={engine}>
-      <header className="sqlx-header">
-        <div className="sqlx-brand">
-          <span className="mark" aria-hidden>
-            <i />
-            <i />
-            <i />
-          </span>
-          <h1>SQL Playground</h1>
-        </div>
+      <div className="sqlx-top">
+        <header className="sqlx-header">
+          <div className="sqlx-brand">
+            <span className="mark" aria-hidden>
+              <i />
+              <i />
+              <i />
+            </span>
+            <h1>SQL Playground</h1>
+          </div>
 
-        <DatasetPicker
-          value={dataset}
-          engine={engine}
-          warm={(id) => db.isWarm(engine, id)}
-          onChange={switchDataset}
-        />
-        
-        <button 
-          className="sqlx-btn secondary" 
-          onClick={() => setUploaderOpen(true)}
-          style={{ marginLeft: 8 }}
-        >
-          <Upload size={14} /> Upload Data
-        </button>
+          <DatasetPicker
+            value={dataset}
+            engine={engine}
+            warm={(id) => db.isWarm(engine, id)}
+            onChange={switchDataset}
+          />
 
-        <div className="sqlx-engines" role="tablist" aria-label="Database engine" style={{ marginLeft: "auto" }}>
-          {(["postgres", "duckdb"] as Engine[]).map((candidate) => {
-            const supported = active.engines.includes(candidate);
-            return (
-              <button
-                key={candidate}
-                role="tab"
-                aria-selected={engine === candidate}
-                disabled={!supported}
-                className={engine === candidate ? "active" : ""}
-                onClick={() => supported && setEngine(candidate)}
-                title={
-                  supported
-                    ? candidate === "postgres"
-                      ? "PGlite: real PostgreSQL compiled to WebAssembly"
-                      : "DuckDB WebAssembly: a columnar analytics engine"
-                    : `${active.name} does not run on ${candidate === "postgres" ? "PostgreSQL" : "DuckDB"}`
-                }
-              >
-                <span className={`dot ${db.stateOf(candidate, dataset).status}`} />
-                {candidate === "postgres" ? "PostgreSQL" : "DuckDB"}
-              </button>
-            );
-          })}
-        </div>
-
-        <span className={`sqlx-status ${state.status}`} title={state.detail}>
-          {state.status !== "ready" && state.status !== "failed" && (
-            <Loader2 size={12} className="spin" />
-          )}
-          {statusText}
-        </span>
-      </header>
-
-      {(state.status === "booting" || state.status === "loading") && (
-        <div
-          className="sqlx-loadbar"
-          role="progressbar"
-          aria-valuenow={Math.round(state.progress * 100)}
-        >
-          <span style={{ width: `${Math.max(2, state.progress * 100)}%` }} />
-          <em>
-            {active.name}
-            {active.bytes > 0 && ` · ${humanBytes(active.bytes)}`}
-            {state.label && ` · ${state.label}`}
-          </em>
-        </div>
-      )}
-
-      {state.status === "failed" && (
-        <div className="sqlx-loadfail">
-          Could not load {active.name}: {state.detail ?? "unknown error"}
-          <button className="sqlx-link" onClick={() => setSchemaVersion((v) => v + 1)}>
-            Try again
+          <button
+            className="sqlx-btn secondary"
+            onClick={() => setUploaderOpen(true)}
+            style={{ marginLeft: 8 }}
+          >
+            <Upload size={14} /> Upload Data
           </button>
-        </div>
-      )}
+
+          <div
+            className="sqlx-engines"
+            role="tablist"
+            aria-label="Database engine"
+            style={{ marginLeft: "auto" }}
+          >
+            {(["postgres", "duckdb"] as Engine[]).map((candidate) => {
+              const supported = active.engines.includes(candidate);
+              return (
+                <button
+                  key={candidate}
+                  role="tab"
+                  aria-selected={engine === candidate}
+                  disabled={!supported}
+                  className={engine === candidate ? "active" : ""}
+                  onClick={() => supported && setEngine(candidate)}
+                  title={
+                    supported
+                      ? candidate === "postgres"
+                        ? "PGlite: real PostgreSQL compiled to WebAssembly"
+                        : "DuckDB WebAssembly: a columnar analytics engine"
+                      : `${active.name} does not run on ${candidate === "postgres" ? "PostgreSQL" : "DuckDB"}`
+                  }
+                >
+                  <span className={`dot ${db.stateOf(candidate, dataset).status}`} />
+                  {candidate === "postgres" ? "PostgreSQL" : "DuckDB"}
+                </button>
+              );
+            })}
+          </div>
+
+          <span className={`sqlx-status ${state.status}`} title={state.detail}>
+            {state.status !== "ready" && state.status !== "failed" && (
+              <Loader2 size={12} className="spin" />
+            )}
+            {statusText}
+          </span>
+        </header>
+
+        {(state.status === "booting" || state.status === "loading") && (
+          <div
+            className="sqlx-loadbar"
+            role="progressbar"
+            aria-valuenow={Math.round(state.progress * 100)}
+          >
+            <span style={{ width: `${Math.max(2, state.progress * 100)}%` }} />
+            <em>
+              {active.name}
+              {active.bytes > 0 && ` · ${humanBytes(active.bytes)}`}
+              {state.label && ` · ${state.label}`}
+            </em>
+          </div>
+        )}
+
+        {state.status === "failed" && (
+          <div className="sqlx-loadfail">
+            Could not load {active.name}: {state.detail ?? "unknown error"}
+            <button className="sqlx-link" onClick={() => setSchemaVersion((v) => v + 1)}>
+              Try again
+            </button>
+          </div>
+        )}
+
+        {practice && (
+          <div className="sqlx-practice-banner">
+            <div>
+              <strong>Practice ready: {practice.title}</strong>
+              <span>{practice.prompt}</span>
+            </div>
+            <div className="sqlx-practice-actions">
+              <button className="sqlx-btn primary" onClick={loadPractice}>
+                Load exercise
+              </button>
+              <button className="sqlx-link" onClick={() => setPractice(null)}>
+                Keep my draft
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="sqlx-body">
         <aside className="sqlx-aside">
@@ -612,40 +685,60 @@ export function SqlPlayground() {
             challengeMode={challengeMode}
           >
             <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "-8px" }}>
-               <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer", color: "var(--text-secondary, #666)", fontWeight: 500 }}>
-                 <input 
-                   type="checkbox" 
-                   checked={challengeMode} 
-                   onChange={e => setChallengeMode(e.target.checked)} 
-                   style={{ cursor: "pointer", accentColor: "var(--accent, #6366f1)" }}
-                 />
-                 Challenge Mode
-               </label>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                  color: "var(--text-secondary, #666)",
+                  fontWeight: 500,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={challengeMode}
+                  onChange={(e) => setChallengeMode(e.target.checked)}
+                  style={{ cursor: "pointer", accentColor: "var(--accent, #6366f1)" }}
+                />
+                Challenge Mode
+              </label>
             </div>
             {challengeMode && (
-              <ChallengeList 
-                 dataset={dataset}
-                 engine={engine}
-                 activeChallengeId={activeChallengeId}
-                 onSelectChallenge={handleSelectChallenge}
+              <ChallengeList
+                dataset={dataset}
+                engine={engine}
+                activeChallengeId={activeChallengeId}
+                onSelectChallenge={handleSelectChallenge}
               />
             )}
           </SchemaExplorer>
         </aside>
 
-        <main className="sqlx-main" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <main
+          className="sqlx-main"
+          style={{ display: "flex", flexDirection: "column", height: "100%" }}
+        >
           {challengeMode && activeChallengeId && (
-            <div style={{ padding: "12px 14px 0 14px", flex: "none", overflowY: "auto", maxHeight: "50%" }}>
+            <div
+              style={{
+                padding: "12px 14px 0 14px",
+                flex: "none",
+                overflowY: "auto",
+                maxHeight: "50%",
+              }}
+            >
               <ChallengePanel
-                 challenge={getChallenge(activeChallengeId)!}
-                 engine={engine}
-                 onRun={runChallenge}
-                 onReset={handleResetChallenge}
-                 onExit={handleExitChallenge}
-                 onUseStarter={(s) => setSql(s)}
-                 feedback={challengeFeedback}
-                 running={running}
-                 isDatasetActive={true}
+                challenge={getChallenge(activeChallengeId)!}
+                engine={engine}
+                onRun={runChallenge}
+                onReset={handleResetChallenge}
+                onExit={handleExitChallenge}
+                onUseStarter={(s) => setSql(s)}
+                feedback={challengeFeedback}
+                running={running}
+                isDatasetActive={true}
               />
             </div>
           )}
@@ -656,224 +749,239 @@ export function SqlPlayground() {
               top={
                 <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                   <section className="sqlx-editor-card" style={{ flex: 1, minHeight: 0 }}>
-                  <div className="sqlx-toolbar">
-                    <span className="file">query.sql</span>
+                    <div className="sqlx-toolbar">
+                      <span className="file">query.sql</span>
 
-                  <button
-                    className="sqlx-btn primary"
-                    onClick={() => run()}
-                    disabled={running || !ready}
-                  >
-                    {running ? <Loader2 size={13} className="spin" /> : <Play size={13} />}
-                    {runLabel}
-                  </button>
+                      <button
+                        className="sqlx-btn primary"
+                        onClick={() => run()}
+                        disabled={running || !ready}
+                      >
+                        {running ? <Loader2 size={13} className="spin" /> : <Play size={13} />}
+                        {runLabel}
+                      </button>
 
-                  <button className="sqlx-btn" onClick={explain} disabled={!ready}>
-                    <Sparkles size={13} /> Explain
-                  </button>
+                      <button className="sqlx-btn" onClick={explain} disabled={!ready}>
+                        <Sparkles size={13} /> Explain
+                      </button>
 
-                  <button
-                    className="sqlx-btn"
-                    onClick={format}
-                    title={formatNote ?? "Tidy the SQL (Shift+Alt+F)"}
-                  >
-                    <Wand2 size={13} /> Format
-                  </button>
+                      <button
+                        className="sqlx-btn"
+                        onClick={format}
+                        title={formatNote ?? "Tidy the SQL (Shift+Alt+F)"}
+                      >
+                        <Wand2 size={13} /> Format
+                      </button>
 
-                  {formatNote && <span className="sqlx-format-note">{formatNote}</span>}
+                      {formatNote && <span className="sqlx-format-note">{formatNote}</span>}
 
-                  <div className="sqlx-menu">
-                    <button
-                      className="sqlx-btn"
-                      onClick={() => setHistoryOpen((o) => !o)}
-                      aria-expanded={historyOpen}
-                    >
-                      <Clock size={13} /> History
-                      <ChevronDown size={12} />
-                    </button>
-                    {historyOpen && (
-                      <div className="sqlx-menu-panel" onMouseLeave={() => setHistoryOpen(false)}>
-                        {history.length === 0 ? (
-                          <p className="empty">Nothing run yet.</p>
-                        ) : (
-                          <>
-                            <div className="menu-head">
-                              <span>Recent queries</span>
-                              <button
-                                onClick={() => {
-                                  setHistory([]);
-                                  localStorage.removeItem(HISTORY_KEY);
-                                }}
-                              >
-                                <Trash2 size={11} /> Clear
-                              </button>
-                            </div>
-                            <ul>
-                              {history.map((entry, i) => (
-                                <li key={`${entry.at}-${i}`}>
+                      <div className="sqlx-menu">
+                        <button
+                          className="sqlx-btn"
+                          onClick={() => setHistoryOpen((o) => !o)}
+                          aria-expanded={historyOpen}
+                        >
+                          <Clock size={13} /> History
+                          <ChevronDown size={12} />
+                        </button>
+                        {historyOpen && (
+                          <div
+                            className="sqlx-menu-panel"
+                            onMouseLeave={() => setHistoryOpen(false)}
+                          >
+                            {history.length === 0 ? (
+                              <p className="empty">Nothing run yet.</p>
+                            ) : (
+                              <>
+                                <div className="menu-head">
+                                  <span>Recent queries</span>
                                   <button
                                     onClick={() => {
-                                      setSql(entry.sql);
-                                      setHistoryOpen(false);
-                                      editorRef.current?.focus();
+                                      setHistory([]);
+                                      localStorage.removeItem(HISTORY_KEY);
                                     }}
                                   >
-                                    <code>{entry.sql.replace(/\s+/g, " ").slice(0, 74)}</code>
-                                    <span className={`meta ${entry.failed ? "bad" : ""}`}>
-                                      {entry.dataset ?? "—"} ·{" "}
-                                      {entry.engine === "postgres" ? "pg" : "duck"} ·{" "}
-                                      {entry.failed ? "error" : `${entry.rows} rows`} ·{" "}
-                                      {entry.ms.toFixed(0)} ms
-                                    </span>
+                                    <Trash2 size={11} /> Clear
                                   </button>
-                                </li>
-                              ))}
-                            </ul>
-                          </>
+                                </div>
+                                <ul>
+                                  {history.map((entry, i) => (
+                                    <li key={`${entry.at}-${i}`}>
+                                      <button
+                                        onClick={() => {
+                                          setSql(entry.sql);
+                                          setHistoryOpen(false);
+                                          editorRef.current?.focus();
+                                        }}
+                                      >
+                                        <code>{entry.sql.replace(/\s+/g, " ").slice(0, 74)}</code>
+                                        <span className={`meta ${entry.failed ? "bad" : ""}`}>
+                                          {entry.dataset ?? "—"} ·{" "}
+                                          {entry.engine === "postgres" ? "pg" : "duck"} ·{" "}
+                                          {entry.failed ? "error" : `${entry.rows} rows`} ·{" "}
+                                          {entry.ms.toFixed(0)} ms
+                                        </span>
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </>
+                            )}
+                          </div>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  <button
-                    className="sqlx-btn"
-                    onClick={() => navigator.clipboard?.writeText(sql)}
-                    title="Copy the whole editor"
-                  >
-                    <Copy size={13} />
-                  </button>
-
-                  <button
-                    className="sqlx-btn"
-                    onClick={resetDatabase}
-                    disabled={resetting || !ready}
-                    title="Discard your changes and reload this dataset"
-                  >
-                    {resetting ? <Loader2 size={13} className="spin" /> : <RotateCcw size={13} />}
-                    Reset
-                  </button>
-
-                  {dialectWarning && (
-                    <button
-                      className="sqlx-dialect-badge"
-                      title={dialectWarning}
-                      onClick={() => {
-                        const other: Engine = engine === "postgres" ? "duckdb" : "postgres";
-                        if (active.engines.includes(other)) setEngine(other);
-                      }}
-                    >
-                      <AlertTriangle size={12} />
-                      <span>{dialectIssues[0].construct}</span>
-                      {active.engines.includes(engine === "postgres" ? "duckdb" : "postgres") && (
-                        <em>switch engine</em>
-                      )}
-                    </button>
-                  )}
-
-                  <span className="hint">
-                    {statementCount > 1 && <b>{statementCount} statements · </b>}
-                    <kbd>{navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}</kbd>
-                    <kbd>↵</kbd> run
-                  </span>
-                </div>
-
-                <div className="sqlx-editor">
-                  <SqlEditor
-                    ref={editorRef}
-                    value={sql}
-                    onChange={setSql}
-                    onRun={() => run()}
-                    onExplain={explain}
-                    onFormat={format}
-                    schema={completionSchema}
-                    engine={engine}
-                    dark={dark}
-                    engineError={engineError}
-                    onTargetChange={setRunTarget}
-                  />
-                </div>
-              </section>
-              </div>
-            }
-            bottom={
-              <section className="sqlx-panel-wrap">
-                {!challengeMode && (
-                  <div className="sqlx-tabs" role="tablist">
-                    {tabs.map((t) => (
                       <button
-                        key={t.id}
-                        role="tab"
-                        aria-selected={tab === t.id}
-                        className={`sqlx-tab ${tab === t.id ? "active" : ""}`}
-                        onClick={() => setTab(t.id)}
+                        className="sqlx-btn"
+                        onClick={() => navigator.clipboard?.writeText(sql)}
+                        title="Copy the whole editor"
                       >
-                        {t.label}
-                        {t.badge !== undefined && <span className="pill">{t.badge}</span>}
+                        <Copy size={13} />
                       </button>
-                    ))}
-                  </div>
-                )}
 
-                <div className="sqlx-panel">
-                  {tab === "results" &&
-                    (result ? (
-                      <QueryResultTable result={result} engine={engine} />
-                    ) : (
-                      <div className="sqlx-empty">
-                        <strong>Press Run.</strong>
-                        <span>
-                          {active.name} is loaded on{" "}
-                          {engine === "postgres" ? "PostgreSQL" : "DuckDB"}. Pick a guided query on
-                          the left, or write your own.
-                        </span>
-                      </div>
-                    ))}
+                      <button
+                        className="sqlx-btn"
+                        onClick={resetDatabase}
+                        disabled={resetting || !ready}
+                        title="Discard your changes and reload this dataset"
+                      >
+                        {resetting ? (
+                          <Loader2 size={13} className="spin" />
+                        ) : (
+                          <RotateCcw size={13} />
+                        )}
+                        Reset
+                      </button>
 
-                  {tab === "pipeline" && (
-                    <QueryFlowVisualizer
-                      engine={engine}
-                      dataset={dataset}
-                      sql={target}
-                      result={result}
-                      active
-                    />
-                  )}
+                      {dialectWarning && (
+                        <button
+                          className="sqlx-dialect-badge"
+                          title={dialectWarning}
+                          onClick={() => {
+                            const other: Engine = engine === "postgres" ? "duckdb" : "postgres";
+                            if (active.engines.includes(other)) setEngine(other);
+                          }}
+                        >
+                          <AlertTriangle size={12} />
+                          <span>{dialectIssues[0].construct}</span>
+                          {active.engines.includes(
+                            engine === "postgres" ? "duckdb" : "postgres",
+                          ) && <em>switch engine</em>}
+                        </button>
+                      )}
 
-                  {tab === "plan" && (
-                    <ExecutionPlanVisualizer
-                      engine={engine}
-                      dataset={dataset}
-                      sql={target}
-                      ready={ready}
-                      active
-                      dark={dark}
-                    />
-                  )}
+                      <span className="hint">
+                        {statementCount > 1 && <b>{statementCount} statements · </b>}
+                        <kbd>{navigator.platform?.includes("Mac") ? "⌘" : "Ctrl"}</kbd>
+                        <kbd>↵</kbd> run
+                      </span>
+                    </div>
 
-                  {tab === "chart" && <ChartVisualizer result={result} engine={engine} />}
-
-                  {tab === "schema" && <SchemaVisualizer schema={schema} active />}
+                    <div className="sqlx-editor">
+                      <SqlEditor
+                        ref={editorRef}
+                        value={sql}
+                        onChange={setSql}
+                        onRun={() => run()}
+                        onExplain={explain}
+                        onFormat={format}
+                        schema={completionSchema}
+                        engine={engine}
+                        dark={dark}
+                        engineError={engineError}
+                        onTargetChange={setRunTarget}
+                      />
+                    </div>
+                  </section>
                 </div>
-              </section>
-            }
-          />
+              }
+              bottom={
+                <section className="sqlx-panel-wrap">
+                  {!challengeMode && (
+                    <div className="sqlx-tabs" role="tablist">
+                      {tabs.map((t) => (
+                        <button
+                          key={t.id}
+                          role="tab"
+                          aria-selected={tab === t.id}
+                          className={`sqlx-tab ${tab === t.id ? "active" : ""}`}
+                          onClick={() => setTab(t.id)}
+                        >
+                          {t.label}
+                          {t.badge !== undefined && <span className="pill">{t.badge}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="sqlx-panel">
+                    {tab === "results" &&
+                      (result ? (
+                        <QueryResultTable result={result} engine={engine} />
+                      ) : (
+                        <div className="sqlx-empty">
+                          <strong>Press Run.</strong>
+                          <span>
+                            {active.name} is loaded on{" "}
+                            {engine === "postgres" ? "PostgreSQL" : "DuckDB"}. Pick a guided query
+                            on the left, or write your own.
+                          </span>
+                        </div>
+                      ))}
+
+                    {tab === "pipeline" && (
+                      <QueryFlowVisualizer
+                        engine={engine}
+                        dataset={dataset}
+                        sql={target}
+                        result={result}
+                        active
+                      />
+                    )}
+
+                    {tab === "plan" && (
+                      <ExecutionPlanVisualizer
+                        engine={engine}
+                        dataset={dataset}
+                        sql={target}
+                        ready={ready}
+                        active
+                        dark={dark}
+                      />
+                    )}
+
+                    {tab === "chart" && <ChartVisualizer result={result} engine={engine} />}
+
+                    {tab === "schema" && <SchemaVisualizer schema={schema} active />}
+                  </div>
+                </section>
+              }
+            />
           </div>
         </main>
       </div>
 
       {uploaderOpen && (
-        <CsvUploader 
-          onClose={() => setUploaderOpen(false)} 
+        <CsvUploader
+          onClose={() => setUploaderOpen(false)}
           onUpload={handleUpload}
           currentDataset={active.name}
         />
       )}
 
-      <DatasetSwitchDialog 
+      <DatasetSwitchDialog
         isOpen={switchDialog.isOpen}
-        targetDatasetName={switchDialog.targetChallenge ? getDataset(switchDialog.targetChallenge.dataset).name : ""}
+        targetDatasetName={
+          switchDialog.targetChallenge ? getDataset(switchDialog.targetChallenge.dataset).name : ""
+        }
         currentDatasetName={active.name}
-        targetEngineName={switchDialog.targetChallenge ? (switchDialog.targetChallenge.engines[0] === "postgres" ? "PostgreSQL" : "DuckDB") : ""}
+        targetEngineName={
+          switchDialog.targetChallenge
+            ? switchDialog.targetChallenge.engines[0] === "postgres"
+              ? "PostgreSQL"
+              : "DuckDB"
+            : ""
+        }
         onConfirm={confirmSwitch}
         onCancel={() => setSwitchDialog({ isOpen: false })}
       />
