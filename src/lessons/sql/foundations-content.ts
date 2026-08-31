@@ -63,6 +63,7 @@ export type Section =
         | "q-range"
         | "q-like"
         | "q-null3vl"
+        | "q-sargability"
         | "q-aggr"
         | "q-grpby"
         | "q-having"
