@@ -5,7 +5,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
-import { useLocation } from "@tanstack/react-router";
+import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
   const KEYWORDS = new Set([
@@ -86,7 +86,7 @@ function highlightPython(line: string) {
 }
 
 function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==)/g);
+  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
@@ -99,6 +99,17 @@ function parseInlineMarkdown(text: string) {
     }
     if (part.startsWith('==') && part.endsWith('==')) {
       return <span key={i} className="text-foreground">{part.slice(2, -2)}</span>;
+    }
+    if (part.startsWith('[') && part.endsWith(')') && part.includes('](')) {
+      const match = part.match(/\[(.*?)\]\((.*?)\)/);
+      if (match) {
+        // External links
+        if (match[2].startsWith('http')) {
+          return <a key={i} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors">{match[1]}</a>;
+        }
+        // Internal links
+        return <Link key={i} to={match[2]} className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors">{match[1]}</Link>;
+      }
     }
     return part;
   });
