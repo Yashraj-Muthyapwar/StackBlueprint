@@ -21,7 +21,7 @@ export default defineConfig({
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
-      exclude: ["@electric-sql/pglite", "@duckdb/duckdb-wasm"]
+      exclude: ["@electric-sql/pglite", "@duckdb/duckdb-wasm", "sql.js"]
     }
   }
 });
