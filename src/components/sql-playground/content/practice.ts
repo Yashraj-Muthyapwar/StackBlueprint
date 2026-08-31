@@ -53,6 +53,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name, price, and in_stock for products that meet both requirements.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-featured-products-logic": {
+    id: "cycledepot-featured-products-logic",
+    title: "Build a featured product list",
+    prompt:
+      "Return name, category, price, and in_stock for Road Bikes with at least 90 units in stock, or non-Road Bikes priced at least 4000. Use AND, OR, NOT, and parentheses. The result should have 3 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-featured-products-logic",
+    starterSql: `-- Cycle Depot featured products.
+-- Return name, category, price, and in_stock for either qualifying group.
+-- Use parentheses to keep each group easy to read.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customers-without-city": {
     id: "cycledepot-customers-without-city",
     title: "Find customers without a city",
