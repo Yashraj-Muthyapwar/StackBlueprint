@@ -9,7 +9,7 @@ import {
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cycledepot" | "bikestore" | "adventureworks" | "olist" | "tpch";
+export type DatasetId = "cycledepot" | "bikestore" | "adventureworks" | "olist" | "tpch" | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -26,6 +26,7 @@ export interface DatasetDef {
   /** How the data gets into the engine. */
   source:
     | { kind: "generated" }
+    | { kind: "blank" }
     | { kind: "csv"; manifest: DatasetManifest }
     | { kind: "tpch"; scaleFactor: number };
   /** Compressed bytes fetched on first use. 0 means nothing is downloaded. */
@@ -41,6 +42,19 @@ export interface DatasetDef {
 const sumRows = (m: DatasetManifest) => m.tables.reduce((total, t) => total + t.rows, 0);
 
 export const DATASETS: DatasetDef[] = [
+  {
+    id: "my-workspace",
+    name: "My Workspace",
+    tagline: "Upload your own data to explore.",
+    about:
+      "A blank canvas for your own data. Upload CSVs into this private, temporary DuckDB or PostgreSQL session to perform analysis. Data is never sent to a server.",
+    difficulty: "beginner",
+    engines: ["duckdb", "postgres"],
+    source: { kind: "blank" },
+    bytes: 0,
+    stats: { tables: 0, rows: 0 },
+    credit: { label: "Local Data", url: "" },
+  },
   {
     id: "cycledepot",
     name: "Cycle Depot",
