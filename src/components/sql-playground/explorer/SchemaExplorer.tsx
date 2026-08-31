@@ -9,9 +9,11 @@ interface Props {
   datasetName: string;
   loading: boolean;
   onUseQuery: (sql: string, autoRun: boolean) => void;
+  challengeMode?: boolean;
+  children?: React.ReactNode;
 }
 
-export function SchemaExplorer({ schema, groups, datasetName, loading, onUseQuery }: Props) {
+export function SchemaExplorer({ schema, groups, datasetName, loading, onUseQuery, challengeMode = false, children }: Props) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState("");
 
@@ -117,32 +119,36 @@ export function SchemaExplorer({ schema, groups, datasetName, loading, onUseQuer
         </div>
       </section>
 
-      <section>
-        <h2>Guided queries</h2>
-        <div className="sqlx-examples">
-          {groups.map((group) => (
-            <div key={group.group} className="sqlx-ex-group">
-              <div className="label">{group.group}</div>
-              <p className="blurb">{group.blurb}</p>
-              {group.items.map((example) => (
-                <button
-                  key={example.title}
-                  className="sqlx-ex"
-                  onClick={() => onUseQuery(example.sql, false)}
-                >
-                  <span className="t">
-                    {example.title}
-                    {example.only && (
-                      <span className="badge">{example.only === "duckdb" ? "duck" : "pg"}</span>
-                    )}
-                  </span>
-                  <span className="n">{example.note}</span>
-                </button>
-              ))}
-            </div>
-          ))}
-        </div>
-      </section>
+      {children}
+
+      {!challengeMode && (
+        <section>
+          <h2>Guided queries</h2>
+          <div className="sqlx-examples">
+            {groups.map((group) => (
+              <div key={group.group} className="sqlx-ex-group">
+                <div className="label">{group.group}</div>
+                <p className="blurb">{group.blurb}</p>
+                {group.items.map((example) => (
+                  <button
+                    key={example.title}
+                    className="sqlx-ex"
+                    onClick={() => onUseQuery(example.sql, false)}
+                  >
+                    <span className="t">
+                      {example.title}
+                      {example.only && (
+                        <span className="badge">{example.only === "duckdb" ? "duck" : "pg"}</span>
+                      )}
+                    </span>
+                    <span className="n">{example.note}</span>
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
