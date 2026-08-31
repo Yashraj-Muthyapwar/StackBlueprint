@@ -358,6 +358,7 @@ interface Handle {
   exec(sql: string): Promise<{ rows: any[]; fields: Field[]; affected?: number }>;
   reload(): Promise<void>;
   dispose(): Promise<void>;
+  uploadCsv?: (file: File, tableName: string) => Promise<void>;
 }
 
 async function bootPostgres(
@@ -402,6 +403,46 @@ async function bootPostgres(
       }
       await pg.exec("CREATE SCHEMA public;");
       await loadIntoPostgres(pg, dataset, onProgress);
+    },
+    async uploadCsv(file: File, tableName: string) {
+      await pg.exec(`CREATE SCHEMA IF NOT EXISTS "uploads";`);
+      
+      const text = await file.slice(0, 1024 * 50).text();
+      const lines = text.split('\n').filter(l => l.trim().length > 0);
+      if (lines.length < 2) throw new Error("CSV must have a header and at least one row of data");
+      
+      const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
+      const firstRow = lines[1].split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
+      
+      const cols = headers.map((h, i) => {
+        let val = firstRow[i] || '';
+        let type = 'text';
+        if (/^-?\d+$/.test(val)) type = 'integer';
+        else if (/^-?\d*\.\d+$/.test(val)) type = 'double precision';
+        else if (val.toLowerCase() === 'true' || val.toLowerCase() === 'false') type = 'boolean';
+        else if (val && !isNaN(Date.parse(val)) && isNaN(Number(val))) type = 'timestamp';
+        
+        let safeName = h.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+        if (/^[0-9]/.test(safeName)) safeName = 'c_' + safeName;
+        if (!safeName) safeName = `col_${i}`;
+        
+        return `"${safeName}" ${type}`;
+      });
+      
+      await pg.exec(`CREATE TABLE "uploads"."${tableName}" (${cols.join(', ')});`);
+      
+      const colNames = headers.map((h, i) => {
+        let safeName = h.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+        if (/^[0-9]/.test(safeName)) safeName = 'c_' + safeName;
+        if (!safeName) safeName = `col_${i}`;
+        return `"${safeName}"`;
+      });
+      
+      await pg.query(
+        `COPY "uploads"."${tableName}" (${colNames.join(', ')}) FROM '/dev/blob' WITH (FORMAT csv, HEADER true)`,
+        [],
+        { blob: file }
+      );
     },
     async dispose() {
       await pg.close();
@@ -466,6 +507,17 @@ async function bootDuckDB(
         await conn.query(`DROP ${kind} IF EXISTS "${r.table_schema}"."${r.table_name}" CASCADE`);
       }
       await loadIntoDuckDB(database, conn, dataset, onProgress);
+    },
+    async uploadCsv(file: File, tableName: string) {
+      await conn.query(`CREATE SCHEMA IF NOT EXISTS "uploads";`);
+      const buffer = new Uint8Array(await file.arrayBuffer());
+      const virtualName = `upload_${Date.now()}_${file.name}`;
+      await database.registerFileBuffer(virtualName, buffer);
+      try {
+        await conn.query(`CREATE TABLE "uploads"."${tableName}" AS SELECT * FROM read_csv_auto('${virtualName}');`);
+      } finally {
+        await database.dropFile(virtualName);
+      }
     },
     async dispose() {
       await conn.close();
@@ -679,6 +731,23 @@ class DBClient {
     this.emit(key, { status: "loading", progress: 0, label: "reloading" });
     await handle.reload();
     this.emit(key, { status: "ready", progress: 1, label: "ready" });
+  }
+
+  /** Upload a CSV file directly to the uploads schema */
+  async uploadCsv(engine: Engine, dataset: DatasetId, file: File, tableName: string): Promise<void> {
+    if (file.size > 50 * 1024 * 1024) throw new Error("File exceeds 50MB limit for browser stability.");
+    
+    const handle = await this.init(engine, dataset);
+    if (!handle.uploadCsv) throw new Error(`${engine} does not support CSV uploads.`);
+    
+    this.emit(`${engine}:${dataset}`, { status: "loading", progress: 0, label: `Importing ${file.name}` });
+    try {
+      await handle.uploadCsv(file, tableName);
+      this.emit(`${engine}:${dataset}`, { status: "ready", progress: 1, label: "ready" });
+    } catch (e: any) {
+      this.emit(`${engine}:${dataset}`, { status: "ready", progress: 1, label: "ready" });
+      throw new Error(`Failed to import CSV: ${e?.message ?? String(e)}`);
+    }
   }
 }
 
