@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Pause, Play, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
@@ -36,6 +36,25 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
   const total = useMemo(() => totalSteps(stages), [stages]);
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
+  const stageMeasurements = useRef(new Map<number, HTMLDivElement>());
+  const [canvasHeight, setCanvasHeight] = useState<number>();
+
+  const measureCanvas = useCallback(() => {
+    const tallestStage = Math.ceil(
+      Math.max(0, ...Array.from(stageMeasurements.current.values(), (element) => element.getBoundingClientRect().height)),
+    );
+
+    if (tallestStage > 0) {
+      setCanvasHeight((current) => current === tallestStage ? current : tallestStage);
+    }
+  }, []);
+
+  useLayoutEffect(() => {
+    const observer = new ResizeObserver(measureCanvas);
+    stageMeasurements.current.forEach((element) => observer.observe(element));
+    measureCanvas();
+    return () => observer.disconnect();
+  }, [measureCanvas, total, variant]);
 
   useEffect(() => {
     if (!playing) return;
@@ -61,8 +80,30 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
 
   return (
     <div className="flex flex-col">
-      <div className="relative px-5 py-6 lg:px-7 lg:py-8">
-        <MultiStage stages={stages} step={step} />
+      <div className="relative" style={canvasHeight ? { minHeight: canvasHeight } : undefined}>
+        <div className="px-5 py-6 lg:px-7 lg:py-8">
+          <MultiStage stages={stages} step={step} />
+        </div>
+
+        {/*
+          Each step is measured off-screen for this particular animation. The
+          visible canvas then reserves only its tallest step, avoiding page
+          jumps without imposing one oversized height on every lesson.
+        */}
+        <div aria-hidden="true" className="pointer-events-none invisible absolute inset-x-0 top-0">
+          {Array.from({ length: total }, (_, measuredStep) => (
+            <div
+              key={measuredStep}
+              ref={(element) => {
+                if (element) stageMeasurements.current.set(measuredStep, element);
+                else stageMeasurements.current.delete(measuredStep);
+              }}
+              className="px-5 py-6 lg:px-7 lg:py-8"
+            >
+              <MultiStage stages={stages} step={measuredStep} />
+            </div>
+          ))}
+        </div>
       </div>
       <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
         <div className="flex items-center gap-1">
