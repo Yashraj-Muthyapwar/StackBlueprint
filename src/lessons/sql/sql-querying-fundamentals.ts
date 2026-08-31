@@ -1,6 +1,7 @@
 import type { LessonContent } from "../types";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
+import distinctOrderLimitImg from "@/images/sql/querying-fundamentals/distinct-order-limit.png";
 import sqlOperatorsImg from "@/images/sql/querying-fundamentals/sql-operators.png";
 import whereFiltersImg from "@/images/sql/querying-fundamentals/where-filters.png";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
@@ -429,104 +430,224 @@ WHERE city IS NULL;`,
 
 const orderLimit: LessonContent = {
   slug: "order-limit",
-  title: "ORDER BY & LIMIT",
-  subtitle: "Deterministic ordering, NULLS FIRST / LAST, and pagination pitfalls.",
+  title: "DISTINCT, ORDER BY & LIMIT",
+  subtitle: "Remove repeated values, sort Cycle Depot results, and keep only the rows you need.",
   sections: [
     {
       kind: "prose",
-      heading: "Order is opt-in",
+      heading: "Shape a Useful Short List",
       body: [
-        "Without ORDER BY, row order is undefined and not stable across runs. ORDER BY is the only thing that makes results deterministic. For pagination, that determinism must be bulletproof — always tie-break on a unique column or rows will repeat or vanish between pages.",
+        "Query results often contain repeated values, arrive in no useful order, or include more rows than you need. `DISTINCT`, `ORDER BY`, and `LIMIT` solve those three problems.",
+        "Use `DISTINCT` to keep unique result values. Use `ORDER BY` to choose their sequence. Use `LIMIT` to keep the first number of rows after sorting.",
       ],
     },
     {
-      kind: "code",
-      language: "sql",
-      caption: "Ordering with tie-break",
-      code: `SELECT id, name, created_at
-FROM   products
-ORDER  BY created_at DESC, id DESC   -- id breaks ties
-LIMIT  20;
-
--- NULL ordering is explicit in Postgres
-SELECT id, deleted_at
-FROM   products
-ORDER  BY deleted_at DESC NULLS LAST;`,
+      kind: "image",
+      src: distinctOrderLimitImg,
+      alt: "A Cycle Depot customers country list transformed by DISTINCT, ORDER BY, and LIMIT into Canada, France, and Germany",
+      caption: "DISTINCT removes repeated countries, ORDER BY makes the result alphabetical, and LIMIT keeps the first three rows.",
     },
     {
       kind: "prose",
-      heading: "LIMIT and OFFSET — paging through results",
+      heading: "Start with DISTINCT",
       body: [
-        "`LIMIT N` caps output at the first N rows. `OFFSET M` skips the first M rows before LIMIT starts counting — the formula for page P is `OFFSET = (P - 1) × page_size`.",
-        "A common interview question: the second-highest salary. Sort DESC, OFFSET 1 to skip the maximum, LIMIT 1 to grab the next. Add DISTINCT if duplicate top salaries would share rank 1.",
+        "The customers table has many rows but only six countries. `DISTINCT` removes duplicate values from the selected result columns. It does not change the customers table.",
+        "When you select more than one column, `DISTINCT` considers the whole combination. `SELECT DISTINCT country, segment` keeps unique country-and-segment pairs, not unique countries alone.",
       ],
-    },
-    {
-      kind: "animation",
-      variant: "offset-pagination",
-      caption:
-        "LIMIT / OFFSET in action — pages 1 & 2, the second-highest-salary trick, and why deep OFFSET is slow",
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Pagination with OFFSET",
-      code: `-- Page 1 (first 20 rows)
-SELECT id, name, salary
-FROM   employees
-ORDER  BY salary DESC, id DESC
-LIMIT  20;
-
--- Page 2 (skip 20, take 20)
-SELECT id, name, salary
-FROM   employees
-ORDER  BY salary DESC, id DESC
-LIMIT  20 OFFSET 20;
-
--- Second highest salary (interview classic)
-SELECT DISTINCT salary AS second_highest
-FROM   employees
-ORDER  BY salary DESC
-LIMIT  1 OFFSET 1;`,
+      caption: "List every customer country once",
+      code: `SELECT DISTINCT country
+FROM customers;`,
+    },
+    {
+      kind: "table",
+      caption: "The six unique countries. This preview is alphabetized for reading, but DISTINCT alone does not promise an order.",
+      headers: ["country"],
+      rows: [["Canada"], ["France"], ["Germany"], ["India"], ["UK"], ["USA"]],
     },
     {
       kind: "prose",
-      heading: "Why deep OFFSET hurts — keyset to the rescue",
+      heading: "ORDER BY Makes the Sequence Deliberate",
       body: [
-        "OFFSET 1000 LIMIT 20 forces the engine to read and discard 1000 rows every request. Cost grows linearly with page number. Keyset (seek) pagination avoids this: remember the last sort key and ask for rows AFTER it — O(1) per page regardless of depth.",
+        "Without `ORDER BY`, SQL does not promise the order in which rows appear. Add `ASC` for lowest-to-highest or A-to-Z order. `ASC` is the default. Add `DESC` for highest-to-lowest or Z-to-A order.",
+        "When two rows have the same first sort value, add another column to make their order predictable, such as `ORDER BY price DESC, name ASC`.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Keyset pagination — O(1) per page",
-      code: `-- First page
-SELECT id, created_at, name
-FROM   products
-ORDER  BY created_at DESC, id DESC
-LIMIT  20;
-
--- Next page: pass the last row's (created_at, id) back in
-SELECT id, created_at, name
-FROM   products
-WHERE  (created_at, id) < ($1, $2)
-ORDER  BY created_at DESC, id DESC
-LIMIT  20;`,
+      caption: "Show the four most expensive products",
+      code: `SELECT name, price
+FROM products
+ORDER BY price DESC
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "The result is sorted from the highest price down, then capped at four rows.",
+      headers: ["name", "price"],
+      rows: [
+        ["Aero Sprint Pro", "5400.00"],
+        ["Switchback Enduro", "4150.00"],
+        ["Volt E-Cargo", "3890.00"],
+        ["Boulder Full Suspension", "3199.00"],
+      ],
     },
     {
       kind: "callout",
-      tone: "warn",
-      title: "OFFSET is not free",
-      body: "OFFSET N reads N rows from disk before discarding them. At page 500 of a 20-per-page list, that's 10,000 wasted reads per request. Switch to keyset pagination whenever a list might grow past a few hundred items.",
+      tone: "info",
+      title: "LIMIT needs an order to be meaningful",
+      body: "`LIMIT 4` by itself returns four rows, but not necessarily the four rows you care about. Put ORDER BY before LIMIT whenever the first rows should mean highest, newest, alphabetically first, or another deliberate ranking.",
+    },
+    {
+      kind: "prose",
+      heading: "Use All Three Together",
+      body: [
+        "This query builds a compact country picker. First it removes repeated countries, then it sorts the unique values alphabetically, then it keeps the first three.",
+        "The written order is `SELECT`, `FROM`, `ORDER BY`, `LIMIT`, but `DISTINCT` affects the selected result before the final ordering and limit are applied.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Return the first three unique customer countries in alphabetical order",
+      code: `SELECT DISTINCT country
+FROM customers
+ORDER BY country ASC
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption: "The exact three-row result",
+      headers: ["country"],
+      rows: [["Canada"], ["France"], ["Germany"]],
+    },
+    {
+      kind: "animation",
+      variant: "distinct-order-limit",
+      caption: "See repeated countries collapse, product prices sort from high to low, LIMIT keep the first rows, and OFFSET move to the next page",
+    },
+    {
+      kind: "prose",
+      heading: "Paginate with LIMIT and OFFSET",
+      body: [
+        "Pagination divides a long, ordered result into pages. `LIMIT` sets the page size. `OFFSET` skips rows before that page begins. For page P, `OFFSET = (P - 1) * page_size`.",
+        "Always order before using OFFSET. Otherwise, page 1 and page 2 have no dependable meaning because SQL has not been asked for a sequence.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Return the second page of four most-recent Cycle Depot orders",
+      code: `SELECT id, order_date, status
+FROM orders
+ORDER BY order_date DESC, id DESC
+LIMIT 4 OFFSET 4;`,
+    },
+    {
+      kind: "table",
+      caption: "The second page after the four most-recent orders are skipped",
+      headers: ["id", "order_date", "status"],
+      rows: [
+        ["57", "2025-05-25", "delivered"],
+        ["100", "2025-05-23", "delivered"],
+        ["111", "2025-05-18", "shipped"],
+        ["99", "2025-05-15", "delivered"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Why Deep OFFSET Hurts",
+      body: [
+        "To reach `OFFSET 10000`, the database may need to find and discard the first 10,000 ordered rows before returning the next page. That work grows as users move deeper into the result.",
+        "For very large, frequently paged lists, use **keyset pagination** instead. Remember the last row's sort values and ask only for rows after that point. This avoids repeatedly skipping every earlier row.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Use the final row on page 1 as the key for the next page",
+      code: `SELECT id, order_date, status
+FROM orders
+WHERE (order_date, id) < (DATE '2025-06-04', 5)
+ORDER BY order_date DESC, id DESC
+LIMIT 4;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Stable pagination needs a tie-breaker",
+      body: "Two orders can share an order_date. Sorting by order_date DESC, id DESC gives every row a stable place and makes both OFFSET and keyset pagination dependable.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build a short country list",
+      prompt: "Return each customer country once, sort the values alphabetically, and keep only the first three. Then run the checked Cycle Depot exercise.",
+      tables: ["customers"],
+      successCheck: "Exactly 3 rows and one country column: Canada, France, and Germany.",
+      href: "/sql-playground?practice=cycledepot-first-three-countries",
     },
     {
       kind: "takeaways",
       items: [
-        "No ORDER BY → no guaranteed order.",
-        "Always tie-break on a unique column (usually id) before paginating.",
-        "Be explicit about NULL placement with NULLS FIRST / NULLS LAST.",
-        "OFFSET = (page - 1) × page_size — and `LIMIT 1 OFFSET 1` is the second-highest trick.",
-        "Prefer keyset pagination over deep OFFSET — same answer, constant cost.",
+        "DISTINCT removes duplicate selected values or duplicate selected combinations.",
+        "ORDER BY is how you request a deliberate result order. ASC is the default and DESC reverses it.",
+        "Use a second ORDER BY column to break ties when the result needs a predictable sequence.",
+        "LIMIT keeps the first N rows after the ordering has been applied.",
+        "For a useful short list, combine DISTINCT, ORDER BY, and LIMIT in one query.",
+        "OFFSET skips ordered rows for later pages, but deep OFFSET work grows with the page number.",
+        "For large, active lists, keyset pagination continues from the last sort values instead of repeatedly skipping earlier rows.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "distinct-order-limit-1",
+          question: "What does SELECT DISTINCT country do?",
+          options: [
+            "Returns each customer row once",
+            "Returns each country value once",
+            "Sorts countries alphabetically",
+            "Returns only the first country",
+          ],
+          correctIndex: 1,
+          explanation: "DISTINCT removes repeated values from the selected country column.",
+        },
+        {
+          id: "distinct-order-limit-2",
+          question: "Which clause should come before LIMIT when you want the most expensive products?",
+          options: ["FROM", "WHERE", "ORDER BY price DESC", "DISTINCT"],
+          correctIndex: 2,
+          explanation: "ORDER BY price DESC ranks products from highest price to lowest before LIMIT keeps the first rows.",
+        },
+        {
+          id: "distinct-order-limit-3",
+          question: "Which query returns the first three unique countries alphabetically?",
+          options: [
+            "SELECT country FROM customers LIMIT 3;",
+            "SELECT DISTINCT country FROM customers ORDER BY country LIMIT 3;",
+            "SELECT country FROM customers ORDER BY country DESC;",
+            "SELECT DISTINCT country FROM customers WHERE LIMIT 3;",
+          ],
+          correctIndex: 1,
+          explanation: "DISTINCT removes repeats, ORDER BY country sorts A to Z, and LIMIT 3 keeps the first three rows.",
+        },
+        {
+          id: "distinct-order-limit-4",
+          question: "With a page size of 4, what does LIMIT 4 OFFSET 4 return?",
+          options: [
+            "The first four ordered rows",
+            "The next four ordered rows after the first four",
+            "Four duplicate rows removed by DISTINCT",
+            "Every row after row four",
+          ],
+          correctIndex: 1,
+          explanation: "OFFSET 4 skips the first four ordered rows, then LIMIT 4 keeps the next four rows.",
+        },
       ],
     },
   ],
