@@ -65,6 +65,7 @@ import webScraperLogo from "@/images/logos/web-scraper-logo.png";
 import pythonLogo from "@/images/logos/python-logo.png";
 import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
 import pandasLogo from "@/images/logos/pandas-logo.svg";
+import mongoDbLogo from "@/images/logos/MongoDB_Logomark_ForestGreen.png";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
@@ -420,12 +421,13 @@ export const roadmap: RoadmapCategory[] = [
             title: "01 · Filtering & Predicates",
             slug: "filtering",
             path: "/sql/querying/filtering",
-            blurb: "Boolean logic, range and set filters, pattern matching, and the NULL three-valued logic trap.",
+            blurb: "Boolean logic, range and set filters, pattern matching, NULL semantics, and index-friendly WHERE predicates.",
             lessons: [
               { title: "1.1 Boolean Logic (AND / OR / NOT)", slug: "boolean-logic", path: "/sql/querying/filtering/boolean-logic", icon: Filter },
               { title: "1.2 Set, Range & Array Filtering", slug: "in-between", path: "/sql/querying/filtering/in-between", icon: Filter },
               { title: "1.3 Pattern Matching (LIKE / ILIKE)", slug: "like-ilike", path: "/sql/querying/filtering/like-ilike", icon: Filter },
               { title: "1.4 The NULL Pitfalls (Three-Valued Logic)", slug: "null-pitfalls", path: "/sql/querying/filtering/null-pitfalls", icon: AlertTriangle },
+              { title: "1.5 Writing Efficient WHERE Predicates", slug: "writing-efficient-where-predicates", path: "/sql/querying/filtering/writing-efficient-where-predicates", icon: Search },
             ],
           },
           {
@@ -1286,6 +1288,34 @@ export const roadmap: RoadmapCategory[] = [
         ],
       }
     ]
+  },
+  {
+    title: "MongoDB",
+    slug: "mongodb",
+    icon: mongoDbLogo,
+    locked: false,
+    overviewPath: "/mongodb",
+    blurb: "Master MongoDB: from NoSQL concepts to aggregations and Python integration.",
+    patterns: [],
+    sections: [
+      {
+        title: "MongoDB Fundamentals",
+        patterns: [
+          lockedPattern("0. NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases."),
+          lockedPattern("1. Getting Started with MongoDB Atlas", "getting-started-atlas", "Set up your first MongoDB cluster."),
+          lockedPattern("2. MongoDB and the Document Model", "document-model", "Understand how MongoDB stores data as documents."),
+          lockedPattern("3. Connecting to a MongoDB Database Using the MongoDB Shell", "mongodb-shell", "Connect and run commands via the shell."),
+          lockedPattern("4. Connecting to MongoDB in Python", "connecting-python", "Integrate MongoDB with your Python applications."),
+          lockedPattern("5. CRUD Operations: Insert and Find Documents", "crud-insert-find", "Create and read documents in MongoDB."),
+          lockedPattern("6. CRUD Operations: Replace and Delete Documents", "crud-replace-delete", "Update and remove documents."),
+          lockedPattern("7. CRUD Operations: Modifying Query Results", "modifying-query-results", "Sort, limit, and skip query results."),
+          lockedPattern("8. CRUD Operations in Python", "crud-python", "Perform CRUD operations using PyMongo."),
+          lockedPattern("9. MongoDB Indexes", "mongodb-indexes", "Improve query performance with indexes."),
+          lockedPattern("10. MongoDB Aggregation", "mongodb-aggregation", "Process data records and return computed results."),
+          lockedPattern("11. MongoDB Aggregation in Python", "aggregation-python", "Run aggregation pipelines in Python."),
+        ],
+      }
+    ],
   },
 ];
 
