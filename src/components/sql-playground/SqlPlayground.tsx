@@ -10,6 +10,7 @@ import {
   Sparkles,
   Trash2,
   Wand2,
+  Upload,
 } from "lucide-react";
 import { format as formatSql } from "sql-formatter";
 
@@ -27,6 +28,7 @@ import { SchemaVisualizer } from "./visualizer/SchemaVisualizer";
 import { QueryFlowVisualizer } from "./visualizer/QueryFlowVisualizer";
 import { ExecutionPlanVisualizer } from "./visualizer/ExecutionPlanVisualizer";
 import { ChartVisualizer } from "./visualizer/ChartVisualizer";
+import { CsvUploader } from "./CsvUploader";
 import { useIsDark } from "./useIsDark";
 
 import "./sql-flow.css";
@@ -85,6 +87,8 @@ export function SqlPlayground() {
   const [resetting, setResetting] = useState(false);
   /** Bumped after a reset or dataset load so dependent views refetch. */
   const [schemaVersion, setSchemaVersion] = useState(0);
+
+  const [uploaderOpen, setUploaderOpen] = useState(false);
 
   const active = getDataset(dataset);
 
@@ -268,8 +272,8 @@ export function SqlPlayground() {
 
   // Switching dataset also swaps the editor contents to the new dataset's starter query
   // so that the user doesn't get schema mismatch errors with old queries.
-  const switchDataset = useCallback(
-    (next: DatasetId) => {
+    const switchDataset = useCallback(
+    (next: DatasetId, overrideSql?: string) => {
       const def = getDataset(next);
       const nextEngine = def.engines.includes(engine) ? engine : def.engines[0];
 
@@ -278,10 +282,37 @@ export function SqlPlayground() {
       setResult(null);
       setRanSql("");
       setTab("results");
-      setSql(starterFor(next, nextEngine)); // Always reset to starter query when switching databases
+      setSql(overrideSql || starterFor(next, nextEngine));
     },
     [engine],
   );
+
+  const handleUpload = async (file: File, tableName: string, targetChoice: "workspace" | "current") => {
+    let targetDataset = dataset;
+    let targetEngine = engine;
+
+    if (targetChoice === "workspace" && dataset !== "my-workspace") {
+      targetDataset = "my-workspace";
+    }
+
+    await db.uploadCsv(targetEngine, targetDataset, file, tableName);
+    
+    // Switch to the target dataset if we aren't already on it
+    const previewSql = `SELECT * FROM "uploads"."${tableName}" LIMIT 50;`;
+    if (dataset !== targetDataset || engine !== targetEngine) {
+      switchDataset(targetDataset, previewSql);
+    } else {
+      // Force schema reload
+      setSchemaVersion((v) => v + 1);
+      
+      // Auto-populate query editor with starter
+      setSql(previewSql);
+      setTab("results");
+      
+      // Automatically run the preview
+      setTimeout(() => run(previewSql), 100);
+    }
+  };
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -376,8 +407,16 @@ export function SqlPlayground() {
           warm={(id) => db.isWarm(engine, id)}
           onChange={switchDataset}
         />
+        
+        <button 
+          className="sqlx-btn secondary" 
+          onClick={() => setUploaderOpen(true)}
+          style={{ marginLeft: 8 }}
+        >
+          <Upload size={14} /> Upload Data
+        </button>
 
-        <div className="sqlx-engines" role="tablist" aria-label="Database engine">
+        <div className="sqlx-engines" role="tablist" aria-label="Database engine" style={{ marginLeft: "auto" }}>
           {(["postgres", "duckdb"] as Engine[]).map((candidate) => {
             const supported = active.engines.includes(candidate);
             return (
@@ -652,6 +691,14 @@ export function SqlPlayground() {
           />
         </main>
       </div>
+
+      {uploaderOpen && (
+        <CsvUploader 
+          onClose={() => setUploaderOpen(false)} 
+          onUpload={handleUpload}
+          currentDataset={active.name}
+        />
+      )}
     </div>
   );
 }
