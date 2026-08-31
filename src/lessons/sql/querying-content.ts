@@ -8,6 +8,7 @@
 
 import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 import booleanLogicImg from "@/images/sql/querying/boolean-logic-cycle-depot.png";
+import nullThreeValuedLogicImg from "@/images/sql/querying/null-three-valued-logic-cycle-depot.png";
 import patternMatchingImg from "@/images/sql/querying/pattern-matching-cycle-depot.png";
 import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
 
@@ -547,95 +548,170 @@ WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
 const nullPitfalls: LessonContent = {
   slug: "null-pitfalls",
   title: "1.4 The NULL Pitfalls (Three-Valued Logic)",
-  subtitle: "Why col = NULL is always UNKNOWN and how rows vanish silently.",
+  subtitle: "Find missing values safely and understand why UNKNOWN rows disappear from WHERE.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "NULL Means Missing or Unknown",
       body: [
-        "NULL means 'unknown', not empty. Every silent data-quality bug in analytics starts with forgetting that distinction.",
-        "Think of NULL as IEEE-754 NaN: any comparison or arithmetic produces UNKNOWN, and WHERE only keeps hard TRUE.",
+        "`NULL` does not mean an empty string, zero, or a value you can compare normally. It means the value is missing or unknown. Five Cycle Depot customer profiles have no city recorded.",
+        "That creates a third logical result: TRUE, FALSE, or UNKNOWN. A WHERE clause keeps only TRUE rows. It drops both FALSE and UNKNOWN rows.",
+      ],
+    },
+    {
+      kind: "image",
+      src: nullThreeValuedLogicImg,
+      alt: "Cycle Depot customer records flowing through city equals NULL, city IS NULL, and city not equal to Austin conditions. The equals NULL condition produces UNKNOWN and keeps no rows, while IS NULL keeps the missing-city rows.",
+      caption: "WHERE keeps only TRUE. A comparison with NULL produces UNKNOWN, so use IS NULL or IS NOT NULL when you mean to test whether data is missing.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Use IS NULL to find customers whose city is missing",
+      code: `-- This comparison is never TRUE, even for a NULL city.
+SELECT id, name, city
+FROM customers
+WHERE city = NULL;
+
+-- This is the correct missing-value test.
+SELECT id, name, email
+FROM customers
+WHERE city IS NULL
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "The five Cycle Depot customers returned by city IS NULL, ordered by id",
+      headers: ["id", "name", "email", "country"],
+      rows: [
+        ["5", "Omar Doyle", "omar.doyle5@example.com", "Germany"],
+        ["14", "Hana Yilmaz", "hana.yilmaz14@example.com", "France"],
+        ["45", "Chloe Farouk", "chloe.farouk45@example.com", "France"],
+        ["46", "Farid Sharma", "farid.sharma46@example.com", "Canada"],
+        ["47", "Elena Silva", "elena.silva47@example.com", "USA"],
       ],
     },
     {
       kind: "animation",
       variant: "q-null3vl",
-      caption: "NULL = NULL evaluates UNKNOWN — the row falls through the floor.",
+      caption: "Watch the same Cycle Depot customers fall through = NULL, pass IS NULL, disappear from a normal comparison, and receive a display label with COALESCE.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "TRUE, FALSE, and UNKNOWN",
       body: [
-        "Customer rows stack left; rows with a NULL email show a purple token. The predicate ribbon reads `email = 'a@b.com'`.",
-        "Rows matching the literal glow green. NULL rows flash purple and fall off-canvas (UNKNOWN). A second pass with `email IS NULL` sends those same rows right.",
-        "Side-by-side: `= NULL` returns zero rows; `IS NULL` returns every NULL row.",
+        "Normal comparisons such as `=`, `<>`, `<`, and `>` cannot determine whether an unknown value matches. Their result is UNKNOWN when either side is NULL. `IS NULL` and `IS NOT NULL` are special tests that always return TRUE or FALSE.",
+        "This is why `WHERE city <> 'Austin'` does not include customers whose city is missing. The missing-city rows are not known to be different from Austin, so they are UNKNOWN and WHERE removes them.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Three-valued logic in a WHERE clause",
+      headers: ["Expression", "Result when city is NULL", "Does WHERE keep it?"],
+      rows: [
+        ["city = NULL", "UNKNOWN", "No"],
+        ["city <> 'Austin'", "UNKNOWN", "No"],
+        ["city IS NULL", "TRUE", "Yes"],
+        ["city IS NOT NULL", "FALSE", "No"],
+        ["city IS DISTINCT FROM 'Austin'", "TRUE", "Yes"],
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Use IS NULL — never = NULL",
-      code: `-- /* Phase 2a: WRONG — equality with NULL is UNKNOWN, the row is dropped */
-SELECT id, email
-FROM   customers
-WHERE  email = NULL;          -- /* always returns 0 rows */
+      caption: "Include missing cities explicitly, then label them for a report",
+      code: `SELECT id, name, city
+FROM customers
+WHERE city <> 'Austin'
+   OR city IS NULL
+ORDER BY id;
 
--- /* Phase 2b: RIGHT — IS NULL is a special two-valued predicate */
-SELECT id, email
-FROM   customers
-WHERE  email IS NULL;         -- /* returns every row with unknown email */
-
--- /* Defensive coalesce inside a complex predicate */
-SELECT id, COALESCE(email, 'unknown') AS email_safe
-FROM   customers
-WHERE  COALESCE(email, '') <> '';   -- /* treat NULL as empty for the filter */
-
--- /* DISTINCT FROM is the NULL-safe inequality operator */
-SELECT id
-FROM   customers
-WHERE  email IS DISTINCT FROM 'admin@x.com';   -- /* NULL counts as "different" */`,
-    },
-    {
-      kind: "table",
-      caption: "NULL truth-table summary",
-      headers: ["Expression", "Result", "Row kept?"],
-      rows: [
-        ["NULL = NULL", "UNKNOWN", "No"],
-        ["NULL <> NULL", "UNKNOWN", "No"],
-        ["NULL IS NULL", "TRUE", "Yes"],
-        ["NULL IS NOT NULL", "FALSE", "No"],
-        ["NULL IS DISTINCT FROM 1", "TRUE", "Yes"],
-      ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [183]", "Customers Who Never Order", "Pure IS NULL filtering after a LEFT JOIN."],
-        ["Drill [1142]", "User Activity for the Past 30 Days II", "Aggregate-with-NULL handling via COALESCE."],
-        ["Challenge [1853]", "Convert Date Format", "NULL-safe expressions combined with formatting."],
-      ],
+SELECT id, name,
+       COALESCE(city, 'Missing city') AS city_status
+FROM customers
+ORDER BY id;`,
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — NULL silently drops rows from NOT IN and CHECK",
-      body: "`NOT IN` returns zero rows if the subquery emits a single NULL. CHECK constraints have the same trap: `CHECK (status <> 'banned')` passes NULL because UNKNOWN is not FALSE.",
+      title: "Do not put NULL in a NOT IN list",
+      body: "`city NOT IN ('Austin', NULL)` does not keep the non-Austin cities you expect. Every non-Austin comparison becomes UNKNOWN because the list contains NULL, and WHERE drops UNKNOWN. A literal list without NULL is safe. When the list comes from another query, filter its NULLs or use NOT EXISTS when joins are introduced later.",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "NULL-safe comparison is database-specific",
+      body: "PostgreSQL and DuckDB support `IS DISTINCT FROM`, which treats NULL as a comparable missing value. For example, `city IS DISTINCT FROM 'Austin'` keeps every non-Austin city and every missing city. It is often clearer than combining `<>` with `OR city IS NULL`.",
     },
     {
       kind: "callout",
       tone: "info",
       title: "Planner and aggregate impact",
-      body: "B-Tree indexes store NULLs, so IS NULL can use an index with a partial index or a modern planner. SUM/AVG silently skip NULLs; COUNT(*) counts NULL rows but COUNT(col) does not — the leading cause of off-by-one analytics bugs.",
+      body: "In PostgreSQL, B-tree indexes include NULL entries, so an `IS NULL` filter can use an appropriate index when the planner estimates that it will help. Aggregates have their own NULL rules: `SUM` and `AVG` skip NULL values, `COUNT(*)` counts every row, and `COUNT(column)` counts only non-NULL values. That difference is a common source of unexpected report totals.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Find customers without a city",
+      prompt: "Return id, name, and email for Cycle Depot customers whose city is missing. Use IS NULL, not = NULL, in the checked data-quality exercise.",
+      tables: ["customers"],
+      successCheck: "5 rows with the columns id, name, and email.",
+      href: "/sql-playground?practice=cycledepot-customers-without-city",
     },
     {
       kind: "takeaways",
       items: [
-        "= NULL is always UNKNOWN — use IS NULL / IS NOT NULL.",
-        "IS DISTINCT FROM is the NULL-safe <>.",
-        "NOT IN explodes if the inner set contains a single NULL.",
-        "Aggregate functions skip NULL — COUNT(*) does not.",
+        "NULL means missing or unknown. It is not equal to anything, including another NULL.",
+        "WHERE keeps only TRUE. FALSE and UNKNOWN rows are both excluded.",
+        "Use IS NULL and IS NOT NULL to test missing data. Use COALESCE when a report needs a display value.",
+        "A NULL inside NOT IN can turn expected matches into UNKNOWN. Use a NULL-safe approach when the list may contain missing values.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "null-logic-equals",
+          question: "Why does WHERE city = NULL return no rows?",
+          options: [
+            "NULL is an empty string.",
+            "The comparison evaluates to UNKNOWN, and WHERE keeps only TRUE.",
+            "The customers table has no city column.",
+            "SQL changes NULL to Austin first.",
+          ],
+          correctIndex: 1,
+          explanation: "A normal comparison with NULL is UNKNOWN, not TRUE. Use IS NULL instead.",
+        },
+        {
+          id: "null-logic-where",
+          question: "Which values can a WHERE clause keep?",
+          options: ["TRUE only", "TRUE and UNKNOWN", "FALSE and UNKNOWN", "Any non-NULL value"],
+          correctIndex: 0,
+          explanation: "WHERE keeps rows only when its condition is TRUE.",
+        },
+        {
+          id: "null-logic-coalesce",
+          question: "What does COALESCE(city, 'Missing city') do?",
+          options: [
+            "Permanently updates the customer city.",
+            "Returns city when it is known, otherwise the display text Missing city.",
+            "Filters out every NULL city.",
+            "Sorts cities alphabetically.",
+          ],
+          correctIndex: 1,
+          explanation: "COALESCE returns the first non-NULL argument without changing the stored value.",
+        },
+        {
+          id: "null-logic-not-in",
+          question: "What is risky about city NOT IN ('Austin', NULL)?",
+          options: [
+            "It returns only Austin customers.",
+            "The NULL can make non-Austin comparisons UNKNOWN.",
+            "NOT IN cannot be used with text.",
+            "It automatically converts NULL to an empty string.",
+          ],
+          correctIndex: 1,
+          explanation: "A NULL in the list makes comparisons that do not otherwise match evaluate to UNKNOWN.",
+        },
       ],
     },
   ],
