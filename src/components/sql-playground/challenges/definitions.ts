@@ -277,6 +277,52 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-march-order-range",
+    version: 1,
+    title: "Find March orders with a date range",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a March 2024 order report without transforming the date column.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly these columns: id, customer_id, and order_date.",
+      "Include dates on or after March 1, 2024.",
+      "Exclude dates on or after April 1, 2024.",
+      "Sort by order_date, then id.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Cycle Depot March order report.
+-- Return id, customer_id, and order_date for March 2024.
+-- Use >= DATE '2024-03-01' and < DATE '2024-04-01'.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT id, customer_id, order_date FROM orders.",
+      "Use order_date >= DATE '2024-03-01' for the start of the range.",
+      "Add AND order_date < DATE '2024-04-01', then ORDER BY order_date, id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+      duckdb: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+        duckdb: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+      },
+      requiredColumns: ["id", "customer_id", "order_date"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "March range complete",
+      body: "Correct. You used an inclusive start and exclusive finish to express a clear, index-friendly date range.",
+      nextConcept: "Aggregate filtered rows with GROUP BY",
+    },
+  },
+  {
     id: "cycle-depot-find-us-customers",
     version: 1,
     title: "Find US customers",

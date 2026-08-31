@@ -104,6 +104,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return id, name, and email for customers whose city is missing.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-march-order-range": {
+    id: "cycledepot-march-order-range",
+    title: "Find March orders with a date range",
+    prompt:
+      "Return id, customer_id, and order_date for orders placed in March 2024. Use an inclusive March 1 start and an exclusive April 1 finish. Sort by order_date, then id. The result should have 5 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-march-order-range",
+    starterSql: `-- Cycle Depot March order report.
+-- Return id, customer_id, and order_date for March 2024.
+-- Use >= DATE '2024-03-01' and < DATE '2024-04-01'.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-first-three-countries": {
     id: "cycledepot-first-three-countries",
     title: "Build a short country list",
