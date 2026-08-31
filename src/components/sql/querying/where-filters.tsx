@@ -112,107 +112,147 @@ export const boolStages: Stage[] = [
   },
 ];
 
-// ----- q-range: IN, BETWEEN, NOT IN, combined -----
-const ORDERS_R: Row[] = [
-  r(1, 101, "Ada", 45, "paid"),
-  r(2, 102, "Linus", 120, "paid"),
-  r(3, 103, "Grace", 8, "pending"),
-  r(4, 104, "Bob", 75, "shipped"),
-  r(5, 105, "Alan", 250, "refund"),
-  r(6, 106, "Eve", 180, "shipped"),
+// ----- q-range: IN, BETWEEN, NOT IN, combined, PostgreSQL @> -----
+const RANGE_PRODUCTS: Row[] = [
+  r(2, 2, "Trailhead 29 Carbon", "Mountain Bikes", 2450, 113),
+  r(3, 3, "Boulder Full Suspension", "Mountain Bikes", 3199, 125),
+  r(6, 6, "Meridian Road Carbon", "Road Bikes", 2890, 65),
+  r(8, 8, "Gravel Runner GX", "Road Bikes", 1980, 122),
+  r(11, 11, "Volt E-Commuter", "City Bikes", 2260, 15),
+  r(12, 12, "Volt E-Cargo", "City Bikes", 3890, 33),
 ];
-const RCOLS = ["id", "customer", "total", "status"];
+const RANGE_COLS = ["id", "name", "category", "price", "in_stock"];
+
+// This is deliberately a PostgreSQL-only teaching dataset. Cycle Depot's
+// products table does not currently store tags in an array column.
+const ARRAY_TAG_PRODUCTS: Row[] = [
+  r("aero", "Aero Sprint Pro", "{road,race,carbon}"),
+  r("gravel", "Gravel Runner GX", "{road,gravel,tubeless}"),
+  r("city", "City Commuter 7", "{city,rack}"),
+];
+const ARRAY_TAG_COLS = ["name", "tags"];
 
 export const rangeStages: Stage[] = [
   {
     name: "IN list",
-    blurb: "Membership test — equivalent to chained OR",
-    sql: ["SELECT id, customer, status", "FROM   orders", "WHERE  status IN ('paid','shipped')"],
-    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    blurb: "Keep rows that match one listed value",
+    sql: ["SELECT name, category, in_stock", "FROM   products", "WHERE  category IN ('Road Bikes', 'Mountain Bikes')"],
+    table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
-      st([0, 1], "pending", "Raw orders table."),
+      st([0, 1], "pending", "Six Cycle Depot products enter the category filter."),
       st(
         [2],
-        pass((r) => ["paid", "shipped"].includes(String(r.cells[3]))),
-        "IN compiles to a hash probe for >5 elements. Grace (pending) and Alan (refund) fall away.",
-        { highlightCols: [3] },
+        pass((r) => ["Road Bikes", "Mountain Bikes"].includes(String(r.cells[2]))),
+        "IN reads like a compact list of allowed values. Four Road or Mountain Bikes remain; both City Bikes are removed.",
+        { highlightCols: [2] },
       ),
     ],
   },
   {
     name: "BETWEEN",
-    blurb: "Inclusive range — equivalent to total >= a AND total <= b",
-    sql: ["SELECT id, customer, total", "FROM   orders", "WHERE  total BETWEEN 50 AND 200"],
-    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    blurb: "Both endpoints are included",
+    sql: ["SELECT name, price", "FROM   products", "WHERE  price BETWEEN 2000 AND 3000"],
+    table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
       st(
         [2],
-        pass((r) => Number(r.cells[2]) >= 50 && Number(r.cells[2]) <= 200),
-        "BETWEEN is INCLUSIVE on BOTH ends. Use a B-Tree range scan when total is indexed.",
-        { highlightCols: [2] },
+        pass((r) => Number(r.cells[3]) >= 2000 && Number(r.cells[3]) <= 3000),
+        "BETWEEN includes 2000 and 3000. Trailhead 29 Carbon, Meridian Road Carbon, and Volt E-Commuter are inside this price range.",
+        { highlightCols: [3] },
       ),
       st(
         [2],
-        pass((r) => Number(r.cells[2]) >= 50 && Number(r.cells[2]) <= 200),
-        "Watch out: BETWEEN with dates is a classic bug — '2026-06-30' excludes anything after midnight that day. Prefer half-open ranges (>= a AND < b).",
+        pass((r) => Number(r.cells[3]) >= 2000 && Number(r.cells[3]) <= 3000),
+        "For prices, inclusive endpoints are usually intuitive. For timestamps, prefer a half-open range such as >= start AND < next_day so you do not miss later times on the final date.",
         { noteTone: "amber" },
       ),
     ],
   },
   {
-    name: "NOT IN (NULL trap)",
-    blurb: "NULL inside the list silently empties the result",
-    sql: ["SELECT id, customer, status", "FROM   orders", "WHERE  status NOT IN ('refund', NULL)"],
-    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    name: "NOT IN",
+    blurb: "Exclude rows that match the list",
+    sql: ["SELECT name, category", "FROM   products", "WHERE  category NOT IN ('Road Bikes', 'Mountain Bikes')"],
+    table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
       st(
         [2],
-        () => "dropped" as RowState,
-        "NOT IN expands to status<>'refund' AND status<>NULL. The second comparison is UNKNOWN for every row → 3VL drops everything. ZERO rows returned.",
-        { highlightCols: [3], noteTone: "rose" },
-      ),
-    ],
-  },
-  {
-    name: "Fix: filter NULLs first",
-    blurb: "Rewrite with an explicit IS NOT NULL — or use NOT EXISTS",
-    sql: [
-      "SELECT id, customer, status",
-      "FROM   orders",
-      "WHERE  status <> 'refund'",
-      "       AND status IS NOT NULL",
-    ],
-    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
-    steps: [
-      st(
-        [2, 3],
-        pass((r) => r.cells[3] !== "refund" && r.cells[3] !== null),
-        "Now the predicate is TRUE/FALSE — never UNKNOWN. 5 rows survive; only Alan (refund) drops.",
-        { highlightCols: [3], noteTone: "mint" },
+        pass((r) => !["Road Bikes", "Mountain Bikes"].includes(String(r.cells[2]))),
+        "NOT IN reverses the membership test. The two City Bikes remain because neither category appears in the excluded list.",
+        { highlightCols: [2], noteTone: "amber" },
       ),
     ],
   },
   {
     name: "Combined",
-    blurb: "Both predicates in a real query",
+    blurb: "Use a set and a range in one business rule",
     sql: [
-      "SELECT id, customer, total, status",
-      "FROM   orders",
-      "WHERE  total BETWEEN 50 AND 200",
-      "       AND status IN ('paid','shipped')",
+      "SELECT name, category, price",
+      "FROM   products",
+      "WHERE  category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes')",
+      "       AND category NOT IN ('City Bikes')",
+      "       AND price BETWEEN 2000 AND 4000",
     ],
-    table: { name: "orders", cols: RCOLS, rows: ORDERS_R },
+    table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
       st(
-        [2, 3],
+        [2],
         pass(
           (r) =>
-            Number(r.cells[2]) >= 50 &&
-            Number(r.cells[2]) <= 200 &&
-            ["paid", "shipped"].includes(String(r.cells[3])),
+            ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])),
         ),
-        "Range + set together. Optimiser picks the more selective predicate first; here status IN (2 of 4 values) wins.",
+        "All six displayed products are in the allowed bike-category set.",
+        { highlightCols: [2] },
+      ),
+      st(
+        [3],
+        pass(
+          (r) =>
+            ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])) &&
+            r.cells[2] !== "City Bikes"),
+        "NOT IN removes the City Bikes from that set, leaving the four Road and Mountain Bikes.",
+        { highlightCols: [2], noteTone: "amber" },
+      ),
+      st(
+        [4],
+        pass(
+          (r) =>
+            ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])) &&
+            r.cells[2] !== "City Bikes" &&
+            Number(r.cells[3]) >= 2000 &&
+            Number(r.cells[3]) <= 4000),
+        "BETWEEN narrows the remaining products to Trailhead 29 Carbon, Boulder Full Suspension, and Meridian Road Carbon.",
         { highlightCols: [2, 3] },
+      ),
+    ],
+  },
+  {
+    name: "PostgreSQL @> arrays",
+    blurb: "Keep arrays that contain every requested value",
+    layout: "wide",
+    sql: [
+      "WITH product_tags(name, tags) AS (",
+      "  VALUES",
+      "    ('Aero Sprint Pro', ARRAY['road', 'race', 'carbon']),",
+      "    ('Gravel Runner GX', ARRAY['road', 'gravel', 'tubeless']),",
+      "    ('City Commuter 7', ARRAY['city', 'rack'])",
+      ")",
+      "SELECT name, tags",
+      "FROM   product_tags",
+      "WHERE  tags @> ARRAY['road'];",
+    ],
+    table: { name: "product_tags · PostgreSQL demo", cols: ARRAY_TAG_COLS, rows: ARRAY_TAG_PRODUCTS },
+    steps: [
+      st(
+        [0, 1, 2, 3, 4],
+        "pending",
+        "This small VALUES dataset gives each product a tags array. It is a PostgreSQL teaching example, not a column in Cycle Depot's current products table.",
+        { highlightCols: [1], noteTone: "violet" },
+      ),
+      st(
+        [8],
+        pass((r) => String(r.cells[1]).includes("road")),
+        "@> reads as contains. The left-hand tags array must contain every requested value on the right, so the two products tagged road remain. Array order does not matter.",
+        { highlightCols: [1], noteTone: "violet" },
       ),
     ],
   },
