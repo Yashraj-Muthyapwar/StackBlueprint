@@ -21,61 +21,69 @@ export type Section =
   | { kind: "code"; language: "sql" | "text"; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: string[][] }
   | {
-    kind: "callout";
-    tone: "info" | "warn" | "success";
-    title: string;
-    body: string;
-  }
+      kind: "callout";
+      tone: "info" | "warn" | "success";
+      title: string;
+      body: string;
+    }
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
   | {
-    kind: "animation";
-    variant:
-    | "pipeline"
-    | "select-projection"
-    | "table-build"
-    | "foreign-key"
-    | "null-truth"
-    | "type-sizes"
-    | "where-filter"
-    | "group-by-agg"
-    | "join-types"
-    | "set-ops"
-    | "table-anatomy"
-    | "pk-anatomy"
-    | "fk-deep"
-    | "normalization"
-    | "intro-what-is-db"
-    | "intro-db-types"
-    | "intro-how-db-works"
-    | "intro-querying"
-    | "intro-storage"
-    | "commands-map"
-    | "query-structure"
-    | "select-distinct"
-    | "offset-pagination"
-    | "sql-comments"
-    | "sql-operators"
-    | "q-bool"
-    | "q-range"
-    | "q-like"
-    | "q-null3vl"
-    | "q-aggr"
-    | "q-grpby"
-    | "q-having"
-    | "q-cube"
-    | "q-venn"
-    | "q-self"
-    | "q-semianti"
-    | "q-algos"
-    | "q-scalar"
-    | "q-corr"
-    | "q-existsin"
-    | "q-setops"
-    | "intro-sql-client-server";
-    caption?: string;
-  }
+      kind: "animation";
+      variant:
+        | "pipeline"
+        | "select-projection"
+        | "table-build"
+        | "foreign-key"
+        | "null-truth"
+        | "type-sizes"
+        | "where-filter"
+        | "group-by-agg"
+        | "join-types"
+        | "set-ops"
+        | "table-anatomy"
+        | "pk-anatomy"
+        | "fk-deep"
+        | "normalization"
+        | "intro-what-is-db"
+        | "intro-db-types"
+        | "intro-how-db-works"
+        | "intro-querying"
+        | "intro-storage"
+        | "commands-map"
+        | "query-structure"
+        | "select-distinct"
+        | "offset-pagination"
+        | "sql-comments"
+        | "sql-operators"
+        | "q-bool"
+        | "q-range"
+        | "q-like"
+        | "q-null3vl"
+        | "q-aggr"
+        | "q-grpby"
+        | "q-having"
+        | "q-cube"
+        | "q-venn"
+        | "q-self"
+        | "q-semianti"
+        | "q-algos"
+        | "q-scalar"
+        | "q-corr"
+        | "q-existsin"
+        | "q-setops"
+        | "intro-sql-client-server";
+      caption?: string;
+    }
+  | {
+      kind: "playground-practice";
+      title: string;
+      prompt: string;
+      tables: string[];
+      successCheck: string;
+      href: string;
+    }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
@@ -173,8 +181,6 @@ INSERT INTO users (email) VALUES
   ],
 };
 
-
-
 // This is saved for latter use - I have just skipped it for later section.
 const normalization: LessonContent = {
   slug: "normalization",
@@ -193,12 +199,13 @@ const normalization: LessonContent = {
       kind: "image",
       src: normalizationImg,
       alt: "Database Normalization",
-      caption: "Step by step: organizing data to remove redundancy"
+      caption: "Step by step: organizing data to remove redundancy",
     },
     {
       kind: "animation",
       variant: "normalization",
-      caption: "Same data, decomposed step by step: Unnormalized to 1NF, 2NF, 3NF, BCNF, then Denormalize",
+      caption:
+        "Same data, decomposed step by step: Unnormalized to 1NF, 2NF, 3NF, BCNF, then Denormalize",
     },
     {
       kind: "prose",
@@ -236,7 +243,7 @@ CREATE TABLE order_items (
       kind: "image",
       src: denormalizationImg,
       alt: "Database Denormalization",
-      caption: "Combining tables to optimize read performance"
+      caption: "Combining tables to optimize read performance",
     },
     {
       kind: "callout",
@@ -272,10 +279,11 @@ CREATE TABLE order_items (
             "To encrypt the data.",
             "To ensure every fact lives in exactly one place, reducing redundancy and anomalies.",
             "To combine all tables into one giant table.",
-            "To automatically generate primary keys."
+            "To automatically generate primary keys.",
           ],
           correctIndex: 1,
-          explanation: "Normalization organizes data to reduce duplication, ensuring that updates, inserts, and deletes affect only one place in the database."
+          explanation:
+            "Normalization organizes data to reduce duplication, ensuring that updates, inserts, and deletes affect only one place in the database.",
         },
         {
           id: "norm2",
@@ -284,10 +292,11 @@ CREATE TABLE order_items (
             "When the database crashes during an update.",
             "When you update a piece of duplicated data in one row but forget to update it in others, causing inconsistencies.",
             "When you try to insert data without a primary key.",
-            "When you delete a row and it cascades to too many children."
+            "When you delete a row and it cascades to too many children.",
           ],
           correctIndex: 1,
-          explanation: "Update anomalies occur when redundant data gets out of sync because you didn't update every single copy of it."
+          explanation:
+            "Update anomalies occur when redundant data gets out of sync because you didn't update every single copy of it.",
         },
         {
           id: "norm3",
@@ -296,10 +305,11 @@ CREATE TABLE order_items (
             "No transitive dependencies.",
             "Every column must be an integer.",
             "Every cell is atomic (indivisible) and there are no repeating groups or lists in a single column.",
-            "There must be at least three tables in the database."
+            "There must be at least three tables in the database.",
           ],
           correctIndex: 2,
-          explanation: "1NF requires that all data is atomic, meaning you shouldn't store comma-separated lists or JSON arrays where a related table should be."
+          explanation:
+            "1NF requires that all data is atomic, meaning you shouldn't store comma-separated lists or JSON arrays where a related table should be.",
         },
         {
           id: "norm4",
@@ -308,10 +318,11 @@ CREATE TABLE order_items (
             "It applies to every single table.",
             "It only applies when a table has no primary key.",
             "It specifically applies when a table has a composite primary key (a key made of multiple columns).",
-            "It only applies to tables holding user passwords."
+            "It only applies to tables holding user passwords.",
           ],
           correctIndex: 2,
-          explanation: "2NF requires that all non-key columns depend on the entire composite primary key, not just a part of it."
+          explanation:
+            "2NF requires that all non-key columns depend on the entire composite primary key, not just a part of it.",
         },
         {
           id: "norm5",
@@ -320,10 +331,11 @@ CREATE TABLE order_items (
             "Every table must have a foreign key.",
             "No transitive dependencies (if column A depends on B, and B is not the primary key, they should be in a separate table).",
             "All numbers must be floating points.",
-            "Every row must have a unique identifier."
+            "Every row must have a unique identifier.",
           ],
           correctIndex: 1,
-          explanation: "3NF removes transitive dependencies. For example, a customer's 'city' depends on their 'zip_code', not directly on the customer's ID, so zip codes and cities should technically be their own table."
+          explanation:
+            "3NF removes transitive dependencies. For example, a customer's 'city' depends on their 'zip_code', not directly on the customer's ID, so zip codes and cities should technically be their own table.",
         },
         {
           id: "norm6",
@@ -332,10 +344,11 @@ CREATE TABLE order_items (
             "It is the exact same thing as 1NF.",
             "It is a stricter version of 3NF that handles complex edge cases where multiple overlapping candidate keys exist.",
             "It is a rule for creating indexes.",
-            "It dictates how to write JOIN queries."
+            "It dictates how to write JOIN queries.",
           ],
           correctIndex: 1,
-          explanation: "BCNF strengthens 3NF by stating that for every non-trivial functional dependency X -> Y, X must be a superkey."
+          explanation:
+            "BCNF strengthens 3NF by stating that for every non-trivial functional dependency X -> Y, X must be a superkey.",
         },
         {
           id: "norm7",
@@ -344,10 +357,11 @@ CREATE TABLE order_items (
             "Deleting tables from the database.",
             "Deliberately repeating data in multiple places to speed up read queries by avoiding expensive joins.",
             "Scrambling data for security.",
-            "Removing primary keys."
+            "Removing primary keys.",
           ],
           correctIndex: 1,
-          explanation: "Denormalization trades storage space and write complexity for faster read performance by keeping related data together."
+          explanation:
+            "Denormalization trades storage space and write complexity for faster read performance by keeping related data together.",
         },
         {
           id: "norm8",
@@ -356,10 +370,11 @@ CREATE TABLE order_items (
             "Read queries become much slower.",
             "You cannot use foreign keys anymore.",
             "Maintaining consistency becomes difficult: every time the source data changes, you have to manually update all the duplicated copies.",
-            "It requires you to buy more RAM."
+            "It requires you to buy more RAM.",
           ],
           correctIndex: 2,
-          explanation: "Because data is duplicated, an update requires fanning out the change to multiple places, which introduces the risk of data getting out of sync (anomalies)."
+          explanation:
+            "Because data is duplicated, an update requires fanning out the change to multiple places, which introduces the risk of data getting out of sync (anomalies).",
         },
         {
           id: "norm9",
@@ -368,25 +383,23 @@ CREATE TABLE order_items (
             "Right at the beginning, before you even write any queries.",
             "Only when a measured read pattern cannot be satisfied with standard indexing, and you have proven it is a bottleneck.",
             "Whenever you have more than 5 tables.",
-            "Never. Denormalization is always bad."
+            "Never. Denormalization is always bad.",
           ],
           correctIndex: 1,
-          explanation: "Premature denormalization leads to buggy, drift-heavy databases. You should always start normalized (3NF) and only denormalize when metrics prove you have a specific read performance issue."
+          explanation:
+            "Premature denormalization leads to buggy, drift-heavy databases. You should always start normalized (3NF) and only denormalize when metrics prove you have a specific read performance issue.",
         },
         {
           id: "norm10",
-          question: "[Medium] Which normal form is generally considered the 'sweet spot' that most teams aim for when designing a standard application database?",
-          options: [
-            "1NF",
-            "2NF",
-            "3NF",
-            "BCNF"
-          ],
+          question:
+            "[Medium] Which normal form is generally considered the 'sweet spot' that most teams aim for when designing a standard application database?",
+          options: ["1NF", "2NF", "3NF", "BCNF"],
           correctIndex: 2,
-          explanation: "3NF is the standard goal for relational modeling. It eliminates the vast majority of redundancy without overly complicating the schema design."
-        }
-      ]
-    }
+          explanation:
+            "3NF is the standard goal for relational modeling. It eliminates the vast majority of redundancy without overly complicating the schema design.",
+        },
+      ],
+    },
   ],
 };
 
@@ -417,7 +430,12 @@ const numericText: LessonContent = {
         ["SMALLINT", "2", "±32K", "Tiny counters, enums (rare)"],
         ["INTEGER", "4", "±2.1B", "Counts, IDs in small tables"],
         ["BIGINT", "8", "±9.2 × 10¹⁸", "Primary keys, big counters"],
-        ["NUMERIC(p,s)", "var", "Exact decimal", "Money, percentages, anything where rounding is unacceptable"],
+        [
+          "NUMERIC(p,s)",
+          "var",
+          "Exact decimal",
+          "Money, percentages, anything where rounding is unacceptable",
+        ],
         ["REAL / DOUBLE", "4 / 8", "Floating point", "Scientific data — NEVER money"],
       ],
     },
@@ -433,7 +451,11 @@ const numericText: LessonContent = {
       headers: ["Type", "What it is", "When to use"],
       rows: [
         ["CHAR(n)", "Fixed-length, blank-padded", "Almost never. Avoid."],
-        ["VARCHAR(n)", "Variable, max n chars", "When n is a real business constraint (e.g. country code = 2)"],
+        [
+          "VARCHAR(n)",
+          "Variable, max n chars",
+          "When n is a real business constraint (e.g. country code = 2)",
+        ],
         ["TEXT", "Variable, no limit", "Default. In Postgres, identical performance to VARCHAR."],
       ],
     },
@@ -465,8 +487,7 @@ const numericText: LessonContent = {
 const datesTimestamps: LessonContent = {
   slug: "dates-timestamps",
   title: "Dates, Timestamps & Time Zones",
-  subtitle:
-    "TIMESTAMP vs TIMESTAMPTZ, intervals, and why UTC is the only safe storage choice.",
+  subtitle: "TIMESTAMP vs TIMESTAMPTZ, intervals, and why UTC is the only safe storage choice.",
   sections: [
     {
       kind: "prose",
@@ -481,7 +502,11 @@ const datesTimestamps: LessonContent = {
       rows: [
         ["DATE", "YYYY-MM-DD", "Birthdays, holidays, due dates"],
         ["TIMESTAMP", "YYYY-MM-DD HH:MM:SS (no TZ)", "Almost never. Source of bugs."],
-        ["TIMESTAMPTZ", "Same, normalized to UTC", "Default. Created_at, updated_at, anything 'happened at'."],
+        [
+          "TIMESTAMPTZ",
+          "Same, normalized to UTC",
+          "Default. Created_at, updated_at, anything 'happened at'.",
+        ],
         ["INTERVAL", "A duration (3 days, 2 hours)", "Time arithmetic, ages, retention windows"],
       ],
     },
@@ -533,8 +558,7 @@ FROM   orders;`,
 const jsonJsonb: LessonContent = {
   slug: "json-jsonb",
   title: "JSON & JSONB",
-  subtitle:
-    "When semi-structured columns earn their keep — and when they don't.",
+  subtitle: "When semi-structured columns earn their keep — and when they don't.",
   sections: [
     {
       kind: "prose",
@@ -602,8 +626,7 @@ CREATE INDEX idx_events_payload ON events USING GIN (payload);`,
 const nullSemantics: LessonContent = {
   slug: "null-semantics",
   title: "NULL Semantics",
-  subtitle:
-    "Three-valued logic, NULL propagation, and the comparisons that silently fail.",
+  subtitle: "Three-valued logic, NULL propagation, and the comparisons that silently fail.",
   sections: [
     {
       kind: "prose",
@@ -673,8 +696,7 @@ SELECT count(nickname) FROM users;  -- counts non-NULL only`,
 const dbWhatIs: LessonContent = {
   slug: "what-is-database",
   title: "What is a Database?",
-  subtitle:
-    "Understand data, information, and why databases replaced scattered files.",
+  subtitle: "Understand data, information, and why databases replaced scattered files.",
   sections: [
     {
       kind: "prose",
@@ -769,31 +791,15 @@ WHERE state = 'TX';`,
       caption: "Flat Files vs Databases",
       headers: ["Concern", "Flat files", "Database system"],
       rows: [
-        [
-          "Data copies",
-          "Often duplicated across files",
-          "Shared, centrally managed data",
-        ],
-        [
-          "New questions",
-          "Usually need custom code",
-          "Use queries such as SQL",
-        ],
-        [
-          "Business rules",
-          "Repeated across applications",
-          "Defined and enforced centrally",
-        ],
+        ["Data copies", "Often duplicated across files", "Shared, centrally managed data"],
+        ["New questions", "Usually need custom code", "Use queries such as SQL"],
+        ["Business rules", "Repeated across applications", "Defined and enforced centrally"],
         [
           "Multiple users",
           "Updates can conflict or be lost",
           "Concurrent access is managed safely",
         ],
-        [
-          "Failures",
-          "Can leave partial or corrupt data",
-          "Transactions help keep data consistent",
-        ],
+        ["Failures", "Can leave partial or corrupt data", "Transactions help keep data consistent"],
       ],
     },
     {
@@ -836,7 +842,8 @@ WHERE state = 'TX';`,
         },
         {
           id: "q3",
-          question: "Which problem commonly occurs when multiple departments maintain separate files for the same customer?",
+          question:
+            "Which problem commonly occurs when multiple departments maintain separate files for the same customer?",
           options: [
             "Data duplication and inconsistency.",
             "Faster querying.",
@@ -844,8 +851,7 @@ WHERE state = 'TX';`,
             "Better access control.",
           ],
           correctIndex: 0,
-          explanation:
-            "Separate copies can drift apart when one is updated and another is not.",
+          explanation: "Separate copies can drift apart when one is updated and another is not.",
         },
         {
           id: "q4",
@@ -881,8 +887,7 @@ WHERE state = 'TX';`,
 const dbmsExplained: LessonContent = {
   slug: "what-is-a-dbms",
   title: "What is a DBMS?",
-  subtitle:
-    "Learn how database software stores, protects, and retrieves data safely.",
+  subtitle: "Learn how database software stores, protects, and retrieves data safely.",
   sections: [
     {
       kind: "prose",
@@ -1031,8 +1036,7 @@ WHERE state = 'TX';`,
           question: "Which is an example of DBMS software?",
           options: ["PostgreSQL", "HTML", "Excel formula", "CSS"],
           correctIndex: 0,
-          explanation:
-            "PostgreSQL is a database management system.",
+          explanation: "PostgreSQL is a database management system.",
         },
       ],
     },
@@ -1164,16 +1168,14 @@ const relationalModel: LessonContent = {
             "A connection between servers.",
           ],
           correctIndex: 0,
-          explanation:
-            "A row stores one record, such as one customer, product, or order.",
+          explanation: "A row stores one record, such as one customer, product, or order.",
         },
         {
           id: "q2",
           question: "What is another name for a table in the relational model?",
           options: ["Relation", "Transaction", "Index", "Query"],
           correctIndex: 0,
-          explanation:
-            "The formal relational-model term for a table is a relation.",
+          explanation: "The formal relational-model term for a table is a relation.",
         },
         {
           id: "q3",
@@ -1209,8 +1211,7 @@ const relationalModel: LessonContent = {
 const levelsOfAbstraction: LessonContent = {
   slug: "levels-of-abstraction",
   title: "Levels of Abstraction",
-  subtitle:
-    "Understand the physical, logical, and view levels of a database and why they matter.",
+  subtitle: "Understand the physical, logical, and view levels of a database and why they matter.",
   sections: [
     {
       kind: "prose",
@@ -1293,16 +1294,8 @@ const levelsOfAbstraction: LessonContent = {
           "Customer name, email, orders",
           "Employee salaries and internal financial data",
         ],
-        [
-          "Warehouse employee",
-          "Products, inventory, shipping details",
-          "Customer payment details",
-        ],
-        [
-          "Finance analyst",
-          "Orders, payments, revenue",
-          "Unrelated operational details",
-        ],
+        ["Warehouse employee", "Products, inventory, shipping details", "Customer payment details"],
+        ["Finance analyst", "Orders, payments, revenue", "Unrelated operational details"],
       ],
     },
     {
@@ -1339,28 +1332,16 @@ const levelsOfAbstraction: LessonContent = {
         {
           id: "q1",
           question: "Which level describes tables, columns, keys, and relationships?",
-          options: [
-            "Physical level",
-            "Logical level",
-            "View level",
-            "Network level",
-          ],
+          options: ["Physical level", "Logical level", "View level", "Network level"],
           correctIndex: 1,
-          explanation:
-            "The logical level describes what data exists and how it is organized.",
+          explanation: "The logical level describes what data exists and how it is organized.",
         },
         {
           id: "q2",
           question: "Which level is concerned with indexes, files, and disk storage?",
-          options: [
-            "Physical level",
-            "Logical level",
-            "View level",
-            "Application level",
-          ],
+          options: ["Physical level", "Logical level", "View level", "Application level"],
           correctIndex: 0,
-          explanation:
-            "The physical level describes how the DBMS stores and retrieves data.",
+          explanation: "The physical level describes how the DBMS stores and retrieves data.",
         },
         {
           id: "q3",
@@ -1538,8 +1519,7 @@ const databaseKeys: LessonContent = {
             "To connect directly to a server.",
           ],
           correctIndex: 0,
-          explanation:
-            "A primary key gives each row a unique, non-empty identity.",
+          explanation: "A primary key gives each row a unique, non-empty identity.",
         },
         {
           id: "q2",
@@ -1551,8 +1531,7 @@ const databaseKeys: LessonContent = {
             "Changes the name of a table.",
           ],
           correctIndex: 1,
-          explanation:
-            "A foreign key stores a value that refers to a key in another table.",
+          explanation: "A foreign key stores a value that refers to a key in another table.",
         },
         {
           id: "q3",
@@ -1564,8 +1543,7 @@ const databaseKeys: LessonContent = {
             "Customer IDs are not useful in an orders table.",
           ],
           correctIndex: 2,
-          explanation:
-            "Repeated foreign-key values represent a one-to-many relationship.",
+          explanation: "Repeated foreign-key values represent a one-to-many relationship.",
         },
         {
           id: "q4",
@@ -1577,8 +1555,7 @@ const databaseKeys: LessonContent = {
             "A key that cannot identify a row.",
           ],
           correctIndex: 0,
-          explanation:
-            "A composite key combines multiple columns to uniquely identify a row.",
+          explanation: "A composite key combines multiple columns to uniquely identify a row.",
         },
       ],
     },
@@ -1588,8 +1565,7 @@ const databaseKeys: LessonContent = {
 const databaseLandscape: LessonContent = {
   slug: "database-landscape",
   title: "The Database Landscape",
-  subtitle:
-    "Understand relational databases, NoSQL models, distributed SQL, and where SQL fits.",
+  subtitle: "Understand relational databases, NoSQL models, distributed SQL, and where SQL fits.",
   sections: [
     {
       kind: "prose",
@@ -1765,17 +1741,10 @@ const databaseLandscape: LessonContent = {
         },
         {
           id: "dl2",
-          question:
-            "Which NoSQL model is especially useful for caching and fast lookups by ID?",
-          options: [
-            "Graph",
-            "Key-value",
-            "Relational",
-            "Wide-column only",
-          ],
+          question: "Which NoSQL model is especially useful for caching and fast lookups by ID?",
+          options: ["Graph", "Key-value", "Relational", "Wide-column only"],
           correctIndex: 1,
-          explanation:
-            "Key-value stores are optimized for retrieving values through known keys.",
+          explanation: "Key-value stores are optimized for retrieving values through known keys.",
         },
         {
           id: "dl3",
@@ -1792,22 +1761,14 @@ const databaseLandscape: LessonContent = {
         },
         {
           id: "dl4",
-          question:
-            "Which database family focuses on traversing connections between entities?",
-          options: [
-            "Document",
-            "Graph",
-            "Key-value",
-            "Wide-column",
-          ],
+          question: "Which database family focuses on traversing connections between entities?",
+          options: ["Document", "Graph", "Key-value", "Wide-column"],
           correctIndex: 1,
-          explanation:
-            "Graph databases model entities as nodes and their connections as edges.",
+          explanation: "Graph databases model entities as nodes and their connections as edges.",
         },
         {
           id: "dl5",
-          question:
-            "Which statement best describes relational databases and NoSQL databases?",
+          question: "Which statement best describes relational databases and NoSQL databases?",
           options: [
             "NoSQL always replaces relational databases.",
             "Relational databases are always slower.",
@@ -1905,7 +1866,6 @@ const dbUnderTheHood: LessonContent = {
   ],
 };
 
-
 // I want to move this to different section.
 
 const sqlIntro: LessonContent = {
@@ -1918,7 +1878,7 @@ const sqlIntro: LessonContent = {
       heading: "What is SQL?",
       body: [
         "SQL (Structured Query Language) is the standard language for interacting with relational databases. It allows you to create tables, insert data, and write queries to ask complex questions about your data.",
-        "Unlike general-purpose languages like 'Python' or 'JavaScript', **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently."
+        "Unlike general-purpose languages like 'Python' or 'JavaScript', **SQL is declarative**. You tell the database *what* you want (e.g., 'give me all active users'), and the database engine figures out *how* to get it efficiently.",
       ],
     },
     {
@@ -1927,7 +1887,7 @@ const sqlIntro: LessonContent = {
       body: [
         "• **Universal Standard**: Almost every major database system (*PostgreSQL, MySQL, SQLite, SQL Server*) uses **SQL**.",
         "• **Data Integrity**: It enforces **strict rules** (*schemas*) so your data remains consistent and reliable.",
-        "• **Performance**: SQL databases are highly optimized to search through millions of rows in milliseconds."
+        "• **Performance**: SQL databases are highly optimized to search through millions of rows in milliseconds.",
       ],
     },
     {
@@ -2020,31 +1980,11 @@ WHERE state = 'TX';`,
       caption: "The SQL command families",
       headers: ["Family", "Purpose", "Common commands"],
       rows: [
-        [
-          "DDL",
-          "Defines or changes database structure",
-          "CREATE, ALTER, DROP, TRUNCATE",
-        ],
-        [
-          "DML",
-          "Adds, changes, or removes rows",
-          "INSERT, UPDATE, DELETE",
-        ],
-        [
-          "DQL",
-          "Reads data",
-          "SELECT",
-        ],
-        [
-          "DCL",
-          "Controls permissions",
-          "GRANT, REVOKE",
-        ],
-        [
-          "TCL",
-          "Controls transactions",
-          "BEGIN, COMMIT, ROLLBACK, SAVEPOINT",
-        ],
+        ["DDL", "Defines or changes database structure", "CREATE, ALTER, DROP, TRUNCATE"],
+        ["DML", "Adds, changes, or removes rows", "INSERT, UPDATE, DELETE"],
+        ["DQL", "Reads data", "SELECT"],
+        ["DCL", "Controls permissions", "GRANT, REVOKE"],
+        ["TCL", "Controls transactions", "BEGIN, COMMIT, ROLLBACK, SAVEPOINT"],
       ],
     },
     {
@@ -2182,8 +2122,7 @@ COMMIT;`,
       questions: [
         {
           id: "sc1",
-          question:
-            "Which command family creates or changes a table's structure?",
+          question: "Which command family creates or changes a table's structure?",
           options: ["DML", "DQL", "DDL", "TCL"],
           correctIndex: 2,
           explanation:
@@ -2194,13 +2133,11 @@ COMMIT;`,
           question: "Which command reads data from a table?",
           options: ["SELECT", "INSERT", "GRANT", "COMMIT"],
           correctIndex: 0,
-          explanation:
-            "SELECT is used to retrieve data and is commonly classified as DQL.",
+          explanation: "SELECT is used to retrieve data and is commonly classified as DQL.",
         },
         {
           id: "sc3",
-          question:
-            "What happens if DELETE is run without a WHERE clause?",
+          question: "What happens if DELETE is run without a WHERE clause?",
           options: [
             "It deletes every row in the table.",
             "It deletes the table structure.",
@@ -2208,17 +2145,14 @@ COMMIT;`,
             "It deletes only the newest row.",
           ],
           correctIndex: 0,
-          explanation:
-            "Without WHERE, DELETE applies to all rows in the target table.",
+          explanation: "Without WHERE, DELETE applies to all rows in the target table.",
         },
         {
           id: "sc4",
-          question:
-            "Which command is used to give a role permission to read a table?",
+          question: "Which command is used to give a role permission to read a table?",
           options: ["ALTER", "GRANT", "ROLLBACK", "INSERT"],
           correctIndex: 1,
-          explanation:
-            "GRANT is a DCL command used to give permissions.",
+          explanation: "GRANT is a DCL command used to give permissions.",
         },
         {
           id: "sc5",
@@ -2230,8 +2164,7 @@ COMMIT;`,
             "Reads rows from a table.",
           ],
           correctIndex: 0,
-          explanation:
-            "COMMIT completes a transaction and makes its changes permanent.",
+          explanation: "COMMIT completes a transaction and makes its changes permanent.",
         },
         {
           id: "sc6",
@@ -2263,15 +2196,17 @@ const fundamentalsQuiz: LessonContent = {
       questions: [
         {
           id: "fq1",
-          question: "What is a primary drawback of storing structured application data in regular files (like CSVs) instead of a database?",
+          question:
+            "What is a primary drawback of storing structured application data in regular files (like CSVs) instead of a database?",
           options: [
             "Files cannot be opened by humans.",
             "Files do not safely handle multiple users modifying data at the same time (concurrency).",
             "Files take up more disk space than databases.",
-            "Files require an internet connection."
+            "Files require an internet connection.",
           ],
           correctIndex: 1,
-          explanation: "Databases (through a DBMS) safely handle concurrency, whereas standard files can easily become corrupted if multiple processes write to them simultaneously."
+          explanation:
+            "Databases (through a DBMS) safely handle concurrency, whereas standard files can easily become corrupted if multiple processes write to them simultaneously.",
         },
         {
           id: "fq2",
@@ -2280,10 +2215,11 @@ const fundamentalsQuiz: LessonContent = {
             "To provide a graphical user interface for designing websites.",
             "To act as the software engine that safely stores, retrieves, and protects data.",
             "To generate primary keys automatically without user input.",
-            "To replace the server's operating system."
+            "To replace the server's operating system.",
           ],
           correctIndex: 1,
-          explanation: "The DBMS is the software (like PostgreSQL or MySQL) that manages the actual database and ensures data is stored and retrieved reliably."
+          explanation:
+            "The DBMS is the software (like PostgreSQL or MySQL) that manages the actual database and ensures data is stored and retrieved reliably.",
         },
         {
           id: "fq3",
@@ -2292,10 +2228,11 @@ const fundamentalsQuiz: LessonContent = {
             "Into a hierarchy of folders and files.",
             "Into a series of interconnected graphs and nodes.",
             "Into tables consisting of rows and columns.",
-            "Into flexible JSON documents."
+            "Into flexible JSON documents.",
           ],
           correctIndex: 2,
-          explanation: "The relational model organizes data into tables (relations), where rows represent individual records and columns represent attributes."
+          explanation:
+            "The relational model organizes data into tables (relations), where rows represent individual records and columns represent attributes.",
         },
         {
           id: "fq4",
@@ -2304,22 +2241,24 @@ const fundamentalsQuiz: LessonContent = {
             "To encrypt sensitive data in a table.",
             "To establish a connection to another table.",
             "To uniquely and reliably identify each specific row in a table.",
-            "To sort the table automatically alphabetically."
+            "To sort the table automatically alphabetically.",
           ],
           correctIndex: 2,
-          explanation: "A primary key ensures every row has a unique, non-empty identity."
+          explanation: "A primary key ensures every row has a unique, non-empty identity.",
         },
         {
           id: "fq5",
-          question: "Why might a database designer choose a 'surrogate key' (like a database-generated ID) over a 'natural key' (like an email address)?",
+          question:
+            "Why might a database designer choose a 'surrogate key' (like a database-generated ID) over a 'natural key' (like an email address)?",
           options: [
             "Surrogate keys take up less space than natural keys.",
             "Natural keys have no real-world meaning.",
             "Surrogate keys never change, whereas natural keys (like an email) might change in the real world.",
-            "Surrogate keys are required for NoSQL databases."
+            "Surrogate keys are required for NoSQL databases.",
           ],
           correctIndex: 2,
-          explanation: "Surrogate keys provide a stable, unchanging identity. If a user changes their email (a natural key), you won't have to update all related tables."
+          explanation:
+            "Surrogate keys provide a stable, unchanging identity. If a user changes their email (a natural key), you won't have to update all related tables.",
         },
         {
           id: "fq6",
@@ -2328,22 +2267,25 @@ const fundamentalsQuiz: LessonContent = {
             "It enforces a relationship by referring to a primary key in another table.",
             "It allows external users to access the database.",
             "It uniquely identifies a column in the current table.",
-            "It automatically deletes duplicate rows."
+            "It automatically deletes duplicate rows.",
           ],
           correctIndex: 0,
-          explanation: "A foreign key connects rows across tables and allows the database to enforce referential integrity."
+          explanation:
+            "A foreign key connects rows across tables and allows the database to enforce referential integrity.",
         },
         {
           id: "fq7",
-          question: "Which level of database abstraction is responsible for describing exactly how data is stored on disk (e.g., files, pages, and indexes)?",
+          question:
+            "Which level of database abstraction is responsible for describing exactly how data is stored on disk (e.g., files, pages, and indexes)?",
           options: [
             "The View Level",
             "The Logical Level",
             "The Physical Level",
-            "The Schema Level"
+            "The Schema Level",
           ],
           correctIndex: 2,
-          explanation: "The physical level handles the lowest-level storage and retrieval details behind the scenes."
+          explanation:
+            "The physical level handles the lowest-level storage and retrieval details behind the scenes.",
         },
         {
           id: "fq8",
@@ -2352,34 +2294,32 @@ const fundamentalsQuiz: LessonContent = {
             "It allows users to store unlimited amounts of data.",
             "It allows administrators to change storage details (like adding an index) without rewriting application queries.",
             "It prevents the database server from ever crashing.",
-            "It removes the need for primary keys."
+            "It removes the need for primary keys.",
           ],
           correctIndex: 1,
-          explanation: "Physical data independence means the underlying physical structure can be optimized without breaking the logical or view levels above it."
+          explanation:
+            "Physical data independence means the underlying physical structure can be optimized without breaking the logical or view levels above it.",
         },
         {
           id: "fq9",
-          question: "Which family of SQL commands is used to modify the structure of the database, such as creating or dropping tables?",
+          question:
+            "Which family of SQL commands is used to modify the structure of the database, such as creating or dropping tables?",
           options: [
             "DML (Data Manipulation Language)",
             "DQL (Data Query Language)",
             "DDL (Data Definition Language)",
-            "TCL (Transaction Control Language)"
+            "TCL (Transaction Control Language)",
           ],
           correctIndex: 2,
-          explanation: "DDL handles structural, schema-level changes (CREATE, ALTER, DROP)."
+          explanation: "DDL handles structural, schema-level changes (CREATE, ALTER, DROP).",
         },
         {
           id: "fq10",
           question: "Which SQL command family do INSERT, UPDATE, and DELETE belong to?",
-          options: [
-            "DDL",
-            "DML",
-            "DCL",
-            "TCL"
-          ],
+          options: ["DDL", "DML", "DCL", "TCL"],
           correctIndex: 1,
-          explanation: "DML (Data Manipulation Language) is used to add, change, or remove the actual rows of data."
+          explanation:
+            "DML (Data Manipulation Language) is used to add, change, or remove the actual rows of data.",
         },
         {
           id: "fq11",
@@ -2388,22 +2328,25 @@ const fundamentalsQuiz: LessonContent = {
             "To grant permissions to a new user.",
             "To permanently save all changes made during the current transaction.",
             "To undo changes made in the current transaction.",
-            "To define a new table structure."
+            "To define a new table structure.",
           ],
           correctIndex: 1,
-          explanation: "COMMIT is a TCL command that finalizes a transaction, making its changes permanent."
+          explanation:
+            "COMMIT is a TCL command that finalizes a transaction, making its changes permanent.",
         },
         {
           id: "fq12",
-          question: "If your application needs to handle very large volumes of flexible, JSON-like data where each record might have different fields, which database model is likely the best fit?",
+          question:
+            "If your application needs to handle very large volumes of flexible, JSON-like data where each record might have different fields, which database model is likely the best fit?",
           options: [
             "Relational Database",
             "Document Database (NoSQL)",
             "Key-Value Store",
-            "Graph Database"
+            "Graph Database",
           ],
           correctIndex: 1,
-          explanation: "Document databases are designed to store flexible, variable-shaped data like JSON."
+          explanation:
+            "Document databases are designed to store flexible, variable-shaped data like JSON.",
         },
         {
           id: "fq13",
@@ -2412,10 +2355,11 @@ const fundamentalsQuiz: LessonContent = {
             "Databases that have completely eliminated SQL.",
             "Not Only SQL, acting as an umbrella term for non-relational database models.",
             "A specific database product made by a single company.",
-            "Databases that cannot handle transactions."
+            "Databases that cannot handle transactions.",
           ],
           correctIndex: 1,
-          explanation: "NoSQL means 'not only SQL' and covers families like key-value, document, wide-column, and graph databases."
+          explanation:
+            "NoSQL means 'not only SQL' and covers families like key-value, document, wide-column, and graph databases.",
         },
         {
           id: "fq14",
@@ -2424,10 +2368,11 @@ const fundamentalsQuiz: LessonContent = {
             "To keep track of which users are currently logged in.",
             "To safely and quickly record changes sequentially on disk before writing them to the main data files, ensuring no data is lost in a crash.",
             "To store passwords securely.",
-            "To translate SQL commands into machine code."
+            "To translate SQL commands into machine code.",
           ],
           correctIndex: 1,
-          explanation: "The WAL provides durability. Sequential writes to the log are very fast, and if the database crashes, it can replay the log to recover data."
+          explanation:
+            "The WAL provides durability. Sequential writes to the log are very fast, and if the database crashes, it can replay the log to recover data.",
         },
         {
           id: "fq15",
@@ -2436,14 +2381,15 @@ const fundamentalsQuiz: LessonContent = {
             "By ensuring no two transactions conflict.",
             "By caching all data in RAM so it can be read instantly.",
             "By writing committed changes to permanent storage (like SSD or HDD), so they survive power losses.",
-            "By enforcing foreign key relationships."
+            "By enforcing foreign key relationships.",
           ],
           correctIndex: 2,
-          explanation: "Durability guarantees that once a transaction is committed, it will remain in the system even in the event of a crash or power loss."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Durability guarantees that once a transaction is committed, it will remain in the system even in the event of a crash or power loss.",
+        },
+      ],
+    },
+  ],
 };
 
 // ---------- TOPIC INDEX ----------
@@ -2456,7 +2402,17 @@ export const FOUNDATION_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "terminal",
     blurb:
       "What is SQL, client-server architecture, the five families of SQL commands, keys, and normalization.",
-    lessons: [dbWhatIs, dbmsExplained, relationalModel, databaseKeys, levelsOfAbstraction, sqlCommands, databaseLandscape, dbUnderTheHood, fundamentalsQuiz],
+    lessons: [
+      dbWhatIs,
+      dbmsExplained,
+      relationalModel,
+      databaseKeys,
+      levelsOfAbstraction,
+      sqlCommands,
+      databaseLandscape,
+      dbUnderTheHood,
+      fundamentalsQuiz,
+    ],
   },
   "data-types": {
     slug: "data-types",
