@@ -7,6 +7,7 @@
 //   5. Engineering 'Gotchas' & Compliance
 
 import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
+import booleanLogicImg from "@/images/sql/querying/boolean-logic-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -16,90 +17,137 @@ import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 const booleanLogic: LessonContent = {
   slug: "boolean-logic",
   title: "1.1 Boolean Logic (AND / OR / NOT)",
-  subtitle: "Precedence rules, short-circuit evaluation, and three-valued truth.",
+  subtitle: "Combine product rules with AND, OR, and NOT, then make mixed conditions easy to read.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Combine Product Rules Clearly",
       body: [
-        "WHERE evaluates one boolean expression per row — get the algebra wrong and the query silently returns the wrong rows.",
-        "Precedence order: NOT fires first, then AND, then OR — the same hierarchy as in most programming languages.",
+        "A `WHERE` clause checks a condition for each row in the table named by `FROM`. It keeps the row only when the full condition is true.",
+        "Use `AND` when a product must meet every rule. Use `OR` when either rule is enough. Use `NOT` when you want to exclude matches. These three operators let you turn a business request into a precise filter.",
+      ],
+    },
+    {
+      kind: "image",
+      src: booleanLogicImg,
+      alt: "Cycle Depot products flowing through AND, OR, and NOT filters into the rows each condition keeps.",
+      caption: "AND requires both checks, OR accepts either check, and NOT excludes the rows that match its condition.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "AND: Road Bikes that are ready to promote",
+      code: `SELECT name, price, in_stock
+FROM products
+WHERE category = 'Road Bikes'
+  AND in_stock >= 90
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "Both conditions are true for these two Cycle Depot products",
+      headers: ["name", "price", "in_stock"],
+      rows: [
+        ["Aero Sprint Pro", "5400.00", "99"],
+        ["Gravel Runner GX", "1980.00", "122"],
       ],
     },
     {
       kind: "animation",
       variant: "q-bool",
-      caption: "Per-row predicate evaluation — survivors flow down, rejects fade out.",
+      caption: "See the same Cycle Depot rows pass through AND, OR, NOT, and a parenthesized combined condition.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "Broaden, Exclude, Then Combine",
       body: [
-        "Rows enter as cards on the left; a predicate ribbon shows AND/OR/NOT tokens with precedence brackets dimmed.",
-        "The scanner applies NOT first, AND second, OR last. TRUE rows arc right; FALSE and UNKNOWN rows fade into the discard tray.",
-        "The result viewport holds only TRUE rows; a parsed-tree overlay confirms the NOT → AND → OR evaluation order.",
+        "`OR` broadens a result. For example, a promotion can include every Road Bike **or** any product priced at least 4000. A row needs only one side of the OR to be true.",
+        "`NOT` reverses a condition. `NOT category = 'Road Bikes'` keeps products outside that category. In the query below, parentheses divide the rule into two readable groups before OR combines them.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Precedence in action — two queries, two answers",
-      code: `-- /* Phase 1: load product rows into the scanner */
-SELECT id, category, price
-FROM   products
--- /* Phase 2a: parsed as  category='pen' OR (category='pencil' AND price < 5) */
-WHERE  category = 'pen'
-   OR  category = 'pencil'
-  AND  price   < 5;
-
--- /* Phase 2b: parentheses force OR to evaluate first, AND second */
-SELECT id, category, price
-FROM   products
-WHERE (category = 'pen' OR category = 'pencil')   -- /* OR branch fans first */
-  AND  price < 5;                                  -- /* AND gate prunes survivors */
--- /* Phase 3: only cheap pens & pencils reach the result viewport */`,
+      caption: "A featured-products rule using AND, OR, and NOT",
+      code: `SELECT name, category, price, in_stock
+FROM products
+WHERE (category = 'Road Bikes' AND in_stock >= 90)
+   OR (NOT category = 'Road Bikes' AND price >= 4000)
+ORDER BY id;`,
     },
     {
       kind: "table",
-      caption: "Three-valued truth table — UNKNOWN is contagious",
-      headers: ["A", "B", "A AND B", "A OR B", "NOT A"],
+      caption: "The three products that satisfy either parenthesized group",
+      headers: ["name", "category", "price", "in_stock"],
       rows: [
-        ["TRUE", "TRUE", "TRUE", "TRUE", "FALSE"],
-        ["TRUE", "FALSE", "FALSE", "TRUE", "FALSE"],
-        ["TRUE", "UNKNOWN", "UNKNOWN", "TRUE", "FALSE"],
-        ["FALSE", "UNKNOWN", "FALSE", "UNKNOWN", "TRUE"],
-        ["UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN"],
-      ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [595]", "Big Countries", "Single OR predicate, basic WHERE syntactic validation."],
-        ["Drill [627]", "Swap Salary", "NOT / CASE on a single boolean condition, pure implementation."],
-        ["Challenge [184]", "Department Highest Salary", "Boolean predicates fused with aggregation + join."],
+        ["Switchback Enduro", "Mountain Bikes", "4150.00", "10"],
+        ["Aero Sprint Pro", "Road Bikes", "5400.00", "99"],
+        ["Gravel Runner GX", "Road Bikes", "1980.00", "122"],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — operator precedence",
-      body: "`a OR b AND c` parses as `a OR (b AND c)` because AND binds tighter. Always parenthesize mixed operators — the parser does exactly what you typed.",
+      title: "Make mixed rules explicit",
+      body: "SQL evaluates `NOT` before `AND`, and `AND` before `OR`. Parentheses make the intended groups obvious to you and anyone reviewing the query. Use them whenever a condition mixes AND and OR.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "Planner impact",
-      body: "PostgreSQL reorders predicates by estimated selectivity from pg_statistic and short-circuits them. A miswritten OR can suppress an index scan — verify with EXPLAIN (ANALYZE, BUFFERS).",
+      title: "A note about NULL",
+      body: "If a comparison involves a NULL, it can evaluate to UNKNOWN. `NOT UNKNOWN` is still UNKNOWN, and WHERE keeps only TRUE rows. Cycle Depot product categories are required, so this example has no missing categories; the NULL lesson covers this behavior in depth.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build a featured product list",
+      prompt: "Return name, category, price, and in_stock for Road Bikes with at least 90 units in stock, or products that are not Road Bikes and cost at least 4000. Use AND, OR, NOT, and parentheses in the checked Cycle Depot exercise.",
+      tables: ["products"],
+      successCheck: "3 rows with the columns name, category, price, and in_stock.",
+      href: "/sql-playground?practice=cycle-depot-featured-products-logic",
     },
     {
       kind: "takeaways",
       items: [
-        "WHERE keeps rows where the predicate is TRUE — FALSE and UNKNOWN both drop.",
-        "Precedence: NOT > AND > OR — parenthesize whenever mixing.",
-        "Three-valued logic means a single NULL can collapse an entire filter.",
-        "EXPLAIN ANALYZE is the only ground truth for predicate selectivity.",
+        "WHERE keeps a row only when its complete condition is TRUE.",
+        "AND requires every condition to be true. OR requires at least one. NOT excludes matches.",
+        "SQL evaluates NOT, then AND, then OR. Parentheses make a mixed rule clear and safe to change.",
+        "NULL can produce UNKNOWN, and WHERE excludes UNKNOWN rows just like FALSE rows.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "boolean-logic-and",
+          question: "Which operator should you use when a product must be a Road Bike and have at least 90 units in stock?",
+          options: ["OR", "AND", "NOT", "DISTINCT"],
+          correctIndex: 1,
+          explanation: "AND requires both conditions to be true for the same row.",
+        },
+        {
+          id: "boolean-logic-or",
+          question: "What does OR do in a WHERE condition?",
+          options: [
+            "It keeps a row only when every condition is true.",
+            "It keeps a row when at least one condition is true.",
+            "It removes all matching rows.",
+            "It sorts the result.",
+          ],
+          correctIndex: 1,
+          explanation: "OR accepts a row when either side of the condition is true.",
+        },
+        {
+          id: "boolean-logic-precedence",
+          question: "Why are parentheses useful when a condition mixes AND and OR?",
+          options: [
+            "They rename result columns.",
+            "They show exactly which conditions belong together.",
+            "They make WHERE run after SELECT.",
+            "They remove duplicate rows.",
+          ],
+          correctIndex: 1,
+          explanation: "Parentheses make the intended logical groups explicit, rather than relying on precedence alone.",
+        },
       ],
     },
   ],
