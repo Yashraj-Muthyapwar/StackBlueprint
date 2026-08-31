@@ -87,6 +87,12 @@ export async function loadIntoPostgres(
     return;
   }
 
+  if (dataset.source.kind === "blank") {
+    await pg.exec(`CREATE SCHEMA IF NOT EXISTS "uploads";`);
+    onProgress({ fraction: 1, label: "ready" });
+    return;
+  }
+
   if (dataset.source.kind !== "csv") {
     throw new Error(`${dataset.name} is not available on PostgreSQL.`);
   }
@@ -166,6 +172,13 @@ export async function loadIntoDuckDB(
   signal?: AbortSignal,
 ): Promise<void> {
   const dataset: DatasetDef = getDataset(datasetId);
+
+  if (dataset.source.kind === "blank") {
+    onProgress({ fraction: 0, label: "setting up workspace" });
+    await conn.query(`CREATE SCHEMA IF NOT EXISTS "uploads";`);
+    onProgress({ fraction: 1, label: "ready" });
+    return;
+  }
 
   if (dataset.source.kind === "generated") {
     onProgress({ fraction: 0.1, label: "building tables" });
