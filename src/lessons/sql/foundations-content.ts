@@ -54,7 +54,7 @@ export type Section =
         | "commands-map"
         | "query-structure"
         | "select-distinct"
-        | "offset-pagination"
+        | "distinct-order-limit"
         | "sql-comments"
         | "sql-calculations-aliases"
         | "sql-operators"
