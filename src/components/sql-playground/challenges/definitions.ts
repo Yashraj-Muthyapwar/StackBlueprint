@@ -254,6 +254,47 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-road-bike-shortlist",
+    version: 1,
+    title: "Build a Road Bike shortlist",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "The sales team needs the three most expensive Road Bikes to feature in a campaign.",
+    requirements: [
+      "Use the products table.",
+      "Return the name and price columns only.",
+      "Keep products where category is 'Road Bikes'.",
+      "Sort from the highest price to the lowest and keep the first 3 rows.",
+    ],
+    requiredTables: ["products"],
+    hints: [
+      "Use WHERE category = 'Road Bikes' before sorting.",
+      "Use ORDER BY price DESC, followed by LIMIT 3.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+      duckdb: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+        duckdb: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+      },
+      requiredColumns: ["name", "price"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Road Bike shortlist complete",
+      body: "Correct. You used the logical flow from source rows through filtering, sorting, and limiting to build the shortlist.",
+      nextConcept: "The final querying fundamentals quiz",
+    },
+  },
+  {
     id: "cycle-depot-recent-delivered-orders",
     version: 1,
     title: "Recent delivered orders",
