@@ -1070,25 +1070,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "The same `+` operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved. This is **operator polymorphism**.",
               "### 2. Understand operator overloading",
               "Python also lets your own classes define how operators should behave. This is called **operator overloading**.",
-              "Suppose you create a `Cart` class and you want to use the `+` operator to combine two carts. Python classes can define special methods that control operator behavior. For `+`, Python uses `__add__()`."
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: "class Cart:\n    def __init__(self, items):\n        self.items = items\n\n    def __add__(self, other):\n        return Cart(self.items + other.items)\n\ncart1 = Cart([\"Laptop\", \"Mouse\"])\ncart2 = Cart([\"Keyboard\"])\ncombined_cart = cart1 + cart2\n\nprint(combined_cart.items)"
-          },
-          {
-            kind: "prose",
-            body: [
-              "When Python sees `cart1 + cart2`, you can think of it roughly as `cart1.__add__(cart2)`. The `Cart` class decides what `+` means for its objects.",
-              "These special methods with double underscores on both sides are commonly called **dunder methods** (short for \"double underscore\"). They allow your custom classes to integrate seamlessly with Python's built-in operators and functions.",
-              "### Common Dunder Methods",
-              "• `__init__(self, ...)`: Automatically called when you create a new instance of a class to set up initial values.",
-              "• `__str__(self)`: Called by `print()` and `str()` to give a clean, readable text description of an object.",
-              "• `__repr__(self)`: Called to get an official, detailed string representation of an object, often used for debugging.",
-              "• `__len__(self)`: Called when you use the `len()` function on your custom object.",
-              "• `__eq__(self, other)`: Called when you check if two objects are equal using the `==` operator.",
-              "• `__add__(self, other)`: Called when you add two objects together using the `+` operator.",
+              "You can define special methods with double underscores (like `__add__()` for the `+` operator) to control how objects behave.",
+              "These are commonly called **dunder methods**. Because this is such an important aspect of polymorphism, you can dive deeper into `__add__()`, `__str__()`, `__len__()`, and more in the dedicated [Special Methods](/python/oop/special-methods) lesson!",
               "### 3. See function polymorphism",
               "A function can also work with different types of objects. The built-in `len()` function is a simple example."
             ]
