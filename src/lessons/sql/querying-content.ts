@@ -8,6 +8,7 @@
 
 import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 import booleanLogicImg from "@/images/sql/querying/boolean-logic-cycle-depot.png";
+import patternMatchingImg from "@/images/sql/querying/pattern-matching-cycle-depot.png";
 import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
 
 // =============================================================
@@ -329,94 +330,214 @@ WHERE tags @> ARRAY['road'];`,
 const likeIlike: LessonContent = {
   slug: "like-ilike",
   title: "1.3 Pattern Matching (LIKE / ILIKE)",
-  subtitle: "Wildcards, escaping, and why a leading % forces a full table scan.",
+  subtitle: "Search Cycle Depot product names with %, _, ILIKE, NOT LIKE, and safe literal matching.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Search Text with a Pattern",
       body: [
-        "LIKE and ILIKE are how SQL expresses prefix and substring filters — anchored patterns can hit a B-Tree index; unanchored patterns cannot.",
-        "An anchored prefix (`foo%`) lets the engine descend the B-Tree to the first match and scan forward. A leading wildcard (`%foo`) forces a full heap scan.",
+        "`LIKE` checks whether text fits a pattern. It is useful when you know part of a product name, email, city, or code, but not the entire value.",
+        "A pattern has ordinary characters plus optional wildcards. `%` stands for zero or more characters. `_` stands for exactly one character. Everything else is matched literally unless you escape it.",
+      ],
+    },
+    {
+      kind: "image",
+      src: patternMatchingImg,
+      alt: "Cycle Depot product-name searches showing LIKE Volt percent matching two Volt products, LIKE percent Road percent matching three products containing Road, and ILIKE volt e hyphen percent matching the two Volt products regardless of case.",
+      caption: "Prefix, contains, and case-insensitive patterns can return different product sets. The contains search includes Shellcap Road Helmet because the word Road occurs in its name.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find every Cycle Depot product whose name starts with Volt",
+      code: `SELECT name, category, price
+FROM products
+WHERE name LIKE 'Volt%'
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "The trailing % accepts the remaining characters in each Volt product name",
+      headers: ["name", "category", "price"],
+      rows: [
+        ["Volt E-Commuter", "City Bikes", "2260.00"],
+        ["Volt E-Cargo", "City Bikes", "3890.00"],
       ],
     },
     {
       kind: "animation",
       variant: "q-like",
-      caption: "Anchored prefix rides the index; leading % triggers a full scan.",
+      caption: "Follow the same Cycle Depot names through prefix, contains, single-character, case-insensitive, and exclusion patterns.",
+    },
+    {
+      kind: "table",
+      caption: "The core LIKE pattern language",
+      headers: ["Pattern", "Meaning", "Cycle Depot match"],
+      rows: [
+        ["'Volt%'", "Starts with Volt", "Volt E-Commuter and Volt E-Cargo"],
+        ["'%Road%'", "Contains Road anywhere", "Both Meridian Road bikes and Shellcap Road Helmet"],
+        ["'%Helmet'", "Ends with Helmet", "Shellcap Road Helmet"],
+        ["'Volt _-%'", "One character after Volt, then a hyphen and any ending", "Both Volt E- products"],
+        ["'Road\\_Bikes' ESCAPE '\\'", "A literal underscore, not a wildcard", "The text Road_Bikes"],
+      ],
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "Visual Logic: Prefix Search and Contains Search",
       body: [
-        "A B-Tree index sits left; the heap sits right. The anchored pattern glows green, the leading-wildcard pattern glows red.",
-        "The green pattern descends the B-Tree to a leaf and reads a tight range. The red pattern skips the index entirely and sweeps every heap row.",
-        "Top viewport: index-scan badge, few blocks read. Bottom viewport: sequential-scan badge, buffer counter at table size.",
+        "On a large product catalog, picture an ordinary B-tree name index as an ordered list of product names and the table as the rows that hold the full product details. A prefix pattern such as `Volt%` gives the database a known starting point, so an appropriate index can seek near Volt and read the nearby matching range.",
+        "A contains pattern such as `%Road%` does not reveal the first character. An ordinary B-tree cannot use its ordered prefixes to jump directly to Road, so the database may need to inspect many names instead. The actual query plan still depends on the database, collation, statistics, and available indexes.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Anchor your pattern or pay for a sequential scan",
-      code: `-- /* Phase 2 (green): anchored prefix — B-Tree leaf seek */
-SELECT id, email
-FROM   users
-WHERE  email LIKE 'admin%';        -- /* index range scan on email_idx */
+      caption: "A prefix search gives the optimizer more to work with than a contains search",
+      code: `-- The name starts with Volt.
+SELECT id, name
+FROM products
+WHERE name LIKE 'Volt%';
 
--- /* Phase 2 (red): leading wildcard — index ignored */
-SELECT id, email
-FROM   users
-WHERE  email LIKE '%@acme.com';    -- /* sequential scan over the whole heap */
+-- Road may occur anywhere in the name.
+SELECT id, name
+FROM products
+WHERE name LIKE '%Road%';
 
--- /* Case-insensitive variant — ILIKE bypasses B-Tree unless using a citext or expression index */
-SELECT id, email
-FROM   users
-WHERE  email ILIKE 'Admin%';       -- /* needs LOWER(email) index or citext column to stay fast */
+-- PostgreSQL only: a case-insensitive prefix search can use a matching
+-- functional index when the catalog needs this search often.
+CREATE INDEX products_lower_name_prefix_idx
+ON products (LOWER(name) text_pattern_ops);
 
--- /* Escaping a literal underscore inside an identifier */
-SELECT *
-FROM   audit_log
-WHERE  action LIKE 'user\\_login%' ESCAPE '\\';  -- /* '_' is now literal, not wildcard */`,
+SELECT id, name
+FROM products
+WHERE LOWER(name) LIKE 'volt%';`,
     },
     {
       kind: "table",
-      caption: "Wildcard cheatsheet",
-      headers: ["Token", "Matches", "Index-friendly?"],
+      caption: "How wildcard position changes the usual B-tree opportunity",
+      headers: ["Pattern", "Can an ordinary name B-tree seek by prefix?", "What to remember"],
       rows: [
-        ["%", "Zero or more characters", "Only when not leading"],
-        ["_", "Exactly one character", "Only when not leading"],
-        ["ESCAPE 'c'", "Treats next char literally", "n/a"],
-        ["ILIKE", "Case-insensitive LIKE", "Needs functional / citext index"],
+        ["name LIKE 'Volt%'", "Usually, with a compatible index and collation", "The first letters are known."],
+        ["name LIKE '%Road%'", "No", "The first letters are unknown, so a prefix seek is unavailable."],
+        ["name ILIKE 'volt%'", "Not with a normal case-sensitive name index", "Use a case-insensitive or functional index when this search is important."],
       ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [1527]", "Patients With a Condition", "Basic LIKE prefix syntactic validation."],
-        ["Drill [1517]", "Find Users With Valid E-Mails", "Pattern matching with escaping & regex-style anchoring."],
-        ["Challenge [1683]", "Invalid Tweets", "Pattern length checks combined with predicate filtering."],
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "warn",
-      title: "Logic Trap — '%' matches the empty string",
-      body: "`LIKE 'a%z'` matches `'az'` — the wildcard can match zero characters. Reviewers often miss this, producing audit queries that are wider than intended.",
     },
     {
       kind: "callout",
       tone: "info",
-      title: "Planner impact",
-      body: "An anchored LIKE on a `text_pattern_ops` B-Tree is fast. A leading wildcard forces a sequential scan — O(N×M). Use a `pg_trgm` GIN index or `tsvector` for substring workloads.",
+      title: "Use the plan, not a promise",
+      body: "A prefix pattern does not guarantee an index scan, and a contains pattern does not guarantee one exact scan type. Use EXPLAIN on a realistic database when performance matters. PostgreSQL trigram indexes or full-text search can support broader search workloads, but they solve a different problem from basic LIKE syntax.",
+    },
+    {
+      kind: "prose",
+      heading: "Choose LIKE, ILIKE, or NOT LIKE",
+      body: [
+        "Use `LIKE` when the pattern's letter case should follow your database's normal matching rules. In PostgreSQL, `LIKE` is case-sensitive. `ILIKE` is the PostgreSQL-style case-insensitive form, so `name ILIKE 'volt e-%'` finds `Volt E-Commuter` even though the pattern is lowercase.",
+        "Use `NOT LIKE` to remove a text pattern. You can combine it with another condition to make a precise catalog search, such as products containing road but not helmet.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Case-insensitive road search, excluding helmets",
+      code: `SELECT name, category
+FROM products
+WHERE name ILIKE '%road%'
+  AND name NOT LIKE '%Helmet%'
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "The two Road Bike product names that remain after the helmet exclusion",
+      headers: ["name", "category"],
+      rows: [
+        ["Meridian Road Alloy", "Road Bikes"],
+        ["Meridian Road Carbon", "Road Bikes"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Match Literal % and _ Characters Safely",
+      body: [
+        "A percent sign and underscore are wildcards inside a LIKE pattern. If your data literally contains either character, declare an escape character with `ESCAPE`, then put that character before the wildcard you want to treat as ordinary text.",
+        "This matters for codes, imported filenames, and labels. The example uses a small inline list because Cycle Depot product names do not contain literal underscores or percent signs.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Escape an underscore so it means an underscore, not any one character",
+      code: `WITH search_terms(label) AS (
+  VALUES ('Road_Bikes'), ('Road%Bikes'), ('Road Bikes')
+)
+SELECT label
+FROM search_terms
+WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "% can match nothing",
+      body: "`LIKE 'a%z'` matches both `abz` and `az` because `%` may match zero characters. Use `_` or explicit text when the number of characters matters.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Search the Road product catalog",
+      prompt: "Return name and category for product names that contain road without letter-case sensitivity, but exclude any name containing Helmet. Use ILIKE and NOT LIKE in the checked Cycle Depot exercise.",
+      tables: ["products"],
+      successCheck: "2 rows with the columns name and category.",
+      href: "/sql-playground?practice=cycledepot-road-product-search",
     },
     {
       kind: "takeaways",
       items: [
-        "Anchored LIKE ('foo%') rides a B-Tree; leading % forces a sequential scan.",
-        "ILIKE is shorthand for LOWER(col) LIKE LOWER(pat) — index it explicitly.",
-        "Use ESCAPE when matching literal % or _.",
-        "Reach for pg_trgm or tsvector for true substring/full-text workloads.",
+        "LIKE compares text with a pattern. % means zero or more characters, and _ means exactly one character.",
+        "Use ILIKE when case should not matter in PostgreSQL-style SQL. Use NOT LIKE to remove a pattern from the result.",
+        "Escape literal % and _ characters with ESCAPE when your search text contains them.",
+        "A leading % is useful for contains searches but can be more expensive on a large table. Regex and full-text search solve different problems.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "pattern-matching-percent",
+          question: "What does the % wildcard represent in a LIKE pattern?",
+          options: ["Exactly one character", "Zero or more characters", "A numeric value", "Any SQL keyword"],
+          correctIndex: 1,
+          explanation: "% can match any sequence of characters, including an empty sequence.",
+        },
+        {
+          id: "pattern-matching-underscore",
+          question: "Which pattern matches Volt E-Commuter and Volt E-Cargo by requiring exactly one character before the hyphen?",
+          options: ["'Volt %'", "'Volt _-%'", "'Volt __-%'", "'%Volt E-'"],
+          correctIndex: 1,
+          explanation: "_ matches the one E character, the hyphen is literal, and % accepts the remaining text.",
+        },
+        {
+          id: "pattern-matching-ilike",
+          question: "Why would you use ILIKE 'volt e-%' rather than LIKE 'volt e-%' in PostgreSQL?",
+          options: [
+            "ILIKE removes duplicate rows.",
+            "ILIKE ignores letter case.",
+            "ILIKE matches only one character.",
+            "ILIKE sorts the result alphabetically.",
+          ],
+          correctIndex: 1,
+          explanation: "ILIKE is PostgreSQL's case-insensitive pattern-match operator.",
+        },
+        {
+          id: "pattern-matching-escape",
+          question: "How do you make _ mean a literal underscore inside a LIKE pattern?",
+          options: [
+            "Write LIKE 'Road_Bikes' without any change.",
+            "Use LIKE 'Road\\_Bikes' ESCAPE '\\'.",
+            "Use ILIKE '_Road_Bikes'.",
+            "Use NOT LIKE 'Road_Bikes'.",
+          ],
+          correctIndex: 1,
+          explanation: "The escape character tells LIKE to treat the following underscore as ordinary text.",
+        },
       ],
     },
   ],
