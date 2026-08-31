@@ -99,7 +99,14 @@ const sections: Section[] = [
         title: "SQL Querying Fundamentals",
         blurb: "SELECT, FROM, WHERE, ORDER BY, LIMIT — and the logical order SQL evaluates them.",
         icon: Table,
-        modules: ["SELECT / FROM", "WHERE filters", "ORDER BY / LIMIT", "Logical query order"],
+        modules: [
+          "SELECT / FROM",
+          "Comments, calculations & aliases",
+          "SQL operators",
+          "WHERE filters",
+          "ORDER BY / LIMIT",
+          "Logical query order",
+        ],
         unlocked: true,
       },
       {
@@ -532,4 +539,3 @@ function SqlIndex() {
     </div>
   );
 }
-
