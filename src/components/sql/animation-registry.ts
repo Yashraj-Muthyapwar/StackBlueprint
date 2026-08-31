@@ -17,11 +17,12 @@ import { setopsStages } from "./querying/set-operations";
 import { boolStages, rangeStages } from "./querying/where-filters";
 import { nullThreeValuedLogicStages } from "./querying/null-three-valued-logic";
 import { patternMatchingStages } from "./querying/pattern-matching";
+import { sargabilityStages } from "./querying/sargability";
 import { projStages } from "./querying-fundamentals/your-first-query";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
-  "q-bool": boolStages, "q-range": rangeStages, "q-like": patternMatchingStages, "q-null3vl": nullThreeValuedLogicStages,
+  "q-bool": boolStages, "q-range": rangeStages, "q-like": patternMatchingStages, "q-null3vl": nullThreeValuedLogicStages, "q-sargability": sargabilityStages,
   "q-aggr": aggrStages, "q-grpby": grpStages, "q-having": havingStages, "q-cube": cubeStages,
   "q-venn": vennStages, "q-self": selfStages, "q-semianti": semiStages, "q-algos": algosStages,
   "q-scalar": scalarStages, "q-corr": corrStages, "q-existsin": existsStages, "q-setops": setopsStages,
