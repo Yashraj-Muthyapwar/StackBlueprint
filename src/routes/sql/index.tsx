@@ -1,12 +1,12 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useProgress } from "@/hooks/use-progress";
+import { TrackCard } from "@/components/learning-paths/TrackCard";
 import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
 import sqlLogo from "@/images/logos/sql-logo.png";
 import {
   AlertTriangle,
   ArrowLeft,
-  ArrowRight,
   BarChart3,
   Boxes,
   Braces,
@@ -95,6 +95,14 @@ const sections: Section[] = [
         unlocked: true,
       },
       {
+        slug: "data-types",
+        title: "Data Types & Schemas",
+        blurb: "Numbers, strings, dates, JSON, NULLs — and designing schemas that stay clean.",
+        icon: Database,
+        modules: ["Numeric & text", "Dates & timestamps", "JSON / JSONB", "NULL semantics"],
+        unlocked: true,
+      },
+      {
         slug: "sql-querying-fundamentals",
         title: "SQL Querying Fundamentals",
         blurb: "SELECT, FROM, WHERE, ORDER BY, LIMIT — and the logical order SQL evaluates them.",
@@ -109,14 +117,7 @@ const sections: Section[] = [
         ],
         unlocked: true,
       },
-      {
-        slug: "data-types",
-        title: "Data Types & Schemas",
-        blurb: "Numbers, strings, dates, JSON, NULLs — and designing schemas that stay clean.",
-        icon: Database,
-        modules: ["Numeric & text", "Dates & timestamps", "JSON / JSONB", "NULL semantics"],
-        unlocked: true,
-      },
+
     ],
   },
   {
@@ -449,86 +450,31 @@ function SqlIndex() {
                   const isLocked = !t.unlocked;
 
                   const isFoundations = t.routeBase === "foundations" || !t.routeBase;
-                  const realTopic = isFoundations 
+                  const realTopic = isFoundations
                     ? FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS]
                     : QUERYING_TOPICS[t.slug as keyof typeof QUERYING_TOPICS];
-                  
+
                   const completedCount = realTopic
                     ? realTopic.lessons.filter(l => isCompleted(l.slug)).length
                     : 0;
                   const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
-                  const card = (
-                    <div
-                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
-                        isLocked
-                          ? "bg-card/20 opacity-80 grayscale"
-                          : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
-                      }`}
-                    >
-                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
-                        <Icon
-                          className={`size-10 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-
-                      <div className="flex flex-1 flex-col p-6 sm:p-8">
-                        <div className="flex items-center justify-between gap-4">
-                          <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                            {t.title}
-                          </h3>
-                          {isLocked && <LockKeyhole className="size-5 text-muted-foreground" />}
-                        </div>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                          {t.blurb}
-                        </p>
-
-                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
-                          {t.modules.map((m) => (
-                            <span
-                              key={m}
-                              className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
-                            >
-                              {m}
-                            </span>
-                          ))}
-                        </div>
-
-                        {!isLocked && (
-                          <div className="mt-6 flex items-center gap-2">
-                            <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
-                              <div 
-                                className="h-full bg-mint transition-all duration-500 ease-out" 
-                                style={{ width: `${(completedCount / totalCount) * 100}%` }}
-                              />
-                            </div>
-                            <span className="text-xs font-medium text-muted-foreground">
-                              {completedCount}/{totalCount} lessons complete
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {!isLocked && (
-                        <div className="absolute bottom-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-sm:hidden">
-                          <div className="grid size-8 place-items-center rounded-full bg-mint/10 text-mint">
-                            <ArrowRight className="size-4" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-
-                  if (isLocked) {
-                    return <div key={t.slug}>{card}</div>;
-                  }
-
                   const toPath = t.to || `/sql/${t.routeBase || "foundations"}/${t.slug}`;
                   return (
-                    <Link key={t.slug} to={toPath} className="block w-full outline-none">
-                      {card}
-                    </Link>
+                    <TrackCard
+                      key={t.slug}
+                      title={t.title}
+                      blurb={t.blurb}
+                      icon={Icon}
+                      isLocked={isLocked}
+                      lessons={t.modules.map((title, moduleIndex) => ({
+                        slug: `${t.slug}-${moduleIndex}`,
+                        title,
+                      }))}
+                      completedCount={completedCount}
+                      totalCount={totalCount}
+                      href={isLocked ? undefined : toPath}
+                    />
                   );
                 })}
               </div>
