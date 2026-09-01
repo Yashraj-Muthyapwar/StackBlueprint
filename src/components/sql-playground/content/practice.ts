@@ -153,6 +153,32 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return counts for all customers, customers with a city, and distinct countries.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-order-counts-by-status": {
+    id: "cycledepot-order-counts-by-status",
+    title: "Count orders by status",
+    prompt:
+      "Return one row for each order status and the number of orders with that status. Select status and COUNT(*) AS order_count, group by status, and sort alphabetically by status.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-order-counts-by-status",
+    starterSql: `-- Cycle Depot order-status summary.
+-- Return status and COUNT(*) AS order_count from orders.
+-- Group by status and order the result by status.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-order-statuses-with-at-least-ten-orders": {
+    id: "cycledepot-order-statuses-with-at-least-ten-orders",
+    title: "Find active order-status groups",
+    prompt:
+      "Return each order status with at least 10 Cycle Depot orders. Select status and COUNT(*) AS order_count, group by status, filter the groups with HAVING COUNT(*) >= 10, and sort from largest count to smallest.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-order-statuses-with-at-least-ten-orders",
+    starterSql: `-- Cycle Depot active order statuses.
+-- Return status and COUNT(*) AS order_count for statuses with at least 10 orders.
+-- Group by status, filter with HAVING, then sort largest count first.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
