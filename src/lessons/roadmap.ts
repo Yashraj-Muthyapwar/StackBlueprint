@@ -300,6 +300,7 @@ export interface RoadmapCategory {
   title: string;
   slug: string;
   icon: LucideIcon | string;
+  iconColor?: string;
   blurb: string;
   /** Optional grouping label shown above the patterns (e.g. "Arrays / Matrix"). */
   sectionTitle?: string;
@@ -342,6 +343,19 @@ const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPatte
   locked: true,
 });
 
+const unlockedAIPattern = (title: string, slug: string, blurb: string, lessonsList: string[]): RoadmapPattern => ({
+  title,
+  slug,
+  blurb,
+  lessons: lessonsList.map((lTitle, index) => ({
+    title: lTitle,
+    slug: `lesson-${index + 1}`,
+    path: `/ai-engineering/${slug}/lesson-${index + 1}`,
+    icon: Bot,
+  })),
+  locked: false,
+});
+
 export const roadmap: RoadmapCategory[] = [
   {
     title: "Patterns (DSA)",
@@ -362,7 +376,7 @@ export const roadmap: RoadmapCategory[] = [
     icon: sqlLogo,
     locked: false,
     overviewPath: "/sql",
-    blurb: "Learn SQL from database foundations through practical querying, with visual lessons and checked practice.",
+    blurb: "Master SQL: from database foundations to complex querying and performance tuning.",
     patterns: [],
     sections: [
       {
@@ -1326,22 +1340,138 @@ export const roadmap: RoadmapCategory[] = [
     title: "AI Engineering",
     slug: "ai-engineering",
     icon: Bot,
+    iconColor: "text-rose-500",
     locked: false,
     overviewPath: "/ai-engineering",
     blurb: "Learn the fundamentals of Large Language Models and build your own AI applications.",
     patterns: [],
     sections: [
       {
-        title: "AI Engineering Fundamentals",
+        title: "Foundations of Generative AI",
+        blurb: "Core concepts, evolution of LLMs, and running models locally or via APIs.",
         patterns: [
-          lockedPattern("1. Introduction to AI & LLMs", "intro-ai-llm", "Understand what Large Language Models are and how they work."),
-          lockedPattern("2. Prompt Engineering Basics", "prompt-engineering", "Learn the art of crafting effective prompts to get the best responses."),
-          lockedPattern("3. Working with LLM APIs", "llm-apis", "Integrate OpenAI and Anthropic APIs into your applications."),
-          lockedPattern("4. Embeddings & Vector Databases", "embeddings-vector-db", "Learn how text is represented as numbers and stored for semantic search."),
-          lockedPattern("5. Retrieval-Augmented Generation (RAG)", "rag", "Ground LLM responses in your own private data."),
-          lockedPattern("6. Fine-Tuning vs Prompting", "fine-tuning", "Know when to guide an existing model and when to train your own."),
-          lockedPattern("7. Orchestration with LangChain", "langchain", "Build complex workflows by chaining prompts, tools, and memory."),
-          lockedPattern("8. Deploying AI Applications", "deploying-ai", "Take your LLM application to production securely and reliably."),
+          unlockedAIPattern("Core Concepts & Evolution", "core-concepts", "From RNNs to the Transformer architecture, tokenization, and model pretraining.", [
+            "Introduction to Generative Modeling",
+            "Tokenization & Embeddings",
+            "The Transformer Architecture",
+            "Model Lifecycle & Pretraining"
+          ]),
+          unlockedAIPattern("Local Inference & API Integration", "local-inference", "Interact with APIs and run open-weight models locally with Ollama and vLLM.", [
+            "Interacting with Model APIs",
+            "Local Model Execution & Quantization"
+          ]),
+        ],
+      },
+      {
+        title: "Prompt Engineering & Context",
+        blurb: "Mastering in-context learning, structured outputs, and advanced reasoning.",
+        patterns: [
+          unlockedAIPattern("Prompt Crafting & Structured I/O", "prompt-crafting", "Personas, few-shot prompting, and enforcing strict JSON outputs.", [
+            "System Prompts & Personas",
+            "In-Context Learning Techniques",
+            "Structured Outputs & Schemas"
+          ]),
+          unlockedAIPattern("Advanced Reasoning Patterns", "advanced-reasoning", "Chain-of-Thought (CoT), Self-Consistency, and Tree of Thoughts (ToT).", [
+            "Chain-of-Thought (CoT)",
+            "Self-Consistency & Tree of Thoughts (ToT)"
+          ]),
+        ],
+      },
+      {
+        title: "Embeddings & RAG",
+        blurb: "Connecting LLMs to external knowledge using vector stores and advanced retrieval.",
+        patterns: [
+          unlockedAIPattern("Vector Stores & Ingestion Pipelines", "vector-stores", "Document chunking, vector embeddings, and similarity search in vector databases.", [
+            "Document Parsing & Chunking",
+            "Vector Embeddings & Similarity Search",
+            "Vector Databases"
+          ]),
+          unlockedAIPattern("Advanced RAG Strategies", "advanced-rag", "Hybrid search, cross-encoder re-ranking, query expansion, and GraphRAG.", [
+            "Hybrid Search & Re-ranking",
+            "Context Engineering & Retrieval Optimization",
+            "GraphRAG & Structured Knowledge"
+          ]),
+        ],
+      },
+      {
+        title: "Tool Use & Function Calling",
+        blurb: "Empowering LLMs to interact with external APIs, databases, and code environments.",
+        patterns: [
+          unlockedAIPattern("Interfacing with External Systems", "interfacing-systems", "Mechanics of function calling, REST API wrappers, and Model Context Protocol (MCP).", [
+            "Mechanics of Function Calling",
+            "API & Database Tooling",
+            "Model Context Protocol (MCP)"
+          ]),
+          unlockedAIPattern("Dynamic Execution Environments", "dynamic-execution", "Sandboxed code execution and semantic tool selection strategies.", [
+            "Code Generation & Sandboxed Execution",
+            "Tool Selection Strategies"
+          ]),
+        ],
+      },
+      {
+        title: "Single-Agent Architectures",
+        blurb: "Building autonomous agents with perception-action loops, memory, and state graphs.",
+        patterns: [
+          unlockedAIPattern("Agent Core Loops & Reasoning Patterns", "agent-core-loops", "ReAct framework, Plan-and-Solve, and iterative self-correction.", [
+            "The Agentic Loop & Autonomy",
+            "ReAct Framework",
+            "Plan-and-Solve & Stepwise Execution",
+            "Reflection & Self-Correction"
+          ]),
+          unlockedAIPattern("Memory & State Machines", "memory-state", "Agent memory architectures and deterministic control with LangGraph.", [
+            "Agent Memory Architecture",
+            "State Graphs & Deterministic Control"
+          ]),
+        ],
+      },
+      {
+        title: "Multi-Agent Systems",
+        blurb: "Scaling agents into collaborative swarms and orchestrating enterprise workflows.",
+        patterns: [
+          unlockedAIPattern("Multi-Agent Patterns & Protocols", "multi-agent-patterns", "Hierarchical networks, structured handoffs, and frameworks like CrewAI and AutoGen.", [
+            "Multi-Agent Architectures",
+            "Inter-Agent Communication",
+            "Multi-Agent Frameworks"
+          ]),
+          unlockedAIPattern("Scalability & Enterprise Workflows", "scalability-workflows", "Distributed execution and Human-in-the-Loop (HITL) oversight.", [
+            "Distributed Agent Execution",
+            "Human-in-the-Loop (HITL)"
+          ]),
+        ],
+      },
+      {
+        title: "Evaluation, Observability & Safety",
+        blurb: "Measuring agent performance, tracing execution, and implementing guardrails.",
+        patterns: [
+          unlockedAIPattern("Agent & RAG Evaluation", "agent-rag-eval", "LLM-as-a-Judge, the RAG Triad, and automated testing suites.", [
+            "Evaluation Metrics & Benchmarks",
+            "LLM-as-a-Judge & Automated Testing",
+            "Component-Level vs. End-to-End Evals"
+          ]),
+          unlockedAIPattern("Observability & Production Operations", "observability", "Tracing telemetry, semantic caching, and token budgeting.", [
+            "Tracing & Telemetry",
+            "Caching & Rate Limiting"
+          ]),
+          unlockedAIPattern("AI Safety & Defensive Engineering", "ai-safety", "Defending against prompt injection and implementing input/output guardrails.", [
+            "Security & Threat Vectors",
+            "Guardrails & Moderation"
+          ]),
+        ],
+      },
+      {
+        title: "Model Adaptation, Fine-Tuning & Serving",
+        blurb: "Customizing models with PEFT/LoRA and deploying them for high throughput.",
+        patterns: [
+          unlockedAIPattern("Fine-Tuning Foundations", "fine-tuning", "Supervised fine-tuning, QLoRA adapters, and preference alignment (DPO).", [
+            "When to Prompt, RAG, or Fine-Tune",
+            "Supervised Fine-Tuning (SFT)",
+            "Parameter-Efficient Fine-Tuning (PEFT)",
+            "Preference Alignment"
+          ]),
+          unlockedAIPattern("High-Throughput Production Serving", "production-serving", "Continuous batching with vLLM and edge deployment via WebGPU.", [
+            "Inference Engines",
+            "Edge Deployment & WebGPU"
+          ]),
         ],
       }
     ],
