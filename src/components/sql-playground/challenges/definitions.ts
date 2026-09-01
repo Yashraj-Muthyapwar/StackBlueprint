@@ -690,6 +690,99 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-order-counts-by-status",
+    version: 1,
+    title: "Count orders by status",
+    group: "aggregation",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a status summary for the Cycle Depot orders table.",
+    requirements: [
+      "Use the orders table.",
+      "Return status and COUNT(*) AS order_count.",
+      "Group the rows by status.",
+      "Sort the rows alphabetically by status.",
+      "Return exactly these columns: status and order_count.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Cycle Depot order-status summary.
+-- Return status and COUNT(*) AS order_count from orders.
+-- Group by status and order the result by status.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "A grouping column appears in both SELECT and GROUP BY.",
+      "COUNT(*) counts the orders inside each status group.",
+      "ORDER BY status makes the result match the requested alphabetical order.",
+    ],
+    solutionSql: {
+      postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+      duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+        duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+      },
+      requiredColumns: ["status", "order_count"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Status summary complete",
+      body: "Correct. You made one count for each order status instead of one count for the whole orders table.",
+      nextConcept: "Use HAVING to filter grouped results",
+    },
+  },
+  {
+    id: "cycle-depot-order-statuses-with-at-least-ten-orders",
+    version: 1,
+    title: "Find active order-status groups",
+    group: "aggregation",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Find Cycle Depot order statuses that have at least ten orders.",
+    requirements: [
+      "Use the orders table.",
+      "Return status and COUNT(*) AS order_count.",
+      "Group rows by status.",
+      "Use HAVING COUNT(*) >= 10 to keep qualifying groups.",
+      "Sort by order_count descending, then status ascending.",
+      "Return exactly these columns: status and order_count.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Cycle Depot active order statuses.
+-- Return status and COUNT(*) AS order_count for statuses with at least 10 orders.
+-- Group by status, filter with HAVING, then sort largest count first.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "GROUP BY status creates one count for each status.",
+      "COUNT(*) is an aggregate, so its condition belongs in HAVING.",
+      "Use ORDER BY order_count DESC, status ASC for the requested order.",
+    ],
+    solutionSql: {
+      postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+      duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+        duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+      },
+      requiredColumns: ["status", "order_count"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Active statuses found",
+      body: "Correct. You grouped the orders first, then used HAVING to keep only status groups with at least ten orders.",
+      nextConcept: "Use WHERE and HAVING together when a report needs both row and group filters.",
+    },
+  },
+  {
     id: "cycle-depot-revenue-by-category",
     version: 1,
     title: "Revenue by product category",
