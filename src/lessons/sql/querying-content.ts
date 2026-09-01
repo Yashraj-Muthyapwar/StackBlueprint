@@ -12,6 +12,7 @@ import nullThreeValuedLogicImg from "@/images/sql/querying/null-three-valued-log
 import patternMatchingImg from "@/images/sql/querying/pattern-matching-cycle-depot.png";
 import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
 import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
+import aggregateFunctionsImg from "@/images/sql/querying/aggregate-functions-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -1027,93 +1028,131 @@ const filteringFinalQuiz: LessonContent = {
 // ---------- 2.1 Aggregate Functions ----------
 const aggregateFns: LessonContent = {
   slug: "aggregate-functions",
-  title: "Aggregate Functions (COUNT / SUM / AVG / MIN / MAX)",
-  subtitle: "Streaming reducers, NULL skipping, and the COUNT(*) vs COUNT(col) asymmetry.",
+  title: "Aggregate Functions (COUNT / COUNT DISTINCT / SUM / AVG / MIN / MAX)",
+  subtitle: "Turn many Cycle Depot rows into one useful number, including distinct-value counts.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Turn rows into an answer",
       body: [
-        "Aggregate functions fold a row stream into a single value — every dashboard KPI depends on their NULL semantics being exact.",
-        "Internally each aggregate maintains a running accumulator per row. The key design decision: skip NULL inputs or count them?",
+        "A normal SELECT can return one row per customer or product. An aggregate function reads many rows and returns a summary instead.",
+        "Use COUNT when you need how many, SUM for a total, AVG for a typical value, and MIN or MAX for the smallest or largest value.",
       ],
+    },
+    {
+      kind: "image",
+      src: aggregateFunctionsImg,
+      alt: "A conceptual illustration of order, customer, and product records flowing into a single aggregation step, then producing count, distinct count, total, average, minimum, and maximum metrics.",
+      caption: "Conceptual view: aggregation collapses many records into summary metrics. The code and result tables below use the exact Cycle Depot schema and values.",
     },
     {
       kind: "animation",
       variant: "q-aggr",
-      caption: "Rows stream into an accumulator pill — NULLs slip past for SUM, are counted by COUNT(*).",
+      caption: "Cycle Depot rows collapse into one answer. The previews use real rows from the generated dataset; the result cards show the full-table totals.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "The smallest useful summary",
       body: [
-        "Row cards stream left; five accumulator pills (COUNT*, COUNT(amount), SUM, AVG, MAX) sit right, each starting at 0 or NULL.",
-        "Each row touches every pill. COUNT(*) ticks unconditionally; COUNT(amount) skips NULL; SUM adds; AVG updates running sum and non-null count; MAX glows on a new high.",
-        "Pills show final scalars. COUNT(*) = 5, COUNT(amount) = 4 — the asymmetry is shown explicitly.",
+        "Start with a question that needs one answer: how many orders has Cycle Depot received? COUNT(*) counts rows, so it is the safest default when you truly mean every row.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Five reducers, one scan",
-      code: `-- /* Phase 1: stream the orders table */
-SELECT
-  COUNT(*)         AS row_count,        -- /* counts every row, NULL or not */
-  COUNT(amount)    AS amount_count,     -- /* counts only non-NULL amounts */
-  SUM(amount)      AS revenue,          -- /* skips NULLs silently */
-  AVG(amount)      AS mean_ticket,      -- /* = SUM/COUNT(amount), NOT /COUNT(*) */
-  MAX(amount)      AS top_ticket,       -- /* monotone running max */
-  COUNT(DISTINCT customer_id) AS unique_customers   -- /* hash-set sized agg */
-FROM   orders;
-
--- /* FILTER clause — conditional aggregation in a single pass */
-SELECT
-  COUNT(*)                              AS total,
-  COUNT(*) FILTER (WHERE status='paid') AS paid_rows,
-  SUM(amount) FILTER (WHERE status='paid') AS paid_revenue   -- /* no need for CASE WHEN */
-FROM   orders;`,
+      caption: "One row, one answer: total orders",
+      code: `SELECT COUNT(*) AS order_count
+FROM orders;`,
     },
     {
       kind: "table",
-      caption: "Aggregate semantics under NULL",
-      headers: ["Function", "Counts NULL?", "Returns when all NULL"],
-      rows: [
-        ["COUNT(*)", "Yes", "0"],
-        ["COUNT(col)", "No", "0"],
-        ["SUM(col)", "No", "NULL"],
-        ["AVG(col)", "No", "NULL"],
-        ["MIN/MAX(col)", "No", "NULL"],
+      caption: "Result in the current Cycle Depot dataset",
+      headers: ["order_count"],
+      rows: [["142"]],
+    },
+    {
+      kind: "prose",
+      heading: "Count rows, values, or unique values",
+      body: [
+        "COUNT(*) counts every row. COUNT(column) counts only rows where that column is not NULL. COUNT(DISTINCT column) first removes repeated non-NULL values, then counts what remains.",
+        "For example, the customer table has 60 rows, 55 filled-in cities, and customers from 6 different countries.",
       ],
     },
     {
+      kind: "code",
+      language: "sql",
+      caption: "Three different counts from the same customer table",
+      code: `SELECT
+  COUNT(*)                AS customer_count,
+  COUNT(city)             AS customers_with_city,
+  COUNT(DISTINCT country) AS country_count
+FROM customers;`,
+    },
+    {
       kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
+      caption: "COUNT(DISTINCT country) counts USA once, UK once, and so on, not once per customer",
+      headers: ["customer_count", "customers_with_city", "country_count"],
+      rows: [["60", "55", "6"]],
+    },
+    {
+      kind: "prose",
+      heading: "Summarise a numeric column",
+      body: [
+        "SUM adds values together. AVG calculates their arithmetic mean. MIN and MAX find the endpoints. Like COUNT(column), these functions ignore NULL inputs.",
+        "The products table has a price for every product, so it is a clean place to compare all four functions.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A catalogue-price summary",
+      code: `SELECT
+  SUM(price)            AS total_catalogue_price,
+  ROUND(AVG(price), 2)  AS average_price,
+  MIN(price)            AS lowest_price,
+  MAX(price)            AS highest_price
+FROM products;`,
+    },
+    {
+      kind: "table",
+      caption: "Result in the current Cycle Depot dataset",
+      headers: ["total_catalogue_price", "average_price", "lowest_price", "highest_price"],
+      rows: [["32515.00", "1083.83", "28.00", "5400.00"]],
+    },
+    {
+      kind: "table",
+      caption: "Choose the aggregate that matches the question",
+      headers: ["Function", "Use it when you need", "Cycle Depot example"],
       rows: [
-        ["Warm-up [1141]", "User Activity for the Past 30 Days I", "Pure COUNT DISTINCT syntactic validation."],
-        ["Drill [1075]", "Project Employees I", "AVG with rounding — pure aggregate implementation."],
-        ["Challenge [1731]", "The Number of Employees Which Report to Each Employee", "Aggregation fused with self-join + grouping."],
+        ["COUNT(*)", "Every row", "How many orders exist?"],
+        ["COUNT(city)", "Non-NULL values", "How many customers supplied a city?"],
+        ["COUNT(DISTINCT country)", "Unique non-NULL values", "How many customer countries are represented?"],
+        ["SUM(price)", "A total", "What is the combined catalogue price?"],
+        ["AVG(price)", "An average", "What is the typical product price?"],
+        ["MIN / MAX(price)", "The lowest or highest value", "What are the cheapest and most expensive products?"],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — AVG divides by non-NULL count, not row count",
-      body: "AVG(amount) = SUM(amount) / COUNT(amount). If half the rows are NULL, that result is double SUM/COUNT(*). Agree with stakeholders which denominator is correct.",
+      title: "COUNT(*) and COUNT(column) are not interchangeable",
+      body: "Use COUNT(*) when the question is about rows. Use COUNT(column) only when you intentionally want to ignore missing values. COUNT(DISTINCT column) also ignores NULL and does not count repeated values more than once.",
     },
     {
-      kind: "callout",
-      tone: "info",
-      title: "Memory and spill cost",
-      body: "SUM/MIN/MAX run in O(1) memory. COUNT(DISTINCT col) builds a hash set sized to cardinality — it spills to disk above work_mem. Use the `hll` extension for approximate counts on high-cardinality columns.",
+      kind: "playground-practice",
+      title: "Build a customer coverage summary",
+      prompt: "Return one Cycle Depot summary row with the number of customers, the number with a city, and the number of distinct countries. Use COUNT(*), COUNT(city), and COUNT(DISTINCT country).",
+      tables: ["customers"],
+      successCheck: "One row with customer_count = 60, customers_with_city = 55, and country_count = 6.",
+      href: "/sql-playground?practice=cycledepot-customer-coverage-summary",
     },
     {
       kind: "takeaways",
       items: [
-        "COUNT(*) counts rows; COUNT(col) counts non-NULL values.",
-        "SUM/AVG/MIN/MAX silently skip NULL inputs.",
-        "FILTER (WHERE …) is cleaner than CASE inside aggregates.",
-        "COUNT(DISTINCT) is memory-heavy — consider HLL above 10M distinct keys.",
+        "Aggregates turn many rows into one summary value.",
+        "COUNT(*) counts rows, while COUNT(column) skips NULL values.",
+        "COUNT(DISTINCT column) counts each non-NULL value once.",
+        "SUM, AVG, MIN, and MAX summarise numeric values and skip NULL inputs.",
       ],
     },
   ],
