@@ -347,12 +347,15 @@ const unlockedAIPattern = (title: string, slug: string, blurb: string, lessonsLi
   title,
   slug,
   blurb,
-  lessons: lessonsList.map((lTitle, index) => ({
-    title: lTitle,
-    slug: `lesson-${index + 1}`,
-    path: `/ai-engineering/${slug}/lesson-${index + 1}`,
-    icon: Bot,
-  })),
+  lessons: lessonsList.map((lTitle) => {
+    const lSlug = lTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    return {
+      title: lTitle,
+      slug: lSlug,
+      path: `/ai-engineering/${slug}/${lSlug}`,
+      icon: Bot,
+    };
+  }),
   locked: false,
 });
 
