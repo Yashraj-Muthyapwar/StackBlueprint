@@ -59,6 +59,7 @@ export type Section =
         | "sql-calculations-aliases"
         | "sql-operators"
         | "where-filtering"
+        | "case-when"
         | "q-bool"
         | "q-range"
         | "q-like"
