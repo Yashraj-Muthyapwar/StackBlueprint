@@ -14,6 +14,7 @@ import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-de
 import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
 import aggregateFunctionsImg from "@/images/sql/querying/aggregate-functions-cycle-depot.png";
 import groupByImg from "@/images/sql/querying/group-by-cycle-depot.png";
+import havingImg from "@/images/sql/querying/having-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -1368,95 +1369,116 @@ ORDER BY 1, 2;`,
 const havingLesson: LessonContent = {
   slug: "having",
   title: "Evaluation Filtering (HAVING)",
-  subtitle: "HAVING filters whole buckets after aggregation — WHERE filters individual rows before.",
+  subtitle: "Use HAVING to keep or remove whole groups after an aggregate has calculated them.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Filter groups after you count them",
       body: [
-        "WHERE filters rows before bucketing; HAVING filters buckets after aggregation. Confusing them is the most common cause of slow GROUP BY queries.",
-        "Think of it as two gates on a conveyor: WHERE rejects individual items before pallets are packed; HAVING rejects entire pallets after packing.",
+        "WHERE and HAVING both remove data, but they work on different things. WHERE checks individual source rows. HAVING checks the groups created by GROUP BY after an aggregate such as COUNT(*) or SUM(...) has produced a value for each group.",
+        "Use HAVING when the question sounds like: which groups have at least this many rows, enough revenue, or an average above a target?",
+      ],
+    },
+    {
+      kind: "image",
+      src: havingImg,
+      alt: "Cycle Depot orders flowing from a WHERE channel equals web row filter, through GROUP BY status summaries, to a HAVING count threshold that keeps delivered, shipped, and pending groups.",
+      caption: "WHERE removes individual non-web orders first. GROUP BY counts the surviving web orders by status. HAVING then keeps only status groups with ten or more orders.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep order-status groups with at least ten orders",
+      code: `SELECT
+  status,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY status
+HAVING COUNT(*) >= 10
+ORDER BY order_count DESC, status ASC;`,
+    },
+    {
+      kind: "table",
+      caption: "Result in the current Cycle Depot dataset",
+      headers: ["status", "order_count"],
+      rows: [
+        ["delivered", "84"],
+        ["shipped", "32"],
+        ["pending", "13"],
       ],
     },
     {
       kind: "animation",
       variant: "q-having",
-      caption: "Pre-aggregation rows pass WHERE; post-aggregation buckets pass HAVING.",
+      caption: "WHERE filters rows first. HAVING filters the finished summaries.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "Put each condition in the right clause",
       body: [
-        "Left to right: raw rows → WHERE gate → GROUP BY buckets → HAVING gate → result viewport.",
-        "Rows pass the WHERE gate; survivors bucket and collapse. Each bucket card then hits the HAVING gate — failures dim and slide off; survivors reach the viewport.",
-        "Viewport holds buckets that passed the HAVING threshold; a badge confirms HAVING ran after aggregation.",
+        "Ask what your condition describes. If it describes one order, place it in WHERE. If it describes a count, sum, average, minimum, or maximum for an entire group, place it in HAVING.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "A quick decision guide",
+      headers: ["Condition asks about", "Use", "Cycle Depot example"],
+      rows: [
+        ["One order row", "WHERE", "channel = 'web'"],
+        ["A completed group", "HAVING", "COUNT(*) >= 10"],
+        ["A group column value", "WHERE, usually", "status <> 'cancelled'"],
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "WHERE pre-filters rows; HAVING post-filters buckets",
-      code: `-- /* Phase 2a: WHERE drops rows BEFORE aggregation */
-SELECT region,
-       SUM(amount) AS revenue
-FROM   orders
-WHERE  status = 'paid'                 -- /* per-row predicate runs first */
-GROUP  BY region                       -- /* buckets formed from survivors */
-HAVING SUM(amount) > 10000             -- /* Phase 2b: bucket-level predicate */
-ORDER  BY revenue DESC;
-
--- /* ANTI-PATTERN: using HAVING to filter rows the engine could have rejected earlier */
-SELECT region, SUM(amount)
-FROM   orders
-GROUP  BY region
-HAVING region IN ('APAC','EMEA');      -- /* WRONG: this should be in WHERE */
-
--- /* Same query, optimised — push the predicate to WHERE */
-SELECT region, SUM(amount)
-FROM   orders
-WHERE  region IN ('APAC','EMEA')       -- /* filter rows before bucketing */
-GROUP  BY region;`,
+      caption: "First keep web orders, then keep web-status groups with ten or more orders",
+      code: `SELECT
+  status,
+  COUNT(*) AS order_count
+FROM orders
+WHERE channel = 'web'
+GROUP BY status
+HAVING COUNT(*) >= 10
+ORDER BY order_count DESC, status ASC;`,
     },
     {
       kind: "table",
-      caption: "WHERE vs HAVING decision matrix",
-      headers: ["Predicate references", "Goes in"],
+      caption: "The web channel has three qualifying status groups",
+      headers: ["status", "order_count"],
       rows: [
-        ["Only base / joined columns", "WHERE"],
-        ["An aggregate (SUM, COUNT, …)", "HAVING"],
-        ["A grouping column", "WHERE (preferred) or HAVING"],
-        ["A window function", "Subquery / CTE, then WHERE"],
-      ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [596]", "Classes More Than 5 Students", "Basic HAVING COUNT > N syntactic validation."],
-        ["Drill [1050]", "Actors and Directors Who Cooperated At Least Three Times", "Pure HAVING on COUNT after GROUP BY pair."],
-        ["Challenge [1112]", "Highest Grade For Each Student", "HAVING fused with subqueries and window-style filtering."],
+        ["delivered", "51"],
+        ["shipped", "13"],
+        ["pending", "10"],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — non-aggregate predicates in HAVING",
-      body: "`HAVING region = 'APAC'` is legal but wasteful — the engine builds all buckets then discards most. Move it to WHERE so the planner prunes rows before bucketing and can use an index.",
+      title: "COUNT(*) cannot go in WHERE",
+      body: "`WHERE COUNT(*) >= 10` is invalid because COUNT(*) does not exist until after GROUP BY has formed the groups. Put aggregate conditions in HAVING. Repeat the aggregate expression instead of relying on its SELECT alias for portable SQL.",
     },
     {
       kind: "callout",
-      tone: "info",
-      title: "Push early, aggregate less",
-      body: "Moving predicates from HAVING to WHERE shrinks the row stream into HashAggregate, often by orders of magnitude. Verify in EXPLAIN ANALYZE: the rows-removed-by-filter counter on the scan node should jump after the rewrite.",
+      tone: "tip",
+      title: "Filter rows as early as possible",
+      body: "Keep row-level conditions in WHERE even when a database also accepts them in HAVING. Filtering web orders before grouping means the database has fewer rows to aggregate and can more easily use an index when one is available.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Find active order-status groups",
+      prompt: "Return each Cycle Depot order status with at least ten orders. Select status and COUNT(*) AS order_count, group by status, filter the groups with HAVING COUNT(*) >= 10, and sort from largest count to smallest.",
+      tables: ["orders"],
+      successCheck: "Three rows: delivered 84, shipped 32, and pending 13.",
+      href: "/sql-playground?practice=cycledepot-order-statuses-with-at-least-ten-orders",
     },
     {
       kind: "takeaways",
       items: [
-        "WHERE = per-row pre-aggregation filter.",
-        "HAVING = per-bucket post-aggregation filter.",
-        "Push non-aggregate predicates to WHERE to enable index use.",
-        "EXPLAIN ANALYZE reveals whether the rewrite shrank the row stream.",
+        "WHERE filters individual rows before GROUP BY creates groups.",
+        "HAVING filters completed groups after an aggregate has calculated each group value.",
+        "Use HAVING for aggregate conditions such as COUNT(*) >= 10 and SUM(...) > a target.",
+        "Keep row-level conditions in WHERE to reduce the rows that must be grouped.",
       ],
     },
   ],
