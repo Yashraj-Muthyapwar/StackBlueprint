@@ -1,4 +1,4 @@
-import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
+import type { Row, Stage, RowState } from "@/components/lesson/MultiStage";
 import { pass, r, st } from "../animation-shared";
 
 // ----- q-aggr: Cycle Depot aggregates -----
@@ -139,20 +139,6 @@ const STATUS_CHANNEL_PREVIEW: Row[] = [
   r("delivered-web", "delivered", "web", 51),
 ];
 
-const bucketPanel = (groups: { k: string; sum: number }[]) => (
-  <div className="grid gap-2">
-    {groups.map((g) => (
-      <div
-        key={g.k}
-        className="flex items-center justify-between rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]"
-      >
-        <span className="text-violet">{g.k}</span>
-        <span className="text-mint">Σ = ${g.sum}</span>
-      </div>
-    ))}
-  </div>
-);
-
 const splitPanel = () => (
   <div className="grid gap-2">
     <div className="rounded-md border border-mint/40 bg-mint/10 px-3 py-2 font-mono text-[12px]">
@@ -250,7 +236,7 @@ export const grpStages: Stage[] = [
   },
 ];
 
-// ----- q-having: WHERE only, GROUP BY, HAVING, combined -----
+// Shared compact rows retained for the subquery animation family.
 export const ORD_H: Row[] = [
   r(1, 1, "Ada", 45, "paid"),
   r(2, 2, "Linus", 120, "paid"),
@@ -261,136 +247,85 @@ export const ORD_H: Row[] = [
 ];
 export const HCOLS = ["id", "customer", "total", "status"];
 
+// ----- q-having: Cycle Depot row filters and group filters -----
+const HAVING_ORDER_PREVIEW: Row[] = [
+  r("order-1", 1, 1, "shipped", "store"),
+  r("order-2", 2, 1, "delivered", "web"),
+  r("order-3", 3, 1, "delivered", "web"),
+  r("order-5", 5, 2, "delivered", "store"),
+  r("order-9", 9, 5, "shipped", "web"),
+  r("order-10", 10, 6, "delivered", "web"),
+];
+const HAVING_ORDER_COLS = ["id", "customer_id", "status", "channel"];
+
+const WEB_STATUS_COUNTS: Row[] = [
+  r("cancelled", "cancelled", 8),
+  r("delivered", "delivered", 51),
+  r("pending", "pending", 10),
+  r("returned", "returned", 4),
+  r("shipped", "shipped", 13),
+];
+
 export const havingStages: Stage[] = [
   {
-    name: "WHERE filters rows",
-    sql: ["SELECT id, customer, total, status", "FROM   orders", "WHERE  status = 'paid'"],
-    table: { name: "orders", cols: HCOLS, rows: ORD_H },
+    name: "WHERE filters individual order rows",
+    canvasMinHeight: 500,
+    sql: ["SELECT id, status, channel", "FROM   orders", "WHERE  channel = 'web'"],
+    table: { name: "orders preview", cols: HAVING_ORDER_COLS, rows: HAVING_ORDER_PREVIEW },
     steps: [
       st(
         [2],
-        pass((r) => r.cells[3] === "paid"),
-        "WHERE runs BEFORE grouping — operates on raw rows. Grace's pending order drops here.",
+        pass((row) => row.cells[3] === "web"),
+        "WHERE runs on individual rows. The web orders stay; the store orders are removed before any groups exist.",
         { highlightCols: [3] },
       ),
     ],
   },
   {
-    name: "GROUP BY collapses",
+    name: "GROUP BY creates web-status summaries",
     sql: [
-      "SELECT customer, SUM(total) AS revenue",
+      "SELECT status, COUNT(*) AS order_count",
       "FROM   orders",
-      "WHERE  status = 'paid'",
-      "GROUP  BY customer",
+      "WHERE  channel = 'web'",
+      "GROUP  BY status",
     ],
-    table: { name: "orders", cols: HCOLS, rows: ORD_H },
+    table: { name: "orders preview", cols: HAVING_ORDER_COLS, rows: HAVING_ORDER_PREVIEW },
     steps: [
       st(
         [3],
-        pass((r) => r.cells[3] === "paid"),
-        "Surviving rows bucket by customer. Aggregates compute per bucket.",
-        {
-          highlightCols: [1],
-          side: bucketPanel([
-            { k: "Ada", sum: 125 },
-            { k: "Linus", sum: 195 },
-            { k: "Bob", sum: 50 },
-          ]),
-        },
+        pass((row) => row.cells[3] === "web"),
+        "GROUP BY runs after WHERE. It turns the surviving web orders into one count for each status.",
+        { highlightCols: [2] },
       ),
       st(
         [0, 3],
         "added",
-        "Final projection: only customer and SUM(total) AS revenue leave the operator — 3 rows.",
+        "The full Cycle Depot dataset produces five web-status groups. These are now summaries, not individual orders.",
         {
-          rowsOverride: [r("ada", "Ada", 125), r("lin", "Linus", 195), r("bob", "Bob", 50)],
-          colsOverride: ["customer", "revenue"],
+          rowsOverride: WEB_STATUS_COUNTS,
+          colsOverride: ["status", "order_count"],
+          highlightCols: [0, 1],
           noteTone: "violet",
         },
       ),
     ],
   },
   {
-    name: "HAVING filters GROUPS",
+    name: "HAVING filters the completed groups",
     sql: [
-      "SELECT customer, SUM(total) AS revenue",
+      "SELECT status, COUNT(*) AS order_count",
       "FROM   orders",
-      "WHERE  status = 'paid'",
-      "GROUP  BY customer",
-      "HAVING SUM(total) >= 100",
+      "WHERE  channel = 'web'",
+      "GROUP  BY status",
+      "HAVING COUNT(*) >= 10",
     ],
-    table: { name: "orders", cols: HCOLS, rows: ORD_H },
+    table: { name: "web-status groups", cols: ["status", "order_count"], rows: WEB_STATUS_COUNTS },
     steps: [
       st(
         [4],
-        pass((r) => r.cells[3] === "paid"),
-        "HAVING is WHERE for groups — runs AFTER aggregation. Bob's $50 bucket falls below threshold and is dropped.",
-        {
-          side: bucketPanel([
-            { k: "Ada ✓", sum: 125 },
-            { k: "Linus ✓", sum: 195 },
-            { k: "Bob ✗", sum: 50 },
-          ]),
-        },
-      ),
-      st([0, 4], "added", "Result projection — exactly the columns named in SELECT.", {
-        rowsOverride: [r("ada", "Ada", 125), r("lin", "Linus", 195)],
-        colsOverride: ["customer", "revenue"],
-        noteTone: "violet",
-      }),
-    ],
-  },
-  {
-    name: "Logical order: FROM → WHERE → GROUP BY → HAVING → SELECT",
-    sql: [
-      "SELECT customer, SUM(total) AS revenue  -- 5",
-      "FROM   orders                           -- 1",
-      "WHERE  status = 'paid'                  -- 2",
-      "GROUP  BY customer                      -- 3",
-      "HAVING SUM(total) >= 100                -- 4",
-    ],
-    table: { name: "orders", cols: HCOLS, rows: ORD_H },
-    steps: [
-      st([1], "pending", "Step 1 — FROM resolves the source relation.", { noteTone: "neutral" }),
-      st(
-        [2],
-        pass((r) => r.cells[3] === "paid"),
-        "Step 2 — WHERE filters raw rows. Grace (pending) drops.",
-        { highlightCols: [3] },
-      ),
-      st(
-        [3],
-        pass((r) => r.cells[3] === "paid"),
-        "Step 3 — GROUP BY hashes survivors by customer (Ada, Linus, Bob).",
-        {
-          highlightCols: [1],
-          side: bucketPanel([
-            { k: "Ada", sum: 125 },
-            { k: "Linus", sum: 195 },
-            { k: "Bob", sum: 50 },
-          ]),
-        },
-      ),
-      st(
-        [4],
-        pass((r) => r.cells[3] === "paid" && r.cells[1] !== "Bob"),
-        "Step 4 — HAVING drops Bob's bucket (50 < 100).",
-        {
-          side: bucketPanel([
-            { k: "Ada ✓", sum: 125 },
-            { k: "Linus ✓", sum: 195 },
-          ]),
-        },
-      ),
-      st(
-        [0],
-        "added",
-        "Step 5 — SELECT runs LAST. Only the projected columns reach the client; that's why aliases declared here are invisible to WHERE / GROUP BY.",
-        {
-          rowsOverride: [r("ada", "Ada", 125), r("lin", "Linus", 195)],
-          colsOverride: ["customer", "revenue"],
-          noteTone: "violet",
-        },
+        (row) => (Number(row.cells[1]) >= 10 ? ("kept" as RowState) : ("dropped" as RowState)),
+        "HAVING runs after COUNT(*). It keeps the delivered, shipped, and pending groups, and removes the smaller cancelled and returned groups.",
+        { highlightCols: [1] },
       ),
     ],
   },
