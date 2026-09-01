@@ -43,6 +43,7 @@ const sumPanel = (label: string, value: string) => (
 export const aggrStages: Stage[] = [
   {
     name: "COUNT(*) counts rows",
+    canvasMinHeight: 570,
     sql: ["SELECT COUNT(*) AS order_count", "FROM   orders"],
     table: { name: "orders preview", cols: ORDER_COLS, rows: ORDER_PREVIEW },
     steps: [
@@ -157,6 +158,7 @@ const countPanel = (groups: { key: string; count: number }[]) => (
 export const grpStages: Stage[] = [
   {
     name: "One total has no groups",
+    canvasMinHeight: 536,
     sql: ["SELECT COUNT(*) AS order_count", "FROM   orders"],
     table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
@@ -189,13 +191,6 @@ export const grpStages: Stage[] = [
           rowsOverride: STATUS_COUNTS,
           colsOverride: ["status", "order_count"],
           highlightCols: [0, 1],
-          side: countPanel([
-            { key: "delivered", count: 84 },
-            { key: "shipped", count: 32 },
-            { key: "pending", count: 13 },
-            { key: "cancelled", count: 9 },
-            { key: "returned", count: 4 },
-          ]),
         },
       ),
     ],
