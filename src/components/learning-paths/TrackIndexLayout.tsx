@@ -7,6 +7,8 @@ export interface TrackIndexLayoutProps {
   blurb?: string;
   logoSrc?: string;
   logoAlt?: string;
+  icon?: any;
+  iconColor?: string;
   sections?: any[];
   patterns?: any[];
   basePath: string;
@@ -17,6 +19,8 @@ export function TrackIndexLayout({
   blurb,
   logoSrc,
   logoAlt,
+  icon: IconComponent,
+  iconColor,
   sections,
   patterns,
   basePath,
@@ -36,6 +40,11 @@ export function TrackIndexLayout({
                 alt={logoAlt || "Logo"}
                 className="h-32 w-auto object-contain drop-shadow-sm lg:h-40 lg:w-auto"
               />
+            </div>
+          )}
+          {IconComponent && (
+            <div className="mx-auto mb-6 flex justify-center">
+              <IconComponent className={`size-16 drop-shadow-sm lg:size-20 ${iconColor || ""}`} strokeWidth={1.5} />
             </div>
           )}
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
@@ -62,7 +71,7 @@ export function TrackIndexLayout({
                     <div className="grid size-8 shrink-0 place-items-center rounded-full bg-[#E2E8F0] dark:bg-border text-sm font-bold text-foreground">
                       {secIdx + 1}
                     </div>
-                    <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                    <h2 className="text-xl font-bold leading-snug tracking-tight text-foreground sm:text-[22px]">
                       {heading}
                     </h2>
                   </div>
