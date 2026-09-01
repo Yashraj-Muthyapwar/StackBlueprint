@@ -103,8 +103,6 @@ const GROUP_ORDER_PREVIEW: Row[] = [
   r("order-1", 1, 1, "shipped"),
   r("order-2", 2, 1, "delivered"),
   r("order-3", 3, 1, "delivered"),
-  r("order-4", 4, 1, "delivered"),
-  r("order-5", 5, 2, "delivered"),
   r("order-6", 6, 2, "shipped"),
 ];
 const GROUP_ORDER_COLS = ["id", "customer_id", "status"];
@@ -117,14 +115,28 @@ const STATUS_COUNTS: Row[] = [
   r("shipped", "shipped", 32),
 ];
 
+const DISTINCT_STATUSES: Row[] = [
+  r("cancelled", "cancelled"),
+  r("delivered", "delivered"),
+  r("pending", "pending"),
+  r("returned", "returned"),
+  r("shipped", "shipped"),
+];
+
+const GROUP_CUSTOMER_PREVIEW: Row[] = [
+  r("customer-1", 1, "Zane Novak", "Austin", "USA"),
+  r("customer-2", 2, "Boris Alvarez", "Bristol", "UK"),
+  r("customer-5", 5, "Omar Doyle", null, "Germany"),
+  r("customer-6", 6, "Sami Mensah", "Portland", "USA"),
+];
+const GROUP_CUSTOMER_COLS = ["id", "name", "city", "country"];
+
 const STATUS_CHANNEL_PREVIEW: Row[] = [
   r("cancelled-store", "cancelled", "store", 1),
   r("cancelled-web", "cancelled", "web", 8),
   r("delivered-partner", "delivered", "partner", 8),
   r("delivered-store", "delivered", "store", 25),
   r("delivered-web", "delivered", "web", 51),
-  r("pending-partner", "pending", "partner", 1),
-  r("pending-store", "pending", "store", 2),
 ];
 
 const bucketPanel = (groups: { k: string; sum: number }[]) => (
@@ -141,57 +153,85 @@ const bucketPanel = (groups: { k: string; sum: number }[]) => (
   </div>
 );
 
-const countPanel = (groups: { key: string; count: number }[]) => (
+const splitPanel = () => (
   <div className="grid gap-2">
-    {groups.map((group) => (
-      <div
-        key={group.key}
-        className="flex items-center justify-between rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]"
-      >
-        <span className="text-violet">{group.key}</span>
-        <span className="text-mint">{group.count} orders</span>
-      </div>
-    ))}
+    <div className="rounded-md border border-mint/40 bg-mint/10 px-3 py-2 font-mono text-[12px]">
+      <div className="text-mint">delivered bucket</div>
+      <div className="mt-1 text-foreground/80">orders 2, 3</div>
+    </div>
+    <div className="rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]">
+      <div className="text-violet">shipped bucket</div>
+      <div className="mt-1 text-foreground/80">orders 1, 6</div>
+    </div>
+  </div>
+);
+
+const nullGroupPanel = () => (
+  <div className="rounded-md border border-amber/40 bg-amber/10 px-3 py-2 font-mono text-[12px]">
+    <div className="text-amber">NULL city bucket</div>
+    <div className="mt-1 text-foreground/80">5 customers in the full dataset</div>
   </div>
 );
 
 export const grpStages: Stage[] = [
   {
-    name: "One total has no groups",
-    canvasMinHeight: 536,
-    sql: ["SELECT COUNT(*) AS order_count", "FROM   orders"],
+    name: "Explore possible groups with DISTINCT",
+    canvasMinHeight: 480,
+    sql: ["SELECT DISTINCT status", "FROM   orders", "ORDER  BY status"],
     table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
       st(
-        [0],
+        [0, 2],
         () => "kept" as RowState,
-        "COUNT(*) with no GROUP BY treats all 142 Cycle Depot orders as one collection, so it returns one summary row.",
+        "Before grouping, DISTINCT is a quick way to inspect the group values. The full orders table has five statuses.",
         {
-          side: countPanel([{ key: "all orders", count: 142 }]),
+          rowsOverride: DISTINCT_STATUSES,
+          colsOverride: ["status"],
+          highlightCols: [0],
         },
       ),
     ],
   },
   {
-    name: "GROUP BY status creates buckets",
-    sql: ["SELECT status, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status", "ORDER  BY status"],
+    name: "Split rows into status buckets",
+    sql: ["SELECT status, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status"],
     table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
       st(
         [2],
         () => "kept" as RowState,
-        "GROUP BY status puts delivered rows together, shipped rows together, and does the same for every other status.",
-        { highlightCols: [2] },
+        "Split: GROUP BY status places rows with the same status in the same bucket. This four-row preview shows the delivered and shipped buckets only.",
+        { highlightCols: [2], side: splitPanel() },
       ),
+    ],
+  },
+  {
+    name: "Apply COUNT and combine the results",
+    sql: ["SELECT status, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status", "ORDER  BY status"],
+    table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
+    steps: [
       st(
         [0, 2, 3],
         () => "added" as RowState,
-        "COUNT(*) now runs once per status bucket. The full dataset produces five result rows, one for each status.",
+        "Apply and combine: COUNT(*) runs once inside each bucket, then SQL combines those answers into one summary table with one row per status.",
         {
           rowsOverride: STATUS_COUNTS,
           colsOverride: ["status", "order_count"],
           highlightCols: [0, 1],
         },
+      ),
+    ],
+  },
+  {
+    name: "NULL values form one bucket",
+    sql: ["SELECT city, COUNT(*) AS customer_count", "FROM   customers", "GROUP  BY city"],
+    table: { name: "customers preview", cols: GROUP_CUSTOMER_COLS, rows: GROUP_CUSTOMER_PREVIEW },
+    steps: [
+      st(
+        [2],
+        () => "kept" as RowState,
+        "A NULL grouping value is not discarded. All rows with a missing city share one NULL city bucket. A city with zero customer rows would not appear at all.",
+        { highlightCols: [2], side: nullGroupPanel(), noteTone: "amber" },
       ),
     ],
   },
@@ -203,7 +243,7 @@ export const grpStages: Stage[] = [
       st(
         [2],
         () => "kept" as RowState,
-        "GROUP BY status, channel creates one group for every distinct status-and-channel pair. Cycle Depot has 12 such pairs; this is the first seven after sorting.",
+        "status and channel both identify each group, so both appear in SELECT and GROUP BY. Cycle Depot has 12 status-and-channel pairs; this is the first five after sorting.",
         { highlightCols: [0, 1] },
       ),
     ],
