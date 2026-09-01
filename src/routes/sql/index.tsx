@@ -112,6 +112,7 @@ const sections: Section[] = [
           "Comments, calculations & aliases",
           "SQL operators",
           "WHERE filters",
+          "CASE WHEN: labels & buckets",
           "DISTINCT, ORDER BY & LIMIT",
           "Logical query order",
         ],
