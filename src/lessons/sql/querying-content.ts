@@ -13,6 +13,7 @@ import patternMatchingImg from "@/images/sql/querying/pattern-matching-cycle-dep
 import rangeSetFiltersImg from "@/images/sql/querying/range-set-filters-cycle-depot.png";
 import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
 import aggregateFunctionsImg from "@/images/sql/querying/aggregate-functions-cycle-depot.png";
+import groupByImg from "@/images/sql/querying/group-by-cycle-depot.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -1158,99 +1159,125 @@ FROM products;`,
   ],
 };
 
-// ---------- 2.2 The Collapse Engine (GROUP BY) ----------
+// ---------- 2.2 GROUP BY ----------
 const groupByLesson: LessonContent = {
   slug: "group-by",
-  title: "The Collapse Engine (GROUP BY)",
-  subtitle: "Hashing rows into per-key buckets and reducing each bucket to one output row.",
+  title: "GROUP BY: One Summary per Group",
+  subtitle: "Organise Cycle Depot orders into groups, then return one useful summary row for each group.",
   sections: [
     {
       kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
+      heading: "Turn one total into a breakdown",
       body: [
-        "GROUP BY turns transactional rows into analytical summaries — every cohort, funnel, and DAU metric starts here.",
-        "HashAggregate works like a `defaultdict(list)`: each row hashes into a bucket, then each bucket is reduced to one output row.",
+        "Without GROUP BY, an aggregate such as COUNT(*) returns one answer for the whole table. GROUP BY first separates the rows into groups that share the same value, then calculates one answer inside each group.",
+        "For example, Cycle Depot has 142 orders in total. Grouping by status turns that one total into five status summaries, so the team can see how many orders are delivered, shipped, pending, returned, or cancelled.",
       ],
     },
     {
-      kind: "animation",
-      variant: "q-grpby",
-      caption: "Rows hash into bucket lanes; aggregates collapse each lane into one row.",
+      kind: "image",
+      src: groupByImg,
+      alt: "A conceptual Cycle Depot diagram showing raw order rows flowing through GROUP BY status into Delivered, Shipped, Pending, Returned, and Cancelled buckets, then becoming one result row per status.",
+      caption: "GROUP BY puts rows with the same status into the same bucket. An aggregate such as COUNT(*) then produces one summary row for each bucket.",
     },
     {
       kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
+      heading: "The smallest useful GROUP BY query",
       body: [
-        "Raw orders sit left; three empty bucket lanes (APAC/EMEA/NA) hover centre; the result viewport is empty.",
-        "Each row arcs to its bucket lane by region hash; the running-sum chip ticks. When the stream ends, each bucket compresses to one output row.",
-        "Viewport holds one row per region with SUM and COUNT. A side panel shows the HashAggregate plan node and memory usage.",
+        "Put the column that names the group in both SELECT and GROUP BY. Then add an aggregate to describe the rows in that group. ORDER BY is included here only to make the displayed result deterministic.",
       ],
     },
     {
       kind: "code",
       language: "sql",
-      caption: "Bucket by region, reduce per bucket",
-      code: `-- /* Phase 1: scan raw orders */
-SELECT region,                              -- /* grouping key */
-       COUNT(*)    AS order_count,          -- /* per-bucket reduce */
-       SUM(amount) AS revenue
-FROM   orders
-GROUP  BY region                            -- /* Phase 2: hash rows into bucket lanes */
-ORDER  BY revenue DESC;                     -- /* Phase 3: sort the bucket outputs */
-
--- /* Multi-column key — composite hash */
-SELECT region, channel,
-       SUM(amount) AS revenue
-FROM   orders
-GROUP  BY region, channel;                  -- /* one bucket per (region, channel) tuple */
-
--- /* Every non-aggregated column MUST appear in GROUP BY — functional dependency rule */
-SELECT region, currency, SUM(amount)
-FROM   orders
-GROUP  BY region, currency;`,
+      caption: "Count Cycle Depot orders for each status",
+      code: `SELECT
+  status,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY status
+ORDER BY status;`,
     },
     {
       kind: "table",
-      caption: "Logical query phase ordering (FROM → GROUP BY → SELECT)",
-      headers: ["#", "Phase", "What it does"],
+      caption: "Result in the current Cycle Depot dataset: five statuses, five summary rows",
+      headers: ["status", "order_count"],
       rows: [
-        ["1", "FROM / JOIN", "Materialise the row stream."],
-        ["2", "WHERE", "Drop rows that fail predicates (pre-aggregation)."],
-        ["3", "GROUP BY", "Hash/sort into buckets."],
-        ["4", "Aggregate", "Reduce each bucket."],
-        ["5", "HAVING", "Drop whole buckets (post-aggregation)."],
-        ["6", "SELECT / ORDER BY / LIMIT", "Project, sort, page."],
+        ["cancelled", "9"],
+        ["delivered", "84"],
+        ["pending", "13"],
+        ["returned", "4"],
+        ["shipped", "32"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-grpby",
+      caption: "First, GROUP BY status collects alike orders together. Then COUNT(*) gives each status bucket one order count. Adding channel creates a group for every status-and-channel combination.",
+    },
+    {
+      kind: "prose",
+      heading: "Add a second grouping column when you need a deeper split",
+      body: [
+        "A single grouping column gives one row per distinct value. Adding a second column gives one row per distinct pair of values. This is useful when a manager wants to compare order status across sales channels.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "One group for every status and channel pair",
+      code: `SELECT
+  status,
+  channel,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY status, channel
+ORDER BY status, channel;`,
+    },
+    {
+      kind: "table",
+      caption: "Deterministic preview: the first seven of the twelve status-and-channel groups",
+      headers: ["status", "channel", "order_count"],
+      rows: [
+        ["cancelled", "store", "1"],
+        ["cancelled", "web", "8"],
+        ["delivered", "partner", "8"],
+        ["delivered", "store", "25"],
+        ["delivered", "web", "51"],
+        ["pending", "partner", "1"],
+        ["pending", "store", "2"],
       ],
     },
     {
       kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
+      caption: "The grouping key controls the number and meaning of result rows",
+      headers: ["Query shape", "Result grain", "Current result size"],
       rows: [
-        ["Warm-up [1729]", "Find Followers Count", "Single-column GROUP BY + COUNT."],
-        ["Drill [1484]", "Group Sold Products By The Date", "GROUP BY + STRING_AGG / array aggregation."],
-        ["Challenge [1158]", "Market Analysis I", "GROUP BY combined with multiple joins and date filtering."],
+        ["COUNT(*) with no GROUP BY", "The entire orders table", "1 row"],
+        ["GROUP BY status", "One row per status", "5 rows"],
+        ["GROUP BY status, channel", "One row per status-and-channel pair", "12 rows"],
       ],
     },
     {
       kind: "callout",
       tone: "warn",
-      title: "Logic Trap — non-grouped columns in SELECT",
-      body: "`SELECT region, customer_id, SUM(amount) … GROUP BY region` is illegal — customer_id has no defined value per bucket. PostgreSQL rejects it; MySQL without ONLY_FULL_GROUP_BY silently picks a random value.",
+      title: "Every selected detail needs a defined value",
+      body: "This is not valid: `SELECT status, channel, COUNT(*) FROM orders GROUP BY status`. A status group can contain more than one channel, so SQL cannot choose one channel for the result. Add channel to GROUP BY, or remove it from SELECT.",
     },
     {
-      kind: "callout",
-      tone: "info",
-      title: "HashAggregate vs GroupAggregate",
-      body: "HashAggregate wins when distinct keys fit in work_mem. When it overflows it spills batches to disk — shown as 'Disk: NNmb' in EXPLAIN ANALYZE. GroupAggregate streams a pre-sorted input and avoids the hash table entirely.",
+      kind: "playground-practice",
+      title: "Count orders by status",
+      prompt: "Return one row for each Cycle Depot order status and the number of orders with that status. Select status and COUNT(*) AS order_count, group by status, and sort alphabetically by status.",
+      tables: ["orders"],
+      successCheck: "Five rows: cancelled 9, delivered 84, pending 13, returned 4, and shipped 32.",
+      href: "/sql-playground?practice=cycledepot-order-counts-by-status",
     },
     {
       kind: "takeaways",
       items: [
         "GROUP BY produces one row per distinct key combination.",
-        "Every SELECT column must be in GROUP BY or be an aggregate.",
-        "HashAggregate ≫ GroupAggregate when keys fit in memory.",
-        "Spill-to-disk shows as Disk: <MB> in EXPLAIN ANALYZE.",
+        "Use an aggregate such as COUNT(*) to describe the rows in each group.",
+        "Every selected expression must either be grouped or be an aggregate.",
+        "Adding another GROUP BY column makes the result more detailed because it creates groups for each distinct value pair.",
       ],
     },
   ],
