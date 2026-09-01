@@ -1181,38 +1181,26 @@ const groupByLesson: LessonContent = {
     },
     {
       kind: "prose",
-      heading: "The smallest useful GROUP BY query",
+      heading: "Plan the summary before writing SQL",
       body: [
-        "Put the column that names the group in both SELECT and GROUP BY. Then add an aggregate to describe the rows in that group. ORDER BY is included here only to make the displayed result deterministic.",
+        "A grouped query answers three questions: which column defines the groups, which rows or values are being summarised, and which aggregate should describe them. Writing down those choices prevents a query that is valid SQL but answers the wrong business question.",
       ],
     },
     {
-      kind: "code",
-      language: "sql",
-      caption: "Count Cycle Depot orders for each status",
-      code: `SELECT
-  status,
-  COUNT(*) AS order_count
-FROM orders
-GROUP BY status
-ORDER BY status;`,
-    },
-    {
       kind: "table",
-      caption: "Result in the current Cycle Depot dataset: five statuses, five summary rows",
-      headers: ["status", "order_count"],
+      caption: "Designing a Cycle Depot order-status summary",
+      headers: ["Question", "Choice"],
       rows: [
-        ["cancelled", "9"],
-        ["delivered", "84"],
-        ["pending", "13"],
-        ["returned", "4"],
-        ["shipped", "32"],
+        ["What defines each group?", "order status"],
+        ["What is counted?", "order rows"],
+        ["Which operation?", "COUNT(*) AS order_count"],
+        ["How should the result be inspected?", "ORDER BY order_count DESC"],
       ],
     },
     {
       kind: "animation",
       variant: "q-grpby",
-      caption: "First, GROUP BY status collects alike orders together. Then COUNT(*) gives each status bucket one order count. Adding channel creates a group for every status-and-channel combination.",
+      caption: "GROUP BY splits alike rows, applies an aggregate to each bucket, and combines the results.",
     },
     {
       kind: "prose",
@@ -1235,7 +1223,7 @@ ORDER BY status, channel;`,
     },
     {
       kind: "table",
-      caption: "Deterministic preview: the first seven of the twelve status-and-channel groups",
+      caption: "Deterministic preview: the first five of the twelve status-and-channel groups",
       headers: ["status", "channel", "order_count"],
       rows: [
         ["cancelled", "store", "1"],
@@ -1243,8 +1231,6 @@ ORDER BY status, channel;`,
         ["delivered", "partner", "8"],
         ["delivered", "store", "25"],
         ["delivered", "web", "51"],
-        ["pending", "partner", "1"],
-        ["pending", "store", "2"],
       ],
     },
     {
@@ -1260,8 +1246,101 @@ ORDER BY status, channel;`,
     {
       kind: "callout",
       tone: "warn",
-      title: "Every selected detail needs a defined value",
-      body: "This is not valid: `SELECT status, channel, COUNT(*) FROM orders GROUP BY status`. A status group can contain more than one channel, so SQL cannot choose one channel for the result. Add channel to GROUP BY, or remove it from SELECT.",
+      title: "The GROUP BY rule to keep visible",
+      body: "Every expression in SELECT must either identify the group by appearing in GROUP BY, or reduce the group through an aggregate such as COUNT, SUM, or AVG. `SELECT status, channel, COUNT(*) FROM orders GROUP BY status` is not valid because one status can contain several channels. Add channel to GROUP BY, aggregate it, or remove it from SELECT.",
+    },
+    {
+      kind: "prose",
+      heading: "NULL values are a group. Missing groups are not.",
+      body: [
+        "Rows whose grouping column is NULL are placed together in one NULL group. In the current Cycle Depot customers table, five customers have no city, so GROUP BY city returns one NULL city row with a count of 5.",
+        "A category with zero matching rows is different: it does not appear in a GROUP BY result at all. To show zero-activity categories, start with a complete reference list and later combine it with activity data using a LEFT JOIN.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A NULL city becomes one explicit group",
+      code: `SELECT
+  city,
+  COUNT(*) AS customer_count
+FROM customers
+GROUP BY city
+ORDER BY city;`,
+    },
+    {
+      kind: "callout",
+      tone: "tip",
+      title: "Include the group size with summary metrics",
+      body: "A small group can make a metric look more meaningful than it is. Include COUNT(*) beside SUM or AVG so readers can judge reliability. For example, the returned status has 4 Cycle Depot orders, while delivered has 84.",
+    },
+    {
+      kind: "prose",
+      heading: "Group by a useful expression, not only a stored column",
+      body: [
+        "Real reports often group a transformed value. DATE_TRUNC creates calendar buckets, EXTRACT pulls out a date part, and CASE turns many raw values into business-friendly ranges. Repeat the expression in GROUP BY so SQL knows how the buckets are defined.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Monthly order volume with DATE_TRUNC",
+      code: `SELECT
+  DATE_TRUNC('month', order_date) AS order_month,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY DATE_TRUNC('month', order_date)
+ORDER BY order_month;`,
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Yearly order volume with EXTRACT",
+      code: `SELECT
+  EXTRACT(YEAR FROM order_date) AS order_year,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY EXTRACT(YEAR FROM order_date)
+ORDER BY order_year;`,
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Turn product prices into reporting bands with CASE",
+      code: `SELECT
+  CASE
+    WHEN price < 100 THEN 'under_100'
+    WHEN price < 1000 THEN '100_to_999'
+    ELSE '1000_plus'
+  END AS price_band,
+  COUNT(*) AS product_count,
+  AVG(price) AS average_price
+FROM products
+GROUP BY CASE
+  WHEN price < 100 THEN 'under_100'
+  WHEN price < 1000 THEN '100_to_999'
+  ELSE '1000_plus'
+END
+ORDER BY price_band;`,
+    },
+    {
+      kind: "prose",
+      heading: "Ordinal grouping is a shortcut, not a production habit",
+      body: [
+        "GROUP BY 1, 2 means group by the first and second expressions in SELECT. It is convenient while exploring at the keyboard, especially with long expressions. In production queries and data pipelines, prefer the explicit expressions because changing the SELECT order can silently change what the ordinal positions mean.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Convenient ad hoc shortcut. Prefer explicit GROUP BY expressions in maintained SQL.",
+      code: `SELECT
+  EXTRACT(YEAR FROM order_date) AS order_year,
+  status,
+  COUNT(*) AS order_count
+FROM orders
+GROUP BY 1, 2
+ORDER BY 1, 2;`,
     },
     {
       kind: "playground-practice",
@@ -1275,9 +1354,11 @@ ORDER BY status, channel;`,
       kind: "takeaways",
       items: [
         "GROUP BY produces one row per distinct key combination.",
+        "Use DISTINCT to inspect the categories that can become groups before you aggregate them.",
         "Use an aggregate such as COUNT(*) to describe the rows in each group.",
-        "Every selected expression must either be grouped or be an aggregate.",
+        "Every selected expression must either identify the group in GROUP BY or reduce it with an aggregate.",
         "Adding another GROUP BY column makes the result more detailed because it creates groups for each distinct value pair.",
+        "GROUP BY can use date and CASE expressions; ordinal positions are best kept to quick ad hoc exploration.",
       ],
     },
   ],
