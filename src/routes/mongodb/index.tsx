@@ -175,7 +175,7 @@ function MongoDbIndex() {
             />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
-            MongoDB Track
+            MongoDB
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
             Master MongoDB: from NoSQL concepts to aggregations and Python integration.
