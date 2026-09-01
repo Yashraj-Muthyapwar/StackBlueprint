@@ -90,6 +90,54 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-product-price-bands",
+    version: 1,
+    title: "Classify Cycle Depot products",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Label every Cycle Depot product by its price range without removing any rows.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly the name, price, and price_band columns.",
+      "Use CASE to label prices below 1000 as Budget.",
+      "Label prices from 1000 up to, but not including, 2500 as Mid-range.",
+      "Label prices of 2500 or more as Premium.",
+      "Sort by price, then name.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product labels.
+-- Return name, price, and a CASE expression named price_band from products.
+-- Budget: below 1000. Mid-range: below 2500. Premium: everything else.
+-- Sort by price, then name. Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with SELECT name, price, then add CASE ... END AS price_band.",
+      "Put WHEN price < 1000 before WHEN price < 2500 so Budget can be reached.",
+      "Use ELSE 'Premium', then ORDER BY price, name.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+      duckdb: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+        duckdb: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+      },
+      requiredColumns: ["name", "price", "price_band"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Product price bands complete",
+      body: "Correct. You kept all 30 products and used CASE to add a clear price_band value to every row.",
+      nextConcept: "DISTINCT, ORDER BY, and LIMIT",
+    },
+  },
+  {
     id: "cycle-depot-ready-to-sell-premium-products",
     version: 1,
     title: "Find ready-to-sell premium products",
