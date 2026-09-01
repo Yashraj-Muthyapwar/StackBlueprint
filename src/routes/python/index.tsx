@@ -31,7 +31,7 @@ export const Route = createFileRoute("/python/")({
 
 export const PYTHON_SECTIONS = [
   {
-    title: "1. Foundations",
+    title: "Foundations",
     blurb: "The core syntax and built-in data structures of Python.",
     patterns: [
       {
@@ -61,7 +61,7 @@ export const PYTHON_SECTIONS = [
     ],
   },
   {
-    title: "2. Intermediate Concepts",
+    title: "Intermediate Concepts",
     blurb: "Structuring your code with functions, modules, and classes.",
     patterns: [
       {
@@ -117,7 +117,7 @@ export const PYTHON_SECTIONS = [
     ],
   },
   {
-    title: "3. Advanced Python",
+    title: "Advanced Python",
     blurb: "Advanced techniques for high-performance and asynchronous code.",
     patterns: [
       {
