@@ -95,16 +95,36 @@ export const aggrStages: Stage[] = [
   },
 ];
 
-// ----- q-grpby: single key, multi key, with aggregate -----
-const SALES_G: Row[] = [
-  r(1, 1, "EU", "Q1", 40),
-  r(2, 2, "EU", "Q2", 25),
-  r(3, 3, "US", "Q1", 90),
-  r(4, 4, "US", "Q2", 110),
-  r(5, 5, "APAC", "Q1", 60),
-  r(6, 6, "EU", "Q1", 55),
+// ----- q-grpby: Cycle Depot status and channel summaries -----
+// This is a small, labelled preview of real orders. Aggregate output below uses
+// the full 142-row Cycle Depot orders table.
+const GROUP_ORDER_PREVIEW: Row[] = [
+  r(1, 1, "shipped"),
+  r(2, 1, "delivered"),
+  r(3, 1, "delivered"),
+  r(4, 1, "delivered"),
+  r(5, 2, "delivered"),
+  r(6, 2, "shipped"),
 ];
-const GCOLS = ["id", "region", "quarter", "amount"];
+const GROUP_ORDER_COLS = ["id", "customer_id", "status"];
+
+const STATUS_COUNTS: Row[] = [
+  r("cancelled", "cancelled", 9),
+  r("delivered", "delivered", 84),
+  r("pending", "pending", 13),
+  r("returned", "returned", 4),
+  r("shipped", "shipped", 32),
+];
+
+const STATUS_CHANNEL_PREVIEW: Row[] = [
+  r("cancelled-store", "cancelled", "store", 1),
+  r("cancelled-web", "cancelled", "web", 8),
+  r("delivered-partner", "delivered", "partner", 8),
+  r("delivered-store", "delivered", "store", 25),
+  r("delivered-web", "delivered", "web", 51),
+  r("pending-partner", "pending", "partner", 1),
+  r("pending-store", "pending", "store", 2),
+];
 
 const bucketPanel = (groups: { k: string; sum: number }[]) => (
   <div className="grid gap-2">
@@ -120,67 +140,76 @@ const bucketPanel = (groups: { k: string; sum: number }[]) => (
   </div>
 );
 
+const countPanel = (groups: { key: string; count: number }[]) => (
+  <div className="grid gap-2">
+    {groups.map((group) => (
+      <div
+        key={group.key}
+        className="flex items-center justify-between rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]"
+      >
+        <span className="text-violet">{group.key}</span>
+        <span className="text-mint">{group.count} orders</span>
+      </div>
+    ))}
+  </div>
+);
+
 export const grpStages: Stage[] = [
   {
-    name: "Single-key bucketing",
-    sql: ["SELECT region, SUM(amount) AS total", "FROM   sales", "GROUP  BY region"],
-    table: { name: "sales", cols: GCOLS, rows: SALES_G },
+    name: "One total has no groups",
+    sql: ["SELECT COUNT(*) AS order_count", "FROM   orders"],
+    table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
-      st([2], () => "kept" as RowState, "Hash each row on region → 3 buckets (EU, US, APAC).", {
-        highlightCols: [1],
-      }),
       st(
-        [0, 2],
+        [0],
         () => "kept" as RowState,
-        "Reduce each bucket: SUM(amount). One output row per group.",
+        "COUNT(*) with no GROUP BY treats all 142 Cycle Depot orders as one collection, so it returns one summary row.",
         {
-          highlightCols: [1, 3],
-          side: bucketPanel([
-            { k: "EU", sum: 120 },
-            { k: "US", sum: 200 },
-            { k: "APAC", sum: 60 },
-          ]),
+          side: countPanel([{ key: "all orders", count: 142 }]),
         },
       ),
     ],
   },
   {
-    name: "Multi-key bucketing",
-    sql: ["SELECT region, quarter, SUM(amount)", "FROM   sales", "GROUP  BY region, quarter"],
-    table: { name: "sales", cols: GCOLS, rows: SALES_G },
+    name: "GROUP BY status creates buckets",
+    sql: ["SELECT status, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status", "ORDER  BY status"],
+    table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
       st(
         [2],
         () => "kept" as RowState,
-        "Composite key (region, quarter). EU+Q1 has two rows; EU+Q2 one — 5 buckets.",
-        { highlightCols: [1, 2] },
+        "GROUP BY status puts delivered rows together, shipped rows together, and does the same for every other status.",
+        { highlightCols: [2] },
       ),
       st(
-        [0, 2],
-        () => "kept" as RowState,
-        "Multi-dim grouping. Output cardinality = distinct(region,quarter) tuples.",
+        [0, 2, 3],
+        () => "added" as RowState,
+        "COUNT(*) now runs once per status bucket. The full dataset produces five result rows, one for each status.",
         {
-          side: bucketPanel([
-            { k: "EU·Q1", sum: 95 },
-            { k: "EU·Q2", sum: 25 },
-            { k: "US·Q1", sum: 90 },
-            { k: "US·Q2", sum: 110 },
-            { k: "APAC·Q1", sum: 60 },
+          rowsOverride: STATUS_COUNTS,
+          colsOverride: ["status", "order_count"],
+          highlightCols: [0, 1],
+          side: countPanel([
+            { key: "delivered", count: 84 },
+            { key: "shipped", count: 32 },
+            { key: "pending", count: 13 },
+            { key: "cancelled", count: 9 },
+            { key: "returned", count: 4 },
           ]),
         },
       ),
     ],
   },
   {
-    name: "Every non-aggregated column must be in GROUP BY",
-    sql: ["SELECT region, quarter, amount  -- ERROR", "FROM   sales", "GROUP  BY region"],
-    table: { name: "sales", cols: GCOLS, rows: SALES_G },
+    name: "Two columns make more detailed groups",
+    sql: ["SELECT status, channel, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status, channel", "ORDER  BY status, channel"],
+    table: { name: "orders", cols: ["status", "channel", "order_count"], rows: STATUS_CHANNEL_PREVIEW },
     steps: [
       st(
-        [0],
-        () => "dropped" as RowState,
-        "Standard-SQL error: 'quarter' / 'amount' not in GROUP BY and not aggregated. Postgres/Oracle reject; MySQL ONLY_FULL_GROUP_BY off picks an arbitrary row — silent data corruption.",
-        { highlightCols: [2, 3], noteTone: "rose" },
+        [2],
+        () => "kept" as RowState,
+        "GROUP BY status, channel creates one group for every distinct status-and-channel pair. Cycle Depot has 12 such pairs; this is the first seven after sorting.",
+        { highlightCols: [0, 1] },
       ),
     ],
   },
