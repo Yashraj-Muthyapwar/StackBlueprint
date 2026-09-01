@@ -102,7 +102,7 @@ export function AppSidebar() {
                       {typeof cat.icon === "string" ? (
                         <img src={cat.icon} alt={`${cat.title} logo`} className="size-3 object-contain drop-shadow-sm opacity-80" />
                       ) : (
-                        <cat.icon className="size-3" />
+                        <cat.icon className={`size-3 ${cat.iconColor || ""}`} />
                       )}
                       {cat.overviewPath ? (
                         <Link
