@@ -14,6 +14,13 @@ export function LessonAnimation({
   variant: AnimationVariant;
   caption?: string;
 }) {
+  // Keep SSR/client hydration from changing the surrounding lesson layout for
+  // animations that declare a lesson-specific canvas reserve.
+  const fallbackHeight = Math.max(
+    360,
+    ...STAGES_REGISTRY[variant].map((stage) => stage.canvasMinHeight ?? 0),
+  );
+
   return (
     <figure className="relative overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-mint/5 via-transparent to-transparent opacity-60 pointer-events-none" />
@@ -23,7 +30,14 @@ export function LessonAnimation({
         </figcaption>
       ) : null}
       <div className="relative z-10">
-        <ClientOnly fallback={<div className="h-[360px] animate-pulse bg-surface-2/40" />}>
+        <ClientOnly
+          fallback={
+            <div className="flex flex-col">
+              <div style={{ height: fallbackHeight }} className="animate-pulse bg-surface-2/40" />
+              <div className="h-[47px] border-t border-hairline bg-surface-2/40" />
+            </div>
+          }
+        >
           <AnimationStage variant={variant} />
         </ClientOnly>
       </div>
@@ -34,27 +48,26 @@ export function LessonAnimation({
 function AnimationStage({ variant }: { variant: AnimationVariant }) {
   const stages = STAGES_REGISTRY[variant];
   const total = useMemo(() => totalSteps(stages), [stages]);
+  const configuredMinHeight = useMemo(
+    () => Math.max(0, ...stages.map((stage) => stage.canvasMinHeight ?? 0)),
+    [stages],
+  );
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const stageMeasurements = useRef(new Map<number, HTMLDivElement>());
-  const measuredWidth = useRef<number>();
   const [canvasHeight, setCanvasHeight] = useState<number>();
 
   const measureCanvas = useCallback(() => {
     const measurements = Array.from(stageMeasurements.current.values());
     const tallestStage = Math.ceil(Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().height)));
-    const width = Math.ceil(Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().width)));
-
     if (tallestStage > 0) {
-      const widthChanged = measuredWidth.current !== undefined && measuredWidth.current !== width;
-      measuredWidth.current = width;
-
       // A step change briefly reattaches the off-screen measurement refs. Keep
       // the tallest height already found at the same width so that short-lived
       // measurements cannot pull the canvas up and move the lesson below it.
-      // A genuine responsive-width change can still recalculate the right size.
+      // Responsive layouts can grow naturally beyond this reserve; never
+      // reducing it during playback is what keeps nearby lesson content still.
       setCanvasHeight((current) => {
-        const next = widthChanged ? tallestStage : Math.max(current ?? 0, tallestStage);
+        const next = Math.max(current ?? 0, tallestStage);
         return current === next ? current : next;
       });
     }
@@ -91,7 +104,12 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
 
   return (
     <div className="flex flex-col">
-      <div className="relative" style={canvasHeight ? { minHeight: canvasHeight } : undefined}>
+      <div
+        className="relative"
+        style={Math.max(configuredMinHeight, canvasHeight ?? 0) > 0
+          ? { minHeight: Math.max(configuredMinHeight, canvasHeight ?? 0) }
+          : undefined}
+      >
         <div className="px-5 py-6 lg:px-7 lg:py-8">
           <MultiStage stages={stages} step={step} />
         </div>
