@@ -141,6 +141,18 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name and price for Road Bikes, highest price first, keeping 3 rows.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-customer-coverage-summary": {
+    id: "cycledepot-customer-coverage-summary",
+    title: "Build a customer coverage summary",
+    prompt:
+      "Return one summary row with the customer count, the count of customers with a city, and the number of distinct countries. Use COUNT(*), COUNT(city), and COUNT(DISTINCT country). The three columns must be customer_count, customers_with_city, and country_count.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-coverage-summary",
+    starterSql: `-- Cycle Depot customer coverage summary.
+-- Return counts for all customers, customers with a city, and distinct countries.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {

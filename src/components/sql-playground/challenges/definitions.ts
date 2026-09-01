@@ -645,6 +645,51 @@ export const CHALLENGES: ChallengeDefinition[] = [
     }
   },
   {
+    id: "cycle-depot-customer-coverage-summary",
+    version: 1,
+    title: "Build a customer coverage summary",
+    group: "aggregation",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Summarise Cycle Depot customer coverage in one row.",
+    requirements: [
+      "Use the customers table.",
+      "Count every customer as customer_count.",
+      "Count non-NULL city values as customers_with_city.",
+      "Count distinct countries as country_count.",
+      "Return exactly these columns: customer_count, customers_with_city, and country_count.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: `-- Cycle Depot customer coverage summary.
+-- Return counts for all customers, customers with a city, and distinct countries.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "COUNT(*) counts every customer row.",
+      "COUNT(city) skips customers whose city is NULL.",
+      "Put DISTINCT inside COUNT to count each country once.",
+    ],
+    solutionSql: {
+      postgres: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+      duckdb: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+        duckdb: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+      },
+      requiredColumns: ["customer_count", "customers_with_city", "country_count"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Customer coverage summary complete",
+      body: "Correct. You separated row count, non-NULL value count, and distinct-value count in one clear summary.",
+      nextConcept: "Group summaries with GROUP BY",
+    },
+  },
+  {
     id: "cycle-depot-revenue-by-category",
     version: 1,
     title: "Revenue by product category",
