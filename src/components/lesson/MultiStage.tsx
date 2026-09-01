@@ -55,6 +55,12 @@ export type Stage = {
   name: string;
   /** One-line subtitle shown under the banner. */
   blurb?: string;
+  /**
+   * A lesson-specific desktop reserve for the animation body. Use this only
+   * when a custom font or a tall derived-result step would otherwise make the
+   * canvas grow during its first playback. Narrow layouts can still grow past it.
+   */
+  canvasMinHeight?: number;
   /** Give a deliberately wide source table the full animation width. */
   layout?: "default" | "wide";
   sql: string[];
