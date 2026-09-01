@@ -49,13 +49,13 @@ export const Route = createFileRoute("/sql/")({
       {
         name: "description",
         content:
-          "From SELECT to query plans — a 0→1 visual SQL & databases roadmap. Foundations, joins, window functions, CTEs, procedures, triggers, transactions, indexing, and performance tuning.",
+          "Master SQL: from database foundations to complex querying and performance tuning.",
       },
       { property: "og:title", content: "SQL Mastery — StackBlueprint" },
       {
         property: "og:description",
         content:
-          "Interactive, visual SQL roadmap: foundations, joins, windows, CTEs, programmability, integrity, and optimization.",
+          "Master SQL: from database foundations to complex querying and performance tuning.",
       },
     ],
   }),
@@ -421,8 +421,7 @@ function SqlIndex() {
             SQL Mastery
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            A visual, end-to-end roadmap for SQL — from the relational model to procedures,
-            triggers, isolation levels, EXPLAIN plans, and the trade-offs behind every fast query.
+            Master SQL: from database foundations to complex querying and performance tuning.
           </p>
         </div>
       </div>
