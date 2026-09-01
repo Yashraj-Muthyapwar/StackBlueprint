@@ -1378,6 +1378,16 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
+        title: "Level 1 Capstone",
+        blurb: "Apply your knowledge from Modules 1 & 2 by building a conversational agent.",
+        patterns: [
+          unlockedAIPattern("Interactive CLI Assistant", "capstone-1", "Build an Interactive Multi-Turn CLI Assistant with Custom Context Windows.", [
+            "Project Setup & Architecture",
+            "Implementation & Testing"
+          ]),
+        ]
+      },
+      {
         title: "Embeddings & RAG",
         blurb: "Connecting LLMs to external knowledge using vector stores and advanced retrieval.",
         patterns: [
@@ -1409,6 +1419,16 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
+        title: "Level 2 Capstone",
+        blurb: "Apply your knowledge from Modules 3 & 4 by building an intelligent RAG system.",
+        patterns: [
+          unlockedAIPattern("Hybrid GraphRAG Engine", "capstone-2", "Build a Hybrid GraphRAG Documentation Engine with Real-Time SQL & Tool Invocation.", [
+            "Project Setup & Architecture",
+            "Implementation & Testing"
+          ]),
+        ]
+      },
+      {
         title: "Single-Agent Architectures",
         blurb: "Building autonomous agents with perception-action loops, memory, and state graphs.",
         patterns: [
@@ -1438,6 +1458,16 @@ export const roadmap: RoadmapCategory[] = [
             "Human-in-the-Loop (HITL)"
           ]),
         ],
+      },
+      {
+        title: "Level 3 Capstone",
+        blurb: "Apply your knowledge from Modules 5 & 6 by orchestrating a multi-agent team.",
+        patterns: [
+          unlockedAIPattern("Autonomous Multi-Agent Team", "capstone-3", "Build an Autonomous Multi-Agent Research & Code Generation Team with HITL Gates.", [
+            "Project Setup & Architecture",
+            "Implementation & Testing"
+          ]),
+        ]
       },
       {
         title: "Evaluation, Observability & Safety",
@@ -1473,6 +1503,16 @@ export const roadmap: RoadmapCategory[] = [
             "Edge Deployment & WebGPU"
           ]),
         ],
+      },
+      {
+        title: "Level 4 Capstone",
+        blurb: "Apply your knowledge from Modules 7 & 8 to deploy a robust, enterprise-grade agent.",
+        patterns: [
+          unlockedAIPattern("Enterprise Agent System", "capstone-4", "Deploy an Enterprise Agent System with Tracing, Custom Evaluators, Guardrails, and a Fine-Tuned LoRA Adapter.", [
+            "Project Setup & Architecture",
+            "Implementation & Testing"
+          ]),
+        ]
       }
     ],
   },
