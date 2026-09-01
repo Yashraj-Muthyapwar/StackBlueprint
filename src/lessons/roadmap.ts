@@ -407,6 +407,7 @@ export const roadmap: RoadmapCategory[] = [
               { title: "SQL Basics: Comments, Calculations, and Aliases", slug: "sql-basics-comments-operators", path: "/sql/foundations/sql-querying-fundamentals/sql-basics-comments-operators", icon: Terminal },
               { title: "SQL Operators: Arithmetic, Comparison, and Logic", slug: "sql-operators", path: "/sql/foundations/sql-querying-fundamentals/sql-operators", icon: Calculator },
               { title: "WHERE Filters", slug: "where", path: "/sql/foundations/sql-querying-fundamentals/where", icon: Filter },
+              { title: "CASE WHEN: Label and Bucket Data", slug: "case-when", path: "/sql/foundations/sql-querying-fundamentals/case-when", icon: Rows3 },
               { title: "DISTINCT, ORDER BY & LIMIT", slug: "order-limit", path: "/sql/foundations/sql-querying-fundamentals/order-limit", icon: Rows3 },
               { title: "Logical Query Order", slug: "logical-order", path: "/sql/foundations/sql-querying-fundamentals/logical-order", icon: Workflow },
               { title: "Querying Fundamentals: Final Quiz", slug: "querying-fundamentals-quiz", path: "/sql/foundations/sql-querying-fundamentals/querying-fundamentals-quiz", icon: HelpCircle },
@@ -438,7 +439,7 @@ export const roadmap: RoadmapCategory[] = [
             blurb: "Aggregate values, form groups, filter groups, and create multi-dimensional summaries.",
             lessons: [
               { title: "Aggregate Functions (COUNT / COUNT DISTINCT / SUM / AVG / MIN / MAX)", slug: "aggregate-functions", path: "/sql/querying/aggregations/aggregate-functions", icon: Sigma },
-              { title: "The Collapse Engine (GROUP BY)", slug: "group-by", path: "/sql/querying/aggregations/group-by", icon: Sigma },
+              { title: "GROUP BY: One Summary per Group", slug: "group-by", path: "/sql/querying/aggregations/group-by", icon: Sigma },
               { title: "Evaluation Filtering (HAVING)", slug: "having", path: "/sql/querying/aggregations/having", icon: Filter },
               { title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)", slug: "grouping-sets", path: "/sql/querying/aggregations/grouping-sets", icon: Sigma },
               { title: "Aggregations & GROUP BY: Final Quiz", slug: "aggregations-quiz", path: "/sql/querying/aggregations/aggregations-quiz", icon: HelpCircle },
@@ -1317,6 +1318,30 @@ export const roadmap: RoadmapCategory[] = [
           lockedPattern("9. MongoDB Indexes", "mongodb-indexes", "Improve query performance with indexes."),
           lockedPattern("10. MongoDB Aggregation", "mongodb-aggregation", "Process data records and return computed results."),
           lockedPattern("11. MongoDB Aggregation in Python", "aggregation-python", "Run aggregation pipelines in Python."),
+        ],
+      }
+    ],
+  },
+  {
+    title: "AI Engineering",
+    slug: "ai-engineering",
+    icon: Bot,
+    locked: false,
+    overviewPath: "/ai-engineering",
+    blurb: "Learn the fundamentals of Large Language Models and build your own AI applications.",
+    patterns: [],
+    sections: [
+      {
+        title: "AI Engineering Fundamentals",
+        patterns: [
+          lockedPattern("1. Introduction to AI & LLMs", "intro-ai-llm", "Understand what Large Language Models are and how they work."),
+          lockedPattern("2. Prompt Engineering Basics", "prompt-engineering", "Learn the art of crafting effective prompts to get the best responses."),
+          lockedPattern("3. Working with LLM APIs", "llm-apis", "Integrate OpenAI and Anthropic APIs into your applications."),
+          lockedPattern("4. Embeddings & Vector Databases", "embeddings-vector-db", "Learn how text is represented as numbers and stored for semantic search."),
+          lockedPattern("5. Retrieval-Augmented Generation (RAG)", "rag", "Ground LLM responses in your own private data."),
+          lockedPattern("6. Fine-Tuning vs Prompting", "fine-tuning", "Know when to guide an existing model and when to train your own."),
+          lockedPattern("7. Orchestration with LangChain", "langchain", "Build complex workflows by chaining prompts, tools, and memory."),
+          lockedPattern("8. Deploying AI Applications", "deploying-ai", "Take your LLM application to production securely and reliably."),
         ],
       }
     ],
