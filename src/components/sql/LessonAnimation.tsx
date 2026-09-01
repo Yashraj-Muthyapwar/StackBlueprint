@@ -37,15 +37,26 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
   const [step, setStep] = useState(0);
   const [playing, setPlaying] = useState(true);
   const stageMeasurements = useRef(new Map<number, HTMLDivElement>());
+  const measuredWidth = useRef<number>();
   const [canvasHeight, setCanvasHeight] = useState<number>();
 
   const measureCanvas = useCallback(() => {
-    const tallestStage = Math.ceil(
-      Math.max(0, ...Array.from(stageMeasurements.current.values(), (element) => element.getBoundingClientRect().height)),
-    );
+    const measurements = Array.from(stageMeasurements.current.values());
+    const tallestStage = Math.ceil(Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().height)));
+    const width = Math.ceil(Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().width)));
 
     if (tallestStage > 0) {
-      setCanvasHeight((current) => current === tallestStage ? current : tallestStage);
+      const widthChanged = measuredWidth.current !== undefined && measuredWidth.current !== width;
+      measuredWidth.current = width;
+
+      // A step change briefly reattaches the off-screen measurement refs. Keep
+      // the tallest height already found at the same width so that short-lived
+      // measurements cannot pull the canvas up and move the lesson below it.
+      // A genuine responsive-width change can still recalculate the right size.
+      setCanvasHeight((current) => {
+        const next = widthChanged ? tallestStage : Math.max(current ?? 0, tallestStage);
+        return current === next ? current : next;
+      });
     }
   }, []);
 
