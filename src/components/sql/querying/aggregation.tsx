@@ -100,12 +100,12 @@ export const aggrStages: Stage[] = [
 // This is a small, labelled preview of real orders. Aggregate output below uses
 // the full 142-row Cycle Depot orders table.
 const GROUP_ORDER_PREVIEW: Row[] = [
-  r(1, 1, "shipped"),
-  r(2, 1, "delivered"),
-  r(3, 1, "delivered"),
-  r(4, 1, "delivered"),
-  r(5, 2, "delivered"),
-  r(6, 2, "shipped"),
+  r("order-1", 1, 1, "shipped"),
+  r("order-2", 2, 1, "delivered"),
+  r("order-3", 3, 1, "delivered"),
+  r("order-4", 4, 1, "delivered"),
+  r("order-5", 5, 2, "delivered"),
+  r("order-6", 6, 2, "shipped"),
 ];
 const GROUP_ORDER_COLS = ["id", "customer_id", "status"];
 
