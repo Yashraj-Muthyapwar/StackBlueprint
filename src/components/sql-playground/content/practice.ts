@@ -104,6 +104,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return id, name, and email for customers whose city is missing.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-product-price-bands": {
+    id: "cycledepot-product-price-bands",
+    title: "Classify Cycle Depot products",
+    prompt:
+      "Return every product's name, price, and price_band. Label prices below 1000 as Budget, prices below 2500 as Mid-range, and all remaining prices as Premium. Sort by price, then name. The result should have 30 rows and exactly three columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-product-price-bands",
+    starterSql: `-- Cycle Depot product labels.
+-- Return name, price, and a CASE expression named price_band from products.
+-- Budget: below 1000. Mid-range: below 2500. Premium: everything else.
+-- Sort by price, then name. Write your query below, then choose Run and check.`,
+  },
   "cycledepot-march-order-range": {
     id: "cycledepot-march-order-range",
     title: "Find March orders with a date range",
