@@ -6,6 +6,8 @@ import logicalQueryOrderImg from "@/images/sql/querying-fundamentals/logical-que
 import logicalQueryOrderMnemonicImg from "@/images/sql/querying-fundamentals/logical-query-order-mnemonic.png";
 import sqlOperatorsImg from "@/images/sql/querying-fundamentals/sql-operators.png";
 import whereFiltersImg from "@/images/sql/querying-fundamentals/where-filters.png";
+import caseWhenImg from "@/images/sql/querying-fundamentals/case-when-labels.png";
+import caseFirstMatchFlowImg from "@/images/sql/querying-fundamentals/case-first-match-flow.png";
 import yourFirstQueryImg from "@/images/sql/querying-fundamentals/your-first-query.png";
 
 const selectFrom: LessonContent = {
@@ -424,6 +426,250 @@ WHERE city IS NULL;`,
           options: ["Only TRUE rows", "TRUE and FALSE rows", "TRUE and UNKNOWN rows", "Every row"],
           correctIndex: 0,
           explanation: "WHERE keeps TRUE rows. FALSE and UNKNOWN are excluded.",
+        },
+      ],
+    },
+  ],
+};
+
+const caseWhenLesson: LessonContent = {
+  slug: "case-when",
+  title: "CASE WHEN: Label and Bucket Data",
+  subtitle: "Turn conditions into useful values without removing Cycle Depot rows.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "When a Filter Is Not the Goal",
+      body: [
+        "`WHERE` removes rows that do not meet a condition. That is useful when you want a smaller result. But many questions need every row to stay visible and need one new value that explains the row.",
+        "`CASE` is a conditional expression inside `SELECT`. It checks conditions and returns a value, so you can label, categorize, or transform each row without filtering it away.",
+      ],
+    },
+    {
+      kind: "image",
+      src: caseWhenImg,
+      alt: "A side-by-side visual comparing WHERE removing product rows with CASE keeping the rows and adding a price band label",
+      caption: "WHERE reduces the row set. CASE preserves the row set and creates a new result value such as price_band.",
+    },
+    {
+      kind: "prose",
+      heading: "Build a Price Band for Every Product",
+      body: [
+        "This query keeps all 30 Cycle Depot products. The CASE expression contributes one extra result column named `price_band`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Label each product by price",
+      code: `SELECT
+  name,
+  price,
+  CASE
+    WHEN price < 1000 THEN 'Budget'
+    WHEN price < 2500 THEN 'Mid-range'
+    ELSE 'Premium'
+  END AS price_band
+FROM products
+ORDER BY price, name;`,
+    },
+    {
+      kind: "table",
+      caption: "A small input-to-result preview. Each source product remains, and price_band is the new derived column.",
+      headers: ["name", "price", "price_band"],
+      rows: [
+        ["Insulated Bottle", "28.00", "Budget"],
+        ["Meridian Road Alloy", "1150.00", "Mid-range"],
+        ["Aero Sprint Pro", "5400.00", "Premium"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Read CASE as a First-Match Decision",
+      body: [
+        "For each row, SQL reads `WHEN` conditions from top to bottom. It returns the value after the first condition that is true, then moves on to the next row.",
+        "If no `WHEN` is true, `ELSE` supplies the fallback value. CASE creates a value. It does not remove the row that receives it.",
+      ],
+    },
+    {
+      kind: "image",
+      src: caseFirstMatchFlowImg,
+      alt: "A CASE decision flow for Meridian Road Alloy at 1150 dollars: it fails price below 1000, passes price below 2500, and receives the Mid-range label",
+      caption: "Meridian Road Alloy follows the highlighted path: the first WHEN is false, the second WHEN is true, so CASE returns Mid-range and stops.",
+    },
+    {
+      kind: "animation",
+      variant: "case-when",
+      caption: "Follow three Cycle Depot products through CASE: first match wins, and ELSE labels the remaining row",
+    },
+    {
+      kind: "prose",
+      heading: "CASE Labels. WHERE Filters.",
+      body: [
+        "Both CASE and WHERE contain conditions, but they answer different questions. Use WHERE when a row should not be in the result. Use CASE when the row should remain and you want to describe it differently.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "WHERE removes products below the premium threshold",
+      code: `SELECT name, price
+FROM products
+WHERE price >= 2500;`,
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "CASE keeps every product and adds a tier",
+      code: `SELECT
+  name,
+  price,
+  CASE
+    WHEN price >= 2500 THEN 'Premium'
+    ELSE 'Standard'
+  END AS product_tier
+FROM products;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Choose the tool by the desired result",
+      body: "A WHERE condition decides whether a row survives. A CASE condition decides which value a surviving row receives. You can use both in one query later, but they have separate jobs.",
+    },
+    {
+      kind: "prose",
+      heading: "Handle Missing Values with IS NULL",
+      body: [
+        "Use `IS NULL` inside a `WHEN` when you need to label a missing value. `city = NULL` is never the correct test because equality with NULL is UNKNOWN, not true.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Give customers with a missing city a useful label",
+      code: `SELECT
+  name,
+  CASE
+    WHEN city IS NULL THEN 'City missing'
+    ELSE city
+  END AS city_label
+FROM customers;`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Never compare with = NULL",
+      body: "Write WHEN city IS NULL THEN ... to find a missing city. Write WHEN city = NULL THEN ... and no row will match that condition.",
+    },
+    {
+      kind: "prose",
+      heading: "Put Specific Conditions First",
+      body: [
+        "Because CASE stops at the first true condition, a broad condition can make a later, narrower condition unreachable.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Broken order: the Budget label can never be returned",
+      code: `CASE
+  WHEN price < 3000 THEN 'Under 3000'
+  WHEN price < 1000 THEN 'Budget'
+  ELSE 'Premium'
+END`,
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Why the broken order fails",
+      body: "A Frame Pump priced at 39 matches price < 3000 immediately, so it receives Under 3000. SQL never reaches the later price < 1000 test. Every Budget-priced product is already under 3000, which makes the Budget branch unreachable.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Fixed order: the narrowest range comes first",
+      code: `CASE
+  WHEN price < 1000 THEN 'Budget'
+  WHEN price < 3000 THEN 'Mid-range'
+  ELSE 'Premium'
+END`,
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Why the fixed order works",
+      body: "The Budget range is tested first. A product priced at 39 receives Budget; a product priced at 1150 then reaches and matches the Mid-range test; only prices of 3000 or more reach Premium.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Classify Cycle Depot products",
+      prompt: "Return name, price, and price_band for every product. Label prices below 1000 as Budget, prices below 2500 as Mid-range, and all remaining prices as Premium. Sort by price, then name, and run the checked exercise.",
+      tables: ["products"],
+      successCheck: "30 rows with name, price, and price_band, ordered by price and name.",
+      href: "/sql-playground?practice=cycledepot-product-price-bands",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "CASE produces a conditional value for each row.",
+        "WHERE filters rows; CASE labels or transforms values while keeping the row.",
+        "WHEN conditions run from top to bottom, and the first true condition wins.",
+        "Use IS NULL in a WHEN clause to handle missing values safely.",
+        "Use ELSE when every row should receive a fallback label.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "case-when-1",
+          question: "Which statement best describes CASE compared with WHERE?",
+          options: [
+            "CASE removes rows and WHERE adds a value",
+            "CASE adds a value for a row and WHERE can remove a row",
+            "Both can only sort rows",
+            "Both must appear after ORDER BY",
+          ],
+          correctIndex: 1,
+          explanation: "CASE returns a value in the result. WHERE decides which rows continue to the result.",
+        },
+        {
+          id: "case-when-2",
+          question: "What happens after a CASE expression finds its first true WHEN condition for a row?",
+          options: [
+            "It returns that result and stops testing later WHEN clauses for that row",
+            "It combines every true result",
+            "It removes the row",
+            "It always runs ELSE too",
+          ],
+          correctIndex: 0,
+          explanation: "CASE is first-match logic. Later WHEN clauses are not evaluated once an earlier condition is true.",
+        },
+        {
+          id: "case-when-3",
+          question: "Which CASE condition correctly labels a missing customer city?",
+          options: ["WHEN city = NULL", "WHEN city IS NULL", "WHEN city = 'NULL'", "WHEN NOT city"],
+          correctIndex: 1,
+          explanation: "NULL needs IS NULL. Equality with NULL evaluates to UNKNOWN.",
+        },
+        {
+          id: "case-when-4",
+          question: "If no WHEN condition is true and CASE has no ELSE, what value does it return?",
+          options: ["NULL", "The previous row's value", "FALSE", "An automatically chosen label"],
+          correctIndex: 0,
+          explanation: "Without ELSE, CASE returns NULL when none of its WHEN conditions match.",
+        },
+        {
+          id: "case-when-5",
+          question: "Which expression labels prices below 1000 as Budget and all others as Premium?",
+          options: [
+            "CASE WHEN price < 1000 THEN 'Budget' ELSE 'Premium' END",
+            "WHERE price < 1000 THEN 'Budget' ELSE 'Premium'",
+            "CASE price < 1000 AS 'Budget' ELSE 'Premium'",
+            "CASE WHEN price = NULL THEN 'Budget' ELSE 'Premium' END",
+          ],
+          correctIndex: 0,
+          explanation: "A searched CASE uses WHEN for its condition, THEN for its returned value, and ELSE for the fallback.",
         },
       ],
     },
@@ -1345,6 +1591,7 @@ export const sqlQueryingFundamentalsTopic = {
     commentsCalculationsAliases,
     sqlOperators,
     whereLesson,
+    caseWhenLesson,
     orderLimit,
     logicalOrder,
     queryingFundamentalsQuiz,
