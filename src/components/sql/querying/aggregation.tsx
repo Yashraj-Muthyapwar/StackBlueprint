@@ -1,16 +1,37 @@
 import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
 import { pass, r, st } from "../animation-shared";
 
-// ----- q-aggr: COUNT(*), COUNT(col), SUM/AVG, MIN/MAX -----
-const SALES_A: Row[] = [
-  r(1, 1, "EU", 40),
-  r(2, 2, "US", null),
-  r(3, 3, "EU", 25),
-  r(4, 4, "APAC", 90),
-  r(5, 5, "US", 110),
-  r(6, 6, "EU", null),
+// ----- q-aggr: Cycle Depot aggregates -----
+// The full generated dataset has 142 orders, 60 customers, and 30 products.
+// Each animation table is intentionally a labelled preview of that real data.
+const ORDER_PREVIEW: Row[] = [
+  r(1, 1, 1, "2023-08-25", "shipped"),
+  r(2, 2, 1, "2023-09-09", "delivered"),
+  r(3, 3, 1, "2024-10-16", "delivered"),
+  r(4, 4, 1, "2024-08-29", "delivered"),
+  r(5, 5, 2, "2025-06-04", "delivered"),
+  r(6, 6, 2, "2023-09-25", "shipped"),
 ];
-const ACOLS = ["id", "region", "amount"];
+const ORDER_COLS = ["id", "customer_id", "order_date", "status"];
+
+const CUSTOMER_PREVIEW: Row[] = [
+  r(1, 1, "Zane Novak", "Austin", "USA"),
+  r(2, 2, "Boris Alvarez", "Bristol", "UK"),
+  r(3, 3, "Priya Doyle", "Manchester", "UK"),
+  r(4, 4, "Ugo Mensah", "Dallas", "USA"),
+  r(5, 5, "Omar Doyle", null, "Germany"),
+  r(6, 6, "Sami Mensah", "Portland", "USA"),
+];
+const CUSTOMER_COLS = ["id", "name", "city", "country"];
+
+const PRODUCT_PREVIEW: Row[] = [
+  r(1, "Trailhead 29 Hardtail", 1299),
+  r(5, "Meridian Road Alloy", 1150),
+  r(7, "Aero Sprint Pro", 5400),
+  r(13, "Shellcap Road Helmet", 129),
+  r(26, "Frame Pump", 39),
+];
+const PRODUCT_COLS = ["name", "price"];
 
 const sumPanel = (label: string, value: string) => (
   <div className="rounded-lg border border-mint/40 bg-mint/10 p-3">
@@ -21,54 +42,54 @@ const sumPanel = (label: string, value: string) => (
 
 export const aggrStages: Stage[] = [
   {
-    name: "COUNT(*) — every row",
-    sql: ["SELECT COUNT(*) AS n", "FROM   sales"],
-    table: { name: "sales", cols: ACOLS, rows: SALES_A },
+    name: "COUNT(*) counts rows",
+    sql: ["SELECT COUNT(*) AS order_count", "FROM   orders"],
+    table: { name: "orders preview", cols: ORDER_COLS, rows: ORDER_PREVIEW },
     steps: [
       st(
         [0],
         () => "kept" as RowState,
-        "COUNT(*) counts ROWS, not values. NULLs are NOT skipped — 6 rows total.",
-        { side: sumPanel("COUNT(*)", "6") },
+        "COUNT(*) counts every row. The preview shows 6 rows, but the full Cycle Depot orders table contains 142 order rows.",
+        { side: sumPanel("COUNT(*)", "142 orders") },
       ),
     ],
   },
   {
-    name: "COUNT(col) — skips NULL",
-    sql: ["SELECT COUNT(amount) AS n", "FROM   sales"],
-    table: { name: "sales", cols: ACOLS, rows: SALES_A },
+    name: "COUNT(column) skips NULL",
+    sql: ["SELECT COUNT(city) AS customers_with_city", "FROM   customers"],
+    table: { name: "customers preview", cols: CUSTOMER_COLS, rows: CUSTOMER_PREVIEW },
     steps: [
       st(
         [0],
         (row) => (row.cells[2] === null ? ("dropped" as RowState) : ("kept" as RowState)),
-        "COUNT(col) counts non-NULL VALUES of that column. The two NULL amounts are skipped → 4.",
-        { highlightCols: [2], side: sumPanel("COUNT(amount)", "4") },
+        "COUNT(city) ignores missing cities. Omar's NULL city is skipped, so the full dataset has 55 city values even though it has 60 customers.",
+        { highlightCols: [2], side: sumPanel("COUNT(city)", "55 customers") },
       ),
     ],
   },
   {
-    name: "SUM / AVG — beware NULL",
-    sql: ["SELECT SUM(amount) AS total,", "       AVG(amount) AS mean", "FROM   sales"],
-    table: { name: "sales", cols: ACOLS, rows: SALES_A },
+    name: "COUNT(DISTINCT) removes repeats",
+    sql: ["SELECT COUNT(DISTINCT country) AS country_count", "FROM   customers"],
+    table: { name: "customers preview", cols: CUSTOMER_COLS, rows: CUSTOMER_PREVIEW },
     steps: [
       st(
         [0],
-        (row) => (row.cells[2] === null ? ("dropped" as RowState) : ("kept" as RowState)),
-        "SUM/AVG ignore NULLs. AVG = SUM/COUNT(col), NOT COUNT(*) — different denominator! 265/4 = 66.25, not 265/6.",
-        { highlightCols: [2], side: sumPanel("SUM / AVG", "$265 / $66.25"), noteTone: "amber" },
+        () => "kept" as RowState,
+        "USA and UK appear more than once in this preview, but DISTINCT keeps each country value once. Across all customers, Cycle Depot has 6 distinct countries.",
+        { highlightCols: [3], side: sumPanel("COUNT(DISTINCT country)", "6 countries"), noteTone: "violet" },
       ),
     ],
   },
   {
-    name: "MIN / MAX",
-    sql: ["SELECT MIN(amount), MAX(amount)", "FROM   sales"],
-    table: { name: "sales", cols: ACOLS, rows: SALES_A },
+    name: "SUM, AVG, MIN, and MAX",
+    sql: ["SELECT SUM(price), AVG(price),", "       MIN(price), MAX(price)", "FROM   products"],
+    table: { name: "products preview", cols: PRODUCT_COLS, rows: PRODUCT_PREVIEW },
     steps: [
       st(
         [0],
-        (row) => (row.cells[2] === null ? ("dropped" as RowState) : ("kept" as RowState)),
-        "Extremes over non-NULL values. MIN/MAX use an index endpoint if one exists — O(log n), not O(n).",
-        { highlightCols: [2], side: sumPanel("MIN / MAX", "$25 / $110") },
+        () => "kept" as RowState,
+        "These reducers answer different questions about the same price column: total, typical value, cheapest value, and most expensive value. They all ignore NULL inputs.",
+        { highlightCols: [1], side: sumPanel("all 30 product prices", "Σ $32,515 · avg $1,083.83 · $28 to $5,400") },
       ),
     ],
   },
