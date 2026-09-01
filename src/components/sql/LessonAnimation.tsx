@@ -101,13 +101,14 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
   );
 
   const { stageIdx } = locate(stages, step);
+  const reservedHeight = Math.max(configuredMinHeight, canvasHeight ?? 0);
 
   return (
     <div className="flex flex-col">
       <div
-        className="relative"
-        style={Math.max(configuredMinHeight, canvasHeight ?? 0) > 0
-          ? { minHeight: Math.max(configuredMinHeight, canvasHeight ?? 0) }
+        className="relative overflow-hidden"
+        style={reservedHeight > 0
+          ? { height: reservedHeight }
           : undefined}
       >
         <div className="px-5 py-6 lg:px-7 lg:py-8">
@@ -116,8 +117,9 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
 
         {/*
           Each step is measured off-screen for this particular animation. The
-          visible canvas then reserves only its tallest step, avoiding page
-          jumps without imposing one oversized height on every lesson.
+          visible canvas then reserves only its tallest step. Fixing that
+          height prevents transition elements from briefly expanding the
+          surrounding lesson while the next stage enters.
         */}
         <div aria-hidden="true" className="pointer-events-none invisible absolute inset-x-0 top-0">
           {Array.from({ length: total }, (_, measuredStep) => (
