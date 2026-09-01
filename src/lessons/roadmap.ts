@@ -437,7 +437,7 @@ export const roadmap: RoadmapCategory[] = [
             path: "/sql/querying/aggregations",
             blurb: "Aggregate values, form groups, filter groups, and create multi-dimensional summaries.",
             lessons: [
-              { title: "Aggregate Functions (COUNT / SUM / AVG / MIN / MAX)", slug: "aggregate-functions", path: "/sql/querying/aggregations/aggregate-functions", icon: Sigma },
+              { title: "Aggregate Functions (COUNT / COUNT DISTINCT / SUM / AVG / MIN / MAX)", slug: "aggregate-functions", path: "/sql/querying/aggregations/aggregate-functions", icon: Sigma },
               { title: "The Collapse Engine (GROUP BY)", slug: "group-by", path: "/sql/querying/aggregations/group-by", icon: Sigma },
               { title: "Evaluation Filtering (HAVING)", slug: "having", path: "/sql/querying/aggregations/having", icon: Filter },
               { title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)", slug: "grouping-sets", path: "/sql/querying/aggregations/grouping-sets", icon: Sigma },
