@@ -6,6 +6,7 @@ import { introSqlClientServer } from "./foundations/client-server";
 import { commentsStages, calculationAliasStages } from "./querying-fundamentals/sql-basics-comments-calculations-aliases";
 import { operatorStages } from "./querying-fundamentals/sql-operators";
 import { whereFilteringStages } from "./querying-fundamentals/where-filters";
+import { caseWhenStages } from "./querying-fundamentals/case-when";
 import { distinctOrderLimitStages } from "./querying-fundamentals/distinct-order-by-and-limit";
 import { queryStructureStages } from "./querying-fundamentals/query-structure";
 import { distinctStages } from "./querying-fundamentals/select-distinct";
@@ -36,6 +37,7 @@ export const STAGES_REGISTRY = {
   "distinct-order-limit": distinctOrderLimitStages, "sql-comments": commentsStages,
   "sql-calculations-aliases": calculationAliasStages, "sql-operators": operatorStages,
   "where-filtering": whereFilteringStages,
+  "case-when": caseWhenStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
