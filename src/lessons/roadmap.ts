@@ -508,6 +508,21 @@ export const roadmap: RoadmapCategory[] = [
             ],
           },
           {
+            title: "Numeric Functions",
+            slug: "numeric-functions",
+            path: "/sql/specialized/numeric-functions",
+            blurb: "ROUND, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT — the math layer of SQL.",
+            lessons: [
+              { title: "ROUND / TRUNC / CEIL / FLOOR", slug: "round-trunc-ceil-floor", path: "/sql/specialized/numeric-functions/round-trunc-ceil-floor", icon: Calculator },
+              { title: "NULLIF / COALESCE: Safe Math", slug: "nullif-coalesce", path: "/sql/specialized/numeric-functions/nullif-coalesce", icon: Calculator },
+              { title: "ABS / SIGN / LEAST / GREATEST", slug: "abs-sign-least-greatest", path: "/sql/specialized/numeric-functions/abs-sign-least-greatest", icon: Calculator },
+              { title: "MOD / %: Remainder & Parity", slug: "mod", path: "/sql/specialized/numeric-functions/mod", icon: Calculator },
+              { title: "POWER / SQRT / EXP / LOG", slug: "power-sqrt-log", path: "/sql/specialized/numeric-functions/power-sqrt-log", icon: Calculator },
+              { title: "RANDOM / RAND: Numbers in a Range", slug: "random-range", path: "/sql/specialized/numeric-functions/random-range", icon: Calculator },
+              { title: "Numeric Functions: Final Quiz", slug: "numeric-functions-quiz", path: "/sql/specialized/numeric-functions/numeric-functions-quiz", icon: HelpCircle },
+            ],
+          },
+          {
             title: "Conversions",
             slug: "conversions",
             path: "/sql/specialized/conversions",
