@@ -490,6 +490,26 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
+        title: "Specialized Data Handling",
+        patterns: [
+          {
+            title: "String Functions",
+            slug: "string-functions",
+            path: "/sql/specialized/string-functions",
+            blurb: "Build, extract, clean, and search text values with practical SQL string functions.",
+            lessons: [
+              { title: "CONCAT / SUBSTRING: Build and Extract Text", slug: "concat-substring", path: "/sql/specialized/string-functions/concat-substring", icon: Hash },
+              { title: "LEFT / RIGHT / LENGTH", slug: "left-right-length", path: "/sql/specialized/string-functions/left-right-length", icon: Hash },
+              { title: "UPPER / LOWER", slug: "upper-lower", path: "/sql/specialized/string-functions/upper-lower", icon: Hash },
+              { title: "TRIM / REPLACE", slug: "trim-replace", path: "/sql/specialized/string-functions/trim-replace", icon: Hash },
+              { title: "POSITION / SPLIT_PART", slug: "position-split-part", path: "/sql/specialized/string-functions/position-split-part", icon: Hash },
+              { title: "CAST / TO_CHAR (Type Casting)", slug: "cast-to-char", path: "/sql/specialized/string-functions/cast-to-char", icon: Hash },
+              { title: "Regular Expressions (Regex)", slug: "regex", path: "/sql/specialized/string-functions/regex", icon: Hash },
+            ],
+          },
+        ],
+      },
+      {
         title: "Advanced SQL",
         patterns: [
           {
