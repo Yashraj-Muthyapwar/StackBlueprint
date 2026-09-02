@@ -453,12 +453,11 @@ export const roadmap: RoadmapCategory[] = [
             title: "Aggregations & GROUP BY",
             slug: "aggregations",
             path: "/sql/querying/aggregations",
-            blurb: "Aggregate values, form groups, filter groups, and create multi-dimensional summaries.",
+            blurb: "Aggregate values, form groups, filter groups, and verify your understanding with a final quiz.",
             lessons: [
               { title: "Aggregate Functions (COUNT / COUNT DISTINCT / SUM / AVG / MIN / MAX)", slug: "aggregate-functions", path: "/sql/querying/aggregations/aggregate-functions", icon: Sigma },
               { title: "GROUP BY: One Summary per Group", slug: "group-by", path: "/sql/querying/aggregations/group-by", icon: Sigma },
               { title: "Evaluation Filtering (HAVING)", slug: "having", path: "/sql/querying/aggregations/having", icon: Filter },
-              { title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)", slug: "grouping-sets", path: "/sql/querying/aggregations/grouping-sets", icon: Sigma },
               { title: "Aggregations & GROUP BY: Final Quiz", slug: "aggregations-quiz", path: "/sql/querying/aggregations/aggregations-quiz", icon: HelpCircle },
             ],
           },
@@ -486,6 +485,20 @@ export const roadmap: RoadmapCategory[] = [
               { title: "Existence Checks (EXISTS vs IN)", slug: "exists-vs-in", path: "/sql/querying/subqueries/exists-vs-in", icon: Filter },
               { title: "Set Operations (UNION / INTERSECT / EXCEPT)", slug: "set-ops", path: "/sql/querying/subqueries/set-ops", icon: Layers },
               { title: "Subqueries & Set Ops: Final Quiz", slug: "subqueries-quiz", path: "/sql/querying/subqueries/subqueries-quiz", icon: HelpCircle },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Advanced SQL",
+        patterns: [
+          {
+            title: "Window Functions",
+            slug: "window-functions",
+            path: "/sql/querying/window-functions",
+            blurb: "Advanced analytical SQL, beginning with multi-dimensional GROUPING SETS, ROLLUP, and CUBE.",
+            lessons: [
+              { title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)", slug: "grouping-sets", path: "/sql/querying/window-functions/grouping-sets", icon: Sigma },
             ],
           },
         ],
