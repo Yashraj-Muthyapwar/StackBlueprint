@@ -17,6 +17,58 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-product-model-numbers": {
+    id: "cycledepot-product-model-numbers",
+    title: "Extract product model numbers",
+    prompt:
+      "Return every Cycle Depot product name containing a number, plus model_number. Use REGEXP_LIKE(name, '[0-9]+') to filter and REGEXP_SUBSTR(name, '[0-9]+') AS model_number to extract the first digit run. Sort by id. The result should have 5 rows and exactly two columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-product-model-numbers",
+    starterSql: `-- Cycle Depot product model numbers.
+-- Return name and model_number from products that contain digits.
+-- Use REGEXP_LIKE to filter and REGEXP_SUBSTR to extract.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-customer-email-parts": {
+    id: "cycledepot-customer-email-parts",
+    title: "Extract customer email parts",
+    prompt:
+      "Return every Cycle Depot customer's email, at_position, email_local, and email_domain. Use POSITION('@' IN email), SPLIT_PART(email, '@', 1), and SPLIT_PART(email, '@', 2). Sort by id. The result should have 60 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-email-parts",
+    starterSql: `-- Cycle Depot customer email parts.
+-- Return email, at_position, email_local, and email_domain from customers.
+-- Use POSITION and SPLIT_PART with the @ delimiter.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-clean-product-keys": {
+    id: "cycledepot-clean-product-keys",
+    title: "Create clean product keys",
+    prompt:
+      "Return every Cycle Depot product's name and product_key. Add one edge space with CONCAT(' ', name, ' '), remove it with TRIM, then replace each internal space with '-' using REPLACE. Sort by id. The result should have 30 rows and exactly two columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-clean-product-keys",
+    starterSql: `-- Cycle Depot clean product keys.
+-- Return name and product_key from products.
+-- Use CONCAT, TRIM, and REPLACE to make a clean hyphenated key.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-product-case-labels": {
+    id: "cycledepot-product-case-labels",
+    title: "Create product case labels",
+    prompt:
+      "Return every Cycle Depot product's name, category, category_upper, and category_lower. Use UPPER(category) and LOWER(category). Sort by id. The result should have 30 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-product-case-labels",
+    starterSql: `-- Cycle Depot product case labels.
+-- Return name, category, category_upper, and category_lower from products.
+-- Use UPPER(category) and LOWER(category).
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-customer-text-summaries": {
     id: "cycledepot-customer-text-summaries",
     title: "Create customer text summaries",
