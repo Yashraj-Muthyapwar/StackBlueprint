@@ -499,7 +499,7 @@ export const roadmap: RoadmapCategory[] = [
             blurb: "Build, extract, clean, and search text values with practical SQL string functions.",
             lessons: [
               { title: "CONCAT / SUBSTRING: Build and Extract Text", slug: "concat-substring", path: "/sql/specialized/string-functions/concat-substring", icon: Hash },
-              { title: "LEFT / RIGHT / LENGTH", slug: "left-right-length", path: "/sql/specialized/string-functions/left-right-length", icon: Hash },
+              { title: "LEFT / RIGHT / LENGTH: Inspect Text", slug: "left-right-length", path: "/sql/specialized/string-functions/left-right-length", icon: Hash },
               { title: "UPPER / LOWER", slug: "upper-lower", path: "/sql/specialized/string-functions/upper-lower", icon: Hash },
               { title: "TRIM / REPLACE", slug: "trim-replace", path: "/sql/specialized/string-functions/trim-replace", icon: Hash },
               { title: "POSITION / SPLIT_PART", slug: "position-split-part", path: "/sql/specialized/string-functions/position-split-part", icon: Hash },
