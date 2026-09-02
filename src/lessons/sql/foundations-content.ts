@@ -15,6 +15,7 @@ import databaseKeysImg from "@/images/sql/foundations/database-keys.png";
 import levelsOfAbstractionImg from "@/images/sql/foundations/database-levels.png";
 import databaseLandscapeImg from "@/images/sql/foundations/database-landscape.png";
 import { sqlQueryingFundamentalsTopic } from "./sql-querying-fundamentals";
+import type { AnyVariant } from "@/components/sql/animation-registry";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
@@ -31,53 +32,7 @@ export type Section =
   | { kind: "image"; src: string; alt: string; caption?: string }
   | {
       kind: "animation";
-      variant:
-        | "pipeline"
-        | "select-projection"
-        | "table-build"
-        | "foreign-key"
-        | "null-truth"
-        | "type-sizes"
-        | "where-filter"
-        | "group-by-agg"
-        | "join-types"
-        | "set-ops"
-        | "table-anatomy"
-        | "pk-anatomy"
-        | "fk-deep"
-        | "normalization"
-        | "intro-what-is-db"
-        | "intro-db-types"
-        | "intro-how-db-works"
-        | "intro-querying"
-        | "intro-storage"
-        | "commands-map"
-        | "query-structure"
-        | "select-distinct"
-        | "distinct-order-limit"
-        | "sql-comments"
-        | "sql-calculations-aliases"
-        | "sql-operators"
-        | "where-filtering"
-        | "case-when"
-        | "q-bool"
-        | "q-range"
-        | "q-like"
-        | "q-null3vl"
-        | "q-sargability"
-        | "q-aggr"
-        | "q-grpby"
-        | "q-having"
-        | "q-cube"
-        | "q-venn"
-        | "q-self"
-        | "q-semianti"
-        | "q-algos"
-        | "q-scalar"
-        | "q-corr"
-        | "q-existsin"
-        | "q-setops"
-        | "intro-sql-client-server";
+      variant: AnyVariant;
       caption?: string;
     }
   | {
