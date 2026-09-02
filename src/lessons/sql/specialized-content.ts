@@ -1332,6 +1332,64 @@ const stringFunctionsQuiz: LessonContent = {
 };
 
 // =============================================================
+// NUMERIC FUNCTIONS
+// =============================================================
+const roundTruncCeilFloor: LessonContent = {
+  slug: "round-trunc-ceil-floor",
+  title: "ROUND / TRUNC / CEIL / FLOOR",
+  subtitle: "Round to decimal places, truncate precision, and clamp values to integer boundaries.",
+  sections: [],
+};
+
+const nullifCoalesce: LessonContent = {
+  slug: "nullif-coalesce",
+  title: "NULLIF / COALESCE: Safe Math",
+  subtitle: "Prevent divide-by-zero crashes and guarantee fallback numbers in calculations.",
+  sections: [],
+};
+
+const absSignLeastGreatest: LessonContent = {
+  slug: "abs-sign-least-greatest",
+  title: "ABS / SIGN / LEAST / GREATEST",
+  subtitle: "Compute absolute values, test signs, and choose row-level minimums and maximums.",
+  sections: [],
+};
+
+const modRemainder: LessonContent = {
+  slug: "mod",
+  title: "MOD / %: Remainder & Parity",
+  subtitle: "Calculate remainders, test for odd/even numbers, and cycle items through buckets.",
+  sections: [],
+};
+
+const powerSqrtLog: LessonContent = {
+  slug: "power-sqrt-log",
+  title: "POWER / SQRT / EXP / LOG",
+  subtitle: "Compute powers, square roots, exponential growth, and logarithmic scales.",
+  sections: [],
+};
+
+const randomRange: LessonContent = {
+  slug: "random-range",
+  title: "RANDOM / RAND: Numbers in a Range",
+  subtitle: "Generate random numbers, scale to custom min-max ranges, and sample rows.",
+  sections: [],
+};
+
+const numericFunctionsQuiz: LessonContent = {
+  slug: "numeric-functions-quiz",
+  title: "Numeric Functions: Final Quiz",
+  subtitle: "Test your understanding of rounding, safe math, arithmetic functions, and random numbers.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [],
+    },
+  ],
+};
+
+// =============================================================
 // CONVERSIONS
 // =============================================================
 const castToChar: LessonContent = {
@@ -1390,7 +1448,15 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Specialized Data Handling",
     iconKey: "terminal",
     blurb: "ROUND, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT — the math layer of SQL.",
-    lessons: [],
+    lessons: [
+      roundTruncCeilFloor,
+      nullifCoalesce,
+      absSignLeastGreatest,
+      modRemainder,
+      powerSqrtLog,
+      randomRange,
+      numericFunctionsQuiz,
+    ],
   },
   "datetime-functions": {
     slug: "datetime-functions",
