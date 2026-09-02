@@ -22,6 +22,10 @@ import { sargabilityStages } from "./querying/sargability";
 import { projStages } from "./querying-fundamentals/your-first-query";
 import { concatSubstringStages } from "./string-functions/concat-substring";
 import { leftRightLengthStages } from "./string-functions/left-right-length.tsx";
+import { upperLowerStages } from "./string-functions/upper-lower.tsx";
+import { trimReplaceStages } from "./string-functions/trim-replace.tsx";
+import { positionSplitPartStages } from "./string-functions/position-split-part.tsx";
+import { regexStages } from "./string-functions/regex.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -42,6 +46,10 @@ export const STAGES_REGISTRY = {
   "case-when": caseWhenStages,
   "q-concat-substring": concatSubstringStages,
   "q-left-right-length": leftRightLengthStages,
+  "q-upper-lower": upperLowerStages,
+  "q-trim-replace": trimReplaceStages,
+  "q-position-split-part": positionSplitPartStages,
+  "q-regex": regexStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
