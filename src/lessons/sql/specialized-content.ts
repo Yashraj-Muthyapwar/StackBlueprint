@@ -1,5 +1,6 @@
 import type { LessonContent, FoundationTopicMeta } from "../types";
 import concatSubstringImg from "@/images/sql/string-functions/concat-substring-cycle-depot.png";
+import leftRightLengthImg from "@/images/sql/string-functions/left-right-length-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -184,9 +185,175 @@ LIMIT 4;`,
 
 const leftRightLength: LessonContent = {
   slug: "left-right-length",
-  title: "LEFT / RIGHT / LENGTH",
-  subtitle: "Placeholder for LEFT / RIGHT / LENGTH",
-  sections: [],
+  title: "LEFT / RIGHT / LENGTH: Inspect Text",
+  subtitle: "Take a fixed piece from either end of Cycle Depot text, then count every character.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Inspect text without changing it",
+      body: [
+        "Customer names and email addresses are stored as complete strings, but a report sometimes needs a short code, a suffix, or a quick data-quality check. `LEFT` copies characters from the beginning of a string. `RIGHT` copies characters from its end. `LENGTH` counts the characters in the string.",
+        "These functions create values in the query result. They do not shorten, replace, or otherwise edit the values stored in the `customers` table.",
+      ],
+    },
+    {
+      kind: "image",
+      src: leftRightLengthImg,
+      alt: "A visual showing the beginning of Zane Novak extracted as Zan, the end of an email extracted as example.com, and the ten characters counted in Zane Novak including the space.",
+      caption: "LEFT reads from the beginning, RIGHT reads from the ending, and LENGTH counts every character, including spaces.",
+    },
+    {
+      kind: "prose",
+      heading: "Build a small customer code with LEFT",
+      body: [
+        "`LEFT(text, count)` returns the requested number of characters from the beginning. A fixed count is useful for a compact code, but it counts characters rather than words. `LEFT(name, 3)` turns `Zane Novak` into `Zan`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the full name and add a three-character customer code",
+      code: `SELECT
+  name,
+  LEFT(name, 3) AS name_code
+FROM customers
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "The same three-character rule is applied to each Cycle Depot customer",
+      headers: ["name", "name_code"],
+      rows: [
+        ["Zane Novak", "Zan"],
+        ["Boris Alvarez", "Bor"],
+        ["Priya Doyle", "Pri"],
+        ["Ugo Mensah", "Ugo"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-left-right-length",
+      caption: "The stored text stays intact. Each function adds a calculated result for the same customer row.",
+    },
+    {
+      kind: "prose",
+      heading: "Read a known suffix with RIGHT",
+      body: [
+        "`RIGHT(text, count)` works from the other end. Every current Cycle Depot practice email ends in `example.com`, which is 11 characters long, so `RIGHT(email, 11)` returns that suffix. This is a fixed-width slice, not a general email parser. A later lesson covers delimiter-aware text splitting.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Read the last 11 characters from each practice email",
+      code: `SELECT
+  email,
+  RIGHT(email, 11) AS email_domain
+FROM customers
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "The fixed suffix is the same in the current practice dataset",
+      headers: ["email", "email_domain"],
+      rows: [
+        ["zane.novak1@example.com", "example.com"],
+        ["boris.alvarez2@example.com", "example.com"],
+        ["priya.doyle3@example.com", "example.com"],
+        ["ugo.mensah4@example.com", "example.com"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Use LENGTH to inspect character counts",
+      body: [
+        "`LENGTH(text)` returns a number. It counts letters, digits, punctuation, and spaces. `LENGTH('Zane Novak')` is 10 because the blank space between the two names is also a character.",
+        "Character counts can help spot unexpectedly short or long values. They are not a substitute for a format rule, but they are a quick first signal when exploring a dataset.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Inspect the full customer name, a short code, an email suffix, and the character count together",
+      code: `SELECT
+  name,
+  LEFT(name, 3) AS name_code,
+  RIGHT(email, 11) AS email_domain,
+  LENGTH(name) AS name_characters
+FROM customers
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "A text expression can sit beside the original values in one result",
+      headers: ["name", "name_code", "email_domain", "name_characters"],
+      rows: [
+        ["Zane Novak", "Zan", "example.com", "10"],
+        ["Boris Alvarez", "Bor", "example.com", "13"],
+        ["Priya Doyle", "Pri", "example.com", "11"],
+        ["Ugo Mensah", "Ugo", "example.com", "10"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Fixed width means fixed width",
+      body: "If the requested count is longer than the available text, LEFT and RIGHT return the whole string. They do not pad it or raise an error. Use a delimiter-aware function when the part you need can have a variable length.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Create customer text summaries",
+      prompt: "Return name, name_code, email_domain, and name_characters from customers. Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name). Name the calculated columns exactly, order by id, and run the checked exercise.",
+      tables: ["customers"],
+      successCheck: "60 rows with exactly name, name_code, email_domain, and name_characters, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-customer-text-summaries",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "LEFT takes a fixed number of characters from the beginning of a text value.",
+        "RIGHT takes a fixed number of characters from the end of a text value.",
+        "LENGTH counts every character, including spaces and punctuation.",
+        "These functions transform the result of a query, not the text stored in the source table.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "left-direction",
+          question: "What does LEFT('Zane Novak', 3) return?",
+          options: ["Nov", "Zan", "Zane", "10"],
+          correctIndex: 1,
+          explanation: "LEFT starts at the beginning and returns the requested three characters: Zan.",
+        },
+        {
+          id: "right-direction",
+          question: "What does RIGHT('example.com', 3) return?",
+          options: ["exa", "com", "moc", "example.com"],
+          correctIndex: 1,
+          explanation: "RIGHT counts from the end of the string, so the last three characters are com.",
+        },
+        {
+          id: "length-space",
+          question: "Why is LENGTH('Zane Novak') equal to 10?",
+          options: ["It counts the space between the names", "It ignores all spaces", "It counts only vowels", "It rounds the name to ten characters"],
+          correctIndex: 0,
+          explanation: "LENGTH counts all characters in the string, including the space between Zane and Novak.",
+        },
+        {
+          id: "long-request",
+          question: "What happens when LEFT('Bike', 10) asks for more characters than the string contains?",
+          options: ["It returns Bike", "It adds spaces until there are ten characters", "It raises an error", "It returns an empty value"],
+          correctIndex: 0,
+          explanation: "LEFT returns the available text when the requested count exceeds the string length.",
+        },
+      ],
+    },
+  ],
 };
 
 const upperLower: LessonContent = {
