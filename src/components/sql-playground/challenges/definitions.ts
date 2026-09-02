@@ -14,29 +14,29 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use the products table.",
       "Return exactly name, category, and compact_label.",
       "Use SUBSTRING(name FROM 1 FOR 5) to take the first five characters of name.",
-      "Use CONCAT to join that prefix, ' · ', and category.",
+      "Use CONCAT to join that prefix, ' - ', and category.",
       "Name the result compact_label.",
       "Sort the result by id.",
     ],
     requiredTables: ["products"],
     starterSql: `-- Cycle Depot compact product labels.
 -- Return name, category, and compact_label from products.
--- Use the first five characters of name, then join them to category with ' · '.
+-- Use the first five characters of name, then join them to category with ' - '.
 -- Sort by id, then run and check.`,
     hints: [
       "Start with SELECT name, category FROM products.",
       "Add SUBSTRING(name FROM 1 FOR 5) to take the prefix.",
-      "Wrap it with CONCAT(..., ' · ', category) AS compact_label, then ORDER BY id.",
+      "Wrap it with CONCAT(..., ' - ', category) AS compact_label, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' · ', category) AS compact_label FROM products ORDER BY id;",
-      duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' · ', category) AS compact_label FROM products ORDER BY id;",
+      postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
+      duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' · ', category) AS compact_label FROM products ORDER BY id;",
-        duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' · ', category) AS compact_label FROM products ORDER BY id;",
+        postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
+        duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
       },
       requiredColumns: ["name", "category", "compact_label"],
       columnOrder: "exact",
