@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL Lesson Creation & Revamp"
+  short_description: "Create or adapt SQL lessons with real datasets"
+  default_prompt: "Use $sql-lesson-revamp to create or refresh this SQL lesson with learner-friendly content, visuals, and checked practice."
