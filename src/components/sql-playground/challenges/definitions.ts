@@ -2,6 +2,53 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "cycle-depot-customer-text-summaries",
+    version: 1,
+    title: "Create customer text summaries",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a compact text summary for every Cycle Depot customer.",
+    requirements: [
+      "Use the customers table.",
+      "Return exactly name, name_code, email_domain, and name_characters.",
+      "Use LEFT(name, 3) AS name_code.",
+      "Use RIGHT(email, 11) AS email_domain.",
+      "Use LENGTH(name) AS name_characters.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: `-- Cycle Depot customer text summaries.
+-- Return name, name_code, email_domain, and name_characters from customers.
+-- Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name).
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name FROM customers.",
+      "Add LEFT(name, 3) AS name_code and LENGTH(name) AS name_characters.",
+      "Add RIGHT(email, 11) AS email_domain, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+      duckdb: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+        duckdb: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+      },
+      requiredColumns: ["name", "name_code", "email_domain", "name_characters"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Customer text summaries complete",
+      body: "Correct. You read fixed text from both ends and counted the full customer name without changing the stored values.",
+      nextConcept: "UPPER and LOWER",
+    },
+  },
+  {
     id: "cycle-depot-compact-product-labels",
     version: 1,
     title: "Build compact product labels",
