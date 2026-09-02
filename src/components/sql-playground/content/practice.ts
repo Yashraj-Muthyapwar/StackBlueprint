@@ -17,6 +17,19 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-customer-text-summaries": {
+    id: "cycledepot-customer-text-summaries",
+    title: "Create customer text summaries",
+    prompt:
+      "Return every Cycle Depot customer's name, name_code, email_domain, and name_characters. Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name). Sort by id. The result should have 60 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-text-summaries",
+    starterSql: `-- Cycle Depot customer text summaries.
+-- Return name, name_code, email_domain, and name_characters from customers.
+-- Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name).
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-compact-product-labels": {
     id: "cycledepot-compact-product-labels",
     title: "Build compact product labels",
