@@ -3,6 +3,7 @@ import { useProgress } from "@/hooks/use-progress";
 import { TrackCard } from "@/components/learning-paths/TrackCard";
 import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
+import { SPECIALIZED_TOPICS } from "@/lessons/sql/specialized-content";
 import sqlLogo from "@/images/logos/sql-logo.png";
 import {
   AlertTriangle,
@@ -69,7 +70,7 @@ type Topic = {
   icon: LucideIcon;
   modules: string[];
   unlocked?: boolean;
-  routeBase?: "foundations" | "querying";
+  routeBase?: "foundations" | "querying" | "specialized";
   to?: string;
 };
 
@@ -176,7 +177,17 @@ const sections: Section[] = [
         blurb:
           "CONCAT, SUBSTRING, TRIM, REPLACE, CHARINDEX/POSITION, and regex patterns for text wrangling.",
         icon: Hash,
-        modules: ["CONCAT / SUBSTRING", "TRIM / REPLACE", "POSITION / CHARINDEX", "Regex"],
+        modules: [
+          "CONCAT / SUBSTRING",
+          "LEFT / RIGHT / LENGTH",
+          "UPPER / LOWER",
+          "TRIM / REPLACE",
+          "POSITION / SPLIT_PART",
+          "CAST / TO_CHAR",
+          "Regex",
+        ],
+        unlocked: true,
+        routeBase: "specialized",
       },
       {
         slug: "numeric-functions",
@@ -451,10 +462,14 @@ function SqlIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
 
-                  const isFoundations = t.routeBase === "foundations" || !t.routeBase;
-                  const realTopic = isFoundations
-                    ? FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS]
-                    : QUERYING_TOPICS[t.slug as keyof typeof QUERYING_TOPICS];
+                  let realTopic;
+                  if (t.routeBase === "specialized") {
+                    realTopic = SPECIALIZED_TOPICS[t.slug as keyof typeof SPECIALIZED_TOPICS];
+                  } else if (t.routeBase === "querying") {
+                    realTopic = QUERYING_TOPICS[t.slug as keyof typeof QUERYING_TOPICS];
+                  } else {
+                    realTopic = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
+                  }
 
                   const completedCount = realTopic
                     ? realTopic.lessons.filter(l => isCompleted(l.slug)).length
