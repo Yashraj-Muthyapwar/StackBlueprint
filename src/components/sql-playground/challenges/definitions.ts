@@ -2,6 +2,190 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "cycle-depot-product-model-numbers",
+    version: 2,
+    title: "Extract product model numbers",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt: "Find Cycle Depot product names containing digits and extract the first model-number run from each one.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name and model_number.",
+      "Keep matching rows with WHERE REGEXP_LIKE(name, '[0-9]+').",
+      "Use REGEXP_SUBSTR(name, '[0-9]+') AS model_number.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product model numbers.
+-- Return name and model_number from products that contain digits.
+-- Use REGEXP_LIKE to filter and REGEXP_SUBSTR to extract.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name FROM products.",
+      "Add WHERE REGEXP_LIKE(name, '[0-9]+') to keep names containing a digit run.",
+      "Add REGEXP_SUBSTR(name, '[0-9]+') AS model_number, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
+      },
+      requiredColumns: ["name", "model_number"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Product model numbers complete",
+      body: "Correct. You filtered flexible digit patterns and extracted the matching model number from each product name.",
+      nextConcept: "More PostgreSQL text patterns",
+    },
+  },
+  {
+    id: "cycle-depot-customer-email-parts",
+    version: 1,
+    title: "Extract customer email parts",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Find the @ position in every Cycle Depot customer email, then return the local name and domain separately.",
+    requirements: [
+      "Use the customers table.",
+      "Return exactly email, at_position, email_local, and email_domain.",
+      "Use POSITION('@' IN email) AS at_position.",
+      "Use SPLIT_PART(email, '@', 1) AS email_local.",
+      "Use SPLIT_PART(email, '@', 2) AS email_domain.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: `-- Cycle Depot customer email parts.
+-- Return email, at_position, email_local, and email_domain from customers.
+-- Use POSITION and SPLIT_PART with the @ delimiter.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT email FROM customers.",
+      "Add POSITION('@' IN email) AS at_position.",
+      "Add the two SPLIT_PART expressions, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+      duckdb: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+        duckdb: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+      },
+      requiredColumns: ["email", "at_position", "email_local", "email_domain"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Customer email parts complete",
+      body: "Correct. You located a real delimiter and used it to produce the local name and domain for every customer email.",
+      nextConcept: "CAST and TO_CHAR",
+    },
+  },
+  {
+    id: "cycle-depot-clean-product-keys",
+    version: 1,
+    title: "Create clean product keys",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create a clean hyphenated key for every Cycle Depot product.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name and product_key.",
+      "Add edge spaces with CONCAT(' ', name, ' '), then remove them with TRIM.",
+      "Use REPLACE to change every internal space to '-'.",
+      "Name the result product_key.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot clean product keys.
+-- Return name and product_key from products.
+-- Use CONCAT, TRIM, and REPLACE to make a clean hyphenated key.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name FROM products.",
+      "Use TRIM(CONCAT(' ', name, ' ')) to remove the temporary edge spaces.",
+      "Wrap that expression in REPLACE(..., ' ', '-') AS product_key, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+      duckdb: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+        duckdb: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+      },
+      requiredColumns: ["name", "product_key"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Clean product keys complete",
+      body: "Correct. You removed temporary edge spaces before replacing each internal space with a hyphen.",
+      nextConcept: "POSITION and SPLIT_PART",
+    },
+  },
+  {
+    id: "cycle-depot-product-case-labels",
+    version: 1,
+    title: "Create product case labels",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Create uppercase and lowercase category labels for every Cycle Depot product.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name, category, category_upper, and category_lower.",
+      "Use UPPER(category) AS category_upper.",
+      "Use LOWER(category) AS category_lower.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product case labels.
+-- Return name, category, category_upper, and category_lower from products.
+-- Use UPPER(category) and LOWER(category).
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name, category FROM products.",
+      "Add UPPER(category) AS category_upper.",
+      "Add LOWER(category) AS category_lower, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+      duckdb: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+        duckdb: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+      },
+      requiredColumns: ["name", "category", "category_upper", "category_lower"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Product case labels complete",
+      body: "Correct. You formatted both case variants for every product while keeping the original category in the result.",
+      nextConcept: "TRIM and REPLACE",
+    },
+  },
+  {
     id: "cycle-depot-customer-text-summaries",
     version: 1,
     title: "Create customer text summaries",
