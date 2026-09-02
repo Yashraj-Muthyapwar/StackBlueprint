@@ -132,7 +132,7 @@ LIMIT 4;`,
     {
       kind: "playground-practice",
       title: "Build compact product labels",
-      prompt: "Return name, category, and compact_label from products. Use SUBSTRING(name FROM 1 FOR 5) to take the prefix, then use CONCAT to join it to category with ' · '. Name the result compact_label, order by id, and run the checked exercise.",
+      prompt: "Return name, category, and compact_label from products. Use SUBSTRING(name FROM 1 FOR 5) to take the prefix, then use CONCAT to join it to category with ' - '. Name the result compact_label, order by id, and run the checked exercise.",
       tables: ["products"],
       successCheck: "30 rows with exactly name, category, and compact_label, ordered by id.",
       href: "/sql-playground?practice=cycledepot-compact-product-labels",
