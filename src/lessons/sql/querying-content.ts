@@ -2521,7 +2521,7 @@ LIMIT  100;`,
 };
 
 // =============================================================
-// TOPIC INDEX — 4 modules × 4 sub-topics = 16 lessons
+// TOPIC INDEX
 // =============================================================
 
 export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
