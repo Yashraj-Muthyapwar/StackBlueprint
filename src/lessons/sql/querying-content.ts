@@ -983,16 +983,16 @@ const filteringFinalQuiz: LessonContent = {
           explanation: "Normal comparisons with NULL are UNKNOWN. IS NULL is the missing-value test.",
         },
         {
-          id: "filtering-final-unknown",
-          question: "What happens to a row where city is NULL under WHERE city <> 'Austin'?",
+          id: "filtering-final-not",
+          question: "For a product with a known category, what does WHERE NOT category = 'Road Bikes' keep?",
           options: [
-            "It is kept because NULL is different from Austin.",
-            "It is dropped because the comparison is UNKNOWN and WHERE keeps only TRUE.",
-            "It is converted to Austin.",
-            "It causes every row to be removed with a syntax error.",
+            "Only Road Bikes",
+            "Every product that is not a Road Bike",
+            "Only products with a NULL category",
+            "Every product, regardless of category",
           ],
           correctIndex: 1,
-          explanation: "NULL is unknown, so the comparison is UNKNOWN. WHERE drops FALSE and UNKNOWN rows.",
+          explanation: "NOT reverses the category comparison. The question specifies a known category because NOT UNKNOWN is still UNKNOWN for a NULL value.",
         },
         {
           id: "filtering-final-date-range",
@@ -1484,11 +1484,146 @@ ORDER BY order_count DESC, status ASC;`,
   ],
 };
 
-// ---------- 2.4 Multi-Dimensional Aggregations (GROUPING SETS) ----------
+// ---------- Aggregations & GROUP BY: Final Quiz ----------
+const aggregationsFinalQuiz: LessonContent = {
+  slug: "aggregations-quiz",
+  title: "Aggregations & GROUP BY: Final Quiz",
+  subtitle:
+    "Check your understanding of aggregate functions, grouping grain, expressions, and HAVING.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "aggregations-final-count-rows",
+          question: "What does COUNT(*) return for a group of orders?",
+          options: [
+            "The number of rows in the group, including rows with NULL values in individual columns",
+            "Only the number of orders whose status is not NULL",
+            "The total of every numeric column in the group",
+            "One result row for every source row",
+          ],
+          correctIndex: 0,
+          explanation:
+            "COUNT(*) counts rows. It does not inspect a particular column, so NULL values in individual columns do not remove a row from the count.",
+        },
+        {
+          id: "aggregations-final-count-column",
+          question: "Which expression counts only customers that supplied a city?",
+          options: ["COUNT(*)", "COUNT(city)", "COUNT(DISTINCT *)", "SUM(city)"],
+          correctIndex: 1,
+          explanation:
+            "COUNT(column) ignores NULL values in that column, so COUNT(city) counts only rows with a city value.",
+        },
+        {
+          id: "aggregations-final-count-distinct",
+          question: "What does COUNT(DISTINCT country) count?",
+          options: [
+            "Every country value, including repeats and NULL",
+            "Each unique non-NULL country once",
+            "Only the most frequent country",
+            "The number of columns named country",
+          ],
+          correctIndex: 1,
+          explanation:
+            "COUNT(DISTINCT column) removes duplicate non-NULL values before counting and ignores NULL.",
+        },
+        {
+          id: "aggregations-final-aggregate-choice",
+          question: "Which aggregate answers: What is the total catalogue price of all Cycle Depot products?",
+          options: ["AVG(price)", "COUNT(price)", "SUM(price)", "MAX(price)"],
+          correctIndex: 2,
+          explanation: "SUM adds the numeric values together to produce a total.",
+        },
+        {
+          id: "aggregations-final-grain",
+          question: "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
+          options: [
+            "One row for the whole orders table",
+            "One row per order",
+            "One row per distinct status",
+            "One row per customer",
+          ],
+          correctIndex: 2,
+          explanation:
+            "The GROUP BY key defines the result grain. Grouping by status creates one summary row for each distinct status.",
+        },
+        {
+          id: "aggregations-final-group-rule",
+          question: "Why is this query invalid? SELECT status, channel, COUNT(*) FROM orders GROUP BY status;",
+          options: [
+            "COUNT(*) cannot be used with GROUP BY",
+            "channel is neither aggregated nor included in GROUP BY",
+            "status can only be used in ORDER BY",
+            "GROUP BY must always contain two columns",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Every selected expression must either identify a group by appearing in GROUP BY or reduce that group with an aggregate.",
+        },
+        {
+          id: "aggregations-final-multiple-columns",
+          question: "What does GROUP BY status, channel create?",
+          options: [
+            "One group for every distinct status-and-channel pair",
+            "One group for every status, ignoring channel",
+            "One group for every channel, ignoring status",
+            "A sorted copy of the orders table",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Adding a grouping column makes the result more detailed: each unique pair becomes its own group.",
+        },
+        {
+          id: "aggregations-final-expression",
+          question: "When SELECT includes DATE_TRUNC('month', order_date) AS order_month, what should a portable grouped query use to define the same groups?",
+          options: [
+            "GROUP BY order_date",
+            "GROUP BY DATE_TRUNC('month', order_date)",
+            "GROUP BY COUNT(*)",
+            "HAVING DATE_TRUNC('month', order_date)",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Repeat the grouping expression so SQL knows that all dates in the same truncated month belong in one group.",
+        },
+        {
+          id: "aggregations-final-ordinal",
+          question: "Why are GROUP BY 1, 2 positions best limited to quick ad hoc exploration?",
+          options: [
+            "They do not support aggregate functions",
+            "Changing the SELECT order can silently change what the positions mean",
+            "They always create only one group",
+            "They cannot be used with ORDER BY",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Ordinal positions refer to SELECT-list order. Explicit column names or expressions are clearer and safer in maintained SQL.",
+        },
+        {
+          id: "aggregations-final-having",
+          question: "Which clause keeps only order-status groups containing at least ten orders?",
+          options: [
+            "WHERE COUNT(*) >= 10",
+            "GROUP BY COUNT(*) >= 10",
+            "HAVING COUNT(*) >= 10",
+            "ORDER BY COUNT(*) >= 10",
+          ],
+          correctIndex: 2,
+          explanation:
+            "HAVING filters finished groups after GROUP BY and COUNT(*) have produced a value for each group.",
+        },
+      ],
+    },
+  ],
+};
+
+// ---------- Advanced SQL: Multi-Dimensional Aggregations (GROUPING SETS) ----------
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
   title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
-  subtitle: "All subtotal permutations in one table scan — no UNION ALL required.",
+  subtitle: "Build related detail rows and subtotals in one grouped query, without separate UNION ALL queries.",
   sections: [
     {
       kind: "prose",
@@ -2405,8 +2540,17 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Querying Data",
     iconKey: "database",
     blurb:
-      "Scalar reducers, the collapse engine, HAVING vs WHERE pipeline ordering, and multi-dimensional GROUPING SETS.",
-    lessons: [aggregateFns, groupByLesson, havingLesson, groupingSets],
+      "Count, summarise, group, and filter Cycle Depot data with a dependable aggregation workflow.",
+    lessons: [aggregateFns, groupByLesson, havingLesson, aggregationsFinalQuiz],
+  },
+  "window-functions": {
+    slug: "window-functions",
+    title: "Window Functions",
+    category: "Advanced SQL",
+    iconKey: "database",
+    blurb:
+      "Start advanced analytical SQL with multi-dimensional totals, then build toward window-function techniques.",
+    lessons: [groupingSets],
   },
   joins: {
     slug: "joins",
