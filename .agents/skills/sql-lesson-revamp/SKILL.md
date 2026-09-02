@@ -86,6 +86,7 @@ Prefer the application's existing lesson section types, image component, table c
 When the lesson has a hands-on SQL task, connect it to the existing checked-practice system rather than presenting an answer-only exercise.
 
 - Give a short business prompt, an explicit table, requested columns or behavior, and a starter query that is incomplete but syntactically safe for the editor experience.
+- Use keyboard-friendly ASCII characters in any SQL or literal value the learner must type. Standard keyboard punctuation such as `!`, `=`, `-`, `<`, `>`, `/`, `\\`, `(`, `)`, `*`, `&`, `^`, `%`, `$`, `#`, and `@` is appropriate when it represents the intended SQL or output. Do not require typographic-only characters such as a middle dot, curly quote, em dash, or Unicode arrow in learner-entered text.
 - Validate semantic intent through the query result, expected columns, and where appropriate expected data. Do not rely only on matching SQL text.
 - Preserve the learner's current editor draft on failed attempts.
 - Use short, helpful feedback that identifies the next action. Do not expose raw engine errors, stack traces, or implementation details to learners.
