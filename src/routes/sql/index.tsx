@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useProgress } from "@/hooks/use-progress";
 import { TrackCard } from "@/components/learning-paths/TrackCard";
-import { FOUNDATION_TOPICS } from "@/lessons/sql/foundations-content";
+import { FOUNDATION_TOPICS, type FoundationTopicMeta } from "@/lessons/sql/foundations-content";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
 import { SPECIALIZED_TOPICS } from "@/lessons/sql/specialized-content";
 import sqlLogo from "@/images/logos/sql-logo.png";
@@ -183,7 +183,6 @@ const sections: Section[] = [
           "UPPER / LOWER",
           "TRIM / REPLACE",
           "POSITION / SPLIT_PART",
-          "CAST / TO_CHAR",
           "Regex",
         ],
         unlocked: true,
@@ -208,7 +207,9 @@ const sections: Section[] = [
         title: "Conversions",
         blurb: "CAST and CONVERT — for schema evolution and cross-type operations.",
         icon: Repeat,
-        modules: ["CAST", "CONVERT", "Implicit coercion", "Safe casts"],
+        modules: ["CAST / TO_CHAR (Type Casting)", "CONVERT", "Implicit Coercion", "Safe Casts"],
+        unlocked: true,
+        routeBase: "specialized",
       },
       {
         slug: "error-handling",
@@ -462,7 +463,7 @@ function SqlIndex() {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
 
-                  let realTopic;
+                  let realTopic: FoundationTopicMeta | undefined;
                   if (t.routeBase === "specialized") {
                     realTopic = SPECIALIZED_TOPICS[t.slug as keyof typeof SPECIALIZED_TOPICS];
                   } else if (t.routeBase === "querying") {
