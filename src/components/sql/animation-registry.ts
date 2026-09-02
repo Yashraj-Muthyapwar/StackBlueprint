@@ -20,6 +20,7 @@ import { nullThreeValuedLogicStages } from "./querying/null-three-valued-logic";
 import { patternMatchingStages } from "./querying/pattern-matching";
 import { sargabilityStages } from "./querying/sargability";
 import { projStages } from "./querying-fundamentals/your-first-query";
+import { concatSubstringStages } from "./string-functions/concat-substring";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -38,6 +39,7 @@ export const STAGES_REGISTRY = {
   "sql-calculations-aliases": calculationAliasStages, "sql-operators": operatorStages,
   "where-filtering": whereFilteringStages,
   "case-when": caseWhenStages,
+  "q-concat-substring": concatSubstringStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

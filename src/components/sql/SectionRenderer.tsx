@@ -92,6 +92,8 @@ function highlightSql(line: string) {
     "DESC",
     "ASC",
     "COALESCE",
+    "CONCAT",
+    "SUBSTRING",
     "EXISTS",
     "ARRAY",
     "RETURNING",
