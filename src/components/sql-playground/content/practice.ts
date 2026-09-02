@@ -21,13 +21,13 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
     id: "cycledepot-compact-product-labels",
     title: "Build compact product labels",
     prompt:
-      "Return every Cycle Depot product's name, category, and compact_label. Use the first five characters of name, then CONCAT that prefix, ' · ', and category. Name it compact_label and sort by id. The result should have 30 rows and exactly three columns.",
+      "Return every Cycle Depot product's name, category, and compact_label. Use the first five characters of name, then CONCAT that prefix, ' - ', and category. Name it compact_label and sort by id. The result should have 30 rows and exactly three columns.",
     dataset: "cycledepot",
     engine: "postgres",
     challengeId: "cycle-depot-compact-product-labels",
     starterSql: `-- Cycle Depot compact product labels.
 -- Return name, category, and compact_label from products.
--- Use the first five characters of name, then join them to category with ' · '.
+-- Use the first five characters of name, then join them to category with ' - '.
 -- Sort by id, then run and check.`,
   },
   "cycledepot-customer-projection": {
