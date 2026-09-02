@@ -1463,7 +1463,7 @@ LIMIT 10;`,
 const queryingFundamentalsQuiz: LessonContent = {
   slug: "querying-fundamentals-quiz",
   title: "Querying Fundamentals: Final Quiz",
-  subtitle: "Test your knowledge of SELECT, FROM, WHERE, operators, and logical execution order.",
+  subtitle: "Test your knowledge of SELECT, FROM, WHERE, CASE, operators, and logical execution order.",
   sections: [
     {
       kind: "quiz",
@@ -1551,16 +1551,11 @@ const queryingFundamentalsQuiz: LessonContent = {
           explanation: "DESC places higher prices first. LIMIT then keeps the first three rows.",
         },
         {
-          id: "qf-offset",
-          question: "After ordering rows deterministically, what does LIMIT 4 OFFSET 4 return?",
-          options: [
-            "The first four rows",
-            "Four rows after skipping the first four rows",
-            "Rows whose ID equals 4",
-            "Every fourth row",
-          ],
+          id: "qf-case-first-match",
+          question: "A product costs 39. What label does this CASE expression return? CASE WHEN price < 3000 THEN 'Under 3000' WHEN price < 1000 THEN 'Budget' ELSE 'Premium' END",
+          options: ["Budget", "Under 3000", "Premium", "NULL"],
           correctIndex: 1,
-          explanation: "OFFSET skips rows from the ordered result before LIMIT keeps the next set.",
+          explanation: "CASE returns the first matching result. Since 39 is below 3000, it returns Under 3000 and never evaluates the later Budget condition.",
         },
         {
           id: "qf-logical-order",
