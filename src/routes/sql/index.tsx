@@ -139,7 +139,7 @@ const sections: Section[] = [
         title: "Aggregations & GROUP BY",
         blurb: "COUNT, SUM, AVG, MIN, MAX, HAVING — and what GROUP BY really does to a row.",
         icon: Sigma,
-        modules: ["Aggregate funcs", "GROUP BY", "HAVING", "GROUPING SETS"],
+        modules: ["Aggregate funcs", "GROUP BY", "HAVING", "Final quiz"],
         unlocked: true,
         routeBase: "querying",
       },
@@ -216,9 +216,11 @@ const sections: Section[] = [
       {
         slug: "window-functions",
         title: "Window Functions",
-        blurb: "ROW_NUMBER, RANK, LAG/LEAD, framed aggregates — analytics inside SQL.",
+        blurb: "Advanced analytical SQL, beginning with GROUPING SETS, ROLLUP, and CUBE.",
         icon: BarChart3,
-        modules: ["ROW_NUMBER / RANK", "LAG / LEAD", "PARTITION BY", "Window frames"],
+        modules: ["GROUPING SETS / ROLLUP / CUBE"],
+        unlocked: true,
+        routeBase: "querying",
       },
       {
         slug: "ctes",
