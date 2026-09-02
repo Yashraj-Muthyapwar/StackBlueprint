@@ -21,6 +21,7 @@ import { patternMatchingStages } from "./querying/pattern-matching";
 import { sargabilityStages } from "./querying/sargability";
 import { projStages } from "./querying-fundamentals/your-first-query";
 import { concatSubstringStages } from "./string-functions/concat-substring";
+import { leftRightLengthStages } from "./string-functions/left-right-length.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -40,6 +41,7 @@ export const STAGES_REGISTRY = {
   "where-filtering": whereFilteringStages,
   "case-when": caseWhenStages,
   "q-concat-substring": concatSubstringStages,
+  "q-left-right-length": leftRightLengthStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
