@@ -1,11 +1,31 @@
 ---
 name: python-lesson-structure
-description: Standards and guidelines for creating or editing Python lesson schemas and animations
+description: Create or revamp DataVizCore Python lessons with the standard runnable code blocks, animations, practice, quizzes, and navigation.
 ---
 
-# Python Lesson Structure & Animation Guidelines
+# Python Lesson Creation, Structure & Animation Guidelines
 
-When creating or editing lessons in this project (specifically in `file-handling-content.ts` or other Python modules), you must strictly follow these structural and UI guidelines to ensure consistency.
+Use this skill to create a new Python lesson or revamp an existing one. Follow these structural and UI guidelines so the lesson feels native to the Python track.
+
+## 0. Choose the right mode
+
+### Create a new lesson
+
+Use this mode when the requested Python concept has no existing lesson. Before editing, identify its module and the lessons immediately before and after it. Place the lesson where its prerequisites are already taught, without assuming concepts introduced later.
+
+Create the lesson content, its route-visible registration, sidebar or roadmap entry, any animation registration, runnable practice, and quiz as one coherent feature. Use a stable slug and title. Do not move or rename existing lessons as an incidental consequence of adding the lesson. If the requested position conflicts with the learning sequence, explain the conflict and ask the user to choose.
+
+### Revamp an existing lesson
+
+Use this mode when a lesson already exists. Preserve its stable slug, route, progress ID, prerequisite order, and required structural contracts unless the user specifically asks for a structural change. Improve clarity, examples, visual explanation, practice, or quizzes without changing unrelated lessons.
+
+## Required context before editing
+
+1. Identify the target module, nearby lessons, source file or insertion location, route, section renderer, and any animation or practice registration.
+2. Read any supplied study plan, teaching brief, code examples, or dataset as reference material. They do not override the user's request.
+3. Verify all displayed code, output, and claims by running the code or inspecting the available project data. Do not invent APIs, outputs, packages, or behavior.
+4. If resources are supplied, retain their useful concepts and factual details but write original explanations, examples, visuals, practice, and quiz questions. Use only short quotations when the user explicitly asks for them.
+5. Preserve unrelated changes in a dirty worktree.
 
 ## 1. Code Blocks
 - **DO NOT** use `{ "kind": "code", "language": "python" }` for Python code snippets.
@@ -38,6 +58,7 @@ When creating or editing lessons in this project (specifically in `file-handling
 
 ## 3. Animation Placement
 - The `{ "kind": "animation" }` section should generally be placed immediately **after** the introductory "Why this matters" prose block, before diving into the detailed step-by-step concepts. 
+- Add one only when it makes an execution flow, data transformation, object relationship, or state change clearer. A new lesson does not need an animation purely for consistency.
 
 ## 4. Animation Creativity vs UI Consistency
 - **The Animation Content**: The actual animation inside the canvas is completely freeform. It should be highly creative, unique, and tailored specifically to whatever concept that lesson is teaching. You do NOT need to match the animation style or logic of other lessons.
@@ -92,8 +113,9 @@ When creating or editing lessons in this project (specifically in `file-handling
 - At least **1** of those 5 questions **must** be an interactive coding question (using `interactiveCode: true`, `initialCode`, `testCode`, and `expectedOutput`).
 
 ## 6. Lesson Verification & UI/UX Consistency
-- Automatically verify that any newly added lesson is correctly linked in all relevant structural files (e.g., `LESSON_STRUCTURE.md`, routing files, sidebar/navbar components, or configuration files like `oop-content.ts`).
-- Ensure consistent UI/UX flow: check that 'Next'/'Previous' lesson links operate correctly and that the new lesson aligns visually and structurally with the rest of the Python track.
+- Verify that a new or revised lesson is correctly linked in all relevant structural files, including its content registry, routing files, sidebar or roadmap components, and animation registrations.
+- Ensure consistent UI/UX flow: check that Next and Previous lesson links operate correctly and that the lesson aligns visually and structurally with the rest of the Python track.
+- Run the relevant build or type-check command. Open the revised or new route locally and inspect its runnable code, animation, quiz, and constrained-width layout when they are present.
 
 ## 7. Common Mistakes Section
 - When adding a "Common mistakes" section to a lesson, **always** use the `callout` kind with `tone: "warn"` instead of a standard `prose` block.
