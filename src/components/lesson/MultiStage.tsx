@@ -92,27 +92,122 @@ export function locate(stages: Stage[], step: number): { stageIdx: number; local
 // ============================================================
 
 const KEYWORDS = new Set([
-  "SELECT","FROM","WHERE","AND","OR","NOT","NULL","IS","IN","BETWEEN","LIKE","ILIKE",
-  "GROUP","BY","HAVING","ORDER","LIMIT","OFFSET","ON","JOIN","INNER","LEFT","RIGHT","FULL",
-  "OUTER","CROSS","UNION","ALL","DISTINCT","AS","EXISTS","CASE","WHEN","THEN","ELSE","END",
-  "COUNT","SUM","AVG","MIN","MAX","CONCAT","SUBSTRING","LEFT","RIGHT","LENGTH","UPPER","LOWER","TRIM","REPLACE","POSITION","SPLIT_PART","REGEXP_LIKE","REGEXP_SUBSTR","REGEXP_MATCH","REGEXP_REPLACE","ROLLUP","CUBE","GROUPING","SETS","WITH","INTERSECT","EXCEPT",
-  "VALUES","INSERT","INTO","UPDATE","SET","DELETE","CREATE","TABLE","PRIMARY","KEY","FOREIGN",
-  "REFERENCES","CHECK","UNIQUE","DEFAULT","ASC","DESC","NULLS","FIRST","LAST",
+  "SELECT",
+  "FROM",
+  "WHERE",
+  "AND",
+  "OR",
+  "NOT",
+  "NULL",
+  "IS",
+  "IN",
+  "BETWEEN",
+  "LIKE",
+  "ILIKE",
+  "GROUP",
+  "BY",
+  "HAVING",
+  "ORDER",
+  "LIMIT",
+  "OFFSET",
+  "ON",
+  "JOIN",
+  "INNER",
+  "LEFT",
+  "RIGHT",
+  "FULL",
+  "OUTER",
+  "CROSS",
+  "UNION",
+  "ALL",
+  "DISTINCT",
+  "AS",
+  "EXISTS",
+  "CASE",
+  "WHEN",
+  "THEN",
+  "ELSE",
+  "END",
+  "COUNT",
+  "SUM",
+  "AVG",
+  "MIN",
+  "MAX",
+  "ROUND",
+  "NULLIF",
+  "COALESCE",
+  "CONCAT",
+  "CONCAT_WS",
+  "SUBSTRING",
+  "LEFT",
+  "RIGHT",
+  "LENGTH",
+  "CHAR_LENGTH",
+  "UPPER",
+  "LOWER",
+  "INITCAP",
+  "TRIM",
+  "LTRIM",
+  "RTRIM",
+  "BTRIM",
+  "REPLACE",
+  "POSITION",
+  "SPLIT_PART",
+  "REGEXP_LIKE",
+  "REGEXP_SUBSTR",
+  "REGEXP_MATCH",
+  "REGEXP_REPLACE",
+  "ROLLUP",
+  "CUBE",
+  "GROUPING",
+  "SETS",
+  "WITH",
+  "INTERSECT",
+  "EXCEPT",
+  "VALUES",
+  "INSERT",
+  "INTO",
+  "UPDATE",
+  "SET",
+  "DELETE",
+  "CREATE",
+  "TABLE",
+  "PRIMARY",
+  "KEY",
+  "FOREIGN",
+  "REFERENCES",
+  "CHECK",
+  "UNIQUE",
+  "DEFAULT",
+  "ASC",
+  "DESC",
+  "NULLS",
+  "FIRST",
+  "LAST",
 ]);
 
 function hl(line: string): React.ReactNode[] {
   const out: React.ReactNode[] = [];
-  let i = 0, key = 0;
+  let i = 0,
+    key = 0;
   while (i < line.length) {
     const c = line[i];
     if (c === "-" && line[i + 1] === "-") {
-      out.push(<span key={key++} className="text-muted-foreground/60">{line.slice(i)}</span>);
+      out.push(
+        <span key={key++} className="text-muted-foreground/60">
+          {line.slice(i)}
+        </span>,
+      );
       break;
     }
     if (c === "'") {
       const end = line.indexOf("'", i + 1);
       const stop = end === -1 ? line.length : end + 1;
-      out.push(<span key={key++} className="text-amber">{line.slice(i, stop)}</span>);
+      out.push(
+        <span key={key++} className="text-amber">
+          {line.slice(i, stop)}
+        </span>,
+      );
       i = stop;
       continue;
     }
@@ -121,9 +216,13 @@ function hl(line: string): React.ReactNode[] {
       while (j < line.length && /[A-Za-z0-9_]/.test(line[j])) j++;
       const w = line.slice(i, j);
       out.push(
-        KEYWORDS.has(w.toUpperCase())
-          ? <span key={key++} className="text-mint">{w}</span>
-          : <span key={key++}>{w}</span>
+        KEYWORDS.has(w.toUpperCase()) ? (
+          <span key={key++} className="text-mint">
+            {w}
+          </span>
+        ) : (
+          <span key={key++}>{w}</span>
+        ),
       );
       i = j;
       continue;
@@ -131,7 +230,11 @@ function hl(line: string): React.ReactNode[] {
     if (/[0-9]/.test(c)) {
       let j = i + 1;
       while (j < line.length && /[0-9.]/.test(line[j])) j++;
-      out.push(<span key={key++} className="text-violet">{line.slice(i, j)}</span>);
+      out.push(
+        <span key={key++} className="text-violet">
+          {line.slice(i, j)}
+        </span>,
+      );
       i = j;
       continue;
     }
@@ -145,7 +248,13 @@ function hl(line: string): React.ReactNode[] {
 // Primitives — exported so stage configs can build side panels
 // ============================================================
 
-export function QueryBlock({ lines, activeLines = [] }: { lines: string[]; activeLines?: number[] }) {
+export function QueryBlock({
+  lines,
+  activeLines = [],
+}: {
+  lines: string[];
+  activeLines?: number[];
+}) {
   return (
     <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/50 shadow-sm">
       <div className="border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
@@ -195,9 +304,7 @@ export function MiniTable({
       {title ? (
         <div className="flex items-center justify-between border-b border-hairline bg-surface-2/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
           <span>{title}</span>
-          <span>
-            {(states ? states.filter((s) => s !== "dropped").length : rows.length)} rows
-          </span>
+          <span>{states ? states.filter((s) => s !== "dropped").length : rows.length} rows</span>
         </div>
       ) : null}
       <div
@@ -218,8 +325,7 @@ export function MiniTable({
         {rows.map((r, idx) => {
           const st = states?.[idx];
           const bg =
-            st === "kept" || st === "added" ? "bg-mint/5" :
-            st === "dropped" ? "bg-rose/5" : "";
+            st === "kept" || st === "added" ? "bg-mint/5" : st === "dropped" ? "bg-rose/5" : "";
           return (
             <motion.div
               key={r.key}
@@ -242,10 +348,13 @@ export function MiniTable({
                   <div
                     key={i}
                     className={`min-w-0 truncate px-2.5 py-1.5 font-mono text-[12px] ${
-                      hi ? "bg-mint/15 text-mint" :
-                      isNull ? "text-amber" :
-                      st === "dropped" ? "text-muted-foreground line-through" :
-                      "text-foreground/85"
+                      hi
+                        ? "bg-mint/15 text-mint"
+                        : isNull
+                          ? "text-amber"
+                          : st === "dropped"
+                            ? "text-muted-foreground line-through"
+                            : "text-foreground/85"
                     }`}
                     title={isNull ? "NULL" : String(c)}
                   >
@@ -263,11 +372,15 @@ export function MiniTable({
 
 export function Note({ tone = "mint", children }: { tone?: Tone; children: React.ReactNode }) {
   const cls =
-    tone === "rose" ? "border-rose/40 bg-rose/10 text-rose" :
-    tone === "amber" ? "border-amber/40 bg-amber/10 text-amber" :
-    tone === "violet" ? "border-violet/40 bg-violet/10 text-violet" :
-    tone === "neutral" ? "border-hairline bg-surface-2/40 text-muted-foreground" :
-    "border-mint/40 bg-mint/10 text-mint";
+    tone === "rose"
+      ? "border-rose/40 bg-rose/10 text-rose"
+      : tone === "amber"
+        ? "border-amber/40 bg-amber/10 text-amber"
+        : tone === "violet"
+          ? "border-violet/40 bg-violet/10 text-violet"
+          : tone === "neutral"
+            ? "border-hairline bg-surface-2/40 text-muted-foreground"
+            : "border-mint/40 bg-mint/10 text-mint";
   return (
     <motion.div
       initial={{ opacity: 0, y: 4 }}
@@ -284,13 +397,7 @@ export function Note({ tone = "mint", children }: { tone?: Tone; children: React
 // Stage banner — switches when the global step crosses a boundary
 // ============================================================
 
-function StageBanner({
-  stages,
-  stageIdx,
-}: {
-  stages: Stage[];
-  stageIdx: number;
-}) {
+function StageBanner({ stages, stageIdx }: { stages: Stage[]; stageIdx: number }) {
   const s = stages[stageIdx];
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-hairline bg-slate-50 dark:bg-surface-2/40 px-3 py-2 shadow-sm sm:flex-row sm:items-center sm:justify-between">
@@ -299,9 +406,7 @@ function StageBanner({
           Concept {stageIdx + 1} / {stages.length}
         </span>
         <span className="font-mono text-[13px] text-foreground/90">{s.name}</span>
-        {s.blurb ? (
-          <span className="text-[12.5px] text-muted-foreground">— {s.blurb}</span>
-        ) : null}
+        {s.blurb ? <span className="text-[12.5px] text-muted-foreground">— {s.blurb}</span> : null}
       </div>
       <div className="flex items-center gap-1">
         {stages.map((_, i) => (
@@ -354,14 +459,14 @@ export function MultiStage({ stages, step }: { stages: Stage[]; step: number }) 
           {note}
         </div>
       ) : (
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] min-w-0">
-        <div className="space-y-3 min-w-0">
-          <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
-          {panel}
-          {stepCfg.side ? <div>{stepCfg.side}</div> : null}
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px] min-w-0">
+          <div className="space-y-3 min-w-0">
+            <QueryBlock lines={s.sql} activeLines={stepCfg.activeLines ?? []} />
+            {panel}
+            {stepCfg.side ? <div>{stepCfg.side}</div> : null}
+          </div>
+          {note}
         </div>
-        {note}
-      </div>
       )}
     </div>
   );
@@ -372,7 +477,12 @@ function SinglePanel({
   step,
   stageIdx,
   local,
-}: { stage: Stage; step: StageStep; stageIdx: number; local: number }) {
+}: {
+  stage: Stage;
+  step: StageStep;
+  stageIdx: number;
+  local: number;
+}) {
   if (!stage.table) return null;
   const cols = step.colsOverride ?? stage.table.cols;
   const baseRows = step.rowsOverride ?? stage.table.rows;
@@ -406,14 +516,24 @@ function DualPanel({
   step,
   stageIdx,
   local,
-}: { stage: Stage; step: StageStep; stageIdx: number; local: number }) {
+}: {
+  stage: Stage;
+  step: StageStep;
+  stageIdx: number;
+  local: number;
+}) {
   const left = stage.leftTable!;
   const right = stage.rightTable!;
   return (
     <div className="space-y-3">
       <div className="grid gap-3 md:grid-cols-2">
         <MiniTable title={left.name} cols={left.cols} rows={left.rows} states={step.leftStates} />
-        <MiniTable title={right.name} cols={right.cols} rows={right.rows} states={step.rightStates} />
+        <MiniTable
+          title={right.name}
+          cols={right.cols}
+          rows={right.rows}
+          states={step.rightStates}
+        />
       </div>
       {step.resultRows ? (
         <AnimatePresence mode="wait" initial={false}>
