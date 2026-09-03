@@ -13,6 +13,12 @@ const LEFT_RESULT_ROWS: Row[] = [
   r(3, "Priya Doyle", "Pri", 11),
 ];
 
+const CHARACTER_COUNT_ROWS: Row[] = [
+  r(1, "Zane Novak", 10, 10),
+  r(2, "Boris Alvarez", 13, 13),
+  r(3, "Priya Doyle", 11, 11),
+];
+
 const EMAIL_ROWS: Row[] = [
   r(1, "zane.novak1@example.com"),
   r(2, "boris.alvarez2@example.com"),
@@ -52,6 +58,36 @@ export const leftRightLengthStages: Stage[] = [
         {
           rowsOverride: LEFT_RESULT_ROWS,
           colsOverride: ["name", "name_code", "name_characters"],
+          highlightCols: [1, 2],
+        },
+      ),
+    ],
+  },
+  {
+    name: "CHAR_LENGTH makes the unit explicit",
+    canvasMinHeight: 420,
+    sql: [
+      "SELECT name,",
+      "       LENGTH(name) AS length_count,",
+      "       CHAR_LENGTH(name) AS character_count",
+      "FROM   customers",
+      "ORDER  BY id",
+      "LIMIT  3",
+    ],
+    table: { name: "customers", cols: ["name"], rows: NAME_ROWS },
+    steps: [
+      st(
+        [0, 3, 4, 5],
+        "kept",
+        "Both expressions examine the same complete customer name. The space between first and last name is a character too.",
+      ),
+      st(
+        [1, 2],
+        "kept",
+        "For text, LENGTH and CHAR_LENGTH return the same character count. CHAR_LENGTH is useful when you want the unit to be obvious in a portable query.",
+        {
+          rowsOverride: CHARACTER_COUNT_ROWS,
+          colsOverride: ["name", "length_count", "character_count"],
           highlightCols: [1, 2],
         },
       ),

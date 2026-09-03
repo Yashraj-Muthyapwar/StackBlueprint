@@ -13,16 +13,18 @@ const UPPER_RESULT_ROWS: Row[] = [
   r(3, "Boulder Full Suspension", "BOULDER FULL SUSPENSION"),
 ];
 
-const CATEGORY_ROWS: Row[] = [
-  r(1, "Mountain Bikes"),
-  r(2, "Road Bikes"),
-  r(3, "City Bikes"),
-];
+const CATEGORY_ROWS: Row[] = [r(1, "Mountain Bikes"), r(2, "Road Bikes"), r(3, "City Bikes")];
 
 const LOWER_RESULT_ROWS: Row[] = [
   r(1, "Mountain Bikes", "mountain bikes"),
   r(2, "Road Bikes", "road bikes"),
   r(3, "City Bikes", "city bikes"),
+];
+
+const INITCAP_ROWS: Row[] = [
+  r(1, "GPS Cycling Computer", "Gps Cycling Computer"),
+  r(2, "City Commuter Step-Thru", "City Commuter Step-Thru"),
+  r(3, "Shellcap MIPS Pro", "Shellcap Mips Pro"),
 ];
 
 /** A lesson-scoped walkthrough of case conversion in a query result. */
@@ -80,6 +82,39 @@ export const upperLowerStages: Stage[] = [
         {
           rowsOverride: LOWER_RESULT_ROWS,
           colsOverride: ["category", "category_lower"],
+          highlightCols: [1],
+        },
+      ),
+    ],
+  },
+  {
+    name: "INITCAP makes a title-cased label",
+    canvasMinHeight: 420,
+    sql: [
+      "SELECT name,",
+      "       INITCAP(LOWER(name)) AS name_title",
+      "FROM   products",
+      "ORDER  BY id",
+      "LIMIT  3",
+    ],
+    table: {
+      name: "products",
+      cols: ["name"],
+      rows: INITCAP_ROWS.map(({ key, cells }) => ({ key, cells: [cells[0]] })),
+    },
+    steps: [
+      st(
+        [0, 2, 3, 4],
+        "kept",
+        "The stored product name remains unchanged. This example includes GPS and MIPS so the title-casing convention is easy to inspect.",
+      ),
+      st(
+        [1],
+        "kept",
+        "LOWER normalizes the text first, then INITCAP title-cases each word. That means GPS becomes Gps and MIPS becomes Mips.",
+        {
+          rowsOverride: INITCAP_ROWS,
+          colsOverride: ["name", "name_title"],
           highlightCols: [1],
         },
       ),
