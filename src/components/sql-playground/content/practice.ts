@@ -17,6 +17,71 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-shape-sale-prices": {
+    id: "cycledepot-shape-sale-prices",
+    title: "Shape Cycle Depot sale prices",
+    prompt:
+      "Return every Cycle Depot product's name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale. Use price * 0.875 as the sale calculation, ROUND and TRUNC to two decimal places, then CEIL and FLOOR to whole numbers. Sort by id. The result should have 30 rows and exactly six columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-shape-sale-prices",
+    starterSql: `-- Cycle Depot sale-price shapes.
+-- Return name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale.
+-- Use price * 0.875, then ROUND / TRUNC to 2 decimals and CEIL / FLOOR to integers.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-compare-product-values": {
+    id: "cycledepot-compare-product-values",
+    title: "Compare Cycle Depot product values",
+    prompt:
+      "Return every Cycle Depot product's name, price, cost, target_gap, target_direction, lower_amount, and higher_amount. Measure the gap from 150.00 with ABS(price - 150.00), label it with SIGN(price - 150.00), and use LEAST(price, cost) plus GREATEST(price, cost). Sort by id. The result should have 30 rows and exactly seven columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-compare-product-values",
+    starterSql: `-- Cycle Depot product-value comparisons.
+-- Return name, price, cost, target_gap, target_direction, lower_amount, and higher_amount.
+-- Use ABS and SIGN against 150.00, then LEAST and GREATEST for price and cost.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-route-products-by-remainder": {
+    id: "cycledepot-route-products-by-remainder",
+    title: "Route Cycle Depot products by remainder",
+    prompt:
+      "Return every Cycle Depot product's id, name, parity_remainder, and pickup_wave. Use id % 2 AS parity_remainder and MOD(id, 3) AS pickup_wave. Sort by id. The result should have 30 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-route-products-by-remainder",
+    starterSql: `-- Cycle Depot product routing.
+-- Return id, name, parity_remainder, and pickup_wave from products.
+-- Use id % 2 for parity and MOD(id, 3) for the pickup wave.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-model-product-scales": {
+    id: "cycledepot-model-product-scales",
+    title: "Model Cycle Depot product scales",
+    prompt:
+      "Return every Cycle Depot product's name, price, price_index_squared, price_root, growth_factor, and log10_price_scale. Use ROUND(POWER(price / 100.0, 2), 4), ROUND(SQRT(price)::numeric, 3), ROUND(EXP((id % 3)::numeric), 3), and ROUND(LOG(price / 100.0), 3). Sort by id. The result should have 30 rows and exactly six columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-model-product-scales",
+    starterSql: `-- Cycle Depot product scales.
+-- Return name, price, price_index_squared, price_root, growth_factor, and log10_price_scale.
+-- Use POWER, SQRT, EXP, and LOG with the requested rounding.
+-- Sort by id, then run and check.`,
+  },
+  "cycledepot-assign-random-promo-groups": {
+    id: "cycledepot-assign-random-promo-groups",
+    title: "Assign random Cycle Depot promo groups",
+    prompt:
+      "Return every Cycle Depot product's name and promo_group. Use FLOOR(RANDOM() * 6 + 1)::int AS promo_group to create a whole number from 1 through 6. Sort the source rows by id. The result should have 30 rows and exactly two columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-assign-random-promo-groups",
+    starterSql: `-- Cycle Depot random promo groups.
+-- Return name and promo_group from products.
+-- Use FLOOR(RANDOM() * 6 + 1)::int AS promo_group.
+-- Sort the source rows by id, then run and check.`,
+  },
   "cycledepot-safe-product-margins": {
     id: "cycledepot-safe-product-margins",
     title: "Build safe product margin percentages",

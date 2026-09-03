@@ -36,6 +36,21 @@ export type ResultValidator =
       expectedSql: Partial<Record<ChallengeEngine, string>>;
       field: string;
       numericTolerance?: number;
+    }
+  | {
+      /** Validates generated values whose exact output is intentionally non-deterministic. */
+      kind: "numeric-range";
+      expectedSql: Partial<Record<ChallengeEngine, string>>;
+      requiredColumns: string[];
+      stableColumns: string[];
+      rowCount: number;
+      rowOrder: "exact" | "any";
+      ranges: Array<{
+        field: string;
+        minInclusive: number;
+        maxInclusive: number;
+        integer?: boolean;
+      }>;
     };
 
 export type SuccessCopy = {

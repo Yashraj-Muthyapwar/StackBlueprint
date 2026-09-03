@@ -41,6 +41,11 @@ import { trimReplaceStages } from "./string-functions/trim-replace.tsx";
 import { positionSplitPartStages } from "./string-functions/position-split-part.tsx";
 import { regexStages } from "./string-functions/regex.tsx";
 import { nullifCoalesceStages } from "./string-functions/nullif-coalesce.tsx";
+import { roundTruncCeilFloorStages } from "./numeric-functions/round-trunc-ceil-floor.tsx";
+import { absSignLeastGreatestStages } from "./numeric-functions/abs-sign-least-greatest.tsx";
+import { modRemainderStages } from "./numeric-functions/mod.tsx";
+import { powerSqrtLogStages } from "./numeric-functions/power-sqrt-log.tsx";
+import { randomRangeStages } from "./numeric-functions/random-range.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -97,6 +102,11 @@ export const STAGES_REGISTRY = {
   "q-position-split-part": positionSplitPartStages,
   "q-regex": regexStages,
   "q-nullif-coalesce": nullifCoalesceStages,
+  "q-round-trunc-ceil-floor": roundTruncCeilFloorStages,
+  "q-abs-sign-least-greatest": absSignLeastGreatestStages,
+  "q-mod": modRemainderStages,
+  "q-power-sqrt-log": powerSqrtLogStages,
+  "q-random-range": randomRangeStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

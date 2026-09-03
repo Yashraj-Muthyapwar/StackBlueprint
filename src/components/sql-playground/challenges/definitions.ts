@@ -2,6 +2,277 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "cycle-depot-shape-sale-prices",
+    version: 1,
+    title: "Shape Cycle Depot sale prices",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Use four numeric functions to present the same 12.5% Cycle Depot sale calculation in the form a report needs.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale.",
+      "Use price * 0.875 as the sale calculation.",
+      "Use ROUND(price * 0.875, 2) AS rounded_sale.",
+      "Use TRUNC(price * 0.875, 2) AS truncated_sale.",
+      "Use CEIL(price * 0.875) AS ceiling_sale and FLOOR(price * 0.875) AS floor_sale.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot sale-price shapes.
+-- Return name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale.
+-- Use price * 0.875, then ROUND / TRUNC to 2 decimals and CEIL / FLOOR to integers.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name, price FROM products.",
+      "Add ROUND(price * 0.875, 2) AS rounded_sale and TRUNC(price * 0.875, 2) AS truncated_sale.",
+      "Add CEIL(price * 0.875) AS ceiling_sale and FLOOR(price * 0.875) AS floor_sale, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT name, price, ROUND(price * 0.875, 2) AS rounded_sale, TRUNC(price * 0.875, 2) AS truncated_sale, CEIL(price * 0.875) AS ceiling_sale, FLOOR(price * 0.875) AS floor_sale FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT name, price, ROUND(price * 0.875, 2) AS rounded_sale, TRUNC(price * 0.875, 2) AS truncated_sale, CEIL(price * 0.875) AS ceiling_sale, FLOOR(price * 0.875) AS floor_sale FROM products ORDER BY id;",
+      },
+      requiredColumns: [
+        "name",
+        "price",
+        "rounded_sale",
+        "truncated_sale",
+        "ceiling_sale",
+        "floor_sale",
+      ],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Sale-price shapes complete",
+      body: "Correct. You produced a nearest-cent value, a cut-off value, and the whole-number upper and lower bounds from the same Cycle Depot sale calculation.",
+      nextConcept: "NULLIF / COALESCE: Safe Math",
+    },
+  },
+  {
+    id: "cycle-depot-compare-product-values",
+    version: 1,
+    title: "Compare Cycle Depot product values",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Measure a target gap, keep its direction, and choose the lower and higher monetary values for every Cycle Depot product.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name, price, cost, target_gap, target_direction, lower_amount, and higher_amount.",
+      "Use ABS(price - 150.00) AS target_gap.",
+      "Use SIGN(price - 150.00) AS target_direction.",
+      "Use LEAST(price, cost) AS lower_amount and GREATEST(price, cost) AS higher_amount.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product-value comparisons.
+-- Return name, price, cost, target_gap, target_direction, lower_amount, and higher_amount.
+-- Use ABS and SIGN against 150.00, then LEAST and GREATEST for price and cost.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name, price, cost FROM products.",
+      "Use ABS(price - 150.00) AS target_gap and SIGN(price - 150.00) AS target_direction.",
+      "Use LEAST(price, cost) AS lower_amount and GREATEST(price, cost) AS higher_amount, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT name, price, cost, ABS(price - 150.00) AS target_gap, SIGN(price - 150.00) AS target_direction, LEAST(price, cost) AS lower_amount, GREATEST(price, cost) AS higher_amount FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT name, price, cost, ABS(price - 150.00) AS target_gap, SIGN(price - 150.00) AS target_direction, LEAST(price, cost) AS lower_amount, GREATEST(price, cost) AS higher_amount FROM products ORDER BY id;",
+      },
+      requiredColumns: [
+        "name",
+        "price",
+        "cost",
+        "target_gap",
+        "target_direction",
+        "lower_amount",
+        "higher_amount",
+      ],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Product-value comparisons complete",
+      body: "Correct. You measured each target gap, kept its direction, and selected the lower and higher values within every product row.",
+      nextConcept: "MOD / %: Remainder & Parity",
+    },
+  },
+  {
+    id: "cycle-depot-route-products-by-remainder",
+    version: 1,
+    title: "Route Cycle Depot products by remainder",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Use remainder arithmetic to label every Cycle Depot product by parity and a repeating three-wave route.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly id, name, parity_remainder, and pickup_wave.",
+      "Use id % 2 AS parity_remainder.",
+      "Use MOD(id, 3) AS pickup_wave.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product routing.
+-- Return id, name, parity_remainder, and pickup_wave from products.
+-- Use id % 2 for parity and MOD(id, 3) for the pickup wave.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT id, name FROM products.",
+      "Add id % 2 AS parity_remainder.",
+      "Add MOD(id, 3) AS pickup_wave, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT id, name, id % 2 AS parity_remainder, MOD(id, 3) AS pickup_wave FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT id, name, id % 2 AS parity_remainder, MOD(id, 3) AS pickup_wave FROM products ORDER BY id;",
+      },
+      requiredColumns: ["id", "name", "parity_remainder", "pickup_wave"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Remainder routing complete",
+      body: "Correct. You used one remainder calculation to identify parity and another to cycle every product through a predictable wave.",
+      nextConcept: "POWER / SQRT / EXP / LOG",
+    },
+  },
+  {
+    id: "cycle-depot-model-product-scales",
+    version: 1,
+    title: "Model Cycle Depot product scales",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Use four numeric functions to build squared, root, exponential, and logarithmic views of every Cycle Depot product.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name, price, price_index_squared, price_root, growth_factor, and log10_price_scale.",
+      "Use ROUND(POWER(price / 100.0, 2), 4) AS price_index_squared.",
+      "Use ROUND(SQRT(price)::numeric, 3) AS price_root.",
+      "Use ROUND(EXP((id % 3)::numeric), 3) AS growth_factor.",
+      "Use ROUND(LOG(price / 100.0), 3) AS log10_price_scale.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot product scales.
+-- Return name, price, price_index_squared, price_root, growth_factor, and log10_price_scale.
+-- Use POWER, SQRT, EXP, and LOG with the requested rounding.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name, price FROM products.",
+      "Add ROUND(POWER(price / 100.0, 2), 4) and ROUND(SQRT(price)::numeric, 3).",
+      "Add EXP from id % 3, LOG from price / 100.0, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT name, price, ROUND(POWER(price / 100.0, 2), 4) AS price_index_squared, ROUND(SQRT(price)::numeric, 3) AS price_root, ROUND(EXP((id % 3)::numeric), 3) AS growth_factor, ROUND(LOG(price / 100.0), 3) AS log10_price_scale FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT name, price, ROUND(POWER(price / 100.0, 2), 4) AS price_index_squared, ROUND(SQRT(price)::numeric, 3) AS price_root, ROUND(EXP((id % 3)::numeric), 3) AS growth_factor, ROUND(LOG(price / 100.0), 3) AS log10_price_scale FROM products ORDER BY id;",
+      },
+      requiredColumns: [
+        "name",
+        "price",
+        "price_index_squared",
+        "price_root",
+        "growth_factor",
+        "log10_price_scale",
+      ],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Product-scale model complete",
+      body: "Correct. You built four different numeric views of the same Cycle Depot product rows while preserving the original price for context.",
+      nextConcept: "RANDOM / RAND: Numbers in a Range",
+    },
+  },
+  {
+    id: "cycle-depot-assign-random-promo-groups",
+    version: 1,
+    title: "Assign random Cycle Depot promo groups",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt: "Assign every Cycle Depot product to a temporary random promo group from 1 through 6.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name and promo_group.",
+      "Use FLOOR(RANDOM() * 6 + 1)::int AS promo_group.",
+      "Sort the source rows by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot random promo groups.
+-- Return name and promo_group from products.
+-- Use FLOOR(RANDOM() * 6 + 1)::int AS promo_group.
+-- Sort the source rows by id, then run and check.`,
+    hints: [
+      "Start with SELECT name FROM products.",
+      "Add FLOOR(RANDOM() * 6 + 1)::int AS promo_group.",
+      "Finish with ORDER BY id. Each checked promo_group can be any integer from 1 through 6.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT name, FLOOR(RANDOM() * 6 + 1)::int AS promo_group FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "numeric-range",
+      expectedSql: {
+        postgres: "SELECT name FROM products ORDER BY id;",
+      },
+      requiredColumns: ["name", "promo_group"],
+      stableColumns: ["name"],
+      rowCount: 30,
+      rowOrder: "exact",
+      ranges: [
+        {
+          field: "promo_group",
+          minInclusive: 1,
+          maxInclusive: 6,
+          integer: true,
+        },
+      ],
+    },
+    success: {
+      title: "Random promo groups complete",
+      body: "Correct. You kept the real Cycle Depot product order while generating a fresh valid promo group for every row.",
+      nextConcept: "Numeric Functions: Final Quiz",
+    },
+  },
+  {
     id: "cycle-depot-safe-product-margins",
     version: 1,
     title: "Build safe product margin percentages",
