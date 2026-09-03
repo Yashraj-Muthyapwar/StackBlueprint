@@ -2,6 +2,55 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "cycle-depot-safe-product-margins",
+    version: 1,
+    title: "Build safe product margin percentages",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt: "Calculate a safely guarded margin percentage for every Cycle Depot product.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly name, price, cost, and margin_pct.",
+      "Calculate 100.0 * (price - cost) / NULLIF(price, 0).",
+      "Round the percentage to one decimal place.",
+      "Use COALESCE(..., 0.0) so a missing calculated rate displays as 0.0.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot safe product margins.
+-- Return name, price, cost, and margin_pct from products.
+-- Protect the price denominator with NULLIF(price, 0).
+-- Round to one decimal and use COALESCE(..., 0.0) for the fallback.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT name, price, cost FROM products.",
+      "Write NULLIF(price, 0) where the denominator would normally be price.",
+      "Wrap ROUND(100.0 * (price - cost) / NULLIF(price, 0), 1) with COALESCE(..., 0.0), then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT name, price, cost, COALESCE(ROUND(100.0 * (price - cost) / NULLIF(price, 0), 1), 0.0) AS margin_pct FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT name, price, cost, COALESCE(ROUND(100.0 * (price - cost) / NULLIF(price, 0), 1), 0.0) AS margin_pct FROM products ORDER BY id;",
+      },
+      requiredColumns: ["name", "price", "cost", "margin_pct"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Safe product margins complete",
+      body: "Correct. You protected the denominator before division and supplied a deliberate fallback for a missing rate.",
+      nextConcept: "LEFT, RIGHT, and LENGTH",
+    },
+  },
+  {
     id: "cycle-depot-product-model-numbers",
     version: 2,
     title: "Extract product model numbers",
@@ -9,7 +58,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres"],
-    prompt: "Find Cycle Depot product names containing digits and extract the first model-number run from each one.",
+    prompt:
+      "Find Cycle Depot product names containing digits and extract the first model-number run from each one.",
     requirements: [
       "Use the products table.",
       "Return exactly name and model_number.",
@@ -28,12 +78,14 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add REGEXP_SUBSTR(name, '[0-9]+') AS model_number, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
+      postgres:
+        "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
+        postgres:
+          "SELECT name, REGEXP_SUBSTR(name, '[0-9]+') AS model_number FROM products WHERE REGEXP_LIKE(name, '[0-9]+') ORDER BY id;",
       },
       requiredColumns: ["name", "model_number"],
       columnOrder: "exact",
@@ -47,13 +99,14 @@ export const CHALLENGES: ChallengeDefinition[] = [
   },
   {
     id: "cycle-depot-customer-email-parts",
-    version: 1,
+    version: 2,
     title: "Extract customer email parts",
     group: "start",
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "Find the @ position in every Cycle Depot customer email, then return the local name and domain separately.",
+    prompt:
+      "Find the @ position in every Cycle Depot customer email, then return the local name and domain separately.",
     requirements: [
       "Use the customers table.",
       "Return exactly email, at_position, email_local, and email_domain.",
@@ -73,14 +126,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add the two SPLIT_PART expressions, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
-      duckdb: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+      postgres:
+        "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+      duckdb:
+        "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
-        duckdb: "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+        postgres:
+          "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
+        duckdb:
+          "SELECT email, POSITION('@' IN email) AS at_position, SPLIT_PART(email, '@', 1) AS email_local, SPLIT_PART(email, '@', 2) AS email_domain FROM customers ORDER BY id;",
       },
       requiredColumns: ["email", "at_position", "email_local", "email_domain"],
       columnOrder: "exact",
@@ -94,100 +151,111 @@ export const CHALLENGES: ChallengeDefinition[] = [
   },
   {
     id: "cycle-depot-clean-product-keys",
-    version: 1,
-    title: "Create clean product keys",
+    version: 3,
+    title: "Create clean product keys with BTRIM",
     group: "start",
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "Create a clean hyphenated key for every Cycle Depot product.",
+    prompt:
+      "Compare left, right, whitespace, and chosen-character cleanup, then create a clean hyphenated key for every Cycle Depot product.",
     requirements: [
       "Use the products table.",
-      "Return exactly name and product_key.",
-      "Add edge spaces with CONCAT(' ', name, ' '), then remove them with TRIM.",
+      "Return exactly name, left_trimmed, right_trimmed, marker_trimmed, and product_key.",
+      "Add one edge space on each side with CONCAT(' ', name, ' ').",
+      "Use LTRIM inside pipes as left_trimmed and RTRIM inside pipes as right_trimmed.",
+      "Use BTRIM(CONCAT('---', name, '---'), '-') as marker_trimmed.",
+      "Use TRIM to remove both temporary edges before creating product_key.",
       "Use REPLACE to change every internal space to '-'.",
       "Name the result product_key.",
       "Sort the result by id.",
     ],
     requiredTables: ["products"],
     starterSql: `-- Cycle Depot clean product keys.
--- Return name and product_key from products.
--- Use CONCAT, TRIM, and REPLACE to make a clean hyphenated key.
+-- Return name, left_trimmed, right_trimmed, marker_trimmed, and product_key from products.
+-- Use LTRIM and RTRIM inside pipes to show the remaining edge spaces.
+-- Use BTRIM to remove --- markers, then TRIM and REPLACE to make a clean hyphenated key.
 -- Sort by id, then run and check.`,
     hints: [
       "Start with SELECT name FROM products.",
-      "Use TRIM(CONCAT(' ', name, ' ')) to remove the temporary edge spaces.",
-      "Wrap that expression in REPLACE(..., ' ', '-') AS product_key, then ORDER BY id.",
+      "Use CONCAT('|', LTRIM(CONCAT(' ', name, ' ')), '|') AS left_trimmed, then mirror it with RTRIM for right_trimmed.",
+      "Use BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed.",
+      "Use REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
-      duckdb: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+      postgres:
+        "SELECT name, CONCAT('|', LTRIM(CONCAT(' ', name, ' ')), '|') AS left_trimmed, CONCAT('|', RTRIM(CONCAT(' ', name, ' ')), '|') AS right_trimmed, BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+      duckdb:
+        "SELECT name, CONCAT('|', LTRIM(CONCAT(' ', name, ' ')), '|') AS left_trimmed, CONCAT('|', RTRIM(CONCAT(' ', name, ' ')), '|') AS right_trimmed, BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
-        duckdb: "SELECT name, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+        postgres:
+          "SELECT name, CONCAT('|', LTRIM(CONCAT(' ', name, ' ')), '|') AS left_trimmed, CONCAT('|', RTRIM(CONCAT(' ', name, ' ')), '|') AS right_trimmed, BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
+        duckdb:
+          "SELECT name, CONCAT('|', LTRIM(CONCAT(' ', name, ' ')), '|') AS left_trimmed, CONCAT('|', RTRIM(CONCAT(' ', name, ' ')), '|') AS right_trimmed, BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed, REPLACE(TRIM(CONCAT(' ', name, ' ')), ' ', '-') AS product_key FROM products ORDER BY id;",
       },
-      requiredColumns: ["name", "product_key"],
+      requiredColumns: ["name", "left_trimmed", "right_trimmed", "marker_trimmed", "product_key"],
       columnOrder: "exact",
       rowOrder: "exact",
     },
     success: {
-      title: "Clean product keys complete",
-      body: "Correct. You removed temporary edge spaces before replacing each internal space with a hyphen.",
+      title: "Clean product keys with BTRIM complete",
+      body: "Correct. You compared left and right cleanup, removed chosen hyphen markers from both edges, and then replaced internal spaces with hyphens.",
       nextConcept: "POSITION and SPLIT_PART",
     },
   },
   {
     id: "cycle-depot-product-case-labels",
-    version: 1,
+    version: 2,
     title: "Create product case labels",
     group: "start",
     difficulty: "beginner",
     dataset: "cycledepot",
-    engines: ["postgres", "duckdb"],
-    prompt: "Create uppercase and lowercase category labels for every Cycle Depot product.",
+    engines: ["postgres"],
+    prompt: "Create uppercase, lowercase, and title-cased labels for every Cycle Depot product.",
     requirements: [
       "Use the products table.",
-      "Return exactly name, category, category_upper, and category_lower.",
+      "Return exactly name, category, category_upper, category_lower, and name_title.",
       "Use UPPER(category) AS category_upper.",
       "Use LOWER(category) AS category_lower.",
+      "Use INITCAP(LOWER(name)) AS name_title.",
       "Sort the result by id.",
     ],
     requiredTables: ["products"],
     starterSql: `-- Cycle Depot product case labels.
--- Return name, category, category_upper, and category_lower from products.
--- Use UPPER(category) and LOWER(category).
+-- Return name, category, category_upper, category_lower, and name_title from products.
+-- Use UPPER(category), LOWER(category), and INITCAP(LOWER(name)).
 -- Sort by id, then run and check.`,
     hints: [
       "Start with SELECT name, category FROM products.",
       "Add UPPER(category) AS category_upper.",
-      "Add LOWER(category) AS category_lower, then ORDER BY id.",
+      "Add LOWER(category) AS category_lower and INITCAP(LOWER(name)) AS name_title, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
-      duckdb: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+      postgres:
+        "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower, INITCAP(LOWER(name)) AS name_title FROM products ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
-        duckdb: "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower FROM products ORDER BY id;",
+        postgres:
+          "SELECT name, category, UPPER(category) AS category_upper, LOWER(category) AS category_lower, INITCAP(LOWER(name)) AS name_title FROM products ORDER BY id;",
       },
-      requiredColumns: ["name", "category", "category_upper", "category_lower"],
+      requiredColumns: ["name", "category", "category_upper", "category_lower", "name_title"],
       columnOrder: "exact",
       rowOrder: "exact",
     },
     success: {
       title: "Product case labels complete",
-      body: "Correct. You formatted both case variants for every product while keeping the original category in the result.",
+      body: "Correct. You created uppercase, lowercase, and title-cased labels while keeping each source value in the result.",
       nextConcept: "TRIM and REPLACE",
     },
   },
   {
     id: "cycle-depot-customer-text-summaries",
-    version: 1,
+    version: 2,
     title: "Create customer text summaries",
     group: "start",
     difficulty: "beginner",
@@ -199,28 +267,33 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Return exactly name, name_code, email_domain, and name_characters.",
       "Use LEFT(name, 3) AS name_code.",
       "Use RIGHT(email, 11) AS email_domain.",
-      "Use LENGTH(name) AS name_characters.",
+      "Use CHAR_LENGTH(name) AS name_characters.",
       "Sort the result by id.",
     ],
     requiredTables: ["customers"],
     starterSql: `-- Cycle Depot customer text summaries.
 -- Return name, name_code, email_domain, and name_characters from customers.
 -- Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name).
+-- Use CHAR_LENGTH(name) AS name_characters.
 -- Sort by id, then run and check.`,
     hints: [
       "Start with SELECT name FROM customers.",
-      "Add LEFT(name, 3) AS name_code and LENGTH(name) AS name_characters.",
+      "Add LEFT(name, 3) AS name_code and CHAR_LENGTH(name) AS name_characters.",
       "Add RIGHT(email, 11) AS email_domain, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
-      duckdb: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+      postgres:
+        "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, CHAR_LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+      duckdb:
+        "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, CHAR_LENGTH(name) AS name_characters FROM customers ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
-        duckdb: "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+        postgres:
+          "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, CHAR_LENGTH(name) AS name_characters FROM customers ORDER BY id;",
+        duckdb:
+          "SELECT name, LEFT(name, 3) AS name_code, RIGHT(email, 11) AS email_domain, CHAR_LENGTH(name) AS name_characters FROM customers ORDER BY id;",
       },
       requiredColumns: ["name", "name_code", "email_domain", "name_characters"],
       columnOrder: "exact",
@@ -228,13 +301,13 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
     success: {
       title: "Customer text summaries complete",
-      body: "Correct. You read fixed text from both ends and counted the full customer name without changing the stored values.",
+      body: "Correct. You read fixed text from both ends and used CHAR_LENGTH to count the full customer name without changing stored values.",
       nextConcept: "UPPER and LOWER",
     },
   },
   {
     id: "cycle-depot-compact-product-labels",
-    version: 1,
+    version: 2,
     title: "Build compact product labels",
     group: "start",
     difficulty: "beginner",
@@ -245,7 +318,7 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use the products table.",
       "Return exactly name, category, and compact_label.",
       "Use SUBSTRING(name FROM 1 FOR 5) to take the first five characters of name.",
-      "Use CONCAT to join that prefix, ' - ', and category.",
+      "Use CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) to join the prefix and category.",
       "Name the result compact_label.",
       "Sort the result by id.",
     ],
@@ -253,21 +326,26 @@ export const CHALLENGES: ChallengeDefinition[] = [
     starterSql: `-- Cycle Depot compact product labels.
 -- Return name, category, and compact_label from products.
 -- Use the first five characters of name, then join them to category with ' - '.
+-- Use CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) for compact_label.
 -- Sort by id, then run and check.`,
     hints: [
       "Start with SELECT name, category FROM products.",
       "Add SUBSTRING(name FROM 1 FOR 5) to take the prefix.",
-      "Wrap it with CONCAT(..., ' - ', category) AS compact_label, then ORDER BY id.",
+      "Wrap it with CONCAT_WS(' - ', SUBSTRING(...), category) AS compact_label, then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
-      duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
+      postgres:
+        "SELECT name, category, CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) AS compact_label FROM products ORDER BY id;",
+      duckdb:
+        "SELECT name, category, CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) AS compact_label FROM products ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
-        duckdb: "SELECT name, category, CONCAT(SUBSTRING(name FROM 1 FOR 5), ' - ', category) AS compact_label FROM products ORDER BY id;",
+        postgres:
+          "SELECT name, category, CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) AS compact_label FROM products ORDER BY id;",
+        duckdb:
+          "SELECT name, category, CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) AS compact_label FROM products ORDER BY id;",
       },
       requiredColumns: ["name", "category", "compact_label"],
       columnOrder: "exact",
@@ -275,7 +353,7 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
     success: {
       title: "Compact labels complete",
-      body: "Correct. You used SUBSTRING to extract a fixed prefix and CONCAT to build a readable value for every product.",
+      body: "Correct. You used SUBSTRING to extract a fixed prefix and CONCAT_WS to build a readable value for every product.",
       nextConcept: "LEFT, RIGHT, and LENGTH",
     },
   },
@@ -395,14 +473,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use ELSE 'Premium', then ORDER BY price, name.",
     ],
     solutionSql: {
-      postgres: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
-      duckdb: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+      postgres:
+        "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+      duckdb:
+        "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
-        duckdb: "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+        postgres:
+          "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
+        duckdb:
+          "SELECT name, price, CASE WHEN price < 1000 THEN 'Budget' WHEN price < 2500 THEN 'Mid-range' ELSE 'Premium' END AS price_band FROM products ORDER BY price, name;",
       },
       requiredColumns: ["name", "price", "price_band"],
       columnOrder: "exact",
@@ -441,14 +523,17 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add WHERE, then join price >= 2000 and in_stock >= 50 with AND.",
     ],
     solutionSql: {
-      postgres: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+      postgres:
+        "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
       duckdb: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
-        duckdb: "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+        postgres:
+          "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
+        duckdb:
+          "SELECT name, price, in_stock FROM products WHERE price >= 2000 AND in_stock >= 50;",
       },
       requiredColumns: ["name", "price", "in_stock"],
       columnOrder: "exact",
@@ -488,14 +573,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Connect it with OR to a second group: NOT category = 'Road Bikes' AND price >= 4000.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
-      duckdb: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+      postgres:
+        "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+      duckdb:
+        "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
-        duckdb: "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+        postgres:
+          "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
+        duckdb:
+          "SELECT name, category, price, in_stock FROM products WHERE (category = 'Road Bikes' AND in_stock >= 90) OR (NOT category = 'Road Bikes' AND price >= 4000);",
       },
       requiredColumns: ["name", "category", "price", "in_stock"],
       columnOrder: "exact",
@@ -535,14 +624,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add category NOT IN ('City Bikes') and price BETWEEN 2000 AND 4000 with AND.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
-      duckdb: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+      postgres:
+        "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+      duckdb:
+        "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
-        duckdb: "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+        postgres:
+          "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
+        duckdb:
+          "SELECT name, category, price FROM products WHERE category IN ('Road Bikes', 'Mountain Bikes', 'City Bikes') AND category NOT IN ('City Bikes') AND price BETWEEN 2000 AND 4000;",
       },
       requiredColumns: ["name", "category", "price"],
       columnOrder: "exact",
@@ -583,14 +676,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add AND name NOT LIKE '%Helmet%', then ORDER BY id.",
     ],
     solutionSql: {
-      postgres: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
-      duckdb: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+      postgres:
+        "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+      duckdb:
+        "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
-        duckdb: "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+        postgres:
+          "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
+        duckdb:
+          "SELECT name, category FROM products WHERE name ILIKE '%road%' AND name NOT LIKE '%Helmet%' ORDER BY id;",
       },
       requiredColumns: ["name", "category"],
       columnOrder: "exact",
@@ -629,14 +726,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Add AND order_date < DATE '2024-04-01', then ORDER BY order_date, id.",
     ],
     solutionSql: {
-      postgres: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
-      duckdb: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+      postgres:
+        "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+      duckdb:
+        "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
-        duckdb: "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+        postgres:
+          "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
+        duckdb:
+          "SELECT id, customer_id, order_date FROM orders WHERE order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' ORDER BY order_date, id;",
       },
       requiredColumns: ["id", "customer_id", "order_date"],
       columnOrder: "exact",
@@ -656,16 +757,17 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "The marketing team needs a list of all customers located in the USA to send a targeted promotion.",
+    prompt:
+      "The marketing team needs a list of all customers located in the USA to send a targeted promotion.",
     requirements: [
       "Use the customers table.",
       "Return all columns for customers whose country is 'USA'.",
-      "Sort the results by name from A to Z."
+      "Sort the results by name from A to Z.",
     ],
     requiredTables: ["customers"],
     hints: [
       "Use the WHERE clause to filter for country = 'USA'.",
-      "Use ORDER BY name ASC to sort the results alphabetically."
+      "Use ORDER BY name ASC to sort the results alphabetically.",
     ],
     solutionSql: {
       postgres: "SELECT * FROM customers WHERE country = 'USA' ORDER BY name ASC;",
@@ -684,8 +786,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You successfully filtered the customers table and ordered the results.",
-      nextConcept: "Customers without a city"
-    }
+      nextConcept: "Customers without a city",
+    },
   },
   {
     id: "cycle-depot-customers-without-city",
@@ -695,16 +797,17 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "Data hygiene check! We need to find all customers who are missing a city in their profile.",
+    prompt:
+      "Data hygiene check! We need to find all customers who are missing a city in their profile.",
     requirements: [
       "Use the customers table.",
       "Return the id, name, and email columns.",
-      "Include only customers where the city is missing (NULL)."
+      "Include only customers where the city is missing (NULL).",
     ],
     requiredTables: ["customers"],
     hints: [
       "Missing values in SQL are represented by NULL.",
-      "You cannot use '= NULL' to check for missing values. Use 'IS NULL' instead."
+      "You cannot use '= NULL' to check for missing values. Use 'IS NULL' instead.",
     ],
     solutionSql: {
       postgres: "SELECT id, name, email FROM customers WHERE city IS NULL;",
@@ -723,8 +826,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You correctly used IS NULL to find missing data.",
-      nextConcept: "Recent delivered orders"
-    }
+      nextConcept: "Recent delivered orders",
+    },
   },
   {
     id: "cycle-depot-first-three-countries",
@@ -734,7 +837,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "beginner",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "The Cycle Depot onboarding form needs the first three country choices in alphabetical order.",
+    prompt:
+      "The Cycle Depot onboarding form needs the first three country choices in alphabetical order.",
     requirements: [
       "Use the customers table.",
       "Return the country column only.",
@@ -787,14 +891,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use ORDER BY price DESC, followed by LIMIT 3.",
     ],
     solutionSql: {
-      postgres: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
-      duckdb: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+      postgres:
+        "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+      duckdb:
+        "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
-        duckdb: "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+        postgres:
+          "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
+        duckdb:
+          "SELECT name, price FROM products WHERE category = 'Road Bikes' ORDER BY price DESC LIMIT 3;",
       },
       requiredColumns: ["name", "price"],
       columnOrder: "exact",
@@ -820,23 +928,26 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use the orders table.",
       "Return all columns.",
       "Filter for orders with the status 'delivered'.",
-      "Order them by order_date from newest to oldest, and return only the first 10."
+      "Order them by order_date from newest to oldest, and return only the first 10.",
     ],
     requiredTables: ["orders"],
     hints: [
       "Filter by status = 'delivered'.",
       "Sort by order_date DESC.",
-      "Use LIMIT 10 to restrict the output to just 10 rows."
+      "Use LIMIT 10 to restrict the output to just 10 rows.",
     ],
     solutionSql: {
-      postgres: "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
+      postgres:
+        "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
       duckdb: "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
-        duckdb: "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
+        postgres:
+          "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
+        duckdb:
+          "SELECT * FROM orders WHERE status = 'delivered' ORDER BY order_date DESC LIMIT 10;",
       },
       requiredColumns: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
       columnOrder: "any",
@@ -845,8 +956,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You combined filtering, ordering, and limiting to find the most recent matching rows.",
-      nextConcept: "Show each order with its customer"
-    }
+      nextConcept: "Show each order with its customer",
+    },
   },
   {
     id: "cycle-depot-each-order-with-customer",
@@ -860,22 +971,26 @@ export const CHALLENGES: ChallengeDefinition[] = [
     requirements: [
       "Use both the orders and customers tables.",
       "Return the order id, order_date, customer name, and customer country.",
-      "Only include orders that have a matching customer."
+      "Only include orders that have a matching customer.",
     ],
     requiredTables: ["orders", "customers"],
     hints: [
       "Use an INNER JOIN to combine orders and customers.",
-      "The relationship is defined by orders.customer_id = customers.id."
+      "The relationship is defined by orders.customer_id = customers.id.",
     ],
     solutionSql: {
-      postgres: "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
-      duckdb: "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
+      postgres:
+        "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
+      duckdb:
+        "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
-        duckdb: "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
+        postgres:
+          "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
+        duckdb:
+          "SELECT o.id, o.order_date, c.name, c.country FROM orders o JOIN customers c ON o.customer_id = c.id;",
       },
       requiredColumns: ["id", "order_date", "name", "country"],
       columnOrder: "any",
@@ -884,8 +999,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You successfully joined two tables to enrich order data with customer details.",
-      nextConcept: "Customers who never ordered"
-    }
+      nextConcept: "Customers who never ordered",
+    },
   },
   {
     id: "cycle-depot-customers-no-orders",
@@ -895,29 +1010,34 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "intermediate",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "The retention team wants a list of customers who signed up but have not yet placed an order. Return id, name, country, and signup_date, ordered by signup_date from oldest to newest.",
+    prompt:
+      "The retention team wants a list of customers who signed up but have not yet placed an order. Return id, name, country, and signup_date, ordered by signup_date from oldest to newest.",
     requirements: [
       "Use customers and orders.",
       "Return exactly the four named columns.",
       "Include every customer with no matching order.",
       "Do not include customers who have ordered.",
-      "Order by signup_date from oldest to newest."
+      "Order by signup_date from oldest to newest.",
     ],
     requiredTables: ["customers", "orders"],
     hints: [
       "You can use a LEFT JOIN from customers to orders.",
       "If a customer has no orders, the joined order columns will be NULL. Filter for where order id IS NULL.",
-      "Alternatively, use WHERE NOT EXISTS."
+      "Alternatively, use WHERE NOT EXISTS.",
     ],
     solutionSql: {
-      postgres: "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
-      duckdb: "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
+      postgres:
+        "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
+      duckdb:
+        "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
-        duckdb: "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
+        postgres:
+          "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
+        duckdb:
+          "SELECT c.id, c.name, c.country, c.signup_date FROM customers c LEFT JOIN orders o ON c.id = o.customer_id WHERE o.id IS NULL ORDER BY c.signup_date ASC;",
       },
       requiredColumns: ["id", "name", "country", "signup_date"],
       columnOrder: "any",
@@ -926,8 +1046,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You found all customers who have not placed an order. Your query preserves customers even when no matching order exists.",
-      nextConcept: "Calculate each order's total"
-    }
+      nextConcept: "Calculate each order's total",
+    },
   },
   {
     id: "cycle-depot-order-totals",
@@ -941,23 +1061,27 @@ export const CHALLENGES: ChallengeDefinition[] = [
     requirements: [
       "Use orders and order_items.",
       "Return order id, order_date, and the total value of the order as total_value.",
-      "Include only orders that have items."
+      "Include only orders that have items.",
     ],
     requiredTables: ["orders", "order_items"],
     hints: [
       "Join orders to order_items.",
       "Group the results by order id and order_date.",
-      "Use SUM(unit_price * quantity) to calculate the total value."
+      "Use SUM(unit_price * quantity) to calculate the total value.",
     ],
     solutionSql: {
-      postgres: "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
-      duckdb: "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
+      postgres:
+        "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
+      duckdb:
+        "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
-        duckdb: "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
+        postgres:
+          "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
+        duckdb:
+          "SELECT o.id, o.order_date, SUM(oi.unit_price * oi.quantity) as total_value FROM orders o JOIN order_items oi ON o.id = oi.order_id GROUP BY o.id, o.order_date;",
       },
       requiredColumns: ["id", "order_date", "total_value"],
       columnOrder: "any",
@@ -967,8 +1091,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You combined a join with an aggregate function to roll up line items into order totals.",
-      nextConcept: "Revenue by product category"
-    }
+      nextConcept: "Revenue by product category",
+    },
   },
   {
     id: "cycle-depot-customer-coverage-summary",
@@ -996,14 +1120,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Put DISTINCT inside COUNT to count each country once.",
     ],
     solutionSql: {
-      postgres: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
-      duckdb: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+      postgres:
+        "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+      duckdb:
+        "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
-        duckdb: "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+        postgres:
+          "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
+        duckdb:
+          "SELECT COUNT(*) AS customer_count, COUNT(city) AS customers_with_city, COUNT(DISTINCT country) AS country_count FROM customers;",
       },
       requiredColumns: ["customer_count", "customers_with_city", "country_count"],
       columnOrder: "exact",
@@ -1042,14 +1170,17 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "ORDER BY status makes the result match the requested alphabetical order.",
     ],
     solutionSql: {
-      postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+      postgres:
+        "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
       duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
-        duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+        postgres:
+          "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
+        duckdb:
+          "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status ORDER BY status;",
       },
       requiredColumns: ["status", "order_count"],
       columnOrder: "exact",
@@ -1089,14 +1220,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "Use ORDER BY order_count DESC, status ASC for the requested order.",
     ],
     solutionSql: {
-      postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
-      duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+      postgres:
+        "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+      duckdb:
+        "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
-        duckdb: "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+        postgres:
+          "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
+        duckdb:
+          "SELECT status, COUNT(*) AS order_count FROM orders GROUP BY status HAVING COUNT(*) >= 10 ORDER BY order_count DESC, status ASC;",
       },
       requiredColumns: ["status", "order_count"],
       columnOrder: "exact",
@@ -1120,23 +1255,27 @@ export const CHALLENGES: ChallengeDefinition[] = [
     requirements: [
       "Use products and order_items.",
       "Return the category name and the total revenue for that category.",
-      "Revenue is unit_price * quantity."
+      "Revenue is unit_price * quantity.",
     ],
     requiredTables: ["products", "order_items"],
     hints: [
       "Join the two tables on product_id.",
       "Group by the category column.",
-      "Sum the unit_price multiplied by quantity."
+      "Sum the unit_price multiplied by quantity.",
     ],
     solutionSql: {
-      postgres: "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
-      duckdb: "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
+      postgres:
+        "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
+      duckdb:
+        "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
-        duckdb: "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
+        postgres:
+          "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
+        duckdb:
+          "SELECT p.category, SUM(oi.unit_price * oi.quantity) as revenue FROM products p JOIN order_items oi ON p.id = oi.product_id GROUP BY p.category;",
       },
       requiredColumns: ["category", "revenue"],
       columnOrder: "any",
@@ -1146,8 +1285,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You used GROUP BY to aggregate data across a category.",
-      nextConcept: "Countries with more than 20 orders"
-    }
+      nextConcept: "Countries with more than 20 orders",
+    },
   },
   {
     id: "cycle-depot-countries-high-orders",
@@ -1161,23 +1300,27 @@ export const CHALLENGES: ChallengeDefinition[] = [
     requirements: [
       "Use customers and orders.",
       "Return the country name and the order count.",
-      "Only include countries with an order count strictly greater than 20."
+      "Only include countries with an order count strictly greater than 20.",
     ],
     requiredTables: ["customers", "orders"],
     hints: [
       "Join the tables and group by country.",
       "Count the number of orders.",
-      "Use HAVING to filter on the aggregated count, since WHERE cannot filter on aggregates."
+      "Use HAVING to filter on the aggregated count, since WHERE cannot filter on aggregates.",
     ],
     solutionSql: {
-      postgres: "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
-      duckdb: "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
+      postgres:
+        "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
+      duckdb:
+        "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
-        duckdb: "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
+        postgres:
+          "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
+        duckdb:
+          "SELECT c.country, COUNT(o.id) as order_count FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.country HAVING COUNT(o.id) > 20;",
       },
       requiredColumns: ["country", "order_count"],
       columnOrder: "any",
@@ -1186,8 +1329,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You used HAVING to filter groups after they were aggregated.",
-      nextConcept: "Count missing cities"
-    }
+      nextConcept: "Count missing cities",
+    },
   },
   {
     id: "cycle-depot-count-missing-cities",
@@ -1198,15 +1341,9 @@ export const CHALLENGES: ChallengeDefinition[] = [
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
     prompt: "Return a single row with the number of customers who do not have a city listed.",
-    requirements: [
-      "Use the customers table.",
-      "Return one column containing the count.",
-    ],
+    requirements: ["Use the customers table.", "Return one column containing the count."],
     requiredTables: ["customers"],
-    hints: [
-      "Use COUNT(*) or COUNT(id) to count rows.",
-      "Filter for city IS NULL."
-    ],
+    hints: ["Use COUNT(*) or COUNT(id) to count rows.", "Filter for city IS NULL."],
     solutionSql: {
       postgres: "SELECT COUNT(*) as missing_count FROM customers WHERE city IS NULL;",
       duckdb: "SELECT COUNT(*) as missing_count FROM customers WHERE city IS NULL;",
@@ -1224,8 +1361,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You counted rows based on a specific condition.",
-      nextConcept: "Find highest-value customers"
-    }
+      nextConcept: "Find highest-value customers",
+    },
   },
   {
     id: "cycle-depot-highest-value-customers",
@@ -1239,23 +1376,27 @@ export const CHALLENGES: ChallengeDefinition[] = [
     requirements: [
       "Use customers, orders, and order_items.",
       "Return customer name and their total spend.",
-      "Sort by total spend descending and limit to 5."
+      "Sort by total spend descending and limit to 5.",
     ],
     requiredTables: ["customers", "orders", "order_items"],
     hints: [
       "You need to join all three tables to connect a customer to the items they bought.",
       "Group by the customer's name.",
-      "Sum (unit_price * quantity) for the spend."
+      "Sum (unit_price * quantity) for the spend.",
     ],
     solutionSql: {
-      postgres: "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
-      duckdb: "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
+      postgres:
+        "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
+      duckdb:
+        "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
-        duckdb: "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
+        postgres:
+          "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
+        duckdb:
+          "SELECT c.name, SUM(oi.unit_price * oi.quantity) as total_spend FROM customers c JOIN orders o ON c.id = o.customer_id JOIN order_items oi ON o.id = oi.order_id GROUP BY c.id, c.name ORDER BY total_spend DESC LIMIT 5;",
       },
       requiredColumns: ["name", "total_spend"],
       columnOrder: "any",
@@ -1265,8 +1406,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You executed a multi-table join and aggregation to find top customers.",
-      nextConcept: "Rank each customer's orders"
-    }
+      nextConcept: "Rank each customer's orders",
+    },
   },
   {
     id: "cycle-depot-rank-customer-orders",
@@ -1276,7 +1417,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     difficulty: "advanced",
     dataset: "cycledepot",
     engines: ["postgres", "duckdb"],
-    prompt: "Assign a sequential rank to each order placed by a customer, based on the order date. The first order is 1, the second is 2, etc.",
+    prompt:
+      "Assign a sequential rank to each order placed by a customer, based on the order date. The first order is 1, the second is 2, etc.",
     requirements: [
       "Use the orders table.",
       "Return customer_id, order id, order_date, and the rank column.",
@@ -1285,17 +1427,21 @@ export const CHALLENGES: ChallengeDefinition[] = [
     hints: [
       "Use the ROW_NUMBER() window function.",
       "Use PARTITION BY customer_id to restart the numbering for each customer.",
-      "Use ORDER BY order_date within the window function to sort correctly."
+      "Use ORDER BY order_date within the window function to sort correctly.",
     ],
     solutionSql: {
-      postgres: "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
-      duckdb: "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
+      postgres:
+        "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
+      duckdb:
+        "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
-        duckdb: "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
+        postgres:
+          "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
+        duckdb:
+          "SELECT customer_id, id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) as order_rank FROM orders;",
       },
       requiredColumns: ["customer_id", "id", "order_date", "order_rank"],
       columnOrder: "any",
@@ -1304,8 +1450,8 @@ export const CHALLENGES: ChallengeDefinition[] = [
     success: {
       title: "Challenge complete",
       body: "You used a window function to compute a value across related rows without collapsing them into groups.",
-      nextConcept: "Month-over-month order change"
-    }
+      nextConcept: "Month-over-month order change",
+    },
   },
   {
     id: "cycle-depot-mom-order-change",
@@ -1322,23 +1468,27 @@ export const CHALLENGES: ChallengeDefinition[] = [
       "First, get the count of orders per month (use DATE_TRUNC('month', order_date)).",
       "Then, use LAG to find the previous month's count.",
       "Return month, order_count, and prev_month_count.",
-      "Order by month."
+      "Order by month.",
     ],
     requiredTables: ["orders"],
     hints: [
       "Step 1: Write a query to get month and COUNT(id). Save it as a CTE.",
       "Step 2: Query from the CTE, selecting month, order_count, and LAG(order_count) OVER (ORDER BY month).",
-      "DATE_TRUNC is supported in both Postgres and DuckDB."
+      "DATE_TRUNC is supported in both Postgres and DuckDB.",
     ],
     solutionSql: {
-      postgres: "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
-      duckdb: "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
+      postgres:
+        "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
+      duckdb:
+        "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
     },
     validator: {
       kind: "result-set",
       expectedSql: {
-        postgres: "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
-        duckdb: "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
+        postgres:
+          "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
+        duckdb:
+          "WITH monthly AS (SELECT DATE_TRUNC('month', order_date) as month, COUNT(id) as order_count FROM orders GROUP BY 1) SELECT month, order_count, LAG(order_count) OVER (ORDER BY month) as prev_month_count FROM monthly ORDER BY month;",
       },
       requiredColumns: ["month", "order_count", "prev_month_count"],
       columnOrder: "any",
@@ -1346,15 +1496,18 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
     success: {
       title: "Challenge complete",
-      body: "You successfully used a CTE and the LAG window function to perform a time-series comparison."
-    }
-  }
+      body: "You successfully used a CTE and the LAG window function to perform a time-series comparison.",
+    },
+  },
 ];
 
-export function getChallenges(dataset: ChallengeDataset, engine: ChallengeEngine): ChallengeDefinition[] {
-  return CHALLENGES.filter(c => c.dataset === dataset && c.engines.includes(engine));
+export function getChallenges(
+  dataset: ChallengeDataset,
+  engine: ChallengeEngine,
+): ChallengeDefinition[] {
+  return CHALLENGES.filter((c) => c.dataset === dataset && c.engines.includes(engine));
 }
 
 export function getChallenge(id: string): ChallengeDefinition | undefined {
-  return CHALLENGES.find(c => c.id === id);
+  return CHALLENGES.find((c) => c.id === id);
 }
