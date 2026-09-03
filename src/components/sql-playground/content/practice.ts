@@ -17,6 +17,20 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-safe-product-margins": {
+    id: "cycledepot-safe-product-margins",
+    title: "Build safe product margin percentages",
+    prompt:
+      "Return every Cycle Depot product's name, price, cost, and margin_pct. Calculate 100.0 * (price - cost) / NULLIF(price, 0), round to one decimal place, and use COALESCE(..., 0.0) as the fallback. Sort by id. The result should have 30 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-safe-product-margins",
+    starterSql: `-- Cycle Depot safe product margins.
+-- Return name, price, cost, and margin_pct from products.
+-- Protect the price denominator with NULLIF(price, 0).
+-- Round to one decimal and use COALESCE(..., 0.0) for the fallback.
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-product-model-numbers": {
     id: "cycledepot-product-model-numbers",
     title: "Extract product model numbers",
@@ -45,54 +59,57 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
   },
   "cycledepot-clean-product-keys": {
     id: "cycledepot-clean-product-keys",
-    title: "Create clean product keys",
+    title: "Create clean product keys with BTRIM",
     prompt:
-      "Return every Cycle Depot product's name and product_key. Add one edge space with CONCAT(' ', name, ' '), remove it with TRIM, then replace each internal space with '-' using REPLACE. Sort by id. The result should have 30 rows and exactly two columns.",
+      "Return every Cycle Depot product's name, left_trimmed, right_trimmed, marker_trimmed, and product_key. Add one edge space on each side with CONCAT(' ', name, ' '), use LTRIM and RTRIM inside pipes for the directional results, use BTRIM(CONCAT('---', name, '---'), '-') AS marker_trimmed, then use TRIM and REPLACE to create product_key. Sort by id. The result should have 30 rows and exactly five columns.",
     dataset: "cycledepot",
     engine: "postgres",
     challengeId: "cycle-depot-clean-product-keys",
     starterSql: `-- Cycle Depot clean product keys.
--- Return name and product_key from products.
--- Use CONCAT, TRIM, and REPLACE to make a clean hyphenated key.
+-- Return name, left_trimmed, right_trimmed, marker_trimmed, and product_key from products.
+-- Use LTRIM and RTRIM inside pipes to show the remaining edge spaces.
+-- Use BTRIM to remove --- markers, then TRIM and REPLACE to make a clean hyphenated key.
 -- Sort by id, then run and check.`,
   },
   "cycledepot-product-case-labels": {
     id: "cycledepot-product-case-labels",
     title: "Create product case labels",
     prompt:
-      "Return every Cycle Depot product's name, category, category_upper, and category_lower. Use UPPER(category) and LOWER(category). Sort by id. The result should have 30 rows and exactly four columns.",
+      "Return every Cycle Depot product's name, category, category_upper, category_lower, and name_title. Use UPPER(category), LOWER(category), and INITCAP(LOWER(name)). Sort by id. The result should have 30 rows and exactly five columns.",
     dataset: "cycledepot",
     engine: "postgres",
     challengeId: "cycle-depot-product-case-labels",
     starterSql: `-- Cycle Depot product case labels.
--- Return name, category, category_upper, and category_lower from products.
--- Use UPPER(category) and LOWER(category).
+-- Return name, category, category_upper, category_lower, and name_title from products.
+-- Use UPPER(category), LOWER(category), and INITCAP(LOWER(name)).
 -- Sort by id, then run and check.`,
   },
   "cycledepot-customer-text-summaries": {
     id: "cycledepot-customer-text-summaries",
     title: "Create customer text summaries",
     prompt:
-      "Return every Cycle Depot customer's name, name_code, email_domain, and name_characters. Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name). Sort by id. The result should have 60 rows and exactly four columns.",
+      "Return every Cycle Depot customer's name, name_code, email_domain, and name_characters. Use LEFT(name, 3), RIGHT(email, 11), and CHAR_LENGTH(name). Sort by id. The result should have 60 rows and exactly four columns.",
     dataset: "cycledepot",
     engine: "postgres",
     challengeId: "cycle-depot-customer-text-summaries",
     starterSql: `-- Cycle Depot customer text summaries.
 -- Return name, name_code, email_domain, and name_characters from customers.
 -- Use LEFT(name, 3), RIGHT(email, 11), and LENGTH(name).
+-- Use CHAR_LENGTH(name) AS name_characters to make the unit explicit.
 -- Sort by id, then run and check.`,
   },
   "cycledepot-compact-product-labels": {
     id: "cycledepot-compact-product-labels",
     title: "Build compact product labels",
     prompt:
-      "Return every Cycle Depot product's name, category, and compact_label. Use the first five characters of name, then CONCAT that prefix, ' - ', and category. Name it compact_label and sort by id. The result should have 30 rows and exactly three columns.",
+      "Return every Cycle Depot product's name, category, and compact_label. Use SUBSTRING(name FROM 1 FOR 5), then CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category). Name it compact_label and sort by id. The result should have 30 rows and exactly three columns.",
     dataset: "cycledepot",
     engine: "postgres",
     challengeId: "cycle-depot-compact-product-labels",
     starterSql: `-- Cycle Depot compact product labels.
 -- Return name, category, and compact_label from products.
 -- Use the first five characters of name, then join them to category with ' - '.
+-- Use CONCAT_WS(' - ', SUBSTRING(name FROM 1 FOR 5), category) for compact_label.
 -- Sort by id, then run and check.`,
   },
   "cycledepot-customer-projection": {
