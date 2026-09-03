@@ -80,7 +80,6 @@ type Section = {
   topics: Topic[];
 };
 
-
 const sections: Section[] = [
   {
     group: "Foundations",
@@ -90,9 +89,16 @@ const sections: Section[] = [
       {
         slug: "database-fundamentals",
         title: "Database Fundamentals",
-        blurb: "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
+        blurb:
+          "What is SQL, client-server architecture, types of SQL commands, keys, and normalization.",
         icon: Terminal,
-        modules: ["What is a database?", "How databases work", "SQL & Client-Server", "DDL vs DML", "Keys & Normalization"],
+        modules: [
+          "What is a database?",
+          "How databases work",
+          "SQL & Client-Server",
+          "DDL vs DML",
+          "Keys & Normalization",
+        ],
         unlocked: true,
       },
       {
@@ -119,7 +125,6 @@ const sections: Section[] = [
         ],
         unlocked: true,
       },
-
     ],
   },
   {
@@ -175,13 +180,13 @@ const sections: Section[] = [
         slug: "string-functions",
         title: "String Functions",
         blurb:
-          "CONCAT, SUBSTRING, TRIM, REPLACE, CHARINDEX/POSITION, and regex patterns for text wrangling.",
+          "CONCAT, CONCAT_WS, LEFT, RIGHT, LENGTH, CHAR_LENGTH, TRIM, REPLACE, CHARINDEX/POSITION, and regex patterns for text wrangling.",
         icon: Hash,
         modules: [
-          "CONCAT / SUBSTRING",
-          "LEFT / RIGHT / LENGTH",
-          "UPPER / LOWER",
-          "TRIM / REPLACE",
+          "CONCAT / CONCAT_WS / SUBSTRING",
+          "LEFT / RIGHT / LENGTH / CHAR_LENGTH",
+          "UPPER / LOWER / INITCAP",
+          "TRIM / LTRIM / RTRIM / BTRIM / REPLACE",
           "POSITION / SPLIT_PART",
           "Regex",
           "Final quiz",
@@ -196,7 +201,7 @@ const sections: Section[] = [
         icon: Calculator,
         modules: [
           "ROUND / TRUNC / CEIL / FLOOR",
-          "NULLIF / COALESCE",
+          "NULLIF / COALESCE: Safe Math",
           "ABS / SIGN / LEAST / GREATEST",
           "MOD / %",
           "POWER / SQRT / LOG",
@@ -440,7 +445,11 @@ function SqlIndex() {
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mx-auto mb-6 flex justify-center">
-            <img src={sqlLogo} alt="SQL Mastery Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
+            <img
+              src={sqlLogo}
+              alt="SQL Mastery Logo"
+              className="size-16 object-contain drop-shadow-sm lg:size-20"
+            />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             SQL Mastery
@@ -460,9 +469,7 @@ function SqlIndex() {
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
                   </div>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground">
-                    {sec.group}
-                  </h2>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">{sec.group}</h2>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {sec.groupBlurb}
@@ -484,7 +491,7 @@ function SqlIndex() {
                   }
 
                   const completedCount = realTopic
-                    ? realTopic.lessons.filter(l => isCompleted(l.slug)).length
+                    ? realTopic.lessons.filter((l) => isCompleted(l.slug)).length
                     : 0;
                   const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
