@@ -894,18 +894,32 @@ LIMIT 4;`,
         {
           id: "rtrim-direction",
           question: "Which function removes spaces only from the right edge of a text value?",
-          options: ["LTRIM", "RTRIM", "TRIM", "REPLACE"],
+          options: ["LTRIM", "RTRIM", "BTRIM", "REPLACE"],
           correctIndex: 1,
           explanation:
             "RTRIM means right trim. LTRIM cleans only the left edge, while TRIM cleans both edges.",
         },
         {
           id: "btrim-characters",
-          question: "What does BTRIM('---Trailhead---', '-') return?",
+          question: "What does BTRIM('---Trailhead---', '-') return for the Cycle Depot label?",
           options: ["Trailhead", "---Trailhead---", "Trailhead-", "Trailhead---"],
           correctIndex: 0,
           explanation:
             "BTRIM removes the specified hyphen characters from both outside edges of the text value.",
+        },
+        {
+          id: "btrim-query-choice",
+          question:
+            "Which expression removes the imported --- markers from both edges of every product name?",
+          options: [
+            "BTRIM(CONCAT('---', name, '---'), '-')",
+            "REPLACE(name, '-', '')",
+            "LTRIM(CONCAT('---', name, '---'))",
+            "RTRIM(CONCAT('---', name, '---'))",
+          ],
+          correctIndex: 0,
+          explanation:
+            "BTRIM receives both the padded text and the character to trim. REPLACE would remove matching hyphens everywhere, while LTRIM and RTRIM clean only one side.",
         },
         {
           id: "replace-spaces",
