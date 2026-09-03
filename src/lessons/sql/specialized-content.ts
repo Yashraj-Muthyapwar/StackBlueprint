@@ -6,6 +6,11 @@ import trimReplaceImg from "@/images/sql/string-functions/trim-replace-cycle-dep
 import positionSplitPartImg from "@/images/sql/string-functions/position-split-part-cycle-depot.png";
 import regexImg from "@/images/sql/string-functions/regex-cycle-depot.png";
 import nullifCoalesceImg from "@/images/sql/string-functions/nullif-coalesce-safe-math-cycle-depot.png";
+import roundTruncCeilFloorImg from "@/images/sql/numeric-functions/round-trunc-ceil-floor-cycle-depot.png";
+import absSignLeastGreatestImg from "@/images/sql/numeric-functions/abs-sign-least-greatest-cycle-depot.png";
+import modRemainderImg from "@/images/sql/numeric-functions/mod-remainder-cycle-depot.png";
+import powerSqrtLogImg from "@/images/sql/numeric-functions/power-sqrt-log-cycle-depot.png";
+import randomRangeImg from "@/images/sql/numeric-functions/random-range-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -1730,9 +1735,203 @@ const stringFunctionsQuiz: LessonContent = {
 // =============================================================
 const roundTruncCeilFloor: LessonContent = {
   slug: "round-trunc-ceil-floor",
-  title: "ROUND / TRUNC / CEIL / FLOOR",
-  subtitle: "Round to decimal places, truncate precision, and clamp values to integer boundaries.",
-  sections: [],
+  title: "ROUND / TRUNC / CEIL / FLOOR: Shape Numbers",
+  subtitle:
+    "Round Cycle Depot sale prices to cents, cut off extra precision, or move values to whole-number boundaries.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Choose the number shape your report needs",
+      body: [
+        "Calculations often produce more precision than a report, price tag, or planning rule needs. SQL gives you different tools depending on whether the value should be nearest, cut short, pushed up, or pushed down.",
+        "`ROUND` chooses the nearest value at a precision you set. `TRUNC` removes extra digits without rounding. `CEIL` moves to the next integer, while `FLOOR` moves to the lower integer. Each function returns a computed value and leaves the stored Cycle Depot price unchanged.",
+      ],
+    },
+    {
+      kind: "image",
+      src: roundTruncCeilFloorImg,
+      alt: "Cycle Depot sale-price diagram showing 1299.00 multiplied by 0.875 to make 1136.625, then ROUND, TRUNC, CEIL, and FLOOR results.",
+      caption:
+        "The same Trailhead 29 Hardtail sale calculation produces four valid outputs. The right function depends on the reporting or planning rule.",
+    },
+    {
+      kind: "prose",
+      heading: "ROUND returns the nearest value",
+      body: [
+        "`ROUND(number, decimal_places)` looks at the next digit and returns the nearest value at the requested precision. A 12.5% sale multiplies the list price by 0.875. For the first product, 1136.625 rounds to 1136.63 at two decimal places.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Round Cycle Depot sale prices to the nearest cent",
+      code: `SELECT
+  name,
+  price * 0.875 AS sale_price_raw,
+  ROUND(price * 0.875, 2) AS rounded_sale
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "A deterministic 12.5% sale. ROUND keeps two decimal places and uses the next digit to decide the result.",
+      headers: ["name", "sale_price_raw", "rounded_sale"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1136.62500", "1136.63"],
+        ["Trailhead 29 Carbon", "2143.75000", "2143.75"],
+        ["Boulder Full Suspension", "2799.12500", "2799.13"],
+        ["Switchback Enduro", "3631.25000", "3631.25"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "TRUNC keeps precision without rounding",
+      body: [
+        "`TRUNC(number, decimal_places)` stops at the requested decimal place and discards everything after it. It does not look at the next digit. That means the same 1136.625 sale price becomes 1136.62, not 1136.63.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep two sale-price decimal places without rounding",
+      code: `SELECT
+  name,
+  price * 0.875 AS sale_price_raw,
+  TRUNC(price * 0.875, 2) AS truncated_sale
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "TRUNC removes digits after the second decimal place, even when the next digit would make ROUND increase the value.",
+      headers: ["name", "sale_price_raw", "truncated_sale"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1136.62500", "1136.62"],
+        ["Trailhead 29 Carbon", "2143.75000", "2143.75"],
+        ["Boulder Full Suspension", "2799.12500", "2799.12"],
+        ["Switchback Enduro", "3631.25000", "3631.25"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-round-trunc-ceil-floor",
+      caption:
+        "Start from the same raw sale price, then compare nearest-cent rounding, cut-off precision, the next whole integer, and the lower whole integer.",
+    },
+    {
+      kind: "prose",
+      heading: "CEIL and FLOOR set whole-number bounds",
+      body: [
+        "`CEIL(number)` returns the smallest integer that is greater than or equal to the value. `FLOOR(number)` returns the largest integer that is less than or equal to the value. For a positive value such as 1136.625, CEIL returns 1137 and FLOOR returns 1136.",
+        "Think of CEIL as moving up on the number line and FLOOR as moving down. That distinction matters for planning rules such as a whole-number quantity of packages, seats, or catalog-price bands.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Compare whole-number upper and lower sale-price bounds",
+      code: `SELECT
+  name,
+  price * 0.875 AS sale_price_raw,
+  CEIL(price * 0.875) AS ceiling_sale,
+  FLOOR(price * 0.875) AS floor_sale
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "CEIL gives the next whole number and FLOOR gives the lower whole number for each raw sale price.",
+      headers: ["name", "sale_price_raw", "ceiling_sale", "floor_sale"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1136.62500", "1137", "1136"],
+        ["Trailhead 29 Carbon", "2143.75000", "2144", "2143"],
+        ["Boulder Full Suspension", "2799.12500", "2800", "2799"],
+        ["Switchback Enduro", "3631.25000", "3632", "3631"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "For negative values, up and down still follow the number line",
+      body: "CEIL(-2.3) is -2 because -2 is the smallest integer greater than or equal to -2.3. FLOOR(-2.3) is -3 because -3 is the largest integer less than or equal to -2.3.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Shape Cycle Depot sale prices",
+      prompt:
+        "Return name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale from products. Use price * 0.875 as the sale calculation. ROUND and TRUNC it to two decimal places, then use CEIL and FLOOR without a decimal-place argument. Name every calculated column exactly, order by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly name, price, rounded_sale, truncated_sale, ceiling_sale, and floor_sale, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-shape-sale-prices",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "ROUND(number, places) returns the nearest value at the precision you request.",
+        "TRUNC(number, places) cuts off extra digits instead of rounding them.",
+        "CEIL moves a fractional value up to the next integer, while FLOOR moves it down to the lower integer.",
+        "For negative values, CEIL and FLOOR still move up and down on the number line.",
+        "Pick the function that matches the business rule instead of treating all precision cleanup as rounding.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "round-nearest-cent",
+          question: "What does ROUND(1136.625, 2) return?",
+          options: ["1136.63", "1136.62", "1137", "1136"],
+          correctIndex: 0,
+          explanation:
+            "The third decimal place is 5, so ROUND increases the second decimal place from 2 to 3.",
+        },
+        {
+          id: "trunc-no-rounding",
+          question: "What does TRUNC(1136.625, 2) return?",
+          options: ["1136.62", "1136.63", "1137", "1136"],
+          correctIndex: 0,
+          explanation:
+            "TRUNC keeps the requested places and drops the remaining digits without rounding.",
+        },
+        {
+          id: "ceil-positive",
+          question: "Which function returns 1137 from 1136.625?",
+          options: ["CEIL", "FLOOR", "TRUNC", "ROUND(value, 2)"],
+          correctIndex: 0,
+          explanation: "CEIL returns the smallest integer greater than or equal to the value.",
+        },
+        {
+          id: "floor-negative",
+          question: "What does FLOOR(-2.3) return?",
+          options: ["-3", "-2", "2", "-2.3"],
+          correctIndex: 0,
+          explanation:
+            "FLOOR moves down on the number line to the largest integer less than or equal to the value.",
+        },
+        {
+          id: "price-rule-choice",
+          question:
+            "Which function fits a policy that must never show more than the raw calculated sale price?",
+          options: [
+            "TRUNC(price * 0.875, 2)",
+            "ROUND(price * 0.875, 2)",
+            "CEIL(price * 0.875)",
+            "FLOOR(price * 0.875)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "TRUNC removes precision without increasing the value. ROUND can increase it when the next digit is 5 or greater.",
+        },
+      ],
+    },
+  ],
 };
 
 const nullifCoalesce: LessonContent = {
@@ -1752,9 +1951,9 @@ const nullifCoalesce: LessonContent = {
     {
       kind: "image",
       src: nullifCoalesceImg,
-      alt: "A Cycle Depot SQL query calculates safe product margin percentages with NULLIF and COALESCE, followed by a result preview for four real products.",
+      alt: "Cycle Depot Safe Margin infographic showing a zero-revenue source calculation branching to NULLIF protection, a safe NULL result, a COALESCE fallback of 0.0, or an intentionally kept NULL.",
       caption:
-        "The exact Cycle Depot query protects price with NULLIF(price, 0). The result preview shows real products ordered by id, including their calculated margin percentages.",
+        "NULLIF protects a zero denominator. COALESCE replaces the resulting NULL with the fallback you choose.",
     },
     {
       kind: "prose",
@@ -1926,30 +2125,746 @@ FROM report_rows;`,
 
 const absSignLeastGreatest: LessonContent = {
   slug: "abs-sign-least-greatest",
-  title: "ABS / SIGN / LEAST / GREATEST",
-  subtitle: "Compute absolute values, test signs, and choose row-level minimums and maximums.",
-  sections: [],
+  title: "ABS / SIGN / LEAST / GREATEST: Compare Values",
+  subtitle:
+    "Measure a Cycle Depot price gap, label its direction, and choose the lower or higher value in each row.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Compare numbers without losing the meaning",
+      body: [
+        "A numeric difference can answer two separate questions: how far apart are the values, and which side is larger? Other reports need the smaller or larger of several values in the same row. SQL has one focused function for each job.",
+        "`ABS` removes a sign and keeps a distance. `SIGN` reduces a value to direction: negative, zero, or positive. `LEAST` returns the smallest expression in a row, while `GREATEST` returns the largest. They compute report values without changing the stored Cycle Depot data.",
+      ],
+    },
+    {
+      kind: "image",
+      src: absSignLeastGreatestImg,
+      alt: "Cycle Depot price comparison diagram for Shellcap Road Helmet showing ABS, SIGN, LEAST, and GREATEST results from real price, target, and cost values.",
+      caption:
+        "A 129.00 helmet is 21.00 below the 150.00 target. ABS keeps the 21.00 distance, SIGN keeps the downward direction, and LEAST or GREATEST chooses between its cost and price.",
+    },
+    {
+      kind: "prose",
+      heading: "ABS measures distance from a target",
+      body: [
+        "Subtracting a target price from a product price creates a signed gap. For Shellcap Road Helmet, 129.00 minus 150.00 is -21.00. The negative sign is useful for direction, but it gets in the way when the only question is the size of the gap.",
+        "`ABS(number)` returns the absolute value. It turns -21.00 into 21.00 and leaves a positive gap such as 69.00 positive.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure how far selected Cycle Depot products are from a 150.00 target",
+      code: `SELECT
+  name,
+  price,
+  price - 150.00 AS price_vs_target,
+  ABS(price - 150.00) AS target_gap
+FROM products
+WHERE id BETWEEN 13 AND 16
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "ABS makes each target gap positive while the raw difference still shows which side of the target the product sits on.",
+      headers: ["name", "price", "price_vs_target", "target_gap"],
+      rows: [
+        ["Shellcap Road Helmet", "129.00", "-21.00", "21.00"],
+        ["Shellcap MIPS Pro", "219.00", "69.00", "69.00"],
+        ["Kidsafe Helmet", "59.00", "-91.00", "91.00"],
+        ["Thermal Bib Tights", "149.00", "-1.00", "1.00"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "SIGN turns a difference into a direction label",
+      body: [
+        "`SIGN(number)` returns -1 for a negative number, 0 for zero, and 1 for a positive number. This is useful when the report needs a compact direction indicator instead of the full amount.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Label whether each product is below or above the 150.00 target",
+      code: `SELECT
+  name,
+  price - 150.00 AS price_vs_target,
+  SIGN(price - 150.00) AS target_direction
+FROM products
+WHERE id BETWEEN 13 AND 16
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption: "-1 means below target, 1 means above target, and 0 would mean an exact match.",
+      headers: ["name", "price_vs_target", "target_direction"],
+      rows: [
+        ["Shellcap Road Helmet", "-21.00", "-1"],
+        ["Shellcap MIPS Pro", "69.00", "1"],
+        ["Kidsafe Helmet", "-91.00", "-1"],
+        ["Thermal Bib Tights", "-1.00", "-1"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-abs-sign-least-greatest",
+      caption:
+        "Start with a signed price difference, then separate distance from direction and compare the two financial values within each product row.",
+    },
+    {
+      kind: "prose",
+      heading: "LEAST and GREATEST compare values in the same row",
+      body: [
+        "`LEAST(value1, value2, ...)` returns the smallest supplied value. `GREATEST(value1, value2, ...)` returns the largest. They compare expressions horizontally within every result row, unlike aggregate functions such as MIN and MAX, which summarize values across rows.",
+        "For a Cycle Depot product, cost is the lower amount and list price is the higher amount. Keeping the expressions explicit makes the rule easy to reuse when a row has several candidate values.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Choose the lower cost and higher list price for each selected product",
+      code: `SELECT
+  name,
+  price,
+  cost,
+  LEAST(price, cost) AS lower_amount,
+  GREATEST(price, cost) AS higher_amount
+FROM products
+WHERE id BETWEEN 13 AND 16
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "LEAST and GREATEST make a row-level comparison for every product instead of combining the products into one summary.",
+      headers: ["name", "price", "cost", "lower_amount", "higher_amount"],
+      rows: [
+        ["Shellcap Road Helmet", "129.00", "62.00", "62.00", "129.00"],
+        ["Shellcap MIPS Pro", "219.00", "108.00", "108.00", "219.00"],
+        ["Kidsafe Helmet", "59.00", "24.00", "24.00", "59.00"],
+        ["Thermal Bib Tights", "149.00", "68.00", "68.00", "149.00"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "LEAST and GREATEST are not MIN and MAX",
+      body: "LEAST(price, cost) compares values within one product row. MIN(price) would summarize the price column across many rows. Use the row-level functions when the comparison belongs inside each row.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Compare Cycle Depot product values",
+      prompt:
+        "Return name, price, cost, target_gap, target_direction, lower_amount, and higher_amount from products. Measure the gap from 150.00 with ABS(price - 150.00), label it with SIGN(price - 150.00), and use LEAST(price, cost) plus GREATEST(price, cost). Name every calculated column exactly, order by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly name, price, cost, target_gap, target_direction, lower_amount, and higher_amount, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-compare-product-values",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "ABS removes the sign from a number so you can measure distance regardless of direction.",
+        "SIGN returns -1, 0, or 1 for negative, zero, or positive values.",
+        "LEAST returns the smallest expression within each row, while GREATEST returns the largest.",
+        "LEAST and GREATEST make row-level comparisons. MIN and MAX summarize a set of rows.",
+        "Use the function that preserves the distinction your business question needs: amount, direction, lower value, or higher value.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "abs-gap",
+          question: "What does ABS(-21.00) return?",
+          options: ["21.00", "-21.00", "-1", "0"],
+          correctIndex: 0,
+          explanation: "ABS returns the distance from zero, so it removes the negative sign.",
+        },
+        {
+          id: "sign-values",
+          question: "What does SIGN(0) return?",
+          options: ["0", "1", "-1", "NULL"],
+          correctIndex: 0,
+          explanation: "SIGN returns 0 when its input is exactly zero.",
+        },
+        {
+          id: "sign-above-target",
+          question:
+            "A product price is 69.00 above its target. What does SIGN(price - target) return?",
+          options: ["1", "-1", "69", "0"],
+          correctIndex: 0,
+          explanation: "A positive difference maps to 1.",
+        },
+        {
+          id: "least-row-level",
+          question: "What does LEAST(129.00, 62.00) return?",
+          options: ["62.00", "129.00", "191.00", "-67.00"],
+          correctIndex: 0,
+          explanation: "LEAST returns the smaller of its supplied expressions.",
+        },
+        {
+          id: "greatest-vs-max",
+          question: "Which expression compares price and cost within each product row?",
+          options: ["GREATEST(price, cost)", "MAX(price, cost)", "MAX(price)", "SUM(price, cost)"],
+          correctIndex: 0,
+          explanation:
+            "GREATEST is a row-level function that compares the two expressions for each product.",
+        },
+      ],
+    },
+  ],
 };
 
 const modRemainder: LessonContent = {
   slug: "mod",
   title: "MOD / %: Remainder & Parity",
-  subtitle: "Calculate remainders, test for odd/even numbers, and cycle items through buckets.",
-  sections: [],
+  subtitle:
+    "Use remainders to test real Cycle Depot product IDs for odd/even parity and rotate products through predictable buckets.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A remainder can become a useful label",
+      body: [
+        "Division normally answers how many whole groups fit into a number. A remainder answers what is left after those groups. That small value is useful for alternating work, testing odd or even IDs, and assigning rows to repeating buckets.",
+        "`MOD(dividend, divisor)` returns the remainder. In PostgreSQL, `%` is shorthand for the same operation. The result is always less than the divisor, so `% 2` can only produce 0 or 1 and `MOD(id, 3)` can only produce 0, 1, or 2.",
+      ],
+    },
+    {
+      kind: "image",
+      src: modRemainderImg,
+      alt: "Cycle Depot product-routing diagram showing IDs 1 through 6, their id percent 2 parity remainders, and MOD(id, 3) pickup-wave remainders.",
+      caption:
+        "Remainder 0 marks even IDs in the parity check. With three buckets, the repeating remainders 0, 1, and 2 become predictable wave labels.",
+    },
+    {
+      kind: "prose",
+      heading: "Use % 2 to test odd and even IDs",
+      body: [
+        "When an integer divides evenly by 2, its remainder is 0, so it is even. Otherwise the remainder is 1, so it is odd. The first six Cycle Depot product IDs alternate exactly this way.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Show the parity remainder for six real product IDs",
+      code: `SELECT
+  id,
+  name,
+  id % 2 AS parity_remainder
+FROM products
+ORDER BY id
+LIMIT 6;`,
+    },
+    {
+      kind: "table",
+      caption: "0 means the product ID is even; 1 means it is odd.",
+      headers: ["id", "name", "parity_remainder"],
+      rows: [
+        ["1", "Trailhead 29 Hardtail", "1"],
+        ["2", "Trailhead 29 Carbon", "0"],
+        ["3", "Boulder Full Suspension", "1"],
+        ["4", "Switchback Enduro", "0"],
+        ["5", "Meridian Road Alloy", "1"],
+        ["6", "Meridian Road Carbon", "0"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "MOD and % express the same remainder idea",
+      body: [
+        "Use `MOD(value, divisor)` when the function form reads more clearly, or `%` when a compact arithmetic expression is easier to scan. Both expressions below assign the same three-wave rotation.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Compare MOD and % for the same three-wave rotation",
+      code: `SELECT
+  id,
+  MOD(id, 3) AS mod_wave,
+  id % 3 AS percent_wave
+FROM products
+ORDER BY id
+LIMIT 6;`,
+    },
+    {
+      kind: "table",
+      caption: "Both expressions return the same remainder sequence for the first six product IDs.",
+      headers: ["id", "mod_wave", "percent_wave"],
+      rows: [
+        ["1", "1", "1"],
+        ["2", "2", "2"],
+        ["3", "0", "0"],
+        ["4", "1", "1"],
+        ["5", "2", "2"],
+        ["6", "0", "0"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-mod",
+      caption:
+        "First use % 2 to separate odd and even IDs. Then switch to MOD(id, 3) to cycle the same products through three pickup waves.",
+    },
+    {
+      kind: "prose",
+      heading: "Use a remainder to rotate through buckets",
+      body: [
+        "`MOD(id, 3)` creates three repeating labels. ID 1 receives wave 1, ID 2 receives wave 2, ID 3 receives wave 0, and then the pattern restarts. This is handy for a deterministic rotation when a full scheduling system is unnecessary.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Assign the first six products to three deterministic pickup waves",
+      code: `SELECT
+  id,
+  name,
+  MOD(id, 3) AS pickup_wave
+FROM products
+ORDER BY id
+LIMIT 6;`,
+    },
+    {
+      kind: "table",
+      caption: "Each wave number repeats every three product IDs.",
+      headers: ["id", "name", "pickup_wave"],
+      rows: [
+        ["1", "Trailhead 29 Hardtail", "1"],
+        ["2", "Trailhead 29 Carbon", "2"],
+        ["3", "Boulder Full Suspension", "0"],
+        ["4", "Switchback Enduro", "1"],
+        ["5", "Meridian Road Alloy", "2"],
+        ["6", "Meridian Road Carbon", "0"],
+      ],
+    },
+    {
+      kind: "playground-practice",
+      title: "Route Cycle Depot products by remainder",
+      prompt:
+        "Return id, name, parity_remainder, and pickup_wave from products. Use id % 2 AS parity_remainder and MOD(id, 3) AS pickup_wave. Name both calculated columns exactly, order by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly id, name, parity_remainder, and pickup_wave, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-route-products-by-remainder",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "MOD(dividend, divisor) returns the remainder after division.",
+        "% is PostgreSQL shorthand for remainder arithmetic.",
+        "A remainder of 0 from id % 2 identifies an even ID, while 1 identifies an odd ID.",
+        "MOD(id, 3) repeats 0, 1, and 2, which makes three deterministic row-level buckets.",
+        "Remainder-based buckets are stable for a given ID, so use them when the rotation should be predictable.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "mod-basic",
+          question: "What does MOD(8, 3) return?",
+          options: ["2", "1", "3", "8"],
+          correctIndex: 0,
+          explanation: "Two whole groups of 3 fit into 8, leaving a remainder of 2.",
+        },
+        {
+          id: "parity-even",
+          question: "What does id % 2 return for an even product ID?",
+          options: ["0", "1", "2", "NULL"],
+          correctIndex: 0,
+          explanation: "Even integers divide by 2 with no remainder.",
+        },
+        {
+          id: "parity-odd",
+          question: "Which expression identifies odd IDs when its result is 1?",
+          options: ["id % 2", "id % 3", "MOD(id, 1)", "id / 2"],
+          correctIndex: 0,
+          explanation: "An odd integer leaves remainder 1 after division by 2.",
+        },
+        {
+          id: "mod-wave",
+          question: "What does MOD(6, 3) return?",
+          options: ["0", "1", "2", "3"],
+          correctIndex: 0,
+          explanation: "Six divides evenly into groups of three, leaving remainder 0.",
+        },
+        {
+          id: "mod-percent",
+          question: "Which PostgreSQL expression returns the same value as MOD(id, 3)?",
+          options: ["id % 3", "id / 3", "id * 3", "ROUND(id, 3)"],
+          correctIndex: 0,
+          explanation:
+            "% is the remainder operator, so it is equivalent to MOD for this calculation.",
+        },
+      ],
+    },
+  ],
 };
 
 const powerSqrtLog: LessonContent = {
   slug: "power-sqrt-log",
-  title: "POWER / SQRT / EXP / LOG",
-  subtitle: "Compute powers, square roots, exponential growth, and logarithmic scales.",
-  sections: [],
+  title: "POWER / SQRT / EXP / LOG: Model Scale",
+  subtitle:
+    "Square, root, compound, and compress real Cycle Depot values with four focused numeric functions.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Change the scale, not the source value",
+      body: [
+        "Some questions need a number on a different scale. A square can make large differences stand out, a square root can pull a large range closer together, exponential growth models repeated multiplication, and a logarithm turns a multiplicative scale into readable steps.",
+        "These functions calculate a new expression for each row. They do not modify the `products` table or its stored prices.",
+      ],
+    },
+    {
+      kind: "image",
+      src: powerSqrtLogImg,
+      alt: "Cycle Depot SQL query and result preview showing product prices transformed with POWER and SQRT, alongside EXP and base-10 LOG examples.",
+      caption:
+        "The preview keeps the raw Cycle Depot price visible, then adds a squared price index and a rounded square root. EXP and LOG handle exponential and logarithmic scales.",
+    },
+    {
+      kind: "prose",
+      heading: "POWER raises a value to an exponent",
+      body: [
+        "`POWER(base, exponent)` multiplies a value by itself as many times as the exponent requests. Here, each price is first divided by 100 so the square is easier to read. `POWER(12.99, 2)` is 168.7401.",
+        "A square exaggerates the distance between values. That makes it useful for a deliberately weighted score, but it is not a replacement for a product price or a currency total.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Square a scaled version of four real Cycle Depot prices",
+      code: `SELECT
+  name,
+  price,
+  ROUND(POWER(price / 100.0, 2), 4) AS price_index_squared
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "A preview of the first four products, ordered explicitly by id.",
+      headers: ["name", "price", "price_index_squared"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1299.00", "168.7401"],
+        ["Trailhead 29 Carbon", "2450.00", "600.2500"],
+        ["Boulder Full Suspension", "3199.00", "1023.3601"],
+        ["Switchback Enduro", "4150.00", "1722.2500"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "SQRT finds the value that squares back to the input",
+      body: [
+        "`SQRT(value)` returns the square root. It can make a wide, non-negative measure more compact. For example, the square root of the Trailhead 29 Hardtail price is about 36.042 because 36.042 multiplied by itself is close to 1299.",
+        "Square roots often include many decimal places. Casting the result to `numeric` lets PostgreSQL use the two-argument `ROUND` form to make the report result easier to scan.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Show a rounded square-root scale for the same four products",
+      code: `SELECT
+  name,
+  price,
+  ROUND(SQRT(price)::numeric, 3) AS price_root
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption: "The root scale grows more slowly than the original price scale.",
+      headers: ["name", "price", "price_root"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1299.00", "36.042"],
+        ["Trailhead 29 Carbon", "2450.00", "49.497"],
+        ["Boulder Full Suspension", "3199.00", "56.560"],
+        ["Switchback Enduro", "4150.00", "64.420"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-power-sqrt-log",
+      caption:
+        "Square a scaled price, pull the price back onto a root scale, then see exponential growth and base-10 logarithmic compression side by side.",
+    },
+    {
+      kind: "prose",
+      heading: "EXP compounds and LOG compresses",
+      body: [
+        "`EXP(x)` calculates e raised to `x`, where e is approximately 2.71828. Each one-step increase multiplies the result by e, so it is useful for continuous-growth models. `EXP(2)` is about 7.389.",
+        "In PostgreSQL, `LOG(x)` is a base-10 logarithm. It returns the exponent that produces `x` from 10, so `LOG(1000)` is 3. The input must be positive. Use `LN(x)` when you specifically need the natural logarithm with base e.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Compare an exponential growth factor with a base-10 logarithmic scale",
+      code: `WITH steps(step) AS (
+  VALUES (0), (1), (2), (3)
+)
+SELECT
+  step,
+  ROUND(EXP(step::numeric), 3) AS exp_value,
+  POWER(10, step) AS base10_scale,
+  LOG(POWER(10, step)) AS log10_scale
+FROM steps
+ORDER BY step;`,
+    },
+    {
+      kind: "table",
+      caption: "LOG maps each power of 10 back to the step that produced it.",
+      headers: ["step", "exp_value", "base10_scale", "log10_scale"],
+      rows: [
+        ["0", "1.000", "1", "0"],
+        ["1", "2.718", "10", "1"],
+        ["2", "7.389", "100", "2"],
+        ["3", "20.086", "1000", "3"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "amber",
+      title: "Inputs matter",
+      body: "SQRT needs a non-negative input, and LOG needs a positive input. Decide how to handle invalid source values before running these functions in a production query.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Model Cycle Depot product scales",
+      prompt:
+        "Return every product's name, price, price_index_squared, price_root, growth_factor, and log10_price_scale. Use the four numeric functions, round the calculated values as specified, sort by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly name, price, price_index_squared, price_root, growth_factor, and log10_price_scale, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-model-product-scales",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "POWER(base, exponent) raises a number to the requested exponent.",
+        "SQRT(value) returns a square root and needs a non-negative value.",
+        "EXP(x) calculates e raised to x, which grows multiplicatively as x increases.",
+        "PostgreSQL LOG(x) uses base 10 and needs a positive value. Use LN(x) for a natural logarithm.",
+        "Use ROUND when a derived scale needs readable report precision, while keeping the original measure visible for context.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "power-basic",
+          question: "What does POWER(5, 2) return?",
+          options: ["25", "10", "7", "2.5"],
+          correctIndex: 0,
+          explanation: "POWER(5, 2) multiplies 5 by itself, producing 25.",
+        },
+        {
+          id: "sqrt-basic",
+          question: "What does SQRT(81) return?",
+          options: ["9", "40.5", "8", "6561"],
+          correctIndex: 0,
+          explanation: "9 multiplied by 9 is 81, so its square root is 9.",
+        },
+        {
+          id: "exp-basic",
+          question: "Which expression calculates e raised to 2?",
+          options: ["EXP(2)", "POWER(2, e)", "LOG(2)", "SQRT(2)"],
+          correctIndex: 0,
+          explanation:
+            "EXP(x) is PostgreSQL's exponential function, which returns e to the x power.",
+        },
+        {
+          id: "log-base",
+          question: "In PostgreSQL, what does LOG(1000) return?",
+          options: ["3", "100", "10", "6.908"],
+          correctIndex: 0,
+          explanation: "PostgreSQL LOG is base 10, and 10 raised to 3 equals 1000.",
+        },
+        {
+          id: "log-input",
+          question: "Which input is valid for LOG(x)?",
+          options: ["A positive number", "Any negative number", "Zero only", "Any text value"],
+          correctIndex: 0,
+          explanation: "A logarithm requires a positive numeric input.",
+        },
+      ],
+    },
+  ],
 };
 
 const randomRange: LessonContent = {
   slug: "random-range",
   title: "RANDOM / RAND: Numbers in a Range",
-  subtitle: "Generate random numbers, scale to custom min-max ranges, and sample rows.",
-  sections: [],
+  subtitle:
+    "Generate fresh values, scale them into usable ranges, and take changing Cycle Depot product samples.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Randomness is a new draw, not a stored value",
+      body: [
+        "A random function produces a new value each time the query runs. That makes it useful for simulations, test data, temporary group assignment, and samples. It also means you should not expect the same output twice unless you deliberately control the random seed.",
+        "This PostgreSQL playground uses `RANDOM()`. Some other SQL engines call the comparable function `RAND()`, so check the dialect before copying a query between systems.",
+      ],
+    },
+    {
+      kind: "image",
+      src: randomRangeImg,
+      alt: "Cycle Depot random-picks flow showing RANDOM values from zero up to but not including one, a formula that maps values to promo groups one through six, and a three-product random sample.",
+      caption:
+        "Each random draw falls from 0 up to, but not including, 1. The same draw can be shifted into a whole-number group or used to shuffle product rows for a changing sample.",
+    },
+    {
+      kind: "prose",
+      heading: "RANDOM() starts with a fraction from 0 to under 1",
+      body: [
+        "In PostgreSQL, `RANDOM()` returns a decimal value greater than or equal to 0 and less than 1. It can return 0, but it never returns 1. A result such as 0.63 is only one draw, not a value you can rely on seeing again.",
+        "Run this query more than once in the playground and watch the value change. Because the value is intentionally variable, this lesson labels example values as illustrative rather than presenting them as a fixed query result.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Generate one fresh fractional draw",
+      code: `SELECT RANDOM() AS raw_random;`,
+    },
+    {
+      kind: "prose",
+      heading: "Scale the fraction into a useful integer range",
+      body: [
+        "To choose an integer from 1 through 6, multiply the random fraction by 6, add 1, then use `FLOOR` to remove the decimal part. The expression before `FLOOR` is at least 1 and less than 7, so the final integer can only be 1 through 6.",
+        "The `::int` cast makes the whole-number intent explicit in the result. Here, a product row could receive a temporary promo group without adding a new column to `products`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Assign each Cycle Depot product a fresh promo group from 1 through 6",
+      code: `SELECT
+  name,
+  FLOOR(RANDOM() * 6 + 1)::int AS promo_group
+FROM products
+ORDER BY id;`,
+    },
+    {
+      kind: "callout",
+      tone: "amber",
+      title: "The upper bound needs special care",
+      body: "RANDOM() is always less than 1. To make an inclusive whole-number range from min through max, use FLOOR(RANDOM() * (max - min + 1) + min).",
+    },
+    {
+      kind: "animation",
+      variant: "q-random-range",
+      caption:
+        "Watch a fractional random draw become a 1 through 6 group, then watch the same idea shuffle real Cycle Depot products into one possible sample.",
+    },
+    {
+      kind: "prose",
+      heading: "Shuffle rows to take a changing product sample",
+      body: [
+        "`ORDER BY RANDOM()` gives every row a temporary random sort position. `LIMIT 3` then keeps the first three rows after that shuffle. The selected products may differ on every execution.",
+        "This is convenient for a small table or an exploratory query. On a large production table, sorting every row randomly can be expensive, so sampling methods designed for your database may be a better fit.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Return one changing three-product Cycle Depot sample",
+      code: `SELECT
+  name,
+  category
+FROM products
+ORDER BY RANDOM()
+LIMIT 3;`,
+    },
+    {
+      kind: "playground-practice",
+      title: "Assign random Cycle Depot promo groups",
+      prompt:
+        "Return every product's name and promo_group. Use FLOOR(RANDOM() * 6 + 1)::int AS promo_group to create a whole number from 1 through 6, sort the source rows by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly name and promo_group, ordered by id. Every promo_group must be an integer from 1 through 6.",
+      href: "/sql-playground?practice=cycledepot-assign-random-promo-groups",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "PostgreSQL RANDOM() returns a new decimal value from 0 inclusive to 1 exclusive.",
+        "Some other SQL dialects call the comparable function RAND(), so confirm the function name before switching databases.",
+        "FLOOR(RANDOM() * (max - min + 1) + min) creates a whole-number value from min through max, inclusive.",
+        "ORDER BY RANDOM() followed by LIMIT creates a changing row sample, but the order and membership are not repeatable by default.",
+        "Random ordering can be costly on large tables, so use it intentionally for exploration and small samples.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "random-range",
+          question: "Which range describes PostgreSQL RANDOM()?",
+          options: [
+            "0 inclusive to 1 exclusive",
+            "1 through 10",
+            "0 through 1 inclusive",
+            "Only whole numbers",
+          ],
+          correctIndex: 0,
+          explanation: "RANDOM() can return 0 but always remains below 1.",
+        },
+        {
+          id: "random-dialect",
+          question: "Which function name is used by this PostgreSQL playground?",
+          options: ["RANDOM()", "RAND()", "RANDOM_INT()", "PICK()"],
+          correctIndex: 0,
+          explanation: "PostgreSQL uses RANDOM(). RAND() is common in some other SQL dialects.",
+        },
+        {
+          id: "random-integer",
+          question: "Which expression can produce an integer from 1 through 6?",
+          options: [
+            "FLOOR(RANDOM() * 6 + 1)",
+            "RANDOM() * 6",
+            "FLOOR(RANDOM() * 5)",
+            "RANDOM() + 6",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The expression creates a value from 1 up to, but not including, 7, then FLOORS it to 1 through 6.",
+        },
+        {
+          id: "random-sample",
+          question: "What does ORDER BY RANDOM() LIMIT 3 do?",
+          options: [
+            "Returns a changing three-row sample",
+            "Always returns the first three rows",
+            "Rounds three values",
+            "Returns exactly three random decimals",
+          ],
+          correctIndex: 0,
+          explanation:
+            "RANDOM() supplies a temporary sort order, and LIMIT keeps the first three rows after that shuffle.",
+        },
+        {
+          id: "random-repeatability",
+          question: "Why can the output of a RANDOM() query differ on the next run?",
+          options: [
+            "It generates a new draw each execution",
+            "The products table changes automatically",
+            "ORDER BY id is random",
+            "RANDOM() stores a permanent value",
+          ],
+          correctIndex: 0,
+          explanation: "Random functions are volatile, so each execution requests new values.",
+        },
+      ],
+    },
+  ],
 };
 
 const numericFunctionsQuiz: LessonContent = {
@@ -1961,7 +2876,106 @@ const numericFunctionsQuiz: LessonContent = {
     {
       kind: "quiz",
       isFinalQuiz: true,
-      questions: [],
+      questions: [
+        {
+          id: "numeric-final-round",
+          question: "What does ROUND(1136.625, 2) return?",
+          options: ["1136.63", "1136.62", "1137", "1136"],
+          correctIndex: 0,
+          explanation: "ROUND keeps two decimal places and rounds up because the next digit is 5.",
+        },
+        {
+          id: "numeric-final-floor-negative",
+          question: "What does FLOOR(-2.3) return?",
+          options: ["-3", "-2", "2", "-2.3"],
+          correctIndex: 0,
+          explanation:
+            "FLOOR moves down the number line to the greatest integer that is less than or equal to the input.",
+        },
+        {
+          id: "numeric-final-safe-denominator",
+          question: "Which expression safely turns a zero denominator into NULL before division?",
+          options: [
+            "revenue / NULLIF(units_sold, 0)",
+            "revenue / COALESCE(units_sold, 0)",
+            "NULLIF(revenue / units_sold, 0)",
+            "revenue / FLOOR(units_sold)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "NULLIF(units_sold, 0) becomes NULL only when units_sold is 0, preventing a divide-by-zero error.",
+        },
+        {
+          id: "numeric-final-coalesce-order",
+          question: "Which expression keeps margin_pct when it exists and otherwise displays 0.0?",
+          options: [
+            "COALESCE(margin_pct, 0.0)",
+            "COALESCE(0.0, margin_pct)",
+            "NULLIF(margin_pct, 0.0)",
+            "NULLIF(0.0, margin_pct)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "COALESCE returns the first non-NULL value, so the calculated value belongs first and the fallback second.",
+        },
+        {
+          id: "numeric-final-direction",
+          question: "Which function turns price - target into -1, 0, or 1 to show direction?",
+          options: ["SIGN", "ABS", "ROUND", "MOD"],
+          correctIndex: 0,
+          explanation:
+            "SIGN reduces a negative, zero, or positive value to its direction. ABS would keep only the distance.",
+        },
+        {
+          id: "numeric-final-row-comparison",
+          question: "Which expression returns the higher of price and cost for each product row?",
+          options: [
+            "GREATEST(price, cost)",
+            "MAX(price)",
+            "LEAST(price, cost)",
+            "SUM(price, cost)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "GREATEST compares expressions within each row. MAX(price) would summarize price across a set of rows.",
+        },
+        {
+          id: "numeric-final-parity",
+          question: "Which PostgreSQL expression identifies even product IDs when its result is 0?",
+          options: ["id % 2", "id / 2", "MOD(id, 1)", "ROUND(id, 2)"],
+          correctIndex: 0,
+          explanation:
+            "An even integer leaves remainder 0 after division by 2. In PostgreSQL, % is remainder shorthand.",
+        },
+        {
+          id: "numeric-final-root",
+          question: "Which expression returns 9 from the value 81?",
+          options: ["SQRT(81)", "POWER(81, 2)", "EXP(81)", "LOG(81)"],
+          correctIndex: 0,
+          explanation:
+            "SQRT returns the value that, when multiplied by itself, produces the input.",
+        },
+        {
+          id: "numeric-final-log",
+          question: "In PostgreSQL, what does LOG(1000) return?",
+          options: ["3", "100", "10", "6.908"],
+          correctIndex: 0,
+          explanation: "PostgreSQL LOG uses base 10, and 10 raised to 3 equals 1000.",
+        },
+        {
+          id: "numeric-final-random-range",
+          question: "Which expression can produce a whole-number promo group from 1 through 6?",
+          options: [
+            "FLOOR(RANDOM() * 6 + 1)",
+            "RANDOM() * 6",
+            "FLOOR(RANDOM() * 5)",
+            "RANDOM() + 6",
+          ],
+          correctIndex: 0,
+          explanation:
+            "RANDOM() starts at 0 and remains below 1. Scaling by 6, shifting by 1, and applying FLOOR yields only 1 through 6.",
+        },
+      ],
     },
   ],
 };
@@ -2024,7 +3038,7 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     title: "Numeric Functions",
     category: "Specialized Data Handling",
     iconKey: "terminal",
-    blurb: "ROUND, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT — the math layer of SQL.",
+    blurb: "ROUND, TRUNC, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT/EXP/LOG — the math layer of SQL.",
     lessons: [
       roundTruncCeilFloor,
       nullifCoalesce,
