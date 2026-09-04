@@ -1770,6 +1770,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
       body: "You successfully used a CTE and the LAG window function to perform a time-series comparison.",
     },
   },
+  {
+    id: "cycle-depot-format-product-identifiers",
+    version: 1,
+    title: "Create Cycle Depot text IDs and price labels",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Turn product IDs into text and prices into display-ready labels while preserving the original Cycle Depot values.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly id, name, product_id_text, and price_label.",
+      "Use CAST(id AS text) AS product_id_text.",
+      "Use TO_CHAR(price, 'FM$9,999.00') AS price_label.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot text IDs and price labels.
+-- Return id, name, product_id_text, and price_label from products.
+-- Use CAST(id AS text) and TO_CHAR(price, 'FM$9,999.00').
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT id, name FROM products.",
+      "Add CAST(id AS text) AS product_id_text.",
+      "Add TO_CHAR(price, 'FM$9,999.00') AS price_label, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT id, name, CAST(id AS text) AS product_id_text, TO_CHAR(price, 'FM$9,999.00') AS price_label FROM products ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT id, name, CAST(id AS text) AS product_id_text, TO_CHAR(price, 'FM$9,999.00') AS price_label FROM products ORDER BY id;",
+      },
+      requiredColumns: ["id", "name", "product_id_text", "price_label"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Cycle Depot labels complete",
+      body: "Correct. You cast each product identifier to text and created a readable currency label while keeping the source product rows intact.",
+      nextConcept: "CONVERT",
+    },
+  },
 ];
 
 export function getChallenges(

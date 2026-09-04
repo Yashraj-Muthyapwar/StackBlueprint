@@ -17,6 +17,19 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-format-product-identifiers": {
+    id: "cycledepot-format-product-identifiers",
+    title: "Create Cycle Depot text IDs and price labels",
+    prompt:
+      "Return every Cycle Depot product's id, name, product_id_text, and price_label. Use CAST(id AS text) AS product_id_text and TO_CHAR(price, 'FM$9,999.00') AS price_label. Sort by id. The result should have 30 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-format-product-identifiers",
+    starterSql: `-- Cycle Depot text IDs and price labels.
+-- Return id, name, product_id_text, and price_label from products.
+-- Use CAST(id AS text) and TO_CHAR(price, 'FM$9,999.00').
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-shape-sale-prices": {
     id: "cycledepot-shape-sale-prices",
     title: "Shape Cycle Depot sale prices",
