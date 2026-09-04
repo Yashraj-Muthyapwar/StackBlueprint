@@ -11,6 +11,7 @@ import absSignLeastGreatestImg from "@/images/sql/numeric-functions/abs-sign-lea
 import modRemainderImg from "@/images/sql/numeric-functions/mod-remainder-cycle-depot.png";
 import powerSqrtLogImg from "@/images/sql/numeric-functions/power-sqrt-log-cycle-depot.png";
 import randomRangeImg from "@/images/sql/numeric-functions/random-range-cycle-depot.png";
+import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -2986,8 +2987,169 @@ const numericFunctionsQuiz: LessonContent = {
 const castToChar: LessonContent = {
   slug: "cast-to-char",
   title: "CAST / TO_CHAR (Type Casting)",
-  subtitle: "Placeholder for CAST / TO_CHAR (Type Casting)",
-  sections: [],
+  subtitle:
+    "Change a value's data type when SQL needs it, then format Cycle Depot values for clear human-readable output.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A value can keep its meaning while changing its representation",
+      body: [
+        "An integer product ID is useful for database relationships, while a text version is useful when you build a label or key. A numeric price is useful for calculations, while a formatted price is useful when a person reads a report. These jobs look similar but solve different problems.",
+        "`CAST(value AS type)` changes the SQL data type of a result expression. `TO_CHAR(value, format)` formats a number or date as text. Both create a new query value and leave the stored Cycle Depot data unchanged.",
+      ],
+    },
+    {
+      kind: "image",
+      src: castToCharImg,
+      alt: "Cycle Depot Type Casting infographic showing Trailhead 29 Hardtail with an integer ID and numeric price branching to a CAST text value, a formatted TO_CHAR price label, and a numeric calculation.",
+      caption:
+        "CAST changes the type for SQL work. TO_CHAR creates a display-ready text value after the numeric work is complete.",
+    },
+    {
+      kind: "prose",
+      heading: "CAST makes the target type explicit",
+      body: [
+        "Use `CAST(id AS text)` when a number must behave as text in the result. The visible characters can look the same, but the result type is now text. PostgreSQL also offers the short form `id::text`, though the standard CAST form makes the target type especially clear to new readers.",
+        "This query keeps the original integer ID next to its text counterpart so you can see that casting changes the type, not the business identity of the product.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Cast Cycle Depot product IDs to text",
+      code: `SELECT
+  id,
+  name,
+  CAST(id AS text) AS product_id_text
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "The product ID is the same identifier in both columns. product_id_text is typed as text for later text operations.",
+      headers: ["id", "name", "product_id_text"],
+      rows: [
+        ["1", "Trailhead 29 Hardtail", "1"],
+        ["2", "Trailhead 29 Carbon", "2"],
+        ["3", "Boulder Full Suspension", "3"],
+        ["4", "Switchback Enduro", "4"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "TO_CHAR formats a value for people",
+      body: [
+        "`TO_CHAR(price, 'FM$9,999.00')` formats a number as text with a dollar sign, comma separator, and two decimal places. `FM` removes padding spaces, `9` reserves digit positions, and the punctuation becomes part of the display.",
+        "A formatted value is text, so use it at the presentation edge of a query. Keep `price` numeric for arithmetic, comparisons, and numeric sorting, then add a formatted column for a report or exported label.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the numeric price and add a display-ready price label",
+      code: `SELECT
+  name,
+  price,
+  TO_CHAR(price, 'FM$9,999.00') AS price_label
+FROM products
+ORDER BY id
+LIMIT 4;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "price remains numeric for SQL calculations. price_label is text designed for a person to scan.",
+      headers: ["name", "price", "price_label"],
+      rows: [
+        ["Trailhead 29 Hardtail", "1299.00", "$1,299.00"],
+        ["Trailhead 29 Carbon", "2450.00", "$2,450.00"],
+        ["Boulder Full Suspension", "3199.00", "$3,199.00"],
+        ["Switchback Enduro", "4150.00", "$4,150.00"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-cast-to-char",
+      caption:
+        "First change an integer ID into text, then format a numeric Cycle Depot price as a display-ready label without losing the original numeric value.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Format last when you still need math",
+      body: "`$1,299.00` is text, not a number to keep calculating with. Calculate and sort with price first, then use TO_CHAR in the final result column for display.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Create Cycle Depot text IDs and price labels",
+      prompt:
+        "Return every product's id, name, product_id_text, and price_label from products. Use CAST(id AS text) AS product_id_text and TO_CHAR(price, 'FM$9,999.00') AS price_label. Name both calculated columns exactly, order by id, and run the checked exercise.",
+      tables: ["products"],
+      successCheck:
+        "30 rows with exactly id, name, product_id_text, and price_label, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-format-product-identifiers",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "CAST(value AS type) changes the data type of a result expression without changing the stored source value.",
+        "PostgreSQL also supports the compact ::type cast syntax, but CAST is standard SQL and makes the target type explicit.",
+        "TO_CHAR(value, format) formats a numeric or date value as text for readable output.",
+        "In FM$9,999.00, FM removes padding, 9 reserves digit positions, and punctuation is displayed literally.",
+        "Keep values numeric while you calculate and sort. Format them with TO_CHAR only for the final display.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "cast-id-to-text",
+          question: "What is the purpose of CAST(id AS text)?",
+          options: [
+            "Change the result type to text",
+            "Add a new stored ID column",
+            "Round the ID",
+            "Format the ID as currency",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CAST changes the type of the result expression. It does not modify the stored id column.",
+        },
+        {
+          id: "cast-postgres-short-form",
+          question: "Which PostgreSQL expression is shorthand for CAST(id AS text)?",
+          options: ["id::text", "id::char()", "TEXT(id)", "TO_CHAR(id)"],
+          correctIndex: 0,
+          explanation: "PostgreSQL uses ::type as its compact cast syntax.",
+        },
+        {
+          id: "to-char-price-label",
+          question: "What does TO_CHAR(1299.00, 'FM$9,999.00') return?",
+          options: ["$1,299.00", "1299.00", "1299", "1,299"],
+          correctIndex: 0,
+          explanation:
+            "The format adds the currency sign and comma separator while preserving two decimal places.",
+        },
+        {
+          id: "to-char-result-type",
+          question: "What type of value does TO_CHAR create?",
+          options: ["Text", "Integer", "Decimal", "Date"],
+          correctIndex: 0,
+          explanation: "TO_CHAR formats its input into a text result for display.",
+        },
+        {
+          id: "format-last",
+          question: "Which value should you use to sort product prices numerically?",
+          options: ["price", "TO_CHAR(price, 'FM$9,999.00')", "CAST(price AS text)", "price_label"],
+          correctIndex: 0,
+          explanation:
+            "Keep price numeric for math and numeric sorting. The formatted label is text for people to read.",
+        },
+      ],
+    },
+  ],
 };
 
 const convertLesson: LessonContent = {
