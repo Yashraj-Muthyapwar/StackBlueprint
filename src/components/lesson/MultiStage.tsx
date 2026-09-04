@@ -148,6 +148,8 @@ const KEYWORDS = new Set([
   "LOG",
   "RANDOM",
   "RAND",
+  "CAST",
+  "TO_CHAR",
   "NULLIF",
   "COALESCE",
   "CONCAT",
