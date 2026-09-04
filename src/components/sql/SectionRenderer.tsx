@@ -108,6 +108,8 @@ function highlightSql(line: string) {
     "LOG",
     "RANDOM",
     "RAND",
+    "CAST",
+    "TO_CHAR",
     "CONCAT",
     "CONCAT_WS",
     "SUBSTRING",
