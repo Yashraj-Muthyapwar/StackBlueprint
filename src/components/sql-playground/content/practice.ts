@@ -17,6 +17,19 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-convert-signup-dates": {
+    id: "cycledepot-convert-signup-dates",
+    title: "Create PostgreSQL signup-date text",
+    prompt:
+      "Return every Cycle Depot customer's id, name, signup_text, and signup_month. Use CAST(signup_date AS text) AS signup_text and TO_CHAR(signup_date, 'YYYY-MM') AS signup_month. Sort by id. The result should have 60 rows and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-convert-signup-dates",
+    starterSql: `-- Cycle Depot PostgreSQL date text.
+-- Return id, name, signup_text, and signup_month from customers.
+-- Use CAST(signup_date AS text) and TO_CHAR(signup_date, 'YYYY-MM').
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-format-product-identifiers": {
     id: "cycledepot-format-product-identifiers",
     title: "Create Cycle Depot text IDs and price labels",

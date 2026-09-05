@@ -1771,6 +1771,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-convert-signup-dates",
+    version: 1,
+    title: "Create PostgreSQL signup-date text",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Turn Cycle Depot signup dates into text while keeping the original date values available for date work.",
+    requirements: [
+      "Use the customers table.",
+      "Return exactly id, name, signup_text, and signup_month.",
+      "Use CAST(signup_date AS text) AS signup_text.",
+      "Use TO_CHAR(signup_date, 'YYYY-MM') AS signup_month.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: `-- Cycle Depot PostgreSQL date text.
+-- Return id, name, signup_text, and signup_month from customers.
+-- Use CAST(signup_date AS text) and TO_CHAR(signup_date, 'YYYY-MM').
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT id, name FROM customers.",
+      "Add CAST(signup_date AS text) AS signup_text.",
+      "Add TO_CHAR(signup_date, 'YYYY-MM') AS signup_month, then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT id, name, CAST(signup_date AS text) AS signup_text, TO_CHAR(signup_date, 'YYYY-MM') AS signup_month FROM customers ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT id, name, CAST(signup_date AS text) AS signup_text, TO_CHAR(signup_date, 'YYYY-MM') AS signup_month FROM customers ORDER BY id;",
+      },
+      requiredColumns: ["id", "name", "signup_text", "signup_month"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Cycle Depot date text complete",
+      body: "Correct. You used PostgreSQL's CAST and TO_CHAR equivalents to create text labels while keeping the customer source rows intact.",
+      nextConcept: "Implicit Coercion",
+    },
+  },
+  {
     id: "cycle-depot-format-product-identifiers",
     version: 1,
     title: "Create Cycle Depot text IDs and price labels",
