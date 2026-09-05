@@ -14,6 +14,7 @@ import randomRangeImg from "@/images/sql/numeric-functions/random-range-cycle-de
 import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png";
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
+import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -3538,8 +3539,166 @@ LIMIT 3;`,
 const safeCasts: LessonContent = {
   slug: "safe-casts",
   title: "Safe Casts",
-  subtitle: "Placeholder for Safe Casts",
-  sections: [],
+  subtitle:
+    "Validate imported text before converting it, so malformed Cycle Depot product IDs become intentional NULLs instead of query errors.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Put a gate in front of an unsafe conversion",
+      body: [
+        "A direct cast such as `raw_product_id::integer` works only when every input is a valid integer. One blank or label such as `'bike-7'` can make the whole query fail.",
+        "For imported or application-supplied text, first test whether a value has the shape you accept. Then put the cast inside the matching `CASE` branch. Values that do not pass the test receive NULL, which makes the missing conversion visible without stopping the result.",
+      ],
+    },
+    {
+      kind: "image",
+      src: safeCastsImg,
+      alt: "Cycle Depot safe cast infographic showing incoming text product IDs passing through a friendly regex gate so valid numeric IDs become integers and blank or bike-7 values become NULL.",
+      caption:
+        "A small query-local incoming-ID preview keeps only digit-shaped values eligible for the integer cast. The malformed values deliberately become NULL.",
+    },
+    {
+      kind: "prose",
+      heading: "Validate the text, then cast only the match",
+      body: [
+        "In PostgreSQL, `~` checks a value against a regular expression. The anchors `^` and `$` mean the entire value must match, and `[0-9]+` means one or more digits. Thus `'1'` and `'3'` pass, while an empty string and `'bike-7'` do not.",
+        "`CASE` evaluates the integer cast only for a passing row. With no `ELSE` branch, its fallback is NULL. This query-local preview uses valid IDs from Cycle Depot alongside two intentionally malformed incoming values so the protective path is easy to see.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Safely turn incoming Cycle Depot product-ID text into integers",
+      code: `WITH incoming_product_ids(raw_product_id) AS (
+  VALUES ('1'), ('3'), (''), ('bike-7')
+)
+SELECT
+  raw_product_id,
+  CASE
+    WHEN raw_product_id ~ '^[0-9]+$'
+      THEN raw_product_id::integer
+  END AS safe_product_id
+FROM incoming_product_ids
+ORDER BY raw_product_id;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "Exact output from the query-local preview. The input rows are ordered by raw text, and only digit-shaped values are converted.",
+      headers: ["raw_product_id", "safe_product_id"],
+      rows: [
+        ["''", "NULL"],
+        ["'1'", "1"],
+        ["'3'", "3"],
+        ["'bike-7'", "NULL"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "NULLIF cleans a blank, but it is not a complete safe cast",
+      body: [
+        "`NULLIF(raw_product_id, '')` is useful when blank text should become NULL. It does not validate the other nonblank values. Casting `NULLIF(raw_product_id, '')::integer` protects the empty string, but `'bike-7'` would still cause an invalid-integer error.",
+        "Use the narrowest validation rule that represents your input contract. The digits-only rule here is right for positive whole product IDs. A signed quantity, decimal price, or date needs a different rule and a different conversion plan.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-safe-casts",
+      caption:
+        "The first step labels each incoming value as valid or invalid. The second uses that label as a gate: only valid text reaches `::integer`, while every other row stays in the output with NULL.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Safe-cast helpers vary by database",
+      body: "This PostgreSQL lesson uses CASE plus a validation rule. Other databases may offer helpers named TRY_CAST or SAFE_CAST, but their syntax and edge cases differ. Check the target dialect before copying a safe-cast pattern.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Safely cast incoming Cycle Depot product IDs",
+      prompt:
+        "Use the supplied query-local `incoming_product_ids` CTE with values '1', '3', '', and 'bike-7'. Return exactly raw_product_id and safe_product_id. With CASE and the PostgreSQL rule `raw_product_id ~ '^[0-9]+$'`, cast only valid rows with `raw_product_id::integer`; invalid rows must be NULL. Order by raw_product_id, then run the checked exercise.",
+      tables: [],
+      successCheck:
+        "Four rows with exactly raw_product_id and safe_product_id: blank and bike-7 map to NULL, while 1 and 3 map to integers.",
+      href: "/sql-playground?practice=cycledepot-safely-cast-product-ids",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A direct text-to-integer cast can fail the whole query when one input is malformed.",
+        "In PostgreSQL, `~ '^[0-9]+$'` accepts a nonempty value made entirely of digits.",
+        "CASE can gate a cast so only validated text reaches the conversion expression.",
+        "Without ELSE, CASE returns NULL for a nonmatching value, preserving the row and making the failed conversion explicit.",
+        "NULLIF handles one known sentinel such as a blank; use broader validation when other malformed text is possible.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "safe-casts-direct-risk",
+          question: "Why is raw_product_id::integer risky for incoming text?",
+          options: [
+            "One malformed value can make the query fail",
+            "It permanently changes the input text",
+            "It removes all NULL values",
+            "It always rounds decimal values",
+          ],
+          correctIndex: 0,
+          explanation:
+            "PostgreSQL raises an invalid-input error if it tries to cast text such as bike-7 to an integer.",
+        },
+        {
+          id: "safe-casts-regex-anchor",
+          question: "What does ^[0-9]+$ require in this lesson?",
+          options: [
+            "The complete value contains one or more digits only",
+            "The value starts with a decimal point",
+            "The value has any one number somewhere inside it",
+            "The value is already an integer column",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The anchors require a full match, while [0-9]+ requires at least one digit.",
+        },
+        {
+          id: "safe-casts-case-fallback",
+          question: "What does CASE return for bike-7 when there is no ELSE branch?",
+          options: ["NULL", "0", "bike-7", "An automatically repaired ID"],
+          correctIndex: 0,
+          explanation:
+            "A CASE expression with no matching WHEN and no ELSE returns NULL.",
+        },
+        {
+          id: "safe-casts-nullif-limit",
+          question: "What does NULLIF(raw_product_id, '') protect by itself?",
+          options: [
+            "A blank string only",
+            "Every malformed nonblank value",
+            "All invalid dates",
+            "Every database dialect",
+          ],
+          correctIndex: 0,
+          explanation:
+            "NULLIF turns the specific empty-string sentinel into NULL, but bike-7 remains nonblank and unsafe to cast directly.",
+        },
+        {
+          id: "safe-casts-dialect",
+          question: "Why should a safe-cast query be checked for the target database?",
+          options: [
+            "Safe-cast helpers and syntax differ by SQL dialect",
+            "Regular expressions cannot be used in SQL",
+            "CASE exists only in PostgreSQL",
+            "Every database treats invalid casts as NULL",
+          ],
+          correctIndex: 0,
+          explanation:
+            "PostgreSQL can use CASE with a validation condition, while other systems may provide different safe-cast helper functions.",
+        },
+      ],
+    },
+  ],
 };
 
 // =============================================================
