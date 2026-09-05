@@ -49,6 +49,7 @@ import { randomRangeStages } from "./numeric-functions/random-range.tsx";
 import { castToCharStages } from "./conversions/cast-to-char.tsx";
 import { convertStages } from "./conversions/convert.tsx";
 import { implicitCoercionStages } from "./conversions/implicit-coercion.tsx";
+import { safeCastsStages } from "./conversions/safe-casts.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -113,6 +114,7 @@ export const STAGES_REGISTRY = {
   "q-cast-to-char": castToCharStages,
   "q-convert": convertStages,
   "q-implicit-coercion": implicitCoercionStages,
+  "q-safe-casts": safeCastsStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

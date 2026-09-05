@@ -17,6 +17,19 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-safely-cast-product-ids": {
+    id: "cycledepot-safely-cast-product-ids",
+    title: "Safely cast incoming Cycle Depot product IDs",
+    prompt:
+      "Use the supplied query-local incoming_product_ids CTE with values '1', '3', '', and 'bike-7'. Return exactly raw_product_id and safe_product_id. Use CASE with raw_product_id ~ '^[0-9]+$' so only valid values are cast with raw_product_id::integer. Order by raw_product_id. The result should have four rows and exactly two columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-safely-cast-product-ids",
+    starterSql: `-- Safely cast incoming Cycle Depot product IDs.
+-- Use a CTE with '1', '3', '', and 'bike-7'.
+-- Return raw_product_id and safe_product_id with CASE plus ^[0-9]+$.
+-- Cast only valid values to integer, order by raw_product_id, then run and check.`,
+  },
   "cycledepot-use-implicit-coercion": {
     id: "cycledepot-use-implicit-coercion",
     title: "Use context for a Cycle Depot sale lookup",

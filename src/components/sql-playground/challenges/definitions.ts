@@ -1771,6 +1771,64 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-safely-cast-product-ids",
+    version: 1,
+    title: "Safely cast incoming Cycle Depot product IDs",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Validate query-local incoming product-ID text before casting it so malformed values produce NULL instead of an invalid-integer error.",
+    requirements: [
+      "Use a query-local incoming_product_ids CTE with '1', '3', '', and 'bike-7'.",
+      "Return exactly raw_product_id and safe_product_id.",
+      "Use CASE with raw_product_id ~ '^[0-9]+$' to gate the integer cast.",
+      "Cast valid text with raw_product_id::integer.",
+      "Sort the result by raw_product_id.",
+    ],
+    requiredTables: [],
+    starterSql: `-- Safely cast incoming Cycle Depot product IDs.
+-- Use a CTE with '1', '3', '', and 'bike-7'.
+-- Return raw_product_id and safe_product_id with CASE plus ^[0-9]+$.
+-- Cast only valid values to integer, order by raw_product_id, then run and check.`,
+    hints: [
+      "Start with WITH incoming_product_ids(raw_product_id) AS (VALUES ('1'), ('3'), (''), ('bike-7')).",
+      "Select raw_product_id, then add CASE WHEN raw_product_id ~ '^[0-9]+$'.",
+      "Put raw_product_id::integer after THEN, alias the expression safe_product_id, and order by raw_product_id.",
+    ],
+    solutionSql: {
+      postgres: `WITH incoming_product_ids(raw_product_id) AS (
+  VALUES ('1'), ('3'), (''), ('bike-7')
+)
+SELECT raw_product_id,
+       CASE WHEN raw_product_id ~ '^[0-9]+$'
+            THEN raw_product_id::integer END AS safe_product_id
+FROM incoming_product_ids
+ORDER BY raw_product_id;`,
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: `WITH incoming_product_ids(raw_product_id) AS (
+  VALUES ('1'), ('3'), (''), ('bike-7')
+)
+SELECT raw_product_id,
+       CASE WHEN raw_product_id ~ '^[0-9]+$'
+            THEN raw_product_id::integer END AS safe_product_id
+FROM incoming_product_ids
+ORDER BY raw_product_id;`,
+      },
+      requiredColumns: ["raw_product_id", "safe_product_id"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Safe casting complete",
+      body: "Correct. You validated each incoming text value before conversion, so invalid IDs remained visible as NULL instead of breaking the result.",
+    },
+  },
+  {
     id: "cycle-depot-use-implicit-coercion",
     version: 1,
     title: "Use context for a Cycle Depot sale lookup",
