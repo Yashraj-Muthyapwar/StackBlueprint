@@ -12,6 +12,7 @@ import modRemainderImg from "@/images/sql/numeric-functions/mod-remainder-cycle-
 import powerSqrtLogImg from "@/images/sql/numeric-functions/power-sqrt-log-cycle-depot.png";
 import randomRangeImg from "@/images/sql/numeric-functions/random-range-cycle-depot.png";
 import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png";
+import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -3155,8 +3156,202 @@ LIMIT 4;`,
 const convertLesson: LessonContent = {
   slug: "convert",
   title: "CONVERT",
-  subtitle: "Placeholder for CONVERT",
-  sections: [],
+  subtitle:
+    "Recognize CONVERT across SQL dialects, then use the PostgreSQL equivalent that runs in the Cycle Depot playground.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "The conversion goal can stay the same while the syntax changes",
+      body: [
+        "A report may need a Cycle Depot signup date as text, perhaps for an export or a readable label. The goal is simple: turn a date value into characters. The exact command is not universal, though. SQL Server and MySQL use `CONVERT` for common type conversions, while this course playground runs PostgreSQL.",
+        "Treat `CONVERT` as a dialect clue, not a portable command you can paste into every database. First identify the database, then choose its conversion syntax. In PostgreSQL, use `CAST(value AS type)` to change a type and `TO_CHAR(value, format)` when you need a controlled text display.",
+      ],
+    },
+    {
+      kind: "image",
+      src: convertDialectBridgeImg,
+      alt: "Cycle Depot conversion map showing one customer signup date branching to SQL Server CONVERT, MySQL CONVERT, and PostgreSQL TO_CHAR syntax, all producing text dates.",
+      caption:
+        "The conversion intent is the same: make a date readable as text. The function syntax depends on the database that runs the query.",
+    },
+    {
+      kind: "prose",
+      heading: "CONVERT is not one cross-database function",
+      body: [
+        "The reference below shows the same date-to-text intent in three common dialects. It is a syntax guide, not a query to run unchanged in the Cycle Depot playground.",
+      ],
+    },
+    {
+      kind: "table",
+      caption:
+        "Each expression starts with a date and returns text. PostgreSQL uses a different function name for this formatted display.",
+      headers: ["database", "date-to-text expression", "what it controls"],
+      rows: [
+        [
+          "SQL Server",
+          "CONVERT(varchar(10), signup_date, 23)",
+          "target type and style 23",
+        ],
+        ["MySQL", "CONVERT(signup_date, CHAR)", "target type"],
+        [
+          "PostgreSQL playground",
+          "TO_CHAR(signup_date, 'YYYY-MM-DD')",
+          "text display format",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Use CAST for PostgreSQL type conversion",
+      body: [
+        "The Cycle Depot playground is PostgreSQL, so `CAST(signup_date AS text)` is the direct runnable equivalent when the goal is simply to make the date a text value. The stored `signup_date` remains a date. Only the result expression changes type.",
+        "The stable order and limit make the preview easy to inspect. These are the first three real Cycle Depot customer rows, with the same date shown as text beside it.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Cast real Cycle Depot signup dates to text in PostgreSQL",
+      code: `SELECT
+  id,
+  signup_date,
+  CAST(signup_date AS text) AS signup_text
+FROM customers
+ORDER BY id
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "signup_date is still a date value. signup_text contains the same visible date as text.",
+      headers: ["id", "signup_date", "signup_text"],
+      rows: [
+        ["1", "2023-01-06", "2023-01-06"],
+        ["2", "2024-06-08", "2024-06-08"],
+        ["3", "2023-01-15", "2023-01-15"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Use TO_CHAR when the text needs a specific shape",
+      body: [
+        "A cast turns the date into text, but it does not let you choose a display pattern. `TO_CHAR(signup_date, 'YYYY-MM')` intentionally creates a compact year-month label. Use this when the final report needs a particular appearance.",
+        "Keep the original date column available for date logic and sorting. Create a formatted text column only at the presentation edge of the query.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Create a compact PostgreSQL signup-month label",
+      code: `SELECT
+  id,
+  signup_date,
+  TO_CHAR(signup_date, 'YYYY-MM') AS signup_month
+FROM customers
+ORDER BY id
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "signup_month is text shaped for a report label, while signup_date remains the original date value.",
+      headers: ["id", "signup_date", "signup_month"],
+      rows: [
+        ["1", "2023-01-06", "2023-01"],
+        ["2", "2024-06-08", "2024-06"],
+        ["3", "2023-01-15", "2023-01"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-convert",
+      caption:
+        "Start with real Cycle Depot date values, change their result type with CAST, then create an intentionally shaped PostgreSQL text label with TO_CHAR.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not paste CONVERT into this PostgreSQL playground",
+      body: "SQL Server and MySQL have useful CONVERT syntax, but PostgreSQL does not use CONVERT as its general type-casting command. In this course, choose CAST for a type change or TO_CHAR for formatted text output.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Create PostgreSQL signup-date text",
+      prompt:
+        "Return every Cycle Depot customer's id, name, signup_text, and signup_month from customers. Use CAST(signup_date AS text) AS signup_text and TO_CHAR(signup_date, 'YYYY-MM') AS signup_month. Name both calculated columns exactly, order by id, and run the checked exercise.",
+      tables: ["customers"],
+      successCheck:
+        "60 rows with exactly id, name, signup_text, and signup_month, ordered by id.",
+      href: "/sql-playground?practice=cycledepot-convert-signup-dates",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "CONVERT is a dialect-specific function name, not a type-conversion command that works unchanged in every database.",
+        "SQL Server can use CONVERT with a target type and style, while MySQL can use CONVERT(expr, type).",
+        "The Cycle Depot playground runs PostgreSQL, where CAST(value AS type) is the direct type-conversion tool.",
+        "TO_CHAR(value, format) creates text in an intentional display shape, such as YYYY-MM.",
+        "Keep the original date available for date logic and ordering. Add text conversions for final output.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "convert-dialect-clue",
+          question: "Why should you identify the database before using CONVERT?",
+          options: [
+            "Its syntax and availability vary by SQL dialect",
+            "It always changes stored data",
+            "It only works on numbers",
+            "It automatically chooses a date format",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CONVERT has different syntax in SQL Server and MySQL, and PostgreSQL uses other tools for general type conversion.",
+        },
+        {
+          id: "convert-postgres-cast",
+          question: "Which expression changes a PostgreSQL signup_date result into text?",
+          options: [
+            "CAST(signup_date AS text)",
+            "CONVERT(text, signup_date)",
+            "TEXT AS signup_date",
+            "signup_date TO text",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CAST(value AS type) is PostgreSQL's clear, standard form for changing a result expression's type.",
+        },
+        {
+          id: "convert-to-char-format",
+          question: "What does TO_CHAR(signup_date, 'YYYY-MM') let you control?",
+          options: [
+            "The text display pattern", "The stored date value", "The customer ID", "The query's sort direction"],
+          correctIndex: 0,
+          explanation:
+            "TO_CHAR formats a value into text, so YYYY-MM produces a compact year-month label.",
+        },
+        {
+          id: "convert-sql-server-style",
+          question: "In SQL Server, what extra information can CONVERT(varchar(10), signup_date, 23) include?",
+          options: [
+            "A style code for the display", "A table name", "A row limit", "A join condition"],
+          correctIndex: 0,
+          explanation:
+            "SQL Server's third argument is a style code. Style 23 produces an ISO-style YYYY-MM-DD date display.",
+        },
+        {
+          id: "convert-keep-date",
+          question: "Which column should remain available for date comparisons and chronological sorting?",
+          options: ["signup_date", "signup_month", "signup_text", "TO_CHAR output only"],
+          correctIndex: 0,
+          explanation:
+            "Keep the original date typed value for date operations. The formatted columns are text for a final display.",
+        },
+      ],
+    },
+  ],
 };
 
 const implicitCoercion: LessonContent = {
