@@ -13,6 +13,7 @@ import powerSqrtLogImg from "@/images/sql/numeric-functions/power-sqrt-log-cycle
 import randomRangeImg from "@/images/sql/numeric-functions/random-range-cycle-depot.png";
 import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png";
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
+import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -3357,8 +3358,181 @@ LIMIT 3;`,
 const implicitCoercion: LessonContent = {
   slug: "implicit-coercion",
   title: "Implicit Coercion",
-  subtitle: "Placeholder for Implicit Coercion",
-  sections: [],
+  subtitle:
+    "See how PostgreSQL uses surrounding context to interpret compatible literal values in Cycle Depot queries.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Sometimes PostgreSQL chooses the type for you",
+      body: [
+        "An expression needs compatible types before PostgreSQL can compare or calculate with it. When a literal has not declared a type, PostgreSQL can often infer one from the surrounding expression. That automatic choice is called implicit coercion.",
+        "It is most useful when the context is obvious. In `id = '3'`, the `id` column is an integer, so PostgreSQL interprets the quoted literal as an integer for the comparison. The quote marks do not turn the stored id column into text.",
+      ],
+    },
+    {
+      kind: "image",
+      src: implicitCoercionImg,
+      alt: "Cycle Depot type context infographic showing an untyped quoted 3 flowing into WHERE id = 3, which returns the Boulder Full Suspension product row because the integer id column supplies the type context.",
+      caption:
+        "The integer id column gives the quoted literal a clear target type, so PostgreSQL can compare the values safely in this simple expression.",
+    },
+    {
+      kind: "prose",
+      heading: "A quoted literal can be resolved by an integer column",
+      body: [
+        "PostgreSQL initially treats a quoted literal such as `'3'` as an untyped string literal. The equality operator and the integer `id` column give it enough context to resolve the literal as an integer. The query therefore finds the real Cycle Depot product with id 3.",
+        "This is convenient in a small, obvious query. It is not a reason to blur types everywhere. Parameters from applications, imported text, and expressions with several possible target types deserve an explicit cast so the intended conversion is visible.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "PostgreSQL resolves the quoted product ID from context",
+      code: `SELECT
+  id,
+  name,
+  price
+FROM products
+WHERE id = '3'
+ORDER BY id;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "The query returns the one product whose integer id is 3. The literal is interpreted for this comparison; no stored data changes type.",
+      headers: ["id", "name", "price"],
+      rows: [["3", "Boulder Full Suspension", "3199.00"]],
+    },
+    {
+      kind: "prose",
+      heading: "Numeric context works the same way",
+      body: [
+        "Coercion also helps expressions use a compatible numeric type. `price` is a decimal value, and `0.875` is a numeric literal. In the multiplication below, PostgreSQL resolves the expression as numeric and returns a numeric sale_price for each product.",
+        "The result can carry more decimal places than the stored price. That is expected because the calculation has not rounded the value. Use `ROUND` only when the business question calls for a rounded result.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Let numeric context resolve a sale-rate literal",
+      code: `SELECT
+  id,
+  name,
+  price,
+  price * 0.875 AS sale_price
+FROM products
+ORDER BY id
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption:
+        "The decimal price and the numeric 0.875 literal produce numeric sale_price values. This preview is ordered by id and shows three rows.",
+      headers: ["id", "name", "price", "sale_price"],
+      rows: [
+        ["1", "Trailhead 29 Hardtail", "1299.00", "1136.62500"],
+        ["2", "Trailhead 29 Carbon", "2450.00", "2143.75000"],
+        ["3", "Boulder Full Suspension", "3199.00", "2799.12500"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-implicit-coercion",
+      caption:
+        "First the integer id column resolves a quoted literal for a product lookup. Then the decimal price column gives a sale-rate literal a compatible numeric context.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Make the type explicit when the intent is not obvious",
+      body: "Implicit coercion is context-dependent and PostgreSQL-specific. Prefer CAST when a value arrives from an application or import, when several types could fit, or when you want a query to explain its intended type to the next reader.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Use context for a Cycle Depot sale lookup",
+      prompt:
+        "Return id, name, price, and sale_price for the Cycle Depot product found with the quoted literal WHERE id = '3'. Calculate price * 0.875 AS sale_price, name the column exactly, and order by id. This checked exercise should return one row.",
+      tables: ["products"],
+      successCheck:
+        "One row with exactly id, name, price, and sale_price for Boulder Full Suspension.",
+      href: "/sql-playground?practice=cycledepot-use-implicit-coercion",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Implicit coercion is PostgreSQL choosing a compatible type from an expression's surrounding context.",
+        "In id = '3', the integer id column provides enough context to resolve the quoted literal for the comparison.",
+        "Numeric expressions such as price * 0.875 resolve compatible numeric types without changing the stored price column.",
+        "Implicit coercion changes only how the expression is evaluated, never the source column's stored type.",
+        "Use an explicit CAST when input is ambiguous, comes from an external source, or needs to document the intended type.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "implicit-coercion-definition",
+          question: "What is implicit coercion?",
+          options: [
+            "PostgreSQL inferring a compatible type from context",
+            "Permanently changing a column's type",
+            "Formatting a number as currency",
+            "Deleting incompatible rows",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Implicit coercion resolves expression types at query time. It does not alter the table schema or stored data.",
+        },
+        {
+          id: "implicit-coercion-id-literal",
+          question: "Why can WHERE id = '3' work in this PostgreSQL query?",
+          options: [
+            "The integer id column supplies a clear comparison context",
+            "Quote marks make every column text",
+            "PostgreSQL ignores the literal type",
+            "The products table stores id as text",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The equality comparison with an integer column lets PostgreSQL resolve the untyped quoted literal as an integer.",
+        },
+        {
+          id: "implicit-coercion-numeric-result",
+          question: "In price * 0.875, what remains unchanged in the products table?",
+          options: ["The stored price column", "The sale_price result", "The numeric literal", "The multiplication operator"],
+          correctIndex: 0,
+          explanation:
+            "The expression produces a new result value. It does not update the stored Cycle Depot price.",
+        },
+        {
+          id: "implicit-coercion-explicit-cast",
+          question: "When is an explicit CAST the clearer choice?",
+          options: [
+            "When external input or several possible types make intent unclear",
+            "Whenever a query has a WHERE clause",
+            "Only when a table has fewer than ten rows",
+            "Never, because coercion is always safer",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CAST documents the intended target type and is safer when context is not simple or unambiguous.",
+        },
+        {
+          id: "implicit-coercion-dialect",
+          question: "Why should implicit-coercion behavior be checked before porting a query?",
+          options: [
+            "Type-resolution rules vary by SQL dialect",
+            "All databases use the same coercion rules",
+            "Only PostgreSQL supports integers",
+            "A CAST cannot run outside PostgreSQL",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Databases can resolve literals and mixed types differently, so portable SQL should make important conversions explicit.",
+        },
+      ],
+    },
+  ],
 };
 
 const safeCasts: LessonContent = {
