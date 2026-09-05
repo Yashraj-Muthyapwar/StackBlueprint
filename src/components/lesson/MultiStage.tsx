@@ -150,6 +150,7 @@ const KEYWORDS = new Set([
   "RAND",
   "CAST",
   "TO_CHAR",
+  "CONVERT",
   "NULLIF",
   "COALESCE",
   "CONCAT",
