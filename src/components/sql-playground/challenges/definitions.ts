@@ -1771,6 +1771,53 @@ export const CHALLENGES: ChallengeDefinition[] = [
     },
   },
   {
+    id: "cycle-depot-use-implicit-coercion",
+    version: 1,
+    title: "Use context for a Cycle Depot sale lookup",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres"],
+    prompt:
+      "Use PostgreSQL's clear type context to find one Cycle Depot product and calculate its sale price.",
+    requirements: [
+      "Use the products table.",
+      "Return exactly id, name, price, and sale_price.",
+      "Find the product with WHERE id = '3'.",
+      "Use price * 0.875 AS sale_price.",
+      "Sort the result by id.",
+    ],
+    requiredTables: ["products"],
+    starterSql: `-- Cycle Depot context-driven sale lookup.
+-- Return id, name, price, and sale_price from products.
+-- Find the row with WHERE id = '3'. Use price * 0.875 AS sale_price.
+-- Sort by id, then run and check.`,
+    hints: [
+      "Start with SELECT id, name, price FROM products.",
+      "Add price * 0.875 AS sale_price.",
+      "Add WHERE id = '3', then ORDER BY id.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT id, name, price, price * 0.875 AS sale_price FROM products WHERE id = '3' ORDER BY id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT id, name, price, price * 0.875 AS sale_price FROM products WHERE id = '3' ORDER BY id;",
+      },
+      requiredColumns: ["id", "name", "price", "sale_price"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Cycle Depot context lookup complete",
+      body: "Correct. PostgreSQL resolved the quoted product ID in its integer comparison context and used a compatible numeric literal for the sale calculation.",
+      nextConcept: "Safe Casts",
+    },
+  },
+  {
     id: "cycle-depot-convert-signup-dates",
     version: 1,
     title: "Create PostgreSQL signup-date text",

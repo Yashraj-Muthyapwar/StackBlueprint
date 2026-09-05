@@ -17,6 +17,19 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "cycledepot-use-implicit-coercion": {
+    id: "cycledepot-use-implicit-coercion",
+    title: "Use context for a Cycle Depot sale lookup",
+    prompt:
+      "Return id, name, price, and sale_price for the Cycle Depot product found with WHERE id = '3'. Calculate price * 0.875 AS sale_price and sort by id. The result should have one row and exactly four columns.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-use-implicit-coercion",
+    starterSql: `-- Cycle Depot context-driven sale lookup.
+-- Return id, name, price, and sale_price from products.
+-- Find the row with WHERE id = '3'. Use price * 0.875 AS sale_price.
+-- Sort by id, then run and check.`,
+  },
   "cycledepot-convert-signup-dates": {
     id: "cycledepot-convert-signup-dates",
     title: "Create PostgreSQL signup-date text",
