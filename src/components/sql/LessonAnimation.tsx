@@ -59,7 +59,9 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
 
   const measureCanvas = useCallback(() => {
     const measurements = Array.from(stageMeasurements.current.values());
-    const tallestStage = Math.ceil(Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().height)));
+    const tallestStage = Math.ceil(
+      Math.max(0, ...measurements.map((element) => element.getBoundingClientRect().height)),
+    );
     if (tallestStage > 0) {
       // A step change briefly reattaches the off-screen measurement refs. Keep
       // the tallest height already found at the same width so that short-lived
@@ -107,9 +109,7 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
     <div className="flex flex-col">
       <div
         className="relative overflow-hidden"
-        style={reservedHeight > 0
-          ? { height: reservedHeight }
-          : undefined}
+        style={reservedHeight > 0 ? { height: reservedHeight } : undefined}
       >
         <div className="px-5 py-6 lg:px-7 lg:py-8">
           <MultiStage stages={stages} step={step} />
@@ -140,7 +140,10 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => { setPlaying(false); setStep(0); }}
+            onClick={() => {
+              setPlaying(false);
+              setStep(0);
+            }}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
             aria-label="Restart"
           >
@@ -176,6 +179,7 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
             const { stageIdx: si } = locate(stages, i);
             const isActive = i === step;
             const isStageStart = i === 0 || locate(stages, i - 1).stageIdx !== si;
+
             return (
               <motion.span
                 key={i}
