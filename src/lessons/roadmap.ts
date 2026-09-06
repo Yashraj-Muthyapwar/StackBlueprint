@@ -2988,7 +2988,7 @@ export const roadmap: RoadmapCategory[] = [
         title: "Foundations & Setup",
         blurb: "Core NoSQL concepts, document architecture, and connection methods.",
         patterns: [
-          unlockedMongoPattern("NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases.", [
+          unlockedMongoPattern("NoSQL Concepts", "nosql-concepts", "Compare data models, inspect flexible documents, and choose from access patterns.", [
             "Introduction to NoSQL",
             "Types of NoSQL Databases",
             "The CAP Theorem",
