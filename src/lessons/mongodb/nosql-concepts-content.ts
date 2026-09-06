@@ -1,4 +1,5 @@
 import overviewImage from "@/images/mongodb/nosql-concepts/nosql-cycle-depot.png";
+import comparisonImage from "@/images/mongodb/nosql-concepts/nosql-vs-relational.png";
 import type { QuizQuestion } from "@/components/lesson/Quiz";
 
 export type MongoSection =
@@ -33,7 +34,7 @@ export const introductionToNoSQL: MongoLesson = {
     {
       kind: "image",
       src: overviewImage,
-      alt: "Cycle Depot product 7, Aero Sprint Pro, represented as a table row and a document with the same id, name, and price of 5400.",
+      alt: "Cycle Depot product 7, Aero Sprint Pro, represented as a table row and a document with the same id, name, and price of 5400.00.",
       caption: "Same product, same values: columns in a row become named fields in a document.",
     },
     {
@@ -65,6 +66,68 @@ export const introductionToNoSQL: MongoLesson = {
         "A `schema` describes the expected fields and types. In the final animation step, only Aero Sprint Pro includes `in_stock`. That variation is allowed in our proposed document model. Both products still keep a `name` and numeric `price`.",
         "MongoDB supports validation rules to enforce those requirements. Relational databases can also model a varied catalog, for example with separate detail tables. The useful question is which structure fits the way your application reads and updates its data.",
       ],
+    },
+    {
+      kind: "prose",
+      heading: "🆚 NoSQL vs Relational Databases (RDBMS)",
+      body: [
+        "A relational database management system (`RDBMS`) organizes related facts in tables. `NoSQL` is a family of models, so its behavior depends on the database and the data model you choose. Use this comparison to spot the trade-offs, not to treat either category as a fixed set of rules.",
+      ],
+    },
+    {
+      kind: "image",
+      src: comparisonImage,
+      alt: "Cycle Depot products and order_items relational tables linked through products id and order_items product_id on the left, and a proposed MongoDB order_items document that nests the corresponding product fields on the right.",
+      caption:
+        "Both sides show the same Cycle Depot order item: 53 for order 27 and product 7. Relational tables need products.id and order_items.product_id to connect the facts; the proposed MongoDB document keeps the product fields with the order item.",
+    },
+    {
+      kind: "table",
+      caption: "NoSQL and relational databases at a glance",
+      headers: ["Feature", "Relational (SQL)", "NoSQL"],
+      rows: [
+        [
+          "Data structure",
+          "Tables with rows and columns.",
+          "Documents, key-value pairs, graphs, or wide-column stores.",
+        ],
+        [
+          "Schema",
+          "Predefined schema, often with strict column types.",
+          "Flexible schema; validation rules can still enforce requirements.",
+        ],
+        [
+          "Joins",
+          "Supports complex joins across tables.",
+          "Often models related data through embedding or denormalization; capabilities vary by database.",
+        ],
+        [
+          "Scalability",
+          "Often scaled up with more CPU or RAM; some systems also scale out.",
+          "Many systems are designed to scale out across nodes; implementation varies.",
+        ],
+        [
+          "Performance",
+          "Well suited to normalized relationships; join cost depends on the query and indexes.",
+          "Can be efficient for large workloads when the model matches access patterns; not automatically faster.",
+        ],
+        [
+          "Transactions",
+          "Mature ACID transaction support.",
+          "Support varies. For example, MongoDB supports ACID transactions when a multi-document transaction is needed.",
+        ],
+        [
+          "Licensing",
+          "Open-source and commercial options exist.",
+          "Open-source, source-available, and commercial options exist.",
+        ],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Conclusion",
+      body: "NoSQL and SQL are complementary technologies, not rivals. Choose the model that fits your data relationships, access patterns, consistency needs, and operational constraints.",
     },
     {
       kind: "callout",
