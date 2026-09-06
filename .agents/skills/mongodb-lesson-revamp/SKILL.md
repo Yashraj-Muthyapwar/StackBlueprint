@@ -45,7 +45,7 @@ Keep the requested lesson narrow. Read the next lesson's title and reserve its m
 
 Match the current SQL lesson presentation by inspecting an existing lesson in the browser and its renderer. Use backtick markup for mint-highlighted terms through the MongoDB renderer, rather than bolding every key term. Use MongoDB-owned animation controls with synchronized data highlights, narration, play/pause, reset, and steps. Avoid replacing an explanatory animation with generic cards.
 
-Use SQL's image frame: padded image area, width constraint, shared ZoomableImage, and a caption below. When generating an illustration, use the user's latest visual reference for composition, alignment, hierarchy, and color; check all labels and values. The current NoSQL reference is `src/images/mongodb/nosql-cycle-depot-v2.png`.
+Use SQL's image frame: padded image area, width constraint, shared ZoomableImage, and a caption below. When generating an illustration, use the user's latest visual reference for composition, alignment, hierarchy, and color; check all labels and values. The current NoSQL reference is `src/images/mongodb/nosql-concepts/nosql-cycle-depot-v2.png`.
 
 When Cycle Depot is supplied, verify displayed fields and values against the CSV files. Do not invent specifications such as frame size or lumens. Label any proposed document representation or omitted source fields explicitly.
 
@@ -80,7 +80,8 @@ Current discovery anchors, to recheck when applying this skill:
 - `src/lessons/mongodb/nosql-concepts-content.ts`: current section union and `MONGODB_TOPICS` content registry.
 - `src/components/mongodb/SectionRenderer.tsx`: MongoDB rendering contracts and inline highlighting.
 - `src/components/mongodb/AnimationControls.tsx`: MongoDB playback controls.
-- `src/components/mongodb/NoSQLInteractions.tsx`: MongoDB lesson animations and document views.
+- `src/components/mongodb/<module>/`: module-specific lesson components, animations, and document views. The current module is `nosql-concepts/`.
+- `src/images/mongodb/<module>/`: module-specific images. The current NoSQL visual lives in `nosql-concepts/`.
 - `src/lessons/roadmap.ts`: global course navigation.
 - `src/components/learning-paths/LessonLayout.tsx`: shared lesson layout.
 - `src/components/ui/`: global UI primitives, including `zoomable-image.tsx` and `image-carousel.tsx`.
@@ -89,7 +90,7 @@ Current discovery anchors, to recheck when applying this skill:
 
 Use the configured `@/` alias for shared imports. Keep MongoDB-specific renderers, document views, and animations under `src/components/mongodb/`, with lesson data under `src/lessons/mongodb/` where consistent with current architecture. These directories already contain the introduction; extend their current contracts deliberately.
 
-Do not change `src/components/sql/`, SQL lesson renderers, or SQL animation components for MongoDB work. If a shared layout, image viewer, quiz, or UI primitive lacks a necessary capability, make the smallest compatible extension and recheck every caller. Keep track-specific teaching components under `src/components/mongodb/`.
+Do not change `src/components/sql/`, SQL lesson renderers, or SQL animation components for MongoDB work. If a shared layout, image viewer, quiz, or UI primitive lacks a necessary capability, make the smallest compatible extension and recheck every caller. Keep track-wide MongoDB components directly under `src/components/mongodb/`; put module-specific components, animations, and images in matching `src/components/mongodb/<module>/` and `src/images/mongodb/<module>/` directories.
 
 Do not invent section kinds, language tags, component exports, or practice APIs. Confirm the content type and renderer support before authoring blocks. Use the prose `heading` property rather than Markdown headings inside a body array when following the existing renderer contract.
 
