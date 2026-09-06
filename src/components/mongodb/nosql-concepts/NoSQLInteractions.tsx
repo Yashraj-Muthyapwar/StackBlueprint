@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { AnimationControls } from "@/components/mongodb/AnimationControls";
-import { catalog } from "@/lessons/mongodb/nosql-fixtures";
+import { catalog } from "./fixtures";
 
 const steps = [
   {
