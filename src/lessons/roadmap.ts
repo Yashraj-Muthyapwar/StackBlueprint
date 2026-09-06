@@ -846,6 +846,12 @@ export const roadmap: RoadmapCategory[] = [
                 path: "/sql/specialized/conversions/safe-casts",
                 icon: Repeat,
               },
+              {
+                title: "Conversions: Final Quiz",
+                slug: "conversions-quiz",
+                path: "/sql/specialized/conversions/conversions-quiz",
+                icon: HelpCircle,
+              },
             ],
           },
         ],
