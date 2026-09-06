@@ -2959,61 +2959,74 @@ export const roadmap: RoadmapCategory[] = [
     patterns: [],
     sections: [
       {
-        title: "MongoDB Fundamentals",
+        title: "Foundations & Setup",
+        blurb: "Core NoSQL concepts, document architecture, and connection methods.",
         patterns: [
-          lockedPattern("0. NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases."),
+          lockedPattern("NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases."),
           lockedPattern(
-            "1. Getting Started with MongoDB Atlas",
+            "Getting Started with Atlas",
             "getting-started-atlas",
             "Set up your first MongoDB cluster.",
           ),
           lockedPattern(
-            "2. MongoDB and the Document Model",
+            "The Document Model",
             "document-model",
             "Understand how MongoDB stores data as documents.",
           ),
           lockedPattern(
-            "3. Connecting to a MongoDB Database Using the MongoDB Shell",
+            "Connecting via Shell",
             "mongodb-shell",
-            "Connect and run commands via the shell.",
+            "Connect and run commands via the Mongo shell.",
           ),
           lockedPattern(
-            "4. Connecting to MongoDB in Python",
+            "Connecting in Python",
             "connecting-python",
             "Integrate MongoDB with your Python applications.",
           ),
+        ],
+      },
+      {
+        title: "CRUD Operations",
+        blurb: "Mastering data manipulation through the shell and Python.",
+        patterns: [
           lockedPattern(
-            "5. CRUD Operations: Insert and Find Documents",
+            "Insert and Find Documents",
             "crud-insert-find",
             "Create and read documents in MongoDB.",
           ),
           lockedPattern(
-            "6. CRUD Operations: Replace and Delete Documents",
+            "Replace and Delete Documents",
             "crud-replace-delete",
             "Update and remove documents.",
           ),
           lockedPattern(
-            "7. CRUD Operations: Modifying Query Results",
+            "Modifying Query Results",
             "modifying-query-results",
             "Sort, limit, and skip query results.",
           ),
           lockedPattern(
-            "8. CRUD Operations in Python",
+            "CRUD Operations in Python",
             "crud-python",
             "Perform CRUD operations using PyMongo.",
           ),
+        ],
+      },
+      {
+        title: "Indexes & Aggregation",
+        blurb: "Optimizing queries and processing data with advanced pipelines.",
+        patterns: [
           lockedPattern(
-            "9. MongoDB Indexes",
+            "MongoDB Indexes",
             "mongodb-indexes",
             "Improve query performance with indexes.",
           ),
           lockedPattern(
-            "10. MongoDB Aggregation",
+            "MongoDB Aggregation",
             "mongodb-aggregation",
             "Process data records and return computed results.",
           ),
           lockedPattern(
-            "11. MongoDB Aggregation in Python",
+            "Aggregation in Python",
             "aggregation-python",
             "Run aggregation pipelines in Python.",
           ),
