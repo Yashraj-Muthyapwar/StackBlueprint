@@ -369,6 +369,32 @@ const unlockedAIPattern = (
   locked: false,
 });
 
+const unlockedMongoPattern = (
+  title: string,
+  slug: string,
+  blurb: string,
+  lessonsList: string[],
+): RoadmapPattern => ({
+  title,
+  slug,
+  path: `/mongodb/${slug}`,
+  blurb,
+  lessons: lessonsList.map((lTitle) => {
+    const lSlug = lTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    return {
+      title: lTitle,
+      slug: lSlug,
+      path: `/mongodb/${slug}/${lSlug}`,
+      icon: Database,
+    };
+  }),
+  locked: false,
+});
+
+
 export const roadmap: RoadmapCategory[] = [
   {
     title: "Patterns (DSA)",
@@ -2962,7 +2988,11 @@ export const roadmap: RoadmapCategory[] = [
         title: "Foundations & Setup",
         blurb: "Core NoSQL concepts, document architecture, and connection methods.",
         patterns: [
-          lockedPattern("NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases."),
+          unlockedMongoPattern("NoSQL Concepts", "nosql-concepts", "Introduction to NoSQL databases.", [
+            "Introduction to NoSQL",
+            "Types of NoSQL Databases",
+            "The CAP Theorem",
+          ]),
           lockedPattern(
             "Getting Started with Atlas",
             "getting-started-atlas",
