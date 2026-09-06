@@ -1,6 +1,6 @@
 ---
 name: mongodb-lesson-revamp
-description: "Create or revamp DataVizCore MongoDB lessons from user-provided content and reference sources, with original explanations, shared components, purposeful visuals, and verified examples and concise quizzes. Use for MongoDB lesson creation or a learner-focused refresh."
+description: "Create or revamp DataVizCore MongoDB lessons from user-provided content and reference sources, with original explanations, MongoDB-owned lesson components, purposeful visuals, and verified examples and concise quizzes. Use for MongoDB lesson creation or a learner-focused refresh."
 ---
 
 # MongoDB Lesson Creation and Revamp
@@ -43,7 +43,7 @@ Apply these standards to all learner-facing material: titles, prose, code commen
 
 Keep the requested lesson narrow. Read the next lesson's title and reserve its main concepts for that lesson. For an introduction, prefer two or three short teaching sections, one concrete example, one focused visual, and concise takeaways. Do not turn a large source attachment into one long survey.
 
-Match the current SQL lesson presentation by inspecting an existing lesson in the browser and its renderer. Use backtick markup for mint-highlighted terms through the shared inline renderer, rather than bolding every key term. Use the shared animation controls with synchronized data highlights, narration, play/pause, reset, and steps. Avoid replacing an explanatory animation with generic cards.
+Match the current SQL lesson presentation by inspecting an existing lesson in the browser and its renderer. Use backtick markup for mint-highlighted terms through the MongoDB renderer, rather than bolding every key term. Use MongoDB-owned animation controls with synchronized data highlights, narration, play/pause, reset, and steps. Avoid replacing an explanatory animation with generic cards.
 
 Use SQL's image frame: padded image area, width constraint, shared ZoomableImage, and a caption below. When generating an illustration, use the user's latest visual reference for composition, alignment, hierarchy, and color; check all labels and values. The current NoSQL reference is `src/images/mongodb/nosql-cycle-depot-v2.png`.
 
@@ -71,15 +71,16 @@ For setup or conceptual lessons, use a worked example or teaching visual instead
 
 ## Global components and imports
 
-Inspect exports and props before importing. Reuse shared layout, progress, cards, buttons, image viewers, quizzes, and animation controls instead of copying their markup into each MongoDB lesson.
+Inspect exports and props before importing. Reuse shared layout, progress, cards, buttons, image viewers, and quizzes. Keep MongoDB rendering, inline text handling, and animation controls in the MongoDB component directory so the track does not change or import SQL lesson files.
 
 Current discovery anchors, to recheck when applying this skill:
 
 - `src/routes/mongodb/index.tsx`: uses `CATEGORY_BY_SLUG` with the shared `TrackIndexLayout`; do not create a duplicate registry.
 - `src/routes/mongodb/$topic/$lesson.tsx`: content lookup, shared layout, quiz completion, and navigation.
 - `src/lessons/mongodb/nosql-concepts-content.ts`: current section union and `MONGODB_TOPICS` content registry.
-- `src/components/mongodb/SectionRenderer.tsx`: MongoDB rendering contracts.
-- `src/components/lesson/InlineLessonText.tsx` and `AnimationControls.tsx`: inline highlighting and playback controls shared with SQL.
+- `src/components/mongodb/SectionRenderer.tsx`: MongoDB rendering contracts and inline highlighting.
+- `src/components/mongodb/AnimationControls.tsx`: MongoDB playback controls.
+- `src/components/mongodb/NoSQLInteractions.tsx`: MongoDB lesson animations and document views.
 - `src/lessons/roadmap.ts`: global course navigation.
 - `src/components/learning-paths/LessonLayout.tsx`: shared lesson layout.
 - `src/components/ui/`: global UI primitives, including `zoomable-image.tsx` and `image-carousel.tsx`.
@@ -88,7 +89,7 @@ Current discovery anchors, to recheck when applying this skill:
 
 Use the configured `@/` alias for shared imports. Keep MongoDB-specific renderers, document views, and animations under `src/components/mongodb/`, with lesson data under `src/lessons/mongodb/` where consistent with current architecture. These directories already contain the introduction; extend their current contracts deliberately.
 
-If a shared component lacks a necessary capability, make the smallest reusable extension with compatible defaults. Put a new cross-track primitive in the existing shared layer when justified; do not create a parallel design system or make MongoDB depend on SQL-only helpers. Recheck affected callers after a shared change.
+Do not change `src/components/sql/`, SQL lesson renderers, or SQL animation components for MongoDB work. If a shared layout, image viewer, quiz, or UI primitive lacks a necessary capability, make the smallest compatible extension and recheck every caller. Keep track-specific teaching components under `src/components/mongodb/`.
 
 Do not invent section kinds, language tags, component exports, or practice APIs. Confirm the content type and renderer support before authoring blocks. Use the prose `heading` property rather than Markdown headings inside a body array when following the existing renderer contract.
 
@@ -98,7 +99,7 @@ Do not invent section kinds, language tags, component exports, or practice APIs.
 - Use images only when they teach something the native view cannot explain as clearly. Use the `imagegen` skill when generating or editing a raster asset, and inspect its labels, syntax, relationships, and readability before inclusion. Reject inaccurate or generic assets rather than compensating with a caption.
 - Use the shared zoomable image component with descriptive alt text and a teaching caption. Group multiple related images through the supported `image-carousel` section.
 - Give animation steps one meaningful change, such as matching documents, projecting fields, updating a nested value, or transforming a pipeline stage. Keep document identities and values consistent with the example. Synchronize code highlights, explanation, and displayed state.
-- Reuse standard transport controls and the established caption/header mechanism. Provide pause, step, and reset behavior where supported; keep keyboard operation and reduced-motion behavior usable. Avoid autoplay-dependent explanations and decorative movement.
+- Reuse the MongoDB transport controls and the established caption/header mechanism. Provide pause, step, and reset behavior where supported; keep keyboard operation and reduced-motion behavior usable. Avoid autoplay-dependent explanations and decorative movement.
 - Check desktop and narrow layouts for clipped nesting, overlapping labels, unreadable values, and controls outside the viewport. Make full values intentionally accessible when truncation is necessary. Do not copy fixed Python canvas dimensions without checking the MongoDB content.
 
 ## Practice and assessment policy
