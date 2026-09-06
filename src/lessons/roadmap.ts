@@ -352,6 +352,7 @@ const unlockedAIPattern = (
 ): RoadmapPattern => ({
   title,
   slug,
+  path: `/ai-engineering/${slug}`,
   blurb,
   lessons: lessonsList.map((lTitle) => {
     const lSlug = lTitle
@@ -768,10 +769,11 @@ export const roadmap: RoadmapCategory[] = [
             title: "Numeric Functions",
             slug: "numeric-functions",
             path: "/sql/specialized/numeric-functions",
-            blurb: "ROUND, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT — the math layer of SQL.",
+            blurb:
+              "ROUND, TRUNC, CEIL/FLOOR, ABS, MOD/%, POWER/SQRT/EXP/LOG — the math layer of SQL.",
             lessons: [
               {
-                title: "ROUND / TRUNC / CEIL / FLOOR",
+                title: "ROUND / TRUNC / CEIL / FLOOR: Shape Numbers",
                 slug: "round-trunc-ceil-floor",
                 path: "/sql/specialized/numeric-functions/round-trunc-ceil-floor",
                 icon: Calculator,
@@ -783,7 +785,7 @@ export const roadmap: RoadmapCategory[] = [
                 icon: Calculator,
               },
               {
-                title: "ABS / SIGN / LEAST / GREATEST",
+                title: "ABS / SIGN / LEAST / GREATEST: Compare Values",
                 slug: "abs-sign-least-greatest",
                 path: "/sql/specialized/numeric-functions/abs-sign-least-greatest",
                 icon: Calculator,
@@ -795,7 +797,7 @@ export const roadmap: RoadmapCategory[] = [
                 icon: Calculator,
               },
               {
-                title: "POWER / SQRT / EXP / LOG",
+                title: "POWER / SQRT / EXP / LOG: Model Scale",
                 slug: "power-sqrt-log",
                 path: "/sql/specialized/numeric-functions/power-sqrt-log",
                 icon: Calculator,
@@ -3027,6 +3029,20 @@ export const roadmap: RoadmapCategory[] = [
         title: "Foundations of Generative AI",
         blurb: "Core concepts, evolution of LLMs, and running models locally or via APIs.",
         patterns: [
+          unlockedAIPattern(
+            "Deep Learning Fundamentals",
+            "deep-learning-fundamentals",
+            "Neural networks, CNNs, RNNs, and the building blocks of deep learning.",
+            [
+              "Neural Networks Basics",
+              "Loss Functions & Softmax",
+              "Gradient Descent & Variants",
+              "CNN",
+              "RNN",
+              "RNN Types",
+              "LSTM",
+            ],
+          ),
           unlockedAIPattern(
             "Core Concepts & Evolution",
             "core-concepts",
