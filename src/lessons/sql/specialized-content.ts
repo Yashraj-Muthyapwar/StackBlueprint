@@ -3701,6 +3701,136 @@ ORDER BY raw_product_id;`,
   ],
 };
 
+const conversionsQuiz: LessonContent = {
+  slug: "conversions-quiz",
+  title: "Conversions: Final Quiz",
+  subtitle:
+    "Check your understanding of explicit casts, display formatting, dialect differences, type context, and safe PostgreSQL conversions.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "conversions-final-cast-purpose",
+          question: "What does CAST(id AS text) do in a SELECT query?",
+          options: [
+            "Changes that result expression to text",
+            "Permanently changes the id column to text",
+            "Adds a new stored column",
+            "Formats the ID as a currency amount",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CAST changes the type of the value returned by the expression. It does not change the table schema or the stored id values.",
+        },
+        {
+          id: "conversions-final-postgres-shorthand",
+          question: "Which PostgreSQL expression is shorthand for CAST(price AS numeric)?",
+          options: ["price::numeric", "NUMERIC(price)", "TO_CHAR(price)", "CONVERT(price, numeric)"],
+          correctIndex: 0,
+          explanation:
+            "PostgreSQL supports the compact ::type syntax. CAST(value AS type) is the more portable standard form.",
+        },
+        {
+          id: "conversions-final-to-char",
+          question: "What is the result type of TO_CHAR(price, 'FM$9,999.00')?",
+          options: ["Text", "Numeric", "Integer", "Date"],
+          correctIndex: 0,
+          explanation:
+            "TO_CHAR formats a number or date into text for display, such as $1,299.00.",
+        },
+        {
+          id: "conversions-final-format-last",
+          question: "Why should price remain numeric until the final display step?",
+          options: [
+            "Numeric values support arithmetic and numeric sorting",
+            "TO_CHAR permanently deletes decimals",
+            "Formatted text cannot be shown in a result",
+            "CAST cannot work with a price column",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Do calculations and numeric ordering with price. Add a formatted text label only when the result is ready for people to read.",
+        },
+        {
+          id: "conversions-final-convert-dialect",
+          question: "What should you do before copying CONVERT syntax into a query?",
+          options: [
+            "Check the target SQL dialect",
+            "Replace every value with text",
+            "Add a GROUP BY clause",
+            "Convert the table to a view",
+          ],
+          correctIndex: 0,
+          explanation:
+            "CONVERT differs across databases. PostgreSQL uses CAST for a general type conversion and TO_CHAR for formatted text output.",
+        },
+        {
+          id: "conversions-final-postgres-convert",
+          question: "Which PostgreSQL expression turns signup_date into a YYYY-MM text label?",
+          options: [
+            "TO_CHAR(signup_date, 'YYYY-MM')",
+            "CONVERT(varchar(7), signup_date, 23)",
+            "signup_date::month",
+            "CAST(signup_date AS month)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "TO_CHAR uses a PostgreSQL format pattern to create a text display label. The other CONVERT form is SQL Server syntax.",
+        },
+        {
+          id: "conversions-final-implicit-context",
+          question: "Why can WHERE id = '3' work when id is an integer in PostgreSQL?",
+          options: [
+            "The integer column gives the literal a clear comparison context",
+            "Quote marks change id into a text column",
+            "PostgreSQL ignores data types in WHERE",
+            "Every quoted literal is permanently numeric",
+          ],
+          correctIndex: 0,
+          explanation:
+            "PostgreSQL can resolve the quoted literal from the integer comparison context. The stored id column remains an integer.",
+        },
+        {
+          id: "conversions-final-explicit-input",
+          question: "When is an explicit cast clearer than relying on implicit coercion?",
+          options: [
+            "When external input or the intended target type is unclear",
+            "Only when selecting an integer column",
+            "Never, because PostgreSQL always guesses correctly",
+            "Only after a DELETE statement",
+          ],
+          correctIndex: 0,
+          explanation:
+            "An explicit cast documents the intended type and is easier to trust when a value comes from an import or application.",
+        },
+        {
+          id: "conversions-final-direct-cast-risk",
+          question: "What can happen if raw_product_id::integer sees the text bike-7?",
+          options: [
+            "The query can fail with an invalid-integer error",
+            "PostgreSQL automatically assigns the next product ID",
+            "It always returns 0",
+            "The text is silently removed from the table",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A direct integer cast expects valid integer text. Malformed input must be handled before the cast is attempted.",
+        },
+        {
+          id: "conversions-final-safe-case",
+          question: "In the safe-cast pattern, what does CASE return for a value that does not match ^[0-9]+$ when there is no ELSE branch?",
+          options: ["NULL", "0", "The original text", "A random integer"],
+          correctIndex: 0,
+          explanation:
+            "The matching CASE branch contains the cast. A nonmatching row does not run that cast and returns NULL when ELSE is omitted.",
+        },
+      ],
+    },
+  ],
+};
+
 // =============================================================
 // TOPIC INDEX
 // =============================================================
@@ -3753,7 +3883,7 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Specialized Data Handling",
     iconKey: "terminal",
     blurb: "CAST and CONVERT — for schema evolution and cross-type operations.",
-    lessons: [castToChar, convertLesson, implicitCoercion, safeCasts],
+    lessons: [castToChar, convertLesson, implicitCoercion, safeCasts, conversionsQuiz],
   },
   "error-handling": {
     slug: "error-handling",
