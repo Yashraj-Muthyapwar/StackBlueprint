@@ -34,13 +34,20 @@ async function fetchCsv(
   const raw = new Uint8Array(await res.arrayBuffer());
 
   const isGzip = raw.length > 2 && raw[0] === 0x1f && raw[1] === 0x8b;
-  if (!isGzip) return raw;
+  if (!isGzip) return stripUtf8Bom(raw);
 
   if (typeof DecompressionStream === "undefined") {
     throw new Error("This browser cannot decompress the dataset (no DecompressionStream).");
   }
   const stream = new Blob([raw as BlobPart]).stream().pipeThrough(new DecompressionStream("gzip"));
-  return new Uint8Array(await new Response(stream).arrayBuffer());
+  return stripUtf8Bom(new Uint8Array(await new Response(stream).arrayBuffer()));
+}
+
+/** Some source CSVs include a UTF-8 BOM; DuckDB treats it as part of header 1. */
+function stripUtf8Bom(bytes: Uint8Array): Uint8Array {
+  return bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf
+    ? bytes.slice(3)
+    : bytes;
 }
 
 function columnList(table: ManifestTable): string {
