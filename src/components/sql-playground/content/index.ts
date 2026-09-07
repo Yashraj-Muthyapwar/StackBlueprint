@@ -7,6 +7,7 @@ import { COSMETICS_48H_EXAMPLES } from "./cosmetics-48h";
 import { ERGAST_EXAMPLES } from "./ergast";
 import { MARVEL_EXAMPLES } from "./marvel";
 import { OLIST_EXAMPLES } from "./olist";
+import { SQL_LAB_EXAMPLES } from "./sql-lab";
 
 const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
   cosmetics_48h: COSMETICS_48H_EXAMPLES,
@@ -14,6 +15,7 @@ const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
   ergast: ERGAST_EXAMPLES,
   marvel: MARVEL_EXAMPLES,
   olist: OLIST_EXAMPLES,
+  sql_lab: SQL_LAB_EXAMPLES,
 };
 
 /** Queries for this dataset, minus anything the active engine cannot run. */

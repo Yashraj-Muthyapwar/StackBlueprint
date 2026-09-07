@@ -5,6 +5,7 @@ export interface ManifestColumn {
   name: string;
   type: string;
   notNull?: boolean;
+  defaultValue?: string;
 }
 
 export interface ManifestTable {
@@ -15,6 +16,7 @@ export interface ManifestTable {
   bytes: number;
   primaryKey: string[];
   columns: ManifestColumn[];
+  inlineConstraints?: string[];
 }
 
 export interface ManifestForeignKey {
@@ -30,6 +32,7 @@ export interface DatasetManifest {
   bytes: number;
   tables: ManifestTable[];
   foreignKeys: ManifestForeignKey[];
+  setup?: { common?: string[]; postgres?: string[]; duckdb?: string[] };
 }
 
 export const COSMETICS_48H_MANIFEST: DatasetManifest = {
@@ -604,4 +607,85 @@ export const OLIST_MANIFEST: DatasetManifest = {
     { fromTable: "public.order_reviews", fromColumns: ["order_id"], toTable: "public.orders", toColumns: ["order_id"] },
     { fromTable: "public.products", fromColumns: ["product_category_name"], toTable: "public.product_category_translation", toColumns: ["product_category_name"] },
   ],
+};
+
+export const SQL_LAB_MANIFEST: DatasetManifest = {
+  id: "sql_lab",
+  schemas: [],
+  bytes: 845371,
+  tables: [
+    {
+      schema: "public", name: "customers", file: "customers.csv.gz", rows: 2000, bytes: 22872, primaryKey: ["customer_id"],
+      columns: [
+        { name: "customer_id", type: "INTEGER", notNull: true }, { name: "first_name", type: "VARCHAR(50)", notNull: true }, { name: "last_name", type: "VARCHAR(50)", notNull: true }, { name: "email", type: "VARCHAR(150)", notNull: true }, { name: "country", type: "VARCHAR(50)", notNull: true }, { name: "created_at", type: "TIMESTAMP", notNull: true },
+      ],
+      inlineConstraints: ["PRIMARY KEY (\"customer_id\")", "UNIQUE (\"email\")"],
+    },
+    {
+      schema: "public", name: "categories", file: "categories.csv.gz", rows: 30, bytes: 333, primaryKey: ["category_id"],
+      columns: [{ name: "category_id", type: "INTEGER", notNull: true }, { name: "parent_category_id", type: "INTEGER" }, { name: "category_name", type: "VARCHAR(100)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"category_id\")", "UNIQUE (\"category_name\")", "FOREIGN KEY (\"parent_category_id\") REFERENCES \"categories\" (\"category_id\")"],
+    },
+    {
+      schema: "public", name: "products", file: "products.csv.gz", rows: 800, bytes: 9992, primaryKey: ["product_id"],
+      columns: [{ name: "product_id", type: "INTEGER", notNull: true }, { name: "category_id", type: "INTEGER", notNull: true }, { name: "product_name", type: "VARCHAR(150)", notNull: true }, { name: "price", type: "DECIMAL(10,2)", notNull: true }, { name: "cost", type: "DECIMAL(10,2)", notNull: true }, { name: "active", type: "BOOLEAN", notNull: true, defaultValue: "TRUE" }],
+      inlineConstraints: ["PRIMARY KEY (\"product_id\")", "FOREIGN KEY (\"category_id\") REFERENCES \"categories\" (\"category_id\")", "CHECK (\"price\" >= 0)", "CHECK (\"cost\" >= 0)"],
+    },
+    {
+      schema: "public", name: "employees", file: "employees.csv.gz", rows: 60, bytes: 706, primaryKey: ["employee_id"],
+      columns: [{ name: "employee_id", type: "INTEGER", notNull: true }, { name: "manager_id", type: "INTEGER" }, { name: "employee_name", type: "VARCHAR(100)", notNull: true }, { name: "department", type: "VARCHAR(50)", notNull: true }, { name: "title", type: "VARCHAR(100)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"employee_id\")", "FOREIGN KEY (\"manager_id\") REFERENCES \"employees\" (\"employee_id\")", "CHECK (\"manager_id\" IS NULL OR \"manager_id\" <> \"employee_id\")"],
+    },
+    {
+      schema: "public", name: "addresses", file: "addresses.csv.gz", rows: 2800, bytes: 30503, primaryKey: ["address_id"],
+      columns: [{ name: "address_id", type: "INTEGER", notNull: true }, { name: "customer_id", type: "INTEGER", notNull: true }, { name: "address_type", type: "VARCHAR(20)", notNull: true }, { name: "line1", type: "VARCHAR(150)", notNull: true }, { name: "city", type: "VARCHAR(80)", notNull: true }, { name: "region", type: "VARCHAR(80)", notNull: true }, { name: "postal_code", type: "VARCHAR(20)", notNull: true }, { name: "country", type: "VARCHAR(50)", notNull: true }, { name: "is_default", type: "BOOLEAN", notNull: true, defaultValue: "FALSE" }],
+      inlineConstraints: ["PRIMARY KEY (\"address_id\")", "FOREIGN KEY (\"customer_id\") REFERENCES \"customers\" (\"customer_id\")", "CHECK (\"address_type\" IN ('shipping', 'billing'))"],
+    },
+    {
+      schema: "public", name: "orders", file: "orders.csv.gz", rows: 15000, bytes: 207391, primaryKey: ["order_id"],
+      columns: [{ name: "order_id", type: "INTEGER", notNull: true }, { name: "customer_id", type: "INTEGER", notNull: true }, { name: "order_date", type: "TIMESTAMP", notNull: true }, { name: "status", type: "VARCHAR(20)", notNull: true }, { name: "total_amount", type: "DECIMAL(12,2)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"order_id\")", "FOREIGN KEY (\"customer_id\") REFERENCES \"customers\" (\"customer_id\")", "CHECK (\"status\" IN ('pending', 'paid', 'shipped', 'delivered', 'cancelled'))", "CHECK (\"total_amount\" >= 0)"],
+    },
+    {
+      schema: "public", name: "order_items", file: "order_items.csv.gz", rows: 37448, bytes: 204564, primaryKey: ["order_id", "product_id"],
+      columns: [{ name: "order_id", type: "INTEGER", notNull: true }, { name: "product_id", type: "INTEGER", notNull: true }, { name: "quantity", type: "INTEGER", notNull: true }, { name: "unit_price", type: "DECIMAL(10,2)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"order_id\", \"product_id\")", "FOREIGN KEY (\"order_id\") REFERENCES \"orders\" (\"order_id\")", "FOREIGN KEY (\"product_id\") REFERENCES \"products\" (\"product_id\")", "CHECK (\"quantity\" > 0)", "CHECK (\"unit_price\" >= 0)"],
+    },
+    {
+      schema: "public", name: "payments", file: "payments.csv.gz", rows: 15000, bytes: 195814, primaryKey: ["payment_id"],
+      columns: [{ name: "payment_id", type: "INTEGER", notNull: true }, { name: "order_id", type: "INTEGER", notNull: true }, { name: "payment_date", type: "TIMESTAMP" }, { name: "amount", type: "DECIMAL(12,2)", notNull: true }, { name: "status", type: "VARCHAR(20)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"payment_id\")", "FOREIGN KEY (\"order_id\") REFERENCES \"orders\" (\"order_id\")", "CHECK (\"amount\" >= 0)", "CHECK (\"status\" IN ('pending', 'successful', 'failed'))"],
+    },
+    {
+      schema: "public", name: "shipments", file: "shipments.csv.gz", rows: 13577, bytes: 166551, primaryKey: ["shipment_id"],
+      columns: [{ name: "shipment_id", type: "INTEGER", notNull: true }, { name: "order_id", type: "INTEGER", notNull: true }, { name: "shipped_at", type: "TIMESTAMP" }, { name: "delivered_at", type: "TIMESTAMP" }, { name: "carrier", type: "VARCHAR(50)" }, { name: "status", type: "VARCHAR(20)", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"shipment_id\")", "UNIQUE (\"order_id\")", "FOREIGN KEY (\"order_id\") REFERENCES \"orders\" (\"order_id\")", "CHECK (\"status\" IN ('pending', 'shipped', 'delivered'))", "CHECK ((\"status\" = 'pending' AND \"shipped_at\" IS NULL AND \"delivered_at\" IS NULL) OR (\"status\" = 'shipped' AND \"shipped_at\" IS NOT NULL AND \"delivered_at\" IS NULL) OR (\"status\" = 'delivered' AND \"shipped_at\" IS NOT NULL AND \"delivered_at\" IS NOT NULL AND \"delivered_at\" >= \"shipped_at\"))"],
+    },
+    {
+      schema: "public", name: "inventory", file: "inventory.csv.gz", rows: 1600, bytes: 6645, primaryKey: ["product_id", "warehouse_id"],
+      columns: [{ name: "product_id", type: "INTEGER", notNull: true }, { name: "warehouse_id", type: "INTEGER", notNull: true }, { name: "quantity", type: "INTEGER", notNull: true }, { name: "reorder_level", type: "INTEGER", notNull: true }],
+      inlineConstraints: ["PRIMARY KEY (\"product_id\", \"warehouse_id\")", "FOREIGN KEY (\"product_id\") REFERENCES \"products\" (\"product_id\")", "CHECK (\"quantity\" >= 0)", "CHECK (\"reorder_level\" >= 0)"],
+    },
+  ],
+  foreignKeys: [
+    { fromTable: "public.addresses", fromColumns: ["customer_id"], toTable: "public.customers", toColumns: ["customer_id"] },
+    { fromTable: "public.categories", fromColumns: ["parent_category_id"], toTable: "public.categories", toColumns: ["category_id"] },
+    { fromTable: "public.products", fromColumns: ["category_id"], toTable: "public.categories", toColumns: ["category_id"] },
+    { fromTable: "public.orders", fromColumns: ["customer_id"], toTable: "public.customers", toColumns: ["customer_id"] },
+    { fromTable: "public.order_items", fromColumns: ["order_id"], toTable: "public.orders", toColumns: ["order_id"] },
+    { fromTable: "public.order_items", fromColumns: ["product_id"], toTable: "public.products", toColumns: ["product_id"] },
+    { fromTable: "public.payments", fromColumns: ["order_id"], toTable: "public.orders", toColumns: ["order_id"] },
+    { fromTable: "public.shipments", fromColumns: ["order_id"], toTable: "public.orders", toColumns: ["order_id"] },
+    { fromTable: "public.employees", fromColumns: ["manager_id"], toTable: "public.employees", toColumns: ["employee_id"] },
+    { fromTable: "public.inventory", fromColumns: ["product_id"], toTable: "public.products", toColumns: ["product_id"] },
+  ],
+  setup: {
+    common: [
+      "CREATE INDEX idx_orders_customer ON orders (customer_id)",
+      "CREATE INDEX idx_orders_date ON orders (order_date)",
+      "CREATE INDEX idx_order_items_product ON order_items (product_id)",
+      "CREATE VIEW customer_order_summary AS SELECT c.customer_id, c.first_name, c.last_name, COUNT(o.order_id) AS order_count, COALESCE(SUM(o.total_amount), 0) AS lifetime_value FROM customers c LEFT JOIN orders o ON o.customer_id = c.customer_id GROUP BY c.customer_id, c.first_name, c.last_name",
+      "CREATE VIEW low_stock_products AS SELECT p.product_id, p.product_name, i.warehouse_id, i.quantity, i.reorder_level FROM products p JOIN inventory i ON i.product_id = p.product_id WHERE i.quantity <= i.reorder_level",
+    ],
+  },
 };

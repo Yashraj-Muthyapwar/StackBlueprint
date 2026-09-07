@@ -4,13 +4,14 @@ import {
   MARVEL_MANIFEST,
   OLIST_MANIFEST,
   COSMETICS_48H_MANIFEST,
+  SQL_LAB_MANIFEST,
   type DatasetManifest,
   type ManifestColumn,
   type ManifestForeignKey,
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cosmetics_48h" | "cycledepot" | "ergast" | "marvel" | "olist" | "my-workspace";
+export type DatasetId = "cosmetics_48h" | "cycledepot" | "ergast" | "marvel" | "olist" | "sql_lab" | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -42,6 +43,22 @@ export interface DatasetDef {
 const sumRows = (m: DatasetManifest) => m.tables.reduce((total, t) => total + t.rows, 0);
 
 export const DATASETS: DatasetDef[] = [
+  {
+    id: "sql_lab",
+    name: "ShopFlow SQL Lab",
+    tagline: "Synthetic online-store operations for SQL engineering.",
+    about:
+      "A deterministic, production-style store database for practicing schema design, constraints, indexes, plans, transactions, views, and recursive SQL.",
+    difficulty: "advanced",
+    engines: ["postgres", "duckdb"],
+    source: { kind: "csv", manifest: SQL_LAB_MANIFEST },
+    bytes: SQL_LAB_MANIFEST.bytes,
+    stats: { tables: SQL_LAB_MANIFEST.tables.length, rows: sumRows(SQL_LAB_MANIFEST) },
+    credit: { label: "Generated for the SQL Playground", url: "" },
+    caveats: [
+      "Synthetic, deterministic data (seed 42). Both engines share the schema; inspect plans and behavior instead of assuming they match.",
+    ],
+  },
   {
     id: "cosmetics_48h",
     name: "eCommerce Events History in Cosmetics Shop",

@@ -1,7 +1,14 @@
 import type { PGlite } from "@electric-sql/pglite";
 import type * as duckdb from "@duckdb/duckdb-wasm";
 import { DDL as CYCLE_DDL, buildSeed } from "../dataset";
-import { getDataset, qualify, type DatasetDef, type DatasetId, type ManifestTable } from "./index";
+import {
+  getDataset,
+  qualify,
+  type DatasetDef,
+  type DatasetId,
+  type DatasetManifest,
+  type ManifestTable,
+} from "./index";
 
 export interface LoadProgress {
   /** 0..1 across the whole dataset. */
@@ -57,9 +64,24 @@ function columnList(table: ManifestTable): string {
 /** CREATE TABLE text that both engines accept. */
 function createTable(table: ManifestTable): string {
   const cols = table.columns
-    .map((c) => `  "${c.name}" ${c.type}${c.notNull ? " NOT NULL" : ""}`)
+    .map(
+      (c) =>
+        `  "${c.name}" ${c.type}${c.notNull ? " NOT NULL" : ""}${c.defaultValue ? ` DEFAULT ${c.defaultValue}` : ""}`,
+    )
     .join(",\n");
-  return `CREATE TABLE ${qualify(table)} (\n${cols}\n);`;
+  const constraints = (table.inlineConstraints ?? []).map((constraint) => `  ${constraint}`).join(",\n");
+  return `CREATE TABLE ${qualify(table)} (\n${cols}${constraints ? `,\n${constraints}` : ""}\n);`;
+}
+
+async function applySetup(
+  run: (statement: string) => Promise<unknown>,
+  manifest: DatasetManifest,
+  engine: "postgres" | "duckdb",
+): Promise<void> {
+  if (!manifest.setup) return;
+  for (const statement of [...(manifest.setup.common ?? []), ...(manifest.setup[engine] ?? [])]) {
+    await run(statement);
+  }
 }
 
 /**
@@ -69,6 +91,35 @@ function createTable(table: ManifestTable): string {
 function progressWeights(tables: ManifestTable[]): number[] {
   const total = tables.reduce((sum, t) => sum + Math.max(t.bytes, 1), 0);
   return tables.map((t) => Math.max(t.bytes, 1) / total);
+}
+
+/**
+ * DuckDB checks self-referencing foreign keys while an INSERT is running, so a
+ * bulk insert cannot see a parent row that appears earlier in the same CSV.
+ * Load roots first, then successive hierarchy levels, keeping the constraint
+ * active instead of weakening the ShopFlow schema for one engine.
+ */
+async function loadDuckHierarchy(
+  conn: duckdb.AsyncDuckDBConnection,
+  table: ManifestTable,
+  virtualName: string,
+  parentColumn: string,
+): Promise<void> {
+  const idColumn = table.primaryKey[0];
+  const columns = columnList(table);
+  const types = table.columns.map((c) => `'${c.name}': '${c.type}'`).join(", ");
+  const source = `read_csv('${virtualName}', header = true, columns = {${types}}, nullstr = '', ignore_errors = true)`;
+
+  await conn.query(
+    `INSERT INTO ${qualify(table)} SELECT ${columns} FROM ${source} AS source WHERE source."${parentColumn}" IS NULL;`,
+  );
+  // ShopFlow's deepest tree is four levels. Twenty rounds makes this reusable
+  // for a moderately deeper uploaded manifest without looping indefinitely.
+  for (let depth = 0; depth < 20; depth++) {
+    await conn.query(
+      `INSERT INTO ${qualify(table)} SELECT ${columns} FROM ${source} AS source WHERE source."${parentColumn}" IS NOT NULL AND EXISTS (SELECT 1 FROM ${qualify(table)} AS parent WHERE parent."${idColumn}" = source."${parentColumn}") AND NOT EXISTS (SELECT 1 FROM ${qualify(table)} AS existing WHERE existing."${idColumn}" = source."${idColumn}");`,
+    );
+  }
 }
 
 // ------------------------------------------------------------------ postgres
@@ -164,6 +215,9 @@ export async function loadIntoPostgres(
     }
   }
 
+  onProgress({ fraction: 0.985, label: "setting up SQL Lab" });
+  await applySetup((statement) => pg.exec(statement), manifest, "postgres");
+
   onProgress({ fraction: 0.99, label: "analysing" });
   await pg.exec("ANALYZE;");
   onProgress({ fraction: 1, label: "ready" });
@@ -226,16 +280,26 @@ export async function loadIntoDuckDB(
     // CSV reader do the parsing.
     await database.registerFileBuffer(virtualName, csv);
     try {
-      const types = table.columns.map((c) => `'${c.name}': '${c.type}'`).join(", ");
-      await conn.query(
-        `INSERT INTO ${qualify(table)} SELECT ${columnList(table)} FROM read_csv('${virtualName}', header = true, columns = {${types}}, nullstr = '', ignore_errors = true);`,
+      const selfReference = manifest.foreignKeys.find(
+        (fk) => fk.fromTable === `${table.schema}.${table.name}` && fk.toTable === fk.fromTable,
       );
+      if (selfReference) {
+        await loadDuckHierarchy(conn, table, virtualName, selfReference.fromColumns[0]);
+      } else {
+        const types = table.columns.map((c) => `'${c.name}': '${c.type}'`).join(", ");
+        await conn.query(
+          `INSERT INTO ${qualify(table)} SELECT ${columnList(table)} FROM read_csv('${virtualName}', header = true, columns = {${types}}, nullstr = '', ignore_errors = true);`,
+        );
+      }
     } finally {
       await database.dropFile(virtualName);
     }
 
     done += weights[i];
   }
+
+  onProgress({ fraction: 0.97, label: "setting up SQL Lab" });
+  await applySetup((statement) => conn.query(statement), manifest, "duckdb");
 
   onProgress({ fraction: 1, label: "ready" });
 }
