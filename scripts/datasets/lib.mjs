@@ -196,6 +196,20 @@ export async function writeTable(datasetId, tableName, header, rows) {
   return { rows: rows.length, bytes: gz.length, rawBytes: Buffer.byteLength(csv) };
 }
 
+/**
+ * Keep a public source CSV intact while storing it in the app's compressed
+ * dataset bundle. `rows` comes from the caller's validated parse, so we avoid
+ * rewriting fields, identifiers, quoting, or line endings merely to collect
+ * manifest statistics.
+ */
+export async function writeRawCsv(datasetId, filename, source, rows) {
+  const dir = path.join(OUT_DATA, datasetId);
+  await ensureDir(dir);
+  const gz = await gzipAsync(source, { level: 9 });
+  await writeFile(path.join(dir, `${filename}.gz`), gz);
+  return { rows, bytes: gz.length, rawBytes: source.length };
+}
+
 export async function writeSource(filename, contents) {
   await ensureDir(OUT_SRC);
   await writeFile(path.join(OUT_SRC, filename), contents);

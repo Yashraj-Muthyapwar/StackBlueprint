@@ -1,16 +1,27 @@
 import { readFile } from "node:fs/promises";
-import { download, parseCsv, writeTable, banner, mb } from "./lib.mjs";
+import path from "node:path";
+import { download, parseCsv, writeRawCsv, banner, mb } from "./lib.mjs";
 
 const BASE = "https://raw.githubusercontent.com/tunguyenn99/ecommerce-data-modeling/main/dataset";
 
 /**
- * Olist: ~100k real Brazilian e-commerce orders, 2016-2018.
- *
- * The geolocation table is deliberately left out. It is a million rows of
- * lat/long noise, over half the download, and none of the SQL it teaches is
- * anything the other seven tables do not already cover.
+ * Olist's complete public release: real Brazilian e-commerce orders,
+ * 2016-2018. The output retains the original source CSVs, including the
+ * geolocation table and anonymous hash identifiers.
  */
 const TABLES = [
+  {
+    name: "geolocation",
+    csv: "olist_geolocation_dataset.csv",
+    columns: [
+      ["geolocation_zip_code_prefix", "INTEGER", true],
+      ["geolocation_lat", "DECIMAL(11,8)", true],
+      ["geolocation_lng", "DECIMAL(11,8)", true],
+      ["geolocation_city", "VARCHAR(64)", true],
+      ["geolocation_state", "VARCHAR(2)", true],
+    ],
+    primaryKey: [],
+  },
   {
     name: "customers",
     csv: "olist_customers_dataset.csv",
@@ -137,58 +148,18 @@ const FOREIGN_KEYS = [
   toColumns,
 }));
 
-/**
- * Every id in Olist is an opaque 32-character hex hash. Random hex does not
- * compress, so those columns alone are ~22 MB of the 26 MB download while
- * carrying no information: they are surrogate keys, and their values mean
- * nothing outside the join.
- *
- * With `ids: "int"` each distinct hash is mapped to a stable integer, shared
- * across every table so all foreign keys still line up. Row counts, columns and
- * relationships are untouched; only the key representation changes.
- * `ids: "hash"` keeps the original strings, byte for byte.
- */
-const ID_COLUMNS = new Set([
-  "customer_id",
-  "customer_unique_id",
-  "seller_id",
-  "product_id",
-  "order_id",
-  "review_id",
-]);
-
-function makeIdPool() {
-  const pools = new Map();
-  return (column, value) => {
-    if (value === "") return "";
-    // customer_id and customer_unique_id index the same person space; keep the
-    // rest in their own namespaces so ids stay small and readable.
-    const space = column === "customer_unique_id" ? "customer_unique_id" : column;
-    let pool = pools.get(space);
-    if (!pool) {
-      pool = new Map();
-      pools.set(space, pool);
-    }
-    let mapped = pool.get(value);
-    if (mapped === undefined) {
-      mapped = pool.size + 1;
-      pool.set(value, mapped);
-    }
-    return String(mapped);
-  };
-}
-
-export async function buildOlist({ ids = "int" } = {}) {
-  banner(`Olist (${ids} ids)`);
+export async function buildOlist({ sourceDir } = {}) {
+  banner("Olist (complete public release)");
 
   const manifest = [];
   let totalBytes = 0;
-  const compact = ids === "int";
-  const mapId = makeIdPool();
 
   for (const table of TABLES) {
-    const file = await download(`${BASE}/${table.csv}`, `olist-${table.csv}`);
-    const rows = parseCsv(await readFile(file, "utf8"));
+    const file = sourceDir
+      ? path.join(sourceDir, table.csv)
+      : await download(`${BASE}/${table.csv}`, `olist-${table.csv}`);
+    const source = await readFile(file);
+    const rows = parseCsv(source.toString("utf8"));
 
     const header = rows[0].map((h) => h.trim().replace(/^"|"$/g, "").toLowerCase());
     const index = table.columns.map(([name]) => {
@@ -198,36 +169,14 @@ export async function buildOlist({ ids = "int" } = {}) {
     });
 
     const body = rows.slice(1).filter((r) => r.length >= header.length);
-    const out = body.map((r) =>
-      index.map((at, col) => {
-        const [name, type] = table.columns[col];
-        let value = (r[at] ?? "").trim();
-        if (value === "NULL" || value === "\\N") return "";
-        // Review text carries raw newlines; keep them but collapse the CRs.
-        if (type === "TEXT") value = value.replace(/\r/g, "");
-        if (compact && ID_COLUMNS.has(name)) return mapId(name, value);
-        return value;
-      }),
-    );
-
-    const columns = table.columns.map(([name, type, notNull]) => ({
-      name,
-      type: compact && ID_COLUMNS.has(name) ? "INTEGER" : type,
-      notNull,
-    }));
-
-    const stats = await writeTable(
-      "olist",
-      table.name,
-      columns.map((c) => c.name),
-      out,
-    );
+    const columns = table.columns.map(([name, type, notNull]) => ({ name, type, notNull }));
+    const stats = await writeRawCsv("olist", table.csv, source, body.length);
     totalBytes += stats.bytes;
 
     manifest.push({
       schema: "public",
       name: table.name,
-      file: `${table.name}.csv.gz`,
+      file: `${table.csv}.gz`,
       columns,
       primaryKey: table.primaryKey,
       rows: stats.rows,

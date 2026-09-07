@@ -86,11 +86,13 @@ function emitManifest(results) {
 }
 
 const args = process.argv.slice(2);
-// --olist-ids=hash keeps Olist's original 32-char hashes (much larger download).
-const olistIds = args.find((a) => a.startsWith("--olist-ids="))?.split("=")[1] ?? "int";
+// Pass a verified local Kaggle download to preserve the exact public Olist CSVs.
+const olistSource = args
+  .find((a) => a.startsWith("--olist-source="))
+  ?.slice("--olist-source=".length);
 const requested = args.filter((a) => !a.startsWith("--"));
 const ids = requested.length ? requested : Object.keys(BUILDERS);
-const OPTIONS = { olist: { ids: olistIds } };
+const OPTIONS = { olist: { sourceDir: olistSource } };
 
 for (const id of ids) {
   if (!BUILDERS[id]) {
