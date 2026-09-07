@@ -7,6 +7,15 @@ export const COSMETICS_48H_EXAMPLES: ExampleGroup[] = [
     blurb: "Cosmetics Shop activity from 1–3 January 2020 (UTC).",
     items: [
       {
+        title: "48-hour event slice",
+        note: "Inspect the supplied event stream in its original chronological order.",
+        sql: `SELECT timestamp, event_type, product_id, category_code, brand,
+       price, user_id, user_session
+FROM events
+ORDER BY timestamp
+LIMIT 100;`,
+      },
+      {
         title: "Events by behavior",
         note: "Views, carts, removals, and purchases in this 48-hour slice",
         sql: `SELECT event_type,
@@ -116,7 +125,7 @@ GROUP BY session_outcome
 ORDER BY sessions DESC;`,
       },
       {
-        title: "Highest purchase activity by user",
+        title: "Users with the most purchase activity",
         note: "A 48-hour view, not a long-term customer history",
         sql: `SELECT user_id,
        COUNT(*) AS purchase_events,
@@ -127,6 +136,163 @@ WHERE event_type = 'purchase'
 GROUP BY user_id
 ORDER BY event_value DESC, purchase_events DESC
 LIMIT 30;`,
+      },
+      {
+        title: "Session conversion rate",
+        note: "Measure the share of sessions with a view that also recorded a purchase.",
+        sql: `WITH session_outcomes AS (
+  SELECT user_session,
+         MAX(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END) AS viewed,
+         MAX(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchased
+  FROM events
+  WHERE user_session IS NOT NULL
+  GROUP BY user_session
+)
+SELECT COUNT(*) FILTER (WHERE viewed = 1) AS view_sessions,
+       COUNT(*) FILTER (WHERE viewed = 1 AND purchased = 1) AS purchasing_view_sessions,
+       ROUND(
+         100.0 * COUNT(*) FILTER (WHERE viewed = 1 AND purchased = 1)
+         / NULLIF(COUNT(*) FILTER (WHERE viewed = 1), 0),
+         2
+       ) AS view_to_purchase_pct
+FROM session_outcomes;`,
+      },
+    ],
+  },
+  {
+    group: "Event sequences",
+    blurb: "Window functions expose the actions and timing inside each supplied session.",
+    items: [
+      {
+        title: "Previous event in a session",
+        note: "Use LAG() to see the action immediately before each event.",
+        sql: `WITH sequenced_events AS (
+  SELECT user_session,
+         timestamp,
+         event_type,
+         product_id,
+         LAG(event_type) OVER (
+           PARTITION BY user_session
+           ORDER BY timestamp
+         ) AS previous_event_type
+  FROM events
+  WHERE user_session IS NOT NULL
+)
+SELECT user_session, timestamp, previous_event_type, event_type, product_id
+FROM sequenced_events
+WHERE previous_event_type IS NOT NULL
+ORDER BY user_session, timestamp
+LIMIT 100;`,
+      },
+      {
+        title: "Time between events",
+        note: "Measure the whole-second gap between consecutive events within a session.",
+        only: "duckdb",
+        sql: `WITH sequenced_events AS (
+  SELECT user_session,
+         timestamp,
+         event_type,
+         LAG(timestamp) OVER (
+           PARTITION BY user_session
+           ORDER BY timestamp
+         ) AS previous_timestamp
+  FROM events
+  WHERE user_session IS NOT NULL
+)
+SELECT user_session,
+       previous_timestamp,
+       timestamp,
+       event_type,
+       DATEDIFF('second', previous_timestamp, timestamp) AS seconds_since_previous_event
+FROM sequenced_events
+WHERE previous_timestamp IS NOT NULL
+ORDER BY user_session, timestamp
+LIMIT 100;`,
+      },
+      {
+        title: "Time between events",
+        note: "Measure the whole-second gap between consecutive events within a session.",
+        only: "postgres",
+        sql: `WITH sequenced_events AS (
+  SELECT user_session,
+         timestamp,
+         event_type,
+         LAG(timestamp) OVER (
+           PARTITION BY user_session
+           ORDER BY timestamp
+         ) AS previous_timestamp
+  FROM events
+  WHERE user_session IS NOT NULL
+)
+SELECT user_session,
+       previous_timestamp,
+       timestamp,
+       event_type,
+       ROUND(EXTRACT(EPOCH FROM timestamp - previous_timestamp), 2) AS seconds_since_previous_event
+FROM sequenced_events
+WHERE previous_timestamp IS NOT NULL
+ORDER BY user_session, timestamp
+LIMIT 100;`,
+      },
+    ],
+  },
+  {
+    group: "Funnels",
+    blurb: "Treat a session as a short behavioral journey, without overstating this 48-hour slice as a long-term customer lifecycle.",
+    items: [
+      {
+        title: "Add-to-cart conversion",
+        note: "At the session-product level, measure how often a viewed product reached a cart.",
+        sql: `WITH session_product_events AS (
+  SELECT user_session,
+         product_id,
+         MAX(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END) AS viewed,
+         MAX(CASE WHEN event_type = 'cart' THEN 1 ELSE 0 END) AS carted
+  FROM events
+  WHERE user_session IS NOT NULL
+  GROUP BY user_session, product_id
+)
+SELECT COUNT(*) FILTER (WHERE viewed = 1) AS viewed_session_products,
+       COUNT(*) FILTER (WHERE viewed = 1 AND carted = 1) AS carted_session_products,
+       ROUND(
+         100.0 * COUNT(*) FILTER (WHERE viewed = 1 AND carted = 1)
+         / NULLIF(COUNT(*) FILTER (WHERE viewed = 1), 0),
+         2
+       ) AS view_to_cart_pct
+FROM session_product_events;`,
+      },
+      {
+        title: "Purchase funnel",
+        note: "Build a simple view → cart → purchase funnel from session-level behavior.",
+        sql: `WITH session_steps AS (
+  SELECT user_session,
+         MAX(CASE WHEN event_type = 'view' THEN 1 ELSE 0 END) AS viewed,
+         MAX(CASE WHEN event_type = 'cart' THEN 1 ELSE 0 END) AS carted,
+         MAX(CASE WHEN event_type = 'purchase' THEN 1 ELSE 0 END) AS purchased
+  FROM events
+  WHERE user_session IS NOT NULL
+  GROUP BY user_session
+),
+funnel AS (
+  SELECT COUNT(*) FILTER (WHERE viewed = 1) AS viewed_sessions,
+         COUNT(*) FILTER (WHERE viewed = 1 AND carted = 1) AS carted_sessions,
+         COUNT(*) FILTER (WHERE viewed = 1 AND carted = 1 AND purchased = 1) AS purchased_sessions
+  FROM session_steps
+)
+SELECT 'viewed' AS stage,
+       viewed_sessions AS sessions,
+       100.00 AS pct_of_view_sessions
+FROM funnel
+UNION ALL
+SELECT 'carted',
+       carted_sessions,
+       ROUND(100.0 * carted_sessions / NULLIF(viewed_sessions, 0), 2)
+FROM funnel
+UNION ALL
+SELECT 'purchased',
+       purchased_sessions,
+       ROUND(100.0 * purchased_sessions / NULLIF(viewed_sessions, 0), 2)
+FROM funnel;`,
       },
     ],
   },
