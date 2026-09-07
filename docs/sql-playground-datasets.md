@@ -11,6 +11,7 @@ This document describes the built-in SQL Playground datasets, how their files ar
 | Marvel Character Networks | 5 tables, 207,727 rows | Supplied Marvel visualization snapshot | All 8 supplied JSON files are retained as compressed originals; SQL tables flatten their existing arrays. |
 | Olist | 9 linked e-commerce tables, 1,550,922 rows | Olist's public, anonymized Brazilian marketplace release, 2016–2018 | The source CSV content is retained and gzip-compressed for delivery. |
 | eCommerce Events History in Cosmetics Shop | 1 event table, 184,099 rows | Supplied 48-hour slice of Kaggle's Cosmetics Shop history: 2020-01-01 00:00:00+00:00 through 2020-01-03 00:00:00+00:00 | The supplied CSV is preserved byte-for-byte after gzip compression. |
+| ShopFlow SQL Lab | 10 operational tables, 85,070 rows | Deterministic synthetic ShopFlow store operations | CSV data is generated from seed 42 and loaded with constraints, indexes, and views. |
 | My Workspace | No built-in tables | Learner-provided CSV or SQLite data | Temporary, browser-local workspace. |
 
 Bike Store, TPC-H, and AdventureWorks are not part of the current Playground.
@@ -61,6 +62,10 @@ The `events` table retains all 184,099 supplied rows and every original CSV colu
 - End: `2020-01-03 00:00:00+00:00`
 
 The builder validates the header, row count, and both boundaries before it writes `public/datasets/cosmetics_48h/2020-Jan_48h.csv.gz`. The decompressed file is byte-for-byte identical to the supplied CSV; the typed SQL table is loaded from that original-column payload without filtering or synthetic rows.
+
+### ShopFlow SQL Lab
+
+ShopFlow is the Playground's deliberate synthetic database for SQL engineering: constraints, keys, indexes, views, transactions, plans, and recursive CTEs. It is generated locally from fixed seed `42`, not sourced from a real company or external dataset. See [the ShopFlow SQL Lab guide](sql-playground-sql-lab.md) for its schema and reproducible build workflow.
 
 ## Build-time workflow
 
