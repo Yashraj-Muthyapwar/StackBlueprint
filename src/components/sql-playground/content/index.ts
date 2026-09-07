@@ -3,11 +3,13 @@ import type { DatasetId } from "../db/datasets";
 import { forEngine, type ExampleGroup } from "./types";
 
 import { CYCLE_DEPOT_EXAMPLES } from "./cycledepot";
+import { COSMETICS_48H_EXAMPLES } from "./cosmetics-48h";
 import { ERGAST_EXAMPLES } from "./ergast";
 import { MARVEL_EXAMPLES } from "./marvel";
 import { OLIST_EXAMPLES } from "./olist";
 
 const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
+  cosmetics_48h: COSMETICS_48H_EXAMPLES,
   cycledepot: CYCLE_DEPOT_EXAMPLES,
   ergast: ERGAST_EXAMPLES,
   marvel: MARVEL_EXAMPLES,

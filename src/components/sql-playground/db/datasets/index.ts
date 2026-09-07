@@ -3,13 +3,14 @@ import {
   ERGAST_MANIFEST,
   MARVEL_MANIFEST,
   OLIST_MANIFEST,
+  COSMETICS_48H_MANIFEST,
   type DatasetManifest,
   type ManifestColumn,
   type ManifestForeignKey,
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cycledepot" | "ergast" | "marvel" | "olist" | "my-workspace";
+export type DatasetId = "cosmetics_48h" | "cycledepot" | "ergast" | "marvel" | "olist" | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -41,6 +42,24 @@ export interface DatasetDef {
 const sumRows = (m: DatasetManifest) => m.tables.reduce((total, t) => total + t.rows, 0);
 
 export const DATASETS: DatasetDef[] = [
+  {
+    id: "cosmetics_48h",
+    name: "eCommerce Events History in Cosmetics Shop",
+    tagline: "48-hour January 2020 slice: 184k real store events.",
+    about: "184,099 Cosmetics Shop events from a 48-hour January 2020 Kaggle slice.",
+    difficulty: "intermediate",
+    engines: ["postgres", "duckdb"],
+    source: { kind: "csv", manifest: COSMETICS_48H_MANIFEST },
+    bytes: COSMETICS_48H_MANIFEST.bytes,
+    stats: { tables: COSMETICS_48H_MANIFEST.tables.length, rows: sumRows(COSMETICS_48H_MANIFEST) },
+    credit: {
+      label: "Kaggle: eCommerce Events History in Cosmetics Shop",
+      url: "https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop",
+    },
+    caveats: [
+      "48-hour UTC slice: 2020-01-01 00:00 to 2020-01-03 00:00; not the full Kaggle dataset.",
+    ],
+  },
   {
     id: "my-workspace",
     name: "My Workspace",

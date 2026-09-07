@@ -32,6 +32,37 @@ export interface DatasetManifest {
   foreignKeys: ManifestForeignKey[];
 }
 
+export const COSMETICS_48H_MANIFEST: DatasetManifest = {
+  id: "cosmetics_48h",
+  schemas: [],
+  bytes: 4150916,
+  tables: [
+    {
+      schema: "public",
+      name: "events",
+      file: "2020-Jan_48h.csv.gz",
+      rows: 184099,
+      bytes: 4150916,
+      primaryKey: [],
+      columns: [
+        { name: "timestamp", type: "TIMESTAMPTZ", notNull: true },
+        { name: "event_time", type: "VARCHAR(32)", notNull: true },
+        { name: "event_type", type: "VARCHAR(32)", notNull: true },
+        { name: "product_id", type: "INTEGER", notNull: true },
+        { name: "category_id", type: "BIGINT", notNull: true },
+        { name: "category_code", type: "TEXT" },
+        { name: "brand", type: "TEXT" },
+        { name: "price", type: "DECIMAL(12,2)", notNull: true },
+        { name: "user_id", type: "BIGINT", notNull: true },
+        { name: "user_session", type: "VARCHAR(36)" },
+      ],
+    },
+  ],
+  foreignKeys: [
+
+  ],
+};
+
 export const ERGAST_MANIFEST: DatasetManifest = {
   id: "ergast",
   schemas: [],
