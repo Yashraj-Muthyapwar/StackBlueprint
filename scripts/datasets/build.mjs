@@ -2,7 +2,7 @@
 /**
  * Builds the SQL Flow Lab datasets.
  *
- *   node scripts/datasets/build.mjs [olist|ergast|marvel] [--ergast-source=/path/to/ergast_2024]
+ *   node scripts/datasets/build.mjs [cosmetics_48h|olist|ergast|marvel] [--ergast-source=/path/to/ergast_2024]
  *
  * Reads each configured source (or a cached public source where available),
  * applies only that dataset's documented transformations, and writes:
@@ -15,9 +15,11 @@
 import { buildErgast } from "./ergast.mjs";
 import { buildMarvel } from "./marvel.mjs";
 import { buildOlist } from "./olist.mjs";
+import { buildCosmetics48h } from "./cosmetics-48h.mjs";
 import { writeSource, mb } from "./lib.mjs";
 
 const BUILDERS = {
+  cosmetics_48h: buildCosmetics48h,
   ergast: buildErgast,
   marvel: buildMarvel,
   olist: buildOlist,
@@ -96,9 +98,13 @@ const ergastSource = args
 const marvelSource = args
   .find((a) => a.startsWith("--marvel-source="))
   ?.slice("--marvel-source=".length);
+const cosmeticsSource = args
+  .find((a) => a.startsWith("--cosmetics-source="))
+  ?.slice("--cosmetics-source=".length);
 const requested = args.filter((a) => !a.startsWith("--"));
 const ids = requested.length ? requested : Object.keys(BUILDERS);
 const OPTIONS = {
+  cosmetics_48h: { sourceFile: cosmeticsSource },
   ergast: { sourceDir: ergastSource },
   marvel: { sourceDir: marvelSource },
   olist: { sourceDir: olistSource },
