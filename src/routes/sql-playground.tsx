@@ -9,13 +9,13 @@ export const Route = createFileRoute("/sql-playground")({
       {
         name: "description",
         content:
-          "Write SQL against real PostgreSQL and DuckDB engines running in your browser. Five datasets including AdventureWorks, Olist and TPC-H, with per-engine query libraries, a live clause-by-clause row trace, and execution plans.",
+          "Write SQL against real PostgreSQL and DuckDB engines running in your browser. Three datasets including Cycle Depot, Ergast Formula 1 and Olist, with per-engine query libraries, a live clause-by-clause row trace, and execution plans.",
       },
       { property: "og:title", content: "SQL Flow Lab — StackBlueprint" },
       {
         property: "og:description",
         content:
-          "AdventureWorks, Olist, Bike Store and TPC-H, queried in the browser on PostgreSQL and DuckDB.",
+          "Cycle Depot, Ergast Formula 1 and Olist, queried in the browser on PostgreSQL and DuckDB.",
       },
     ],
   }),
