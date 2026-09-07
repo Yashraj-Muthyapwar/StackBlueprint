@@ -205,6 +205,19 @@ export async function writeRawCsv(datasetId, filename, source, rows) {
   return { rows, bytes: gz.length, rawBytes: source.length };
 }
 
+/**
+ * Preserve a non-CSV source artifact alongside a dataset. These files are not
+ * manifest tables and are therefore not loaded by the Playground; they retain
+ * the supplied source exactly, apart from gzip compression.
+ */
+export async function writeRawFile(datasetId, relativeFile, source) {
+  const target = path.join(OUT_DATA, datasetId, relativeFile);
+  await ensureDir(path.dirname(target));
+  const gz = await gzipAsync(source, { level: 9 });
+  await writeFile(target, gz);
+  return { bytes: gz.length, rawBytes: source.length };
+}
+
 export async function writeSource(filename, contents) {
   await ensureDir(OUT_SRC);
   await writeFile(path.join(OUT_SRC, filename), contents);

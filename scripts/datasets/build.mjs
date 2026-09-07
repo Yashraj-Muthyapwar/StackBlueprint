@@ -2,10 +2,10 @@
 /**
  * Builds the SQL Flow Lab datasets.
  *
- *   node scripts/datasets/build.mjs [olist|ergast] [--ergast-source=/path/to/ergast_2024]
+ *   node scripts/datasets/build.mjs [olist|ergast|marvel] [--ergast-source=/path/to/ergast_2024]
  *
- * Downloads each upstream source (cached under scripts/datasets/.cache), strips
- * the columns that cost bandwidth without teaching SQL, and writes:
+ * Reads each configured source (or a cached public source where available),
+ * applies only that dataset's documented transformations, and writes:
  *
  *   public/datasets/<id>/<table>.csv.gz          the data the browser fetches
  *   src/.../db/datasets/manifest.generated.ts    schema, keys and row counts
@@ -13,11 +13,13 @@
  * The output is committed, so building the app never needs the network.
  */
 import { buildErgast } from "./ergast.mjs";
+import { buildMarvel } from "./marvel.mjs";
 import { buildOlist } from "./olist.mjs";
 import { writeSource, mb } from "./lib.mjs";
 
 const BUILDERS = {
   ergast: buildErgast,
+  marvel: buildMarvel,
   olist: buildOlist,
 };
 
@@ -91,9 +93,16 @@ const olistSource = args
 const ergastSource = args
   .find((a) => a.startsWith("--ergast-source="))
   ?.slice("--ergast-source=".length);
+const marvelSource = args
+  .find((a) => a.startsWith("--marvel-source="))
+  ?.slice("--marvel-source=".length);
 const requested = args.filter((a) => !a.startsWith("--"));
 const ids = requested.length ? requested : Object.keys(BUILDERS);
-const OPTIONS = { ergast: { sourceDir: ergastSource }, olist: { sourceDir: olistSource } };
+const OPTIONS = {
+  ergast: { sourceDir: ergastSource },
+  marvel: { sourceDir: marvelSource },
+  olist: { sourceDir: olistSource },
+};
 
 for (const id of ids) {
   if (!BUILDERS[id]) {
