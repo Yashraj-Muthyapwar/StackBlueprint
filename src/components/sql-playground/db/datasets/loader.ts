@@ -201,19 +201,6 @@ export async function loadIntoDuckDB(
     return;
   }
 
-  if (dataset.source.kind === "tpch") {
-    onProgress({ fraction: 0.05, label: "loading the tpch extension" });
-    await conn.query("INSTALL tpch;");
-    await conn.query("LOAD tpch;");
-    onProgress({
-      fraction: 0.3,
-      label: `generating at scale factor ${dataset.source.scaleFactor}`,
-    });
-    await conn.query(`CALL dbgen(sf=${dataset.source.scaleFactor});`);
-    onProgress({ fraction: 1, label: "ready" });
-    return;
-  }
-
   const { manifest } = dataset.source;
 
   for (const schema of manifest.schemas) {

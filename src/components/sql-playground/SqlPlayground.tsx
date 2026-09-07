@@ -135,7 +135,7 @@ export function SqlPlayground() {
     if (savedDataset && DATASETS.some((d) => d.id === savedDataset)) {
       nextDataset = savedDataset;
     }
-    // A stored pair can be invalid, e.g. TPC-H remembered against PostgreSQL.
+    // A stored pair can be invalid when a dataset no longer supports an engine.
     if (!getDataset(nextDataset).engines.includes(nextEngine)) {
       nextEngine = getDataset(nextDataset).engines[0];
     }

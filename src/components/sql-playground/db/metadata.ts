@@ -63,14 +63,12 @@ async function postgresSchema(dataset: DatasetId): Promise<SchemaSnapshot> {
        AND tc.table_schema NOT IN ${USER_SCHEMAS}`,
   );
 
-  // Read foreign keys from the catalogue rather than information_schema. The
-  // obvious information_schema join has two faults that both showed up on
-  // AdventureWorks: joining key_column_usage to constraint_column_usage on the
-  // constraint name alone builds a cross product for composite keys, inventing
-  // pairs like (productid -> specialofferid); and matching the referenced table
-  // on the referencing table's schema drops every cross-schema key, which is 20
-  // of AdventureWorks' 89. unnest(conkey, confkey) walks both column lists in
-  // step instead, so each key contributes exactly its own columns.
+  // Read foreign keys from the catalogue rather than information_schema. An
+  // obvious information_schema join has two faults: joining solely on the
+  // constraint name builds a cross product for composite keys, and matching
+  // the referenced table on the referencing table's schema drops cross-schema
+  // relationships. unnest(conkey, confkey) walks both column lists in step, so
+  // each key contributes exactly its own columns.
   const fks = await db.runOrThrow(
     "postgres",
     dataset,

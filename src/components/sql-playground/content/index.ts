@@ -3,17 +3,13 @@ import type { DatasetId } from "../db/datasets";
 import { forEngine, type ExampleGroup } from "./types";
 
 import { CYCLE_DEPOT_EXAMPLES } from "./cycledepot";
-import { BIKE_STORE_EXAMPLES } from "./bikestore";
-import { ADVENTUREWORKS_EXAMPLES } from "./adventureworks";
+import { ERGAST_EXAMPLES } from "./ergast";
 import { OLIST_EXAMPLES } from "./olist";
-import { TPCH_EXAMPLES } from "./tpch";
 
 const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
   cycledepot: CYCLE_DEPOT_EXAMPLES,
-  bikestore: BIKE_STORE_EXAMPLES,
-  adventureworks: ADVENTUREWORKS_EXAMPLES,
+  ergast: ERGAST_EXAMPLES,
   olist: OLIST_EXAMPLES,
-  tpch: TPCH_EXAMPLES,
 };
 
 /** Queries for this dataset, minus anything the active engine cannot run. */

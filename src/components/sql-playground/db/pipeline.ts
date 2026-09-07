@@ -201,9 +201,9 @@ export function parseClauses(sql: string): Clause[] {
 /**
  * Split a FROM body on top-level commas.
  *
- * `FROM customer, orders, lineitem` is an implicit cross join, which every
- * TPC-H query is written with. Counting it directly means materialising the
- * cartesian product, so the relations have to be measured separately.
+ * A comma-separated FROM list is an implicit cross join. Counting it directly
+ * can materialise an enormous cartesian product, so relations are measured
+ * separately.
  */
 function splitRelations(fromBody: string): string[] {
   const out: string[] = [];
@@ -368,8 +368,7 @@ export async function tracePipeline(
   let fromCount: number | null;
   if (crossJoined) {
     // Comma-separated relations multiply. Measure each one and take the
-    // product rather than asking the engine to build the cross product, which
-    // for TPC-H would be on the order of 10^14 rows.
+    // product rather than asking the engine to build the cross product.
     const each = await Promise.all(
       relations.map((r) => count(`${withPrefix}SELECT COUNT(*) AS n FROM ${r}`)),
     );

@@ -1,7 +1,6 @@
 import type { Engine } from "../db-client";
 import {
-  ADVENTUREWORKS_MANIFEST,
-  BIKESTORE_MANIFEST,
+  ERGAST_MANIFEST,
   OLIST_MANIFEST,
   type DatasetManifest,
   type ManifestColumn,
@@ -9,7 +8,7 @@ import {
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cycledepot" | "bikestore" | "adventureworks" | "olist" | "tpch" | "my-workspace";
+export type DatasetId = "cycledepot" | "ergast" | "olist" | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -27,8 +26,7 @@ export interface DatasetDef {
   source:
     | { kind: "generated" }
     | { kind: "blank" }
-    | { kind: "csv"; manifest: DatasetManifest }
-    | { kind: "tpch"; scaleFactor: number };
+    | { kind: "csv"; manifest: DatasetManifest };
   /** Compressed bytes fetched on first use. 0 means nothing is downloaded. */
   bytes: number;
   /** Headline numbers for the picker. */
@@ -69,41 +67,25 @@ export const DATASETS: DatasetDef[] = [
     credit: { label: "Generated for this lab", url: "" },
   },
   {
-    id: "bikestore",
-    name: "Bike Store",
-    tagline: "The classic teaching schema: two schemas, nine tables.",
+    id: "ergast",
+    name: "Ergast Formula 1",
+    tagline: "Formula 1 race data through the 2024 season. 14 linked tables.",
     about:
-      "A bicycle retailer with stores, staff, stock and orders, split across a production and a sales schema. Small enough to hold in your head, and the schema most SQL courses build their first joins on.",
-    difficulty: "beginner",
-    engines: ["postgres", "duckdb"],
-    source: { kind: "csv", manifest: BIKESTORE_MANIFEST },
-    bytes: BIKESTORE_MANIFEST.bytes,
-    stats: { tables: BIKESTORE_MANIFEST.tables.length, rows: sumRows(BIKESTORE_MANIFEST) },
-    credit: {
-      label: "pltommasino/BikeStoreDB-SQL",
-      url: "https://github.com/pltommasino/BikeStoreDB-SQL",
-    },
-  },
-  {
-    id: "adventureworks",
-    name: "AdventureWorks",
-    tagline: "Microsoft's reference OLTP database. 67 tables, 5 schemas.",
-    about:
-      "A fictional bicycle-parts wholesaler with roughly 20,000 customers and 31,000 sales orders averaging four line items each, spanning people, HR, production, purchasing and sales. Big enough that query plans start to matter and the difference between a good and a bad join order is visible.",
+      "A historical Formula 1 archive spanning 1950 through 2024. Follow drivers, constructors, circuits, qualifying, pit stops, results and more, with enough lap-level data to make analytical queries and query plans meaningful.",
     difficulty: "intermediate",
     engines: ["postgres", "duckdb"],
-    source: { kind: "csv", manifest: ADVENTUREWORKS_MANIFEST },
-    bytes: ADVENTUREWORKS_MANIFEST.bytes,
+    source: { kind: "csv", manifest: ERGAST_MANIFEST },
+    bytes: ERGAST_MANIFEST.bytes,
     stats: {
-      tables: ADVENTUREWORKS_MANIFEST.tables.length,
-      rows: sumRows(ADVENTUREWORKS_MANIFEST),
+      tables: ERGAST_MANIFEST.tables.length,
+      rows: sumRows(ERGAST_MANIFEST),
     },
     credit: {
-      label: "lorint/AdventureWorks-for-Postgres",
-      url: "https://github.com/lorint/AdventureWorks-for-Postgres",
+      label: "Ergast Developer API",
+      url: "https://ergast.com/mrd/",
     },
     caveats: [
-      "Every business row is here. Product photos, XML columns and password hashes were removed: they are 90% of the original download and teach nothing about SQL.",
+      "The supplied snapshot ends with the 2024 season. Identifiers are normalized to lower snake_case for portable, unquoted SQL in both engines.",
     ],
   },
   {
@@ -123,25 +105,6 @@ export const DATASETS: DatasetDef[] = [
     },
     caveats: [
       "Complete public release: all nine source tables are included, including geolocation, with the original anonymized hash identifiers preserved.",
-    ],
-  },
-  {
-    id: "tpch",
-    name: "TPC-H",
-    tagline: "The industry decision-support benchmark, generated on the fly.",
-    about:
-      "Eight tables of synthetic wholesale data plus the 22 official benchmark queries: correlated subqueries, anti-joins, multi-level aggregation and the kind of query planners are built to fight. DuckDB generates it natively, so nothing is downloaded and you can raise the scale factor whenever you want more rows.",
-    difficulty: "advanced",
-    engines: ["duckdb"],
-    source: { kind: "tpch", scaleFactor: 0.05 },
-    bytes: 0,
-    stats: { tables: 8, rows: 375_000 },
-    credit: {
-      label: "TPC-H specification",
-      url: "https://www.tpc.org/tpch/",
-    },
-    caveats: [
-      "DuckDB only. TPC-H is a columnar analytics benchmark, and its heavier queries are what a column store exists for.",
     ],
   },
 ];

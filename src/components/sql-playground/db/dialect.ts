@@ -96,13 +96,6 @@ const RULES: Rule[] = [
     message:
       "DuckDB list functions are not in PostgreSQL. The closest equivalents are array_agg and the array_* functions.",
   },
-  {
-    unsupportedOn: "postgres",
-    pattern: /\bCALL\s+dbgen\b/gi,
-    construct: "CALL dbgen",
-    message: "dbgen comes from DuckDB's tpch extension and only exists on DuckDB.",
-  },
-
   // ---- PostgreSQL-only, so they fail on DuckDB ----
   {
     unsupportedOn: "duckdb",

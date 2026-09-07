@@ -67,8 +67,7 @@ interface TableData {
  *
  * The CSV-backed sets are fetched straight from the same files the loader uses,
  * so exporting one does not require booting an engine. Cycle Depot is generated
- * in JavaScript. TPC-H only exists inside DuckDB, so it is read back out of a
- * live session.
+ * in JavaScript. A blank workspace can be read back out of a live session.
  */
 async function collectTables(
   dataset: DatasetDef,
@@ -101,7 +100,7 @@ async function collectTables(
     return collectFromGenerated();
   }
 
-  // TPC-H: generated inside DuckDB, so read it back from the engine.
+  // A blank workspace has no source files, so read it back from DuckDB.
   onProgress({ fraction: 0.05, label: "starting DuckDB" });
   return collectFromEngine(dataset, "duckdb", onProgress);
 }

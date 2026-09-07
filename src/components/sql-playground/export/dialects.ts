@@ -181,10 +181,8 @@ export function buildSchemaSql(source: SchemaSource, dialect: DialectId): string
   for (const table of source.tables) {
     const cols = table.columns.map((c) => columnLine(c, dialect));
 
-    // A key is only usable if every column it names survived curation. Some
-    // upstream primary keys point at columns that were deliberately dropped
-    // (AdventureWorks' hierarchyid columns, for one), and an inline PRIMARY KEY
-    // naming a missing column makes the whole CREATE TABLE fail.
+    // A key is only usable if every column it names survived curation. An inline
+    // PRIMARY KEY naming a missing column makes the whole CREATE TABLE fail.
     const present = new Set(table.columns.map((c) => c.name));
     const key = table.primaryKey.filter((c) => present.has(c));
     if (key.length && key.length === table.primaryKey.length) {
