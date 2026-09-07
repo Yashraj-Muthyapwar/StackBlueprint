@@ -27,9 +27,9 @@ export interface DatasetDef {
   engines: Engine[];
   /** How the data gets into the engine. */
   source:
-    | { kind: "generated" }
-    | { kind: "blank" }
-    | { kind: "csv"; manifest: DatasetManifest };
+  | { kind: "generated" }
+  | { kind: "blank" }
+  | { kind: "csv"; manifest: DatasetManifest };
   /** Compressed bytes fetched on first use. 0 means nothing is downloaded. */
   bytes: number;
   /** Headline numbers for the picker. */
@@ -43,40 +43,6 @@ export interface DatasetDef {
 const sumRows = (m: DatasetManifest) => m.tables.reduce((total, t) => total + t.rows, 0);
 
 export const DATASETS: DatasetDef[] = [
-  {
-    id: "sql_lab",
-    name: "ShopFlow SQL Lab",
-    tagline: "Synthetic online-store operations for SQL engineering.",
-    about:
-      "A deterministic, production-style store database for practicing schema design, constraints, indexes, plans, transactions, views, and recursive SQL.",
-    difficulty: "advanced",
-    engines: ["postgres", "duckdb"],
-    source: { kind: "csv", manifest: SQL_LAB_MANIFEST },
-    bytes: SQL_LAB_MANIFEST.bytes,
-    stats: { tables: SQL_LAB_MANIFEST.tables.length, rows: sumRows(SQL_LAB_MANIFEST) },
-    credit: { label: "Generated for the SQL Playground", url: "" },
-    caveats: [
-      "Synthetic, deterministic data (seed 42). Both engines share the schema; inspect plans and behavior instead of assuming they match.",
-    ],
-  },
-  {
-    id: "cosmetics_48h",
-    name: "eCommerce Events History in Cosmetics Shop",
-    tagline: "48-hour January 2020 slice: 184k real store events.",
-    about: "184,099 Cosmetics Shop events from a 48-hour January 2020 Kaggle slice.",
-    difficulty: "intermediate",
-    engines: ["postgres", "duckdb"],
-    source: { kind: "csv", manifest: COSMETICS_48H_MANIFEST },
-    bytes: COSMETICS_48H_MANIFEST.bytes,
-    stats: { tables: COSMETICS_48H_MANIFEST.tables.length, rows: sumRows(COSMETICS_48H_MANIFEST) },
-    credit: {
-      label: "Kaggle: eCommerce Events History in Cosmetics Shop",
-      url: "https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop",
-    },
-    caveats: [
-      "48-hour UTC slice: 2020-01-01 00:00 to 2020-01-03 00:00; not the full Kaggle dataset.",
-    ],
-  },
   {
     id: "my-workspace",
     name: "My Workspace",
@@ -160,6 +126,40 @@ export const DATASETS: DatasetDef[] = [
       "Complete public release: all nine source tables are included, including geolocation, with the original anonymized hash identifiers preserved.",
     ],
   },
+  {
+    id: "cosmetics_48h",
+    name: "eCommerce Events History in Cosmetics Shop",
+    tagline: "48-hour January 2020 slice: 184k real store events.",
+    about: "184,099 Cosmetics Shop events from a 48-hour January 2020 Kaggle slice.",
+    difficulty: "intermediate",
+    engines: ["postgres", "duckdb"],
+    source: { kind: "csv", manifest: COSMETICS_48H_MANIFEST },
+    bytes: COSMETICS_48H_MANIFEST.bytes,
+    stats: { tables: COSMETICS_48H_MANIFEST.tables.length, rows: sumRows(COSMETICS_48H_MANIFEST) },
+    credit: {
+      label: "Kaggle: eCommerce Events History in Cosmetics Shop",
+      url: "https://www.kaggle.com/datasets/mkechinov/ecommerce-events-history-in-cosmetics-shop",
+    },
+    caveats: [
+      "48-hour UTC slice: 2020-01-01 00:00 to 2020-01-03 00:00; not the full Kaggle dataset.",
+    ],
+  },
+  {
+    id: "sql_lab",
+    name: "ShopFlow SQL Lab",
+    tagline: "Synthetic online-store operations for SQL engineering.",
+    about:
+      "A deterministic, production-style store database for practicing schema design, constraints, indexes, plans, transactions, views, and recursive SQL.",
+    difficulty: "advanced",
+    engines: ["postgres", "duckdb"],
+    source: { kind: "csv", manifest: SQL_LAB_MANIFEST },
+    bytes: SQL_LAB_MANIFEST.bytes,
+    stats: { tables: SQL_LAB_MANIFEST.tables.length, rows: sumRows(SQL_LAB_MANIFEST) },
+    credit: { label: "Generated for the SQL Playground", url: "" },
+    caveats: [
+      "Synthetic, deterministic data (seed 42). Both engines share the schema; inspect plans and behavior instead of assuming they match.",
+    ],
+  }
 ];
 
 export const DEFAULT_DATASET: DatasetId = "cycledepot";
