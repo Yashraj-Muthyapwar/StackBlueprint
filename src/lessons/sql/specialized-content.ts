@@ -3832,6 +3832,72 @@ const conversionsQuiz: LessonContent = {
 };
 
 // =============================================================
+// DATE & TIME
+// =============================================================
+const timeZonesPrecision: LessonContent = {
+  slug: "time-zones-precision",
+  title: "Current Time & Time Zones",
+  subtitle: "NOW / TIMESTAMPTZ / AT TIME ZONE",
+  sections: [],
+};
+
+const extractionFormatting: LessonContent = {
+  slug: "extraction-formatting",
+  title: "Extraction & Formatting",
+  subtitle: "EXTRACT / TO_CHAR",
+  sections: [],
+};
+
+const dateTruncation: LessonContent = {
+  slug: "date-truncation",
+  title: "Truncation & Bucketing",
+  subtitle: "DATE_TRUNC",
+  sections: [],
+};
+
+const dateArithmetic: LessonContent = {
+  slug: "date-arithmetic",
+  title: "Date Arithmetic & DATEDIFF",
+  subtitle: "DATEDIFF / AGE",
+  sections: [],
+};
+
+const intervalsLookbacks: LessonContent = {
+  slug: "intervals-lookbacks",
+  title: "Intervals & Lookbacks",
+  subtitle: "INTERVAL",
+  sections: [],
+};
+
+const calendarPeriodAnalysis: LessonContent = {
+  slug: "calendar-period-analysis",
+  title: "Calendar & Period Analysis",
+  subtitle: "week / quarter / weekday, period boundaries",
+  sections: [],
+};
+
+const overlappingRanges: LessonContent = {
+  slug: "overlapping-ranges",
+  title: "Overlapping Ranges",
+  subtitle: "OVERLAPS / Ranges",
+  sections: [],
+};
+
+const rollingTimeWindows: LessonContent = {
+  slug: "rolling-time-windows",
+  title: "Rolling Time Windows",
+  subtitle: "time buckets, fixed-width windows",
+  sections: [],
+};
+
+const dateTimeQuiz: LessonContent = {
+  slug: "datetime-quiz",
+  title: "Date & Time: Final Quiz",
+  subtitle: "Test your knowledge on Date & Time functions.",
+  sections: [],
+};
+
+// =============================================================
 // TOPIC INDEX
 // =============================================================
 
@@ -3853,6 +3919,8 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
       stringFunctionsQuiz,
     ],
   },
+
+
   "numeric-functions": {
     slug: "numeric-functions",
     title: "Numeric Functions",
@@ -3874,8 +3942,8 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     title: "Date & Time",
     category: "Specialized Data Handling",
     iconKey: "terminal",
-    blurb: "Time zones, date arithmetic, DATEDIFF / DATE_TRUNC, and interval handling.",
-    lessons: [],
+    blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
+    lessons: [timeZonesPrecision, extractionFormatting, dateTruncation, dateArithmetic, intervalsLookbacks, calendarPeriodAnalysis, overlappingRanges, rollingTimeWindows, dateTimeQuiz],
   },
   conversions: {
     slug: "conversions",
