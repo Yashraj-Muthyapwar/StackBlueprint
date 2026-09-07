@@ -102,6 +102,41 @@ WHERE re.position = 1
 GROUP BY r.year, d.forename, d.surname
 ORDER BY r.year DESC, wins DESC, driver;`,
       },
+      {
+        title: "Championship position by season",
+        note: "RANK() gives a points-based rank; Ergast's supplied position retains the official tie-break result",
+        sql: `WITH final_rounds AS (
+  SELECT year,
+         MAX(round) AS final_round
+  FROM races
+  WHERE year >= 2014
+  GROUP BY year
+),
+final_standings AS (
+  SELECT r.year,
+         ds.driver_id,
+         ds.position AS official_position,
+         ds.points,
+         ds.wins
+  FROM driver_standings ds
+  JOIN races r ON r.race_id = ds.race_id
+  JOIN final_rounds fr
+    ON fr.year = r.year
+   AND fr.final_round = r.round
+)
+SELECT fs.year,
+       d.forename || ' ' || d.surname AS driver,
+       fs.official_position,
+       fs.points,
+       fs.wins,
+       RANK() OVER (
+         PARTITION BY fs.year
+         ORDER BY fs.points DESC
+       ) AS points_rank
+FROM final_standings fs
+JOIN drivers d ON d.driver_id = fs.driver_id
+ORDER BY fs.year DESC, points_rank, driver;`,
+      },
     ],
   },
   {
@@ -159,6 +194,37 @@ WHERE r.year = 2024
   AND re.position IS NOT NULL
 GROUP BY c.name
 ORDER BY avg_finish_position, constructor;`,
+      },
+      {
+        title: "Average qualifying-to-finish gain by driver",
+        note: "Compare qualifying position with the classified finish, then rank drivers within each season",
+        sql: `WITH driver_season_gains AS (
+  SELECT r.year,
+         d.driver_id,
+         d.forename || ' ' || d.surname AS driver,
+         COUNT(*) AS classified_starts,
+         ROUND(AVG(q.position - re.position), 2) AS avg_places_gained
+  FROM qualifying q
+  JOIN results re
+    ON re.race_id = q.race_id
+   AND re.driver_id = q.driver_id
+  JOIN races r ON r.race_id = re.race_id
+  JOIN drivers d ON d.driver_id = re.driver_id
+  WHERE r.year >= 2014
+    AND q.position IS NOT NULL
+    AND re.position IS NOT NULL
+  GROUP BY r.year, d.driver_id, d.forename, d.surname
+)
+SELECT year,
+       driver,
+       classified_starts,
+       avg_places_gained,
+       RANK() OVER (
+         PARTITION BY year
+         ORDER BY avg_places_gained DESC
+       ) AS gain_rank
+FROM driver_season_gains
+ORDER BY year DESC, gain_rank, driver;`,
       },
     ],
   },
@@ -218,12 +284,12 @@ LIMIT 30;`,
     ],
   },
   {
-    group: "Plan-watching",
-    blurb: "Larger joins and windows make the plan and clause trace useful.",
+    group: "Analytical windows",
+    blurb: "Rank, compare and accumulate values while retaining each driver's race-by-race detail.",
     items: [
       {
         title: "Constructor points by season",
-        note: "Aggregate 26,000 race results, then rank each season",
+        note: "Aggregate 26,000 race results, then rank constructors within each season",
         sql: `WITH constructor_seasons AS (
   SELECT r.year,
          c.name AS constructor,
@@ -241,6 +307,80 @@ SELECT year,
 FROM constructor_seasons
 ORDER BY year DESC, championship_rank, constructor;`,
       },
+      {
+        title: "A driver's previous race position",
+        note: "LAG() reaches to the preceding 2024 result; classification order keeps non-finishers in sequence",
+        sql: `WITH driver_races AS (
+  SELECT r.round,
+         r.name AS grand_prix,
+         r.date,
+         re.position AS finish_position,
+         re.position_order AS classification_order
+  FROM results re
+  JOIN races r ON r.race_id = re.race_id
+  JOIN drivers d ON d.driver_id = re.driver_id
+  WHERE r.year = 2024
+    AND d.driver_ref = 'max_verstappen'
+)
+SELECT round,
+       grand_prix,
+       date,
+       finish_position,
+       classification_order,
+       LAG(classification_order) OVER (ORDER BY round) AS previous_classification_order,
+       classification_order
+         - LAG(classification_order) OVER (ORDER BY round) AS change_from_previous_race
+FROM driver_races
+ORDER BY round;`,
+      },
+      {
+        title: "Cumulative championship points",
+        note: "Union sprint and Grand Prix scores, then calculate each driver's running 2024 total",
+        sql: `WITH scored_events AS (
+  SELECT r.year,
+         r.round,
+         1 AS event_order,
+         'Grand Prix' AS event_type,
+         r.name AS event,
+         re.driver_id,
+         re.points
+  FROM results re
+  JOIN races r ON r.race_id = re.race_id
+  WHERE r.year = 2024
+
+  UNION ALL
+
+  SELECT r.year,
+         r.round,
+         0 AS event_order,
+         'Sprint' AS event_type,
+         r.name || ' Sprint' AS event,
+         sr.driver_id,
+         sr.points
+  FROM sprint_results sr
+  JOIN races r ON r.race_id = sr.race_id
+  WHERE r.year = 2024
+)
+SELECT d.forename || ' ' || d.surname AS driver,
+       round,
+       event_type,
+       event,
+       points AS event_points,
+       SUM(points) OVER (
+         PARTITION BY se.driver_id, se.year
+         ORDER BY se.round, se.event_order
+         ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+       ) AS cumulative_points
+FROM scored_events se
+JOIN drivers d ON d.driver_id = se.driver_id
+ORDER BY driver, round, event_order;`,
+      },
+    ],
+  },
+  {
+    group: "Plan-watching",
+    blurb: "Open Explain to see how larger joins, aggregations and filters shape the execution plan.",
+    items: [
       {
         title: "A driver's season-by-season points",
         note: "Open the Plan tab to inspect the join and aggregation",

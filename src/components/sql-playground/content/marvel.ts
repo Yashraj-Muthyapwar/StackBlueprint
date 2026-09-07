@@ -90,10 +90,40 @@ JOIN screen_titles t
  AND t.title_position = e.title_position
 ORDER BY t.catalog, t.title_position, e.link_position;`,
       },
+      {
+        title: "Character appearances by title",
+        note: "Join each supplied cast row to its title through the composite catalog and position key.",
+        sql: `SELECT c.name AS cast_member,
+       t.catalog,
+       t.name AS title,
+       t.released,
+       c.mainseries
+FROM screen_title_characters c
+JOIN screen_titles t
+  ON t.catalog = c.catalog
+ AND t.title_position = c.title_position
+ORDER BY c.name, t.catalog, t.title_position
+LIMIT 100;`,
+      },
+      {
+        title: "Characters in multiple titles",
+        note: "COUNT(DISTINCT ...) prevents repeated cast rows from inflating a title count.",
+        sql: `SELECT c.name AS cast_member,
+       COUNT(DISTINCT CONCAT(c.catalog, ':', c.title_position)) AS titles,
+       COUNT(DISTINCT c.catalog) AS catalogs
+FROM screen_title_characters c
+JOIN screen_titles t
+  ON t.catalog = c.catalog
+ AND t.title_position = c.title_position
+GROUP BY c.name
+HAVING COUNT(DISTINCT CONCAT(c.catalog, ':', c.title_position)) > 1
+ORDER BY titles DESC, cast_member
+LIMIT 30;`,
+      },
     ],
   },
   {
-    group: "Network analysis",
+    group: "Character relationships",
     blurb: "Use a union and aggregation to calculate degree from the raw link endpoints.",
     items: [
       {
@@ -137,6 +167,50 @@ FROM characters
 WHERE comic_appearances >= 100
   AND story_appearances > 0
 ORDER BY comic_to_story_ratio DESC, name
+LIMIT 30;`,
+      },
+      {
+        title: "Who connects Captain America and Iron Man?",
+        note: "Turn each comic link into two neighbor rows, then self-join them to find shared connections.",
+        sql: `WITH comic_neighbors AS (
+  SELECT source_character_id AS character_id,
+         target_character_id AS neighbor_id,
+         coappearance_count
+  FROM character_links
+  WHERE network = 'comics'
+
+  UNION ALL
+
+  SELECT target_character_id AS character_id,
+         source_character_id AS neighbor_id,
+         coappearance_count
+  FROM character_links
+  WHERE network = 'comics'
+),
+selected_characters AS (
+  SELECT character_id, name
+  FROM characters
+  WHERE name IN ('Captain America', 'Iron Man')
+),
+shared_neighbors AS (
+  SELECT captain.neighbor_id AS character_id,
+         captain.coappearance_count AS appearances_with_captain,
+         iron_man.coappearance_count AS appearances_with_iron_man
+  FROM comic_neighbors captain
+  JOIN comic_neighbors iron_man ON iron_man.neighbor_id = captain.neighbor_id
+  JOIN selected_characters captain_character
+    ON captain_character.character_id = captain.character_id
+  JOIN selected_characters iron_man_character
+    ON iron_man_character.character_id = iron_man.character_id
+  WHERE captain_character.name = 'Captain America'
+    AND iron_man_character.name = 'Iron Man'
+)
+SELECT c.name AS shared_character,
+       appearances_with_captain,
+       appearances_with_iron_man
+FROM shared_neighbors s
+JOIN characters c ON c.character_id = s.character_id
+ORDER BY appearances_with_captain + appearances_with_iron_man DESC, shared_character
 LIMIT 30;`,
       },
     ],

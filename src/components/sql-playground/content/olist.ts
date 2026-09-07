@@ -30,6 +30,49 @@ GROUP BY 1
 ORDER BY 1;`,
       },
       {
+        title: "Orders and their items",
+        note: "One order can have many item rows: the core one-to-many relationship.",
+        sql: `SELECT o.order_id,
+       o.order_status,
+       o.order_purchase_timestamp,
+       oi.order_item_id,
+       oi.product_id,
+       oi.price,
+       oi.freight_value
+FROM orders o
+JOIN order_items oi ON oi.order_id = o.order_id
+ORDER BY o.order_purchase_timestamp, o.order_id, oi.order_item_id
+LIMIT 50;`,
+      },
+      {
+        title: "Orders without reviews",
+        note: "A LEFT JOIN plus IS NULL finds orders with no matching review.",
+        sql: `SELECT o.order_id,
+       o.order_status,
+       o.order_purchase_timestamp,
+       c.customer_state
+FROM orders o
+JOIN customers c ON c.customer_id = o.customer_id
+LEFT JOIN order_reviews r ON r.order_id = o.order_id
+WHERE r.order_id IS NULL
+ORDER BY o.order_purchase_timestamp DESC
+LIMIT 50;`,
+      },
+      {
+        title: "High-value customers",
+        note: "Group a person's orders by customer_unique_id, then filter totals with HAVING.",
+        sql: `SELECT c.customer_unique_id,
+       COUNT(DISTINCT o.order_id) AS orders,
+       ROUND(SUM(oi.price + oi.freight_value), 2) AS total_order_value
+FROM customers c
+JOIN orders o ON o.customer_id = c.customer_id
+JOIN order_items oi ON oi.order_id = o.order_id
+GROUP BY c.customer_unique_id
+HAVING SUM(oi.price + oi.freight_value) >= 1000
+ORDER BY total_order_value DESC
+LIMIT 30;`,
+      },
+      {
         title: "Categories in English",
         note: "A lookup table that exists for one reason",
         sql: `SELECT t.product_category_name_english AS category,
