@@ -214,9 +214,21 @@ const sections: Section[] = [
       {
         slug: "datetime-functions",
         title: "Date & Time",
-        blurb: "Time zones, date arithmetic, DATEDIFF / DATE_TRUNC, and interval handling.",
+        blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
         icon: Calendar,
-        modules: ["Time zones", "Date arithmetic", "DATEDIFF / TRUNC", "Intervals"],
+        modules: [
+          "Current Time & Time Zones",
+          "Extraction & Formatting",
+          "Truncation & Bucketing",
+          "Date Arithmetic & DATEDIFF",
+          "Intervals & Lookbacks",
+          "Calendar & Period Analysis",
+          "Overlapping Ranges",
+          "Rolling Time Windows",
+          "Date & Time: Final Quiz",
+        ],
+        unlocked: true,
+        routeBase: "specialized",
       },
       {
         slug: "conversions",
