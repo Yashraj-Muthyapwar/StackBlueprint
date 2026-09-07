@@ -843,6 +843,13 @@ export const roadmap: RoadmapCategory[] = [
             ],
           },
           {
+            title: "Date & Time",
+            slug: "datetime-functions",
+            path: "/sql/specialized/datetime-functions",
+            blurb: "Time zones, date arithmetic, DATEDIFF / DATE_TRUNC, and interval handling.",
+            lessons: [],
+          },
+          {
             title: "Conversions",
             slug: "conversions",
             path: "/sql/specialized/conversions",
