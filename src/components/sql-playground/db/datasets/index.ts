@@ -122,8 +122,7 @@ export const DATASETS: DatasetDef[] = [
       url: "https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce",
     },
     caveats: [
-      "The 1M-row geolocation table is left out: it was over half the download and duplicates what the customer and seller tables already say.",
-      "The opaque 32-character hash keys are mapped to integers. Every row, column and relationship is unchanged, but the ids will not match a Kaggle notebook.",
+      "Complete public release: all nine source tables are included, including geolocation, with the original anonymized hash identifiers preserved.",
     ],
   },
   {
