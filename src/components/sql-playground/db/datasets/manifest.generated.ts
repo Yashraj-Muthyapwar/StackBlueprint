@@ -325,6 +325,97 @@ export const ERGAST_MANIFEST: DatasetManifest = {
   ],
 };
 
+export const MARVEL_MANIFEST: DatasetManifest = {
+  id: "marvel",
+  schemas: [],
+  bytes: 639875,
+  tables: [
+    {
+      schema: "public",
+      name: "characters",
+      file: "characters.csv.gz",
+      rows: 1491,
+      bytes: 18235,
+      primaryKey: ["character_id"],
+      columns: [
+        { name: "character_id", type: "INTEGER", notNull: true },
+        { name: "name", type: "TEXT", notNull: true },
+        { name: "comic_appearances", type: "INTEGER", notNull: true },
+        { name: "series_appearances", type: "INTEGER", notNull: true },
+        { name: "story_appearances", type: "INTEGER", notNull: true },
+      ],
+    },
+    {
+      schema: "public",
+      name: "character_links",
+      file: "character_links.csv.gz",
+      rows: 205607,
+      bytes: 615535,
+      primaryKey: ["network","source_character_id","target_character_id"],
+      columns: [
+        { name: "network", type: "VARCHAR(16)", notNull: true },
+        { name: "source_character_id", type: "INTEGER", notNull: true },
+        { name: "target_character_id", type: "INTEGER", notNull: true },
+        { name: "coappearance_count", type: "INTEGER", notNull: true },
+      ],
+    },
+    {
+      schema: "public",
+      name: "screen_titles",
+      file: "screen_titles.csv.gz",
+      rows: 46,
+      bytes: 1264,
+      primaryKey: ["catalog","title_position"],
+      columns: [
+        { name: "catalog", type: "VARCHAR(16)", notNull: true },
+        { name: "title_position", type: "INTEGER", notNull: true },
+        { name: "name", type: "TEXT", notNull: true },
+        { name: "wiki", type: "TEXT" },
+        { name: "series", type: "TEXT" },
+        { name: "phase", type: "INTEGER" },
+        { name: "season", type: "INTEGER" },
+        { name: "released", type: "VARCHAR(32)" },
+        { name: "poster", type: "TEXT" },
+      ],
+    },
+    {
+      schema: "public",
+      name: "screen_title_characters",
+      file: "screen_title_characters.csv.gz",
+      rows: 562,
+      bytes: 4538,
+      primaryKey: ["catalog","title_position","character_position"],
+      columns: [
+        { name: "catalog", type: "VARCHAR(16)", notNull: true },
+        { name: "title_position", type: "INTEGER", notNull: true },
+        { name: "character_position", type: "INTEGER", notNull: true },
+        { name: "name", type: "TEXT", notNull: true },
+        { name: "mainseries", type: "TEXT" },
+      ],
+    },
+    {
+      schema: "public",
+      name: "end_credit_links",
+      file: "end_credit_links.csv.gz",
+      rows: 21,
+      bytes: 303,
+      primaryKey: ["catalog","title_position","link_position"],
+      columns: [
+        { name: "catalog", type: "VARCHAR(16)", notNull: true },
+        { name: "title_position", type: "INTEGER", notNull: true },
+        { name: "link_position", type: "INTEGER", notNull: true },
+        { name: "linked_title_name", type: "TEXT", notNull: true },
+      ],
+    },
+  ],
+  foreignKeys: [
+    { fromTable: "public.character_links", fromColumns: ["source_character_id"], toTable: "public.characters", toColumns: ["character_id"] },
+    { fromTable: "public.character_links", fromColumns: ["target_character_id"], toTable: "public.characters", toColumns: ["character_id"] },
+    { fromTable: "public.screen_title_characters", fromColumns: ["catalog","title_position"], toTable: "public.screen_titles", toColumns: ["catalog","title_position"] },
+    { fromTable: "public.end_credit_links", fromColumns: ["catalog","title_position"], toTable: "public.screen_titles", toColumns: ["catalog","title_position"] },
+  ],
+};
+
 export const OLIST_MANIFEST: DatasetManifest = {
   id: "olist",
   schemas: [],

@@ -4,11 +4,13 @@ import { forEngine, type ExampleGroup } from "./types";
 
 import { CYCLE_DEPOT_EXAMPLES } from "./cycledepot";
 import { ERGAST_EXAMPLES } from "./ergast";
+import { MARVEL_EXAMPLES } from "./marvel";
 import { OLIST_EXAMPLES } from "./olist";
 
 const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
   cycledepot: CYCLE_DEPOT_EXAMPLES,
   ergast: ERGAST_EXAMPLES,
+  marvel: MARVEL_EXAMPLES,
   olist: OLIST_EXAMPLES,
 };
 

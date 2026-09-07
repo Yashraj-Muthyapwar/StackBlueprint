@@ -1,6 +1,7 @@
 import type { Engine } from "../db-client";
 import {
   ERGAST_MANIFEST,
+  MARVEL_MANIFEST,
   OLIST_MANIFEST,
   type DatasetManifest,
   type ManifestColumn,
@@ -8,7 +9,7 @@ import {
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cycledepot" | "ergast" | "olist" | "my-workspace";
+export type DatasetId = "cycledepot" | "ergast" | "marvel" | "olist" | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -86,6 +87,22 @@ export const DATASETS: DatasetDef[] = [
     },
     caveats: [
       "The supplied snapshot ends with the 2024 season. Identifiers are normalized to lower snake_case for portable, unquoted SQL in both engines.",
+    ],
+  },
+  {
+    id: "marvel",
+    name: "Marvel Character Networks",
+    tagline: "1,491 characters and 205k supplied co-appearance links.",
+    about:
+      "A supplied historical Marvel visualization snapshot: character co-appearance networks across comics, series and stories, plus MCU, Netflix and X-Men screen-title casts. The original JSON files ship alongside SQL-ready projections of their arrays.",
+    difficulty: "intermediate",
+    engines: ["postgres", "duckdb"],
+    source: { kind: "csv", manifest: MARVEL_MANIFEST },
+    bytes: MARVEL_MANIFEST.bytes,
+    stats: { tables: MARVEL_MANIFEST.tables.length, rows: sumRows(MARVEL_MANIFEST) },
+    credit: { label: "Supplied Marvel data snapshot", url: "" },
+    caveats: [
+      "The snapshot has no publisher metadata in its supplied folder. Source JSON is preserved unchanged under the deployed dataset; SQL tables only flatten its arrays and add positional keys.",
     ],
   },
   {
