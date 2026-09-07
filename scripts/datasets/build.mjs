@@ -2,7 +2,7 @@
 /**
  * Builds the SQL Flow Lab datasets.
  *
- *   node scripts/datasets/build.mjs [adventureworks|bikestore|olist]
+ *   node scripts/datasets/build.mjs [olist|ergast] [--ergast-source=/path/to/ergast_2024]
  *
  * Downloads each upstream source (cached under scripts/datasets/.cache), strips
  * the columns that cost bandwidth without teaching SQL, and writes:
@@ -12,14 +12,12 @@
  *
  * The output is committed, so building the app never needs the network.
  */
-import { buildAdventureWorks } from "./adventureworks.mjs";
-import { buildBikeStore } from "./bikestore.mjs";
+import { buildErgast } from "./ergast.mjs";
 import { buildOlist } from "./olist.mjs";
 import { writeSource, mb } from "./lib.mjs";
 
 const BUILDERS = {
-  adventureworks: buildAdventureWorks,
-  bikestore: buildBikeStore,
+  ergast: buildErgast,
   olist: buildOlist,
 };
 
@@ -90,9 +88,12 @@ const args = process.argv.slice(2);
 const olistSource = args
   .find((a) => a.startsWith("--olist-source="))
   ?.slice("--olist-source=".length);
+const ergastSource = args
+  .find((a) => a.startsWith("--ergast-source="))
+  ?.slice("--ergast-source=".length);
 const requested = args.filter((a) => !a.startsWith("--"));
 const ids = requested.length ? requested : Object.keys(BUILDERS);
-const OPTIONS = { olist: { sourceDir: olistSource } };
+const OPTIONS = { ergast: { sourceDir: ergastSource }, olist: { sourceDir: olistSource } };
 
 for (const id of ids) {
   if (!BUILDERS[id]) {

@@ -50,9 +50,8 @@ export const mb = (bytes) =>
 /**
  * Quote a field for RFC 4180 output.
  *
- * NUL bytes are stripped: they turn up inside AdventureWorks hierarchyid
- * columns, and PostgreSQL text cannot store them at all ("invalid byte
- * sequence for encoding UTF8: 0x00").
+ * NUL bytes are stripped because PostgreSQL text cannot store them at all
+ * ("invalid byte sequence for encoding UTF8: 0x00").
  */
 export function csvField(value) {
   if (value === null || value === undefined) return "";
@@ -67,9 +66,8 @@ export function toCsv(header, rows) {
 }
 
 /**
- * Parse a delimited file where fields are never quoted, which is the shape of
- * the AdventureWorks exports. `rowSep` handles the "+|"/"&|" variant that
- * Microsoft uses for tables whose text contains tabs or newlines.
+ * Parse a delimited file where fields are never quoted. `rowSep` handles
+ * sources that use a distinct row separator when text contains delimiters.
  */
 export function parseDelimited(text, { fieldSep, rowSep }) {
   const rows = [];
@@ -83,13 +81,10 @@ export function parseDelimited(text, { fieldSep, rowSep }) {
 }
 
 /**
- * Tab-delimited AdventureWorks files with unquoted free text: a few of them
- * (ProductReview, for one) contain raw newlines inside a comment, so a plain
- * split on "\n" tears one review into several broken rows.
+ * Tab-delimited exports with unquoted free text can contain raw newlines in a
+ * field, so a plain split on "\n" can tear one record into several rows.
  *
- * Rows are instead accumulated until the tab count completes a record. That is
- * reliable here because the exports switch to the "+|" format whenever a field
- * can contain a tab, so tab count is an exact record delimiter.
+ * Rows are instead accumulated until the tab count completes a record.
  */
 export function parseTabRows(text, expectedFields) {
   const rows = [];
@@ -124,7 +119,7 @@ export function parseTabRows(text, expectedFields) {
   return rows;
 }
 
-/** Minimal RFC 4180 reader, for the Olist and Bike Store sources. */
+/** Minimal RFC 4180 reader for source CSV files. */
 export function parseCsv(text) {
   const rows = [];
   let row = [];
@@ -219,7 +214,7 @@ export async function readCached(filename, encoding = "utf8") {
   return readFile(path.join(CACHE, filename), encoding);
 }
 
-/** Normalise the timestamps AdventureWorks exports: "2019-04-30 00:00:00.000". */
+/** Normalise timestamps such as "2019-04-30 00:00:00.000". */
 export function cleanTimestamp(value) {
   if (!value) return "";
   return value.replace(/\.000$/, "").replace(/ 00:00:00$/, "");
