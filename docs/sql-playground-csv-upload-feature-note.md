@@ -11,15 +11,15 @@ This specification outlines the architecture for allowing learners to load a loc
 flowchart TD
     %% User Interaction
     subgraph UI["SQL Playground UI"]
-        Sidebar[Sidebar Dropzone]
-        Dialog[Import Preview Dialog]
+        Sidebar["Sidebar Dropzone"]
+        Dialog["Import Preview Dialog"]
     end
 
     %% DuckDB Processing
     subgraph DB["DuckDB-WASM Engine"]
-        VFS[Virtual File System]
-        Infer[read_csv_auto() / LIMIT 20]
-        Table[Physical Table<br/>uploads.table_name]
+        VFS["Virtual File System"]
+        Infer["read_csv_auto() / LIMIT 20"]
+        Table["Physical Table<br/>uploads.table_name"]
     end
 
     %% Flow
