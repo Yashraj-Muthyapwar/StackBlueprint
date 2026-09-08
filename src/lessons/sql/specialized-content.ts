@@ -3837,56 +3837,56 @@ const conversionsQuiz: LessonContent = {
 const timeZonesPrecision: LessonContent = {
   slug: "time-zones-precision",
   title: "Current Time & Time Zones",
-  subtitle: "NOW / TIMESTAMPTZ / AT TIME ZONE",
+  subtitle: "NOW / TIMESTAMPTZ / AT TIME ZONE — plus DST",
   sections: [],
 };
 
 const extractionFormatting: LessonContent = {
   slug: "extraction-formatting",
   title: "Extraction & Formatting",
-  subtitle: "EXTRACT / TO_CHAR",
+  subtitle: "EXTRACT / DATE_PART / TO_CHAR / EXTRACT(EPOCH …) / strftime",
   sections: [],
 };
 
 const dateTruncation: LessonContent = {
   slug: "date-truncation",
   title: "Truncation & Bucketing",
-  subtitle: "DATE_TRUNC",
+  subtitle: "DATE_TRUNC / DATE_BIN / time_bucket",
   sections: [],
 };
 
 const dateArithmetic: LessonContent = {
   slug: "date-arithmetic",
   title: "Date Arithmetic & DATEDIFF",
-  subtitle: "DATEDIFF / AGE",
+  subtitle: "DATEDIFF / AGE / date − date / EXTRACT(EPOCH FROM b−a)",
   sections: [],
 };
 
 const intervalsLookbacks: LessonContent = {
   slug: "intervals-lookbacks",
-  title: "Intervals & Lookbacks",
-  subtitle: "INTERVAL",
+  title: "Intervals, Lookbacks & Sargable Filters",
+  subtitle: "INTERVAL / half-open ranges / anchor to MAX(ts) / index-safe predicates",
   sections: [],
 };
 
 const calendarPeriodAnalysis: LessonContent = {
   slug: "calendar-period-analysis",
   title: "Calendar & Period Analysis",
-  subtitle: "week / quarter / weekday, period boundaries",
+  subtitle: "ISO week / quarter / weekday / period boundaries",
   sections: [],
 };
 
 const overlappingRanges: LessonContent = {
   slug: "overlapping-ranges",
   title: "Overlapping Ranges",
-  subtitle: "OVERLAPS / Ranges",
+  subtitle: "OVERLAPS / range types / && / @> / EXCLUDE USING gist",
   sections: [],
 };
 
-const rollingTimeWindows: LessonContent = {
-  slug: "rolling-time-windows",
-  title: "Rolling Time Windows",
-  subtitle: "time buckets, fixed-width windows",
+const dateSpinesGapFilling: LessonContent = {
+  slug: "date-spines-gap-filling",
+  title: "Date Spines & Gap Filling",
+  subtitle: "GENERATE_SERIES / LEFT JOIN date axis / dim_date / business-day counting",
   sections: [],
 };
 
@@ -3943,7 +3943,7 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Specialized Data Handling",
     iconKey: "terminal",
     blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
-    lessons: [timeZonesPrecision, extractionFormatting, dateTruncation, dateArithmetic, intervalsLookbacks, calendarPeriodAnalysis, overlappingRanges, rollingTimeWindows, dateTimeQuiz],
+    lessons: [timeZonesPrecision, extractionFormatting, dateTruncation, dateArithmetic, intervalsLookbacks, calendarPeriodAnalysis, overlappingRanges, dateSpinesGapFilling, dateTimeQuiz],
   },
   conversions: {
     slug: "conversions",
