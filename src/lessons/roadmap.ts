@@ -873,7 +873,7 @@ export const roadmap: RoadmapCategory[] = [
                 icon: Calendar,
               },
               {
-                title: "Intervals & Lookbacks",
+                title: "Intervals, Lookbacks & Sargable Filters",
                 slug: "intervals-lookbacks",
                 path: "/sql/specialized/datetime-functions/intervals-lookbacks",
                 icon: Calendar,
@@ -891,9 +891,9 @@ export const roadmap: RoadmapCategory[] = [
                 icon: Calendar,
               },
               {
-                title: "Rolling Time Windows",
-                slug: "rolling-time-windows",
-                path: "/sql/specialized/datetime-functions/rolling-time-windows",
+                title: "Date Spines & Gap Filling",
+                slug: "date-spines-gap-filling",
+                path: "/sql/specialized/datetime-functions/date-spines-gap-filling",
                 icon: Calendar,
               },
               {
