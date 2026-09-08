@@ -444,6 +444,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use DATE_TRUNC for day and month, then DATE_BIN with a 1-hour interval and 2000-01-01 origin.
 -- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
   },
+  "olist-measure-delivery-days": {
+    id: "olist-measure-delivery-days",
+    title: "Measure Olist delivery days two ways",
+    prompt:
+      "For delivered orders, return order_id, order_purchase_timestamp, order_delivered_customer_date, calendar_delivery_days, and elapsed_delivery_days. Use order_delivered_customer_date::date - order_purchase_timestamp::date, and ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-measure-delivery-days",
+    starterSql: `-- Olist delivery duration measures.
+-- Return purchase and delivery timestamps plus calendar_delivery_days and elapsed_delivery_days.
+-- Use date subtraction for the calendar count and EXTRACT(EPOCH) / 86400.0 rounded to 2 decimals.
+-- Keep only delivered rows, ordered by purchase timestamp and order ID, with 5 rows.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {

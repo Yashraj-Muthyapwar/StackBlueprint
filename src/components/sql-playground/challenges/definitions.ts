@@ -2124,6 +2124,55 @@ ORDER BY raw_product_id;`,
       nextConcept: "Date arithmetic and DATEDIFF",
     },
   },
+  {
+    id: "olist-measure-delivery-days",
+    version: 1,
+    title: "Measure Olist delivery days two ways",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Compare calendar-day distance with precise elapsed delivery days for real Olist deliveries.",
+    requirements: [
+      "Use the orders table.",
+      "Keep only rows where order_delivered_customer_date IS NOT NULL.",
+      "Return exactly order_id, order_purchase_timestamp, order_delivered_customer_date, calendar_delivery_days, and elapsed_delivery_days.",
+      "Use order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days.",
+      "Use ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist delivery duration measures.
+-- Return purchase and delivery timestamps plus calendar_delivery_days and elapsed_delivery_days.
+-- Use date subtraction for the calendar count and EXTRACT(EPOCH) / 86400.0 rounded to 2 decimals.
+-- Keep only delivered rows, ordered by purchase timestamp and order ID, with 5 rows.`,
+    hints: [
+      "Start with order_id, order_purchase_timestamp, and order_delivered_customer_date from orders, then keep only non-NULL delivered timestamps.",
+      "Add order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days.",
+      "Add ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days, then order and limit the result.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, order_delivered_customer_date, order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days, ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days FROM orders WHERE order_delivered_customer_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, order_delivered_customer_date, order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days, ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days FROM orders WHERE order_delivered_customer_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "order_delivered_customer_date", "calendar_delivery_days", "elapsed_delivery_days"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.01,
+    },
+    success: {
+      title: "Delivery durations complete",
+      body: "Correct. You separated calendar-day distance from precise elapsed delivery time for the same Olist orders.",
+      nextConcept: "Intervals, lookbacks, and sargable filters",
+    },
+  },
 ];
 
 export function getChallenges(
