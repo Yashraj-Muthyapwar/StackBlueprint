@@ -28,18 +28,6 @@ ORDER BY events DESC;`,
       {
         title: "Hourly activity",
         note: "The exact source timestamp is in UTC",
-        only: "duckdb",
-        sql: `SELECT DATE_TRUNC('hour', timestamp) AS hour_utc,
-       event_type,
-       COUNT(*) AS events
-FROM events
-GROUP BY hour_utc, event_type
-ORDER BY hour_utc, event_type;`,
-      },
-      {
-        title: "Hourly activity",
-        note: "The exact source timestamp is in UTC",
-        only: "postgres",
         sql: `SELECT DATE_TRUNC('hour', timestamp) AS hour_utc,
        event_type,
        COUNT(*) AS events
@@ -51,7 +39,8 @@ ORDER BY hour_utc, event_type;`,
   },
   {
     group: "Products and brands",
-    blurb: "Products can be explored directly because every event keeps its original product and category columns.",
+    blurb:
+      "Products can be explored directly because every event keeps its original product and category columns.",
     items: [
       {
         title: "Most-viewed brands",
@@ -98,7 +87,8 @@ ORDER BY events DESC;`,
   },
   {
     group: "Sessions",
-    blurb: "The dataset treats user_session as a temporary session identifier and user_id as the permanent user identifier.",
+    blurb:
+      "The dataset treats user_session as a temporary session identifier and user_id as the permanent user identifier.",
     items: [
       {
         title: "Session behavior mix",
@@ -238,7 +228,8 @@ LIMIT 100;`,
   },
   {
     group: "Funnels",
-    blurb: "Treat a session as a short behavioral journey, without overstating this 48-hour slice as a long-term customer lifecycle.",
+    blurb:
+      "Treat a session as a short behavioral journey, without overstating this 48-hour slice as a long-term customer lifecycle.",
     items: [
       {
         title: "Add-to-cart conversion",

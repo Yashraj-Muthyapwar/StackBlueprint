@@ -339,9 +339,11 @@ LIMIT 20;`,
     items: [
       {
         title: "Create your own table",
-        note: "DDL works; watch the Schema map update",
+        note: "DDL works; the initial DROP makes this exercise safe to run again",
         sql: `-- DOUBLE PRECISION rather than DOUBLE: DuckDB accepts both,
 -- PostgreSQL only the spelled-out form.
+DROP TABLE IF EXISTS experiments;
+
 CREATE TABLE experiments (
   id    INTEGER PRIMARY KEY,
   name  VARCHAR,
@@ -357,9 +359,9 @@ SELECT * FROM experiments ORDER BY score DESC;`,
       },
       {
         title: "Update rows",
-        note: "UPDATE reports how many rows it touched",
+        note: "Apply a repeatable price policy; re-running keeps the same values",
         sql: `UPDATE products
-SET price = ROUND(price * 1.05, 2)
+SET price = ROUND(cost * 2.25, 2)
 WHERE category = 'Accessories';
 
 SELECT name, category, price

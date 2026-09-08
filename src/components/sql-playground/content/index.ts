@@ -14,6 +14,7 @@ const LIBRARY: Record<DatasetId, ExampleGroup[]> = {
   cycledepot: CYCLE_DEPOT_EXAMPLES,
   ergast: ERGAST_EXAMPLES,
   marvel: MARVEL_EXAMPLES,
+  "my-workspace": [],
   olist: OLIST_EXAMPLES,
   sql_lab: SQL_LAB_EXAMPLES,
 };
