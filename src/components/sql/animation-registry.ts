@@ -51,6 +51,7 @@ import { convertStages } from "./conversions/convert.tsx";
 import { implicitCoercionStages } from "./conversions/implicit-coercion.tsx";
 import { safeCastsStages } from "./conversions/safe-casts.tsx";
 import { olistTimeZoneStages } from "./datetime-functions/time-zones.tsx";
+import { olistExtractionFormattingStages } from "./datetime-functions/extraction-formatting.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -117,6 +118,7 @@ export const STAGES_REGISTRY = {
   "q-implicit-coercion": implicitCoercionStages,
   "q-safe-casts": safeCastsStages,
   "q-olist-time-zones": olistTimeZoneStages,
+  "q-olist-extraction-formatting": olistExtractionFormattingStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
