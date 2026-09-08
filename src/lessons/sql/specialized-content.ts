@@ -15,6 +15,7 @@ import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
+import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant-v2.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -3838,7 +3839,190 @@ const timeZonesPrecision: LessonContent = {
   slug: "time-zones-precision",
   title: "Current Time & Time Zones",
   subtitle: "NOW / TIMESTAMPTZ / AT TIME ZONE — plus DST",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "One instant, many clocks",
+      body: [
+        "A purchase happens at one instant. A dashboard in Sao Paulo, a support team in New York, and a warehouse job running in UTC may show different clock readings for that same instant. The job is not to make those readings match. The job is to preserve the instant, then render it in the zone the reader needs.",
+        "The Olist `orders` table has `order_purchase_timestamp` as `TIMESTAMP`, which is a wall-clock reading with no zone attached. Because this is Brazilian marketplace data, this lesson treats those stored readings as `America/Sao_Paulo`. That assumption turns each wall-clock value into an instant that can safely be shown anywhere.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistTimeZoneInstantImg,
+      alt: "Three linked clocks over a world map illustrate one Olist purchase instant being rendered from São Paulo through UTC to New York.",
+      caption:
+        "A time-zone conversion changes the displayed wall-clock reading, not the purchase instant itself. The SQL examples below make the source and destination zones explicit.",
+    },
+    {
+      kind: "table",
+      caption: "Olist orders stores purchase time as a zone-less TIMESTAMP, not as TIMESTAMPTZ",
+      headers: ["table", "column", "type", "meaning"],
+      rows: [
+        ["orders", "order_id", "VARCHAR(32)", "one Olist order"],
+        ["orders", "order_purchase_timestamp", "TIMESTAMP", "local purchase clock reading"],
+        ["orders", "order_approved_at", "TIMESTAMP", "local approval clock reading, when present"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Ask the database what time it is",
+      body: [
+        "`NOW()` returns the current transaction timestamp as `TIMESTAMPTZ`. `CURRENT_TIMESTAMP` is the standard spelling for the same idea. The exact displayed clock reading depends on the session time zone, but both represent one unambiguous instant.",
+        "Olist is a historical 2016 to 2018 snapshot, so `WHERE order_purchase_timestamp >= NOW() - INTERVAL '7 days'` is not a useful analysis of this dataset today. Use `NOW()` for live operational data. For a reproducible historical report, anchor the report to a deliberate timestamp or to the dataset's latest timestamp in a later lookbacks lesson.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "NOW returns a TIMESTAMPTZ for the current transaction",
+      code: `SELECT
+  NOW() AS transaction_now,
+  CURRENT_TIMESTAMP AS standard_current_timestamp,
+  pg_typeof(NOW()) AS now_type;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Current does not mean a fresh clock read on every row",
+      body: "In PostgreSQL, NOW() is stable for the transaction. Repeating it in one statement gives the same instant, which is exactly what you want for a consistent report. Use a clock function only when you deliberately need the physical wall clock to advance during execution.",
+    },
+    {
+      kind: "prose",
+      heading: "TIMESTAMP names a clock reading; TIMESTAMPTZ names an instant",
+      body: [
+        "`TIMESTAMP '2018-07-24 20:41:37'` says what a clock showed, but not where that clock was. `TIMESTAMPTZ '2018-07-24 20:41:37-03'` supplies an offset, so PostgreSQL can identify one point on the global timeline. PostgreSQL stores a `TIMESTAMPTZ` as an instant and formats it for the active session zone when it displays it.",
+        "`AT TIME ZONE` has two useful directions. Applied to a `TIMESTAMP`, it assigns a named zone and returns a `TIMESTAMPTZ`. Applied to a `TIMESTAMPTZ`, it renders that instant as a local `TIMESTAMP` in the named zone. The expression type tells you which direction you are taking.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-time-zones",
+      caption: "First assign Sao Paulo to Olist's stored wall-clock time. Then render the resulting instant in another zone.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Turn the stored Sao Paulo wall time into an instant, then display that instant in two zones",
+      code: `SELECT
+  order_id,
+  order_purchase_timestamp,
+  (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo')
+    AT TIME ZONE 'UTC' AS purchase_utc,
+  (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo')
+    AT TIME ZONE 'America/New_York' AS purchase_new_york
+FROM orders
+ORDER BY order_purchase_timestamp, order_id
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption: "Preview of the first three Olist purchases, ordered explicitly. São Paulo was UTC-03 and New York was UTC-04 on these September 2016 dates.",
+      headers: ["order_purchase_timestamp", "purchase_utc", "purchase_new_york"],
+      rows: [
+        ["2016-09-04 21:15:19", "2016-09-05 00:15:19", "2016-09-04 20:15:19"],
+        ["2016-09-05 00:15:34", "2016-09-05 03:15:34", "2016-09-04 23:15:34"],
+        ["2016-09-13 15:24:19", "2016-09-13 18:24:19", "2016-09-13 14:24:19"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not attach UTC directly to Olist's raw TIMESTAMP",
+      body: "`order_purchase_timestamp AT TIME ZONE 'UTC'` would claim the Brazilian clock reading was already UTC, shifting the actual purchase instant by hours. Assign the source zone first, then render the resulting instant in the destination zone.",
+    },
+    {
+      kind: "prose",
+      heading: "DST is why named zones beat fixed offsets",
+      body: [
+        "A fixed offset such as `-03:00` describes one offset, not a location's rules over time. Daylight-saving transitions can change the offset, and historical rules can differ from current rules. `America/Sao_Paulo` and `America/New_York` let PostgreSQL use its time-zone rule database for the date being converted.",
+        "On 2018-03-11, New York skipped from 01:59 to 03:00. The two UTC instants below are one hour apart, yet their local clock readings jump two hours. Converting an instant to local time is safe. The harder direction is accepting a local time that never occurred or occurred twice. When an application accepts local user input near a DST transition, preserve the user's zone or offset instead of guessing later.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A DST spring-forward jump in New York",
+      code: `SELECT
+  TIMESTAMPTZ '2018-03-11 06:30:00+00'
+    AT TIME ZONE 'America/New_York' AS before_jump,
+  TIMESTAMPTZ '2018-03-11 07:30:00+00'
+    AT TIME ZONE 'America/New_York' AS after_jump;`,
+    },
+    {
+      kind: "table",
+      caption: "The clock jumps over the 02:00 hour even though the instants are exactly one hour apart",
+      headers: ["before_jump", "after_jump"],
+      rows: [["2018-03-11 01:30:00", "2018-03-11 03:30:00"]],
+    },
+    {
+      kind: "playground-practice",
+      title: "Show Olist purchase instants in two reader zones",
+      prompt: "From Olist orders, return the stored purchase timestamp plus the same purchase instant rendered in UTC and New York. Treat the stored value as America/Sao_Paulo before rendering either destination. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-purchase-instants-across-zones",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "NOW() and CURRENT_TIMESTAMP return the current transaction instant as TIMESTAMPTZ.",
+        "TIMESTAMP is a zone-less wall-clock reading; TIMESTAMPTZ identifies an instant that can be displayed in any session zone.",
+        "For Olist, assign America/Sao_Paulo to the stored purchase TIMESTAMP before converting it to UTC or another reader zone.",
+        "AT TIME ZONE assigns a zone when applied to TIMESTAMP and renders a zone when applied to TIMESTAMPTZ.",
+        "Use named IANA zones such as America/New_York, not fixed offsets, when daylight-saving and historical rules matter.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-time-now-type",
+          question: "What type does NOW() return in PostgreSQL?",
+          options: ["TIMESTAMPTZ", "TIMESTAMP only", "DATE", "TEXT"],
+          correctIndex: 0,
+          explanation: "NOW() identifies the current transaction instant, so it returns timestamp with time zone (TIMESTAMPTZ).",
+        },
+        {
+          id: "olist-time-source-zone",
+          question: "Olist stores order_purchase_timestamp as TIMESTAMP. What is the first correct conversion step for this lesson?",
+          options: [
+            "Assign America/Sao_Paulo with AT TIME ZONE",
+            "Cast it to DATE",
+            "Append the text UTC",
+            "Render it in New York immediately",
+          ],
+          correctIndex: 0,
+          explanation: "The raw value is a Brazilian wall-clock reading. Assigning its source zone turns it into an instant before any destination rendering.",
+        },
+        {
+          id: "olist-time-at-time-zone-direction",
+          question: "What does a TIMESTAMPTZ AT TIME ZONE 'America/New_York' expression produce?",
+          options: [
+            "A local TIMESTAMP clock reading in New York",
+            "A new UTC offset stored in the source table",
+            "A DATE with the time removed",
+            "A zone-less text label only",
+          ],
+          correctIndex: 0,
+          explanation: "When the input is TIMESTAMPTZ, AT TIME ZONE renders that instant as a zone-less local timestamp in the requested zone.",
+        },
+        {
+          id: "olist-time-dst-named-zone",
+          question: "Why is America/New_York safer than a fixed -05:00 offset for year-round reporting?",
+          options: [
+            "The named zone applies the correct historical and daylight-saving rules",
+            "It permanently converts all stored timestamps to New York",
+            "It makes every local time unique",
+            "It prevents NULL timestamps",
+          ],
+          correctIndex: 0,
+          explanation: "A named IANA zone carries date-specific offset rules. A fixed offset cannot represent daylight-saving changes.",
+        },
+      ],
+    },
+  ],
 };
 
 const extractionFormatting: LessonContent = {
