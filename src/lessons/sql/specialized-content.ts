@@ -15,7 +15,7 @@ import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
-import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant-v2.png";
+import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant.png";
 import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
 import olistTruncationBucketingImg from "@/images/sql/datetime-functions/truncation-bucketing-olist.png";
 
