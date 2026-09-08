@@ -431,6 +431,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use EXTRACT(YEAR ...), DATE_PART('hour', ...), and TO_CHAR(..., 'YYYY-MM-DD HH24:MI').
 -- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
   },
+  "olist-create-purchase-buckets": {
+    id: "olist-create-purchase-buckets",
+    title: "Create Olist reporting buckets",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin. Use DATE_TRUNC('day', ...), DATE_TRUNC('month', ...), and DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00'). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-create-purchase-buckets",
+    starterSql: `-- Olist purchase reporting buckets.
+-- Return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.
+-- Use DATE_TRUNC for day and month, then DATE_BIN with a 1-hour interval and 2000-01-01 origin.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {

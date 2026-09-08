@@ -2076,6 +2076,54 @@ ORDER BY raw_product_id;`,
       nextConcept: "Truncation and bucketing",
     },
   },
+  {
+    id: "olist-create-purchase-buckets",
+    version: 1,
+    title: "Create Olist reporting buckets",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Place Olist purchases onto daily, monthly, and fixed one-hour reporting axes while preserving every source timestamp.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.",
+      "Use DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day.",
+      "Use DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month.",
+      "Use DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase reporting buckets.
+-- Return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.
+-- Use DATE_TRUNC for day and month, then DATE_BIN with a 1-hour interval and 2000-01-01 origin.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with order_id and order_purchase_timestamp from orders.",
+      "Add DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day and DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month.",
+      "Add DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day, DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month, DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day, DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month, DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "purchase_day", "purchase_month", "purchase_hour_bin"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Purchase buckets complete",
+      body: "Correct. You preserved each Olist purchase timestamp and created calendar-day, calendar-month, and fixed one-hour reporting bucket starts.",
+      nextConcept: "Date arithmetic and DATEDIFF",
+    },
+  },
 ];
 
 export function getChallenges(
