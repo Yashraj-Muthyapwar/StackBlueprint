@@ -47,44 +47,44 @@ The project is a modern, client-side heavy web application built with the follow
 flowchart TD
     %% Tooling Layer
     subgraph Build["Build & Tooling"]
-        V[Vite Bundler]
-        B[Bun Package Manager]
-        S[scripts/datasets]
+        V["Vite Bundler"]
+        B["Bun Package Manager"]
+        S["scripts/datasets"]
     end
 
     %% Data Layer
     subgraph Data["Curriculum Data Layer (src/lessons/)"]
-        R[roadmap.ts<br/>Source of Truth] 
-        L[Lesson Data & Quizzes]
+        R["roadmap.ts<br/>Source of Truth"] 
+        L["Lesson Data & Quizzes"]
     end
 
     %% UI Layer
     subgraph UI["UI Components (src/components/)"]
-        AS[app-sidebar.tsx<br/>Navigation Menu]
-        C[ui/<br/>Radix + shadcn/ui]
-        D[Domain UI<br/>SQL Animations, etc.]
+        AS["app-sidebar.tsx<br/>Navigation Menu"]
+        C["ui/<br/>Radix + shadcn/ui"]
+        D["Domain UI<br/>SQL Animations, etc."]
     end
 
     %% Playgrounds Layer (WASM)
     subgraph Playgrounds["In-Browser Playgrounds"]
-        CodeM[CodeMirror Editor]
-        WASM[WASM Engines<br/>DuckDB, PGLite, sql.js]
-        DS[Dataset Managers]
+        CodeM["CodeMirror Editor"]
+        WASM["WASM Engines<br/>DuckDB, PGLite, sql.js"]
+        DS["Dataset Managers"]
     end
 
     %% Routing Layer
     subgraph Routing["Routing (src/routes/)"]
-        TR((TanStack Router))
-        Root[__root.tsx<br/>Global Layout]
-        Dyn[Dynamic Routes<br/>$topic/$lesson.tsx]
-        PRoute[Playground Routes<br/>/sql-playground]
+        TR(("TanStack Router"))
+        Root["__root.tsx<br/>Global Layout"]
+        Dyn["Dynamic Routes<br/>$topic/$lesson.tsx"]
+        PRoute["Playground Routes<br/>/sql-playground"]
     end
 
     %% State Layer
     subgraph State["State & Utilities"]
-        H[src/hooks/<br/>useProgress]
-        RQ[TanStack Query]
-        Lib[src/lib/<br/>Helpers]
+        H["src/hooks/<br/>useProgress"]
+        RQ["TanStack Query"]
+        Lib["src/lib/<br/>Helpers"]
     end
 
     %% Relationships
