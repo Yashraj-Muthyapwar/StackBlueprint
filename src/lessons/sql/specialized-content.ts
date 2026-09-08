@@ -15,8 +15,9 @@ import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
-import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant.png";
+import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant-v2.png";
 import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
+import olistTruncationBucketingImg from "@/images/sql/datetime-functions/truncation-bucketing-olist.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -4253,7 +4254,141 @@ const dateTruncation: LessonContent = {
   slug: "date-truncation",
   title: "Truncation & Bucketing",
   subtitle: "DATE_TRUNC / DATE_BIN / time_bucket",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Put individual events onto a shared time axis",
+      body: [
+        "Olist orders arrive at many different seconds. A monthly report, a daily operations view, or an hourly demand chart needs those individual moments placed into common time buckets before it can summarize them.",
+        "`DATE_TRUNC` snaps a timestamp to the start of a named calendar period such as a day, week, or month. `DATE_BIN` snaps a timestamp to a fixed-size interval anchored at a chosen origin. Both return a timestamp marking the bucket start. They do not round forward and they do not alter the stored Olist order time.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistTruncationBucketingImg,
+      alt: "A light-grid diagram shows one Olist purchase timestamp becoming day, month, and one-hour bucket-start timestamps.",
+      caption: "Truncation and binning replace the lower time detail with the shared start of a reporting bucket.",
+    },
+    {
+      kind: "prose",
+      heading: "DATE_TRUNC snaps to a calendar boundary",
+      body: [
+        "`DATE_TRUNC('unit', timestamp)` keeps the larger calendar parts and resets smaller parts to their start. A day bucket begins at midnight; a month bucket begins on the first day of that month at midnight. This makes all events in the same period share the exact same bucket value.",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased at 2017-10-02 10:56:33. Its day bucket starts at 2017-10-02 00:00:00 and its month bucket starts at 2017-10-01 00:00:00.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Snap one real Olist purchase to the start of its day and month",
+      code: "SELECT\n  order_purchase_timestamp,\n  DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day,\n  DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "Both bucket values are timestamps at the beginning of their calendar periods",
+      headers: ["order_purchase_timestamp", "purchase_day", "purchase_month"],
+      rows: [["2017-10-02 10:56:33", "2017-10-02 00:00:00", "2017-10-01 00:00:00"]],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-truncation-bucketing",
+      caption: "The same Olist timestamp can be snapped to calendar boundaries or placed in a fixed one-hour bin.",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Weeks have a defined start",
+      body: "In PostgreSQL, DATE_TRUNC('week', timestamp) starts the week on Monday at 00:00:00. Make that convention visible in report labels, especially when a business calls Sunday the first day of its week.",
+    },
+    {
+      kind: "prose",
+      heading: "DATE_BIN creates fixed-width bins",
+      body: [
+        "Use `DATE_BIN(stride, source, origin)` when the bucket width is an interval such as 15 minutes, 1 hour, or 6 hours. The `origin` is the anchor from which every bin boundary is counted. Choosing the same origin makes the bin assignment repeat predictably across the whole dataset.",
+        "For the same 10:56:33 Olist purchase, a one-hour bin anchored at midnight begins at 10:00:00. The event belongs in the 10:00 to 10:59:59.999... bucket, represented by its start timestamp.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Place one Olist purchase in a fixed one-hour bin",
+      code: "SELECT\n  order_purchase_timestamp,\n  DATE_BIN(\n    INTERVAL '1 hour',\n    order_purchase_timestamp,\n    TIMESTAMP '2000-01-01 00:00:00'\n  ) AS purchase_hour_bin\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "The timestamp falls into the one-hour interval whose start is 10:00:00",
+      headers: ["order_purchase_timestamp", "purchase_hour_bin"],
+      rows: [["2017-10-02 10:56:33", "2017-10-02 10:00:00"]],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Calendar periods and fixed intervals are not interchangeable",
+      body: "A calendar month varies from 28 to 31 days, so DATE_TRUNC('month', ...) expresses a calendar boundary. DATE_BIN uses a fixed interval and does not accept month or year strides. Use DATE_TRUNC for months, quarters, and years; use DATE_BIN for regular durations such as 15 minutes or 6 hours.",
+    },
+    {
+      kind: "prose",
+      heading: "time_bucket is an extension function",
+      body: ["TimescaleDB offers `time_bucket`, a convenient bucketing function for time-series tables. Its intent is similar to `DATE_BIN`, but it is not part of base PostgreSQL and is not installed in the Olist playground. Use it only when your database has the TimescaleDB extension enabled."],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "TimescaleDB only: an equivalent one-hour bucket",
+      code: "-- Requires the TimescaleDB extension; not available in this playground.\nSELECT\n  time_bucket('1 hour', order_purchase_timestamp) AS purchase_hour_bin\nFROM orders;",
+    },
+    {
+      kind: "playground-practice",
+      title: "Create Olist reporting buckets",
+      prompt: "From Olist orders, preserve the purchase timestamp and create daily, monthly, and fixed hourly bucket starts. Use DATE_TRUNC for the day and month values, and DATE_BIN with a 1-hour interval and a 2000-01-01 midnight origin for the hourly bin. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-create-purchase-buckets",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "DATE_TRUNC snaps a timestamp to the start of a named calendar period such as day, week, or month.",
+        "A bucket value is the period start, not the last instant of that period and not a changed stored timestamp.",
+        "DATE_BIN uses a fixed interval plus an origin to create repeatable duration-based buckets.",
+        "Use DATE_TRUNC for calendar months, quarters, and years. Use DATE_BIN for fixed widths such as 15 minutes or 1 hour.",
+        "time_bucket belongs to TimescaleDB, not base PostgreSQL, so verify that the extension is available before using it.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-trunc-day-result",
+          question: "What does DATE_TRUNC('day', TIMESTAMP '2017-10-02 10:56:33') return?",
+          options: ["2017-10-02 00:00:00", "2017-10-02 23:59:59", "2017-10-02 10:00:00", "2017-10-01 00:00:00"],
+          correctIndex: 0,
+          explanation: "Day truncation keeps the date and resets the time to the beginning of that calendar day.",
+        },
+        {
+          id: "olist-date-bin-origin",
+          question: "Why does DATE_BIN take an origin argument?",
+          options: ["It defines the anchor from which fixed-width bin boundaries repeat", "It converts a timestamp into UTC", "It chooses which table stores the bin", "It formats the bucket as text"],
+          correctIndex: 0,
+          explanation: "The origin fixes the start of the repeating interval grid, so every row is assigned consistently.",
+        },
+        {
+          id: "olist-month-bucketing",
+          question: "Which function should you use for a calendar-month Olist report?",
+          options: ["DATE_TRUNC('month', order_purchase_timestamp)", "DATE_BIN(INTERVAL '1 month', order_purchase_timestamp, TIMESTAMP '2000-01-01')", "EXTRACT(MONTH FROM order_purchase_timestamp)", "TO_CHAR(order_purchase_timestamp, 'month')"],
+          correctIndex: 0,
+          explanation: "Months have variable lengths. DATE_TRUNC understands calendar boundaries; DATE_BIN is for fixed intervals.",
+        },
+        {
+          id: "olist-time-bucket-extension",
+          question: "What is required before using time_bucket in PostgreSQL?",
+          options: ["A database with the TimescaleDB extension enabled", "A TIMESTAMPTZ column only", "A JSONB index on orders", "An ORDER BY clause"],
+          correctIndex: 0,
+          explanation: "time_bucket is a TimescaleDB function, not a built-in PostgreSQL function.",
+        },
+      ],
+    },
+  ],
 };
 
 const dateArithmetic: LessonContent = {
