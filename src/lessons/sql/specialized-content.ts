@@ -15,7 +15,8 @@ import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
-import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant-v2.png";
+import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant.png";
+import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -4029,7 +4030,223 @@ const extractionFormatting: LessonContent = {
   slug: "extraction-formatting",
   title: "Extraction & Formatting",
   subtitle: "EXTRACT / DATE_PART / TO_CHAR / EXTRACT(EPOCH …) / strftime",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "One timestamp can answer several questions",
+      body: [
+        "An Olist purchase timestamp records a complete date and time, but reports rarely need the whole value unchanged. You might need a numeric year for a chart, an hour for an operations report, a readable label for an export, or an elapsed duration for a service-level metric.",
+        "Extraction keeps a useful part as a number. Formatting creates display text. Duration conversion turns an interval into one comparable unit. These expressions reshape the query result only. They do not change the stored Olist timestamp.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistExtractionFormattingImg,
+      alt: "A light-grid diagram shows an Olist purchase timestamp branching into a year, an hour, and a formatted date label.",
+      caption:
+        "EXTRACT and DATE_PART return numeric date pieces. TO_CHAR turns the same timestamp into a deliberately formatted text label.",
+    },
+    {
+      kind: "prose",
+      heading: "Extract a numeric date part",
+      body: [
+        "`EXTRACT(field FROM value)` returns one numeric piece of a date, timestamp, or interval. Use it when the result needs to behave as a number, such as a year to group by or an hour to compare. Common fields include `YEAR`, `MONTH`, `DAY`, `HOUR`, `DOW`, and `EPOCH`.",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased at 2017-10-02 10:56:33. Extracting the year and hour gives numeric values that are easier to aggregate or filter later.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Pull numeric year and hour from one real Olist purchase",
+      code: `SELECT
+  order_purchase_timestamp,
+  EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year,
+  EXTRACT(HOUR FROM order_purchase_timestamp) AS purchase_hour
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "table",
+      caption: "EXTRACT returns numeric date pieces from the stored timestamp",
+      headers: ["order_purchase_timestamp", "purchase_year", "purchase_hour"],
+      rows: [["2017-10-02 10:56:33", "2017", "10"]],
+    },
+    {
+      kind: "prose",
+      heading: "DATE_PART is PostgreSQL's alternate spelling",
+      body: [
+        "`DATE_PART('field', value)` asks the same kind of question as `EXTRACT`. It uses a quoted field name and a comma instead of `FROM`. In PostgreSQL, choose the form your team reads most easily and stay consistent. `EXTRACT` is SQL-standard style; `DATE_PART` is a familiar PostgreSQL style.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-extraction-formatting",
+      caption:
+        "The timestamp stays intact while each function projects a different value into the result.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DATE_PART returns the same hour as EXTRACT",
+      code: `SELECT
+  order_purchase_timestamp,
+  DATE_PART('hour', order_purchase_timestamp) AS purchase_hour
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Numbers are for logic; text is for presentation",
+      body: "EXTRACT and DATE_PART return numeric values. Keep that numeric form for calculations, grouping, and sorting. Use TO_CHAR only when the reader needs a display label, because formatted output is text rather than a timestamp.",
+    },
+    {
+      kind: "prose",
+      heading: "Format a timestamp with TO_CHAR",
+      body: [
+        "`TO_CHAR(value, pattern)` formats a date, timestamp, interval, or number as text. The pattern controls the shape. `YYYY` is a four-digit year, `MM` is a two-digit month, `DD` is a two-digit day, `HH24` uses a 24-hour clock, and `MI` is minutes. Notice that minutes are `MI`, not `MM`.",
+        "The timestamp remains useful for chronological work. The `purchase_label` below is for a CSV, an email, or a dashboard tooltip where people need a compact, intentional display.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the timestamp and add a display-ready label",
+      code: `SELECT
+  order_purchase_timestamp,
+  TO_CHAR(
+    order_purchase_timestamp,
+    'Mon DD, YYYY at HH24:MI'
+  ) AS purchase_label
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "table",
+      caption: "TO_CHAR returns text while preserving the original timestamp beside it",
+      headers: ["order_purchase_timestamp", "purchase_label"],
+      rows: [["2017-10-02 10:56:33", "Oct 02, 2017 at 10:56"]],
+    },
+    {
+      kind: "prose",
+      heading: "Convert an interval to elapsed seconds",
+      body: [
+        "Subtracting two timestamps produces an interval. `EXTRACT(EPOCH FROM interval)` converts that interval into total seconds, including full days. Divide by 60, 3,600, or 86,400 when a metric is easier to read in minutes, hours, or days.",
+        "The first Olist order was purchased on 2016-09-04 and approved on 2016-10-07. Its elapsed approval interval is 2,822,564 seconds. The following date-arithmetic lesson will explore elapsed-time calculation in more depth; here, focus on turning the interval into one numeric unit.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure Olist approval delay in seconds and hours",
+      code: `SELECT
+  order_id,
+  EXTRACT(
+    EPOCH FROM order_approved_at - order_purchase_timestamp
+  ) AS seconds_to_approve,
+  ROUND(
+    EXTRACT(EPOCH FROM order_approved_at - order_purchase_timestamp) / 3600.0,
+    1
+  ) AS hours_to_approve
+FROM orders
+WHERE order_id = '2e7a8482f6fb09756ca50c10d7bfc047';`,
+    },
+    {
+      kind: "table",
+      caption: "The interval is converted into one comparable numeric unit",
+      headers: ["seconds_to_approve", "hours_to_approve"],
+      rows: [["2822564", "784.0"]],
+    },
+    {
+      kind: "prose",
+      heading: "Dialect note: DuckDB and SQLite use strftime",
+      body: [
+        "PostgreSQL uses `TO_CHAR` for formatted date text. DuckDB and SQLite commonly use `strftime`, whose percent codes are different from PostgreSQL's patterns. The intent is the same: create display text from a temporal value. Check the active SQL engine before copying a format string.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DuckDB: the strftime equivalent for an Olist display label",
+      code: `-- DuckDB, not PostgreSQL
+SELECT
+  strftime(order_purchase_timestamp, '%b %d, %Y at %H:%M')
+    AS purchase_label
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "playground-practice",
+      title: "Build Olist purchase reporting fields",
+      prompt: "From Olist orders, return the order ID and purchase timestamp plus its numeric year, numeric hour, and a compact text label. Use EXTRACT for the year, DATE_PART for the hour, and TO_CHAR with YYYY-MM-DD HH24:MI for the label. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-extract-and-format-purchases",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "EXTRACT(field FROM value) returns a numeric date or interval part that can still be calculated, grouped, and sorted.",
+        "DATE_PART('field', value) is PostgreSQL's alternate syntax for extracting a numeric part.",
+        "TO_CHAR turns a timestamp into display text. Preserve the original timestamp when later work needs real time semantics.",
+        "EXTRACT(EPOCH FROM interval) turns an elapsed interval into total seconds, which can be scaled to minutes, hours, or days.",
+        "TO_CHAR patterns are PostgreSQL-specific. DuckDB and SQLite use strftime with percent-style format codes.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-extract-year-type",
+          question: "Which expression returns a numeric purchase year from order_purchase_timestamp?",
+          options: [
+            "EXTRACT(YEAR FROM order_purchase_timestamp)",
+            "TO_CHAR(order_purchase_timestamp, 'YYYY')",
+            "strftime(order_purchase_timestamp, 'YEAR')",
+            "DATE_PART(order_purchase_timestamp, YEAR)",
+          ],
+          correctIndex: 0,
+          explanation: "EXTRACT uses a date-part keyword, FROM, and the temporal value. It returns a numeric part.",
+        },
+        {
+          id: "olist-date-part-syntax",
+          question: "Which PostgreSQL expression is an alternate way to get the purchase hour?",
+          options: [
+            "DATE_PART('hour', order_purchase_timestamp)",
+            "DATE_PART(hour FROM order_purchase_timestamp)",
+            "TO_CHAR(order_purchase_timestamp, 'hour')",
+            "EXTRACT('hour', order_purchase_timestamp)",
+          ],
+          correctIndex: 0,
+          explanation: "DATE_PART accepts a quoted field name followed by the temporal expression.",
+        },
+        {
+          id: "olist-to-char-purpose",
+          question: "Why keep order_purchase_timestamp alongside TO_CHAR(order_purchase_timestamp, ...)?",
+          options: [
+            "The original remains temporal for time-aware calculations and sorting",
+            "TO_CHAR permanently edits the stored timestamp",
+            "TO_CHAR returns a TIMESTAMPTZ with a different time zone",
+            "The original is required only for a table alias",
+          ],
+          correctIndex: 0,
+          explanation: "TO_CHAR returns text. Keeping the timestamp preserves the temporal value for later SQL work.",
+        },
+        {
+          id: "olist-epoch-interval",
+          question: "What does EXTRACT(EPOCH FROM order_approved_at - order_purchase_timestamp) return?",
+          options: [
+            "The approval interval expressed as total seconds",
+            "Only the second of the minute when approval happened",
+            "A formatted approval date label",
+            "The order's database ID",
+          ],
+          correctIndex: 0,
+          explanation: "Timestamp subtraction produces an interval; extracting EPOCH from that interval returns its total seconds.",
+        },
+      ],
+    },
+  ],
 };
 
 const dateTruncation: LessonContent = {
