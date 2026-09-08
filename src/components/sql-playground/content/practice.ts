@@ -404,6 +404,33 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Group by status, filter with HAVING, then sort largest count first.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "olist-purchase-instants-across-zones": {
+    id: "olist-purchase-instants-across-zones",
+    title: "Show Olist purchase instants in UTC and New York",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york. Treat the stored wall time as America/Sao_Paulo with AT TIME ZONE, then render it with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'. Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-purchase-instants-across-zones",
+    starterSql: `-- Olist purchase instants across zones.
+-- Return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.
+-- Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.
+-- Render it twice with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
+  "olist-extract-and-format-purchases": {
+    id: "olist-extract-and-format-purchases",
+    title: "Build Olist purchase reporting fields",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label. Use EXTRACT(YEAR FROM order_purchase_timestamp), DATE_PART('hour', order_purchase_timestamp), and TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI'). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-extract-and-format-purchases",
+    starterSql: `-- Olist purchase reporting fields.
+-- Return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.
+-- Use EXTRACT(YEAR ...), DATE_PART('hour', ...), and TO_CHAR(..., 'YYYY-MM-DD HH24:MI').
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {

@@ -1969,6 +1969,113 @@ ORDER BY raw_product_id;`,
       nextConcept: "CONVERT",
     },
   },
+  {
+    id: "olist-purchase-instants-across-zones",
+    version: 1,
+    title: "Show Olist purchase instants in UTC and New York",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres", "duckdb"],
+    prompt:
+      "One Olist purchase instant, two audience clocks: render each order's Sao Paulo wall time in UTC and New York.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.",
+      "Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.",
+      "Render that instant with AT TIME ZONE 'UTC' AS purchase_utc.",
+      "Render that instant with AT TIME ZONE 'America/New_York' AS purchase_new_york.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase instants across zones.
+-- Return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.
+-- Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.
+-- Render it twice with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with SELECT order_id, order_purchase_timestamp FROM orders.",
+      "Add (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc.",
+      "Add (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      duckdb:
+        "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+        duckdb:
+          "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "purchase_utc", "purchase_new_york"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Cross-zone instants complete",
+      body: "Correct. You assigned America/Sao_Paulo to the stored wall reading and rendered the same instant for UTC and New York audiences.",
+      nextConcept: "Extraction and formatting",
+    },
+  },
+  {
+    id: "olist-extract-and-format-purchases",
+    version: 1,
+    title: "Build Olist purchase reporting fields",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Turn Olist purchase timestamps into numeric reporting fields and a compact human-readable label.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.",
+      "Use EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year.",
+      "Use DATE_PART('hour', order_purchase_timestamp) AS purchase_hour.",
+      "Use TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase reporting fields.
+-- Return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.
+-- Use EXTRACT(YEAR ...), DATE_PART('hour', ...), and TO_CHAR(..., 'YYYY-MM-DD HH24:MI').
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with order_id and order_purchase_timestamp from orders.",
+      "Add EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year and DATE_PART('hour', order_purchase_timestamp) AS purchase_hour.",
+      "Add TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year, DATE_PART('hour', order_purchase_timestamp) AS purchase_hour, TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year, DATE_PART('hour', order_purchase_timestamp) AS purchase_hour, TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: [
+        "order_id",
+        "order_purchase_timestamp",
+        "purchase_year",
+        "purchase_hour",
+        "purchase_label",
+      ],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Purchase fields complete",
+      body: "Correct. You kept the Olist timestamp, extracted numeric year and hour fields, and added a deliberate display label for reporting.",
+      nextConcept: "Truncation and bucketing",
+    },
+  },
 ];
 
 export function getChallenges(
