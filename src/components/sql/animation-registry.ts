@@ -53,6 +53,7 @@ import { safeCastsStages } from "./conversions/safe-casts.tsx";
 import { olistTimeZoneStages } from "./datetime-functions/time-zones.tsx";
 import { olistExtractionFormattingStages } from "./datetime-functions/extraction-formatting.tsx";
 import { olistTruncationBucketingStages } from "./datetime-functions/truncation-bucketing.tsx";
+import { olistDateArithmeticStages } from "./datetime-functions/date-arithmetic.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -121,6 +122,7 @@ export const STAGES_REGISTRY = {
   "q-olist-time-zones": olistTimeZoneStages,
   "q-olist-extraction-formatting": olistExtractionFormattingStages,
   "q-olist-truncation-bucketing": olistTruncationBucketingStages,
+  "q-olist-date-arithmetic": olistDateArithmeticStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
