@@ -14,7 +14,7 @@ export const ERGAST_EXAMPLES: ExampleGroup[] = [
         note: "The catalogue is queryable too",
         sql: `SELECT table_name
 FROM information_schema.tables
-WHERE table_schema = 'public'
+WHERE table_schema IN ('public', 'main')
   AND table_type = 'BASE TABLE'
 ORDER BY table_name;`,
       },
@@ -141,7 +141,8 @@ ORDER BY fs.year DESC, points_rank, driver;`,
   },
   {
     group: "Race performance",
-    blurb: "Compare qualifying, starting positions and final classifications at the correct race-driver grain.",
+    blurb:
+      "Compare qualifying, starting positions and final classifications at the correct race-driver grain.",
     items: [
       {
         title: "2024 podium finishers",
@@ -379,7 +380,8 @@ ORDER BY driver, round, event_order;`,
   },
   {
     group: "Plan-watching",
-    blurb: "Open Explain to see how larger joins, aggregations and filters shape the execution plan.",
+    blurb:
+      "Open Explain to see how larger joins, aggregations and filters shape the execution plan.",
     items: [
       {
         title: "A driver's season-by-season points",
@@ -387,7 +389,7 @@ ORDER BY driver, round, event_order;`,
         sql: `SELECT r.year,
        d.forename || ' ' || d.surname AS driver,
        COUNT(*) AS race_entries,
-       ROUND(SUM(re.points), 1) AS points,
+       ROUND(CAST(SUM(re.points) AS NUMERIC), 1) AS points,
        SUM(CASE WHEN re.position = 1 THEN 1 ELSE 0 END) AS wins
 FROM results re
 JOIN races r ON r.race_id = re.race_id

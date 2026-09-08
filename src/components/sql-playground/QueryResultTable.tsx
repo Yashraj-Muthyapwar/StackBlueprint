@@ -111,7 +111,7 @@ export function QueryResultTable({ result, engine }: { result: QueryResult; engi
     );
   }
 
-  if (result.isCommand) {
+  if (result.isCommand && result.fields.length === 0) {
     return (
       <div className="sqlx-ok">
         <Check size={15} />

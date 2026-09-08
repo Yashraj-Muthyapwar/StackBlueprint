@@ -116,7 +116,7 @@ ORDER BY level, employee_id;`,
   UNION ALL
 
   SELECT c.category_id, c.parent_category_id, c.category_name,
-         CONCAT(ct.path, ' > ', c.category_name) AS path
+         CAST(CONCAT(ct.path, ' > ', c.category_name) AS VARCHAR(500)) AS path
   FROM categories c
   JOIN category_tree ct ON c.parent_category_id = ct.category_id
 )
@@ -147,7 +147,8 @@ ORDER BY employee_id;`,
   },
   {
     group: "Indexes & query plans",
-    blurb: "Inspect each engine's actual plan; an index is a tradeoff, not a promise of a particular scan.",
+    blurb:
+      "Inspect each engine's actual plan; an index is a tradeoff, not a promise of a particular scan.",
     items: [
       {
         title: "Index-backed customer lookup",
@@ -196,7 +197,8 @@ DROP INDEX idx_orders_status;`,
   },
   {
     group: "Transactions",
-    blurb: "Compare a rollback-safe rehearsal with a committed workflow that persists in this browser session.",
+    blurb:
+      "Compare a rollback-safe rehearsal with a committed workflow that persists in this browser session.",
     items: [
       {
         title: "Safe transaction rehearsal",

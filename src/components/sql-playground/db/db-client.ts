@@ -157,7 +157,21 @@ export function stripNoise(sql: string): string {
  * presenting it as a successful write operation.
  */
 function isReadStatement(sql: string): boolean {
-  return /^(select|values|show|describe|explain|with)\b/i.test(stripNoise(sql));
+  return /^(select|values|show|describe|explain|with|from|table|pivot|unpivot|summarize)\b/i.test(
+    stripNoise(sql),
+  );
+}
+
+/**
+ * Classify a transaction-control statement. These return a driver "Success"
+ * result on DuckDB, so they must not be mistaken for a query that produced
+ * rows, and an unbalanced one left open would wedge the session.
+ */
+function transactionKind(sql: string): "open" | "close" | null {
+  const s = stripNoise(sql);
+  if (/^(begin|start\s+transaction)\b/i.test(s)) return "open";
+  if (/^(commit|rollback|end|abort)\b/i.test(s)) return "close";
+  return null;
 }
 
 /** Postgres type OIDs we are likely to meet, for a friendlier column header. */
@@ -402,6 +416,12 @@ async function bootPostgres(
       };
     },
     async reload() {
+      // Clear any transaction the user left open, or the DDL below deadlocks.
+      try {
+        await pg.exec("ROLLBACK");
+      } catch {
+        // No transaction in progress.
+      }
       // Drop every user schema, not just public: these datasets bring their own.
       const schemas: any = await pg.query(
         `SELECT nspname FROM pg_namespace
@@ -416,42 +436,42 @@ async function bootPostgres(
     },
     async uploadCsv(file: File, tableName: string) {
       await pg.exec(`CREATE SCHEMA IF NOT EXISTS "uploads";`);
-      
+
       const text = await file.slice(0, 1024 * 50).text();
-      const lines = text.split('\n').filter(l => l.trim().length > 0);
+      const lines = text.split("\n").filter((l) => l.trim().length > 0);
       if (lines.length < 2) throw new Error("CSV must have a header and at least one row of data");
-      
-      const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, ''));
-      const firstRow = lines[1].split(',').map(v => v.trim().replace(/^["']|["']$/g, ''));
-      
+
+      const headers = lines[0].split(",").map((h) => h.trim().replace(/^["']|["']$/g, ""));
+      const firstRow = lines[1].split(",").map((v) => v.trim().replace(/^["']|["']$/g, ""));
+
       const cols = headers.map((h, i) => {
-        let val = firstRow[i] || '';
-        let type = 'text';
-        if (/^-?\d+$/.test(val)) type = 'integer';
-        else if (/^-?\d*\.\d+$/.test(val)) type = 'double precision';
-        else if (val.toLowerCase() === 'true' || val.toLowerCase() === 'false') type = 'boolean';
-        else if (val && !isNaN(Date.parse(val)) && isNaN(Number(val))) type = 'timestamp';
-        
-        let safeName = h.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-        if (/^[0-9]/.test(safeName)) safeName = 'c_' + safeName;
+        let val = firstRow[i] || "";
+        let type = "text";
+        if (/^-?\d+$/.test(val)) type = "integer";
+        else if (/^-?\d*\.\d+$/.test(val)) type = "double precision";
+        else if (val.toLowerCase() === "true" || val.toLowerCase() === "false") type = "boolean";
+        else if (val && !isNaN(Date.parse(val)) && isNaN(Number(val))) type = "timestamp";
+
+        let safeName = h.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
+        if (/^[0-9]/.test(safeName)) safeName = "c_" + safeName;
         if (!safeName) safeName = `col_${i}`;
-        
+
         return `"${safeName}" ${type}`;
       });
-      
-      await pg.exec(`CREATE TABLE "uploads"."${tableName}" (${cols.join(', ')});`);
-      
+
+      await pg.exec(`CREATE TABLE "uploads"."${tableName}" (${cols.join(", ")});`);
+
       const colNames = headers.map((h, i) => {
-        let safeName = h.replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
-        if (/^[0-9]/.test(safeName)) safeName = 'c_' + safeName;
+        let safeName = h.replace(/[^a-zA-Z0-9_]/g, "_").toLowerCase();
+        if (/^[0-9]/.test(safeName)) safeName = "c_" + safeName;
         if (!safeName) safeName = `col_${i}`;
         return `"${safeName}"`;
       });
-      
+
       await pg.query(
-        `COPY "uploads"."${tableName}" (${colNames.join(', ')}) FROM '/dev/blob' WITH (FORMAT csv, HEADER true)`,
+        `COPY "uploads"."${tableName}" (${colNames.join(", ")}) FROM '/dev/blob' WITH (FORMAT csv, HEADER true)`,
         [],
-        { blob: file }
+        { blob: file },
       );
     },
     async dispose() {
@@ -507,15 +527,49 @@ async function bootDuckDB(
       return { rows, fields, affected };
     },
     async reload() {
-      const views = await conn.query(
-        `SELECT table_schema, table_name, table_type FROM information_schema.tables
-         WHERE table_schema NOT IN ('information_schema','pg_catalog','system','temp')`,
-      );
-      for (const row of views.toArray()) {
-        const r: any = row.toJSON();
-        const kind = String(r.table_type).includes("VIEW") ? "VIEW" : "TABLE";
-        await conn.query(`DROP ${kind} IF EXISTS "${r.table_schema}"."${r.table_name}" CASCADE`);
+      // A transaction the user left open (e.g. a lone BEGIN) blocks the DDL
+      // below; clear it first.
+      try {
+        await conn.query("ROLLBACK");
+      } catch {
+        // No active transaction.
       }
+
+      const listObjects = async () => {
+        const res = await conn.query(
+          `SELECT table_schema, table_name, table_type FROM information_schema.tables
+           WHERE table_schema NOT IN ('information_schema','pg_catalog','system','temp')`,
+        );
+        return res.toArray().map((row) => {
+          const r: any = row.toJSON();
+          return {
+            schema: String(r.table_schema),
+            name: String(r.table_name),
+            kind: String(r.table_type).includes("VIEW") ? "VIEW" : "TABLE",
+          };
+        });
+      };
+
+      // DuckDB's DROP ... CASCADE does not remove a table that another table
+      // still references by a foreign key, so a single pass fails on the
+      // ShopFlow schema. Drop views first, then retry the tables until the
+      // dependency graph is empty.
+      let objects = await listObjects();
+      objects.sort((a, b) => (a.kind === "VIEW" ? -1 : 1) - (b.kind === "VIEW" ? -1 : 1));
+      for (let pass = 0; pass < 10 && objects.length > 0; pass++) {
+        let dropped = 0;
+        for (const o of objects) {
+          try {
+            await conn.query(`DROP ${o.kind} IF EXISTS "${o.schema}"."${o.name}" CASCADE`);
+            dropped++;
+          } catch {
+            // Still referenced by a not-yet-dropped table; try again next pass.
+          }
+        }
+        objects = await listObjects();
+        if (dropped === 0) break;
+      }
+
       await loadIntoDuckDB(database, conn, dataset, onProgress);
     },
     async uploadCsv(file: File, tableName: string) {
@@ -524,7 +578,9 @@ async function bootDuckDB(
       const virtualName = `upload_${Date.now()}_${file.name}`;
       await database.registerFileBuffer(virtualName, buffer);
       try {
-        await conn.query(`CREATE TABLE "uploads"."${tableName}" AS SELECT * FROM read_csv_auto('${virtualName}');`);
+        await conn.query(
+          `CREATE TABLE "uploads"."${tableName}" AS SELECT * FROM read_csv_auto('${virtualName}');`,
+        );
       } finally {
         await database.dropFile(virtualName);
       }
@@ -680,14 +736,35 @@ class DBClient {
     type StatementResult = { rows: any[]; fields: Field[]; affected?: number; sql: string };
     let last: StatementResult | null = null;
     let lastWithRows: StatementResult | null = null;
+    let lastReadWithRows: StatementResult | null = null;
     let lastRead: StatementResult | null = null;
+    // Track open transactions so a failed or unbalanced script cannot leave the
+    // session stuck ("cannot start a transaction within a transaction", and a
+    // reload that then hangs).
+    let txnDepth = 0;
 
     for (const [index, stmt] of statements.entries()) {
+      const kind = transactionKind(stmt);
       try {
         last = { ...(await handle.exec(stmt)), sql: stmt };
-        if (last.fields.length > 0) lastWithRows = last;
-        if (isReadStatement(stmt)) lastRead = last;
+        if (kind === "open") txnDepth++;
+        else if (kind === "close") txnDepth = Math.max(0, txnDepth - 1);
+        // A COMMIT/ROLLBACK reports a driver result set on DuckDB; never let it
+        // shadow an earlier SELECT run inside the same transaction.
+        if (last.fields.length > 0 && kind === null) lastWithRows = last;
+        if (isReadStatement(stmt)) {
+          lastRead = last;
+          if (last.fields.length > 0) lastReadWithRows = last;
+        }
       } catch (e: any) {
+        if (txnDepth > 0) {
+          try {
+            await handle.exec("ROLLBACK");
+          } catch {
+            // Nothing to roll back, or the driver rejected it; either way the
+            // next run starts clean.
+          }
+        }
         const message = String(e?.message ?? e);
         const range = ranges[index];
         // Drivers report the position within the single statement they ran, so
@@ -718,14 +795,28 @@ class DBClient {
       }
     }
 
-    const chosen = lastWithRows ?? lastRead ?? last!;
+    // An unbalanced BEGIN with no COMMIT/ROLLBACK in the same script would keep
+    // the session in a transaction; undo it so the next statement is not
+    // rejected and Reset cannot hang.
+    if (txnDepth > 0) {
+      try {
+        await handle.exec("ROLLBACK");
+      } catch {
+        // Best effort only.
+      }
+    }
+
+    const chosen = lastReadWithRows ?? lastWithRows ?? lastRead ?? last!;
+    // BEGIN/COMMIT/ROLLBACK report a one-column "Success" result on DuckDB;
+    // present them as a plain command, not an empty table.
+    const chosenIsTxnControl = transactionKind(chosen.sql) !== null;
     return {
-      rows: chosen.rows,
-      fields: chosen.fields,
+      rows: chosenIsTxnControl ? [] : chosen.rows,
+      fields: chosenIsTxnControl ? [] : chosen.fields,
       executionTimeMs: performance.now() - started,
       statementCount: statements.length,
-      affectedRows: chosen.affected,
-      isCommand: !isReadStatement(chosen.sql),
+      affectedRows: chosenIsTxnControl ? undefined : chosen.affected,
+      isCommand: chosenIsTxnControl || (chosen.fields.length === 0 && !isReadStatement(chosen.sql)),
       sql,
     };
   }
@@ -742,18 +833,41 @@ class DBClient {
     const key: SessionKey = `${engine}:${dataset}`;
     const handle = await this.init(engine, dataset);
     this.emit(key, { status: "loading", progress: 0, label: "reloading" });
-    await handle.reload();
-    this.emit(key, { status: "ready", progress: 1, label: "ready" });
+    try {
+      await handle.reload();
+      this.emit(key, { status: "ready", progress: 1, label: "ready" });
+    } catch {
+      // An in-place reload failed (e.g. a session left in a bad state). Drop the
+      // whole session and boot a fresh one so Reset always recovers.
+      this.handles.delete(key);
+      this.order = this.order.filter((k) => k !== key);
+      try {
+        await handle.dispose();
+      } catch {
+        // Already gone.
+      }
+      await this.init(engine, dataset);
+    }
   }
 
   /** Upload a CSV file directly to the uploads schema */
-  async uploadCsv(engine: Engine, dataset: DatasetId, file: File, tableName: string): Promise<void> {
-    if (file.size > 50 * 1024 * 1024) throw new Error("File exceeds 50MB limit for browser stability.");
-    
+  async uploadCsv(
+    engine: Engine,
+    dataset: DatasetId,
+    file: File,
+    tableName: string,
+  ): Promise<void> {
+    if (file.size > 50 * 1024 * 1024)
+      throw new Error("File exceeds 50MB limit for browser stability.");
+
     const handle = await this.init(engine, dataset);
     if (!handle.uploadCsv) throw new Error(`${engine} does not support CSV uploads.`);
-    
-    this.emit(`${engine}:${dataset}`, { status: "loading", progress: 0, label: `Importing ${file.name}` });
+
+    this.emit(`${engine}:${dataset}`, {
+      status: "loading",
+      progress: 0,
+      label: `Importing ${file.name}`,
+    });
     try {
       await handle.uploadCsv(file, tableName);
       this.emit(`${engine}:${dataset}`, { status: "ready", progress: 1, label: "ready" });
