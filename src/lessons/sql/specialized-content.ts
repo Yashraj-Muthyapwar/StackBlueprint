@@ -18,6 +18,7 @@ import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
 import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant.png";
 import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
 import olistTruncationBucketingImg from "@/images/sql/datetime-functions/truncation-bucketing-olist.png";
+import olistDateArithmeticImg from "@/images/sql/datetime-functions/date-arithmetic-olist.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -4395,7 +4396,147 @@ const dateArithmetic: LessonContent = {
   slug: "date-arithmetic",
   title: "Date Arithmetic & DATEDIFF",
   subtitle: "DATEDIFF / AGE / date − date / EXTRACT(EPOCH FROM b−a)",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "Choose the duration your question actually needs",
+      body: [
+        "An Olist delivery can be described in more than one valid way. A customer-service report may care how many calendar dates passed. An operations metric may need the precise elapsed time. A readable investigation may need an interval that preserves days, hours, and minutes.",
+        "Start by naming the business question. Then select the expression whose output matches it. This prevents a common reporting mistake: calling a calendar-day count an exact elapsed duration, or treating a precise duration as a whole-date count.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistDateArithmeticImg,
+      alt: "A light-grid Olist diagram shows one purchase and delivery timestamp producing calendar days, an AGE interval, and elapsed days.",
+      caption: "The same purchase-to-delivery span has different useful representations, depending on whether the report needs dates, a readable interval, or precise elapsed time.",
+    },
+    {
+      kind: "prose",
+      heading: "Subtract dates for calendar days",
+      body: [
+        "In PostgreSQL, subtracting one `DATE` from another returns an integer number of calendar-day boundaries. Cast timestamps to dates when the time of day is intentionally irrelevant. The expression answers: how many date changes separate these events?",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased on October 2 and delivered on October 10. Its delivery dates are eight calendar days apart, even though the exact timestamps are more than eight 24-hour periods apart.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Count calendar-day distance for one delivered Olist order",
+      code: "SELECT\n  order_purchase_timestamp::date AS purchased_date,\n  order_delivered_customer_date::date AS delivered_date,\n  order_delivered_customer_date::date\n    - order_purchase_timestamp::date AS calendar_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "Date subtraction ignores the time of day and returns an integer day count",
+      headers: ["purchased_date", "delivered_date", "calendar_delivery_days"],
+      rows: [["2017-10-02", "2017-10-10", "8"]],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-date-arithmetic",
+      caption: "Calendar-day counting and elapsed-time measurement start with the same Olist timestamps but intentionally return different shapes.",
+    },
+    {
+      kind: "prose",
+      heading: "Use AGE for a readable PostgreSQL interval",
+      body: [
+        "`AGE(later, earlier)` returns a symbolic PostgreSQL interval with years, months, and days where applicable. For this delivery, the result is 8 days 10:28:40. This format is useful when a person is reading one order investigation, but it is not the right value to average across many rows because months do not all have the same length.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the delivery span as a readable interval",
+      code: "SELECT\n  AGE(\n    order_delivered_customer_date,\n    order_purchase_timestamp\n  ) AS delivery_age\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "AGE preserves the day, hour, minute, and second components for a human-readable result",
+      headers: ["delivery_age"],
+      rows: [["8 days 10:28:40"]],
+    },
+    {
+      kind: "prose",
+      heading: "Use EPOCH for exact elapsed duration",
+      body: [
+        "Subtracting two timestamps produces an interval. `EXTRACT(EPOCH FROM later - earlier)` converts that interval to total seconds. Divide by 86,400.0 for fractional elapsed days or by 3,600.0 for hours. The decimal makes the precision explicit and is safe to average across deliveries.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure the precise Olist delivery duration in elapsed days",
+      code: "SELECT\n  ROUND(\n    EXTRACT(\n      EPOCH FROM order_delivered_customer_date - order_purchase_timestamp\n    ) / 86400.0,\n    2\n  ) AS elapsed_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "The 10:28:40 beyond eight full days becomes a fractional elapsed day",
+      headers: ["elapsed_delivery_days"],
+      rows: [["8.44"]],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "DATEDIFF is a dialect family, not PostgreSQL syntax",
+      body: "PostgreSQL has no built-in DATEDIFF function. Use date subtraction for calendar-day counts or EPOCH arithmetic for precise elapsed time. SQL Server and Snowflake use DATEDIFF, while DuckDB uses DATE_DIFF. Those functions generally count unit boundaries, so read each engine's documentation before treating the result as an exact duration.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DuckDB: DATE_DIFF for the same Olist calendar-day count",
+      code: "-- DuckDB, not PostgreSQL\nSELECT\n  DATE_DIFF(\n    'day',\n    order_purchase_timestamp::date,\n    order_delivered_customer_date::date\n  ) AS calendar_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "playground-practice",
+      title: "Measure Olist delivery days two ways",
+      prompt: "For delivered Olist orders, preserve the purchase and customer-delivery timestamps, then return both calendar-day distance and exact elapsed days. Use date subtraction for the calendar count and EXTRACT(EPOCH) divided by 86400.0, rounded to two decimals, for precise elapsed days. Keep the first five delivered purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five delivered orders with order_id, purchase timestamp, delivery timestamp, calendar_delivery_days, and elapsed_delivery_days, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-measure-delivery-days",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Subtract DATE values when the business question is about whole calendar-day distance.",
+        "AGE(later, earlier) returns a human-readable PostgreSQL interval, which is useful for inspection but not ideal for aggregate duration metrics.",
+        "EXTRACT(EPOCH FROM later - earlier) converts an elapsed timestamp interval to total seconds that can be scaled to hours or fractional days.",
+        "PostgreSQL does not have built-in DATEDIFF. DuckDB's DATE_DIFF and other engines' DATEDIFF functions have their own boundary-count semantics.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-date-arithmetic-calendar-days",
+          question: "What does delivered_at::date - purchased_at::date measure?",
+          options: ["The integer calendar-day distance", "The exact elapsed seconds", "A text label", "The number of delivery items"],
+          correctIndex: 0,
+          explanation: "Casting to DATE discards time of day, and PostgreSQL date subtraction returns an integer day count.",
+        },
+        {
+          id: "olist-date-arithmetic-age",
+          question: "When is AGE(delivered_at, purchased_at) most useful?",
+          options: ["Showing a readable interval for an individual investigation", "Averaging months across all orders", "Replacing the stored timestamp", "Creating a fixed one-hour bucket"],
+          correctIndex: 0,
+          explanation: "AGE returns a symbolic interval that people can read directly. For aggregate durations, use a fixed unit such as total seconds or hours.",
+        },
+        {
+          id: "olist-date-arithmetic-epoch",
+          question: "Why divide EXTRACT(EPOCH FROM delivered_at - purchased_at) by 86400.0?",
+          options: ["To express the precise elapsed duration in fractional days", "To remove time zones", "To format a date label", "To count calendar months"],
+          correctIndex: 0,
+          explanation: "EPOCH returns total seconds. There are 86,400 seconds in a day, and the decimal keeps fractional precision.",
+        },
+        {
+          id: "olist-date-arithmetic-datediff",
+          question: "Which statement about DATEDIFF is correct in PostgreSQL?",
+          options: ["PostgreSQL has no built-in DATEDIFF function", "DATEDIFF always returns exact seconds", "DATEDIFF is required for date subtraction", "DATEDIFF is a TimescaleDB bucket function"],
+          correctIndex: 0,
+          explanation: "Use PostgreSQL date subtraction or EPOCH arithmetic instead. DATEDIFF is a function name from other SQL dialects.",
+        },
+      ],
+    },
+  ],
 };
 
 const intervalsLookbacks: LessonContent = {
