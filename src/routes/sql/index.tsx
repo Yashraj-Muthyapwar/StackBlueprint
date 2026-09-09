@@ -155,7 +155,7 @@ const sections: Section[] = [
         blurb:
           "INNER, LEFT, RIGHT, FULL, SEMI, ANTI, CROSS — pick the right join for the shape of your data.",
         icon: GitMerge,
-        modules: ["INNER / OUTER", "Self joins", "Semi & anti", "Join algorithms"],
+        modules: ["Inner & Outer", "Cross & Self", "Semi & Anti", "LATERAL", "+5 more"],
         unlocked: true,
         routeBase: "querying",
       },
@@ -165,8 +165,6 @@ const sections: Section[] = [
         blurb: "Scalar, correlated, EXISTS, UNION/INTERSECT/EXCEPT — when a subquery beats a join.",
         icon: Layers,
         modules: ["Scalar subqueries", "Correlated", "EXISTS / IN", "UNION / EXCEPT"],
-        unlocked: true,
-        routeBase: "querying",
       },
     ],
   },
