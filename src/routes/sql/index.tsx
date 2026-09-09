@@ -155,7 +155,7 @@ const sections: Section[] = [
         blurb:
           "INNER, LEFT, RIGHT, FULL, SEMI, ANTI, CROSS — pick the right join for the shape of your data.",
         icon: GitMerge,
-        modules: ["INNER / OUTER", "Self joins", "Semi & anti", "Join algorithms"],
+        modules: ["Inner & Outer", "Cross & Self", "Semi & Anti", "LATERAL", "+5 more"],
         unlocked: true,
         routeBase: "querying",
       },
