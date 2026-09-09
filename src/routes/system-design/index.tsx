@@ -73,7 +73,7 @@ type Section = {
 
 const sections: Section[] = [
   {
-    group: "Phase 1 · Foundations",
+    group: "Foundations",
     groupBlurb:
       "How an internet application fits together before the distributed-system complexity. Requirements, estimation, the core metrics, networking, APIs and caching.",
     topics: [
@@ -175,7 +175,7 @@ const sections: Section[] = [
     ],
   },
   {
-    group: "Phase 2 · Data, Scaling & Architecture",
+    group: "Data, Scaling & Architecture",
     groupBlurb:
       "From web architecture to scalable data architecture. Storage internals, replication and sharding, consistency, security, messaging, and the architectural styles that tie services together.",
     topics: [
@@ -316,7 +316,7 @@ const sections: Section[] = [
     ],
   },
   {
-    group: "Phase 3 · Distributed & Data Systems",
+    group: "Distributed & Data Systems",
     groupBlurb:
       "The hard phase. Network failures, clocks, consensus, distributed transactions, then batch and stream processing, data-engineering patterns and observability.",
     topics: [
@@ -425,7 +425,7 @@ const sections: Section[] = [
     ],
   },
   {
-    group: "Phase 4 · Interview Fluency",
+    group: "Interview Fluency",
     groupBlurb:
       "Converting knowledge into design judgment. Specialized structures, a small deep-dive technology set, recurring interview patterns, and the case-study gauntlet.",
     topics: [
