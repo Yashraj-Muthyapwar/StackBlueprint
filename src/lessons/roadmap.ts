@@ -843,6 +843,68 @@ export const roadmap: RoadmapCategory[] = [
             ],
           },
           {
+            title: "Date & Time",
+            slug: "datetime-functions",
+            path: "/sql/specialized/datetime-functions",
+            blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
+            lessons: [
+              {
+                title: "Current Time & Time Zones",
+                slug: "time-zones-precision",
+                path: "/sql/specialized/datetime-functions/time-zones-precision",
+                icon: Calendar,
+              },
+              {
+                title: "Extraction & Formatting",
+                slug: "extraction-formatting",
+                path: "/sql/specialized/datetime-functions/extraction-formatting",
+                icon: Calendar,
+              },
+              {
+                title: "Truncation & Bucketing",
+                slug: "date-truncation",
+                path: "/sql/specialized/datetime-functions/date-truncation",
+                icon: Calendar,
+              },
+              {
+                title: "Date Arithmetic & DATEDIFF",
+                slug: "date-arithmetic",
+                path: "/sql/specialized/datetime-functions/date-arithmetic",
+                icon: Calendar,
+              },
+              {
+                title: "Intervals, Lookbacks & Sargable Filters",
+                slug: "intervals-lookbacks",
+                path: "/sql/specialized/datetime-functions/intervals-lookbacks",
+                icon: Calendar,
+              },
+              {
+                title: "Calendar & Period Analysis",
+                slug: "calendar-period-analysis",
+                path: "/sql/specialized/datetime-functions/calendar-period-analysis",
+                icon: Calendar,
+              },
+              {
+                title: "Overlapping Ranges",
+                slug: "overlapping-ranges",
+                path: "/sql/specialized/datetime-functions/overlapping-ranges",
+                icon: Calendar,
+              },
+              {
+                title: "Date Spines & Gap Filling",
+                slug: "date-spines-gap-filling",
+                path: "/sql/specialized/datetime-functions/date-spines-gap-filling",
+                icon: Calendar,
+              },
+              {
+                title: "Date & Time: Final Quiz",
+                slug: "datetime-quiz",
+                path: "/sql/specialized/datetime-functions/datetime-quiz",
+                icon: HelpCircle,
+              },
+            ],
+          },
+          {
             title: "Conversions",
             slug: "conversions",
             path: "/sql/specialized/conversions",

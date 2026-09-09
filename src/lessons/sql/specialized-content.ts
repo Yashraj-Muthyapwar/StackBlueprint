@@ -15,6 +15,14 @@ import castToCharImg from "@/images/sql/conversions/cast-to-char-cycle-depot.png
 import convertDialectBridgeImg from "@/images/sql/conversions/convert-dialect-bridge-cycle-depot.png";
 import implicitCoercionImg from "@/images/sql/conversions/implicit-coercion-cycle-depot.png";
 import safeCastsImg from "@/images/sql/conversions/safe-casts-cycle-depot.png";
+import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-zone-instant.png";
+import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
+import olistTruncationBucketingImg from "@/images/sql/datetime-functions/truncation-bucketing-olist.png";
+import olistDateArithmeticImg from "@/images/sql/datetime-functions/date-arithmetic-olist.png";
+import olistIntervalsLookbacksImg from "@/images/sql/datetime-functions/intervals-lookbacks-olist.png";
+import olistCalendarPeriodAnalysisImg from "@/images/sql/datetime-functions/calendar-period-analysis-olist.png";
+import olistOverlappingRangesImg from "@/images/sql/datetime-functions/overlapping-ranges-olist.png";
+import olistDateSpinesGapFillingImg from "@/images/sql/datetime-functions/date-spines-gap-filling-olist.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -3832,6 +3840,1029 @@ const conversionsQuiz: LessonContent = {
 };
 
 // =============================================================
+// DATE & TIME
+// =============================================================
+const timeZonesPrecision: LessonContent = {
+  slug: "time-zones-precision",
+  title: "Current Time & Time Zones",
+  subtitle: "NOW / TIMESTAMPTZ / AT TIME ZONE — plus DST",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One instant, many clocks",
+      body: [
+        "A purchase happens at one instant. A dashboard in Sao Paulo, a support team in New York, and a warehouse job running in UTC may show different clock readings for that same instant. The job is not to make those readings match. The job is to preserve the instant, then render it in the zone the reader needs.",
+        "The Olist `orders` table has `order_purchase_timestamp` as `TIMESTAMP`, which is a wall-clock reading with no zone attached. Because this is Brazilian marketplace data, this lesson treats those stored readings as `America/Sao_Paulo`. That assumption turns each wall-clock value into an instant that can safely be shown anywhere.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistTimeZoneInstantImg,
+      alt: "Three linked clocks over a world map illustrate one Olist purchase instant being rendered from São Paulo through UTC to New York.",
+      caption:
+        "A time-zone conversion changes the displayed wall-clock reading, not the purchase instant itself. The SQL examples below make the source and destination zones explicit.",
+    },
+    {
+      kind: "table",
+      caption: "Olist orders stores purchase time as a zone-less TIMESTAMP, not as TIMESTAMPTZ",
+      headers: ["table", "column", "type", "meaning"],
+      rows: [
+        ["orders", "order_id", "VARCHAR(32)", "one Olist order"],
+        ["orders", "order_purchase_timestamp", "TIMESTAMP", "local purchase clock reading"],
+        ["orders", "order_approved_at", "TIMESTAMP", "local approval clock reading, when present"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Ask the database what time it is",
+      body: [
+        "`NOW()` returns the current transaction timestamp as `TIMESTAMPTZ`. `CURRENT_TIMESTAMP` is the standard spelling for the same idea. The exact displayed clock reading depends on the session time zone, but both represent one unambiguous instant.",
+        "Olist is a historical 2016 to 2018 snapshot, so `WHERE order_purchase_timestamp >= NOW() - INTERVAL '7 days'` is not a useful analysis of this dataset today. Use `NOW()` for live operational data. For a reproducible historical report, anchor the report to a deliberate timestamp or to the dataset's latest timestamp in a later lookbacks lesson.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "NOW returns a TIMESTAMPTZ for the current transaction",
+      code: `SELECT
+  NOW() AS transaction_now,
+  CURRENT_TIMESTAMP AS standard_current_timestamp,
+  pg_typeof(NOW()) AS now_type;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Current does not mean a fresh clock read on every row",
+      body: "In PostgreSQL, NOW() is stable for the transaction. Repeating it in one statement gives the same instant, which is exactly what you want for a consistent report. Use a clock function only when you deliberately need the physical wall clock to advance during execution.",
+    },
+    {
+      kind: "prose",
+      heading: "TIMESTAMP names a clock reading; TIMESTAMPTZ names an instant",
+      body: [
+        "`TIMESTAMP '2018-07-24 20:41:37'` says what a clock showed, but not where that clock was. `TIMESTAMPTZ '2018-07-24 20:41:37-03'` supplies an offset, so PostgreSQL can identify one point on the global timeline. PostgreSQL stores a `TIMESTAMPTZ` as an instant and formats it for the active session zone when it displays it.",
+        "`AT TIME ZONE` has two useful directions. Applied to a `TIMESTAMP`, it assigns a named zone and returns a `TIMESTAMPTZ`. Applied to a `TIMESTAMPTZ`, it renders that instant as a local `TIMESTAMP` in the named zone. The expression type tells you which direction you are taking.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-time-zones",
+      caption: "First assign Sao Paulo to Olist's stored wall-clock time. Then render the resulting instant in another zone.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Turn the stored Sao Paulo wall time into an instant, then display that instant in two zones",
+      code: `SELECT
+  order_id,
+  order_purchase_timestamp,
+  (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo')
+    AT TIME ZONE 'UTC' AS purchase_utc,
+  (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo')
+    AT TIME ZONE 'America/New_York' AS purchase_new_york
+FROM orders
+ORDER BY order_purchase_timestamp, order_id
+LIMIT 3;`,
+    },
+    {
+      kind: "table",
+      caption: "Preview of the first three Olist purchases, ordered explicitly. São Paulo was UTC-03 and New York was UTC-04 on these September 2016 dates.",
+      headers: ["order_purchase_timestamp", "purchase_utc", "purchase_new_york"],
+      rows: [
+        ["2016-09-04 21:15:19", "2016-09-05 00:15:19", "2016-09-04 20:15:19"],
+        ["2016-09-05 00:15:34", "2016-09-05 03:15:34", "2016-09-04 23:15:34"],
+        ["2016-09-13 15:24:19", "2016-09-13 18:24:19", "2016-09-13 14:24:19"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Do not attach UTC directly to Olist's raw TIMESTAMP",
+      body: "`order_purchase_timestamp AT TIME ZONE 'UTC'` would claim the Brazilian clock reading was already UTC, shifting the actual purchase instant by hours. Assign the source zone first, then render the resulting instant in the destination zone.",
+    },
+    {
+      kind: "prose",
+      heading: "DST is why named zones beat fixed offsets",
+      body: [
+        "A fixed offset such as `-03:00` describes one offset, not a location's rules over time. Daylight-saving transitions can change the offset, and historical rules can differ from current rules. `America/Sao_Paulo` and `America/New_York` let PostgreSQL use its time-zone rule database for the date being converted.",
+        "On 2018-03-11, New York skipped from 01:59 to 03:00. The two UTC instants below are one hour apart, yet their local clock readings jump two hours. Converting an instant to local time is safe. The harder direction is accepting a local time that never occurred or occurred twice. When an application accepts local user input near a DST transition, preserve the user's zone or offset instead of guessing later.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A DST spring-forward jump in New York",
+      code: `SELECT
+  TIMESTAMPTZ '2018-03-11 06:30:00+00'
+    AT TIME ZONE 'America/New_York' AS before_jump,
+  TIMESTAMPTZ '2018-03-11 07:30:00+00'
+    AT TIME ZONE 'America/New_York' AS after_jump;`,
+    },
+    {
+      kind: "table",
+      caption: "The clock jumps over the 02:00 hour even though the instants are exactly one hour apart",
+      headers: ["before_jump", "after_jump"],
+      rows: [["2018-03-11 01:30:00", "2018-03-11 03:30:00"]],
+    },
+    {
+      kind: "playground-practice",
+      title: "Show Olist purchase instants in two reader zones",
+      prompt: "From Olist orders, return the stored purchase timestamp plus the same purchase instant rendered in UTC and New York. Treat the stored value as America/Sao_Paulo before rendering either destination. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-purchase-instants-across-zones",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "NOW() and CURRENT_TIMESTAMP return the current transaction instant as TIMESTAMPTZ.",
+        "TIMESTAMP is a zone-less wall-clock reading; TIMESTAMPTZ identifies an instant that can be displayed in any session zone.",
+        "For Olist, assign America/Sao_Paulo to the stored purchase TIMESTAMP before converting it to UTC or another reader zone.",
+        "AT TIME ZONE assigns a zone when applied to TIMESTAMP and renders a zone when applied to TIMESTAMPTZ.",
+        "Use named IANA zones such as America/New_York, not fixed offsets, when daylight-saving and historical rules matter.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-time-now-type",
+          question: "What type does NOW() return in PostgreSQL?",
+          options: ["TIMESTAMPTZ", "TIMESTAMP only", "DATE", "TEXT"],
+          correctIndex: 0,
+          explanation: "NOW() identifies the current transaction instant, so it returns timestamp with time zone (TIMESTAMPTZ).",
+        },
+        {
+          id: "olist-time-source-zone",
+          question: "Olist stores order_purchase_timestamp as TIMESTAMP. What is the first correct conversion step for this lesson?",
+          options: [
+            "Assign America/Sao_Paulo with AT TIME ZONE",
+            "Cast it to DATE",
+            "Append the text UTC",
+            "Render it in New York immediately",
+          ],
+          correctIndex: 0,
+          explanation: "The raw value is a Brazilian wall-clock reading. Assigning its source zone turns it into an instant before any destination rendering.",
+        },
+        {
+          id: "olist-time-at-time-zone-direction",
+          question: "What does a TIMESTAMPTZ AT TIME ZONE 'America/New_York' expression produce?",
+          options: [
+            "A local TIMESTAMP clock reading in New York",
+            "A new UTC offset stored in the source table",
+            "A DATE with the time removed",
+            "A zone-less text label only",
+          ],
+          correctIndex: 0,
+          explanation: "When the input is TIMESTAMPTZ, AT TIME ZONE renders that instant as a zone-less local timestamp in the requested zone.",
+        },
+        {
+          id: "olist-time-dst-named-zone",
+          question: "Why is America/New_York safer than a fixed -05:00 offset for year-round reporting?",
+          options: [
+            "The named zone applies the correct historical and daylight-saving rules",
+            "It permanently converts all stored timestamps to New York",
+            "It makes every local time unique",
+            "It prevents NULL timestamps",
+          ],
+          correctIndex: 0,
+          explanation: "A named IANA zone carries date-specific offset rules. A fixed offset cannot represent daylight-saving changes.",
+        },
+      ],
+    },
+  ],
+};
+
+const extractionFormatting: LessonContent = {
+  slug: "extraction-formatting",
+  title: "Extraction & Formatting",
+  subtitle: "EXTRACT / DATE_PART / TO_CHAR / EXTRACT(EPOCH …) / strftime",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One timestamp can answer several questions",
+      body: [
+        "An Olist purchase timestamp records a complete date and time, but reports rarely need the whole value unchanged. You might need a numeric year for a chart, an hour for an operations report, a readable label for an export, or an elapsed duration for a service-level metric.",
+        "Extraction keeps a useful part as a number. Formatting creates display text. Duration conversion turns an interval into one comparable unit. These expressions reshape the query result only. They do not change the stored Olist timestamp.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistExtractionFormattingImg,
+      alt: "A light-grid diagram shows an Olist purchase timestamp branching into a year, an hour, and a formatted date label.",
+      caption:
+        "EXTRACT and DATE_PART return numeric date pieces. TO_CHAR turns the same timestamp into a deliberately formatted text label.",
+    },
+    {
+      kind: "prose",
+      heading: "Extract a numeric date part",
+      body: [
+        "`EXTRACT(field FROM value)` returns one numeric piece of a date, timestamp, or interval. Use it when the result needs to behave as a number, such as a year to group by or an hour to compare. Common fields include `YEAR`, `MONTH`, `DAY`, `HOUR`, `DOW`, and `EPOCH`.",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased at 2017-10-02 10:56:33. Extracting the year and hour gives numeric values that are easier to aggregate or filter later.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Pull numeric year and hour from one real Olist purchase",
+      code: `SELECT
+  order_purchase_timestamp,
+  EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year,
+  EXTRACT(HOUR FROM order_purchase_timestamp) AS purchase_hour
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "table",
+      caption: "EXTRACT returns numeric date pieces from the stored timestamp",
+      headers: ["order_purchase_timestamp", "purchase_year", "purchase_hour"],
+      rows: [["2017-10-02 10:56:33", "2017", "10"]],
+    },
+    {
+      kind: "prose",
+      heading: "DATE_PART is PostgreSQL's alternate spelling",
+      body: [
+        "`DATE_PART('field', value)` asks the same kind of question as `EXTRACT`. It uses a quoted field name and a comma instead of `FROM`. In PostgreSQL, choose the form your team reads most easily and stay consistent. `EXTRACT` is SQL-standard style; `DATE_PART` is a familiar PostgreSQL style.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-extraction-formatting",
+      caption:
+        "The timestamp stays intact while each function projects a different value into the result.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DATE_PART returns the same hour as EXTRACT",
+      code: `SELECT
+  order_purchase_timestamp,
+  DATE_PART('hour', order_purchase_timestamp) AS purchase_hour
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Numbers are for logic; text is for presentation",
+      body: "EXTRACT and DATE_PART return numeric values. Keep that numeric form for calculations, grouping, and sorting. Use TO_CHAR only when the reader needs a display label, because formatted output is text rather than a timestamp.",
+    },
+    {
+      kind: "prose",
+      heading: "Format a timestamp with TO_CHAR",
+      body: [
+        "`TO_CHAR(value, pattern)` formats a date, timestamp, interval, or number as text. The pattern controls the shape. `YYYY` is a four-digit year, `MM` is a two-digit month, `DD` is a two-digit day, `HH24` uses a 24-hour clock, and `MI` is minutes. Notice that minutes are `MI`, not `MM`.",
+        "The timestamp remains useful for chronological work. The `purchase_label` below is for a CSV, an email, or a dashboard tooltip where people need a compact, intentional display.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the timestamp and add a display-ready label",
+      code: `SELECT
+  order_purchase_timestamp,
+  TO_CHAR(
+    order_purchase_timestamp,
+    'Mon DD, YYYY at HH24:MI'
+  ) AS purchase_label
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "table",
+      caption: "TO_CHAR returns text while preserving the original timestamp beside it",
+      headers: ["order_purchase_timestamp", "purchase_label"],
+      rows: [["2017-10-02 10:56:33", "Oct 02, 2017 at 10:56"]],
+    },
+    {
+      kind: "prose",
+      heading: "Convert an interval to elapsed seconds",
+      body: [
+        "Subtracting two timestamps produces an interval. `EXTRACT(EPOCH FROM interval)` converts that interval into total seconds, including full days. Divide by 60, 3,600, or 86,400 when a metric is easier to read in minutes, hours, or days.",
+        "The first Olist order was purchased on 2016-09-04 and approved on 2016-10-07. Its elapsed approval interval is 2,822,564 seconds. The following date-arithmetic lesson will explore elapsed-time calculation in more depth; here, focus on turning the interval into one numeric unit.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure Olist approval delay in seconds and hours",
+      code: `SELECT
+  order_id,
+  EXTRACT(
+    EPOCH FROM order_approved_at - order_purchase_timestamp
+  ) AS seconds_to_approve,
+  ROUND(
+    EXTRACT(EPOCH FROM order_approved_at - order_purchase_timestamp) / 3600.0,
+    1
+  ) AS hours_to_approve
+FROM orders
+WHERE order_id = '2e7a8482f6fb09756ca50c10d7bfc047';`,
+    },
+    {
+      kind: "table",
+      caption: "The interval is converted into one comparable numeric unit",
+      headers: ["seconds_to_approve", "hours_to_approve"],
+      rows: [["2822564", "784.0"]],
+    },
+    {
+      kind: "prose",
+      heading: "Dialect note: DuckDB and SQLite use strftime",
+      body: [
+        "PostgreSQL uses `TO_CHAR` for formatted date text. DuckDB and SQLite commonly use `strftime`, whose percent codes are different from PostgreSQL's patterns. The intent is the same: create display text from a temporal value. Check the active SQL engine before copying a format string.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DuckDB: the strftime equivalent for an Olist display label",
+      code: `-- DuckDB, not PostgreSQL
+SELECT
+  strftime(order_purchase_timestamp, '%b %d, %Y at %H:%M')
+    AS purchase_label
+FROM orders
+WHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';`,
+    },
+    {
+      kind: "playground-practice",
+      title: "Build Olist purchase reporting fields",
+      prompt: "From Olist orders, return the order ID and purchase timestamp plus its numeric year, numeric hour, and a compact text label. Use EXTRACT for the year, DATE_PART for the hour, and TO_CHAR with YYYY-MM-DD HH24:MI for the label. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-extract-and-format-purchases",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "EXTRACT(field FROM value) returns a numeric date or interval part that can still be calculated, grouped, and sorted.",
+        "DATE_PART('field', value) is PostgreSQL's alternate syntax for extracting a numeric part.",
+        "TO_CHAR turns a timestamp into display text. Preserve the original timestamp when later work needs real time semantics.",
+        "EXTRACT(EPOCH FROM interval) turns an elapsed interval into total seconds, which can be scaled to minutes, hours, or days.",
+        "TO_CHAR patterns are PostgreSQL-specific. DuckDB and SQLite use strftime with percent-style format codes.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-extract-year-type",
+          question: "Which expression returns a numeric purchase year from order_purchase_timestamp?",
+          options: [
+            "EXTRACT(YEAR FROM order_purchase_timestamp)",
+            "TO_CHAR(order_purchase_timestamp, 'YYYY')",
+            "strftime(order_purchase_timestamp, 'YEAR')",
+            "DATE_PART(order_purchase_timestamp, YEAR)",
+          ],
+          correctIndex: 0,
+          explanation: "EXTRACT uses a date-part keyword, FROM, and the temporal value. It returns a numeric part.",
+        },
+        {
+          id: "olist-date-part-syntax",
+          question: "Which PostgreSQL expression is an alternate way to get the purchase hour?",
+          options: [
+            "DATE_PART('hour', order_purchase_timestamp)",
+            "DATE_PART(hour FROM order_purchase_timestamp)",
+            "TO_CHAR(order_purchase_timestamp, 'hour')",
+            "EXTRACT('hour', order_purchase_timestamp)",
+          ],
+          correctIndex: 0,
+          explanation: "DATE_PART accepts a quoted field name followed by the temporal expression.",
+        },
+        {
+          id: "olist-to-char-purpose",
+          question: "Why keep order_purchase_timestamp alongside TO_CHAR(order_purchase_timestamp, ...)?",
+          options: [
+            "The original remains temporal for time-aware calculations and sorting",
+            "TO_CHAR permanently edits the stored timestamp",
+            "TO_CHAR returns a TIMESTAMPTZ with a different time zone",
+            "The original is required only for a table alias",
+          ],
+          correctIndex: 0,
+          explanation: "TO_CHAR returns text. Keeping the timestamp preserves the temporal value for later SQL work.",
+        },
+        {
+          id: "olist-epoch-interval",
+          question: "What does EXTRACT(EPOCH FROM order_approved_at - order_purchase_timestamp) return?",
+          options: [
+            "The approval interval expressed as total seconds",
+            "Only the second of the minute when approval happened",
+            "A formatted approval date label",
+            "The order's database ID",
+          ],
+          correctIndex: 0,
+          explanation: "Timestamp subtraction produces an interval; extracting EPOCH from that interval returns its total seconds.",
+        },
+      ],
+    },
+  ],
+};
+
+const dateTruncation: LessonContent = {
+  slug: "date-truncation",
+  title: "Truncation & Bucketing",
+  subtitle: "DATE_TRUNC / DATE_BIN / time_bucket",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Put individual events onto a shared time axis",
+      body: [
+        "Olist orders arrive at many different seconds. A monthly report, a daily operations view, or an hourly demand chart needs those individual moments placed into common time buckets before it can summarize them.",
+        "`DATE_TRUNC` snaps a timestamp to the start of a named calendar period such as a day, week, or month. `DATE_BIN` snaps a timestamp to a fixed-size interval anchored at a chosen origin. Both return a timestamp marking the bucket start. They do not round forward and they do not alter the stored Olist order time.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistTruncationBucketingImg,
+      alt: "A light-grid diagram shows one Olist purchase timestamp becoming day, month, and one-hour bucket-start timestamps.",
+      caption: "Truncation and binning replace the lower time detail with the shared start of a reporting bucket.",
+    },
+    {
+      kind: "prose",
+      heading: "DATE_TRUNC snaps to a calendar boundary",
+      body: [
+        "`DATE_TRUNC('unit', timestamp)` keeps the larger calendar parts and resets smaller parts to their start. A day bucket begins at midnight; a month bucket begins on the first day of that month at midnight. This makes all events in the same period share the exact same bucket value.",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased at 2017-10-02 10:56:33. Its day bucket starts at 2017-10-02 00:00:00 and its month bucket starts at 2017-10-01 00:00:00.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Snap one real Olist purchase to the start of its day and month",
+      code: "SELECT\n  order_purchase_timestamp,\n  DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day,\n  DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "Both bucket values are timestamps at the beginning of their calendar periods",
+      headers: ["order_purchase_timestamp", "purchase_day", "purchase_month"],
+      rows: [["2017-10-02 10:56:33", "2017-10-02 00:00:00", "2017-10-01 00:00:00"]],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-truncation-bucketing",
+      caption: "The same Olist timestamp can be snapped to calendar boundaries or placed in a fixed one-hour bin.",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Weeks have a defined start",
+      body: "In PostgreSQL, DATE_TRUNC('week', timestamp) starts the week on Monday at 00:00:00. Make that convention visible in report labels, especially when a business calls Sunday the first day of its week.",
+    },
+    {
+      kind: "prose",
+      heading: "DATE_BIN creates fixed-width bins",
+      body: [
+        "Use `DATE_BIN(stride, source, origin)` when the bucket width is an interval such as 15 minutes, 1 hour, or 6 hours. The `origin` is the anchor from which every bin boundary is counted. Choosing the same origin makes the bin assignment repeat predictably across the whole dataset.",
+        "For the same 10:56:33 Olist purchase, a one-hour bin anchored at midnight begins at 10:00:00. The event belongs in the 10:00 to 10:59:59.999... bucket, represented by its start timestamp.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Place one Olist purchase in a fixed one-hour bin",
+      code: "SELECT\n  order_purchase_timestamp,\n  DATE_BIN(\n    INTERVAL '1 hour',\n    order_purchase_timestamp,\n    TIMESTAMP '2000-01-01 00:00:00'\n  ) AS purchase_hour_bin\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "The timestamp falls into the one-hour interval whose start is 10:00:00",
+      headers: ["order_purchase_timestamp", "purchase_hour_bin"],
+      rows: [["2017-10-02 10:56:33", "2017-10-02 10:00:00"]],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Calendar periods and fixed intervals are not interchangeable",
+      body: "A calendar month varies from 28 to 31 days, so DATE_TRUNC('month', ...) expresses a calendar boundary. DATE_BIN uses a fixed interval and does not accept month or year strides. Use DATE_TRUNC for months, quarters, and years; use DATE_BIN for regular durations such as 15 minutes or 6 hours.",
+    },
+    {
+      kind: "prose",
+      heading: "time_bucket is an extension function",
+      body: ["TimescaleDB offers `time_bucket`, a convenient bucketing function for time-series tables. Its intent is similar to `DATE_BIN`, but it is not part of base PostgreSQL and is not installed in the Olist playground. Use it only when your database has the TimescaleDB extension enabled."],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "TimescaleDB only: an equivalent one-hour bucket",
+      code: "-- Requires the TimescaleDB extension; not available in this playground.\nSELECT\n  time_bucket('1 hour', order_purchase_timestamp) AS purchase_hour_bin\nFROM orders;",
+    },
+    {
+      kind: "playground-practice",
+      title: "Create Olist reporting buckets",
+      prompt: "From Olist orders, preserve the purchase timestamp and create daily, monthly, and fixed hourly bucket starts. Use DATE_TRUNC for the day and month values, and DATE_BIN with a 1-hour interval and a 2000-01-01 midnight origin for the hourly bin. Keep the first five purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five rows with order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-create-purchase-buckets",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "DATE_TRUNC snaps a timestamp to the start of a named calendar period such as day, week, or month.",
+        "A bucket value is the period start, not the last instant of that period and not a changed stored timestamp.",
+        "DATE_BIN uses a fixed interval plus an origin to create repeatable duration-based buckets.",
+        "Use DATE_TRUNC for calendar months, quarters, and years. Use DATE_BIN for fixed widths such as 15 minutes or 1 hour.",
+        "time_bucket belongs to TimescaleDB, not base PostgreSQL, so verify that the extension is available before using it.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-trunc-day-result",
+          question: "What does DATE_TRUNC('day', TIMESTAMP '2017-10-02 10:56:33') return?",
+          options: ["2017-10-02 00:00:00", "2017-10-02 23:59:59", "2017-10-02 10:00:00", "2017-10-01 00:00:00"],
+          correctIndex: 0,
+          explanation: "Day truncation keeps the date and resets the time to the beginning of that calendar day.",
+        },
+        {
+          id: "olist-date-bin-origin",
+          question: "Why does DATE_BIN take an origin argument?",
+          options: ["It defines the anchor from which fixed-width bin boundaries repeat", "It converts a timestamp into UTC", "It chooses which table stores the bin", "It formats the bucket as text"],
+          correctIndex: 0,
+          explanation: "The origin fixes the start of the repeating interval grid, so every row is assigned consistently.",
+        },
+        {
+          id: "olist-month-bucketing",
+          question: "Which function should you use for a calendar-month Olist report?",
+          options: ["DATE_TRUNC('month', order_purchase_timestamp)", "DATE_BIN(INTERVAL '1 month', order_purchase_timestamp, TIMESTAMP '2000-01-01')", "EXTRACT(MONTH FROM order_purchase_timestamp)", "TO_CHAR(order_purchase_timestamp, 'month')"],
+          correctIndex: 0,
+          explanation: "Months have variable lengths. DATE_TRUNC understands calendar boundaries; DATE_BIN is for fixed intervals.",
+        },
+        {
+          id: "olist-time-bucket-extension",
+          question: "What is required before using time_bucket in PostgreSQL?",
+          options: ["A database with the TimescaleDB extension enabled", "A TIMESTAMPTZ column only", "A JSONB index on orders", "An ORDER BY clause"],
+          correctIndex: 0,
+          explanation: "time_bucket is a TimescaleDB function, not a built-in PostgreSQL function.",
+        },
+      ],
+    },
+  ],
+};
+
+const dateArithmetic: LessonContent = {
+  slug: "date-arithmetic",
+  title: "Date Arithmetic & DATEDIFF",
+  subtitle: "DATEDIFF / AGE / date − date / EXTRACT(EPOCH FROM b−a)",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Choose the duration your question actually needs",
+      body: [
+        "An Olist delivery can be described in more than one valid way. A customer-service report may care how many calendar dates passed. An operations metric may need the precise elapsed time. A readable investigation may need an interval that preserves days, hours, and minutes.",
+        "Start by naming the business question. Then select the expression whose output matches it. This prevents a common reporting mistake: calling a calendar-day count an exact elapsed duration, or treating a precise duration as a whole-date count.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistDateArithmeticImg,
+      alt: "A light-grid Olist diagram shows one purchase and delivery timestamp producing calendar days, an AGE interval, and elapsed days.",
+      caption: "The same purchase-to-delivery span has different useful representations, depending on whether the report needs dates, a readable interval, or precise elapsed time.",
+    },
+    {
+      kind: "prose",
+      heading: "Subtract dates for calendar days",
+      body: [
+        "In PostgreSQL, subtracting one `DATE` from another returns an integer number of calendar-day boundaries. Cast timestamps to dates when the time of day is intentionally irrelevant. The expression answers: how many date changes separate these events?",
+        "Olist order `e481f51cbdc54678b7cc49136f2d6af7` was purchased on October 2 and delivered on October 10. Its delivery dates are eight calendar days apart, even though the exact timestamps are more than eight 24-hour periods apart.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Count calendar-day distance for one delivered Olist order",
+      code: "SELECT\n  order_purchase_timestamp::date AS purchased_date,\n  order_delivered_customer_date::date AS delivered_date,\n  order_delivered_customer_date::date\n    - order_purchase_timestamp::date AS calendar_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "Date subtraction ignores the time of day and returns an integer day count",
+      headers: ["purchased_date", "delivered_date", "calendar_delivery_days"],
+      rows: [["2017-10-02", "2017-10-10", "8"]],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-date-arithmetic",
+      caption: "Calendar-day counting and elapsed-time measurement start with the same Olist timestamps but intentionally return different shapes.",
+    },
+    {
+      kind: "prose",
+      heading: "Use AGE for a readable PostgreSQL interval",
+      body: [
+        "`AGE(later, earlier)` returns a symbolic PostgreSQL interval with years, months, and days where applicable. For this delivery, the result is 8 days 10:28:40. This format is useful when a person is reading one order investigation, but it is not the right value to average across many rows because months do not all have the same length.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep the delivery span as a readable interval",
+      code: "SELECT\n  AGE(\n    order_delivered_customer_date,\n    order_purchase_timestamp\n  ) AS delivery_age\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "AGE preserves the day, hour, minute, and second components for a human-readable result",
+      headers: ["delivery_age"],
+      rows: [["8 days 10:28:40"]],
+    },
+    {
+      kind: "prose",
+      heading: "Use EPOCH for exact elapsed duration",
+      body: [
+        "Subtracting two timestamps produces an interval. `EXTRACT(EPOCH FROM later - earlier)` converts that interval to total seconds. Divide by 86,400.0 for fractional elapsed days or by 3,600.0 for hours. The decimal makes the precision explicit and is safe to average across deliveries.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure the precise Olist delivery duration in elapsed days",
+      code: "SELECT\n  ROUND(\n    EXTRACT(\n      EPOCH FROM order_delivered_customer_date - order_purchase_timestamp\n    ) / 86400.0,\n    2\n  ) AS elapsed_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "table",
+      caption: "The 10:28:40 beyond eight full days becomes a fractional elapsed day",
+      headers: ["elapsed_delivery_days"],
+      rows: [["8.44"]],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "DATEDIFF is a dialect family, not PostgreSQL syntax",
+      body: "PostgreSQL has no built-in DATEDIFF function. Use date subtraction for calendar-day counts or EPOCH arithmetic for precise elapsed time. SQL Server and Snowflake use DATEDIFF, while DuckDB uses DATE_DIFF. Those functions generally count unit boundaries, so read each engine's documentation before treating the result as an exact duration.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DuckDB: DATE_DIFF for the same Olist calendar-day count",
+      code: "-- DuckDB, not PostgreSQL\nSELECT\n  DATE_DIFF(\n    'day',\n    order_purchase_timestamp::date,\n    order_delivered_customer_date::date\n  ) AS calendar_delivery_days\nFROM orders\nWHERE order_id = 'e481f51cbdc54678b7cc49136f2d6af7';",
+    },
+    {
+      kind: "playground-practice",
+      title: "Measure Olist delivery days two ways",
+      prompt: "For delivered Olist orders, preserve the purchase and customer-delivery timestamps, then return both calendar-day distance and exact elapsed days. Use date subtraction for the calendar count and EXTRACT(EPOCH) divided by 86400.0, rounded to two decimals, for precise elapsed days. Keep the first five delivered purchases in a deterministic order.",
+      tables: ["orders"],
+      successCheck: "Five delivered orders with order_id, purchase timestamp, delivery timestamp, calendar_delivery_days, and elapsed_delivery_days, ordered by purchase time and order ID.",
+      href: "/sql-playground?practice=olist-measure-delivery-days",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Subtract DATE values when the business question is about whole calendar-day distance.",
+        "AGE(later, earlier) returns a human-readable PostgreSQL interval, which is useful for inspection but not ideal for aggregate duration metrics.",
+        "EXTRACT(EPOCH FROM later - earlier) converts an elapsed timestamp interval to total seconds that can be scaled to hours or fractional days.",
+        "PostgreSQL does not have built-in DATEDIFF. DuckDB's DATE_DIFF and other engines' DATEDIFF functions have their own boundary-count semantics.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-date-arithmetic-calendar-days",
+          question: "What does delivered_at::date - purchased_at::date measure?",
+          options: ["The integer calendar-day distance", "The exact elapsed seconds", "A text label", "The number of delivery items"],
+          correctIndex: 0,
+          explanation: "Casting to DATE discards time of day, and PostgreSQL date subtraction returns an integer day count.",
+        },
+        {
+          id: "olist-date-arithmetic-age",
+          question: "When is AGE(delivered_at, purchased_at) most useful?",
+          options: ["Showing a readable interval for an individual investigation", "Averaging months across all orders", "Replacing the stored timestamp", "Creating a fixed one-hour bucket"],
+          correctIndex: 0,
+          explanation: "AGE returns a symbolic interval that people can read directly. For aggregate durations, use a fixed unit such as total seconds or hours.",
+        },
+        {
+          id: "olist-date-arithmetic-epoch",
+          question: "Why divide EXTRACT(EPOCH FROM delivered_at - purchased_at) by 86400.0?",
+          options: ["To express the precise elapsed duration in fractional days", "To remove time zones", "To format a date label", "To count calendar months"],
+          correctIndex: 0,
+          explanation: "EPOCH returns total seconds. There are 86,400 seconds in a day, and the decimal keeps fractional precision.",
+        },
+        {
+          id: "olist-date-arithmetic-datediff",
+          question: "Which statement about DATEDIFF is correct in PostgreSQL?",
+          options: ["PostgreSQL has no built-in DATEDIFF function", "DATEDIFF always returns exact seconds", "DATEDIFF is required for date subtraction", "DATEDIFF is a TimescaleDB bucket function"],
+          correctIndex: 0,
+          explanation: "Use PostgreSQL date subtraction or EPOCH arithmetic instead. DATEDIFF is a function name from other SQL dialects.",
+        },
+      ],
+    },
+  ],
+};
+
+const intervalsLookbacks: LessonContent = {
+  slug: "intervals-lookbacks",
+  title: "Intervals, Lookbacks & Sargable Filters",
+  subtitle: "INTERVAL / stable report anchors / half-open ranges / index-friendly timestamp filters",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A lookback needs a meaningful clock",
+      body: [
+        "A lookback is a range ending at an anchor: “the 30 days up to this point.” In a live system, that anchor is often `NOW()`. Olist is historical data, though: its latest purchase is in 2018. Running `NOW() - INTERVAL '30 days'` today would correctly return no Olist rows—and teach the wrong lesson.",
+        "For a reproducible historical report, derive the anchor from the data. Once every chart and query uses the same endpoint, rerunning the analysis produces the same window.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistIntervalsLookbacksImg,
+      alt: "A light-grid timeline shows a 30-day Olist lookback ending at the dataset's latest purchase.",
+      caption: "A stable anchor turns “last 30 days” into a repeatable historical reporting window.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find the stable Olist report anchor",
+      code: `SELECT MAX(order_purchase_timestamp) AS max_purchase
+FROM orders;`,
+    },
+    {
+      kind: "table",
+      caption: "The Olist orders dataset ends at this purchase timestamp",
+      headers: ["max_purchase"],
+      rows: [["2018-10-17 17:30:18"]],
+    },
+    {
+      kind: "prose",
+      heading: "Subtract an interval from the anchor",
+      body: [
+        "`INTERVAL '30 days'` is a duration, not a formatted string. PostgreSQL can subtract it directly from a timestamp. Put the maximum in a one-row `bounds` CTE, then `CROSS JOIN` that one row so both boundaries remain visible to the filter.",
+        "This one-off historical report includes the exact maximum with `<= max_purchase`. The window therefore starts at `2018-09-17 17:30:18` and ends at `2018-10-17 17:30:18`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Return the first five purchases in Olist's anchored 30-day lookback",
+      code: `WITH bounds AS (
+  SELECT MAX(order_purchase_timestamp) AS max_purchase
+  FROM orders
+)
+SELECT
+  o.order_id,
+  o.order_purchase_timestamp
+FROM orders AS o
+CROSS JOIN bounds AS b
+WHERE o.order_purchase_timestamp >= b.max_purchase - INTERVAL '30 days'
+  AND o.order_purchase_timestamp <= b.max_purchase
+ORDER BY o.order_purchase_timestamp, o.order_id
+LIMIT 5;`,
+    },
+    {
+      kind: "table",
+      caption: "The first five of eight purchases in the anchored window",
+      headers: ["order_id", "order_purchase_timestamp"],
+      rows: [
+        ["ed3efbd3a87bea76c2812c66a0b32219", "2018-09-20 13:54:16"],
+        ["5aac76cf7b07dd06fa4d50bf461d2f40", "2018-09-25 11:59:18"],
+        ["869997fbe01f39d184956b5c6bccfdbe", "2018-09-26 08:40:15"],
+        ["392ed9afd714e3c74767d0c4d3e3f477", "2018-09-29 09:13:03"],
+        ["616fa7d4871b87832197b2a137a115d2", "2018-10-01 15:30:09"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-intervals-lookbacks",
+      caption: "First compute Olist's endpoint, then apply interval arithmetic, then see why adjacent periods use an excluded end.",
+    },
+    {
+      kind: "prose",
+      heading: "Make recurring windows half-open",
+      body: [
+        "A daily or monthly pipeline should normally use a half-open range: `timestamp >= start AND timestamp < end`. It includes the start and excludes the end. An order exactly at midnight on October 1 then belongs to October, never both September and October.",
+        "This differs from the anchored report above because the jobs answer different questions. Use an inclusive final endpoint when you deliberately want to include one known maximum. Use half-open boundaries when periods meet each other repeatedly.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A sargable one-day filter: leave the timestamp column bare",
+      code: `-- Avoid applying a function to the indexed column:
+-- WHERE DATE(order_purchase_timestamp) = DATE '2018-10-01'
+
+SELECT order_id, order_purchase_timestamp
+FROM orders
+WHERE order_purchase_timestamp >= TIMESTAMP '2018-10-01 00:00:00'
+  AND order_purchase_timestamp <  TIMESTAMP '2018-10-02 00:00:00'
+ORDER BY order_purchase_timestamp, order_id;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "What “sargable” means",
+      body: "A predicate is sargable when the database can search an index with it. A range comparison against the bare timestamp column is commonly index-friendly; wrapping that column in DATE, TO_CHAR, or EXTRACT can force more work unless you have a matching expression index.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "BETWEEN includes both endpoints",
+      body: "`BETWEEN start AND end` is inclusive at both ends. Adjacent reports that share midnight can double-count it. Prefer `>= start AND < end` for recurring periods.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build an anchored Olist lookback",
+      prompt: "Return the first five Olist purchases in the 30 days ending at the dataset's latest purchase timestamp. Use a bounds CTE with MAX(order_purchase_timestamp), retain order_id and order_purchase_timestamp, and order deterministically.",
+      tables: ["orders"],
+      successCheck: "Five rows from the anchored 30-day range, with order_id and order_purchase_timestamp.",
+      href: "/sql-playground?practice=olist-anchored-purchase-lookback",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Use `NOW()` for a live clock and `MAX(timestamp)` for a stable historical anchor.",
+        "Subtract `INTERVAL` values directly from timestamps to state lookback boundaries clearly.",
+        "Use `>= start AND < end` for adjacent, recurring time periods.",
+        "Keep an indexed timestamp column bare in a range predicate when possible.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-lookback-live-clock",
+          question: "Why would NOW() - INTERVAL '30 days' return no Olist purchases today?",
+          options: ["Olist's purchases are historical and end in 2018", "NOW() removes old rows", "INTERVAL only works with dates", "The orders table has no timestamp"],
+          correctIndex: 0,
+          explanation: "NOW() uses the current clock, while Olist's latest purchase timestamp is in 2018.",
+        },
+        {
+          id: "olist-lookback-anchor",
+          question: "Why use MAX(order_purchase_timestamp) as an Olist report anchor?",
+          options: ["The historical window stays reproducible", "It changes every timestamp to today", "It removes NULLs", "It adds an index"],
+          correctIndex: 0,
+          explanation: "The dataset's own latest timestamp is a stable endpoint for a historical report.",
+        },
+        {
+          id: "olist-lookback-half-open",
+          question: "Which predicate prevents an event at the next midnight from being counted twice?",
+          options: ["ts >= start AND ts < end", "ts BETWEEN start AND end", "DATE(ts) = start", "ts <> end"],
+          correctIndex: 0,
+          explanation: "A half-open range includes its start and excludes its end.",
+        },
+        {
+          id: "olist-lookback-sargable",
+          question: "Which filter is usually more index-friendly for a timestamp column?",
+          options: ["order_purchase_timestamp >= TIMESTAMP '2018-10-01'", "DATE(order_purchase_timestamp) = DATE '2018-10-01'", "TO_CHAR(order_purchase_timestamp, 'YYYY-MM') = '2018-10'", "EXTRACT(DAY FROM order_purchase_timestamp) = 1"],
+          correctIndex: 0,
+          explanation: "The bare timestamp column can be searched directly with a range predicate.",
+        },
+      ],
+    },
+  ],
+};
+
+const calendarPeriodAnalysis: LessonContent = {
+  slug: "calendar-period-analysis",
+  title: "Calendar & Period Analysis",
+  subtitle: "ISO weeks / quarters / weekday keys / readable calendar labels",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One timestamp, several reporting questions",
+      body: [
+        "An Olist purchase timestamp tells you when an order happened. A calendar projection adds the reporting dimensions you need around it: ISO week for weekly operations, quarter for planning, and weekday for staffing patterns.",
+        "These are derived fields, not replacements for the timestamp. Keep the original instant available, then add the smallest calendar key that answers the reporting question.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistCalendarPeriodAnalysisImg,
+      alt: "A light-grid diagram maps an Olist purchase timestamp to ISO week, quarter, and weekday reporting fields.",
+      caption: "The same purchase timestamp can become an ISO reporting key, a planning quarter, or a reader-facing weekday label.",
+    },
+    {
+      kind: "prose",
+      heading: "Pair ISO week with ISO year",
+      body: [
+        "Week numbers reset. A report grouped only by week 1 can mix separate years. Pair EXTRACT(ISOYEAR ...) with EXTRACT(WEEK ...) whenever you use ISO weeks. ISO uses Monday as the first day of the week and has its own year boundary near New Year.",
+        "The first Olist purchase was a Sunday, September 4, 2016. PostgreSQL assigns it ISO year 2016 and ISO week 35. Its calendar quarter is 3, while its ISO weekday is 7.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Project sortable Olist calendar keys and a weekday label",
+      code: [
+        "SELECT",
+        "  order_purchase_timestamp,",
+        "  EXTRACT(ISOYEAR FROM order_purchase_timestamp) AS iso_year,",
+        "  EXTRACT(WEEK FROM order_purchase_timestamp) AS iso_week,",
+        "  EXTRACT(QUARTER FROM order_purchase_timestamp) AS purchase_quarter,",
+        "  EXTRACT(ISODOW FROM order_purchase_timestamp) AS iso_weekday,",
+        "  TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday",
+        "FROM orders",
+        "ORDER BY order_purchase_timestamp, order_id",
+        "LIMIT 5;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "A deterministic preview of the first five Olist purchases",
+      headers: ["purchased", "ISO year", "ISO week", "quarter", "ISO weekday", "weekday label"],
+      rows: [
+        ["2016-09-04 21:15:19", "2016", "35", "3", "7", "Sunday"],
+        ["2016-09-05 00:15:34", "2016", "36", "3", "1", "Monday"],
+        ["2016-09-13 15:24:19", "2016", "37", "3", "2", "Tuesday"],
+        ["2016-09-15 12:16:38", "2016", "37", "3", "4", "Thursday"],
+        ["2016-10-02 22:07:52", "2016", "39", "4", "7", "Sunday"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-calendar-periods",
+      caption: "Build ISO week keys, add quarter and weekday fields, then order real Olist weekdays with a numeric key instead of alphabetic text.",
+    },
+    {
+      kind: "prose",
+      heading: "Sort by keys, format labels at the edge",
+      body: [
+        "EXTRACT returns numeric values. ISODOW is especially useful for a Monday-first chart because Monday is 1 and Sunday is 7. TO_CHAR(..., 'FMDay') produces display text such as Monday without trailing padding.",
+        "Do not sort a report only by purchase_weekday: text sorts alphabetically, so Friday would come before Monday. Sort by iso_weekday, then show the formatted label alongside it.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Order two real Olist weekdays in business-week order",
+      code: [
+        "SELECT",
+        "  EXTRACT(ISODOW FROM order_purchase_timestamp) AS iso_weekday,",
+        "  TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday",
+        "FROM orders",
+        "WHERE order_id IN (",
+        "  '2e7a8482f6fb09756ca50c10d7bfc047',",
+        "  'e5fa5a7210941f7d56d0208e4e071d35'",
+        ")",
+        "ORDER BY iso_weekday;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "Numeric ISO weekday puts Monday before Sunday",
+      headers: ["iso_weekday", "purchase_weekday"],
+      rows: [["1", "Monday"], ["7", "Sunday"]],
+    },
+    { kind: "callout", tone: "warn", title: "DOW and ISODOW are different", body: "EXTRACT(DOW FROM timestamp) uses Sunday = 0. EXTRACT(ISODOW FROM timestamp) uses Monday = 1 through Sunday = 7. Choose one convention deliberately and do not mix their numbers." },
+    { kind: "playground-practice", title: "Create Olist calendar reporting fields", prompt: "Return the first five Olist purchases with order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday. Use EXTRACT for the numeric pieces and TO_CHAR(..., 'FMDay') for the weekday label.", tables: ["orders"], successCheck: "Five deterministic purchase rows with ISO week, quarter, and weekday reporting fields.", href: "/sql-playground?practice=olist-calendar-reporting-fields" },
+    { kind: "takeaways", items: ["Calendar fields are derived reporting dimensions; retain the original timestamp.", "Pair ISOYEAR with WEEK to identify an ISO week unambiguously.", "Use ISODOW when a Monday-first numeric weekday key is useful.", "Sort with numeric or temporal keys and format reader-facing labels at the presentation edge."] },
+    { kind: "quiz", questions: [{ id: "olist-calendar-isoyear", question: "Which field should accompany EXTRACT(WEEK ...) in an ISO-week report?", options: ["EXTRACT(ISOYEAR ...)", "EXTRACT(MONTH ...)", "DATE_PART('epoch', ...)", "TO_CHAR(..., 'Day')"], correctIndex: 0, explanation: "ISO week numbering has its own year boundary, so ISOYEAR identifies which year's week you mean." }, { id: "olist-calendar-isodow", question: "What value does ISODOW return for Monday?", options: ["1", "0", "7", "Monday"], correctIndex: 0, explanation: "ISODOW uses Monday = 1 through Sunday = 7." }, { id: "olist-calendar-dow", question: "What value does DOW return for Sunday in PostgreSQL?", options: ["0", "1", "6", "7"], correctIndex: 0, explanation: "DOW uses Sunday = 0, unlike ISODOW, which uses Sunday = 7." }, { id: "olist-calendar-label", question: "Why should a Monday-first weekday report sort by iso_weekday rather than purchase_weekday?", options: ["The weekday label is text and sorts alphabetically", "The label changes the timestamp", "ISODOW removes duplicate rows", "TO_CHAR cannot display Monday"], correctIndex: 0, explanation: "Text ordering is alphabetical, not Monday-through-Sunday business order." }] },
+  ],
+};
+
+const overlappingRanges: LessonContent = {
+  slug: "overlapping-ranges",
+  title: "Overlapping Ranges",
+  subtitle: "daterange / [) bounds / overlap / containment / exclusion constraints",
+  sections: [
+    { kind: "prose", heading: "A range packages two endpoints and their rules", body: ["An Olist order has a purchase date, an actual delivery date, and an estimated delivery date. A PostgreSQL range keeps a start, an end, and the endpoint convention together, so questions about overlap and containment become explicit.", "Use a half-open date range, [), for calendar spans: include the start date and exclude the day after the end. The added day makes a delivery date visible as a whole day while keeping adjacent periods disjoint."] },
+    { kind: "image", src: olistOverlappingRangesImg, alt: "A light-grid timeline shows two overlapping delivery windows and their shared intersection.", caption: "The && operator asks whether two temporal ranges share any point." },
+    { kind: "code", language: "sql", caption: "Create actual and estimated delivery windows for Olist orders", code: ["SELECT", "  order_id,", "  daterange(order_purchase_timestamp::date,", "            order_delivered_customer_date::date + 1, '[)') AS actual_window,", "  daterange(order_purchase_timestamp::date,", "            order_estimated_delivery_date::date + 1, '[)') AS estimated_window,", "  order_delivered_customer_date::date > order_estimated_delivery_date::date", "    AS delivered_late", "FROM orders", "WHERE order_delivered_customer_date IS NOT NULL", "  AND order_estimated_delivery_date IS NOT NULL", "ORDER BY order_purchase_timestamp, order_id", "LIMIT 5;"].join("\n") },
+    { kind: "table", caption: "A deterministic preview of the first five delivered Olist orders", headers: ["order_id", "actual_window", "estimated_window", "delivered_late"], rows: [["bfbd0f9b…", "[2016-09-15, 2016-11-10)", "[2016-09-15, 2016-10-05)", "true"], ["3b697a20…", "[2016-10-03, 2016-10-27)", "[2016-10-03, 2016-10-28)", "false"], ["be5bc2f0…", "[2016-10-03, 2016-10-28)", "[2016-10-03, 2016-11-08)", "false"], ["a41c8759…", "[2016-10-03, 2016-11-04)", "[2016-10-03, 2016-11-30)", "false"], ["d207cc27…", "[2016-10-03, 2016-11-01)", "[2016-10-03, 2016-11-24)", "false"]] },
+    { kind: "animation", variant: "q-olist-overlapping-ranges", caption: "A real Olist order becomes two half-open ranges, then && and @> test the relationship between them." },
+    { kind: "prose", heading: "Choose the operator that states the question", body: ["The && operator asks whether two ranges share any point. The @> operator asks whether a range contains a date or smaller range. For the illustrated Olist order, the actual window is entirely inside the estimated window, so both overlap and containment can be true.", "For mutable booking data, a GiST exclusion constraint can prevent two ranges for the same resource from overlapping. Olist is read-only course data, so this lesson analyzes existing windows rather than changing its schema."] },
+    { kind: "callout", tone: "warn", title: "The right endpoint is excluded", body: "[2017-10-02, 2017-10-11) includes October 10 but not October 11. Do not use an inclusive end if your ranges must sit next to one another without sharing a boundary." },
+    { kind: "playground-practice", title: "Compare actual and estimated Olist delivery windows", prompt: "For the first five delivered Olist orders, return order_id, actual_window, estimated_window, and delivered_late. Build each half-open date range from purchase through the relevant end date plus one day, and order by purchase timestamp then order ID.", tables: ["orders"], successCheck: "Five delivered orders with two explicit daterange values and a late-delivery comparison.", href: "/sql-playground?practice=olist-compare-delivery-windows" },
+    { kind: "takeaways", items: ["A range combines endpoints with explicit inclusion rules.", "Use [) for date spans that include the end date but exclude the following day.", "&& tests overlap; @> tests containment.", "GiST exclusion constraints can enforce non-overlap for mutable scheduling data."] },
+    { kind: "quiz", questions: [{ id: "olist-range-overlap", question: "What does range_a && range_b mean?", options: ["The ranges overlap", "A contains B", "The ranges have equal length", "The ranges are formatted as text"], correctIndex: 0, explanation: "The overlap operator is true when the two ranges share any point." }, { id: "olist-range-half-open", question: "What does [) mean for a date range?", options: ["Include start, exclude end", "Exclude start, include end", "Include both ends", "Exclude both ends"], correctIndex: 0, explanation: "This half-open convention prevents adjacent periods from sharing their boundary." }, { id: "olist-range-containment", question: "Which operator asks whether a range contains a date?", options: ["@>", "&&", "-", "="], correctIndex: 0, explanation: "@> is PostgreSQL's contains operator for ranges." }, { id: "olist-range-delivery-end", question: "Why add one day to a delivered date before building a [) date range?", options: ["To include the whole delivery date", "To make the range inclusive at both ends", "To convert the range to text", "To remove late deliveries"], correctIndex: 0, explanation: "The next date is excluded, leaving the delivery date itself inside the range." }] },
+  ],
+};
+
+const dateSpinesGapFilling: LessonContent = {
+  slug: "date-spines-gap-filling",
+  title: "Date Spines & Gap Filling",
+  subtitle: "GENERATE_SERIES / complete date axis / LEFT JOIN / real zeroes",
+  sections: [
+    { kind: "prose", heading: "A missing row is not a zero", body: ["Grouping Olist orders by purchase date returns only dates with purchases. A chart built from that result silently skips quiet dates instead of showing zero.", "A date spine is the complete calendar you want to report. Generate it first, then LEFT JOIN the facts. The spine owns the timeline, so a quiet date survives without a matching order."] },
+    { kind: "image", src: olistDateSpinesGapFillingImg, alt: "A light-grid diagram shows a complete date spine left joined to Olist order counts including zero-count dates.", caption: "The spine owns the timeline. The LEFT JOIN preserves every date even when Olist has no order row." },
+    { kind: "prose", heading: "Read GENERATE_SERIES from left to right", body: ["`generate_series(start, stop, step)` returns one row for each value from start through stop. For a daily date spine, use two `DATE` values and an `INTERVAL '1 day'` step. The stop is included when the sequence lands on it, so September 4 through September 8 produces five rows.", "Put the function in `FROM` because it is the row source. `AS d(purchase_date)` gives that generated column a usable name. Date plus an interval produces a timestamp-like value, so `d.purchase_date::date` keeps the reporting key as `DATE`."] },
+    { kind: "code", language: "sql", caption: "Generate five reporting dates before joining any Olist facts", code: ["SELECT d.purchase_date::date AS purchase_date", "FROM generate_series(", "  DATE '2016-09-04',", "  DATE '2016-09-08',", "  INTERVAL '1 day'", ") AS d(purchase_date);"].join("\n") },
+    { kind: "table", caption: "The inclusive stop date gives five generated dates", headers: ["purchase_date"], rows: [["2016-09-04"], ["2016-09-05"], ["2016-09-06"], ["2016-09-07"], ["2016-09-08"]] },
+    { kind: "code", language: "sql", caption: "Create a five-day Olist purchase spine with visible zeroes", code: ["WITH date_spine AS (", "  SELECT d.purchase_date::date AS purchase_date", "  FROM generate_series(DATE '2016-09-04', DATE '2016-09-08',", "                       INTERVAL '1 day') AS d(purchase_date)", ")", "SELECT d.purchase_date, COUNT(o.order_id) AS order_count", "FROM date_spine AS d", "LEFT JOIN orders AS o", "  ON o.order_purchase_timestamp >= d.purchase_date", " AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day'", "GROUP BY d.purchase_date", "ORDER BY d.purchase_date;"].join("\n") },
+    { kind: "table", caption: "The Olist spine preserves three quiet dates", headers: ["purchase_date", "order_count"], rows: [["2016-09-04", "1"], ["2016-09-05", "1"], ["2016-09-06", "0"], ["2016-09-07", "0"], ["2016-09-08", "0"]] },
+    { kind: "animation", variant: "q-olist-date-spines", caption: "The generated dates stay present while each Olist order either joins to its date or leaves a zero count behind." },
+    { kind: "prose", heading: "Count the fact key after a LEFT JOIN", body: ["Use `COUNT(o.order_id)`, not `COUNT(*)`. A `LEFT JOIN` produces one preserved spine row even when no order matched, so `COUNT(*)` would incorrectly report one on each quiet day.", "For production reporting, a `dim_date` table can store holidays, fiscal periods, and business-day flags. Business-day questions then become calendar filters instead of fragile weekday arithmetic."] },
+    { kind: "playground-practice", title: "Fill quiet Olist purchase days", prompt: "Generate a daily spine from 2016-09-04 through 2016-09-08. Left join Olist orders with a half-open daily predicate and return purchase_date plus COUNT(order_id) AS order_count. Keep every spine date in ascending order.", tables: ["orders"], successCheck: "Five consecutive dates, including zero-count dates, with purchase_date and order_count.", href: "/sql-playground?practice=olist-fill-purchase-date-gaps" },
+    { kind: "takeaways", items: ["Generate the reporting date axis before joining facts.", "LEFT JOIN preserves dates that have no matching order.", "Count a nullable fact key, not COUNT(*), to produce real zeroes.", "A date dimension is the durable home for fiscal, holiday, and business-day rules."] },
+    { kind: "quiz", questions: [{ id: "olist-spine-left-join", question: "Why LEFT JOIN orders to a date spine?", options: ["To retain dates with no orders", "To remove duplicate timestamps", "To convert timestamps to text", "To prevent all NULLs"], correctIndex: 0, explanation: "The date spine is preserved, so quiet dates remain available for a zero count." }, { id: "olist-spine-count-key", question: "Why use COUNT(o.order_id) after the LEFT JOIN?", options: ["It counts only matched order rows", "It always returns 1", "It converts the date to an interval", "It formats the result"], correctIndex: 0, explanation: "The order key is NULL when no fact row matched, so COUNT ignores quiet dates correctly." }, { id: "olist-spine-boundary", question: "What join predicate assigns a timestamp to exactly one day?", options: ["ts >= date AND ts < date + INTERVAL '1 day'", "ts BETWEEN date AND date + INTERVAL '1 day'", "DATE(ts) = date only", "ts <> date"], correctIndex: 0, explanation: "The half-open daily range includes a day start and excludes the next day start." }] },
+  ],
+};
+
+const dateTimeQuiz: LessonContent = {
+  slug: "datetime-quiz",
+  title: "Date & Time: Final Quiz",
+  subtitle: "A module review of instants, calendar keys, intervals, ranges, and complete timelines.",
+  sections: [
+    { kind: "quiz", isFinalQuiz: true, questions: [
+      { id: "datetime-final-zone", question: "What assigns an Olist TIMESTAMP interpreted as Sao Paulo local time to its source zone?", options: ["timestamp AT TIME ZONE 'America/Sao_Paulo'", "TO_CHAR(timestamp, 'TZ')", "timestamp::date", "NOW() - timestamp"], correctIndex: 0, explanation: "AT TIME ZONE attaches the intended source zone and produces an instant." },
+      { id: "datetime-final-now", question: "Why is NOW() unsuitable for a repeatable Olist historical lookback?", options: ["Olist ends in 2018, so the live window is empty today", "NOW() cannot return timestamps", "INTERVAL only works with dates", "It removes NULL rows"], correctIndex: 0, explanation: "Anchor historical data to MAX(timestamp), not the current clock." },
+      { id: "datetime-final-extract", question: "Which expression returns the numeric calendar quarter?", options: ["EXTRACT(QUARTER FROM ts)", "TO_CHAR(ts, 'Quarter')", "DATE_TRUNC('quarter', ts)::text", "EXTRACT(EPOCH FROM ts)"], correctIndex: 0, explanation: "EXTRACT returns numeric date-time components." },
+      { id: "datetime-final-format", question: "What does TO_CHAR(timestamp, 'FMDay') produce?", options: ["A display-ready weekday label without padding", "A sortable numeric weekday", "A timestamp in UTC", "An ISO week number"], correctIndex: 0, explanation: "TO_CHAR formats a value as text; FM removes padding." },
+      { id: "datetime-final-trunc", question: "Which expression returns the start of an order's purchase month?", options: ["DATE_TRUNC('month', order_purchase_timestamp)", "EXTRACT(MONTH FROM order_purchase_timestamp)", "TO_CHAR(order_purchase_timestamp, 'YYYY-MM')", "order_purchase_timestamp::date - 30"], correctIndex: 0, explanation: "DATE_TRUNC returns a temporal boundary, useful as a grouping key." },
+      { id: "datetime-final-elapsed", question: "Which expression measures precise elapsed duration in fractional days?", options: ["EXTRACT(EPOCH FROM later - earlier) / 86400.0", "later::date - earlier::date", "TO_CHAR(later, 'Day')", "EXTRACT(WEEK FROM later)"], correctIndex: 0, explanation: "EPOCH converts an interval to total seconds, which can be scaled to days." },
+      { id: "datetime-final-half-open", question: "Which recurring monthly predicate prevents boundary double-counting?", options: ["ts >= start AND ts < end", "ts BETWEEN start AND end", "DATE(ts) = start", "ts <> end"], correctIndex: 0, explanation: "A half-open range includes the start and excludes the next boundary." },
+      { id: "datetime-final-sargable", question: "Which filter is usually more index-friendly?", options: ["ts >= DATE '2018-10-01' AND ts < DATE '2018-10-02'", "DATE(ts) = DATE '2018-10-01'", "TO_CHAR(ts, 'YYYY-MM-DD') = '2018-10-01'", "EXTRACT(DAY FROM ts) = 1"], correctIndex: 0, explanation: "A range keeps the indexed timestamp column bare." },
+      { id: "datetime-final-isoyear", question: "What should be paired with EXTRACT(WEEK FROM ts) in an ISO-week report?", options: ["EXTRACT(ISOYEAR FROM ts)", "EXTRACT(MONTH FROM ts)", "TO_CHAR(ts, 'Day')", "EXTRACT(DOW FROM ts)"], correctIndex: 0, explanation: "ISO week numbering has its own year boundary." },
+      { id: "datetime-final-isodow", question: "What does EXTRACT(ISODOW FROM ts) return for Sunday?", options: ["7", "0", "1", "Sunday"], correctIndex: 0, explanation: "ISODOW uses Monday = 1 through Sunday = 7." },
+      { id: "datetime-final-range", question: "Which PostgreSQL range operator tests overlap?", options: ["&&", "@>", "||", "<>"], correctIndex: 0, explanation: "&& is true when two ranges share any point." },
+      { id: "datetime-final-spine", question: "After LEFT JOINing orders to a date spine, what produces true zeroes on quiet days?", options: ["COUNT(o.order_id)", "COUNT(*)", "INNER JOIN orders", "ORDER BY order_id"], correctIndex: 0, explanation: "The fact key is NULL on unmatched spine rows, and COUNT ignores NULL." }
+    ] },
+  ],
+};
+
+// =============================================================
 // TOPIC INDEX
 // =============================================================
 
@@ -3853,6 +4884,8 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
       stringFunctionsQuiz,
     ],
   },
+
+
   "numeric-functions": {
     slug: "numeric-functions",
     title: "Numeric Functions",
@@ -3874,8 +4907,8 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     title: "Date & Time",
     category: "Specialized Data Handling",
     iconKey: "terminal",
-    blurb: "Time zones, date arithmetic, DATEDIFF / DATE_TRUNC, and interval handling.",
-    lessons: [],
+    blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
+    lessons: [timeZonesPrecision, extractionFormatting, dateTruncation, dateArithmetic, intervalsLookbacks, calendarPeriodAnalysis, overlappingRanges, dateSpinesGapFilling, dateTimeQuiz],
   },
   conversions: {
     slug: "conversions",

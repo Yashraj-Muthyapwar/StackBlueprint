@@ -1969,6 +1969,230 @@ ORDER BY raw_product_id;`,
       nextConcept: "CONVERT",
     },
   },
+  {
+    id: "olist-purchase-instants-across-zones",
+    version: 1,
+    title: "Show Olist purchase instants in UTC and New York",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres", "duckdb"],
+    prompt:
+      "One Olist purchase instant, two audience clocks: render each order's Sao Paulo wall time in UTC and New York.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.",
+      "Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.",
+      "Render that instant with AT TIME ZONE 'UTC' AS purchase_utc.",
+      "Render that instant with AT TIME ZONE 'America/New_York' AS purchase_new_york.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase instants across zones.
+-- Return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.
+-- Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.
+-- Render it twice with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with SELECT order_id, order_purchase_timestamp FROM orders.",
+      "Add (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc.",
+      "Add (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      duckdb:
+        "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+        duckdb:
+          "SELECT order_id, order_purchase_timestamp, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'UTC' AS purchase_utc, (order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo') AT TIME ZONE 'America/New_York' AS purchase_new_york FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "purchase_utc", "purchase_new_york"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Cross-zone instants complete",
+      body: "Correct. You assigned America/Sao_Paulo to the stored wall reading and rendered the same instant for UTC and New York audiences.",
+      nextConcept: "Extraction and formatting",
+    },
+  },
+  {
+    id: "olist-extract-and-format-purchases",
+    version: 1,
+    title: "Build Olist purchase reporting fields",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Turn Olist purchase timestamps into numeric reporting fields and a compact human-readable label.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.",
+      "Use EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year.",
+      "Use DATE_PART('hour', order_purchase_timestamp) AS purchase_hour.",
+      "Use TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase reporting fields.
+-- Return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.
+-- Use EXTRACT(YEAR ...), DATE_PART('hour', ...), and TO_CHAR(..., 'YYYY-MM-DD HH24:MI').
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with order_id and order_purchase_timestamp from orders.",
+      "Add EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year and DATE_PART('hour', order_purchase_timestamp) AS purchase_hour.",
+      "Add TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year, DATE_PART('hour', order_purchase_timestamp) AS purchase_hour, TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, EXTRACT(YEAR FROM order_purchase_timestamp) AS purchase_year, DATE_PART('hour', order_purchase_timestamp) AS purchase_hour, TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI') AS purchase_label FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: [
+        "order_id",
+        "order_purchase_timestamp",
+        "purchase_year",
+        "purchase_hour",
+        "purchase_label",
+      ],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Purchase fields complete",
+      body: "Correct. You kept the Olist timestamp, extracted numeric year and hour fields, and added a deliberate display label for reporting.",
+      nextConcept: "Truncation and bucketing",
+    },
+  },
+  {
+    id: "olist-create-purchase-buckets",
+    version: 1,
+    title: "Create Olist reporting buckets",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Place Olist purchases onto daily, monthly, and fixed one-hour reporting axes while preserving every source timestamp.",
+    requirements: [
+      "Use the orders table.",
+      "Return exactly order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.",
+      "Use DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day.",
+      "Use DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month.",
+      "Use DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist purchase reporting buckets.
+-- Return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.
+-- Use DATE_TRUNC for day and month, then DATE_BIN with a 1-hour interval and 2000-01-01 origin.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+    hints: [
+      "Start with order_id and order_purchase_timestamp from orders.",
+      "Add DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day and DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month.",
+      "Add DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin, then ORDER BY order_purchase_timestamp, order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day, DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month, DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, DATE_TRUNC('day', order_purchase_timestamp) AS purchase_day, DATE_TRUNC('month', order_purchase_timestamp) AS purchase_month, DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00') AS purchase_hour_bin FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "purchase_day", "purchase_month", "purchase_hour_bin"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Purchase buckets complete",
+      body: "Correct. You preserved each Olist purchase timestamp and created calendar-day, calendar-month, and fixed one-hour reporting bucket starts.",
+      nextConcept: "Date arithmetic and DATEDIFF",
+    },
+  },
+  {
+    id: "olist-measure-delivery-days",
+    version: 1,
+    title: "Measure Olist delivery days two ways",
+    group: "start",
+    difficulty: "intermediate",
+    dataset: "olist",
+    engines: ["postgres"],
+    prompt:
+      "Compare calendar-day distance with precise elapsed delivery days for real Olist deliveries.",
+    requirements: [
+      "Use the orders table.",
+      "Keep only rows where order_delivered_customer_date IS NOT NULL.",
+      "Return exactly order_id, order_purchase_timestamp, order_delivered_customer_date, calendar_delivery_days, and elapsed_delivery_days.",
+      "Use order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days.",
+      "Use ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days.",
+      "Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    ],
+    requiredTables: ["orders"],
+    starterSql: `-- Olist delivery duration measures.
+-- Return purchase and delivery timestamps plus calendar_delivery_days and elapsed_delivery_days.
+-- Use date subtraction for the calendar count and EXTRACT(EPOCH) / 86400.0 rounded to 2 decimals.
+-- Keep only delivered rows, ordered by purchase timestamp and order ID, with 5 rows.`,
+    hints: [
+      "Start with order_id, order_purchase_timestamp, and order_delivered_customer_date from orders, then keep only non-NULL delivered timestamps.",
+      "Add order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days.",
+      "Add ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days, then order and limit the result.",
+    ],
+    solutionSql: {
+      postgres:
+        "SELECT order_id, order_purchase_timestamp, order_delivered_customer_date, order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days, ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days FROM orders WHERE order_delivered_customer_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres:
+          "SELECT order_id, order_purchase_timestamp, order_delivered_customer_date, order_delivered_customer_date::date - order_purchase_timestamp::date AS calendar_delivery_days, ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2) AS elapsed_delivery_days FROM orders WHERE order_delivered_customer_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "order_purchase_timestamp", "order_delivered_customer_date", "calendar_delivery_days", "elapsed_delivery_days"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.01,
+    },
+    success: {
+      title: "Delivery durations complete",
+      body: "Correct. You separated calendar-day distance from precise elapsed delivery time for the same Olist orders.",
+      nextConcept: "Intervals, lookbacks, and sargable filters",
+    },
+  },
+  {
+    id: "olist-anchored-purchase-lookback", version: 1, title: "Build an anchored Olist lookback", group: "start", difficulty: "intermediate", dataset: "olist", engines: ["postgres"], prompt: "Use a stable dataset anchor to build a repeatable 30-day Olist purchase lookback.",
+    requirements: ["Use the orders table.", "Use a bounds CTE with MAX(order_purchase_timestamp).", "Return exactly order_id and order_purchase_timestamp.", "Keep timestamps from max_purchase - INTERVAL '30 days' through max_purchase.", "Order by purchase timestamp and order_id, keeping 5 rows."], requiredTables: ["orders"], starterSql: "-- Anchor a 30-day historical Olist lookback.\n-- Use MAX(order_purchase_timestamp) in a bounds CTE.\n-- Return order_id and order_purchase_timestamp, then order and limit 5.", hints: ["Create bounds with MAX(order_purchase_timestamp).", "CROSS JOIN bounds and compare the bare timestamp to max_purchase - INTERVAL '30 days'.", "Order by order_purchase_timestamp, order_id and LIMIT 5."],
+    solutionSql: { postgres: "WITH bounds AS (SELECT MAX(order_purchase_timestamp) AS max_purchase FROM orders) SELECT order_id, order_purchase_timestamp FROM orders CROSS JOIN bounds WHERE order_purchase_timestamp >= max_purchase - INTERVAL '30 days' AND order_purchase_timestamp <= max_purchase ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, validator: { kind: "result-set", expectedSql: { postgres: "WITH bounds AS (SELECT MAX(order_purchase_timestamp) AS max_purchase FROM orders) SELECT order_id, order_purchase_timestamp FROM orders CROSS JOIN bounds WHERE order_purchase_timestamp >= max_purchase - INTERVAL '30 days' AND order_purchase_timestamp <= max_purchase ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, requiredColumns: ["order_id", "order_purchase_timestamp"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Anchored lookback complete", body: "Correct. You used the dataset's own latest timestamp as a stable historical report endpoint.", nextConcept: "Calendar and period analysis" },
+  },
+  {
+    id: "olist-calendar-reporting-fields", version: 1, title: "Create Olist calendar reporting fields", group: "start", difficulty: "intermediate", dataset: "olist", engines: ["postgres"], prompt: "Project ISO-week, quarter, and weekday reporting fields from Olist purchase timestamps.",
+    requirements: ["Use the orders table.", "Return exactly order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday.", "Use EXTRACT(ISOYEAR ...), EXTRACT(WEEK ...), EXTRACT(QUARTER ...), and TO_CHAR(..., 'FMDay').", "Order by purchase timestamp and order_id, keeping 5 rows."], requiredTables: ["orders"], starterSql: "-- Olist calendar reporting fields.\n-- Return ISO year, ISO week, quarter, and a weekday label.\n-- Order by purchase timestamp and order ID, then limit 5.", hints: ["Start with order_id and order_purchase_timestamp.", "Add ISOYEAR and WEEK extraction.", "Add quarter and the weekday label, then order and limit."],
+    solutionSql: { postgres: "SELECT order_id, order_purchase_timestamp, EXTRACT(ISOYEAR FROM order_purchase_timestamp) AS iso_year, EXTRACT(WEEK FROM order_purchase_timestamp) AS iso_week, EXTRACT(QUARTER FROM order_purchase_timestamp) AS purchase_quarter, TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, validator: { kind: "result-set", expectedSql: { postgres: "SELECT order_id, order_purchase_timestamp, EXTRACT(ISOYEAR FROM order_purchase_timestamp) AS iso_year, EXTRACT(WEEK FROM order_purchase_timestamp) AS iso_week, EXTRACT(QUARTER FROM order_purchase_timestamp) AS purchase_quarter, TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday FROM orders ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, requiredColumns: ["order_id", "order_purchase_timestamp", "iso_year", "iso_week", "purchase_quarter", "purchase_weekday"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Calendar fields complete", body: "Correct. You created sortable ISO-week and quarter dimensions plus a reader-friendly weekday label.", nextConcept: "Overlapping ranges" },
+  },
+  {
+    id: "olist-compare-delivery-windows", version: 1, title: "Compare actual and estimated Olist delivery windows", group: "start", difficulty: "intermediate", dataset: "olist", engines: ["postgres"], prompt: "Create explicit actual and estimated delivery ranges, then identify late deliveries.",
+    requirements: ["Use the orders table.", "Keep only rows with both delivery timestamps present.", "Return exactly order_id, actual_window, estimated_window, and delivered_late.", "Build half-open daterange values through each end date plus one day.", "Order by purchase timestamp and order_id, keeping 5 rows."], requiredTables: ["orders"], starterSql: "-- Olist actual and estimated delivery windows.\n-- Build two half-open daterange values and a delivered_late boolean.\n-- Keep delivered rows, order by purchase timestamp and order ID, limit 5.", hints: ["Cast purchase and end timestamps to date.", "Add one day to the end date before constructing each [) range.", "Compare delivery date to estimated date for delivered_late."],
+    solutionSql: { postgres: "SELECT order_id, daterange(order_purchase_timestamp::date, order_delivered_customer_date::date + 1, '[)') AS actual_window, daterange(order_purchase_timestamp::date, order_estimated_delivery_date::date + 1, '[)') AS estimated_window, order_delivered_customer_date::date > order_estimated_delivery_date::date AS delivered_late FROM orders WHERE order_delivered_customer_date IS NOT NULL AND order_estimated_delivery_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, validator: { kind: "result-set", expectedSql: { postgres: "SELECT order_id, daterange(order_purchase_timestamp::date, order_delivered_customer_date::date + 1, '[)') AS actual_window, daterange(order_purchase_timestamp::date, order_estimated_delivery_date::date + 1, '[)') AS estimated_window, order_delivered_customer_date::date > order_estimated_delivery_date::date AS delivered_late FROM orders WHERE order_delivered_customer_date IS NOT NULL AND order_estimated_delivery_date IS NOT NULL ORDER BY order_purchase_timestamp, order_id LIMIT 5;" }, requiredColumns: ["order_id", "actual_window", "estimated_window", "delivered_late"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Delivery windows complete", body: "Correct. You packaged both date spans as ranges and exposed whether each delivery missed its estimate.", nextConcept: "Date spines and gap filling" },
+  },
+  {
+    id: "olist-fill-purchase-date-gaps", version: 1, title: "Fill quiet Olist purchase days", group: "start", difficulty: "intermediate", dataset: "olist", engines: ["postgres"], prompt: "Build a complete daily Olist timeline, including dates with no purchases.",
+    requirements: ["Generate dates from 2016-09-04 through 2016-09-08.", "LEFT JOIN the orders table with a half-open daily predicate.", "Return exactly purchase_date and order_count.", "Use COUNT(order_id) AS order_count.", "Order by purchase_date."], requiredTables: ["orders"], starterSql: "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count.", hints: ["Use generate_series with a one-day interval.", "Join where the timestamp is >= the spine date and < the next date.", "Group and order by the spine date."],
+    solutionSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, validator: { kind: "result-set", expectedSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, requiredColumns: ["purchase_date", "order_count"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Date gaps filled", body: "Correct. You preserved the complete date axis and turned unmatched order rows into real zeroes.", nextConcept: "Date & Time final quiz" },
+  },
 ];
 
 export function getChallenges(

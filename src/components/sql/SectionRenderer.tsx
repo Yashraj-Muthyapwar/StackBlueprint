@@ -420,7 +420,12 @@ export function SectionRenderer({
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
 
-    case "playground-practice":
+    case "playground-practice": {
+      const practiceLabel = section.href.includes("practice=olist")
+        ? "Practice in Olist"
+        : section.href.includes("practice=")
+          ? "Practice in SQL Playground"
+          : "Practice in Cycle Depot";
       return (
         <aside className="rounded-xl border border-mint/30 bg-mint/5 p-5 shadow-sm">
           <div className="flex items-start gap-3">
@@ -429,7 +434,7 @@ export function SectionRenderer({
             </span>
             <div className="min-w-0">
               <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mint">
-                Practice in Cycle Depot
+                {practiceLabel}
               </p>
               <h2 className="mt-1 text-xl font-semibold tracking-tight">{section.title}</h2>
               <p className="mt-2 leading-relaxed text-muted-foreground">{section.prompt}</p>
@@ -449,6 +454,7 @@ export function SectionRenderer({
           </div>
         </aside>
       );
+    }
 
     case "analogy":
       return (

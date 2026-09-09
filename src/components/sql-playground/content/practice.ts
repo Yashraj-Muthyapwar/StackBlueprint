@@ -404,6 +404,63 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Group by status, filter with HAVING, then sort largest count first.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "olist-purchase-instants-across-zones": {
+    id: "olist-purchase-instants-across-zones",
+    title: "Show Olist purchase instants in UTC and New York",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york. Treat the stored wall time as America/Sao_Paulo with AT TIME ZONE, then render it with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'. Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-purchase-instants-across-zones",
+    starterSql: `-- Olist purchase instants across zones.
+-- Return order_id, order_purchase_timestamp, purchase_utc, and purchase_new_york.
+-- Assign the zone first: order_purchase_timestamp AT TIME ZONE 'America/Sao_Paulo'.
+-- Render it twice with AT TIME ZONE 'UTC' and AT TIME ZONE 'America/New_York'.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
+  "olist-extract-and-format-purchases": {
+    id: "olist-extract-and-format-purchases",
+    title: "Build Olist purchase reporting fields",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label. Use EXTRACT(YEAR FROM order_purchase_timestamp), DATE_PART('hour', order_purchase_timestamp), and TO_CHAR(order_purchase_timestamp, 'YYYY-MM-DD HH24:MI'). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-extract-and-format-purchases",
+    starterSql: `-- Olist purchase reporting fields.
+-- Return order_id, order_purchase_timestamp, purchase_year, purchase_hour, and purchase_label.
+-- Use EXTRACT(YEAR ...), DATE_PART('hour', ...), and TO_CHAR(..., 'YYYY-MM-DD HH24:MI').
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
+  "olist-create-purchase-buckets": {
+    id: "olist-create-purchase-buckets",
+    title: "Create Olist reporting buckets",
+    prompt:
+      "From orders, return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin. Use DATE_TRUNC('day', ...), DATE_TRUNC('month', ...), and DATE_BIN(INTERVAL '1 hour', order_purchase_timestamp, TIMESTAMP '2000-01-01 00:00:00'). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-create-purchase-buckets",
+    starterSql: `-- Olist purchase reporting buckets.
+-- Return order_id, order_purchase_timestamp, purchase_day, purchase_month, and purchase_hour_bin.
+-- Use DATE_TRUNC for day and month, then DATE_BIN with a 1-hour interval and 2000-01-01 origin.
+-- Order by order_purchase_timestamp, then order_id, keeping 5 rows.`,
+  },
+  "olist-measure-delivery-days": {
+    id: "olist-measure-delivery-days",
+    title: "Measure Olist delivery days two ways",
+    prompt:
+      "For delivered orders, return order_id, order_purchase_timestamp, order_delivered_customer_date, calendar_delivery_days, and elapsed_delivery_days. Use order_delivered_customer_date::date - order_purchase_timestamp::date, and ROUND(EXTRACT(EPOCH FROM order_delivered_customer_date - order_purchase_timestamp) / 86400.0, 2). Order by order_purchase_timestamp, then order_id, keeping 5 rows.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-measure-delivery-days",
+    starterSql: `-- Olist delivery duration measures.
+-- Return purchase and delivery timestamps plus calendar_delivery_days and elapsed_delivery_days.
+-- Use date subtraction for the calendar count and EXTRACT(EPOCH) / 86400.0 rounded to 2 decimals.
+-- Keep only delivered rows, ordered by purchase timestamp and order ID, with 5 rows.`,
+  },
+  "olist-anchored-purchase-lookback": { id: "olist-anchored-purchase-lookback", title: "Build an anchored Olist lookback", prompt: "Return order_id and order_purchase_timestamp for the first five purchases in the 30 days ending at the latest Olist purchase timestamp. Use a bounds CTE with MAX(order_purchase_timestamp), then order by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-anchored-purchase-lookback", starterSql: "-- Anchor a 30-day historical Olist lookback.\n-- Use MAX(order_purchase_timestamp) in a bounds CTE.\n-- Return order_id and order_purchase_timestamp, then order and limit 5." },
+  "olist-calendar-reporting-fields": { id: "olist-calendar-reporting-fields", title: "Create Olist calendar reporting fields", prompt: "Return order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday for the first five purchases. Use EXTRACT and TO_CHAR(..., 'FMDay'), ordered by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-calendar-reporting-fields", starterSql: "-- Olist calendar reporting fields.\n-- Return ISO year, ISO week, quarter, and a weekday label.\n-- Order by purchase timestamp and order ID, then limit 5." },
+  "olist-compare-delivery-windows": { id: "olist-compare-delivery-windows", title: "Compare actual and estimated Olist delivery windows", prompt: "For five delivered orders, return order_id, actual_window, estimated_window, and delivered_late. Build half-open daterange values from purchase through each end date plus one day, then order by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-compare-delivery-windows", starterSql: "-- Olist actual and estimated delivery windows.\n-- Build two half-open daterange values and a delivered_late boolean.\n-- Keep delivered rows, order by purchase timestamp and order ID, limit 5." },
+  "olist-fill-purchase-date-gaps": { id: "olist-fill-purchase-date-gaps", title: "Fill quiet Olist purchase days", prompt: "Generate dates from 2016-09-04 through 2016-09-08. Left join orders with a half-open daily predicate and return purchase_date plus COUNT(order_id) AS order_count in ascending date order.", dataset: "olist", engine: "postgres", challengeId: "olist-fill-purchase-date-gaps", starterSql: "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count." },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {
