@@ -249,9 +249,11 @@ const sections: Section[] = [
         slug: "error-handling",
         title: "Error Handling",
         blurb:
-          "TRY...CATCH (and equivalents) inside SQL scripts to prevent total failure during batch operations.",
+          "Defensive queries, transactions, savepoints, and PostgreSQL exception blocks.",
         icon: AlertTriangle,
-        modules: ["TRY / CATCH", "RAISE / THROW", "Savepoints", "Batch recovery"],
+        modules: ["Defensive Querying", "Transactions", "Savepoints", "PostgreSQL Exceptions", "Final quiz"],
+        unlocked: true,
+        routeBase: "specialized",
       },
     ],
   },
