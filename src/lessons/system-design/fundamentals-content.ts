@@ -2410,7 +2410,7 @@ export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson, dnsLesson],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
   },
   "networking-protocols": {
     slug: "networking-protocols",
