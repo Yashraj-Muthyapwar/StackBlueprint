@@ -67,7 +67,7 @@ import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
 import pandasLogo from "@/images/logos/pandas-logo.svg";
 import mongoDbLogo from "@/images/logos/MongoDB_Logomark_ForestGreen.png";
 
-import { FUNDAMENTALS_TOPICS } from "./system-design/fundamentals-content";
+import { FOUNDATIONS_TOPICS } from "./system-design/foundations-content";
 import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems-content";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
@@ -1046,11 +1046,11 @@ export const roadmap: RoadmapCategory[] = [
         blurb: "Requirements, estimation, core metrics, networking, APIs and caching.",
         patterns: [
           {
-            title: FUNDAMENTALS_TOPICS["getting-started"].title,
-            slug: FUNDAMENTALS_TOPICS["getting-started"].slug,
-            blurb: FUNDAMENTALS_TOPICS["getting-started"].blurb,
-            path: "/system-design/fundamentals/getting-started",
-            lessons: FUNDAMENTALS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/fundamentals/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle })),
+            title: FOUNDATIONS_TOPICS["getting-started"].title,
+            slug: FOUNDATIONS_TOPICS["getting-started"].slug,
+            blurb: FOUNDATIONS_TOPICS["getting-started"].blurb,
+            path: "/system-design/foundations/getting-started",
+            lessons: FOUNDATIONS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle })),
           },
           lockedPattern(
             "Core Concepts & Metrics",
@@ -1058,11 +1058,11 @@ export const roadmap: RoadmapCategory[] = [
             "Measuring performance: Availability, Scalability, and SLAs.",
           ),
           {
-            title: FUNDAMENTALS_TOPICS["networking-protocols"].title,
-            slug: FUNDAMENTALS_TOPICS["networking-protocols"].slug,
-            blurb: FUNDAMENTALS_TOPICS["networking-protocols"].blurb,
-            path: "/system-design/fundamentals/networking-protocols",
-            lessons: FUNDAMENTALS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/fundamentals/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe })),
+            title: FOUNDATIONS_TOPICS["networking-protocols"].title,
+            slug: FOUNDATIONS_TOPICS["networking-protocols"].slug,
+            blurb: FOUNDATIONS_TOPICS["networking-protocols"].blurb,
+            path: "/system-design/foundations/networking-protocols",
+            lessons: FOUNDATIONS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe })),
           },
           lockedPattern(
             "Routing & Load Balancing",
