@@ -54,6 +54,10 @@ import { olistTimeZoneStages } from "./datetime-functions/time-zones.tsx";
 import { olistExtractionFormattingStages } from "./datetime-functions/extraction-formatting.tsx";
 import { olistTruncationBucketingStages } from "./datetime-functions/truncation-bucketing.tsx";
 import { olistDateArithmeticStages } from "./datetime-functions/date-arithmetic.tsx";
+import { olistIntervalsLookbacksStages } from "./datetime-functions/intervals-lookbacks.tsx";
+import { olistCalendarPeriodStages } from "./datetime-functions/calendar-period-analysis.tsx";
+import { olistOverlappingRangesStages } from "./datetime-functions/overlapping-ranges.tsx";
+import { olistDateSpinesStages } from "./datetime-functions/date-spines-gap-filling.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -123,6 +127,10 @@ export const STAGES_REGISTRY = {
   "q-olist-extraction-formatting": olistExtractionFormattingStages,
   "q-olist-truncation-bucketing": olistTruncationBucketingStages,
   "q-olist-date-arithmetic": olistDateArithmeticStages,
+  "q-olist-intervals-lookbacks": olistIntervalsLookbacksStages,
+  "q-olist-calendar-periods": olistCalendarPeriodStages,
+  "q-olist-overlapping-ranges": olistOverlappingRangesStages,
+  "q-olist-date-spines": olistDateSpinesStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
