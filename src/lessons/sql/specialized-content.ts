@@ -19,6 +19,10 @@ import olistTimeZoneInstantImg from "@/images/sql/datetime-functions/olist-time-
 import olistExtractionFormattingImg from "@/images/sql/datetime-functions/extraction-formatting-olist.png";
 import olistTruncationBucketingImg from "@/images/sql/datetime-functions/truncation-bucketing-olist.png";
 import olistDateArithmeticImg from "@/images/sql/datetime-functions/date-arithmetic-olist.png";
+import olistIntervalsLookbacksImg from "@/images/sql/datetime-functions/intervals-lookbacks-olist.png";
+import olistCalendarPeriodAnalysisImg from "@/images/sql/datetime-functions/calendar-period-analysis-olist.png";
+import olistOverlappingRangesImg from "@/images/sql/datetime-functions/overlapping-ranges-olist.png";
+import olistDateSpinesGapFillingImg from "@/images/sql/datetime-functions/date-spines-gap-filling-olist.png";
 
 // =============================================================
 // STRING FUNCTIONS
@@ -4542,36 +4546,320 @@ const dateArithmetic: LessonContent = {
 const intervalsLookbacks: LessonContent = {
   slug: "intervals-lookbacks",
   title: "Intervals, Lookbacks & Sargable Filters",
-  subtitle: "INTERVAL / half-open ranges / anchor to MAX(ts) / index-safe predicates",
-  sections: [],
+  subtitle: "INTERVAL / stable report anchors / half-open ranges / index-friendly timestamp filters",
+  sections: [
+    {
+      kind: "prose",
+      heading: "A lookback needs a meaningful clock",
+      body: [
+        "A lookback is a range ending at an anchor: “the 30 days up to this point.” In a live system, that anchor is often `NOW()`. Olist is historical data, though: its latest purchase is in 2018. Running `NOW() - INTERVAL '30 days'` today would correctly return no Olist rows—and teach the wrong lesson.",
+        "For a reproducible historical report, derive the anchor from the data. Once every chart and query uses the same endpoint, rerunning the analysis produces the same window.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistIntervalsLookbacksImg,
+      alt: "A light-grid timeline shows a 30-day Olist lookback ending at the dataset's latest purchase.",
+      caption: "A stable anchor turns “last 30 days” into a repeatable historical reporting window.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find the stable Olist report anchor",
+      code: `SELECT MAX(order_purchase_timestamp) AS max_purchase
+FROM orders;`,
+    },
+    {
+      kind: "table",
+      caption: "The Olist orders dataset ends at this purchase timestamp",
+      headers: ["max_purchase"],
+      rows: [["2018-10-17 17:30:18"]],
+    },
+    {
+      kind: "prose",
+      heading: "Subtract an interval from the anchor",
+      body: [
+        "`INTERVAL '30 days'` is a duration, not a formatted string. PostgreSQL can subtract it directly from a timestamp. Put the maximum in a one-row `bounds` CTE, then `CROSS JOIN` that one row so both boundaries remain visible to the filter.",
+        "This one-off historical report includes the exact maximum with `<= max_purchase`. The window therefore starts at `2018-09-17 17:30:18` and ends at `2018-10-17 17:30:18`.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Return the first five purchases in Olist's anchored 30-day lookback",
+      code: `WITH bounds AS (
+  SELECT MAX(order_purchase_timestamp) AS max_purchase
+  FROM orders
+)
+SELECT
+  o.order_id,
+  o.order_purchase_timestamp
+FROM orders AS o
+CROSS JOIN bounds AS b
+WHERE o.order_purchase_timestamp >= b.max_purchase - INTERVAL '30 days'
+  AND o.order_purchase_timestamp <= b.max_purchase
+ORDER BY o.order_purchase_timestamp, o.order_id
+LIMIT 5;`,
+    },
+    {
+      kind: "table",
+      caption: "The first five of eight purchases in the anchored window",
+      headers: ["order_id", "order_purchase_timestamp"],
+      rows: [
+        ["ed3efbd3a87bea76c2812c66a0b32219", "2018-09-20 13:54:16"],
+        ["5aac76cf7b07dd06fa4d50bf461d2f40", "2018-09-25 11:59:18"],
+        ["869997fbe01f39d184956b5c6bccfdbe", "2018-09-26 08:40:15"],
+        ["392ed9afd714e3c74767d0c4d3e3f477", "2018-09-29 09:13:03"],
+        ["616fa7d4871b87832197b2a137a115d2", "2018-10-01 15:30:09"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-intervals-lookbacks",
+      caption: "First compute Olist's endpoint, then apply interval arithmetic, then see why adjacent periods use an excluded end.",
+    },
+    {
+      kind: "prose",
+      heading: "Make recurring windows half-open",
+      body: [
+        "A daily or monthly pipeline should normally use a half-open range: `timestamp >= start AND timestamp < end`. It includes the start and excludes the end. An order exactly at midnight on October 1 then belongs to October, never both September and October.",
+        "This differs from the anchored report above because the jobs answer different questions. Use an inclusive final endpoint when you deliberately want to include one known maximum. Use half-open boundaries when periods meet each other repeatedly.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A sargable one-day filter: leave the timestamp column bare",
+      code: `-- Avoid applying a function to the indexed column:
+-- WHERE DATE(order_purchase_timestamp) = DATE '2018-10-01'
+
+SELECT order_id, order_purchase_timestamp
+FROM orders
+WHERE order_purchase_timestamp >= TIMESTAMP '2018-10-01 00:00:00'
+  AND order_purchase_timestamp <  TIMESTAMP '2018-10-02 00:00:00'
+ORDER BY order_purchase_timestamp, order_id;`,
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "What “sargable” means",
+      body: "A predicate is sargable when the database can search an index with it. A range comparison against the bare timestamp column is commonly index-friendly; wrapping that column in DATE, TO_CHAR, or EXTRACT can force more work unless you have a matching expression index.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "BETWEEN includes both endpoints",
+      body: "`BETWEEN start AND end` is inclusive at both ends. Adjacent reports that share midnight can double-count it. Prefer `>= start AND < end` for recurring periods.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Build an anchored Olist lookback",
+      prompt: "Return the first five Olist purchases in the 30 days ending at the dataset's latest purchase timestamp. Use a bounds CTE with MAX(order_purchase_timestamp), retain order_id and order_purchase_timestamp, and order deterministically.",
+      tables: ["orders"],
+      successCheck: "Five rows from the anchored 30-day range, with order_id and order_purchase_timestamp.",
+      href: "/sql-playground?practice=olist-anchored-purchase-lookback",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Use `NOW()` for a live clock and `MAX(timestamp)` for a stable historical anchor.",
+        "Subtract `INTERVAL` values directly from timestamps to state lookback boundaries clearly.",
+        "Use `>= start AND < end` for adjacent, recurring time periods.",
+        "Keep an indexed timestamp column bare in a range predicate when possible.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "olist-lookback-live-clock",
+          question: "Why would NOW() - INTERVAL '30 days' return no Olist purchases today?",
+          options: ["Olist's purchases are historical and end in 2018", "NOW() removes old rows", "INTERVAL only works with dates", "The orders table has no timestamp"],
+          correctIndex: 0,
+          explanation: "NOW() uses the current clock, while Olist's latest purchase timestamp is in 2018.",
+        },
+        {
+          id: "olist-lookback-anchor",
+          question: "Why use MAX(order_purchase_timestamp) as an Olist report anchor?",
+          options: ["The historical window stays reproducible", "It changes every timestamp to today", "It removes NULLs", "It adds an index"],
+          correctIndex: 0,
+          explanation: "The dataset's own latest timestamp is a stable endpoint for a historical report.",
+        },
+        {
+          id: "olist-lookback-half-open",
+          question: "Which predicate prevents an event at the next midnight from being counted twice?",
+          options: ["ts >= start AND ts < end", "ts BETWEEN start AND end", "DATE(ts) = start", "ts <> end"],
+          correctIndex: 0,
+          explanation: "A half-open range includes its start and excludes its end.",
+        },
+        {
+          id: "olist-lookback-sargable",
+          question: "Which filter is usually more index-friendly for a timestamp column?",
+          options: ["order_purchase_timestamp >= TIMESTAMP '2018-10-01'", "DATE(order_purchase_timestamp) = DATE '2018-10-01'", "TO_CHAR(order_purchase_timestamp, 'YYYY-MM') = '2018-10'", "EXTRACT(DAY FROM order_purchase_timestamp) = 1"],
+          correctIndex: 0,
+          explanation: "The bare timestamp column can be searched directly with a range predicate.",
+        },
+      ],
+    },
+  ],
 };
 
 const calendarPeriodAnalysis: LessonContent = {
   slug: "calendar-period-analysis",
   title: "Calendar & Period Analysis",
-  subtitle: "ISO week / quarter / weekday / period boundaries",
-  sections: [],
+  subtitle: "ISO weeks / quarters / weekday keys / readable calendar labels",
+  sections: [
+    {
+      kind: "prose",
+      heading: "One timestamp, several reporting questions",
+      body: [
+        "An Olist purchase timestamp tells you when an order happened. A calendar projection adds the reporting dimensions you need around it: ISO week for weekly operations, quarter for planning, and weekday for staffing patterns.",
+        "These are derived fields, not replacements for the timestamp. Keep the original instant available, then add the smallest calendar key that answers the reporting question.",
+      ],
+    },
+    {
+      kind: "image",
+      src: olistCalendarPeriodAnalysisImg,
+      alt: "A light-grid diagram maps an Olist purchase timestamp to ISO week, quarter, and weekday reporting fields.",
+      caption: "The same purchase timestamp can become an ISO reporting key, a planning quarter, or a reader-facing weekday label.",
+    },
+    {
+      kind: "prose",
+      heading: "Pair ISO week with ISO year",
+      body: [
+        "Week numbers reset. A report grouped only by week 1 can mix separate years. Pair EXTRACT(ISOYEAR ...) with EXTRACT(WEEK ...) whenever you use ISO weeks. ISO uses Monday as the first day of the week and has its own year boundary near New Year.",
+        "The first Olist purchase was a Sunday, September 4, 2016. PostgreSQL assigns it ISO year 2016 and ISO week 35. Its calendar quarter is 3, while its ISO weekday is 7.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Project sortable Olist calendar keys and a weekday label",
+      code: [
+        "SELECT",
+        "  order_purchase_timestamp,",
+        "  EXTRACT(ISOYEAR FROM order_purchase_timestamp) AS iso_year,",
+        "  EXTRACT(WEEK FROM order_purchase_timestamp) AS iso_week,",
+        "  EXTRACT(QUARTER FROM order_purchase_timestamp) AS purchase_quarter,",
+        "  EXTRACT(ISODOW FROM order_purchase_timestamp) AS iso_weekday,",
+        "  TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday",
+        "FROM orders",
+        "ORDER BY order_purchase_timestamp, order_id",
+        "LIMIT 5;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "A deterministic preview of the first five Olist purchases",
+      headers: ["purchased", "ISO year", "ISO week", "quarter", "ISO weekday", "weekday label"],
+      rows: [
+        ["2016-09-04 21:15:19", "2016", "35", "3", "7", "Sunday"],
+        ["2016-09-05 00:15:34", "2016", "36", "3", "1", "Monday"],
+        ["2016-09-13 15:24:19", "2016", "37", "3", "2", "Tuesday"],
+        ["2016-09-15 12:16:38", "2016", "37", "3", "4", "Thursday"],
+        ["2016-10-02 22:07:52", "2016", "39", "4", "7", "Sunday"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-olist-calendar-periods",
+      caption: "Build ISO week keys, add quarter and weekday fields, then order real Olist weekdays with a numeric key instead of alphabetic text.",
+    },
+    {
+      kind: "prose",
+      heading: "Sort by keys, format labels at the edge",
+      body: [
+        "EXTRACT returns numeric values. ISODOW is especially useful for a Monday-first chart because Monday is 1 and Sunday is 7. TO_CHAR(..., 'FMDay') produces display text such as Monday without trailing padding.",
+        "Do not sort a report only by purchase_weekday: text sorts alphabetically, so Friday would come before Monday. Sort by iso_weekday, then show the formatted label alongside it.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Order two real Olist weekdays in business-week order",
+      code: [
+        "SELECT",
+        "  EXTRACT(ISODOW FROM order_purchase_timestamp) AS iso_weekday,",
+        "  TO_CHAR(order_purchase_timestamp, 'FMDay') AS purchase_weekday",
+        "FROM orders",
+        "WHERE order_id IN (",
+        "  '2e7a8482f6fb09756ca50c10d7bfc047',",
+        "  'e5fa5a7210941f7d56d0208e4e071d35'",
+        ")",
+        "ORDER BY iso_weekday;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "Numeric ISO weekday puts Monday before Sunday",
+      headers: ["iso_weekday", "purchase_weekday"],
+      rows: [["1", "Monday"], ["7", "Sunday"]],
+    },
+    { kind: "callout", tone: "warn", title: "DOW and ISODOW are different", body: "EXTRACT(DOW FROM timestamp) uses Sunday = 0. EXTRACT(ISODOW FROM timestamp) uses Monday = 1 through Sunday = 7. Choose one convention deliberately and do not mix their numbers." },
+    { kind: "playground-practice", title: "Create Olist calendar reporting fields", prompt: "Return the first five Olist purchases with order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday. Use EXTRACT for the numeric pieces and TO_CHAR(..., 'FMDay') for the weekday label.", tables: ["orders"], successCheck: "Five deterministic purchase rows with ISO week, quarter, and weekday reporting fields.", href: "/sql-playground?practice=olist-calendar-reporting-fields" },
+    { kind: "takeaways", items: ["Calendar fields are derived reporting dimensions; retain the original timestamp.", "Pair ISOYEAR with WEEK to identify an ISO week unambiguously.", "Use ISODOW when a Monday-first numeric weekday key is useful.", "Sort with numeric or temporal keys and format reader-facing labels at the presentation edge."] },
+    { kind: "quiz", questions: [{ id: "olist-calendar-isoyear", question: "Which field should accompany EXTRACT(WEEK ...) in an ISO-week report?", options: ["EXTRACT(ISOYEAR ...)", "EXTRACT(MONTH ...)", "DATE_PART('epoch', ...)", "TO_CHAR(..., 'Day')"], correctIndex: 0, explanation: "ISO week numbering has its own year boundary, so ISOYEAR identifies which year's week you mean." }, { id: "olist-calendar-isodow", question: "What value does ISODOW return for Monday?", options: ["1", "0", "7", "Monday"], correctIndex: 0, explanation: "ISODOW uses Monday = 1 through Sunday = 7." }, { id: "olist-calendar-dow", question: "What value does DOW return for Sunday in PostgreSQL?", options: ["0", "1", "6", "7"], correctIndex: 0, explanation: "DOW uses Sunday = 0, unlike ISODOW, which uses Sunday = 7." }, { id: "olist-calendar-label", question: "Why should a Monday-first weekday report sort by iso_weekday rather than purchase_weekday?", options: ["The weekday label is text and sorts alphabetically", "The label changes the timestamp", "ISODOW removes duplicate rows", "TO_CHAR cannot display Monday"], correctIndex: 0, explanation: "Text ordering is alphabetical, not Monday-through-Sunday business order." }] },
+  ],
 };
 
 const overlappingRanges: LessonContent = {
   slug: "overlapping-ranges",
   title: "Overlapping Ranges",
-  subtitle: "OVERLAPS / range types / && / @> / EXCLUDE USING gist",
-  sections: [],
+  subtitle: "daterange / [) bounds / overlap / containment / exclusion constraints",
+  sections: [
+    { kind: "prose", heading: "A range packages two endpoints and their rules", body: ["An Olist order has a purchase date, an actual delivery date, and an estimated delivery date. A PostgreSQL range keeps a start, an end, and the endpoint convention together, so questions about overlap and containment become explicit.", "Use a half-open date range, [), for calendar spans: include the start date and exclude the day after the end. The added day makes a delivery date visible as a whole day while keeping adjacent periods disjoint."] },
+    { kind: "image", src: olistOverlappingRangesImg, alt: "A light-grid timeline shows two overlapping delivery windows and their shared intersection.", caption: "The && operator asks whether two temporal ranges share any point." },
+    { kind: "code", language: "sql", caption: "Create actual and estimated delivery windows for Olist orders", code: ["SELECT", "  order_id,", "  daterange(order_purchase_timestamp::date,", "            order_delivered_customer_date::date + 1, '[)') AS actual_window,", "  daterange(order_purchase_timestamp::date,", "            order_estimated_delivery_date::date + 1, '[)') AS estimated_window,", "  order_delivered_customer_date::date > order_estimated_delivery_date::date", "    AS delivered_late", "FROM orders", "WHERE order_delivered_customer_date IS NOT NULL", "  AND order_estimated_delivery_date IS NOT NULL", "ORDER BY order_purchase_timestamp, order_id", "LIMIT 5;"].join("\n") },
+    { kind: "table", caption: "A deterministic preview of the first five delivered Olist orders", headers: ["order_id", "actual_window", "estimated_window", "delivered_late"], rows: [["bfbd0f9b…", "[2016-09-15, 2016-11-10)", "[2016-09-15, 2016-10-05)", "true"], ["3b697a20…", "[2016-10-03, 2016-10-27)", "[2016-10-03, 2016-10-28)", "false"], ["be5bc2f0…", "[2016-10-03, 2016-10-28)", "[2016-10-03, 2016-11-08)", "false"], ["a41c8759…", "[2016-10-03, 2016-11-04)", "[2016-10-03, 2016-11-30)", "false"], ["d207cc27…", "[2016-10-03, 2016-11-01)", "[2016-10-03, 2016-11-24)", "false"]] },
+    { kind: "animation", variant: "q-olist-overlapping-ranges", caption: "A real Olist order becomes two half-open ranges, then && and @> test the relationship between them." },
+    { kind: "prose", heading: "Choose the operator that states the question", body: ["The && operator asks whether two ranges share any point. The @> operator asks whether a range contains a date or smaller range. For the illustrated Olist order, the actual window is entirely inside the estimated window, so both overlap and containment can be true.", "For mutable booking data, a GiST exclusion constraint can prevent two ranges for the same resource from overlapping. Olist is read-only course data, so this lesson analyzes existing windows rather than changing its schema."] },
+    { kind: "callout", tone: "warn", title: "The right endpoint is excluded", body: "[2017-10-02, 2017-10-11) includes October 10 but not October 11. Do not use an inclusive end if your ranges must sit next to one another without sharing a boundary." },
+    { kind: "playground-practice", title: "Compare actual and estimated Olist delivery windows", prompt: "For the first five delivered Olist orders, return order_id, actual_window, estimated_window, and delivered_late. Build each half-open date range from purchase through the relevant end date plus one day, and order by purchase timestamp then order ID.", tables: ["orders"], successCheck: "Five delivered orders with two explicit daterange values and a late-delivery comparison.", href: "/sql-playground?practice=olist-compare-delivery-windows" },
+    { kind: "takeaways", items: ["A range combines endpoints with explicit inclusion rules.", "Use [) for date spans that include the end date but exclude the following day.", "&& tests overlap; @> tests containment.", "GiST exclusion constraints can enforce non-overlap for mutable scheduling data."] },
+    { kind: "quiz", questions: [{ id: "olist-range-overlap", question: "What does range_a && range_b mean?", options: ["The ranges overlap", "A contains B", "The ranges have equal length", "The ranges are formatted as text"], correctIndex: 0, explanation: "The overlap operator is true when the two ranges share any point." }, { id: "olist-range-half-open", question: "What does [) mean for a date range?", options: ["Include start, exclude end", "Exclude start, include end", "Include both ends", "Exclude both ends"], correctIndex: 0, explanation: "This half-open convention prevents adjacent periods from sharing their boundary." }, { id: "olist-range-containment", question: "Which operator asks whether a range contains a date?", options: ["@>", "&&", "-", "="], correctIndex: 0, explanation: "@> is PostgreSQL's contains operator for ranges." }, { id: "olist-range-delivery-end", question: "Why add one day to a delivered date before building a [) date range?", options: ["To include the whole delivery date", "To make the range inclusive at both ends", "To convert the range to text", "To remove late deliveries"], correctIndex: 0, explanation: "The next date is excluded, leaving the delivery date itself inside the range." }] },
+  ],
 };
 
 const dateSpinesGapFilling: LessonContent = {
   slug: "date-spines-gap-filling",
   title: "Date Spines & Gap Filling",
-  subtitle: "GENERATE_SERIES / LEFT JOIN date axis / dim_date / business-day counting",
-  sections: [],
+  subtitle: "GENERATE_SERIES / complete date axis / LEFT JOIN / real zeroes",
+  sections: [
+    { kind: "prose", heading: "A missing row is not a zero", body: ["Grouping Olist orders by purchase date returns only dates with purchases. A chart built from that result silently skips quiet dates instead of showing zero.", "A date spine is the complete calendar you want to report. Generate it first, then LEFT JOIN the facts. The spine owns the timeline, so a quiet date survives without a matching order."] },
+    { kind: "image", src: olistDateSpinesGapFillingImg, alt: "A light-grid diagram shows a complete date spine left joined to Olist order counts including zero-count dates.", caption: "The spine owns the timeline. The LEFT JOIN preserves every date even when Olist has no order row." },
+    { kind: "prose", heading: "Read GENERATE_SERIES from left to right", body: ["`generate_series(start, stop, step)` returns one row for each value from start through stop. For a daily date spine, use two `DATE` values and an `INTERVAL '1 day'` step. The stop is included when the sequence lands on it, so September 4 through September 8 produces five rows.", "Put the function in `FROM` because it is the row source. `AS d(purchase_date)` gives that generated column a usable name. Date plus an interval produces a timestamp-like value, so `d.purchase_date::date` keeps the reporting key as `DATE`."] },
+    { kind: "code", language: "sql", caption: "Generate five reporting dates before joining any Olist facts", code: ["SELECT d.purchase_date::date AS purchase_date", "FROM generate_series(", "  DATE '2016-09-04',", "  DATE '2016-09-08',", "  INTERVAL '1 day'", ") AS d(purchase_date);"].join("\n") },
+    { kind: "table", caption: "The inclusive stop date gives five generated dates", headers: ["purchase_date"], rows: [["2016-09-04"], ["2016-09-05"], ["2016-09-06"], ["2016-09-07"], ["2016-09-08"]] },
+    { kind: "code", language: "sql", caption: "Create a five-day Olist purchase spine with visible zeroes", code: ["WITH date_spine AS (", "  SELECT d.purchase_date::date AS purchase_date", "  FROM generate_series(DATE '2016-09-04', DATE '2016-09-08',", "                       INTERVAL '1 day') AS d(purchase_date)", ")", "SELECT d.purchase_date, COUNT(o.order_id) AS order_count", "FROM date_spine AS d", "LEFT JOIN orders AS o", "  ON o.order_purchase_timestamp >= d.purchase_date", " AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day'", "GROUP BY d.purchase_date", "ORDER BY d.purchase_date;"].join("\n") },
+    { kind: "table", caption: "The Olist spine preserves three quiet dates", headers: ["purchase_date", "order_count"], rows: [["2016-09-04", "1"], ["2016-09-05", "1"], ["2016-09-06", "0"], ["2016-09-07", "0"], ["2016-09-08", "0"]] },
+    { kind: "animation", variant: "q-olist-date-spines", caption: "The generated dates stay present while each Olist order either joins to its date or leaves a zero count behind." },
+    { kind: "prose", heading: "Count the fact key after a LEFT JOIN", body: ["Use `COUNT(o.order_id)`, not `COUNT(*)`. A `LEFT JOIN` produces one preserved spine row even when no order matched, so `COUNT(*)` would incorrectly report one on each quiet day.", "For production reporting, a `dim_date` table can store holidays, fiscal periods, and business-day flags. Business-day questions then become calendar filters instead of fragile weekday arithmetic."] },
+    { kind: "playground-practice", title: "Fill quiet Olist purchase days", prompt: "Generate a daily spine from 2016-09-04 through 2016-09-08. Left join Olist orders with a half-open daily predicate and return purchase_date plus COUNT(order_id) AS order_count. Keep every spine date in ascending order.", tables: ["orders"], successCheck: "Five consecutive dates, including zero-count dates, with purchase_date and order_count.", href: "/sql-playground?practice=olist-fill-purchase-date-gaps" },
+    { kind: "takeaways", items: ["Generate the reporting date axis before joining facts.", "LEFT JOIN preserves dates that have no matching order.", "Count a nullable fact key, not COUNT(*), to produce real zeroes.", "A date dimension is the durable home for fiscal, holiday, and business-day rules."] },
+    { kind: "quiz", questions: [{ id: "olist-spine-left-join", question: "Why LEFT JOIN orders to a date spine?", options: ["To retain dates with no orders", "To remove duplicate timestamps", "To convert timestamps to text", "To prevent all NULLs"], correctIndex: 0, explanation: "The date spine is preserved, so quiet dates remain available for a zero count." }, { id: "olist-spine-count-key", question: "Why use COUNT(o.order_id) after the LEFT JOIN?", options: ["It counts only matched order rows", "It always returns 1", "It converts the date to an interval", "It formats the result"], correctIndex: 0, explanation: "The order key is NULL when no fact row matched, so COUNT ignores quiet dates correctly." }, { id: "olist-spine-boundary", question: "What join predicate assigns a timestamp to exactly one day?", options: ["ts >= date AND ts < date + INTERVAL '1 day'", "ts BETWEEN date AND date + INTERVAL '1 day'", "DATE(ts) = date only", "ts <> date"], correctIndex: 0, explanation: "The half-open daily range includes a day start and excludes the next day start." }] },
+  ],
 };
 
 const dateTimeQuiz: LessonContent = {
   slug: "datetime-quiz",
   title: "Date & Time: Final Quiz",
-  subtitle: "Test your knowledge on Date & Time functions.",
-  sections: [],
+  subtitle: "A module review of instants, calendar keys, intervals, ranges, and complete timelines.",
+  sections: [
+    { kind: "quiz", isFinalQuiz: true, questions: [
+      { id: "datetime-final-zone", question: "What assigns an Olist TIMESTAMP interpreted as Sao Paulo local time to its source zone?", options: ["timestamp AT TIME ZONE 'America/Sao_Paulo'", "TO_CHAR(timestamp, 'TZ')", "timestamp::date", "NOW() - timestamp"], correctIndex: 0, explanation: "AT TIME ZONE attaches the intended source zone and produces an instant." },
+      { id: "datetime-final-now", question: "Why is NOW() unsuitable for a repeatable Olist historical lookback?", options: ["Olist ends in 2018, so the live window is empty today", "NOW() cannot return timestamps", "INTERVAL only works with dates", "It removes NULL rows"], correctIndex: 0, explanation: "Anchor historical data to MAX(timestamp), not the current clock." },
+      { id: "datetime-final-extract", question: "Which expression returns the numeric calendar quarter?", options: ["EXTRACT(QUARTER FROM ts)", "TO_CHAR(ts, 'Quarter')", "DATE_TRUNC('quarter', ts)::text", "EXTRACT(EPOCH FROM ts)"], correctIndex: 0, explanation: "EXTRACT returns numeric date-time components." },
+      { id: "datetime-final-format", question: "What does TO_CHAR(timestamp, 'FMDay') produce?", options: ["A display-ready weekday label without padding", "A sortable numeric weekday", "A timestamp in UTC", "An ISO week number"], correctIndex: 0, explanation: "TO_CHAR formats a value as text; FM removes padding." },
+      { id: "datetime-final-trunc", question: "Which expression returns the start of an order's purchase month?", options: ["DATE_TRUNC('month', order_purchase_timestamp)", "EXTRACT(MONTH FROM order_purchase_timestamp)", "TO_CHAR(order_purchase_timestamp, 'YYYY-MM')", "order_purchase_timestamp::date - 30"], correctIndex: 0, explanation: "DATE_TRUNC returns a temporal boundary, useful as a grouping key." },
+      { id: "datetime-final-elapsed", question: "Which expression measures precise elapsed duration in fractional days?", options: ["EXTRACT(EPOCH FROM later - earlier) / 86400.0", "later::date - earlier::date", "TO_CHAR(later, 'Day')", "EXTRACT(WEEK FROM later)"], correctIndex: 0, explanation: "EPOCH converts an interval to total seconds, which can be scaled to days." },
+      { id: "datetime-final-half-open", question: "Which recurring monthly predicate prevents boundary double-counting?", options: ["ts >= start AND ts < end", "ts BETWEEN start AND end", "DATE(ts) = start", "ts <> end"], correctIndex: 0, explanation: "A half-open range includes the start and excludes the next boundary." },
+      { id: "datetime-final-sargable", question: "Which filter is usually more index-friendly?", options: ["ts >= DATE '2018-10-01' AND ts < DATE '2018-10-02'", "DATE(ts) = DATE '2018-10-01'", "TO_CHAR(ts, 'YYYY-MM-DD') = '2018-10-01'", "EXTRACT(DAY FROM ts) = 1"], correctIndex: 0, explanation: "A range keeps the indexed timestamp column bare." },
+      { id: "datetime-final-isoyear", question: "What should be paired with EXTRACT(WEEK FROM ts) in an ISO-week report?", options: ["EXTRACT(ISOYEAR FROM ts)", "EXTRACT(MONTH FROM ts)", "TO_CHAR(ts, 'Day')", "EXTRACT(DOW FROM ts)"], correctIndex: 0, explanation: "ISO week numbering has its own year boundary." },
+      { id: "datetime-final-isodow", question: "What does EXTRACT(ISODOW FROM ts) return for Sunday?", options: ["7", "0", "1", "Sunday"], correctIndex: 0, explanation: "ISODOW uses Monday = 1 through Sunday = 7." },
+      { id: "datetime-final-range", question: "Which PostgreSQL range operator tests overlap?", options: ["&&", "@>", "||", "<>"], correctIndex: 0, explanation: "&& is true when two ranges share any point." },
+      { id: "datetime-final-spine", question: "After LEFT JOINing orders to a date spine, what produces true zeroes on quiet days?", options: ["COUNT(o.order_id)", "COUNT(*)", "INNER JOIN orders", "ORDER BY order_id"], correctIndex: 0, explanation: "The fact key is NULL on unmatched spine rows, and COUNT ignores NULL." }
+    ] },
+  ],
 };
 
 // =============================================================
