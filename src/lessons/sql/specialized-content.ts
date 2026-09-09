@@ -4863,6 +4863,45 @@ const dateTimeQuiz: LessonContent = {
 };
 
 // =============================================================
+// ERROR HANDLING
+// =============================================================
+
+const failingSafely: LessonContent = {
+  slug: "failing-safely",
+  title: "Defensive Querying",
+  subtitle: "NULLIF, TRY_CAST, and catching errors early",
+  sections: [],
+};
+
+const transactionsRollbacks: LessonContent = {
+  slug: "transactions-rollbacks",
+  title: "Transactions & Rollbacks",
+  subtitle: "BEGIN, COMMIT, and handling aborted state",
+  sections: [],
+};
+
+const savepoints: LessonContent = {
+  slug: "savepoints",
+  title: "Savepoints",
+  subtitle: "SAVEPOINT and ROLLBACK TO",
+  sections: [],
+};
+
+const plpgsqlExceptions: LessonContent = {
+  slug: "plpgsql-exceptions",
+  title: "Exception Handling (PostgreSQL)",
+  subtitle: "BEGIN ... EXCEPTION ... END",
+  sections: [],
+};
+
+const errorHandlingQuiz: LessonContent = {
+  slug: "error-handling-quiz",
+  title: "Error Handling: Final Quiz",
+  subtitle: "Test your knowledge on Error Handling.",
+  sections: [],
+};
+
+// =============================================================
 // TOPIC INDEX
 // =============================================================
 
@@ -4924,7 +4963,7 @@ export const SPECIALIZED_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Specialized Data Handling",
     iconKey: "terminal",
     blurb:
-      "TRY...CATCH (and equivalents) inside SQL scripts to prevent total failure during batch operations.",
-    lessons: [],
+      "Defensive queries, transactions, savepoints, and PostgreSQL exception blocks.",
+    lessons: [failingSafely, transactionsRollbacks, savepoints, plpgsqlExceptions, errorHandlingQuiz],
   },
 };
