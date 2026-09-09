@@ -67,6 +67,9 @@ import dataEngineeringLogo from "@/images/logos/data-engineering-logo.png";
 import pandasLogo from "@/images/logos/pandas-logo.svg";
 import mongoDbLogo from "@/images/logos/MongoDB_Logomark_ForestGreen.png";
 
+import { FUNDAMENTALS_TOPICS } from "./system-design/fundamentals-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems-content";
+
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
 import { dutchFlag } from "./two-pointers/dutch-flag";
@@ -1039,82 +1042,157 @@ export const roadmap: RoadmapCategory[] = [
     patterns: [],
     sections: [
       {
-        title: "System Design Fundamentals",
+        title: "1 · Foundations",
+        blurb: "Requirements, estimation, core metrics, networking, APIs and caching.",
         patterns: [
-          lockedPattern(
-            "Getting Started",
-            "getting-started",
-            "Introduction to system design and the interview delivery framework.",
-          ),
-          lockedPattern(
-            "Networking & Protocols",
-            "networking-protocols",
-            "Understand how data travels across the web (OSI, TCP, DNS).",
-          ),
+          {
+            title: FUNDAMENTALS_TOPICS["getting-started"].title,
+            slug: FUNDAMENTALS_TOPICS["getting-started"].slug,
+            blurb: FUNDAMENTALS_TOPICS["getting-started"].blurb,
+            path: "/system-design/fundamentals/getting-started",
+            lessons: FUNDAMENTALS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/fundamentals/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle })),
+          },
           lockedPattern(
             "Core Concepts & Metrics",
             "core-metrics",
             "Measuring performance: Availability, Scalability, and SLAs.",
           ),
+          {
+            title: FUNDAMENTALS_TOPICS["networking-protocols"].title,
+            slug: FUNDAMENTALS_TOPICS["networking-protocols"].slug,
+            blurb: FUNDAMENTALS_TOPICS["networking-protocols"].blurb,
+            path: "/system-design/fundamentals/networking-protocols",
+            lessons: FUNDAMENTALS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/fundamentals/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe })),
+          },
           lockedPattern(
-            "Databases & DBMS",
-            "databases",
-            "Choosing the right storage: SQL vs NoSQL, OLAP vs OLTP, ACID.",
+            "Routing & Load Balancing",
+            "routing-load-balancing",
+            "Proxy vs Reverse Proxy, Load Balancers.",
           ),
           lockedPattern(
-            "Scaling Data",
-            "scaling-data",
-            "Distributing data: Replication, Partitioning, Sharding, Consistent Hashing.",
+            "APIs & Rate Limiting",
+            "apis-rate-limiting",
+            "REST, GraphQL, gRPC, and API Gateways.",
           ),
           lockedPattern(
             "Caching & Content Delivery",
-            "caching",
+            "caching-cdn",
             "Reducing latency with caching strategies and CDNs.",
           ),
+        ],
+      },
+      {
+        title: "2 · Data, Scaling & Architecture",
+        blurb: "Storage internals, replication, sharding, consistency, messaging.",
+        patterns: [
           lockedPattern(
-            "Advanced Data Structures",
-            "data-structures",
-            "Specialized structures like Bloom Filters and Quad Trees.",
+            "Database Foundations",
+            "database-foundations",
+            "Choosing the right data model.",
+          ),
+          lockedPattern(
+            "Database Internals",
+            "database-internals",
+            "How databases store and index data.",
+          ),
+          lockedPattern(
+            "Replication & Sharding",
+            "replication-sharding",
+            "Distributing data across nodes.",
+          ),
+          lockedPattern(
+            "Consistency Models",
+            "consistency-models",
+            "What a system promises a client will see.",
+          ),
+          lockedPattern(
+            "Storage Systems",
+            "storage-systems",
+            "Block, file, and object storage.",
+          ),
+          lockedPattern(
+            "Security & Auth",
+            "security-auth",
+            "Keeping data private in transit and at rest.",
+          ),
+          lockedPattern(
+            "Communication & Messaging",
+            "communication-messaging",
+            "Sync vs Async, queues, streams.",
           ),
           lockedPattern(
             "Architectural Styles",
             "architectural-styles",
-            "Monoliths, Microservices, Event-Driven, and Serverless.",
+            "Monoliths, Microservices, Event-Driven.",
+          ),
+        ],
+      },
+      {
+        title: "3 · Distributed & Data Systems",
+        blurb: "Network failures, clocks, consensus, and data-engineering patterns.",
+        patterns: [
+          {
+            title: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].title,
+            slug: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].slug,
+            blurb: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].blurb,
+            path: "/system-design/distributed-systems/distributed-systems",
+            lessons: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/distributed-systems/distributed-systems/${l.slug}`, icon: (l as any).icon || Server })),
+          },
+          lockedPattern(
+            "Time, Clocks & Consensus",
+            "time-consensus",
+            "Ordering events and reaching agreement.",
           ),
           lockedPattern(
-            "APIs & Security",
-            "apis-security",
-            "REST, GraphQL, gRPC, API Gateways, and OAuth2/JWT.",
+            "Distributed Transactions",
+            "distributed-transactions",
+            "Two-Phase Commit, Saga Pattern.",
           ),
           lockedPattern(
-            "Communication Patterns",
-            "communication-patterns",
-            "WebSockets, Message Queues, Pub/Sub, and CDC.",
+            "Batch, Streaming & Analytics",
+            "batch-streaming",
+            "ETL, Data Lakes, Streaming Engines.",
           ),
           lockedPattern(
-            "Distributed Systems",
-            "distributed-systems",
-            "Trading off consistency, availability, and latency.",
+            "Data Engineering Patterns",
+            "data-engineering-patterns",
+            "Incremental Loader, CDC, Lineage.",
           ),
           lockedPattern(
-            "System Tradeoffs",
-            "system-tradeoffs",
-            "Balancing constraints: CAP Theorem, Consistency, and Scaling.",
+            "Observability",
+            "observability",
+            "Logging, Metrics, Tracing, and Alerting.",
+          ),
+        ],
+      },
+      {
+        title: "4 · Interview Fluency",
+        blurb: "Specialized structures, technology deep-dives, and case studies.",
+        patterns: [
+          lockedPattern(
+            "Probabilistic & Spatial",
+            "probabilistic-spatial",
+            "Bloom Filters, Quad Trees, Geohashing.",
           ),
           lockedPattern(
-            "Resilience & Security",
-            "resilience-security",
-            "Circuit Breakers, Chaos Engineering, and Disaster Recovery.",
+            "Deployment & Delivery",
+            "deployment-delivery",
+            "Blue-Green Deployments, Canary Releases.",
           ),
           lockedPattern(
-            "Big Data Processing",
-            "big-data",
-            "Batch vs Stream Processing, MapReduce, and Data Lakes.",
+            "Technology Deep Dives",
+            "technology-deep-dives",
+            "PostgreSQL, Redis, Kafka, Elasticsearch.",
           ),
           lockedPattern(
-            "Case Studies (Capstone)",
+            "Recurring Interview Patterns",
+            "interview-patterns",
+            "High Read/Write Traffic, Hot Keys.",
+          ),
+          lockedPattern(
+            "System Design Interviews",
             "case-studies",
-            "Design real-world apps like Twitter, URL Shorteners, and Netflix.",
+            "End-to-end designs under interview conditions.",
           ),
         ],
       },
