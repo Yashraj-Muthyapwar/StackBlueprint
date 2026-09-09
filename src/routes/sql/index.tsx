@@ -165,8 +165,6 @@ const sections: Section[] = [
         blurb: "Scalar, correlated, EXISTS, UNION/INTERSECT/EXCEPT — when a subquery beats a join.",
         icon: Layers,
         modules: ["Scalar subqueries", "Correlated", "EXISTS / IN", "UNION / EXCEPT"],
-        unlocked: true,
-        routeBase: "querying",
       },
     ],
   },
