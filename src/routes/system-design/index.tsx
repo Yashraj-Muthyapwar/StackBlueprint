@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
+import { TrackCard } from "@/components/learning-paths/TrackCard";
 import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
 import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
@@ -75,29 +76,7 @@ type Section = {
   topics: Topic[];
 };
 
-/**
- * Choose how many module chips a card previews before collapsing to "+N more".
- *
- * A fixed count is the wrong unit: five long labels wrap to three rows and make
- * the card tall, while five short ones leave it looking empty. Budgeting by
- * total label length instead lands every card on roughly two rows of chips, so
- * a topic with 11 modules is no taller than one with 5.
- */
-const CHIP_CHAR_BUDGET = 110;
-const MIN_PREVIEW_MODULES = 3;
-const MAX_PREVIEW_MODULES = 6;
 
-function previewModules(modules: string[]) {
-  const shown: string[] = [];
-  let used = 0;
-  for (const m of modules) {
-    if (shown.length >= MAX_PREVIEW_MODULES) break;
-    if (shown.length >= MIN_PREVIEW_MODULES && used + m.length > CHIP_CHAR_BUDGET) break;
-    shown.push(m);
-    used += m.length;
-  }
-  return { shown, hidden: modules.length - shown.length };
-}
 
 const sections: Section[] = [
   {
@@ -613,96 +592,18 @@ function SystemDesignIndex() {
                     : t.completedCount || 0;
                   const totalCount = realTopic ? realTopic.lessons.length : t.modules.length;
 
-                  // Preview a few modules only. The full list belongs on the
-                  // topic page; showing all 11 here is what made cards ragged.
-                  const { shown, hidden } = previewModules(t.modules);
-
-                  const card = (
-                    <div
-                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
-                        isLocked
-                          ? "bg-card/20 opacity-80 grayscale"
-                          : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
-                      }`}
-                    >
-                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
-                        <Icon
-                          className={`size-10 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
-                          strokeWidth={1.5}
-                        />
-                      </div>
-
-                      <div className="flex flex-1 flex-col p-6 sm:p-8">
-                        <div className="flex items-center justify-between gap-4">
-                          <h3 className="text-xl font-semibold tracking-tight text-foreground">
-                            {t.title}
-                          </h3>
-                          {isLocked && (
-                            <LockKeyhole className="size-5 shrink-0 text-muted-foreground" />
-                          )}
-                        </div>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                          {t.blurb}
-                        </p>
-
-                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
-                          {shown.map((m) => (
-                            <span
-                              key={m}
-                              className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
-                            >
-                              {m}
-                            </span>
-                          ))}
-                          {hidden > 0 && (
-                            <span className="rounded-md px-1.5 py-1 text-xs font-semibold text-muted-foreground">
-                              +{hidden} more
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="mt-6 flex items-center gap-2">
-                          {isLocked ? (
-                            <span className="text-xs font-medium text-muted-foreground">
-                              {totalCount} {totalCount === 1 ? "lesson" : "lessons"} · Coming soon
-                            </span>
-                          ) : (
-                            <>
-                              <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
-                                <div
-                                  className="h-full bg-mint transition-all duration-500 ease-out"
-                                  style={{
-                                    width: `${totalCount ? (completedCount / totalCount) * 100 : 0}%`,
-                                  }}
-                                />
-                              </div>
-                              <span className="text-xs font-medium text-muted-foreground">
-                                {completedCount}/{totalCount} lessons complete
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-
-                      {!isLocked && (
-                        <div className="absolute bottom-6 right-6 opacity-0 transition-opacity duration-300 group-hover:opacity-100 max-sm:hidden">
-                          <div className="grid size-8 place-items-center rounded-full bg-mint/10 text-mint">
-                            <ArrowRight className="size-4" />
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-
-                  if (isLocked) {
-                    return <div key={t.slug}>{card}</div>;
-                  }
-
-                  const toPath = t.to || `/system-design/${t.routeBase}/${t.slug}`;
                   return (
-                    <Link key={t.slug} to={toPath} className="block w-full outline-none">
-                      {card}
-                    </Link>
+                    <TrackCard
+                      key={t.slug}
+                      title={t.title}
+                      blurb={t.blurb}
+                      icon={Icon}
+                      isLocked={isLocked}
+                      lessons={t.modules.map(m => ({ slug: m, title: m }))}
+                      completedCount={completedCount}
+                      totalCount={totalCount}
+                      href={t.to || `/system-design/${t.routeBase}/${t.slug}`}
+                    />
                   );
                 })}
               </div>
