@@ -1,17 +1,17 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, ChevronRight, Container, Layers, Terminal, CheckCircle2 } from "lucide-react";
-import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
+import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content";
 import { useProgress } from "@/hooks/use-progress";
 
 const ICONS = { container: Container, layers: Layers, terminal: Terminal } as const;
 
-export const Route = createFileRoute("/system-design/fundamentals/$topic/")({
+export const Route = createFileRoute("/system-design/foundations/$topic/")({
   component: FoundationTopicPage,
 });
 
 function FoundationTopicPage() {
   const { topic } = Route.useParams();
-  const t = FUNDAMENTALS_TOPICS[topic];
+  const t = FOUNDATIONS_TOPICS[topic];
   const { isCompleted } = useProgress();
 
   if (!t) {
@@ -39,7 +39,7 @@ function FoundationTopicPage() {
           </Link>
           <ChevronRight className="size-3" />
           <Link to="/system-design" className="hover:text-foreground">
-            Fundamentals
+            Foundations
           </Link>
           <ChevronRight className="size-3" />
           <span className="text-foreground">{t.title}</span>
@@ -51,7 +51,7 @@ function FoundationTopicPage() {
           </div>
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              Fundamentals · Topic
+              Foundations · Topic
             </p>
             <h1 className="mt-1 text-3xl font-semibold tracking-tight lg:text-4xl">
               {t.title}
@@ -66,7 +66,7 @@ function FoundationTopicPage() {
           {t.lessons.map((les, i) => (
             <Link
               key={les.slug}
-              to="/system-design/fundamentals/$topic/$lesson"
+              to="/system-design/foundations/$topic/$lesson"
               params={{ topic: t.slug, lesson: les.slug }}
               className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70"
             >
