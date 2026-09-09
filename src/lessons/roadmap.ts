@@ -942,6 +942,45 @@ export const roadmap: RoadmapCategory[] = [
               },
             ],
           },
+          {
+            title: "Error Handling",
+            slug: "error-handling",
+            path: "/sql/specialized/error-handling",
+            locked: false,
+            blurb: "Defensive queries, transactions, savepoints, and PostgreSQL exception blocks.",
+            lessons: [
+              {
+                title: "Defensive Querying",
+                slug: "failing-safely",
+                path: "/sql/specialized/error-handling/failing-safely",
+                icon: AlertTriangle,
+              },
+              {
+                title: "Transactions & Rollbacks",
+                slug: "transactions-rollbacks",
+                path: "/sql/specialized/error-handling/transactions-rollbacks",
+                icon: AlertTriangle,
+              },
+              {
+                title: "Savepoints",
+                slug: "savepoints",
+                path: "/sql/specialized/error-handling/savepoints",
+                icon: AlertTriangle,
+              },
+              {
+                title: "Exception Handling (PostgreSQL)",
+                slug: "plpgsql-exceptions",
+                path: "/sql/specialized/error-handling/plpgsql-exceptions",
+                icon: AlertTriangle,
+              },
+              {
+                title: "Error Handling: Final Quiz",
+                slug: "error-handling-quiz",
+                path: "/sql/specialized/error-handling/error-handling-quiz",
+                icon: HelpCircle,
+              },
+            ],
+          },
         ],
       },
       {
