@@ -2402,7 +2402,7 @@ export const dnsLesson: LessonContent = {
   ]
 };
 
-export const FUNDAMENTALS_TOPICS: Record<string, FoundationTopicMeta> = {
+export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
   "getting-started": {
     slug: "getting-started",
     title: "Getting Started",
