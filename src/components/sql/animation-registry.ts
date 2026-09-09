@@ -6,7 +6,7 @@ import {
   introTypes,
   introWhatIs,
 } from "./foundations/database-introduction";
-import { algosStages, semiStages, selfStages, vennStages } from "./querying/joins";
+
 import { pipelineStages } from "./querying-fundamentals/logical-query-order";
 import { introSqlClientServer } from "./foundations/client-server";
 import {
@@ -70,10 +70,7 @@ export const STAGES_REGISTRY = {
   "q-grpby": grpStages,
   "q-having": havingStages,
   "q-cube": cubeStages,
-  "q-venn": vennStages,
-  "q-self": selfStages,
-  "q-semianti": semiStages,
-  "q-algos": algosStages,
+
   "q-scalar": scalarStages,
   "q-corr": corrStages,
   "q-existsin": existsStages,
@@ -86,7 +83,7 @@ export const STAGES_REGISTRY = {
   "type-sizes": typeStages,
   "where-filter": boolStages,
   "group-by-agg": grpStages,
-  "join-types": vennStages,
+
   "set-ops": setopsStages,
   "table-anatomy": tableAnatomyStages,
   "pk-anatomy": pkStages,
