@@ -286,6 +286,7 @@ export type RoadmapLesson = {
   slug: string;
   path: string;
   icon: LucideIcon;
+  keywords?: string[];
 };
 export type RoadmapPattern = {
   title: string;
@@ -294,6 +295,7 @@ export type RoadmapPattern = {
   blurb: string;
   lessons: RoadmapLesson[];
   locked?: boolean;
+  keywords?: string[];
 };
 export type RoadmapSection = {
   title: string;
@@ -326,6 +328,10 @@ const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
     slug: l.builder.slug,
     path: `/patterns/${p.slug}/${l.builder.slug}`,
     icon: l.icon,
+    keywords: [
+      l.builder.subtitle,
+      ...(l.builder.spotIt ?? []),
+    ].filter(Boolean) as string[],
   })),
 });
 
@@ -1050,7 +1056,7 @@ export const roadmap: RoadmapCategory[] = [
             slug: FOUNDATIONS_TOPICS["getting-started"].slug,
             blurb: FOUNDATIONS_TOPICS["getting-started"].blurb,
             path: "/system-design/foundations/getting-started",
-            lessons: FOUNDATIONS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle })),
+            lessons: FOUNDATIONS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle, keywords: [l.subtitle].filter(Boolean) as string[] })),
           },
           lockedPattern(
             "Core Concepts & Metrics",
@@ -1062,7 +1068,7 @@ export const roadmap: RoadmapCategory[] = [
             slug: FOUNDATIONS_TOPICS["networking-protocols"].slug,
             blurb: FOUNDATIONS_TOPICS["networking-protocols"].blurb,
             path: "/system-design/foundations/networking-protocols",
-            lessons: FOUNDATIONS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe })),
+            lessons: FOUNDATIONS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe, keywords: [l.subtitle].filter(Boolean) as string[] })),
           },
           lockedPattern(
             "Routing & Load Balancing",
@@ -1136,7 +1142,7 @@ export const roadmap: RoadmapCategory[] = [
             slug: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].slug,
             blurb: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].blurb,
             path: "/system-design/distributed-systems/distributed-systems",
-            lessons: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/distributed-systems/distributed-systems/${l.slug}`, icon: (l as any).icon || Server })),
+            lessons: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/distributed-systems/distributed-systems/${l.slug}`, icon: (l as any).icon || Server, keywords: [l.subtitle].filter(Boolean) as string[] })),
           },
           lockedPattern(
             "Time, Clocks & Consensus",
