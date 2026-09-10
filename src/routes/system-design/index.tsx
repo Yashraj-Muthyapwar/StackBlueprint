@@ -29,7 +29,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
 import { TrackCard } from "@/components/learning-paths/TrackCard";
-import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
+import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content";
 import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
 
@@ -89,7 +89,7 @@ const sections: Section[] = [
           "Back-of-the-Envelope Estimation",
         ],
         unlocked: true,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
       {
         slug: "core-metrics",
@@ -104,7 +104,7 @@ const sections: Section[] = [
           "Percentiles (p50 / p99)",
         ],
         unlocked: false,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
       {
         slug: "networking-protocols",
@@ -121,7 +121,7 @@ const sections: Section[] = [
           "DNS",
         ],
         unlocked: true,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
       {
         slug: "routing-load-balancing",
@@ -136,7 +136,7 @@ const sections: Section[] = [
           "API Gateways",
         ],
         unlocked: false,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
       {
         slug: "apis-rate-limiting",
@@ -152,7 +152,7 @@ const sections: Section[] = [
           "Rate Limiting: Token Bucket vs Fixed Window",
         ],
         unlocked: false,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
       {
         slug: "caching-cdn",
@@ -170,7 +170,7 @@ const sections: Section[] = [
           "Content Delivery Networks (CDN)",
         ],
         unlocked: false,
-        routeBase: "fundamentals",
+        routeBase: "foundations",
       },
     ],
   },
@@ -566,7 +566,7 @@ function SystemDesignIndex() {
                   const isLocked = !t.unlocked;
 
                   const realTopic =
-                    FUNDAMENTALS_TOPICS[t.slug as keyof typeof FUNDAMENTALS_TOPICS] ||
+                    FOUNDATIONS_TOPICS[t.slug as keyof typeof FOUNDATIONS_TOPICS] ||
                     DISTRIBUTED_SYSTEMS_TOPICS[t.slug as keyof typeof DISTRIBUTED_SYSTEMS_TOPICS];
                   const completedCount = realTopic
                     ? realTopic.lessons.filter((l) => isCompleted(l.slug)).length

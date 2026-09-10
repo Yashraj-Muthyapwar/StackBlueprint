@@ -1,13 +1,13 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
-import { FUNDAMENTALS_TOPICS } from "@/lessons/system-design/fundamentals-content";
+import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content";
 import { SectionRenderer } from "@/components/system-design/SectionRenderer";
 import { useProgress } from "@/hooks/use-progress";
 
-export const Route = createFileRoute("/system-design/fundamentals/$topic/$lesson")({
+export const Route = createFileRoute("/system-design/foundations/$topic/$lesson")({
   head: ({ params }) => {
-    const t = FUNDAMENTALS_TOPICS[params.topic];
+    const t = FOUNDATIONS_TOPICS[params.topic];
     const l = t?.lessons.find((x) => x.slug === params.lesson);
     if (!t || !l) return { meta: [{ title: "Lesson — System Design" }] };
     return {
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/system-design/fundamentals/$topic/$lesson
 
 function LessonPage() {
   const { topic, lesson } = Route.useParams();
-  const t = FUNDAMENTALS_TOPICS[topic];
+  const t = FOUNDATIONS_TOPICS[topic];
   const { isCompleted, markComplete, markIncomplete } = useProgress();
   const idx = t?.lessons.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons[idx] : undefined;
@@ -55,8 +55,8 @@ function LessonPage() {
 
   return (
     <LessonLayout
-      trackTitle="Fundamentals"
-      trackPath="/system-design/fundamentals"
+      trackTitle="Foundations"
+      trackPath="/system-design/foundations"
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
