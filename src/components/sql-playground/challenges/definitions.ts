@@ -2,6 +2,50 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "shopflow-join-orders-customers",
+    version: 1,
+    title: "Join ShopFlow orders to customers",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "sql_lab",
+    engines: ["postgres"],
+    prompt: "Use an explicit inner join to place each ShopFlow order beside the customer who placed it.",
+    requirements: [
+      "Use the orders and customers tables.",
+      "Return exactly order_id, customer_id, order_date, first_name, last_name, and total_amount.",
+      "Join with ON o.customer_id = c.customer_id.",
+      "Order by o.order_id and keep five rows.",
+    ],
+    requiredTables: ["orders", "customers"],
+    starterSql: `-- Join ShopFlow orders to their customers.
+-- Return order_id, customer_id, order_date, first_name, last_name, and total_amount.
+-- Join orders to customers with ON customer_id.
+-- Order by order_id and keep the first 5 rows.`,
+    hints: [
+      "Start from orders AS o, then JOIN customers AS c.",
+      "Write ON o.customer_id = c.customer_id.",
+      "Select the six requested columns, then ORDER BY o.order_id LIMIT 5.",
+    ],
+    solutionSql: {
+      postgres: "SELECT o.order_id, o.customer_id, o.order_date, c.first_name, c.last_name, o.total_amount FROM orders AS o JOIN customers AS c ON o.customer_id = c.customer_id ORDER BY o.order_id LIMIT 5;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT o.order_id, o.customer_id, o.order_date, c.first_name, c.last_name, o.total_amount FROM orders AS o JOIN customers AS c ON o.customer_id = c.customer_id ORDER BY o.order_id LIMIT 5;",
+      },
+      requiredColumns: ["order_id", "customer_id", "order_date", "first_name", "last_name", "total_amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "ShopFlow order join complete",
+      body: "Correct. You used an explicit equality condition to add the owning customer to each order without changing the one-order-per-row grain.",
+      nextConcept: "Outer Joins & NULL Semantics",
+    },
+  },
+  {
     id: "cycle-depot-shape-sale-prices",
     version: 1,
     title: "Shape Cycle Depot sale prices",

@@ -20,6 +20,15 @@ export type Row = {
   cells: (string | number | null)[];
 };
 
+export type TableAccent = "mint" | "violet";
+
+type StageTable = {
+  name: string;
+  cols: string[];
+  rows: Row[];
+  accent?: TableAccent;
+};
+
 export type StageStep = {
   /** Indices of SQL lines to highlight as the active clause. */
   activeLines?: number[];
@@ -65,11 +74,11 @@ export type Stage = {
   layout?: "default" | "wide";
   sql: string[];
   /** Single source table (default layout). */
-  table?: { name: string; cols: string[]; rows: Row[]; columnTemplate?: string };
+  table?: StageTable & { columnTemplate?: string };
   /** Left source table (dual / join layout). */
-  leftTable?: { name: string; cols: string[]; rows: Row[] };
+  leftTable?: StageTable;
   /** Right source table (dual / join layout). */
-  rightTable?: { name: string; cols: string[]; rows: Row[] };
+  rightTable?: StageTable;
   steps: StageStep[];
 };
 
@@ -113,11 +122,13 @@ const KEYWORDS = new Set([
   "ON",
   "JOIN",
   "INNER",
+  "NATURAL",
   "LEFT",
   "RIGHT",
   "FULL",
   "OUTER",
   "CROSS",
+  "USING",
   "UNION",
   "ALL",
   "DISTINCT",
@@ -306,6 +317,7 @@ export function MiniTable({
   states,
   highlightCols = [],
   columnTemplate,
+  accent,
 }: {
   title?: string;
   cols: string[];
@@ -314,18 +326,21 @@ export function MiniTable({
   highlightCols?: number[];
   /** Explicit widths for tables containing naturally wide fields such as email. */
   columnTemplate?: string;
+  /** A small visual distinction for separate sources in a join. */
+  accent?: TableAccent;
 }) {
   const gridTemplateColumns = columnTemplate ?? `repeat(${cols.length}, minmax(0,1fr))`;
+  const accentClass = accent === "mint" ? "bg-mint/10 text-mint" : accent === "violet" ? "bg-violet/10 text-violet" : "bg-surface-2/60";
   return (
     <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-transparent shadow-sm">
       {title ? (
-        <div className="flex items-center justify-between border-b border-hairline bg-surface-2/60 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+        <div className={`flex items-center justify-between border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${accentClass} ${accent ? "" : "text-muted-foreground"}`}>
           <span>{title}</span>
           <span>{states ? states.filter((s) => s !== "dropped").length : rows.length} rows</span>
         </div>
       ) : null}
       <div
-        className="grid border-b border-hairline bg-surface-2/40 font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted-foreground"
+        className={`grid border-b border-hairline font-mono text-[10.5px] uppercase tracking-[0.14em] ${accent === "mint" ? "bg-mint/5 text-mint" : accent === "violet" ? "bg-violet/5 text-violet" : "bg-surface-2/40 text-muted-foreground"}`}
         style={{ gridTemplateColumns }}
       >
         {cols.map((c, i) => (
@@ -522,6 +537,7 @@ function SinglePanel({
           states={states}
           highlightCols={step.highlightCols}
           columnTemplate={stage.table.columnTemplate}
+          accent={stage.table.accent}
         />
       </motion.div>
     </AnimatePresence>
@@ -544,12 +560,13 @@ function DualPanel({
   return (
     <div className="space-y-3">
       <div className="grid gap-3 md:grid-cols-2">
-        <MiniTable title={left.name} cols={left.cols} rows={left.rows} states={step.leftStates} />
+        <MiniTable title={left.name} cols={left.cols} rows={left.rows} states={step.leftStates} accent={left.accent} />
         <MiniTable
           title={right.name}
           cols={right.cols}
           rows={right.rows}
           states={step.rightStates}
+          accent={right.accent}
         />
       </div>
       {step.resultRows ? (

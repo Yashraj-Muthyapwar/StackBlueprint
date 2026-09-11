@@ -17,6 +17,18 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "shopflow-join-orders-customers": {
+    id: "shopflow-join-orders-customers",
+    title: "Join ShopFlow orders to customers",
+    prompt: "Return five ShopFlow orders with customer_id and their customer's first and last name. Use an explicit JOIN ... ON customer_id relationship.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-join-orders-customers",
+    starterSql: `-- Join ShopFlow orders to their customers.
+-- Return order_id, customer_id, order_date, first_name, last_name, and total_amount.
+-- Join orders to customers with ON customer_id.
+-- Order by order_id and keep the first 5 rows.`,
+  },
   "cycledepot-safely-cast-product-ids": {
     id: "cycledepot-safely-cast-product-ids",
     title: "Safely cast incoming Cycle Depot product IDs",
