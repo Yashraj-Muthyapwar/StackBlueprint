@@ -58,6 +58,7 @@ import { olistIntervalsLookbacksStages } from "./datetime-functions/intervals-lo
 import { olistCalendarPeriodStages } from "./datetime-functions/calendar-period-analysis.tsx";
 import { olistOverlappingRangesStages } from "./datetime-functions/overlapping-ranges.tsx";
 import { olistDateSpinesStages } from "./datetime-functions/date-spines-gap-filling.tsx";
+import { shopflowInnerJoinStages } from "./querying/inner-joins-conditions.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -128,6 +129,7 @@ export const STAGES_REGISTRY = {
   "q-olist-calendar-periods": olistCalendarPeriodStages,
   "q-olist-overlapping-ranges": olistOverlappingRangesStages,
   "q-olist-date-spines": olistDateSpinesStages,
+  "q-shopflow-inner-joins": shopflowInnerJoinStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

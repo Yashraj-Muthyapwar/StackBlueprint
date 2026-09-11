@@ -60,6 +60,7 @@ function highlightSql(line: string) {
     "ON",
     "JOIN",
     "INNER",
+    "NATURAL",
     "LEFT",
     "RIGHT",
     "FULL",
