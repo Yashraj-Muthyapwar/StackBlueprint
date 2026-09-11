@@ -15,6 +15,8 @@ import sargabilityImg from "@/images/sql/querying/sargability-cycle-depot.png";
 import aggregateFunctionsImg from "@/images/sql/querying/aggregate-functions-cycle-depot.png";
 import groupByImg from "@/images/sql/querying/group-by-cycle-depot.png";
 import havingImg from "@/images/sql/querying/having-cycle-depot.png";
+import shopflowInnerJoinExampleRowsImg from "@/images/sql/joins/inner-join-example-rows-shopflow.png";
+import shopflowInnerJoinVennImg from "@/images/sql/joins/inner-join-venn-ids-shopflow.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -1730,7 +1732,39 @@ const innerJoinsConditions: LessonContent = {
   slug: "inner-joins-conditions",
   title: "Inner Joins & Join Conditions",
   subtitle: "JOIN … ON / equi-join / USING / multi-column keys / IS NOT DISTINCT FROM (null-safe) / NATURAL JOIN (and why to avoid it)",
-  sections: [],
+  sections: [
+    { kind: "prose", heading: "An inner join keeps matching pairs", body: ["ShopFlow stores each order separately from the customer who placed it. An `INNER JOIN` combines an order with its customer only when the `ON` join condition is true. The resulting row grain is one row per matching order.", "ShopFlow enforces `orders.customer_id` as a `FOREIGN KEY` to `customers.customer_id`, making this a clear `equi-join`."] },
+    {
+      kind: "image-carousel", images: [
+        { src: shopflowInnerJoinExampleRowsImg, alt: "ShopFlow example rows show three matching customer IDs flowing from orders and customers into an INNER JOIN result, while two unmatched rows are excluded.", caption: "The three mint customer_id values match and become joined rows. Order 4 and customer 2000 have no partner, so an INNER JOIN excludes them." },
+        { src: shopflowInnerJoinVennImg, alt: "A Venn diagram that places matching ShopFlow customer IDs 1785, 797, and 1600 in the INNER JOIN overlap, while unmatched IDs 9999 and 2000 remain outside it.", caption: "The overlap keeps 1785, 797, and 1600 because each ID exists in both tables. 9999 and 2000 have no counterpart, so INNER JOIN excludes them." },
+      ]
+    },
+    { kind: "code", language: "sql", caption: "Match each ShopFlow order to its customer", code: ["SELECT o.order_id, o.customer_id, o.order_date, c.first_name, c.last_name, o.total_amount", "FROM orders AS o", "JOIN customers AS c", "  ON o.customer_id = c.customer_id", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
+    { kind: "animation", variant: "q-shopflow-inner-joins", caption: "Follow complete examples for ON, USING, composite keys, null-safe equality, and why an explicit ON is safer than NATURAL JOIN." },
+    { kind: "prose", heading: "ON states the relationship", body: ["The ON clause is a boolean condition. o.customer_id = c.customer_id is an equi-join because it compares related keys with equals. Qualify columns with aliases so the source of each value remains obvious.", "USING (customer_id) is concise when both tables intentionally use exactly the same key name. Prefer ON when names differ, when a condition has more than one comparison, or when you want the relationship unmistakable."] },
+    { kind: "code", language: "sql", caption: "Use USING for intentionally same-named keys", code: ["SELECT o.order_id, customer_id, c.first_name, c.last_name", "FROM orders AS o", "JOIN customers AS c USING (customer_id)", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
+    { kind: "prose", heading: "Match every part of a key", body: ["ShopFlow order_items has the composite primary key (order_id, product_id). A multi-column relationship must compare every key column; joining only part of a composite key changes the row grain and can multiply rows.", "Ordinary equality does not match NULL to NULL. When two absent optional values should match, use IS NOT DISTINCT FROM. Avoid NATURAL JOIN: it automatically joins every shared column name, so a schema change can silently change the result."] },
+    { kind: "code", language: "sql", caption: "A complete multi-column join condition", code: ["SELECT a.product_id, a.warehouse_id, a.quantity", "FROM inventory AS a", "JOIN inventory AS b", "  ON a.product_id = b.product_id", " AND a.warehouse_id = b.warehouse_id", "WHERE a.product_id = 1", "ORDER BY a.warehouse_id;", "", "-- Null-safe equality: a.optional_code IS NOT DISTINCT FROM b.optional_code"].join("\n") },
+    { kind: "prose", heading: "Use null-safe equality only when missing means the same thing", body: ["`=` does not consider NULL equal to NULL. If a join key is optional and two missing values are supposed to represent the same bucket, use `IS NOT DISTINCT FROM` in the ON condition. It matches equal non-NULL values and matches NULL with NULL.", "ShopFlow does not store a nullable shared join key, so the runnable example uses small query-local code lists. In production, apply this deliberately to an optional key with documented missing-value semantics."] },
+    { kind: "code", language: "sql", caption: "Null-safe equality matches the two NULL code values", code: ["WITH order_codes(order_id, referral_code) AS (", "  VALUES (1, 'WELCOME'), (2, NULL)", "), customer_codes(customer_id, referral_code) AS (", "  VALUES (1785, 'WELCOME'), (797, NULL)", ")", "SELECT o.order_id, c.customer_id, o.referral_code", "FROM order_codes AS o", "JOIN customer_codes AS c", "  ON o.referral_code IS NOT DISTINCT FROM c.referral_code", "ORDER BY o.order_id;"].join("\n") },
+    { kind: "callout", tone: "info", title: "Null-safe equality is deliberate", body: "`a.code = b.code` becomes unknown when either value is NULL, including when both are NULL. `a.code IS NOT DISTINCT FROM b.code` treats two NULL values as equal. Use it only when missing values mean the same thing for this relationship." },
+    { kind: "prose", heading: "NATURAL JOIN hides the most important line", body: ["`NATURAL JOIN` finds every shared column name and makes them join conditions. Today, ShopFlow orders and customers share `customer_id`, so it can appear to work. It is fragile because adding another shared name later changes the query without changing its text.", "The safe form says the one relationship you intend. This is the query to write in application code and reviews."] },
+    { kind: "code", language: "sql", caption: "A fragile NATURAL JOIN and its explicit, reviewable replacement", code: ["-- Avoid: the condition is inferred from every same-named column.", "-- SELECT o.order_id, customer_id, c.first_name", "-- FROM orders AS o NATURAL JOIN customers AS c;", "", "SELECT o.order_id, o.customer_id, c.first_name, c.last_name", "FROM orders AS o", "JOIN customers AS c", "  ON o.customer_id = c.customer_id", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
+    { kind: "callout", tone: "warn", title: "Avoid NATURAL JOIN", body: "NATURAL JOIN chooses every shared column automatically. Adding country, status, or another shared name later can silently tighten the condition. Write ON or USING explicitly." },
+    { kind: "playground-practice", title: "Join ShopFlow orders to customers", prompt: "Use an explicit `JOIN ... ON` to return each order, its customer_id, date, and amount beside the customer's first and last name. The checked ShopFlow exercise verifies the columns, relationship, and row order.", tables: ["orders", "customers"], successCheck: "Five ordered ShopFlow rows with the join key and its matched customer.", href: "/sql-playground?practice=shopflow-join-orders-customers" },
+    { kind: "takeaways", items: ["INNER JOIN returns only pairs satisfying ON.", "An equi-join compares related keys with equals.", "USING is for intentionally same-named keys.", "Composite relationships require every key column.", "Use IS NOT DISTINCT FROM for null-safe equality; avoid NATURAL JOIN."] },
+    {
+      kind: "quiz", questions: [
+        { id: "join-inner-grain", question: "What does an INNER JOIN keep?", options: ["Only pairs whose ON condition is true", "Every left row", "Every possible pair", "Only NULL keys"], correctIndex: 0, explanation: "Inner joins discard unmatched rows from both inputs." },
+        { id: "join-equi", question: "Why is o.customer_id = c.customer_id an equi-join?", options: ["It compares related keys with equals", "It keeps every left row", "It matches NULL values", "It creates every possible pair"], correctIndex: 0, explanation: "An equi-join uses equality to relate key values." },
+        { id: "join-using", question: "When is USING (customer_id) appropriate?", options: ["Both tables intentionally share the same key name", "Keys have different names", "The join needs no keys", "You want every shared column matched"], correctIndex: 0, explanation: "USING is shorthand for one or more intentionally same-named join columns." },
+        { id: "join-composite", question: "How should a composite inventory key of (product_id, warehouse_id) be joined?", options: ["Compare both product_id and warehouse_id", "Compare product_id only", "Use NATURAL JOIN", "Compare warehouse_id only"], correctIndex: 0, explanation: "Every column that identifies the relationship belongs in the join condition." },
+        { id: "join-null-safe", question: "Which operator treats NULL and NULL as equal?", options: ["IS NOT DISTINCT FROM", "=", "<>", "LIKE"], correctIndex: 0, explanation: "IS NOT DISTINCT FROM is null-safe equality." },
+        { id: "join-natural", question: "Why avoid NATURAL JOIN?", options: ["Schema changes can silently change its condition", "It cannot join keys", "It creates a cross join", "It rejects aliases"], correctIndex: 0, explanation: "It joins every current shared column name automatically." },
+      ]
+    },
+  ],
 };
 
 // ---------- 3.2 Outer Joins & NULL Semantics ----------
