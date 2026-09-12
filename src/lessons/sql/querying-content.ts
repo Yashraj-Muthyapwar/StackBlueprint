@@ -20,6 +20,9 @@ import shopflowInnerJoinVennImg from "@/images/sql/joins/inner-join-venn-ids-sho
 import shopflowOuterJoinImg from "@/images/sql/joins/outer-join-null-shopflow.png";
 import shopflowFullJoinDiffImg from "@/images/sql/joins/full-join-table-diff-shopflow.png";
 import shopflowOuterJoinVennImg from "@/images/sql/joins/outer-joins-venn-comparison-shopflow.png";
+import shopflowCrossJoinImg from "@/images/sql/joins/cross-join-cartesian-shopflow.png";
+import shopflowSelfJoinImg from "@/images/sql/joins/self-join-pairs-shopflow.png";
+import shopflowCrossSelfVennComparisonImg from "@/images/sql/joins/cross-self-venn-comparison-shopflow.png";
 
 // =============================================================
 // MODULE 1: FILTERING & PREDICATES
@@ -1966,7 +1969,34 @@ const crossSelfJoins: LessonContent = {
   slug: "cross-self-joins",
   title: "Cross Joins & Self Joins",
   subtitle: "CROSS JOIN / Cartesian product / self-join with aliases / pairwise comparison / generating combinations",
-  sections: [],
+  sections: [
+    { kind: "prose", heading: "Cross joins deliberately make every pairing", body: ["A CROSS JOIN has no ON condition. It returns the Cartesian product: every row on the left paired with every row on the right. If the inputs contain m and n rows, the result contains m × n rows.", "That can be exactly what a report needs. For example, start with selected ShopFlow customers and a short list of contact channels to generate a complete customer-channel plan, including combinations that have not happened yet."] },
+    { kind: "image-carousel", images: [
+      { src: shopflowCrossJoinImg, alt: "A ShopFlow CROSS JOIN diagram showing three customers paired with two contact channels to make six rows.", caption: "CROSS JOIN repeats each customer once per channel. Three customers multiplied by two channels produces six planned combinations." },
+      { src: shopflowSelfJoinImg, alt: "A self-join diagram showing ShopFlow customers aliased as a and b, then producing one unique same-country pair between Priya Singh and Hana Morgan.", caption: "Aliases let the same customers table play two roles. The less-than test removes self-pairs and reverse duplicates." },
+      { src: shopflowCrossSelfVennComparisonImg, alt: "A side-by-side Venn-style comparison of a ShopFlow CROSS JOIN and a ShopFlow self join with aliases and unique pairs.", caption: "Compare the shapes: CROSS JOIN pairs two separate inputs in full; a self join gives one table two aliases, then a condition such as a.customer_id < b.customer_id keeps only unique pairs." },
+    ] },
+    { kind: "code", language: "sql", caption: "Generate every selected customer-channel combination", code: ["WITH channels(channel) AS (", "  VALUES ('email'), ('sms')", ")", "SELECT c.first_name, ch.channel", "FROM customers AS c", "CROSS JOIN channels AS ch", "WHERE c.customer_id IN (797, 1600, 1619)", "ORDER BY c.customer_id, ch.channel;"].join("\n") },
+    { kind: "table", caption: "Deterministic preview: 3 customers × 2 channels", headers: ["first_name", "channel"], rows: [["Priya", "email"], ["Priya", "sms"], ["Miles", "email"], ["Miles", "sms"], ["Hana", "email"], ["Hana", "sms"]] },
+    { kind: "animation", variant: "q-shopflow-cross-self-joins", caption: "Watch the Cartesian product expand, then see aliases turn one table into two roles for pairwise and manager comparisons." },
+    { kind: "prose", heading: "Cartesian products grow quickly", body: ["A CROSS JOIN is not an accidental substitute for a missing join condition. With 2,000 ShopFlow customers and 30 categories, it would produce 60,000 rows before later clauses run. Estimate the multiplication before you execute it.", "Use it intentionally to create calendars, parameter grids, missing-report rows, or every possible pairing. Otherwise, write an explicit join condition that states the relationship you mean."] },
+    { kind: "code", language: "sql", caption: "Measure a CROSS JOIN before selecting its rows", code: ["SELECT COUNT(*) AS combination_count", "FROM customers AS c", "CROSS JOIN (VALUES ('email'), ('sms')) AS ch(channel)", "WHERE c.customer_id IN (797, 1600, 1619);"].join("\n") },
+    { kind: "callout", tone: "warn", title: "No ON condition means multiplication", body: "A CROSS JOIN is intentional only when you want every pairing. If you expected matching keys, a missing ON clause can turn a small query into millions of rows." },
+    { kind: "prose", heading: "A self-join compares a table with itself", body: ["A self-join uses the same table twice, with aliases that give each copy a distinct role. Here a is the first customer and b is the second customer. The join finds customers in the same country.", "Pairwise queries need an inequality such as a.customer_id < b.customer_id. It excludes each row matched to itself and prevents the duplicate reverse pair: Priya-Hana is kept, while Hana-Priya is not."] },
+    { kind: "code", language: "sql", caption: "Find unique selected customer pairs in the same country", code: ["SELECT a.first_name AS customer_a,", "       b.first_name AS customer_b,", "       a.country", "FROM customers AS a", "JOIN customers AS b", "  ON a.country = b.country", " AND a.customer_id < b.customer_id", "WHERE a.customer_id IN (797, 1600, 1619)", "  AND b.customer_id IN (797, 1600, 1619);"].join("\n") },
+    { kind: "prose", heading: "Aliases also expose hierarchies", body: ["ShopFlow employees stores an employee's manager as another employee ID in the same table. A self-join reads employees AS e as the worker and employees AS m as the manager, then turns an ID relationship into names.", "The same pattern supports referral trees, previous-versus-current snapshots, duplicate detection, and pairwise comparisons. The aliases are not cosmetic: they name the two roles in the relationship."] },
+    { kind: "code", language: "sql", caption: "Resolve ShopFlow employees to their managers", code: ["SELECT e.employee_name,", "       m.employee_name AS manager_name", "FROM employees AS e", "JOIN employees AS m", "  ON e.manager_id = m.employee_id", "WHERE e.employee_id IN (2, 4, 5)", "ORDER BY e.employee_id;"].join("\n") },
+    { kind: "playground-practice", title: "Generate ShopFlow customer-channel combinations", prompt: "Create the six combinations of customers 797, 1600, and 1619 with the channels email and sms. Use a query-local channel list and CROSS JOIN.", tables: ["customers"], successCheck: "Six ordered rows: every selected customer paired with both channels.", href: "/sql-playground?practice=shopflow-generate-customer-channel-combinations" },
+    { kind: "takeaways", items: ["CROSS JOIN returns every left-row and right-row pairing.", "Cartesian-product size is left rows × right rows.", "Use CROSS JOIN deliberately to generate complete combinations.", "A self-join uses aliases to assign one table two roles.", "Use an inequality such as a.id < b.id for unique unordered pairs."] },
+    { kind: "quiz", questions: [
+      { id: "cross-product", question: "What does a CROSS JOIN return?", options: ["Every possible left-right row pair", "Only equal keys", "Only left rows", "Only unmatched rows"], correctIndex: 0, explanation: "CROSS JOIN has no match condition and creates the Cartesian product." },
+      { id: "cross-count", question: "How many rows result from 3 customers CROSS JOIN 2 channels?", options: ["6", "5", "3", "2"], correctIndex: 0, explanation: "The product is 3 × 2 = 6." },
+      { id: "cross-use", question: "When is CROSS JOIN appropriate?", options: ["Generating a complete intentional matrix", "Matching a foreign key", "Removing duplicate rows", "Keeping unmatched left rows"], correctIndex: 0, explanation: "It is useful when every combination is genuinely required." },
+      { id: "self-alias", question: "Why use aliases in a self-join?", options: ["To give the two table roles distinct names", "To prevent every join", "To create NULL values", "To avoid selecting columns"], correctIndex: 0, explanation: "Aliases distinguish the two logical roles played by one physical table." },
+      { id: "self-pairs", question: "Why use a.customer_id < b.customer_id for pairwise combinations?", options: ["It removes self-pairs and reverse duplicates", "It includes every direction twice", "It matches NULL values", "It sorts the table"], correctIndex: 0, explanation: "Only one ordering of each pair can satisfy the less-than condition." },
+      { id: "self-manager", question: "Which self-join condition resolves an employee's manager?", options: ["e.manager_id = m.employee_id", "e.employee_id < m.employee_id", "e.department = m.department", "e.employee_id = m.manager_id"], correctIndex: 0, explanation: "The employee's manager_id references another row's employee_id." },
+    ] },
+  ],
 };
 
 // ---------- 3.4 Semi-Joins & Anti-Joins ----------
