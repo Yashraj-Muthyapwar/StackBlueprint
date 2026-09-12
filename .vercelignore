@@ -1,0 +1,10 @@
+# Local/generated material that is not needed to install or build the app.
+# Vercel recreates the production output during `npm run build`.
+dist
+node_modules
+scratch_pdf_pages
+.playwright-cli
+docs
+extract.cjs
+scratch.js
+test_resizable.js
