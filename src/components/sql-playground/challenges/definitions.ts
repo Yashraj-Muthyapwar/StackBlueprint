@@ -2,6 +2,51 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "shopflow-preserve-customers-with-left-join",
+    version: 1,
+    title: "Preserve ShopFlow customers with LEFT JOIN",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "sql_lab",
+    engines: ["postgres"],
+    prompt: "Keep selected ShopFlow customers in the result even when they have no qualifying order.",
+    requirements: [
+      "Use the customers and orders tables.",
+      "Return exactly customer_id, first_name, order_id, and total_amount.",
+      "Preserve customers 797, 1600, and 1619 with LEFT JOIN.",
+      "Restrict the optional orders to IDs 2 and 3 in the ON condition.",
+      "Order by customer_id.",
+    ],
+    requiredTables: ["customers", "orders"],
+    starterSql: `-- Preserve all three selected ShopFlow customers.
+-- Return customer_id, first_name, order_id, and total_amount.
+-- LEFT JOIN orders with customer_id and restrict orders 2 and 3 in ON.
+-- Order by customer_id so Hana remains with NULL order columns.`,
+    hints: [
+      "Start with customers AS c because customers are the preserved rows.",
+      "Write LEFT JOIN orders AS o ON c.customer_id = o.customer_id.",
+      "Add AND o.order_id IN (2, 3) to ON, then filter the three customer IDs in WHERE.",
+    ],
+    solutionSql: {
+      postgres: "SELECT c.customer_id, c.first_name, o.order_id, o.total_amount FROM customers AS c LEFT JOIN orders AS o ON c.customer_id = o.customer_id AND o.order_id IN (2, 3) WHERE c.customer_id IN (797, 1600, 1619) ORDER BY c.customer_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT c.customer_id, c.first_name, o.order_id, o.total_amount FROM customers AS c LEFT JOIN orders AS o ON c.customer_id = o.customer_id AND o.order_id IN (2, 3) WHERE c.customer_id IN (797, 1600, 1619) ORDER BY c.customer_id;",
+      },
+      requiredColumns: ["customer_id", "first_name", "order_id", "total_amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Customer-preserving join complete",
+      body: "Correct. You preserved every selected customer and used ON to restrict only the optional order matches.",
+      nextConcept: "Cross Joins & Self Joins",
+    },
+  },
+  {
     id: "shopflow-join-orders-customers",
     version: 1,
     title: "Join ShopFlow orders to customers",

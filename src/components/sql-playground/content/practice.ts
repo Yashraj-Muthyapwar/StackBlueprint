@@ -17,6 +17,18 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "shopflow-preserve-customers-with-left-join": {
+    id: "shopflow-preserve-customers-with-left-join",
+    title: "Preserve ShopFlow customers with LEFT JOIN",
+    prompt: "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order values by putting the order filter in the LEFT JOIN ON condition.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-preserve-customers-with-left-join",
+    starterSql: `-- Preserve all three selected ShopFlow customers.
+-- Return customer_id, first_name, order_id, and total_amount.
+-- LEFT JOIN orders with customer_id and restrict orders 2 and 3 in ON.
+-- Order by customer_id so Hana remains with NULL order columns.`,
+  },
   "shopflow-join-orders-customers": {
     id: "shopflow-join-orders-customers",
     title: "Join ShopFlow orders to customers",
