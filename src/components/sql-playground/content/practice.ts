@@ -17,6 +17,15 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "shopflow-generate-customer-channel-combinations": {
+    id: "shopflow-generate-customer-channel-combinations",
+    title: "Generate ShopFlow customer-channel combinations",
+    prompt: "Create every combination of customers 797, 1600, and 1619 with email and sms using a query-local list and CROSS JOIN.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-generate-customer-channel-combinations",
+    starterSql: "-- Generate every selected customer-channel combination.\n-- Define email and sms in a channels CTE.\n-- Return first_name and channel for customers 797, 1600, and 1619.\n-- Use CROSS JOIN and order by customer_id, channel.",
+  },
   "shopflow-preserve-customers-with-left-join": {
     id: "shopflow-preserve-customers-with-left-join",
     title: "Preserve ShopFlow customers with LEFT JOIN",

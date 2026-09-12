@@ -2,6 +2,48 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "shopflow-generate-customer-channel-combinations",
+    version: 1,
+    title: "Generate ShopFlow customer-channel combinations",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "sql_lab",
+    engines: ["postgres"],
+    prompt: "Generate a complete two-channel contact plan for three selected ShopFlow customers.",
+    requirements: [
+      "Use the customers table and a query-local channels list.",
+      "The channels list must contain email and sms.",
+      "Return exactly first_name and channel.",
+      "Use CROSS JOIN for customers 797, 1600, and 1619.",
+      "Order by customer_id and channel.",
+    ],
+    requiredTables: ["customers"],
+    starterSql: "-- Generate every selected customer-channel combination.\n-- Define email and sms in a channels CTE.\n-- Return first_name and channel for customers 797, 1600, and 1619.\n-- Use CROSS JOIN and order by customer_id, channel.",
+    hints: [
+      "Create a CTE with: WITH channels(channel) AS (VALUES ('email'), ('sms')).",
+      "Start from customers AS c CROSS JOIN channels AS ch.",
+      "Filter c.customer_id with IN (797, 1600, 1619), then ORDER BY c.customer_id, ch.channel.",
+    ],
+    solutionSql: {
+      postgres: "WITH channels(channel) AS (VALUES ('email'), ('sms')) SELECT c.first_name, ch.channel FROM customers AS c CROSS JOIN channels AS ch WHERE c.customer_id IN (797, 1600, 1619) ORDER BY c.customer_id, ch.channel;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH channels(channel) AS (VALUES ('email'), ('sms')) SELECT c.first_name, ch.channel FROM customers AS c CROSS JOIN channels AS ch WHERE c.customer_id IN (797, 1600, 1619) ORDER BY c.customer_id, ch.channel;",
+      },
+      requiredColumns: ["first_name", "channel"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Complete customer-channel matrix created",
+      body: "Correct. You deliberately used CROSS JOIN to create every selected customer-channel pairing.",
+      nextConcept: "Semi-Joins & Anti-Joins",
+    },
+  },
+  {
     id: "shopflow-preserve-customers-with-left-join",
     version: 1,
     title: "Preserve ShopFlow customers with LEFT JOIN",
