@@ -1159,6 +1159,53 @@ FROM products;`,
         "SUM, AVG, MIN, and MAX summarise numeric values and skip NULL inputs.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "aggregate-functions-count-all-rows",
+          question: "Which expression counts every row in the orders table?",
+          options: ["COUNT(*)", "COUNT(order_date)", "COUNT(DISTINCT id)", "SUM(id)"],
+          correctIndex: 0,
+          explanation:
+            "COUNT(*) counts rows without looking at one particular column, so a NULL in another column does not remove the row from the count.",
+        },
+        {
+          id: "aggregate-functions-count-non-null",
+          question: "What does COUNT(city) count for Cycle Depot customers?",
+          options: [
+            "Only customers whose city is not NULL",
+            "Every customer row, including missing cities",
+            "Each distinct city once",
+            "The number of characters in each city",
+          ],
+          correctIndex: 0,
+          explanation:
+            "COUNT(column) skips NULL values in that column. Use COUNT(*) when the question is about all customer rows.",
+        },
+        {
+          id: "aggregate-functions-distinct",
+          question: "Which expression returns the number of different non-NULL customer countries?",
+          options: [
+            "COUNT(DISTINCT country)",
+            "COUNT(country)",
+            "DISTINCT COUNT(country)",
+            "SUM(DISTINCT country)",
+          ],
+          correctIndex: 0,
+          explanation:
+            "COUNT(DISTINCT country) removes repeated non-NULL country values before counting them.",
+        },
+        {
+          id: "aggregate-functions-summary-choice",
+          question: "Which aggregate answers: What is the highest Cycle Depot product price?",
+          options: ["MAX(price)", "SUM(price)", "AVG(price)", "COUNT(price)"],
+          correctIndex: 0,
+          explanation:
+            "MAX returns the largest non-NULL value. MIN returns the smallest, while SUM and AVG answer different questions.",
+        },
+      ],
+    },
   ],
 };
 
@@ -1364,6 +1411,63 @@ ORDER BY 1, 2;`,
         "GROUP BY can use date and CASE expressions; ordinal positions are best kept to quick ad hoc exploration.",
       ],
     },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "group-by-result-grain",
+          question: "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
+          options: [
+            "One row per distinct status",
+            "One row per order",
+            "One row for the entire orders table",
+            "One row per customer",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The GROUP BY key defines the result grain. Grouping by status creates one summary row for each status value.",
+        },
+        {
+          id: "group-by-select-rule",
+          question: "Why is SELECT status, channel, COUNT(*) FROM orders GROUP BY status invalid?",
+          options: [
+            "channel is neither aggregated nor included in GROUP BY",
+            "COUNT(*) cannot be used with GROUP BY",
+            "status must be in HAVING instead",
+            "GROUP BY requires an ORDER BY clause",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Each selected expression must either identify the group by appearing in GROUP BY or reduce the group through an aggregate.",
+        },
+        {
+          id: "group-by-two-columns",
+          question: "What does GROUP BY status, channel create?",
+          options: [
+            "One group for every distinct status-and-channel pair",
+            "One group for each status, ignoring channel",
+            "One group for each channel, ignoring status",
+            "A sorted copy of every order row",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A second grouping column makes the result more detailed because the group key is now the unique pair of values.",
+        },
+        {
+          id: "group-by-null-bucket",
+          question: "How does GROUP BY city treat customer rows where city is NULL?",
+          options: [
+            "It puts them together in one NULL group",
+            "It deletes them before grouping",
+            "It gives every NULL row its own group",
+            "It changes NULL into an empty string",
+          ],
+          correctIndex: 0,
+          explanation:
+            "NULL values in a grouping column form one visible NULL group. A group with no rows is different and does not appear at all.",
+        },
+      ],
+    },
   ],
 };
 
@@ -1481,6 +1585,58 @@ ORDER BY order_count DESC, status ASC;`,
         "HAVING filters completed groups after an aggregate has calculated each group value.",
         "Use HAVING for aggregate conditions such as COUNT(*) >= 10 and SUM(...) > a target.",
         "Keep row-level conditions in WHERE to reduce the rows that must be grouped.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "having-clause-purpose",
+          question: "Which clause keeps only status groups with at least ten orders?",
+          options: [
+            "HAVING COUNT(*) >= 10",
+            "WHERE COUNT(*) >= 10",
+            "GROUP BY COUNT(*) >= 10",
+            "ORDER BY COUNT(*) >= 10",
+          ],
+          correctIndex: 0,
+          explanation:
+            "HAVING filters completed groups, after GROUP BY and COUNT(*) have produced a count for each group.",
+        },
+        {
+          id: "having-row-filter",
+          question: "Where should channel = 'web' go when the query first keeps web orders, then groups them by status?",
+          options: ["WHERE", "HAVING", "SELECT", "ORDER BY"],
+          correctIndex: 0,
+          explanation:
+            "channel describes each source order row, so WHERE removes non-web rows before the grouping work begins.",
+        },
+        {
+          id: "having-aggregate-timing",
+          question: "Why is WHERE COUNT(*) >= 10 invalid in this grouped query?",
+          options: [
+            "COUNT(*) is calculated only after groups have been formed",
+            "WHERE can be used only with text columns",
+            "COUNT(*) always returns NULL in WHERE",
+            "GROUP BY must contain at least two columns",
+          ],
+          correctIndex: 0,
+          explanation:
+            "WHERE runs on individual input rows. The aggregate value exists later, after GROUP BY, so the aggregate condition belongs in HAVING.",
+        },
+        {
+          id: "having-filter-order",
+          question: "What is the useful order for a query that filters web orders and then keeps only large status groups?",
+          options: [
+            "WHERE, GROUP BY, HAVING",
+            "HAVING, WHERE, GROUP BY",
+            "GROUP BY, WHERE, HAVING",
+            "ORDER BY, WHERE, GROUP BY",
+          ],
+          correctIndex: 0,
+          explanation:
+            "First WHERE reduces source rows, GROUP BY builds summaries from the survivors, and HAVING filters those finished summaries.",
+        },
       ],
     },
   ],
