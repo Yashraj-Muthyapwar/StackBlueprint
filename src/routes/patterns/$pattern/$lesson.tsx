@@ -2,9 +2,13 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { LessonPlayer } from "@/components/lesson/LessonPlayer";
+import { LessonLayout } from "@/components/learning-paths/LessonLayout";
+import { SectionRenderer as PythonSectionRenderer } from "@/components/python/SectionRenderer";
+import { useProgress } from "@/hooks/use-progress";
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
 
 export const Route = createFileRoute("/patterns/$pattern/$lesson")({
@@ -28,6 +32,7 @@ export const Route = createFileRoute("/patterns/$pattern/$lesson")({
 });
 
 function LessonPage() {
+  const { isCompleted, markComplete, markIncomplete } = useProgress();
   const { pattern, lesson } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
   if (!p)
@@ -40,6 +45,43 @@ function LessonPage() {
   const next = idx < p.lessons.length - 1 ? p.lessons[idx + 1] : null;
   const categoryAnchor =
     p.category === "Arrays" ? "arrays-matrix" : p.category === "Strings" ? "strings" : "hash-map";
+
+  if (entry.builder.sections) {
+    const topicLessons = p.lessons.map((item) => ({
+      slug: item.builder.slug,
+      title: item.builder.title,
+      path: `/patterns/${p.slug}/${item.builder.slug}`,
+    }));
+
+    return (
+      <LessonLayout
+        trackTitle="Patterns"
+        trackPath="/patterns"
+        topic={{ slug: p.slug, title: p.title, path: `/patterns/${p.slug}`, lessons: topicLessons }}
+        lesson={{
+          slug: entry.builder.slug,
+          title: entry.builder.title,
+          subtitle: entry.builder.subtitle,
+          path: `/patterns/${p.slug}/${entry.builder.slug}`,
+        }}
+        sections={entry.builder.sections}
+        renderSection={(section, onQuizActiveChange, index) => (
+          <PythonSectionRenderer
+            section={section}
+            onQuizActiveChange={onQuizActiveChange}
+            index={index}
+          />
+        )}
+        hasQuiz={entry.builder.sections.some((section) => section.kind === "quiz")}
+        isCompleted={isCompleted(entry.builder.slug)}
+        onToggleComplete={() =>
+          isCompleted(entry.builder.slug)
+            ? markIncomplete(entry.builder.slug)
+            : markComplete(entry.builder.slug)
+        }
+      />
+    );
+  }
 
   return (
     <div className="px-6 py-8 lg:px-10">
@@ -175,6 +217,34 @@ function LessonPage() {
             </div>
           </div>
         ) : null}
+
+        {entry.builder.takeaways?.length ? (
+          <section className="mt-8 rounded-2xl border border-mint/30 bg-mint/[0.04] p-6">
+            <h2 className="text-lg font-semibold text-foreground">Key Takeaways</h2>
+            <ul className="mt-4 space-y-2 text-sm leading-relaxed text-foreground/90">
+              {entry.builder.takeaways.map((takeaway) => (
+                <li key={takeaway} className="flex gap-2">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-mint" />
+                  <span>{takeaway}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        <div className="mt-8 flex justify-end">
+          <Button
+            type="button"
+            variant={isCompleted(entry.builder.slug) ? "outline" : "default"}
+            onClick={() =>
+              isCompleted(entry.builder.slug)
+                ? markIncomplete(entry.builder.slug)
+                : markComplete(entry.builder.slug)
+            }
+          >
+            {isCompleted(entry.builder.slug) ? "Marked complete" : "Mark lesson complete"}
+          </Button>
+        </div>
 
         <div className="mt-8 flex items-center justify-between gap-3">
           {prev ? (
