@@ -61,6 +61,7 @@ import { olistDateSpinesStages } from "./datetime-functions/date-spines-gap-fill
 import { shopflowInnerJoinStages } from "./querying/inner-joins-conditions.tsx";
 import { shopflowOuterJoinStages } from "./querying/outer-joins-null.tsx";
 import { shopflowCrossSelfJoinStages } from "./querying/cross-self-joins.tsx";
+import { shopflowSemiAntiJoinStages } from "./querying/semi-anti-joins.tsx";
 
 /** Maps stable lesson variant IDs to their lesson-scoped animation stages. */
 export const STAGES_REGISTRY = {
@@ -134,6 +135,7 @@ export const STAGES_REGISTRY = {
   "q-shopflow-inner-joins": shopflowInnerJoinStages,
   "q-shopflow-outer-joins": shopflowOuterJoinStages,
   "q-shopflow-cross-self-joins": shopflowCrossSelfJoinStages,
+  "q-shopflow-semi-anti-joins": shopflowSemiAntiJoinStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
