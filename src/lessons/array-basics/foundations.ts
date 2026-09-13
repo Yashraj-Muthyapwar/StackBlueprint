@@ -591,6 +591,229 @@ export const whatIsAnArrayAndTypes: LessonBuilder<Record<string, never>> = {
   ],
 };
 
+const oneDimensionalOperationsSections: Section[] = [
+  {
+    kind: "prose",
+    heading: "Why this matters",
+    body: [
+      "One-dimensional array work is built from a small set of operations: create, insert, traverse, access, search, and delete. Knowing which operations shift values and which jump directly to an index makes complexity analysis much easier.",
+    ],
+  },
+  { kind: "array-operations-lab" },
+  {
+    kind: "prose",
+    heading: "Creating an array",
+    body: [
+      "Creating from existing values takes `O(n)` time and `O(n)` space because each value must be stored. Creating an empty structure is `O(1)` time and space before values are added.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Create arrays with array and NumPy",
+    packages: ["numpy"],
+    code: `from array import array
+import numpy as np
+
+typed = array("i", [4, 8, 15, 16, 23])
+numeric = np.array([4, 8, 15, 16, 23])
+
+# Display contents and object types for clear comparison
+print("--- Standard Library Array ---")
+print("Value:", typed)
+print("Type: ", type(typed))
+
+print()
+
+print("--- NumPy Array ---")
+print("Value:", numeric)
+print("Type: ", type(numeric))`,
+  },
+  {
+    kind: "prose",
+    heading: "Insertion and deletion",
+    body: [
+      "Inserting or deleting in the middle usually costs `O(n)` time because later values must shift. The `array` module changes the existing object with `insert` or `del`; NumPy returns a new array with `np.insert` or `np.delete`, so it also needs `O(n)` extra space for that result.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Insert and delete",
+    packages: ["numpy"],
+    code: `from array import array
+import numpy as np
+
+typed = array("i", [4, 8, 15, 16])
+typed.insert(2, 99)
+del typed[1]
+print("--- Standard Library Array ---")
+print("Result: ", typed)
+print("Type:   ", type(typed))
+print()
+
+numeric = np.array([4, 8, 15, 16])
+numeric = np.insert(numeric, 2, 99)
+numeric = np.delete(numeric, 1)
+print("--- NumPy Array ---")
+print("Result: ", numeric)
+print("Type:   ", type(numeric))`,
+  },
+  {
+    kind: "prose",
+    heading: "Traversal, access, and search",
+    body: [
+      "Traversal visits every value, so it is `O(n)` time and `O(1)` auxiliary space. Accessing a known index is `O(1)`. A linear search is `O(n)` in the worst case and uses `O(1)` auxiliary space.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Traverse, access, and search",
+    packages: ["numpy"],
+    code: `from array import array
+import numpy as np
+
+# Initialize arrays
+typed = array("i", [4, 8, 15, 16, 23])
+numeric = np.array([4, 8, 15, 16, 23])
+
+# --- Standard Library Array (Python Built-in) ---
+print("--- Standard Library Array Operations ---")
+
+print("Traversal: ", end="")
+for item in typed:
+    print(item, end=" ")
+print()
+print("Access at index 2:", typed[2])
+print("Search index of 16:", typed.index(16))
+
+print()
+
+# --- NumPy Array (Vectorized & Sequential Operations) ---
+print("--- NumPy Array Operations ---")
+print("Traversal: ", end="")
+for item in numeric:
+    print(item, end=" ")
+print()
+print("Access at index 2:", numeric[2])
+
+# Search by value: element-wise comparison returning matching index array
+matching_indices = np.where(numeric == 16)[0]
+print("Search index of 16:", matching_indices[0])`,
+  },
+  {
+    kind: "table",
+    caption: "One-dimensional array operation costs",
+    headers: ["Operation", "Time", "Extra space", "Why"],
+    rows: [
+      ["Create from n values", "`O(n)`", "`O(n)`", "Values must be stored."],
+      [
+        "Insert at an index",
+        "`O(n)`",
+        "`O(1)` array module; `O(n)` NumPy",
+        "Values after the index shift; NumPy returns a new array.",
+      ],
+      ["Traverse", "`O(n)`", "`O(1)`", "Visit each value once."],
+      ["Access by index", "`O(1)`", "`O(1)`", "Index locates the value directly."],
+      ["Linear search", "`O(n)`", "`O(1)`", "Check values until a match appears."],
+      [
+        "Delete at an index",
+        "`O(n)`",
+        "`O(1)` array module; `O(n)` NumPy",
+        "Later values shift; NumPy returns a new array.",
+      ],
+    ],
+  },
+  {
+    kind: "takeaways",
+    items: [
+      "Use `array.array` for typed, mutable sequences and NumPy for numerical arrays and vectorized work.",
+      "Access is `O(1)`, while traversal and an unknown-value search are `O(n)`.",
+      "Middle insertion and deletion are `O(n)` because positions after the change must move.",
+      "NumPy `insert` and `delete` produce new arrays, so their extra-space cost is `O(n)`.",
+    ],
+  },
+  {
+    kind: "quiz",
+    questions: [
+      {
+        id: "one-d-ops-1",
+        question: "What is the usual time complexity of accessing `values[7]`?",
+        options: ["O(1)", "O(log n)", "O(n)", "O(n²)"],
+        correctIndex: 0,
+        explanation: "A known index identifies its value directly.",
+      },
+      {
+        id: "one-d-ops-2",
+        question: "Why is insertion in the middle of an array usually O(n)?",
+        options: [
+          "The array must sort first",
+          "Later values must shift",
+          "The index is unknown",
+          "Arrays cannot grow",
+        ],
+        correctIndex: 1,
+        explanation: "Values after the insertion point need new positions.",
+      },
+      {
+        id: "one-d-ops-3",
+        question: "What does `np.delete` return?",
+        options: [
+          "The removed scalar only",
+          "A new array without the selected element",
+          "The original array changed in place",
+          "A Python list",
+        ],
+        correctIndex: 1,
+        explanation: "NumPy deletion constructs and returns a new array.",
+      },
+      {
+        id: "one-d-ops-4",
+        question: "Which operation is O(n) in the worst case when the target is unknown?",
+        options: ["Access", "Linear search", "Read first value", "Overwrite a known index"],
+        correctIndex: 1,
+        explanation: "A linear search may inspect every value.",
+      },
+      {
+        id: "one-d-ops-5",
+        question:
+          "Create an integer array named `values` containing 3, 6, and 9. Insert 5 at index 1, then print the array.",
+        interactiveCode: true,
+        initialCode: "from array import array\n\n# Write your code here\n",
+        testCode: "print(values)",
+        expectedOutput: "array('i', [3, 5, 6, 9])",
+        explanation: 'Use `array("i", [3, 6, 9])`, then call `values.insert(1, 5)`.',
+      },
+    ],
+  },
+];
+
+export const oneDimensionalArrayOperations: LessonBuilder<Record<string, never>> = {
+  slug: "one-dimensional-array-operations",
+  title: "One-Dimensional Array Operations",
+  subtitle: "Create, insert, traverse, access, search, and delete with array and NumPy.",
+  problem: "Understand the core operations that turn a sequence of values into a usable array.",
+  spotIt: [
+    "You are working with a linear sequence of values.",
+    "You need to predict the cost of changing or finding an element.",
+  ],
+  avoidWhen: [
+    "Data is organized by keys rather than positions.",
+    "You need graph or tree traversal.",
+  ],
+  variant: "array-operations-lab",
+  view: "array",
+  code: "# Explore the runnable operations in the concept lesson.",
+  sections: oneDimensionalOperationsSections,
+  defaultInputs: {},
+  inputs: [],
+  build: () => [
+    {
+      line: 1,
+      array: [4, 8, 15, 16, 23],
+      narration: "Use the operations lab to explore one-dimensional arrays.",
+    },
+  ],
+};
+
 export const arrayIndexing: LessonBuilder<ArrayInputs> = {
   slug: "array-indexing-and-traversal",
   title: "Array Indexing and Traversal",
