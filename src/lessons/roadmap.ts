@@ -100,6 +100,7 @@ import {
   arrayOperations,
   arrayVsLists,
   matrixCoordinates,
+  whatIsAnArrayAndTypes,
 } from "./array-basics/foundations";
 
 import { longestSubstringNoRepeat } from "./strings/longest-substring-no-repeat";
@@ -137,8 +138,9 @@ export const patterns: PatternEntry[] = [
     title: "Basics",
     category: "Arrays",
     blurb:
-      "Start with arrays versus lists, then learn indexing, traversal, matrix coordinates, and operation costs.",
+      "Learn what arrays are, explore 1D through 3D indexing, then build toward traversal, matrices, and operation costs.",
     lessons: [
+      { builder: whatIsAnArrayAndTypes, icon: Boxes },
       { builder: arrayVsLists, icon: Columns3 },
       { builder: arrayIndexing, icon: Rows3 },
       { builder: matrixCoordinates, icon: Table },
