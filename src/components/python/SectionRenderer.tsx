@@ -6,6 +6,7 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
 import { ArrayDimensionsExplorer } from "@/components/array-basics/ArrayDimensionsExplorer";
+import { ArrayOperationsLab } from "@/components/array-basics/ArrayOperationsLab";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -303,6 +304,9 @@ export function SectionRenderer({
 
     case "array-dimensions-explorer":
       return <ArrayDimensionsExplorer />;
+
+    case "array-operations-lab":
+      return <ArrayOperationsLab />;
 
     case "table":
       return (
