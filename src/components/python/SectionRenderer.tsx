@@ -9,13 +9,60 @@ import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
   const KEYWORDS = new Set([
-    "False", "None", "True", "and", "as", "assert", "async", "await",
-    "break", "class", "continue", "def", "del", "elif", "else", "except",
-    "finally", "for", "from", "global", "if", "import", "in", "is", "lambda",
-    "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with", "yield"
+    "False",
+    "None",
+    "True",
+    "and",
+    "as",
+    "assert",
+    "async",
+    "await",
+    "break",
+    "class",
+    "continue",
+    "def",
+    "del",
+    "elif",
+    "else",
+    "except",
+    "finally",
+    "for",
+    "from",
+    "global",
+    "if",
+    "import",
+    "in",
+    "is",
+    "lambda",
+    "nonlocal",
+    "not",
+    "or",
+    "pass",
+    "raise",
+    "return",
+    "try",
+    "while",
+    "with",
+    "yield",
   ]);
   const BUILTINS = new Set([
-    "print", "open", "read", "write", "close", "int", "str", "float", "list", "dict", "set", "tuple", "len", "type", "range", "enumerate", "zip"
+    "print",
+    "open",
+    "read",
+    "write",
+    "close",
+    "int",
+    "str",
+    "float",
+    "list",
+    "dict",
+    "set",
+    "tuple",
+    "len",
+    "type",
+    "range",
+    "enumerate",
+    "zip",
   ]);
 
   const nodes: React.ReactNode[] = [];
@@ -88,34 +135,79 @@ function highlightPython(line: string) {
 function parseInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|\[.*?\]\(.*?\))/g);
   return parts.map((part, i) => {
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold text-foreground">
+          {part.slice(2, -2)}
+        </strong>
+      );
     }
-    if (part.startsWith('*') && part.endsWith('*')) {
-      return <em key={i} className="italic text-foreground">{part.slice(1, -1)}</em>;
+    if (part.startsWith("*") && part.endsWith("*")) {
+      return (
+        <em key={i} className="italic text-foreground">
+          {part.slice(1, -1)}
+        </em>
+      );
     }
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return <code key={i} className="rounded bg-mint/10 text-mint px-1.5 py-0.5 font-mono text-[0.85em] font-medium">{part.slice(1, -1)}</code>;
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={i}
+          className="rounded bg-mint/10 text-mint px-1.5 py-0.5 font-mono text-[0.85em] font-medium"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
     }
-    if (part.startsWith('==') && part.endsWith('==')) {
-      return <span key={i} className="text-foreground">{part.slice(2, -2)}</span>;
+    if (part.startsWith("==") && part.endsWith("==")) {
+      return (
+        <span key={i} className="text-foreground">
+          {part.slice(2, -2)}
+        </span>
+      );
     }
-    if (part.startsWith('[') && part.endsWith(')') && part.includes('](')) {
+    if (part.startsWith("[") && part.endsWith(")") && part.includes("](")) {
       const match = part.match(/\[(.*?)\]\((.*?)\)/);
       if (match) {
         // External links
-        if (match[2].startsWith('http')) {
-          return <a key={i} href={match[2]} target="_blank" rel="noopener noreferrer" className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors">{match[1]}</a>;
+        if (match[2].startsWith("http")) {
+          return (
+            <a
+              key={i}
+              href={match[2]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors"
+            >
+              {match[1]}
+            </a>
+          );
         }
         // Internal links
-        return <Link key={i} to={match[2]} className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors">{match[1]}</Link>;
+        return (
+          <Link
+            key={i}
+            to={match[2]}
+            className="text-mint underline underline-offset-4 decoration-mint/30 hover:decoration-mint/80 transition-colors"
+          >
+            {match[1]}
+          </Link>
+        );
       }
     }
     return part;
   });
 }
 
-export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { section: Section; onQuizActiveChange?: (active: boolean) => void; index?: number }) {
+export function SectionRenderer({
+  section,
+  onQuizActiveChange,
+  index = 0,
+}: {
+  section: Section;
+  onQuizActiveChange?: (active: boolean) => void;
+  index?: number;
+}) {
   const location = useLocation();
   if (!section) return null;
 
@@ -124,25 +216,37 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => {
             if (p.startsWith("### ")) {
               const text = p.slice(4);
-              const targetId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+              const targetId = text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
               return (
-                <h3 key={i} id={targetId} className="mt-4 mb-2 text-lg font-semibold tracking-tight text-foreground scroll-mt-24">
+                <h3
+                  key={i}
+                  id={targetId}
+                  className="mt-4 mb-2 text-lg font-semibold tracking-tight text-foreground scroll-mt-24"
+                >
                   {parseInlineMarkdown(text)}
                 </h3>
               );
             }
             if (p.startsWith("## ")) {
               const text = p.slice(3);
-              const targetId = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+              const targetId = text
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
               return (
-                <h2 key={i} id={targetId} className="mt-6 mb-3 text-xl font-semibold tracking-tight text-foreground scroll-mt-24">
+                <h2
+                  key={i}
+                  id={targetId}
+                  className="mt-6 mb-3 text-xl font-semibold tracking-tight text-foreground scroll-mt-24"
+                >
                   {parseInlineMarkdown(text)}
                 </h2>
               );
@@ -187,7 +291,14 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
     }
 
     case "interactive-code":
-      return <InteractivePythonBlock key={`code-block-${location.pathname}-${index}`} initialCode={section.code} caption={section.caption} />;
+      return (
+        <InteractivePythonBlock
+          key={`code-block-${location.pathname}-${index}`}
+          initialCode={section.code}
+          caption={section.caption}
+          packages={section.packages}
+        />
+      );
 
     case "table":
       return (
@@ -257,18 +368,24 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
               };
       const Icon = tone.Icon;
       return (
-        <aside
-          className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}
-        >
+        <aside className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}>
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
-            {section.title && <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>}
+            {section.title && (
+              <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
+            )}
             <div className="mt-1 space-y-2 text-sm leading-relaxed text-foreground/85">
-              {(section.body || "").split("\n").filter(Boolean).map((paragraph, i) => (
-                <p key={i} className={paragraph.startsWith("- ") ? "ml-4 list-item list-disc" : ""}>
-                  {parseInlineMarkdown(paragraph.replace(/^- /, ''))}
-                </p>
-              ))}
+              {(section.body || "")
+                .split("\n")
+                .filter(Boolean)
+                .map((paragraph, i) => (
+                  <p
+                    key={i}
+                    className={paragraph.startsWith("- ") ? "ml-4 list-item list-disc" : ""}
+                  >
+                    {parseInlineMarkdown(paragraph.replace(/^- /, ""))}
+                  </p>
+                ))}
             </div>
           </div>
         </aside>
@@ -293,7 +410,11 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="flex w-full justify-center bg-surface-2/30 py-4">
-            <ZoomableImage src={section.src} alt={section.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
+            <ZoomableImage
+              src={section.src}
+              alt={section.alt}
+              className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+            />
           </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -334,9 +455,7 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => (
             <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
@@ -379,10 +498,7 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
           </p>
           <ul className="mt-3 space-y-2">
             {section.items?.map((it, i) => (
-              <li
-                key={i}
-                className="flex gap-2.5 text-sm leading-relaxed text-foreground/90"
-              >
+              <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
@@ -390,10 +506,15 @@ export function SectionRenderer({ section, onQuizActiveChange, index = 0 }: { se
           </ul>
         </section>
       );
-      
+
     case "quiz":
-      return <Quiz data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }} onActiveChange={onQuizActiveChange} />;
-      
+      return (
+        <Quiz
+          data={{ questions: section.questions, isFinalQuiz: section.isFinalQuiz }}
+          onActiveChange={onQuizActiveChange}
+        />
+      );
+
     default:
       return null;
   }
