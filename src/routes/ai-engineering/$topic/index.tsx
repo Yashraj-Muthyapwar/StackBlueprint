@@ -14,10 +14,6 @@ function AIEngineeringTopicPage() {
     cat?.sections?.flatMap((s) => s.patterns).find((p) => p.slug === topic);
 
   return (
-    <ChapterIndexLayout
-      trackTitle="AI Engineering"
-      trackPath="/ai-engineering"
-      topic={t as any}
-    />
+    <ChapterIndexLayout trackTitle="AI Engineering" trackPath="/ai-engineering" topic={t as any} />
   );
 }

@@ -22,9 +22,10 @@ export const Route = createFileRoute("/patterns/$pattern/")({
 function PatternIndex() {
   const { pattern } = Route.useParams();
   const p = PATTERN_BY_SLUG[pattern];
-  if (!p) return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
-  const cat = p.category.toLowerCase();
-  const categorySlug = cat === "arrays" ? "arrays" : cat === "strings" ? "strings" : "hash-map";
+  if (!p)
+    return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
+  const categoryAnchor =
+    p.category === "Arrays" ? "arrays-matrix" : p.category === "Strings" ? "strings" : "hash-map";
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
@@ -36,11 +37,7 @@ function PatternIndex() {
             Patterns
           </Link>
           <ChevronRight className="size-3" />
-          <Link
-            to="/patterns/category/$category"
-            params={{ category: categorySlug }}
-            className="hover:text-foreground"
-          >
+          <Link to="/patterns" hash={categoryAnchor} className="hover:text-foreground">
             {p.category}
           </Link>
           <ChevronRight className="size-3" />
@@ -58,7 +55,7 @@ function PatternIndex() {
               key={les.builder.slug}
               to="/patterns/$pattern/$lesson"
               params={{ pattern: p.slug, lesson: les.builder.slug }}
-              className="group relative overflow-hidden rounded-2xl border border-hairline bg-surface p-5 transition-colors hover:border-mint/40"
+              className="group relative flex min-h-[250px] flex-col overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70 md:h-[250px]"
             >
               <div className="flex items-center justify-between">
                 <div className="grid size-10 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
@@ -68,9 +65,13 @@ function PatternIndex() {
                   {String(i + 1).padStart(2, "0")} / {String(p.lessons.length).padStart(2, "0")}
                 </span>
               </div>
-              <h2 className="mt-4 text-base font-medium">{les.builder.title.replace(/^[^—]+—\s*/, "")}</h2>
-              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{les.builder.subtitle}</p>
-              <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-mint">
+              <h2 className="mt-4 text-base font-medium">
+                {les.builder.title.replace(/^[^—]+—\s*/, "")}
+              </h2>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                {les.builder.subtitle}
+              </p>
+              <div className="mt-auto pt-5 inline-flex items-center gap-1.5 text-sm text-mint">
                 Open lesson
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </div>
