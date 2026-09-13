@@ -17,6 +17,15 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "shopflow-find-customer-without-qualifying-order": {
+    id: "shopflow-find-customer-without-qualifying-order",
+    title: "Find a ShopFlow customer without a qualifying order",
+    prompt: "Return the selected customer with no order among order IDs 2 and 3 using NOT EXISTS.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-find-customer-without-qualifying-order",
+    starterSql: "-- Find the selected customer without a qualifying order.\n-- Return customer_id and first_name.\n-- Use NOT EXISTS with orders 2 and 3.\n-- Order by customer_id.",
+  },
   "shopflow-generate-customer-channel-combinations": {
     id: "shopflow-generate-customer-channel-combinations",
     title: "Generate ShopFlow customer-channel combinations",

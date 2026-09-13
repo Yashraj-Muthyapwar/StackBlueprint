@@ -2,6 +2,48 @@ import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./t
 
 export const CHALLENGES: ChallengeDefinition[] = [
   {
+    id: "shopflow-find-customer-without-qualifying-order",
+    version: 1,
+    title: "Find a ShopFlow customer without a qualifying order",
+    group: "start",
+    difficulty: "beginner",
+    dataset: "sql_lab",
+    engines: ["postgres"],
+    prompt: "Find the selected ShopFlow customer with no order among order IDs 2 and 3.",
+    requirements: [
+      "Use the customers and orders tables.",
+      "Return exactly customer_id and first_name.",
+      "Use NOT EXISTS to test for matching order IDs 2 and 3.",
+      "Consider customers 797, 1600, and 1619.",
+      "Order by customer_id.",
+    ],
+    requiredTables: ["customers", "orders"],
+    starterSql: "-- Find the selected customer without a qualifying order.\n-- Return customer_id and first_name.\n-- Use NOT EXISTS with orders 2 and 3.\n-- Order by customer_id.",
+    hints: [
+      "Start from customers AS c and filter c.customer_id IN (797, 1600, 1619).",
+      "Add AND NOT EXISTS (SELECT 1 FROM orders AS o ...).",
+      "Inside the subquery, connect o.customer_id = c.customer_id and restrict o.order_id IN (2, 3).",
+    ],
+    solutionSql: {
+      postgres: "SELECT c.customer_id, c.first_name FROM customers AS c WHERE c.customer_id IN (797, 1600, 1619) AND NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.customer_id = c.customer_id AND o.order_id IN (2, 3)) ORDER BY c.customer_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT c.customer_id, c.first_name FROM customers AS c WHERE c.customer_id IN (797, 1600, 1619) AND NOT EXISTS (SELECT 1 FROM orders AS o WHERE o.customer_id = c.customer_id AND o.order_id IN (2, 3)) ORDER BY c.customer_id;",
+      },
+      requiredColumns: ["customer_id", "first_name"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Safe anti-join complete",
+      body: "Correct. NOT EXISTS kept Hana because no qualifying ShopFlow order was found for her.",
+      nextConcept: "Non-Equi, Range & ASOF Joins",
+    },
+  },
+  {
     id: "shopflow-generate-customer-channel-combinations",
     version: 1,
     title: "Generate ShopFlow customer-channel combinations",
