@@ -17,6 +17,36 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+  "shopflow-find-customer-without-qualifying-order": {
+    id: "shopflow-find-customer-without-qualifying-order",
+    title: "Find a ShopFlow customer without a qualifying order",
+    prompt: "Return the selected customer with no order among order IDs 2 and 3 using NOT EXISTS.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-find-customer-without-qualifying-order",
+    starterSql: "-- Find the selected customer without a qualifying order.\n-- Return customer_id and first_name.\n-- Use NOT EXISTS with orders 2 and 3.\n-- Order by customer_id.",
+  },
+  "shopflow-generate-customer-channel-combinations": {
+    id: "shopflow-generate-customer-channel-combinations",
+    title: "Generate ShopFlow customer-channel combinations",
+    prompt: "Create every combination of customers 797, 1600, and 1619 with email and sms using a query-local list and CROSS JOIN.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-generate-customer-channel-combinations",
+    starterSql: "-- Generate every selected customer-channel combination.\n-- Define email and sms in a channels CTE.\n-- Return first_name and channel for customers 797, 1600, and 1619.\n-- Use CROSS JOIN and order by customer_id, channel.",
+  },
+  "shopflow-preserve-customers-with-left-join": {
+    id: "shopflow-preserve-customers-with-left-join",
+    title: "Preserve ShopFlow customers with LEFT JOIN",
+    prompt: "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order values by putting the order filter in the LEFT JOIN ON condition.",
+    dataset: "sql_lab",
+    engine: "postgres",
+    challengeId: "shopflow-preserve-customers-with-left-join",
+    starterSql: `-- Preserve all three selected ShopFlow customers.
+-- Return customer_id, first_name, order_id, and total_amount.
+-- LEFT JOIN orders with customer_id and restrict orders 2 and 3 in ON.
+-- Order by customer_id so Hana remains with NULL order columns.`,
+  },
   "shopflow-join-orders-customers": {
     id: "shopflow-join-orders-customers",
     title: "Join ShopFlow orders to customers",
