@@ -412,9 +412,21 @@ export const roadmap: RoadmapCategory[] = [
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
     overviewPath: "/patterns",
     sections: [
-      { title: "Arrays / Matrix", patterns: arrayPatterns },
-      { title: "Strings", patterns: stringPatterns },
-      { title: "Hash Map", patterns: hashMapPatterns },
+      {
+        title: "Arrays / Matrix",
+        blurb: "Build a strong foundation with the array patterns that show up in nearly every interview loop.",
+        patterns: arrayPatterns,
+      },
+      {
+        title: "Strings",
+        blurb: "Turn character problems into fast, reliable scans with a small set of reusable techniques.",
+        patterns: stringPatterns,
+      },
+      {
+        title: "Hash Map",
+        blurb: "Use lookup tables, sets, and frequency counts to trade brute force for linear-time solutions.",
+        patterns: hashMapPatterns,
+      },
     ],
     patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
   },
