@@ -52,7 +52,13 @@ export type Step = {
   cellHighlights?: CellHighlight[];
   cellPointers?: CellPointer[];
   // matrix rect overlay (e.g. 2D prefix query rect)
-  matrixRect?: { r1: number; c1: number; r2: number; c2: number; tone?: "violet" | "mint" | "amber" };
+  matrixRect?: {
+    r1: number;
+    c1: number;
+    r2: number;
+    c2: number;
+    tone?: "violet" | "mint" | "amber";
+  };
   // optional water levels for elevation-map
   waterLevels?: number[];
 };
@@ -61,11 +67,26 @@ export type View = "array" | "linked-list" | "matrix" | "elevation-map";
 
 export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
-  | { key: string; label: string; kind: "int"; min?: number; max?: number; help?: string; hidden?: (v: any) => boolean }
+  | {
+      key: string;
+      label: string;
+      kind: "int";
+      min?: number;
+      max?: number;
+      help?: string;
+      hidden?: (v: any) => boolean;
+    }
   | { key: string; label: string; kind: "intMatrix"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "intPairs"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "string"; help?: string; hidden?: (v: any) => boolean }
-  | { key: string; label: string; kind: "select"; options: { value: string; label: string }[]; help?: string; hidden?: (v: any) => boolean };
+  | {
+      key: string;
+      label: string;
+      kind: "select";
+      options: { value: string; label: string }[];
+      help?: string;
+      hidden?: (v: any) => boolean;
+    };
 
 export type PracticeProblem = {
   name: string;
@@ -85,6 +106,10 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   spotIt?: string[];
   /** Situations where this pattern is the wrong tool. */
   avoidWhen?: string[];
+  /** Short lesson recap rendered after the interactive walkthrough. */
+  takeaways?: string[];
+  /** Optional concept-lesson content rendered with the standard lesson layout. */
+  sections?: Section[];
   variant: string;
   view: View | ((inputs: TInputs) => View);
   code: string;
@@ -105,7 +130,6 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   /** Ordered practice problems, easiest first. Render as a ladder with difficulty badges. */
   practiceLadder?: PracticeProblem[];
 };
-
 
 // Backwards-compat alias for existing canvases.
 export type ArrayStep = Step;
@@ -132,7 +156,7 @@ export type QuizQuestion = {
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
-  | { kind: "interactive-code"; code: string; caption?: string }
+  | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
@@ -141,7 +165,13 @@ export type Section =
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
-  | { kind: "terminal-animation"; command: string; output: string; buttonLabel?: string; caption?: string }
+  | {
+      kind: "terminal-animation";
+      command: string;
+      output: string;
+      buttonLabel?: string;
+      caption?: string;
+    }
   | { kind: "docker-run-under-the-hood" }
   | { kind: "ipv4-diagram" }
   | { kind: "ports-diagram" }
@@ -171,10 +201,18 @@ export type Section =
   | { kind: "dns-query-types-diagram" }
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
-  | { kind: "cloud-provider-grid"; items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[] }
+  | {
+      kind: "cloud-provider-grid";
+      items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[];
+    }
   | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "list"; heading?: string; body?: string[]; items: (string | { text: string; subitems: string[] })[] }
+  | {
+      kind: "list";
+      heading?: string;
+      body?: string[];
+      items: (string | { text: string; subitems: string[] })[];
+    }
   | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {
