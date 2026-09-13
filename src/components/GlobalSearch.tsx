@@ -15,14 +15,7 @@ export function GlobalSearch() {
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (
-        e.key === "/" &&
-        e.target instanceof HTMLElement &&
-        !["INPUT", "TEXTAREA"].includes(e.target.tagName)
-      ) {
-        e.preventDefault();
-        setOpen(true);
-      } else if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((o) => !o);
       }
