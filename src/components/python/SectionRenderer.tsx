@@ -5,6 +5,7 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
+import { ArrayDimensionsExplorer } from "@/components/array-basics/ArrayDimensionsExplorer";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -299,6 +300,9 @@ export function SectionRenderer({
           packages={section.packages}
         />
       );
+
+    case "array-dimensions-explorer":
+      return <ArrayDimensionsExplorer />;
 
     case "table":
       return (
