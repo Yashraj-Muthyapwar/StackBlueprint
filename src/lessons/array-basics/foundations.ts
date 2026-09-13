@@ -52,6 +52,37 @@ const arrayVsListsSections: Section[] = [
   },
   {
     kind: "prose",
+    heading: "Common `array` type codes",
+    body: [
+      "The first argument to `array.array` selects the representation used for every item. These are the useful codes to recognize at this stage. You do not need to memorize the full list of codes.",
+    ],
+  },
+  {
+    kind: "table",
+    caption: "A small practical type-code reference",
+    headers: ["Code", "Stores", "Use it when"],
+    rows: [
+      [
+        "`i`",
+        "Signed integers",
+        "You need ordinary whole-number values such as scores or indices.",
+      ],
+      [
+        "`f`",
+        "Single-precision floating-point values",
+        "You need many decimal measurements and compact storage matters.",
+      ],
+      [
+        "`d`",
+        "Double-precision floating-point values",
+        "You need decimal calculations with more precision.",
+      ],
+      ["`b`", "Signed bytes", "You are storing compact signed byte-sized values."],
+      ["`B`", "Unsigned bytes", "You are storing byte data such as small non-negative values."],
+    ],
+  },
+  {
+    kind: "prose",
     heading: "Create both structures",
     body: [
       "Run this example. Notice that the typed `array.array` declares `i` for signed integers, while the Python `list` needs no type declaration.",
