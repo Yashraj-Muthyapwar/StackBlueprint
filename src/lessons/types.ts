@@ -151,6 +151,7 @@ export type QuizQuestion = {
   initialCode?: string;
   testCode?: string;
   expectedOutput?: string;
+  packages?: string[];
 };
 
 export type Section =
@@ -159,6 +160,7 @@ export type Section =
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
   | { kind: "array-operations-lab" }
+  | { kind: "matrix-operations-lab" }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
