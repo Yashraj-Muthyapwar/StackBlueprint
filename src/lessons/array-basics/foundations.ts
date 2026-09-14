@@ -1,8 +1,5 @@
 import type { LessonBuilder, Section, Step } from "../types";
 
-type ArrayInputs = { arr: number[] };
-type MatrixInputs = { matrix: number[][] };
-
 const arrayVsListCode = `from array import array
 import sys
 import numpy as np
@@ -280,111 +277,6 @@ function buildArrayVsList(): Step[] {
         "A plain list does not define vectorized division. Use a loop or a NumPy array when you want arithmetic across every numeric value.",
     },
   ];
-}
-
-const arrayTraversalCode = `def visit_every_value(arr):
-    for index in range(len(arr)):
-        value = arr[index]
-        print(index, value)`;
-
-function buildArrayTraversal({ arr }: ArrayInputs): Step[] {
-  if (arr.length === 0) {
-    return [{ line: 1, array: arr, narration: "An empty array has no indices to visit." }];
-  }
-
-  const steps: Step[] = [
-    {
-      line: 1,
-      array: arr,
-      narration: `An array of ${arr.length} values has indices 0 through ${arr.length - 1}.`,
-    },
-  ];
-  arr.forEach((value, index) => {
-    steps.push({
-      line: 3,
-      array: arr,
-      pointers: [{ name: "index", index, color: "mint" }],
-      highlight: { kind: "match", indices: [index] },
-      status: `arr[${index}] = ${value}`,
-      narration: `Read index ${index}. Its value is ${value}.`,
-    });
-  });
-  return steps;
-}
-
-const matrixTraversalCode = `def visit_matrix(matrix):
-    for row in range(len(matrix)):
-        for col in range(len(matrix[row])):
-            value = matrix[row][col]
-            print(row, col, value)`;
-
-function buildMatrixTraversal({ matrix }: MatrixInputs): Step[] {
-  if (!matrix.length || !matrix[0]?.length) {
-    return [{ line: 1, matrix, narration: "An empty matrix has no cells to visit." }];
-  }
-
-  const steps: Step[] = [
-    {
-      line: 1,
-      matrix,
-      narration: `This matrix has ${matrix.length} rows. Visit one row at a time.`,
-    },
-  ];
-  matrix.forEach((row, r) => {
-    row.forEach((value, c) => {
-      steps.push({
-        line: 3,
-        matrix,
-        cellPointers: [{ name: "cell", r, c, color: "mint" }],
-        cellHighlights: [{ r, c, tone: "match" }],
-        status: `matrix[${r}][${c}] = ${value}`,
-        narration: `Row ${r}, column ${c} contains ${value}.`,
-      });
-    });
-  });
-  return steps;
-}
-
-const arrayOperationsCode = `def update_first_even(arr):
-    for index, value in enumerate(arr):
-        if value % 2 == 0:
-            arr[index] = value * 2
-            return arr
-    return arr`;
-
-function buildArrayOperations({ arr }: ArrayInputs): Step[] {
-  const next = [...arr];
-  const steps: Step[] = [
-    { line: 1, array: next, narration: "Scan each element until an even value is found." },
-  ];
-  const index = next.findIndex((value) => value % 2 === 0);
-
-  if (index === -1) {
-    steps.push({
-      line: 6,
-      array: next,
-      narration: "No even value was found, so the array stays unchanged.",
-    });
-    return steps;
-  }
-
-  steps.push({
-    line: 3,
-    array: next,
-    pointers: [{ name: "index", index, color: "mint" }],
-    highlight: { kind: "compare", indices: [index] },
-    narration: `${next[index]} is the first even value. Arrays provide constant-time access once its index is known.`,
-  });
-  next[index] *= 2;
-  steps.push({
-    line: 4,
-    array: next,
-    pointers: [{ name: "index", index, color: "mint" }],
-    highlight: { kind: "swap", indices: [index] },
-    status: `arr[${index}] is now ${next[index]}`,
-    narration: `Write directly to index ${index}, then return the updated array.`,
-  });
-  return steps;
 }
 
 const whatIsAnArraySections: Section[] = [
@@ -1032,27 +924,6 @@ export const twoDimensionalArrayOperations: LessonBuilder<Record<string, never>>
   ],
 };
 
-export const arrayIndexing: LessonBuilder<ArrayInputs> = {
-  slug: "array-indexing-and-traversal",
-  title: "Array Indexing and Traversal",
-  subtitle: "Read values by index and visit an array from left to right.",
-  problem: "Given an array, visit every value once while keeping track of its index.",
-  spotIt: [
-    "You need to inspect every element in order.",
-    "The prompt asks for a position, value, or a single pass over a list.",
-  ],
-  avoidWhen: [
-    "The data is not stored contiguously, such as a linked list.",
-    "You need a specific non-linear traversal, such as BFS or DFS.",
-  ],
-  variant: "array-basics",
-  view: "array",
-  code: arrayTraversalCode,
-  defaultInputs: { arr: [8, 3, 12, 5, 9] },
-  inputs: [{ key: "arr", label: "Array", kind: "intArray", help: "comma-separated" }],
-  build: buildArrayTraversal,
-};
-
 export const arrayVsLists: LessonBuilder<Record<string, never>> = {
   slug: "arrays-vs-lists",
   title: "Arrays vs Lists",
@@ -1082,52 +953,4 @@ export const arrayVsLists: LessonBuilder<Record<string, never>> = {
   defaultInputs: {},
   inputs: [],
   build: buildArrayVsList,
-};
-
-export const matrixCoordinates: LessonBuilder<MatrixInputs> = {
-  slug: "matrix-coordinates-and-traversal",
-  title: "Matrix Coordinates and Traversal",
-  subtitle: "Use row and column coordinates to visit every cell in a grid.",
-  problem: "Given a matrix, visit each cell in row-major order.",
-  spotIt: [
-    "Input is a grid, board, image, or 2D array.",
-    "You need to inspect each row and each column.",
-  ],
-  avoidWhen: [
-    "You must follow graph edges rather than adjacent grid cells.",
-    "The matrix is sparse and scanning empty cells would be wasteful.",
-  ],
-  variant: "matrix-basics",
-  view: "matrix",
-  code: matrixTraversalCode,
-  defaultInputs: {
-    matrix: [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 9],
-    ],
-  },
-  inputs: [{ key: "matrix", label: "Matrix", kind: "intMatrix" }],
-  build: buildMatrixTraversal,
-};
-
-export const arrayOperations: LessonBuilder<ArrayInputs> = {
-  slug: "array-reads-writes-and-complexity",
-  title: "Array Reads, Writes, and Complexity",
-  subtitle: "Separate constant-time indexed access from the linear scan needed to find an element.",
-  problem: "Find the first even value in an array, double it in place, and return the array.",
-  spotIt: [
-    "You must find an element, then update it by index.",
-    "The prompt asks for an in-place array update.",
-  ],
-  avoidWhen: [
-    "You need frequent inserts or deletes in the middle of a sequence.",
-    "The lookup should be keyed by value rather than position.",
-  ],
-  variant: "array-operations",
-  view: "array",
-  code: arrayOperationsCode,
-  defaultInputs: { arr: [5, 7, 4, 9, 6] },
-  inputs: [{ key: "arr", label: "Array", kind: "intArray", help: "comma-separated" }],
-  build: buildArrayOperations,
 };
