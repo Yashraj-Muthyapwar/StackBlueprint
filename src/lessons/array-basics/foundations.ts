@@ -591,6 +591,200 @@ export const whatIsAnArrayAndTypes: LessonBuilder<Record<string, never>> = {
   ],
 };
 
+const twoDimensionalOperationsSections: Section[] = [
+  {
+    kind: "prose",
+    heading: "Why NumPy for two-dimensional arrays",
+    body: [
+      "Use `NumPy` for multi-dimensional numeric arrays. Python's `array.array` is a typed one-dimensional sequence, while a NumPy array has an explicit shape, supports row and column axes, and provides operations such as `np.insert`, `np.delete`, and element-wise comparisons across a matrix.",
+      "The core matrix operations are create, insert, traverse, access, search, and delete. Each operation now works with a coordinate or an axis instead of a single linear position.",
+    ],
+  },
+  { kind: "matrix-operations-lab" },
+  {
+    kind: "prose",
+    heading: "Creating a matrix",
+    body: [
+      "Creating a matrix from `r × c` values takes `O(r × c)` time and space because NumPy stores every cell. Its `shape` records the number of rows and columns.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Create a two-dimensional NumPy array",
+    packages: ["numpy"],
+    code: `import numpy as np
+
+# Create a 3x3 matrix (2D array) with 3 rows and 3 columns
+matrix = np.array([
+    [4, 8, 15],
+    [16, 23, 42],
+    [50, 60, 70],
+])
+
+print("--- 2D NumPy Matrix ---")
+print(matrix)
+
+# A matrix has two axes: axis=0 targets rows and axis=1 targets columns.
+print("\\n--- Shape & Dimensions ---")
+print("shape:", matrix.shape)
+print("rows:", matrix.shape[0])
+print("columns:", matrix.shape[1])`,
+  },
+  {
+    kind: "prose",
+    heading: "Insert and delete along an axis",
+    body: [
+      "A matrix has two axes: `axis=0` targets rows and `axis=1` targets columns. NumPy does not change the original shape in place for `np.insert` or `np.delete`; each operation constructs and returns a new array. Inserting or deleting a row in a dense matrix costs `O(r × c)` time and `O(r × c)` extra space.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Insert a row, then delete a column",
+    packages: ["numpy"],
+    code: `import numpy as np
+
+matrix = np.array([[4, 8, 15], [16, 23, 42]])
+
+with_new_row = np.insert(matrix, 1, [[90, 91, 92]], axis=0)
+without_middle_column = np.delete(with_new_row, 1, axis=1)
+
+print("--- Insert Row (axis=0) ---")
+print("after row insert:\\n", with_new_row)
+
+print("--- Delete Column (axis=1) ---")
+print("after column delete:\\n", without_middle_column)`,
+  },
+  {
+    kind: "prose",
+    heading: "Traverse, access, and search",
+    body: [
+      "Accessing a known cell such as `matrix[row, column]` is `O(1)`. Traversal visits every cell, so it is `O(r × c)`. Searching for an unknown value can also inspect every cell in the worst case, making it `O(r × c)`.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Traverse cells, read one coordinate, and search by value",
+    packages: ["numpy"],
+    code: `import numpy as np
+
+# Initialize a 3x3 matrix
+matrix = np.array([
+    [4, 8, 15],
+    [16, 23, 42],
+    [50, 60, 70]
+])
+
+print("--- Matrix Traversal ---")
+# Nested loops visit every cell in O(r × c) time
+for row_index, row in enumerate(matrix):
+    for column_index, item in enumerate(row):
+        print(f"({row_index}, {column_index}) = {item}")
+
+print("\\n--- Direct Access ---")
+# Direct access via known coordinates [row, column] operates in O(1) time
+print("Access at Row 1, Column 2:", matrix[1, 2])
+
+print("\\n--- Value Search ---")
+# np.argwhere scans the matrix in O(r × c) time and returns all [row, column] indices matching the condition
+print("Locations of 23:\\n", np.argwhere(matrix == 23))`,
+  },
+  {
+    kind: "table",
+    caption: "Two-dimensional NumPy operation costs",
+    headers: ["Operation", "Time", "Extra space", "Why"],
+    rows: [
+      ["Create an r × c matrix", "`O(r × c)`", "`O(r × c)`", "Every cell must be stored."],
+      [
+        "Insert or delete a row/column",
+        "`O(r × c)`",
+        "`O(r × c)`",
+        "NumPy constructs an array with a new shape.",
+      ],
+      ["Traverse every cell", "`O(r × c)`", "`O(1)`", "Each coordinate is visited once."],
+      [
+        "Access by [row, column]",
+        "`O(1)`",
+        "`O(1)`",
+        "Known coordinates locate one cell directly.",
+      ],
+      [
+        "Search for a value",
+        "`O(r × c)`",
+        "`O(1)` to find one; `O(k)` for returned matches",
+        "An unknown value may require a full scan.",
+      ],
+    ],
+  },
+  {
+    kind: "takeaways",
+    items: [
+      "Use NumPy rather than `array.array` for two-dimensional numeric data because NumPy has shape and axis-aware operations.",
+      "`axis=0` operates on rows and `axis=1` operates on columns.",
+      "A known coordinate read is `O(1)`, while full traversal and an unknown-value search are `O(r × c)`.",
+      "NumPy insertion and deletion return new arrays, so they require `O(r × c)` additional space for a dense matrix.",
+    ],
+  },
+  {
+    kind: "quiz",
+    questions: [
+      {
+        id: "two-d-ops-1",
+        question:
+          "Why is NumPy the better fit than `array.array` for a two-dimensional numeric matrix?",
+        options: [
+          "It uses one-based indexing",
+          "It supports shapes and operations along axes",
+          "It can hold any Python object",
+          "It removes the need for indices",
+        ],
+        correctIndex: 1,
+        explanation:
+          "NumPy represents dimensions with a shape and lets you target rows or columns through axes.",
+      },
+      {
+        id: "two-d-ops-2",
+        question: "Which axis selects rows in `np.delete(matrix, index, axis=0)`?",
+        options: ["axis=0", "axis=1", "axis=-1", "No axis is needed"],
+        correctIndex: 0,
+        explanation:
+          "For a two-dimensional NumPy array, axis 0 runs down the rows and axis 1 runs across columns.",
+      },
+      {
+        id: "two-d-ops-3",
+        question:
+          "What is the usual complexity of reading `matrix[3, 5]` when the coordinate is valid?",
+        options: ["O(1)", "O(log r)", "O(r + c)", "O(r × c)"],
+        correctIndex: 0,
+        explanation: "A known row and column identify one location directly.",
+      },
+      {
+        id: "two-d-ops-4",
+        question: "What does `np.insert` return when adding a row to a matrix?",
+        options: [
+          "A new array",
+          "Only the inserted row",
+          "The original array changed in place",
+          "A Python list",
+        ],
+        correctIndex: 0,
+        explanation: "NumPy insertion returns a newly shaped array; assign the result to keep it.",
+      },
+      {
+        id: "two-d-ops-5",
+        question:
+          "Create a NumPy matrix named `matrix` with rows `[1, 2]` and `[3, 4]`, then print the bottom-right value.",
+        interactiveCode: true,
+        packages: ["numpy"],
+        initialCode: "import numpy as np\n\n# Write your code here\n",
+        testCode: "print(matrix[1, 1])",
+        expectedOutput: "4",
+        explanation:
+          "Use `np.array([[1, 2], [3, 4]])`. The coordinate `[1, 1]` selects the bottom-right cell.",
+      },
+    ],
+  },
+];
+
 const oneDimensionalOperationsSections: Section[] = [
   {
     kind: "prose",
@@ -622,9 +816,7 @@ print("--- Standard Library Array ---")
 print("Value:", typed)
 print("Type: ", type(typed))
 
-print()
-
-print("--- NumPy Array ---")
+print("\\n--- NumPy Array ---")
 print("Value:", numeric)
 print("Type: ", type(numeric))`,
   },
@@ -648,12 +840,8 @@ del typed[1]
 print("--- Standard Library Array ---")
 print("Result: ", typed)
 print("Type:   ", type(typed))
-print()
 
-numeric = np.array([4, 8, 15, 16])
-numeric = np.insert(numeric, 2, 99)
-numeric = np.delete(numeric, 1)
-print("--- NumPy Array ---")
+print("\\n--- NumPy Array ---")
 print("Result: ", numeric)
 print("Type:   ", type(numeric))`,
   },
@@ -685,10 +873,8 @@ print()
 print("Access at index 2:", typed[2])
 print("Search index of 16:", typed.index(16))
 
-print()
-
 # --- NumPy Array (Vectorized & Sequential Operations) ---
-print("--- NumPy Array Operations ---")
+print("\\n--- NumPy Array Operations ---")
 print("Traversal: ", end="")
 for item in numeric:
     print(item, end=" ")
@@ -810,6 +996,38 @@ export const oneDimensionalArrayOperations: LessonBuilder<Record<string, never>>
       line: 1,
       array: [4, 8, 15, 16, 23],
       narration: "Use the operations lab to explore one-dimensional arrays.",
+    },
+  ],
+};
+
+export const twoDimensionalArrayOperations: LessonBuilder<Record<string, never>> = {
+  slug: "two-dimensional-matrix-operations",
+  title: "Two-Dimensional / Matrix Operations",
+  subtitle: "Create, insert, traverse, access, search, and delete matrices with NumPy.",
+  problem: "Use row, column, and axis operations to work confidently with a numeric matrix.",
+  spotIt: [
+    "The data is arranged as a grid with rows and columns.",
+    "You need to insert, delete, or inspect values by an axis or coordinate.",
+  ],
+  avoidWhen: [
+    "Data is sparse enough that scanning an entire dense grid would be wasteful.",
+    "Values are best addressed by keys rather than grid coordinates.",
+  ],
+  variant: "matrix-operations-lab",
+  view: "matrix",
+  code: "# Explore the runnable NumPy matrix operations in the concept lesson.",
+  sections: twoDimensionalOperationsSections,
+  defaultInputs: {},
+  inputs: [],
+  build: () => [
+    {
+      line: 1,
+      matrix: [
+        [4, 8, 15],
+        [16, 23, 42],
+        [50, 60, 70],
+      ],
+      narration: "Use the concept lesson to explore two-dimensional NumPy operations.",
     },
   ],
 };
