@@ -101,6 +101,7 @@ import {
   arrayVsLists,
   matrixCoordinates,
   oneDimensionalArrayOperations,
+  twoDimensionalArrayOperations,
   whatIsAnArrayAndTypes,
 } from "./array-basics/foundations";
 
@@ -144,6 +145,7 @@ export const patterns: PatternEntry[] = [
       { builder: whatIsAnArrayAndTypes, icon: Boxes },
       { builder: arrayVsLists, icon: Columns3 },
       { builder: oneDimensionalArrayOperations, icon: Wrench },
+      { builder: twoDimensionalArrayOperations, icon: Table },
       { builder: arrayIndexing, icon: Rows3 },
       { builder: matrixCoordinates, icon: Table },
       { builder: arrayOperations, icon: Calculator },
