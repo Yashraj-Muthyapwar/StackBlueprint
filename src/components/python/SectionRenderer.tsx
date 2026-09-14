@@ -7,6 +7,7 @@ import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
 import { ArrayDimensionsExplorer } from "@/components/array-basics/ArrayDimensionsExplorer";
 import { ArrayOperationsLab } from "@/components/array-basics/ArrayOperationsLab";
+import { MatrixOperationsLab } from "@/components/array-basics/MatrixOperationsLab";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -307,6 +308,9 @@ export function SectionRenderer({
 
     case "array-operations-lab":
       return <ArrayOperationsLab />;
+
+    case "matrix-operations-lab":
+      return <MatrixOperationsLab />;
 
     case "table":
       return (
