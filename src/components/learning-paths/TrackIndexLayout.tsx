@@ -44,12 +44,13 @@ export function TrackIndexLayout({
           )}
           {IconComponent && (
             <div className="mx-auto mb-6 flex justify-center">
-              <IconComponent className={`size-16 drop-shadow-sm lg:size-20 ${iconColor || ""}`} strokeWidth={1.5} />
+              <IconComponent
+                className={`size-16 drop-shadow-sm lg:size-20 ${iconColor || ""}`}
+                strokeWidth={1.5}
+              />
             </div>
           )}
-          <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
-            {title}
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">{title}</h1>
           {blurb && (
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
               {blurb}
@@ -62,10 +63,18 @@ export function TrackIndexLayout({
         <div className="flex flex-col gap-24">
           {renderSections.map((sec, secIdx) => {
             const parts = sec.title ? sec.title.split(" — ") : [];
-            const heading = parts.length === 2 ? parts[1] : (sec.title || "Chapters");
+            const heading = parts.length === 2 ? parts[1] : sec.title || "Chapters";
+            const sectionId = heading
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/(^-|-$)/g, "");
 
             return (
-              <div key={secIdx} className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
+              <div
+                key={secIdx}
+                id={sectionId}
+                className="scroll-mt-24 flex flex-col lg:flex-row lg:items-start lg:gap-16"
+              >
                 <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
                   <div className="flex items-center gap-3">
                     <div className="grid size-8 shrink-0 place-items-center rounded-full bg-[#E2E8F0] dark:bg-border text-sm font-bold text-foreground">
@@ -86,8 +95,9 @@ export function TrackIndexLayout({
                   {sec.patterns?.map((t: any) => {
                     const Icon = t.lessons?.[0]?.icon || LockKeyhole;
                     const isLocked = t.locked;
-                    
-                    const completedCount = t.lessons?.filter((l: any) => isCompleted(l.slug)).length || 0;
+
+                    const completedCount =
+                      t.lessons?.filter((l: any) => isCompleted(l.slug)).length || 0;
                     const totalCount = t.lessons?.length || 0;
 
                     const toPath = t.path || `${basePath}/${t.slug}`;

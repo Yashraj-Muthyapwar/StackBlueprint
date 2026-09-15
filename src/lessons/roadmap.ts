@@ -50,6 +50,7 @@ import {
   FileText,
   Box,
   Code2,
+  Columns3,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -94,6 +95,13 @@ import { transposeFlip } from "./matrix/transpose-flip";
 import { spiral } from "./matrix/spiral";
 import { diagonal } from "./matrix/diagonal";
 
+import {
+  arrayVsLists,
+  oneDimensionalArrayOperations,
+  twoDimensionalArrayOperations,
+  whatIsAnArrayAndTypes,
+} from "./array-basics/foundations";
+
 import { longestSubstringNoRepeat } from "./strings/longest-substring-no-repeat";
 import { minWindowSubstring } from "./strings/min-window-substring";
 import { anagramInString } from "./strings/anagram-in-string";
@@ -124,6 +132,19 @@ export type PatternEntry = {
 };
 
 export const patterns: PatternEntry[] = [
+  {
+    slug: "array-matrix-basics",
+    title: "Basics",
+    category: "Arrays",
+    blurb:
+      "Learn what arrays are, explore 1D through 3D indexing, then build toward traversal, matrices, and operation costs.",
+    lessons: [
+      { builder: whatIsAnArrayAndTypes, icon: Boxes },
+      { builder: arrayVsLists, icon: Columns3 },
+      { builder: oneDimensionalArrayOperations, icon: Wrench },
+      { builder: twoDimensionalArrayOperations, icon: Table },
+    ],
+  },
   {
     slug: "two-pointers",
     title: "Two Pointers",
@@ -328,10 +349,7 @@ const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
     slug: l.builder.slug,
     path: `/patterns/${p.slug}/${l.builder.slug}`,
     icon: l.icon,
-    keywords: [
-      l.builder.subtitle,
-      ...(l.builder.spotIt ?? []),
-    ].filter(Boolean) as string[],
+    keywords: [l.builder.subtitle, ...(l.builder.spotIt ?? [])].filter(Boolean) as string[],
   })),
 });
 
@@ -403,7 +421,6 @@ const unlockedMongoPattern = (
   locked: false,
 });
 
-
 export const roadmap: RoadmapCategory[] = [
   {
     title: "Patterns (DSA)",
@@ -412,9 +429,24 @@ export const roadmap: RoadmapCategory[] = [
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
     overviewPath: "/patterns",
     sections: [
-      { title: "Arrays / Matrix", patterns: arrayPatterns },
-      { title: "Strings", patterns: stringPatterns },
-      { title: "Hash Map", patterns: hashMapPatterns },
+      {
+        title: "Arrays / Matrix",
+        blurb:
+          "Build a strong foundation with the array patterns that show up in nearly every interview loop.",
+        patterns: arrayPatterns,
+      },
+      {
+        title: "Strings",
+        blurb:
+          "Turn character problems into fast, reliable scans with a small set of reusable techniques.",
+        patterns: stringPatterns,
+      },
+      {
+        title: "Hash Map",
+        blurb:
+          "Use lookup tables, sets, and frequency counts to trade brute force for linear-time solutions.",
+        patterns: hashMapPatterns,
+      },
     ],
     patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
   },
@@ -879,7 +911,8 @@ export const roadmap: RoadmapCategory[] = [
             title: "Date & Time",
             slug: "datetime-functions",
             path: "/sql/specialized/datetime-functions",
-            blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
+            blurb:
+              "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
             lessons: [
               {
                 title: "Current Time & Time Zones",
@@ -1056,7 +1089,13 @@ export const roadmap: RoadmapCategory[] = [
             slug: FOUNDATIONS_TOPICS["getting-started"].slug,
             blurb: FOUNDATIONS_TOPICS["getting-started"].blurb,
             path: "/system-design/foundations/getting-started",
-            lessons: FOUNDATIONS_TOPICS["getting-started"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/getting-started/${l.slug}`, icon: (l as any).icon || PlayCircle, keywords: [l.subtitle].filter(Boolean) as string[] })),
+            lessons: FOUNDATIONS_TOPICS["getting-started"].lessons.map((l) => ({
+              title: l.title,
+              slug: l.slug,
+              path: `/system-design/foundations/getting-started/${l.slug}`,
+              icon: (l as any).icon || PlayCircle,
+              keywords: [l.subtitle].filter(Boolean) as string[],
+            })),
           },
           lockedPattern(
             "Core Concepts & Metrics",
@@ -1068,7 +1107,13 @@ export const roadmap: RoadmapCategory[] = [
             slug: FOUNDATIONS_TOPICS["networking-protocols"].slug,
             blurb: FOUNDATIONS_TOPICS["networking-protocols"].blurb,
             path: "/system-design/foundations/networking-protocols",
-            lessons: FOUNDATIONS_TOPICS["networking-protocols"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/foundations/networking-protocols/${l.slug}`, icon: (l as any).icon || Globe, keywords: [l.subtitle].filter(Boolean) as string[] })),
+            lessons: FOUNDATIONS_TOPICS["networking-protocols"].lessons.map((l) => ({
+              title: l.title,
+              slug: l.slug,
+              path: `/system-design/foundations/networking-protocols/${l.slug}`,
+              icon: (l as any).icon || Globe,
+              keywords: [l.subtitle].filter(Boolean) as string[],
+            })),
           },
           lockedPattern(
             "Routing & Load Balancing",
@@ -1111,11 +1156,7 @@ export const roadmap: RoadmapCategory[] = [
             "consistency-models",
             "What a system promises a client will see.",
           ),
-          lockedPattern(
-            "Storage Systems",
-            "storage-systems",
-            "Block, file, and object storage.",
-          ),
+          lockedPattern("Storage Systems", "storage-systems", "Block, file, and object storage."),
           lockedPattern(
             "Security & Auth",
             "security-auth",
@@ -1142,7 +1183,13 @@ export const roadmap: RoadmapCategory[] = [
             slug: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].slug,
             blurb: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].blurb,
             path: "/system-design/distributed-systems/distributed-systems",
-            lessons: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].lessons.map(l => ({ title: l.title, slug: l.slug, path: `/system-design/distributed-systems/distributed-systems/${l.slug}`, icon: (l as any).icon || Server, keywords: [l.subtitle].filter(Boolean) as string[] })),
+            lessons: DISTRIBUTED_SYSTEMS_TOPICS["distributed-systems"].lessons.map((l) => ({
+              title: l.title,
+              slug: l.slug,
+              path: `/system-design/distributed-systems/distributed-systems/${l.slug}`,
+              icon: (l as any).icon || Server,
+              keywords: [l.subtitle].filter(Boolean) as string[],
+            })),
           },
           lockedPattern(
             "Time, Clocks & Consensus",
@@ -3197,11 +3244,12 @@ export const roadmap: RoadmapCategory[] = [
         title: "Foundations & Setup",
         blurb: "Core NoSQL concepts, document architecture, and connection methods.",
         patterns: [
-          unlockedMongoPattern("NoSQL Concepts", "nosql-concepts", "Compare data models, inspect flexible documents, and choose from access patterns.", [
-            "Introduction to NoSQL",
-            "Types of NoSQL Databases",
-            "The CAP Theorem",
-          ]),
+          unlockedMongoPattern(
+            "NoSQL Concepts",
+            "nosql-concepts",
+            "Compare data models, inspect flexible documents, and choose from access patterns.",
+            ["Introduction to NoSQL", "Types of NoSQL Databases", "The CAP Theorem"],
+          ),
           lockedPattern(
             "Getting Started with Atlas",
             "getting-started-atlas",

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 interface InteractivePythonBlockProps {
   initialCode: string;
   caption?: string;
+  packages?: string[];
   onChange?: (code: string) => void;
   hideRunButton?: boolean;
   hideOutput?: boolean;
@@ -19,7 +20,16 @@ interface InteractivePythonBlockProps {
   customFooterAction?: React.ReactNode;
 }
 
-export function InteractivePythonBlock({ initialCode, caption, onChange, hideRunButton, hideOutput, className, customFooterAction }: InteractivePythonBlockProps) {
+export function InteractivePythonBlock({
+  initialCode,
+  caption,
+  packages = [],
+  onChange,
+  hideRunButton,
+  hideOutput,
+  className,
+  customFooterAction,
+}: InteractivePythonBlockProps) {
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -43,11 +53,17 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
       const pyodide = await getPyodide();
       setIsLoadingPyodide(false);
 
+      if (packages.length > 0) {
+        setIsLoadingPyodide(true);
+        await pyodide.loadPackage(packages);
+        setIsLoadingPyodide(false);
+      }
+
       pyodide.setStdout({
-        batched: (str: string) => setOutput((prev) => prev + str + "\n")
+        batched: (str: string) => setOutput((prev) => prev + str + "\n"),
       });
       pyodide.setStderr({
-        batched: (str: string) => setError((prev) => prev + str + "\n")
+        batched: (str: string) => setError((prev) => prev + str + "\n"),
       });
 
       await pyodide.runPythonAsync(code);
@@ -66,7 +82,12 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
   };
 
   return (
-    <figure className={cn("group relative overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm my-6", className)}>
+    <figure
+      className={cn(
+        "group relative overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm my-6",
+        className,
+      )}
+    >
       <div className="flex items-center justify-between border-b border-hairline/60 bg-surface-2/40 px-4 py-2">
         <div className="flex items-center gap-2">
           <div className="flex gap-1.5 mr-2">
@@ -85,7 +106,12 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={handleReset} className="h-7 px-2.5 text-xs text-muted-foreground hover:bg-surface-2 transition-colors">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="h-7 px-2.5 text-xs text-muted-foreground hover:bg-surface-2 transition-colors"
+          >
             <RotateCcw className="size-3.5 mr-1.5" />
             Reset
           </Button>
@@ -97,8 +123,14 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
               disabled={isRunning || isLoadingPyodide}
               className="h-7 px-3 text-xs bg-mint/90 hover:bg-mint text-slate-900 font-bold shadow-[0_0_12px_rgba(110,231,183,0.3)] transition-all"
             >
-              {isLoadingPyodide ? <Loader2 className="size-3.5 mr-1.5 animate-spin" /> : isRunning ? <Square className="size-3.5 mr-1.5" /> : <Play className="size-3.5 mr-1.5 fill-slate-900" />}
-              {isLoadingPyodide ? "Loading..." : isRunning ? "Running" : "Run Code"}
+              {isLoadingPyodide ? (
+                <Loader2 className="size-3.5 mr-1.5 animate-spin" />
+              ) : isRunning ? (
+                <Square className="size-3.5 mr-1.5" />
+              ) : (
+                <Play className="size-3.5 mr-1.5 fill-slate-900" />
+              )}
+              {isLoadingPyodide ? "Loading package..." : isRunning ? "Running" : "Run Code"}
             </Button>
           )}
         </div>
@@ -118,7 +150,8 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
             foldGutter: false,
             highlightActiveLine: false,
           }}
-          className="text-[13.5px] font-mono [&_.cm-editor]:bg-slate-950 [&_.cm-gutters]:bg-slate-950 [&_.cm-gutters]:border-r-0 [&_.cm-gutters]:text-[#6E7681] [&_.cm-gutters]:!pr-3 [&_.cm-scroller]:!py-4 selection:bg-mint/20" />
+          className="text-[13.5px] font-mono [&_.cm-editor]:bg-slate-950 [&_.cm-gutters]:bg-slate-950 [&_.cm-gutters]:border-r-0 [&_.cm-gutters]:text-[#6E7681] [&_.cm-gutters]:!pr-3 [&_.cm-scroller]:!py-4 selection:bg-mint/20"
+        />
       </div>
 
       {!hideOutput && (output || error) && (
@@ -127,8 +160,12 @@ export function InteractivePythonBlock({ initialCode, caption, onChange, hideRun
             <div className="size-1.5 rounded-full bg-mint/70 shadow-[0_0_8px_rgba(110,231,183,0.5)]" />
             Terminal Output
           </div>
-          {output && <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">{output}</div>}
-          {error && <div className="text-rose-400 whitespace-pre-wrap leading-relaxed mt-2">{error}</div>}
+          {output && (
+            <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">{output}</div>
+          )}
+          {error && (
+            <div className="text-rose-400 whitespace-pre-wrap leading-relaxed mt-2">{error}</div>
+          )}
         </div>
       )}
 
