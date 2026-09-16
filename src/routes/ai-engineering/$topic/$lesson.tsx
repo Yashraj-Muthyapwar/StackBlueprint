@@ -7,6 +7,19 @@ import { SectionRenderer } from "@/components/ai-engineering/SectionRenderer";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
 
 export const Route = createFileRoute("/ai-engineering/$topic/$lesson")({
+  head: ({ params }) => {
+    const content = AI_ENGINEERING_TOPICS[
+      params.topic as keyof typeof AI_ENGINEERING_TOPICS
+    ]?.lessons.find((item) => item.slug === params.lesson);
+    return {
+      meta: content
+        ? [
+            { title: `${content.title} · AI Engineering` },
+            { name: "description", content: content.subtitle },
+          ]
+        : [],
+    };
+  },
   component: AIEngineeringLessonPage,
 });
 
