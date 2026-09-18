@@ -1,3 +1,4 @@
+import stringIndexingImg from "@/images/dsa/strings/strings-and-characters-indexing.png";
 import type { LessonBuilder, Section, Step } from "../types";
 
 type StringInputs = { text: string };
@@ -7,18 +8,26 @@ const charactersSections: Section[] = [
     kind: "prose",
     heading: "Why strings deserve their own toolkit",
     body: [
-      "A string is an ordered sequence of characters. That order lets you read a character by index, compare two positions, or scan from left to right. Those simple actions are the starting point for substring, palindrome, and window problems.",
-      "Python strings are immutable. An expression such as `text.upper()` returns a new string instead of changing the existing one. This matters when a problem asks you to build, normalize, or transform text.",
+      "A string is an ordered sequence of characters. That order lets you read a character by index, compare two positions, or scan from left to right. Those actions become the building blocks for substring, palindrome, and window problems.",
+      "Think of a string as a fixed snapshot of text. Python strings are immutable, so an expression such as `text.upper()` gives you a new string instead of changing the existing one. That detail determines how you solve every transformation problem that follows.",
     ],
   },
   {
+    kind: "image",
+    src: stringIndexingImg,
+    alt: "The characters in STACK labeled with indices 0 through 4, followed by a separate BTACK string to show that changing a character creates a new string.",
+    caption:
+      "A string has stable zero-based positions. Replacing a character produces a separate string.",
+  },
+  { kind: "string-character-explorer" },
+  {
     kind: "interactive-code",
-    caption: "Read characters by zero-based index",
+    caption: "Read characters from either end",
     code: `text = "stack"
 
-print(text[0])
-print(text[2])
-print(text[-1])
+print("first:", text[0])
+print("middle:", text[2])
+print("last:", text[-1])
 print("length:", len(text))`,
   },
   {
@@ -26,8 +35,14 @@ print("length:", len(text))`,
     heading: "Indexing rules",
     body: [
       "Index `0` selects the first character. Negative indices count backward, so `text[-1]` selects the final character. Reading a known valid index is `O(1)`, but an index outside the range raises `IndexError`.",
-      "Strings preserve their original character order. A new string is needed for a changed character or a reordered result.",
+      "The same character has two valid addresses: a positive index from the start and a negative index from the end. For `text = 'stack'`, `text[2]` and `text[-3]` both select `'a'`.",
     ],
+  },
+  {
+    kind: "callout",
+    tone: "warn",
+    title: "Do not read past the string",
+    body: "`text[len(text)]` is outside the valid range because the final valid positive index is `len(text) - 1`. Check bounds before indexing when the position comes from input or a loop with changing pointers.",
   },
   {
     kind: "interactive-code",
@@ -55,9 +70,9 @@ print(word)`,
   {
     kind: "takeaways",
     items: [
-      "A string is an ordered, zero-indexed character sequence.",
-      "Known character reads and `len(text)` are `O(1)`.",
-      "Python strings are immutable, so transformations produce new strings.",
+      "A string is an ordered, zero-indexed character sequence with both positive and negative indices.",
+      "Known character reads and `len(text)` are `O(1)`, while an unknown-character scan is `O(n)`.",
+      "Python strings are immutable, so transformations construct new strings instead of editing old ones.",
     ],
   },
   {
