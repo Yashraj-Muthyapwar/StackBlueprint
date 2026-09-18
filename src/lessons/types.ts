@@ -161,6 +161,7 @@ export type Section =
   | { kind: "array-dimensions-explorer" }
   | { kind: "array-operations-lab" }
   | { kind: "matrix-operations-lab" }
+  | { kind: "string-character-explorer" }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
