@@ -1,4 +1,5 @@
 import stringIndexingImg from "@/images/dsa/strings/strings-and-characters-indexing.png";
+import stringOperationsImg from "@/images/dsa/strings/string-operations-pipeline.png";
 import type { LessonBuilder, Section, Step } from "../types";
 
 type StringInputs = { text: string };
@@ -136,6 +137,13 @@ const operationsSections: Section[] = [
     body: [
       "Most string problems begin with a small preparation step: take a slice, normalize case, remove surrounding whitespace, split words, or join a result. Use the operation that states your intent clearly before reaching for a manual loop.",
     ],
+  },
+  {
+    kind: "image",
+    src: stringOperationsImg,
+    alt: "Two independent Python string examples: one trims and lowercases Data Structures before taking prefix and suffix slices; the other splits scan strings carefully and joins the words with hyphens.",
+    caption:
+      "These two diagrams match the lesson code: normalize and slice `raw` on the left, then split and join `sentence` on the right.",
   },
   {
     kind: "interactive-code",
