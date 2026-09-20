@@ -1,5 +1,6 @@
 import stringIndexingImg from "@/images/dsa/strings/strings-and-characters-indexing.png";
 import stringOperationsImg from "@/images/dsa/strings/string-operations-pipeline.png";
+import stringScansImg from "@/images/dsa/strings/string-scans-and-counts.png";
 import type { LessonBuilder, Section, Step } from "../types";
 
 type StringInputs = { text: string };
@@ -260,6 +261,13 @@ const scansSections: Section[] = [
     body: [
       "A left-to-right scan is the foundation of many string algorithms. Visit each character once, update a small amount of state, and decide whether the current character changes the answer. This pattern appears again in sliding windows and frequency-based problems.",
     ],
+  },
+  {
+    kind: "image",
+    src: stringScansImg,
+    alt: "The string banana scanned from left to right while a frequency map accumulates b: 1, a: 3, and n: 2.",
+    caption:
+      "Each scanned character updates one frequency entry. After one pass over `banana`, the map records every character count.",
   },
   {
     kind: "interactive-code",
