@@ -5,9 +5,10 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
-import { ArrayDimensionsExplorer } from "@/components/array-basics/ArrayDimensionsExplorer";
-import { ArrayOperationsLab } from "@/components/array-basics/ArrayOperationsLab";
-import { MatrixOperationsLab } from "@/components/array-basics/MatrixOperationsLab";
+import { ArrayDimensionsExplorer } from "@/components/dsa/array-basics/ArrayDimensionsExplorer";
+import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
+import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
+import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -311,6 +312,9 @@ export function SectionRenderer({
 
     case "matrix-operations-lab":
       return <MatrixOperationsLab />;
+
+    case "string-character-explorer":
+      return <StringCharacterExplorer />;
 
     case "table":
       return (
