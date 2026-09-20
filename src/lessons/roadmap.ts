@@ -33,6 +33,7 @@ import {
   Download,
   PlayCircle,
   Terminal,
+  Text,
   Settings,
   Activity,
   Trash2,
@@ -111,6 +112,7 @@ import { stringCompression } from "./strings/string-compression";
 import { kmp } from "./strings/kmp";
 import { rabinKarp } from "./strings/rabin-karp";
 import { zAlgorithm } from "./strings/z-algorithm";
+import { stringCharacters, stringOperations, stringScans } from "./strings/basics";
 
 import { frequencyCounting } from "./hash-map/frequency-counting";
 import { topKFrequent } from "./hash-map/top-k-frequent";
@@ -209,6 +211,18 @@ export const patterns: PatternEntry[] = [
       { builder: transposeFlip, icon: FlipHorizontal },
       { builder: spiral, icon: Compass },
       { builder: diagonal, icon: Compass },
+    ],
+  },
+  {
+    slug: "string-basics",
+    title: "Basics",
+    category: "Strings",
+    blurb:
+      "Learn characters, string operations, and the single-pass scans that power later patterns.",
+    lessons: [
+      { builder: stringCharacters, icon: Text },
+      { builder: stringOperations, icon: Code2 },
+      { builder: stringScans, icon: Search },
     ],
   },
   {
