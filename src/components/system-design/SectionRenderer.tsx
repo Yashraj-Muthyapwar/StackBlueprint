@@ -31,6 +31,7 @@ import {
 } from "@/components/system-design/networking-protocols/SubnetVisuals";
 import HttpVisuals from "@/components/system-design/networking-protocols/HttpVisuals";
 import DnsVisuals from "@/components/system-design/networking-protocols/DnsVisuals";
+import { SystemDesignEvolution } from "@/components/system-design/foundations/SystemDesignEvolution";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -160,7 +161,7 @@ function parseInlineMarkdown(text: string) {
       return (
         <code
           key={i}
-          className="rounded bg-red-50 dark:bg-red-500/10 px-1.5 py-0.5 font-mono text-[0.85em] text-red-600 dark:text-red-400 font-medium"
+          className="rounded bg-mint/10 text-mint px-1.5 py-0.5 font-mono text-[0.85em] font-medium"
         >
           {part.slice(1, -1)}
         </code>
@@ -392,6 +393,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           caption={section.caption}
         />
       );
+
+    case "system-design-evolution":
+      return <SystemDesignEvolution />;
 
     case "terminal-animation":
       return <TerminalAnimation section={section} />;
