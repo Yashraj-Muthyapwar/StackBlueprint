@@ -62,7 +62,8 @@ const whatIsSystemDesign: LessonContent = {
       kind: "prose",
       heading: "Requirements and Constraints",
       body: [
-        "Architecture starts with the problem, not the technology. Clarify requirements in this order: `Features → Scale → Data → Latency → Reliability → Consistency → Cost`.",
+        "Architecture starts with the problem, not the technology. Clarify requirements in this order:",
+        "`Features → Scale → Data → Latency → Reliability → Consistency → Cost`.",
         "The same feature can require completely different architectures under different constraints. A timeline for 10,000 users is not the same design problem as one serving hundreds of millions of users with a strict latency target."
       ],
     },
