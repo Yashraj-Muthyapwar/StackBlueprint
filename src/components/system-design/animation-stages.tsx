@@ -311,6 +311,72 @@ const pacelcTheoremAnimation: Stage[] = [
   }
 ];
 
+const systemDesignEvolution: Stage[] = [
+  {
+    name: "1. Start with the baseline",
+    blurb: "One request path for a modest workload",
+    sql: [
+      "Client ──► Application ──► Database",
+      "",
+      "Constraint: modest traffic",
+      "Decision: keep the architecture small"
+    ],
+    table: {
+      name: "What the baseline owns",
+      cols: ["component", "responsibility"],
+      rows: [
+        r(1, "Application", "Request handling and business logic"),
+        r(2, "Database", "Durable application data")
+      ]
+    },
+    steps: [
+      st([0, 2, 3], "kept", "A simple request path is easier to operate and reason about. Keep it until a concrete constraint says otherwise.", { noteTone: "mint" })
+    ]
+  },
+  {
+    name: "2. Reads become the bottleneck",
+    blurb: "Repeated reads add latency and database load",
+    sql: [
+      "Client ──► Application ──► Cache ──► Database",
+      "                         │ hit",
+      "                         └────► return quickly",
+      "Constraint: high repeated-read traffic"
+    ],
+    table: {
+      name: "New trade-off",
+      cols: ["gain", "cost"],
+      rows: [
+        r(1, "Lower read latency", "Invalidation rules"),
+        r(2, "Less database load", "Stale data is possible")
+      ]
+    },
+    steps: [
+      st([0, 1, 2, 3], (row) => row.key === 1 ? "added" : "kept", "A cache is justified by a read bottleneck. It speeds repeated reads, but the design must define when data can be stale.", { noteTone: "amber" })
+    ]
+  },
+  {
+    name: "3. Work arrives in bursts",
+    blurb: "Move non-urgent work off the request path",
+    sql: [
+      "Client ──► Application ──► Database",
+      "                 │",
+      "                 └──► Queue ──► Worker",
+      "Constraint: bursty, slow background work"
+    ],
+    table: {
+      name: "New trade-off",
+      cols: ["gain", "cost"],
+      rows: [
+        r(1, "Absorb bursts", "Results can be delayed"),
+        r(2, "Protect request latency", "Backlog and retry handling")
+      ]
+    },
+    steps: [
+      st([1, 2, 3, 4], (row) => row.key === 1 ? "added" : "kept", "A queue decouples background work such as notifications or media processing. The request can finish sooner, while a worker processes the job later.", { noteTone: "violet" })
+    ]
+  }
+];
+
 export const STAGES_REGISTRY: Record<string, Stage[]> = {
   "ip-client-server": ipClientServer,
   "availability-anim": availabilityAnimation,
@@ -318,6 +384,7 @@ export const STAGES_REGISTRY: Record<string, Stage[]> = {
   "consistency-anim": consistencyAnimation,
   "cap-theorem-anim": capTheoremAnimation,
   "pacelc-theorem-anim": pacelcTheoremAnimation,
+  "system-design-evolution": systemDesignEvolution,
 };
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
