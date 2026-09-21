@@ -2,7 +2,6 @@ import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { Check, Copy } from "lucide-react";
 
-
 /**
  * Renders Python code with line numbers and a sliding highlight bar
  * that animates to the currently-executing line.
@@ -21,7 +20,6 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
       /* ignore */
     }
   };
-
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface">
@@ -48,7 +46,6 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
             python
           </span>
         </div>
-
       </div>
 
       <div className="relative flex-1 overflow-auto">
@@ -128,7 +125,8 @@ function highlight(line: string): React.ReactNode {
 
   // Group multi-char operators (!=, ==, <=, >=, +=, -=, *=, /=, //, **, ->) so
   // font ligatures never fuse `!=` into a ≠ glyph across adjacent single-char spans.
-  const re = /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|!=|==|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|->|[^\s\w])/g;
+  const re =
+    /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|!=|==|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|->|[^\s\w])/g;
   let m: RegExpExecArray | null;
   let k = 0;
   while ((m = re.exec(codePart)) !== null) {
@@ -157,7 +155,10 @@ function highlight(line: string): React.ReactNode {
       out.push(<span key={k++}>{tok}</span>);
     } else {
       out.push(
-        <span key={k++} style={{ color: "color-mix(in oklab, var(--foreground) 60%, transparent)" }}>
+        <span
+          key={k++}
+          style={{ color: "color-mix(in oklab, var(--foreground) 60%, transparent)" }}
+        >
           {tok}
         </span>,
       );

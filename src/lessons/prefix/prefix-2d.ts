@@ -25,7 +25,11 @@ function build({ matrix: mat, query }: Inputs): Step[] {
     C = mat[0].length;
   const prefix: number[][] = Array.from({ length: R + 1 }, () => new Array(C + 1).fill(0));
 
-  steps.push({ line: 3, matrix: mat, narration: `Compute (R+1)×(C+1) prefix matrix from a ${R}×${C} input.` });
+  steps.push({
+    line: 3,
+    matrix: mat,
+    narration: `Compute (R+1)×(C+1) prefix matrix from a ${R}×${C} input.`,
+  });
 
   for (let r = 0; r < R; r++) {
     for (let c = 0; c < C; c++) {
@@ -41,11 +45,19 @@ function build({ matrix: mat, query }: Inputs): Step[] {
     }
   }
 
-  steps.push({ line: 6, matrix: prefix.map((row) => [...row]), narration: "Prefix matrix built. Now answer the query in O(1)." });
+  steps.push({
+    line: 6,
+    matrix: prefix.map((row) => [...row]),
+    narration: "Prefix matrix built. Now answer the query in O(1).",
+  });
 
   const [r1, c1, r2, c2] = query;
   if (r1 < 0 || c1 < 0 || r2 >= R || c2 >= C || r1 > r2 || c1 > c2) {
-    steps.push({ line: 9, matrix: mat, narration: `Query (${r1},${c1})–(${r2},${c2}) is out of bounds.` });
+    steps.push({
+      line: 9,
+      matrix: mat,
+      narration: `Query (${r1},${c1})–(${r2},${c2}) is out of bounds.`,
+    });
     return steps;
   }
   const ans = prefix[r2 + 1][c2 + 1] - prefix[r1][c2 + 1] - prefix[r2 + 1][c1] + prefix[r1][c1];
@@ -63,7 +75,8 @@ export const prefix2D: LessonBuilder<Inputs> = {
   slug: "prefix-2d",
   title: "Prefix Sum — 2D",
   subtitle: "Inclusion–exclusion over a 2D prefix matrix answers rectangle sums in O(1).",
-  problem: "Given a matrix, preprocess it so that the sum of any sub-rectangle (r1, c1, r2, c2) can be answered in O(1) per query.",
+  problem:
+    "Given a matrix, preprocess it so that the sum of any sub-rectangle (r1, c1, r2, c2) can be answered in O(1) per query.",
   spotIt: [
     "Many sub-rectangle sum queries on a static matrix.",
     "Problems like 'count sub-matrices with sum K' or 'max sum sub-rectangle'.",

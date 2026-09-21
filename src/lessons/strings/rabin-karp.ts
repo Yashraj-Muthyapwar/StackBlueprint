@@ -25,7 +25,12 @@ function build({ t, p }: Inputs): Step[] {
   const n = chars.length;
   const m = p.length;
   if (m === 0 || m > n) {
-    steps.push({ line: 3, narration: "Empty / too-long pattern — return [].", array: arr, pointers: [] });
+    steps.push({
+      line: 3,
+      narration: "Empty / too-long pattern — return [].",
+      array: arr,
+      pointers: [],
+    });
     return steps;
   }
 
@@ -44,7 +49,9 @@ function build({ t, p }: Inputs): Step[] {
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (left: number, right: number) => [{ from: left, to: right, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) => [
+    { from: left, to: right, tone: "mid" as const, label: "window" },
+  ];
   const hashView = () => ({
     label: `hash · pattern=${pattern_hash.toString()} window=${text_hash.toString()}`,
     array: [`pattern="${p}"`, `text[w]="${chars.slice(0, m).join("")}"`],
@@ -93,7 +100,8 @@ function build({ t, p }: Inputs): Step[] {
     }
     if (i + m < n) {
       const removed = BigInt(t.charCodeAt(i)) * power;
-      text_hash = (((text_hash - removed) % mod + mod) % mod * base + BigInt(t.charCodeAt(i + m))) % mod;
+      text_hash =
+        (((((text_hash - removed) % mod) + mod) % mod) * base + BigInt(t.charCodeAt(i + m))) % mod;
       steps.push({
         line: 13,
         array: arr,
@@ -122,8 +130,10 @@ function build({ t, p }: Inputs): Step[] {
 export const rabinKarp: LessonBuilder<Inputs> = {
   slug: "rabin-karp",
   title: "Pattern Matching — Rabin–Karp (Rolling Hash)",
-  subtitle: "Hash the pattern once, then slide a rolling hash over the text. On a hash hit, verify chars.",
-  problem: "Given text and pattern, return every start index i where text[i..i+|pattern|-1] == pattern, using a rolling polynomial hash to skip most positions.",
+  subtitle:
+    "Hash the pattern once, then slide a rolling hash over the text. On a hash hit, verify chars.",
+  problem:
+    "Given text and pattern, return every start index i where text[i..i+|pattern|-1] == pattern, using a rolling polynomial hash to skip most positions.",
   spotIt: [
     "Repeated substring queries on a long text — rolling hash answers in O(1) per shift.",
     "You need to detect duplicate substrings, longest repeated, or grouped anagrams cheaply.",

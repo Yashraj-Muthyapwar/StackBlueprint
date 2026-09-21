@@ -30,10 +30,7 @@ export const olistIntervalsLookbacksStages: Stage[] = [
   {
     name: "Anchor the historical window",
     canvasMinHeight: 400,
-    sql: [
-      "SELECT MAX(order_purchase_timestamp) AS max_purchase",
-      "FROM   orders",
-    ],
+    sql: ["SELECT MAX(order_purchase_timestamp) AS max_purchase", "FROM   orders"],
     table: {
       name: "orders",
       cols: ["order_purchase_timestamp"],
@@ -84,7 +81,7 @@ export const olistIntervalsLookbacksStages: Stage[] = [
       ),
       st(
         [5, 6],
-        (row) => row.cells[0].startsWith("bd35") ? "dropped" : "kept",
+        (row) => (row.cells[0].startsWith("bd35") ? "dropped" : "kept"),
         "The WHERE clause performs the filtering. This order is nine minutes before max_purchase - INTERVAL '30 days', so it is excluded. The other three timestamps are inside the closed historical window.",
       ),
       st(
@@ -117,7 +114,7 @@ export const olistIntervalsLookbacksStages: Stage[] = [
     steps: [
       st(
         [2],
-        (row) => row.cells[1].startsWith("2018-09") ? "dropped" : "kept",
+        (row) => (row.cells[1].startsWith("2018-09") ? "dropped" : "kept"),
         "The lower bound includes October 1 and later. September's purchase is excluded before the result is sorted.",
       ),
       st(

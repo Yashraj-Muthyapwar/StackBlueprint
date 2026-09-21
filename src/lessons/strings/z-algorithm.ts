@@ -52,7 +52,8 @@ function build({ s }: Inputs): Step[] {
         line: 7,
         array: arr,
         pointers: ptrs(i, left, right),
-        partitions: right > left ? [{ from: left, to: right - 1, tone: "mid", label: "Z-box" }] : [],
+        partitions:
+          right > left ? [{ from: left, to: right - 1, tone: "mid", label: "Z-box" }] : [],
         highlight: { kind: "compare", indices: [i, i - left] },
         secondary: zView(),
         status: `seed z_array[${i}]=${z_array[i]}`,
@@ -77,7 +78,8 @@ function build({ s }: Inputs): Step[] {
         line: 10,
         array: arr,
         pointers: ptrs(i, left, right),
-        partitions: right > left ? [{ from: left, to: right - 1, tone: "high", label: "new Z-box" }] : [],
+        partitions:
+          right > left ? [{ from: left, to: right - 1, tone: "high", label: "new Z-box" }] : [],
         secondary: zView(),
         status: `Z-box [${left}, ${right})`,
         narration: `New Z-box: left=${left}, right=${right}.`,
@@ -91,7 +93,8 @@ function build({ s }: Inputs): Step[] {
     pointers: [],
     secondary: zView(),
     status: `z_array = [${z_array.join(", ")}]`,
-    narration: "Done. Pattern search: build z_array over P + '$' + T and scan for z_array[i] == |P|.",
+    narration:
+      "Done. Pattern search: build z_array over P + '$' + T and scan for z_array[i] == |P|.",
   });
   return steps;
 }
@@ -100,7 +103,8 @@ export const zAlgorithm: LessonBuilder<Inputs> = {
   slug: "z-algorithm",
   title: "Pattern Matching — Z-Algorithm",
   subtitle: "Compute z_array[i] in linear time by reusing the rightmost match box [left, right).",
-  problem: "Given a string, compute the Z-array where z_array[i] is the length of the longest substring starting at i that matches a prefix of string.",
+  problem:
+    "Given a string, compute the Z-array where z_array[i] is the length of the longest substring starting at i that matches a prefix of string.",
   spotIt: [
     "You need every prefix-match length in linear time (substring search, period detection).",
     "Problem mentions 'longest prefix that is also a suffix at position i' or 'period of a string'.",

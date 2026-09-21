@@ -75,12 +75,7 @@ export const distinctOrderLimitStages: Stage[] = [
   },
   {
     name: "LIMIT keeps the first rows",
-    sql: [
-      "SELECT DISTINCT country",
-      "FROM customers",
-      "ORDER BY country ASC",
-      "LIMIT 3;",
-    ],
+    sql: ["SELECT DISTINCT country", "FROM customers", "ORDER BY country ASC", "LIMIT 3;"],
     table: { name: "customers", cols: COUNTRY_COLS, rows: COUNTRY_ROWS },
     steps: [
       st(

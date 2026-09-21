@@ -25,9 +25,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
       return builder.build(inputs);
     } catch (e) {
       console.error(e);
-      return [
-        { line: 1, narration: `Build failed: ${(e as Error).message}` } as Step,
-      ];
+      return [{ line: 1, narration: `Build failed: ${(e as Error).message}` } as Step];
     }
   }, [builder, inputs]);
 
@@ -85,31 +83,36 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [go, reset]);
 
-  const handleRun = useCallback((next: Record<string, unknown>, warnings: string[], autoPlay: boolean = true) => {
-    setInputs(next);
-    setStepIndex(0);
-    setPlaying(autoPlay);
-  }, []);
+  const handleRun = useCallback(
+    (next: Record<string, unknown>, warnings: string[], autoPlay: boolean = true) => {
+      setInputs(next);
+      setStepIndex(0);
+      setPlaying(autoPlay);
+    },
+    [],
+  );
 
   return (
     <div className="flex flex-col gap-4 mt-6">
-      {builder.problem && (() => {
-        const problemText = typeof builder.problem === "function" ? builder.problem(inputs) : builder.problem;
-        if (!problemText) return null;
-        return (
-          <div className="rounded-2xl border border-hairline bg-surface">
-            <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
-              <div className="size-1.5 rounded-full bg-violet shadow-[0_0_10px_var(--violet)]" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                problem
-              </span>
+      {builder.problem &&
+        (() => {
+          const problemText =
+            typeof builder.problem === "function" ? builder.problem(inputs) : builder.problem;
+          if (!problemText) return null;
+          return (
+            <div className="rounded-2xl border border-hairline bg-surface">
+              <div className="flex items-center gap-2 border-b border-hairline px-4 py-2.5">
+                <div className="size-1.5 rounded-full bg-violet shadow-[0_0_10px_var(--violet)]" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  problem
+                </span>
+              </div>
+              <div className="px-4 py-3 text-[14px] leading-relaxed text-foreground/90">
+                <p className="whitespace-pre-wrap">{problemText}</p>
+              </div>
             </div>
-            <div className="px-4 py-3 text-[14px] leading-relaxed text-foreground/90">
-              <p className="whitespace-pre-wrap">{problemText}</p>
-            </div>
-          </div>
-        );
-      })()}
+          );
+        })()}
 
       <LessonControls
         builder={builder}
@@ -127,7 +130,8 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
           </div>
           <div className="absolute inset-0">
             {(() => {
-              const viewType = typeof builder.view === "function" ? builder.view(inputs) : builder.view;
+              const viewType =
+                typeof builder.view === "function" ? builder.view(inputs) : builder.view;
               return (
                 <>
                   {viewType === "array" && <ArrayCanvas step={step} />}
@@ -142,7 +146,10 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
           </div>
         </div>
         <div className="min-h-[380px]">
-          <CodePane code={builder.codeFor ? builder.codeFor(inputs) : builder.code} activeLine={step.line} />
+          <CodePane
+            code={builder.codeFor ? builder.codeFor(inputs) : builder.code}
+            activeLine={step.line}
+          />
         </div>
       </div>
 

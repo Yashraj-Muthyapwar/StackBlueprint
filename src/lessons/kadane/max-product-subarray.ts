@@ -23,8 +23,17 @@ function build({ arr }: Inputs): Step[] {
     maxProd = arr[0],
     minProd = arr[0];
   const ptrs = (i: number) => [{ name: "i", index: i, color: "amber" as const }];
-  const sec = () => ({ label: "running [max_prod, min_prod, best_sum]", array: [maxProd, minProd, bestSum] });
-  steps.push({ line: 1, array: [...arr], pointers: ptrs(0), secondary: sec(), narration: "Track running max AND min (negatives can flip)." });
+  const sec = () => ({
+    label: "running [max_prod, min_prod, best_sum]",
+    array: [maxProd, minProd, bestSum],
+  });
+  steps.push({
+    line: 1,
+    array: [...arr],
+    pointers: ptrs(0),
+    secondary: sec(),
+    narration: "Track running max AND min (negatives can flip).",
+  });
   for (let i = 1; i < n; i++) {
     const x = arr[i];
     const choices = [x, maxProd * x, minProd * x];
@@ -49,7 +58,13 @@ function build({ arr }: Inputs): Step[] {
       narration: `max_prod=${maxProd}, min_prod=${minProd}, best_sum=${bestSum}.`,
     });
   }
-  steps.push({ line: 8, array: [...arr], status: `return ${bestSum}`, narration: `Maximum product = ${bestSum}.`, pointers: [] });
+  steps.push({
+    line: 8,
+    array: [...arr],
+    status: `return ${bestSum}`,
+    narration: `Maximum product = ${bestSum}.`,
+    pointers: [],
+  });
   return steps;
 }
 
@@ -57,7 +72,8 @@ export const maxProduct: LessonBuilder<Inputs> = {
   slug: "max-product-subarray",
   title: "Max Product Subarray",
   subtitle: "A negative flips signs — keep both the running max and the running min.",
-  problem: "Given an integer array, return the largest product achievable by any contiguous non-empty subarray.",
+  problem:
+    "Given an integer array, return the largest product achievable by any contiguous non-empty subarray.",
   spotIt: [
     "'Maximum product of a contiguous subarray' with negatives and zeros in the input.",
     "Sign can flip — you need to track both running max and running min.",

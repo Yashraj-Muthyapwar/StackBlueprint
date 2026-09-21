@@ -61,14 +61,14 @@ const dataJourney: LessonContent = {
       heading: "Why Pipelines Matter",
       body: [
         "Raw data is often messy, duplicated, or missing fields. The pipeline's processing stage is crucial for ensuring **Data Quality**.",
-        "For Gadget Grove, this means ensuring that a user's purchase on the mobile app and their support ticket on the website can be reliably linked together and normalized before reaching the dashboard. Without this, downstream analytics can lead to incorrect business decisions."
+        "For Gadget Grove, this means ensuring that a user's purchase on the mobile app and their support ticket on the website can be reliably linked together and normalized before reaching the dashboard. Without this, downstream analytics can lead to incorrect business decisions.",
       ],
     },
     {
       kind: "image",
       src: journeyOfDataImg,
       alt: "The Journey of Data",
-      caption: "The 5 Stages of the Data Pipeline"
+      caption: "The 5 Stages of the Data Pipeline",
     },
   ],
 };
@@ -118,11 +118,23 @@ const oltpVsOlap: LessonContent = {
       headers: ["Feature", "OLTP (Operational)", "OLAP (Analytical)"],
       rows: [
         ["Purpose", "Run the business (transactions)", "Analyze the business (BI & Analytics)"],
-        ["Data Model", "Highly Normalized (3NF) to avoid duplication", "Denormalized (Star Schema) to avoid slow JOINs"],
-        ["Query Types", "Simple reads/writes (INSERT, UPDATE, DELETE)", "Complex aggregations (SELECT, GROUP BY, SUM)"],
-        ["Storage Format", "Row-oriented (fast to write entire record)", "Column-oriented (fast to scan specific fields)"],
-        ["Volume", "Gigabytes to Terabytes", "Terabytes to Petabytes"]
-      ]
+        [
+          "Data Model",
+          "Highly Normalized (3NF) to avoid duplication",
+          "Denormalized (Star Schema) to avoid slow JOINs",
+        ],
+        [
+          "Query Types",
+          "Simple reads/writes (INSERT, UPDATE, DELETE)",
+          "Complex aggregations (SELECT, GROUP BY, SUM)",
+        ],
+        [
+          "Storage Format",
+          "Row-oriented (fast to write entire record)",
+          "Column-oriented (fast to scan specific fields)",
+        ],
+        ["Volume", "Gigabytes to Terabytes", "Terabytes to Petabytes"],
+      ],
     },
     {
       kind: "prose",
@@ -307,7 +319,7 @@ const dataWarehouses: LessonContent = {
       heading: "Why Do We Need a Data Warehouse?",
       body: [
         "As we learned earlier, running massive analytical queries (like 'total sales per region over 5 years') on your operational database (OLTP) is dangerous. It locks tables, slows down transactions, and can crash the system that runs your business.",
-        "A **Data Warehouse** is a specialized OLAP database designed specifically to handle these massive, complex read queries without impacting daily operations. It aggregates data from multiple sources (CRM, marketing, billing) into a single, centralized source of truth."
+        "A **Data Warehouse** is a specialized OLAP database designed specifically to handle these massive, complex read queries without impacting daily operations. It aggregates data from multiple sources (CRM, marketing, billing) into a single, centralized source of truth.",
       ],
     },
     {
@@ -320,14 +332,14 @@ const dataWarehouses: LessonContent = {
       kind: "callout",
       tone: "info",
       title: "The Single Source of Truth",
-      body: "By pulling data from disparate systems into one warehouse, you eliminate the classic problem of 'Marketing says we have 100 new users, but Finance says we only have 80'. The warehouse acts as the final, agreed-upon record."
+      body: "By pulling data from disparate systems into one warehouse, you eliminate the classic problem of 'Marketing says we have 100 new users, but Finance says we only have 80'. The warehouse acts as the final, agreed-upon record.",
     },
     {
       kind: "prose",
       heading: "The Big Shift: Separating Compute from Storage",
       body: [
         "In the old days (on-premise servers), processing power (compute) and hard drives (storage) were physically tied together. If you needed more storage, you also had to buy more compute, which was incredibly expensive.",
-        "Modern cloud data warehouses introduced a revolutionary architecture: **Separation of Compute and Storage**. Storage is incredibly cheap (usually object storage like AWS S3), while Compute (the servers running the queries) is expensive. By separating them, you can scale storage infinitely without paying for expensive compute you aren't using."
+        "Modern cloud data warehouses introduced a revolutionary architecture: **Separation of Compute and Storage**. Storage is incredibly cheap (usually object storage like AWS S3), while Compute (the servers running the queries) is expensive. By separating them, you can scale storage infinitely without paying for expensive compute you aren't using.",
       ],
     },
     {
@@ -340,14 +352,14 @@ const dataWarehouses: LessonContent = {
       heading: "ETL vs. ELT: The Paradigm Shift",
       body: [
         "Historically, warehouses were expensive and had limited compute. Therefore, data had to be completely transformed and cleaned *before* it was loaded into the warehouse. This was **ETL** (Extract, Transform, Load).",
-        "Because modern cloud warehouses have massive, cheap storage and scalable compute, the industry shifted to **ELT** (Extract, Load, Transform). Now, we load raw data directly into the warehouse, and use the warehouse's own massive compute power to transform it inside the database."
-      ]
+        "Because modern cloud warehouses have massive, cheap storage and scalable compute, the industry shifted to **ELT** (Extract, Load, Transform). Now, we load raw data directly into the warehouse, and use the warehouse's own massive compute power to transform it inside the database.",
+      ],
     },
     {
       kind: "image",
       src: etlVsEltImg,
       alt: "ETL vs ELT",
-      caption: "The shift from Extract-Transform-Load to Extract-Load-Transform"
+      caption: "The shift from Extract-Transform-Load to Extract-Load-Transform",
     },
     {
       kind: "prose",
@@ -355,20 +367,20 @@ const dataWarehouses: LessonContent = {
       body: [
         "Data in an OLTP database is highly normalized (spread across many tables) to prevent duplicate data. But for analytics, joining 15 tables together is too slow.",
         "Data warehouses use **Dimensional Modeling**, often forming a **Star Schema**. In a Star Schema, you have a central **Fact Table** (e.g., Sales, Clicks) surrounded by **Dimension Tables** (e.g., Date, Product, Customer).",
-        "Fact tables contain measurable metrics (revenue, quantity) and foreign keys. Dimension tables contain descriptive attributes (product name, customer city, year)."
-      ]
+        "Fact tables contain measurable metrics (revenue, quantity) and foreign keys. Dimension tables contain descriptive attributes (product name, customer city, year).",
+      ],
     },
     {
       kind: "image",
       src: dimensionalModelingImg,
       alt: "Dimensional Modeling",
-      caption: "Organizing data for analytical queries"
+      caption: "Organizing data for analytical queries",
     },
     {
       kind: "image",
       src: starSchemaImg,
       alt: "Star Schema",
-      caption: "A central Fact table surrounded by Dimension tables"
+      caption: "A central Fact table surrounded by Dimension tables",
     },
     {
       kind: "code",
@@ -382,13 +394,13 @@ FROM fact_sales f
 JOIN dim_date d ON f.date_id = d.id
 JOIN dim_customer c ON f.customer_id = c.id
 GROUP BY d.year, c.region
-ORDER BY total_revenue DESC;`
+ORDER BY total_revenue DESC;`,
     },
     {
       kind: "prose",
       heading: "Major Cloud Data Warehouses",
       body: [
-        "There are three major players in the cloud data warehouse space, each with unique architectural philosophies:"
+        "There are three major players in the cloud data warehouse space, each with unique architectural philosophies:",
       ],
     },
     {
@@ -396,10 +408,22 @@ ORDER BY total_revenue DESC;`
       caption: "Comparing the Big Three",
       headers: ["Warehouse", "Architecture", "Best For"],
       rows: [
-        ["Snowflake", "Decoupled storage/compute, multi-cloud", "Ease of use, concurrency, cross-cloud strategy"],
-        ["BigQuery", "Serverless, pay-per-query, Google Cloud", "Massive scale without managing infrastructure"],
-        ["Redshift", "Tightly integrated AWS ecosystem", "Companies already heavily invested in AWS"]
-      ]
+        [
+          "Snowflake",
+          "Decoupled storage/compute, multi-cloud",
+          "Ease of use, concurrency, cross-cloud strategy",
+        ],
+        [
+          "BigQuery",
+          "Serverless, pay-per-query, Google Cloud",
+          "Massive scale without managing infrastructure",
+        ],
+        [
+          "Redshift",
+          "Tightly integrated AWS ecosystem",
+          "Companies already heavily invested in AWS",
+        ],
+      ],
     },
     {
       kind: "takeaways",
@@ -407,7 +431,7 @@ ORDER BY total_revenue DESC;`
         "Data Warehouses protect your operational systems from heavy analytical workloads.",
         "They provide a **Single Source of Truth** across the entire organization.",
         "Modern cloud warehouses **separate compute from storage**, drastically lowering costs.",
-        "Snowflake, BigQuery, and Redshift are the dominant modern cloud platforms."
+        "Snowflake, BigQuery, and Redshift are the dominant modern cloud platforms.",
       ],
     },
     {
@@ -420,10 +444,11 @@ ORDER BY total_revenue DESC;`
             "To process millions of real-time e-commerce purchases.",
             "To act as a centralized, specialized system for analytical queries.",
             "To store raw video files and unstructured images.",
-            "To replace all operational databases."
+            "To replace all operational databases.",
           ],
           correctIndex: 1,
-          explanation: "Data Warehouses are built for OLAP workloads—complex analytical queries spanning large datasets."
+          explanation:
+            "Data Warehouses are built for OLAP workloads—complex analytical queries spanning large datasets.",
         },
         {
           id: "dw-2",
@@ -432,10 +457,11 @@ ORDER BY total_revenue DESC;`
             "It is too expensive.",
             "It will cause heavy resource contention and potentially crash the live business application.",
             "OLTP databases don't support SQL.",
-            "Operational databases cannot store numbers."
+            "Operational databases cannot store numbers.",
           ],
           correctIndex: 1,
-          explanation: "Heavy analytical queries can lock tables and consume CPU, starving the fast, small queries needed to run the business."
+          explanation:
+            "Heavy analytical queries can lock tables and consume CPU, starving the fast, small queries needed to run the business.",
         },
         {
           id: "dw-3",
@@ -444,22 +470,25 @@ ORDER BY total_revenue DESC;`
             "Data is only stored on one physical hard drive.",
             "Only one person is allowed to write queries.",
             "All departments use the warehouse as the centralized, agreed-upon record of data.",
-            "The data can never be deleted."
+            "The data can never be deleted.",
           ],
           correctIndex: 2,
-          explanation: "It eliminates discrepancies between departments by providing one unified view of the business data."
+          explanation:
+            "It eliminates discrepancies between departments by providing one unified view of the business data.",
         },
         {
           id: "dw-4",
-          question: "[Medium] What was the biggest architectural revolution in modern cloud data warehouses?",
+          question:
+            "[Medium] What was the biggest architectural revolution in modern cloud data warehouses?",
           options: [
             "The invention of the SQL language.",
             "Separating Compute from Storage.",
             "Forcing users to buy on-premise hardware.",
-            "Switching from rows to columns."
+            "Switching from rows to columns.",
           ],
           correctIndex: 1,
-          explanation: "Separating compute from storage allowed companies to scale storage infinitely and cheaply without buying expensive compute resources they didn't need."
+          explanation:
+            "Separating compute from storage allowed companies to scale storage infinitely and cheaply without buying expensive compute resources they didn't need.",
         },
         {
           id: "dw-5",
@@ -468,70 +497,71 @@ ORDER BY total_revenue DESC;`
             "In the RAM of the compute clusters.",
             "In cheap, centralized cloud object storage (like AWS S3).",
             "On local hard drives inside the compute nodes.",
-            "In external USB drives."
+            "In external USB drives.",
           ],
           correctIndex: 1,
-          explanation: "Data is stored in highly scalable object storage, and compute nodes pull data from there when running queries."
+          explanation:
+            "Data is stored in highly scalable object storage, and compute nodes pull data from there when running queries.",
         },
         {
           id: "dw-6",
-          question: "[Medium] Which data warehouse is famously known for its 'Serverless' architecture where you don't manage any compute instances?",
-          options: [
-            "Amazon Redshift",
-            "Google BigQuery",
-            "PostgreSQL",
-            "MongoDB"
-          ],
+          question:
+            "[Medium] Which data warehouse is famously known for its 'Serverless' architecture where you don't manage any compute instances?",
+          options: ["Amazon Redshift", "Google BigQuery", "PostgreSQL", "MongoDB"],
           correctIndex: 1,
-          explanation: "BigQuery handles all compute provisioning automatically behind the scenes (Dremel engine)."
+          explanation:
+            "BigQuery handles all compute provisioning automatically behind the scenes (Dremel engine).",
         },
         {
           id: "dw-7",
-          question: "[Medium] Which feature allows Snowflake to let the Marketing team and Finance team query the exact same data without slowing each other down?",
+          question:
+            "[Medium] Which feature allows Snowflake to let the Marketing team and Finance team query the exact same data without slowing each other down?",
           options: [
             "Multi-cloud deployment.",
             "Zero-copy cloning.",
             "Separation of compute and storage.",
-            "Time travel."
+            "Time travel.",
           ],
           correctIndex: 2,
-          explanation: "Because storage is centralized and decoupled, multiple independent compute clusters can read the same storage simultaneously without resource contention."
+          explanation:
+            "Because storage is centralized and decoupled, multiple independent compute clusters can read the same storage simultaneously without resource contention.",
         },
         {
           id: "dw-8",
-          question: "[Hard] Before separation of storage and compute, what happened if a traditional warehouse ran out of storage space?",
+          question:
+            "[Hard] Before separation of storage and compute, what happened if a traditional warehouse ran out of storage space?",
           options: [
             "You had to delete old data.",
             "You had to purchase new nodes that included both storage AND expensive CPU, even if you didn't need more CPU.",
             "You simply attached an S3 bucket.",
-            "The database automatically scaled."
+            "The database automatically scaled.",
           ],
           correctIndex: 1,
-          explanation: "Traditional tightly-coupled architectures forced you to scale storage and compute symmetrically, leading to massive wasted costs."
+          explanation:
+            "Traditional tightly-coupled architectures forced you to scale storage and compute symmetrically, leading to massive wasted costs.",
         },
         {
           id: "dw-9",
-          question: "[Hard] If a company is already entirely heavily invested in the AWS ecosystem and relies deeply on tight integration with AWS tools, which warehouse is historically the most native choice?",
-          options: [
-            "Snowflake",
-            "Google BigQuery",
-            "Amazon Redshift",
-            "Azure Synapse"
-          ],
+          question:
+            "[Hard] If a company is already entirely heavily invested in the AWS ecosystem and relies deeply on tight integration with AWS tools, which warehouse is historically the most native choice?",
+          options: ["Snowflake", "Google BigQuery", "Amazon Redshift", "Azure Synapse"],
           correctIndex: 2,
-          explanation: "While Snowflake runs on AWS, Redshift is AWS's native data warehouse offering, providing deep integrations with other AWS services."
+          explanation:
+            "While Snowflake runs on AWS, Redshift is AWS's native data warehouse offering, providing deep integrations with other AWS services.",
         },
         {
           id: "dw-10",
-          question: "[Hard] Why is a Data Warehouse often described using a 'Schema-on-Write' model?",
+          question:
+            "[Hard] Why is a Data Warehouse often described using a 'Schema-on-Write' model?",
           options: [
             "You don't need a schema.",
             "Data must be structured and transformed to fit a predefined schema BEFORE it is loaded into the warehouse.",
             "The schema is generated automatically when you run a query.",
-            "You can only write to the warehouse once."
+            "You can only write to the warehouse once.",
           ],
           correctIndex: 1,
-          explanation: "Warehouses require data to be clean and structured (Schema-on-Write) before it can be analyzed efficiently."
+          explanation:
+            "Warehouses require data to be clean and structured (Schema-on-Write) before it can be analyzed efficiently.",
         },
         {
           id: "dw-11",
@@ -540,10 +570,11 @@ ORDER BY total_revenue DESC;`
             "A database architecture where every table connects to every other table.",
             "A modeling technique with a central Fact table surrounded by descriptive Dimension tables.",
             "A rating system for data quality.",
-            "A NoSQL graph database."
+            "A NoSQL graph database.",
           ],
           correctIndex: 1,
-          explanation: "A Star Schema centralizes metrics in a Fact table and links out to Dimension tables for descriptive attributes like time, location, or product."
+          explanation:
+            "A Star Schema centralizes metrics in a Fact table and links out to Dimension tables for descriptive attributes like time, location, or product.",
         },
         {
           id: "dw-12",
@@ -552,13 +583,14 @@ ORDER BY total_revenue DESC;`
             "Because transforming data became illegal in some countries.",
             "Because modern cloud warehouses have cheap storage and massive compute, allowing data to be transformed directly inside the warehouse.",
             "Because ELT requires fewer engineers.",
-            "Because ELT is a requirement for using SQL."
+            "Because ELT is a requirement for using SQL.",
           ],
           correctIndex: 1,
-          explanation: "With the rise of Snowflake and BigQuery, it became cheaper and faster to load raw data into the warehouse and use its scalable compute to transform it (ELT), rather than processing it in an external server beforehand (ETL)."
-        }
-      ]
-    }
+          explanation:
+            "With the rise of Snowflake and BigQuery, it became cheaper and faster to load raw data into the warehouse and use its scalable compute to transform it (ELT), rather than processing it in an external server beforehand (ETL).",
+        },
+      ],
+    },
   ],
 };
 
@@ -673,13 +705,30 @@ export const FOUNDATION_TOPICS: Record<
   "data-ecosystems": {
     title: "Data Ecosystems",
     slug: "data-ecosystems",
-    blurb: "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
-    lessons: [dataJourney, oltpVsOlap, analyticalStorage, organizingData, databaseEngines, dataWarehouses],
+    blurb:
+      "From transaction processing (OLTP) to analytical datastores (OLAP) and distributed meshes.",
+    lessons: [
+      dataJourney,
+      oltpVsOlap,
+      analyticalStorage,
+      organizingData,
+      databaseEngines,
+      dataWarehouses,
+    ],
   },
   "data-formats": {
     title: "Data Formats & Storage",
     slug: "data-formats",
     blurb: "Understanding how data is stored, compressed, and managed at scale.",
-    lessons: [csvJson, parquetOrc, openTable, storageTypes, cloudStorage, hdfs, dataCompression, inMemoryStorage],
+    lessons: [
+      csvJson,
+      parquetOrc,
+      openTable,
+      storageTypes,
+      cloudStorage,
+      hdfs,
+      dataCompression,
+      inMemoryStorage,
+    ],
   },
 };

@@ -30,8 +30,7 @@ export const Route = createFileRoute("/web-scraping/")({
       { title: "Web Scraping — StackBlueprint" },
       {
         name: "description",
-        content:
-          "From HTTP foundations to AI-driven browser agents.",
+        content: "From HTTP foundations to AI-driven browser agents.",
       },
       { property: "og:title", content: "Web Scraping — StackBlueprint" },
       {
@@ -120,23 +119,38 @@ const sections: Section[] = [
   },
   {
     group: "Advanced Scraping & Automation",
-    groupBlurb: "Handle messy data, execute JavaScript to render dynamic pages, and build robust crawling spiders.",
+    groupBlurb:
+      "Handle messy data, execute JavaScript to render dynamic pages, and build robust crawling spiders.",
     topics: [
       {
         slug: "hidden-api",
         title: "Finding the Hidden API",
         blurb: "Skip HTML entirely by discovering the JSON APIs that power the frontend.",
         icon: Compass,
-        modules: ["Docs & Portals", "Network Tab", "Replaying Requests", "GraphQL & REST", "Sitemaps/Feeds"],
+        modules: [
+          "Docs & Portals",
+          "Network Tab",
+          "Replaying Requests",
+          "GraphQL & REST",
+          "Sitemaps/Feeds",
+        ],
         unlocked: true,
         routeBase: "automation",
       },
       {
         slug: "browser-automation",
         title: "Browser Automation with Playwright and Selenium",
-        blurb: "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks.",
+        blurb:
+          "Control real web browsers to interact with SPAs, click buttons, and bypass simple anti-bot checks.",
         icon: Settings,
-        modules: ["When to Use", "Playwright Basics", "Waiting Correctly", "Interacting", "Intercepting Network", "Vs Selenium"],
+        modules: [
+          "When to Use",
+          "Playwright Basics",
+          "Waiting Correctly",
+          "Interacting",
+          "Intercepting Network",
+          "Vs Selenium",
+        ],
         unlocked: true,
         routeBase: "automation",
       },
@@ -145,7 +159,13 @@ const sections: Section[] = [
         title: "Sessions, Logins, and Authenticated Scraping",
         blurb: "Handle cookies, tokens, CSRF, and state to scrape behind login walls safely.",
         icon: LockKeyhole,
-        modules: ["Session Objects", "Form Logins", "Token Auth", "Reusing Auth State", "What Not To Login"],
+        modules: [
+          "Session Objects",
+          "Form Logins",
+          "Token Auth",
+          "Reusing Auth State",
+          "What Not To Login",
+        ],
         unlocked: true,
         routeBase: "automation",
       },
@@ -154,7 +174,13 @@ const sections: Section[] = [
         title: "Concurrency and Async Fetching",
         blurb: "Speed up your scrapers 100x using threads, asyncio, and semaphores.",
         icon: Repeat,
-        modules: ["Latency vs Throughput", "Threads/Processes", "Asyncio/httpx", "Concurrency Caps", "Retries/Timeouts"],
+        modules: [
+          "Latency vs Throughput",
+          "Threads/Processes",
+          "Asyncio/httpx",
+          "Concurrency Caps",
+          "Retries/Timeouts",
+        ],
         unlocked: true,
         routeBase: "automation",
       },
@@ -163,7 +189,14 @@ const sections: Section[] = [
         title: "The Scrapy Framework",
         blurb: "Build high-performance, asynchronous web crawling spiders that scale.",
         icon: Boxes,
-        modules: ["Why Scrapy", "Spiders/Requests", "Items/Pipelines", "Middlewares", "Scrapy Shell", "With Playwright"],
+        modules: [
+          "Why Scrapy",
+          "Spiders/Requests",
+          "Items/Pipelines",
+          "Middlewares",
+          "Scrapy Shell",
+          "With Playwright",
+        ],
         unlocked: true,
         routeBase: "automation",
       },
@@ -171,14 +204,22 @@ const sections: Section[] = [
   },
   {
     group: "Scale, Ethics & AI",
-    groupBlurb: "Scrape responsibly, avoid getting banned, and utilize next-generation AI agents for unstructured data.",
+    groupBlurb:
+      "Scrape responsibly, avoid getting banned, and utilize next-generation AI agents for unstructured data.",
     topics: [
       {
         slug: "scale-and-politeness",
         title: "Robustness and Politeness",
         blurb: "Manage rate limits, handle retries, rotate proxies, and respect robots.txt.",
         icon: Server,
-        modules: ["robots.txt", "Rate Limiting", "Retry Strategy", "Handling Bans", "Proxy Rotation", "Failing Loudly"],
+        modules: [
+          "robots.txt",
+          "Rate Limiting",
+          "Retry Strategy",
+          "Handling Bans",
+          "Proxy Rotation",
+          "Failing Loudly",
+        ],
         unlocked: true,
         routeBase: "scale",
       },
@@ -205,16 +246,30 @@ const sections: Section[] = [
         title: "Running Scrapers in Production",
         blurb: "Incremental scraping, deduplication, alerting, and containerizing your pipelines.",
         icon: Terminal,
-        modules: ["Incremental Scrapes", "Deduplication", "Scheduling (Airflow)", "Containerizing", "Alerting", "Schema Drift"],
+        modules: [
+          "Incremental Scrapes",
+          "Deduplication",
+          "Scheduling (Airflow)",
+          "Containerizing",
+          "Alerting",
+          "Schema Drift",
+        ],
         unlocked: true,
         routeBase: "scale",
       },
       {
         slug: "ai-agents",
         title: "AI-Driven Extraction and Browser Agents",
-        blurb: "Use LLMs and vision models to navigate pages and extract unstructured data automatically.",
+        blurb:
+          "Use LLMs and vision models to navigate pages and extract unstructured data automatically.",
         icon: Bot,
-        modules: ["LLM Extraction", "DOM to Markdown", "Vision Models", "Auto-Navigating Agents", "Cost/Latency"],
+        modules: [
+          "LLM Extraction",
+          "DOM to Markdown",
+          "Vision Models",
+          "Auto-Navigating Agents",
+          "Cost/Latency",
+        ],
         unlocked: true,
         routeBase: "scale",
       },
@@ -239,13 +294,18 @@ function WebScrapingIndex() {
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mx-auto mb-6 flex justify-center">
-            <img src={webScraperLogo} alt="Web Scraping Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
+            <img
+              src={webScraperLogo}
+              alt="Web Scraping Logo"
+              className="size-16 object-contain drop-shadow-sm lg:size-20"
+            />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Web Scraping
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Extracting data from the web using HTML parsing, headless browsers, scalable crawlers, and AI agents.
+            Extracting data from the web using HTML parsing, headless browsers, scalable crawlers,
+            and AI agents.
           </p>
         </div>
       </div>
@@ -259,9 +319,7 @@ function WebScrapingIndex() {
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
                   </div>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground">
-                    {sec.group}
-                  </h2>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">{sec.group}</h2>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {sec.groupBlurb}
@@ -272,7 +330,7 @@ function WebScrapingIndex() {
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
-                  
+
                   const getTopicLessons = (t: Topic) => {
                     const f = FOUNDATION_TOPICS[t.slug as keyof typeof FOUNDATION_TOPICS];
                     if (f) return f.lessons;
@@ -284,9 +342,9 @@ function WebScrapingIndex() {
                   };
 
                   const realTopicLessons = getTopicLessons(t);
-                  const completedCount = realTopicLessons 
-                    ? realTopicLessons.filter(l => isCompleted(l.slug)).length 
-                    : (t.completedCount || 0);
+                  const completedCount = realTopicLessons
+                    ? realTopicLessons.filter((l) => isCompleted(l.slug)).length
+                    : t.completedCount || 0;
                   const totalCount = realTopicLessons ? realTopicLessons.length : t.modules.length;
 
                   const card = (
@@ -325,12 +383,12 @@ function WebScrapingIndex() {
                             </span>
                           ))}
                         </div>
-                        
+
                         {!isLocked && (
                           <div className="mt-6 flex items-center gap-2">
                             <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
-                              <div 
-                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                              <div
+                                className="h-full bg-mint transition-all duration-500 ease-out"
                                 style={{ width: `${(completedCount / totalCount) * 100}%` }}
                               />
                             </div>

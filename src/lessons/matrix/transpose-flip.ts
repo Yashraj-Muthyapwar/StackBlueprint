@@ -21,7 +21,11 @@ function build({ matrix }: Inputs): Step[] {
   }
   const rows = matrix.length;
   const cols = matrix[0].length;
-  steps.push({ line: 1, matrix: clone(matrix), narration: `Input ${rows}×${cols}. Transpose, then flip each row.` });
+  steps.push({
+    line: 1,
+    matrix: clone(matrix),
+    narration: `Input ${rows}×${cols}. Transpose, then flip each row.`,
+  });
 
   const transposed: number[][] = Array.from({ length: cols }, () => new Array(rows).fill(0));
   for (let col = 0; col < cols; col++) {
@@ -52,8 +56,10 @@ function build({ matrix }: Inputs): Step[] {
 export const transposeFlip: LessonBuilder<Inputs> = {
   slug: "transpose-flip",
   title: "Transpose & Flip",
-  subtitle: "Compose two simple passes — transpose, then reverse rows — for rotations and reflections.",
-  problem: "Given an n×n matrix, transpose it and then flip rows or columns to realize rotations and reflections.",
+  subtitle:
+    "Compose two simple passes — transpose, then reverse rows — for rotations and reflections.",
+  problem:
+    "Given an n×n matrix, transpose it and then flip rows or columns to realize rotations and reflections.",
   spotIt: [
     "Any 90° rotation, reflection, or 'mirror' on a matrix.",
     "Two simple passes are cleaner than a single index-mapping pass.",
@@ -74,6 +80,7 @@ export const transposeFlip: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Matrix (any shape)", kind: "intMatrix" }],
-  validate: ({ matrix }) => (matrix.length === 0 || matrix[0].length === 0 ? ["Matrix is empty."] : []),
+  validate: ({ matrix }) =>
+    matrix.length === 0 || matrix[0].length === 0 ? ["Matrix is empty."] : [],
   build,
 };

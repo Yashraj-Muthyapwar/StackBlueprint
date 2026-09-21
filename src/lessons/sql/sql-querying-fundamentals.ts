@@ -27,7 +27,8 @@ const selectFrom: LessonContent = {
       kind: "image",
       src: yourFirstQueryImg,
       alt: "A Cycle Depot customers table projected into a smaller query result using SELECT name, city, country FROM customers",
-      caption: "A query describes the result you want. Here, SELECT keeps every customer row but returns only name, city, and country.",
+      caption:
+        "A query describes the result you want. Here, SELECT keeps every customer row but returns only name, city, and country.",
     },
     {
       kind: "prose",
@@ -205,7 +206,8 @@ FROM customers;`,
           question: "What separates multiple column names in a SELECT list?",
           options: ["A comma", "A semicolon", "A period", "The word AND"],
           correctIndex: 0,
-          explanation: "Separate selected column names with commas, for example: SELECT name, city FROM customers;",
+          explanation:
+            "Separate selected column names with commas, for example: SELECT name, city FROM customers;",
         },
         {
           id: "yf5",
@@ -229,7 +231,8 @@ FROM customers;`,
 const whereLesson: LessonContent = {
   slug: "where",
   title: "WHERE Filters",
-  subtitle: "Keep the Cycle Depot rows that match a condition, combine conditions, and handle missing values safely.",
+  subtitle:
+    "Keep the Cycle Depot rows that match a condition, combine conditions, and handle missing values safely.",
   sections: [
     {
       kind: "prose",
@@ -399,11 +402,13 @@ WHERE city IS NULL;`,
             "The order of result columns",
           ],
           correctIndex: 1,
-          explanation: "WHERE filters rows. SELECT decides which columns the surviving rows return.",
+          explanation:
+            "WHERE filters rows. SELECT decides which columns the surviving rows return.",
         },
         {
           id: "where2",
-          question: "Which condition keeps products priced at least 2000 with at least 50 units in stock?",
+          question:
+            "Which condition keeps products priced at least 2000 with at least 50 units in stock?",
           options: [
             "price >= 2000 OR in_stock >= 50",
             "price >= 2000 AND in_stock >= 50",
@@ -411,14 +416,16 @@ WHERE city IS NULL;`,
             "price >= 2000 NOT in_stock >= 50",
           ],
           correctIndex: 1,
-          explanation: "Both business requirements must be true, so the two comparisons are joined with AND.",
+          explanation:
+            "Both business requirements must be true, so the two comparisons are joined with AND.",
         },
         {
           id: "where3",
           question: "Which condition correctly finds Cycle Depot customers with no city?",
           options: ["city = NULL", "city <> NULL", "city IS NULL", "city = 'NULL'"],
           correctIndex: 2,
-          explanation: "NULL needs the special IS NULL test. A comparison such as city = NULL produces UNKNOWN.",
+          explanation:
+            "NULL needs the special IS NULL test. A comparison such as city = NULL produces UNKNOWN.",
         },
         {
           id: "where4",
@@ -449,7 +456,8 @@ const caseWhenLesson: LessonContent = {
       kind: "image",
       src: caseWhenImg,
       alt: "A side-by-side visual comparing WHERE removing product rows with CASE keeping the rows and adding a price band label",
-      caption: "WHERE reduces the row set. CASE preserves the row set and creates a new result value such as price_band.",
+      caption:
+        "WHERE reduces the row set. CASE preserves the row set and creates a new result value such as price_band.",
     },
     {
       kind: "prose",
@@ -475,7 +483,8 @@ ORDER BY price, name;`,
     },
     {
       kind: "table",
-      caption: "A small input-to-result preview. Each source product remains, and price_band is the new derived column.",
+      caption:
+        "A small input-to-result preview. Each source product remains, and price_band is the new derived column.",
       headers: ["name", "price", "price_band"],
       rows: [
         ["Insulated Bottle", "28.00", "Budget"],
@@ -495,12 +504,14 @@ ORDER BY price, name;`,
       kind: "image",
       src: caseFirstMatchFlowImg,
       alt: "A CASE decision flow for Meridian Road Alloy at 1150 dollars: it fails price below 1000, passes price below 2500, and receives the Mid-range label",
-      caption: "Meridian Road Alloy follows the highlighted path: the first WHEN is false, the second WHEN is true, so CASE returns Mid-range and stops.",
+      caption:
+        "Meridian Road Alloy follows the highlighted path: the first WHEN is false, the second WHEN is true, so CASE returns Mid-range and stops.",
     },
     {
       kind: "animation",
       variant: "case-when",
-      caption: "Follow three Cycle Depot products through CASE: first match wins, and ELSE labels the remaining row",
+      caption:
+        "Follow three Cycle Depot products through CASE: first match wins, and ELSE labels the remaining row",
     },
     {
       kind: "prose",
@@ -603,7 +614,8 @@ END`,
     {
       kind: "playground-practice",
       title: "Classify Cycle Depot products",
-      prompt: "Return name, price, and price_band for every product. Label prices below 1000 as Budget, prices below 2500 as Mid-range, and all remaining prices as Premium. Sort by price, then name, and run the checked exercise.",
+      prompt:
+        "Return name, price, and price_band for every product. Label prices below 1000 as Budget, prices below 2500 as Mid-range, and all remaining prices as Premium. Sort by price, then name, and run the checked exercise.",
       tables: ["products"],
       successCheck: "30 rows with name, price, and price_band, ordered by price and name.",
       href: "/sql-playground?practice=cycledepot-product-price-bands",
@@ -631,11 +643,13 @@ END`,
             "Both must appear after ORDER BY",
           ],
           correctIndex: 1,
-          explanation: "CASE returns a value in the result. WHERE decides which rows continue to the result.",
+          explanation:
+            "CASE returns a value in the result. WHERE decides which rows continue to the result.",
         },
         {
           id: "case-when-2",
-          question: "What happens after a CASE expression finds its first true WHEN condition for a row?",
+          question:
+            "What happens after a CASE expression finds its first true WHEN condition for a row?",
           options: [
             "It returns that result and stops testing later WHEN clauses for that row",
             "It combines every true result",
@@ -643,7 +657,8 @@ END`,
             "It always runs ELSE too",
           ],
           correctIndex: 0,
-          explanation: "CASE is first-match logic. Later WHEN clauses are not evaluated once an earlier condition is true.",
+          explanation:
+            "CASE is first-match logic. Later WHEN clauses are not evaluated once an earlier condition is true.",
         },
         {
           id: "case-when-3",
@@ -661,7 +676,8 @@ END`,
         },
         {
           id: "case-when-5",
-          question: "Which expression labels prices below 1000 as Budget and all others as Premium?",
+          question:
+            "Which expression labels prices below 1000 as Budget and all others as Premium?",
           options: [
             "CASE WHEN price < 1000 THEN 'Budget' ELSE 'Premium' END",
             "WHERE price < 1000 THEN 'Budget' ELSE 'Premium'",
@@ -669,7 +685,8 @@ END`,
             "CASE WHEN price = NULL THEN 'Budget' ELSE 'Premium' END",
           ],
           correctIndex: 0,
-          explanation: "A searched CASE uses WHEN for its condition, THEN for its returned value, and ELSE for the fallback.",
+          explanation:
+            "A searched CASE uses WHEN for its condition, THEN for its returned value, and ELSE for the fallback.",
         },
       ],
     },
@@ -693,7 +710,8 @@ const orderLimit: LessonContent = {
       kind: "image",
       src: distinctOrderLimitImg,
       alt: "A Cycle Depot customers country list transformed by DISTINCT, ORDER BY, and LIMIT into Canada, France, and Germany",
-      caption: "DISTINCT removes repeated countries, ORDER BY makes the result alphabetical, and LIMIT keeps the first three rows.",
+      caption:
+        "DISTINCT removes repeated countries, ORDER BY makes the result alphabetical, and LIMIT keeps the first three rows.",
     },
     {
       kind: "prose",
@@ -712,7 +730,8 @@ FROM customers;`,
     },
     {
       kind: "table",
-      caption: "The six unique countries. This preview is alphabetized for reading, but DISTINCT alone does not promise an order.",
+      caption:
+        "The six unique countries. This preview is alphabetized for reading, but DISTINCT alone does not promise an order.",
       headers: ["country"],
       rows: [["Canada"], ["France"], ["Germany"], ["India"], ["UK"], ["USA"]],
     },
@@ -776,7 +795,8 @@ LIMIT 3;`,
     {
       kind: "animation",
       variant: "distinct-order-limit",
-      caption: "See repeated countries collapse, product prices sort from high to low, LIMIT keep the first rows, and OFFSET move to the next page",
+      caption:
+        "See repeated countries collapse, product prices sort from high to low, LIMIT keep the first rows, and OFFSET move to the next page",
     },
     {
       kind: "prose",
@@ -833,7 +853,8 @@ LIMIT 4;`,
     {
       kind: "playground-practice",
       title: "Build a short country list",
-      prompt: "Return each customer country once, sort the values alphabetically, and keep only the first three. Then run the checked Cycle Depot exercise.",
+      prompt:
+        "Return each customer country once, sort the values alphabetically, and keep only the first three. Then run the checked Cycle Depot exercise.",
       tables: ["customers"],
       successCheck: "Exactly 3 rows and one country column: Canada, France, and Germany.",
       href: "/sql-playground?practice=cycledepot-first-three-countries",
@@ -867,10 +888,12 @@ LIMIT 4;`,
         },
         {
           id: "distinct-order-limit-2",
-          question: "Which clause should come before LIMIT when you want the most expensive products?",
+          question:
+            "Which clause should come before LIMIT when you want the most expensive products?",
           options: ["FROM", "WHERE", "ORDER BY price DESC", "DISTINCT"],
           correctIndex: 2,
-          explanation: "ORDER BY price DESC ranks products from highest price to lowest before LIMIT keeps the first rows.",
+          explanation:
+            "ORDER BY price DESC ranks products from highest price to lowest before LIMIT keeps the first rows.",
         },
         {
           id: "distinct-order-limit-3",
@@ -882,7 +905,8 @@ LIMIT 4;`,
             "SELECT DISTINCT country FROM customers WHERE LIMIT 3;",
           ],
           correctIndex: 1,
-          explanation: "DISTINCT removes repeats, ORDER BY country sorts A to Z, and LIMIT 3 keeps the first three rows.",
+          explanation:
+            "DISTINCT removes repeats, ORDER BY country sorts A to Z, and LIMIT 3 keeps the first three rows.",
         },
         {
           id: "distinct-order-limit-4",
@@ -894,7 +918,8 @@ LIMIT 4;`,
             "Every row after row four",
           ],
           correctIndex: 1,
-          explanation: "OFFSET 4 skips the first four ordered rows, then LIMIT 4 keeps the next four rows.",
+          explanation:
+            "OFFSET 4 skips the first four ordered rows, then LIMIT 4 keeps the next four rows.",
         },
       ],
     },
@@ -981,7 +1006,8 @@ FROM products;`,
     {
       kind: "animation",
       variant: "sql-calculations-aliases",
-      caption: "The multiplication creates a new value for every product, and AS labels that value in the result",
+      caption:
+        "The multiplication creates a new value for every product, and AS labels that value in the result",
     },
     {
       kind: "playground-practice",
@@ -1027,7 +1053,8 @@ FROM products;`,
             "Renames the products table.",
           ],
           correctIndex: 1,
-          explanation: "The expression calculates a value in the result. It does not update the products table.",
+          explanation:
+            "The expression calculates a value in the result. It does not update the products table.",
         },
         {
           id: "sb4",
@@ -1039,19 +1066,16 @@ FROM products;`,
             "To make the comment execute.",
           ],
           correctIndex: 0,
-          explanation: "AS gives a result column a readable alias without changing the source schema.",
+          explanation:
+            "AS gives a result column a readable alias without changing the source schema.",
         },
         {
           id: "sb5",
           question: "Which part of this query is ignored by the database?",
-          options: [
-            "SELECT name",
-            "FROM products",
-            "price * 1.08",
-            "-- Cycle Depot price preview",
-          ],
+          options: ["SELECT name", "FROM products", "price * 1.08", "-- Cycle Depot price preview"],
           correctIndex: 3,
-          explanation: "A line beginning with -- is a comment for readers, so the database skips it.",
+          explanation:
+            "A line beginning with -- is a comment for readers, so the database skips it.",
         },
       ],
     },
@@ -1181,7 +1205,11 @@ FROM products;`,
       headers: ["operator", "meaning", "Cycle Depot example"],
       rows: [
         ["AND", "Both conditions must be true", "price >= 2000 AND in_stock >= 50"],
-        ["OR", "At least one condition must be true", "category = 'Helmets' OR category = 'Clothing'"],
+        [
+          "OR",
+          "At least one condition must be true",
+          "category = 'Helmets' OR category = 'Clothing'",
+        ],
         ["NOT", "Reverses a condition", "NOT (category = 'Accessories')"],
       ],
     },
@@ -1239,25 +1267,38 @@ WHERE price >= 2000
           question: "Which expression calculates a Cycle Depot product's gross margin?",
           options: ["price = cost", "price - cost", "price >= cost", "price AND cost"],
           correctIndex: 1,
-          explanation: "Subtracting cost from price calculates the gross margin for each product row.",
+          explanation:
+            "Subtracting cost from price calculates the gross margin for each product row.",
         },
         {
           id: "op2",
           question: "What does the comparison price >= 2000 return for each product?",
-          options: ["A new stored price", "A true-or-false value", "Only matching product rows", "A product category"],
+          options: [
+            "A new stored price",
+            "A true-or-false value",
+            "Only matching product rows",
+            "A product category",
+          ],
           correctIndex: 1,
-          explanation: "A comparison evaluates to a boolean value. WHERE can then use that value to decide which rows to keep.",
+          explanation:
+            "A comparison evaluates to a boolean value. WHERE can then use that value to decide which rows to keep.",
         },
         {
           id: "op3",
           question: "When is A AND B true?",
-          options: ["When A is true", "When B is true", "When both A and B are true", "When either A or B is false"],
+          options: [
+            "When A is true",
+            "When B is true",
+            "When both A and B are true",
+            "When either A or B is false",
+          ],
           correctIndex: 2,
           explanation: "AND requires both sides of the expression to be true.",
         },
         {
           id: "op4",
-          question: "Which WHERE clause keeps products priced at least 2000 with at least 50 units in stock?",
+          question:
+            "Which WHERE clause keeps products priced at least 2000 with at least 50 units in stock?",
           options: [
             "WHERE price >= 2000 OR in_stock >= 50",
             "WHERE price >= 2000 AND in_stock >= 50",
@@ -1275,7 +1316,8 @@ WHERE price >= 2000
 const logicalOrder: LessonContent = {
   slug: "logical-order",
   title: "Logical Query Order",
-  subtitle: "SQL is written SELECT-first, but the database processes each clause in a different order.",
+  subtitle:
+    "SQL is written SELECT-first, but the database processes each clause in a different order.",
   sections: [
     {
       kind: "prose",
@@ -1289,7 +1331,8 @@ const logicalOrder: LessonContent = {
       kind: "image",
       src: logicalQueryOrderImg,
       alt: "A Cycle Depot products query moving through FROM, WHERE, SELECT, ORDER BY, and LIMIT to produce three Road Bikes",
-      caption: "The query is written SELECT-first, but the database starts from products, filters Road Bikes, projects two columns, sorts by price, then keeps three rows.",
+      caption:
+        "The query is written SELECT-first, but the database starts from products, filters Road Bikes, projects two columns, sorts by price, then keeps three rows.",
     },
     {
       kind: "code",
@@ -1322,7 +1365,8 @@ LIMIT 3;`,
     {
       kind: "animation",
       variant: "pipeline",
-      caption: "Step through the same Cycle Depot query in the order the database logically processes it",
+      caption:
+        "Step through the same Cycle Depot query in the order the database logically processes it",
     },
     {
       kind: "callout",
@@ -1363,7 +1407,8 @@ LIMIT 10;`,
     },
     {
       kind: "table",
-      caption: "The first five rows of the exact 10-row result, ordered by order count and then customer ID",
+      caption:
+        "The first five rows of the exact 10-row result, ordered by order count and then customer ID",
       headers: ["customer_id", "order_count"],
       rows: [
         ["13", "5"],
@@ -1399,14 +1444,17 @@ LIMIT 10;`,
       kind: "image",
       src: logicalQueryOrderMnemonicImg,
       alt: "Mnemonic Fred John Wrote Good Homework, So Will Dad Order Lunch mapped to the full SQL logical query order",
-      caption: "Fred John Wrote Good Homework, So Will Dad Order Lunch maps F-J-W-G-H-S-W-D-O-L to FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, WINDOW FUNCTIONS, DISTINCT, ORDER BY, and LIMIT.",
+      caption:
+        "Fred John Wrote Good Homework, So Will Dad Order Lunch maps F-J-W-G-H-S-W-D-O-L to FROM, JOIN, WHERE, GROUP BY, HAVING, SELECT, WINDOW FUNCTIONS, DISTINCT, ORDER BY, and LIMIT.",
     },
     {
       kind: "playground-practice",
       title: "Build a Road Bike shortlist",
-      prompt: "Return the name and price of Road Bikes only, sorted from highest price to lowest, keeping the first three. Then run the checked Cycle Depot exercise.",
+      prompt:
+        "Return the name and price of Road Bikes only, sorted from highest price to lowest, keeping the first three. Then run the checked Cycle Depot exercise.",
       tables: ["products"],
-      successCheck: "3 rows with name and price: Aero Sprint Pro, Meridian Road Carbon, and Gravel Runner GX.",
+      successCheck:
+        "3 rows with name and price: Aero Sprint Pro, Meridian Road Carbon, and Gravel Runner GX.",
       href: "/sql-playground?practice=cycledepot-road-bike-shortlist",
     },
     {
@@ -1426,7 +1474,8 @@ LIMIT 10;`,
       questions: [
         {
           id: "logical-order-1",
-          question: "Which clause runs first in a query that uses FROM, WHERE, SELECT, ORDER BY, and LIMIT?",
+          question:
+            "Which clause runs first in a query that uses FROM, WHERE, SELECT, ORDER BY, and LIMIT?",
           options: ["SELECT", "FROM", "WHERE", "ORDER BY"],
           correctIndex: 1,
           explanation: "FROM supplies the source rows before every other listed clause can work.",
@@ -1441,7 +1490,8 @@ LIMIT 10;`,
             "LIMIT hides aliases from WHERE.",
           ],
           correctIndex: 1,
-          explanation: "WHERE evaluates before SELECT creates the alias. ORDER BY evaluates after it exists.",
+          explanation:
+            "WHERE evaluates before SELECT creates the alias. ORDER BY evaluates after it exists.",
         },
         {
           id: "logical-order-3",
@@ -1453,7 +1503,8 @@ LIMIT 10;`,
             "Keeps the first three rows after sorting",
           ],
           correctIndex: 3,
-          explanation: "LIMIT is the final step in this query and caps the already sorted result at three rows.",
+          explanation:
+            "LIMIT is the final step in this query and caps the already sorted result at three rows.",
         },
       ],
     },
@@ -1463,7 +1514,8 @@ LIMIT 10;`,
 const queryingFundamentalsQuiz: LessonContent = {
   slug: "querying-fundamentals-quiz",
   title: "Querying Fundamentals: Final Quiz",
-  subtitle: "Test your knowledge of SELECT, FROM, WHERE, CASE, operators, and logical execution order.",
+  subtitle:
+    "Test your knowledge of SELECT, FROM, WHERE, CASE, operators, and logical execution order.",
   sections: [
     {
       kind: "quiz",
@@ -1471,7 +1523,8 @@ const queryingFundamentalsQuiz: LessonContent = {
       questions: [
         {
           id: "qf-select-projection",
-          question: "What does SELECT name, country choose from the rows supplied by FROM customers?",
+          question:
+            "What does SELECT name, country choose from the rows supplied by FROM customers?",
           options: [
             "Only the name and country columns in the result",
             "Only customers named country",
@@ -1479,7 +1532,8 @@ const queryingFundamentalsQuiz: LessonContent = {
             "Rows in alphabetical order",
           ],
           correctIndex: 0,
-          explanation: "SELECT projects the columns you want in the result. FROM identifies the source rows.",
+          explanation:
+            "SELECT projects the columns you want in the result. FROM identifies the source rows.",
         },
         {
           id: "qf-comments",
@@ -1498,7 +1552,8 @@ const queryingFundamentalsQuiz: LessonContent = {
             "Sorts prices from highest to lowest.",
           ],
           correctIndex: 1,
-          explanation: "AS creates a readable label for the value returned by the expression. It does not change stored data.",
+          explanation:
+            "AS creates a readable label for the value returned by the expression. It does not change stored data.",
         },
         {
           id: "qf-arithmetic",
@@ -1509,7 +1564,8 @@ const queryingFundamentalsQuiz: LessonContent = {
         },
         {
           id: "qf-boolean",
-          question: "Which WHERE condition keeps products priced at least 2000 with at least 50 units in stock?",
+          question:
+            "Which WHERE condition keeps products priced at least 2000 with at least 50 units in stock?",
           options: [
             "WHERE price >= 2000 OR in_stock >= 50",
             "WHERE price >= 2000 AND in_stock >= 50",
@@ -1524,7 +1580,8 @@ const queryingFundamentalsQuiz: LessonContent = {
           question: "Which condition correctly finds rows whose city value is missing?",
           options: ["city = NULL", "city <> NULL", "city IS NULL", "city IN (NULL)"],
           correctIndex: 2,
-          explanation: "A comparison with NULL is UNKNOWN. IS NULL is the correct missing-value test.",
+          explanation:
+            "A comparison with NULL is UNKNOWN. IS NULL is the correct missing-value test.",
         },
         {
           id: "qf-distinct",
@@ -1552,14 +1609,17 @@ const queryingFundamentalsQuiz: LessonContent = {
         },
         {
           id: "qf-case-first-match",
-          question: "A product costs 39. What label does this CASE expression return? CASE WHEN price < 3000 THEN 'Under 3000' WHEN price < 1000 THEN 'Budget' ELSE 'Premium' END",
+          question:
+            "A product costs 39. What label does this CASE expression return? CASE WHEN price < 3000 THEN 'Under 3000' WHEN price < 1000 THEN 'Budget' ELSE 'Premium' END",
           options: ["Budget", "Under 3000", "Premium", "NULL"],
           correctIndex: 1,
-          explanation: "CASE returns the first matching result. Since 39 is below 3000, it returns Under 3000 and never evaluates the later Budget condition.",
+          explanation:
+            "CASE returns the first matching result. Since 39 is below 3000, it returns Under 3000 and never evaluates the later Budget condition.",
         },
         {
           id: "qf-logical-order",
-          question: "For a query using FROM, WHERE, SELECT, ORDER BY, and LIMIT, which is the correct core logical order?",
+          question:
+            "For a query using FROM, WHERE, SELECT, ORDER BY, and LIMIT, which is the correct core logical order?",
           options: [
             "SELECT → FROM → WHERE → ORDER BY → LIMIT",
             "FROM → WHERE → SELECT → ORDER BY → LIMIT",
@@ -1567,7 +1627,8 @@ const queryingFundamentalsQuiz: LessonContent = {
             "WHERE → FROM → SELECT → LIMIT → ORDER BY",
           ],
           correctIndex: 1,
-          explanation: "FROM supplies rows, WHERE filters them, SELECT projects the result, ORDER BY sorts it, and LIMIT keeps the requested count.",
+          explanation:
+            "FROM supplies rows, WHERE filters them, SELECT projects the result, ORDER BY sorts it, and LIMIT keeps the requested count.",
         },
       ],
     },

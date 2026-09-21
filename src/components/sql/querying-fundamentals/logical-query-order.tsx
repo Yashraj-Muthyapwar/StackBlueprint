@@ -13,7 +13,9 @@ const ROAD_BIKES = PRODUCT_ROWS.filter((row) => row.cells[1] === "Road Bikes");
 const ROAD_BIKES_BY_PRICE = [...ROAD_BIKES].sort(
   (left, right) => Number(right.cells[2]) - Number(left.cells[2]),
 );
-const ROAD_BIKES_PROJECTION = ROAD_BIKES.map((row) => r(String(row.key), row.cells[0], row.cells[2]));
+const ROAD_BIKES_PROJECTION = ROAD_BIKES.map((row) =>
+  r(String(row.key), row.cells[0], row.cells[2]),
+);
 const ROAD_BIKES_BY_PRICE_PROJECTION = ROAD_BIKES_BY_PRICE.map((row) =>
   r(String(row.key), row.cells[0], row.cells[2]),
 );
@@ -34,11 +36,7 @@ export const pipelineStages: Stage[] = [
   },
   {
     name: "2. WHERE filters rows",
-    sql: [
-      "SELECT name, price",
-      "FROM products",
-      "WHERE category = 'Road Bikes'",
-    ],
+    sql: ["SELECT name, price", "FROM products", "WHERE category = 'Road Bikes'"],
     table: { name: "products", cols: PRODUCT_COLS, rows: PRODUCT_ROWS },
     steps: [
       st(
@@ -51,11 +49,7 @@ export const pipelineStages: Stage[] = [
   },
   {
     name: "3. SELECT chooses columns",
-    sql: [
-      "SELECT name, price",
-      "FROM products",
-      "WHERE category = 'Road Bikes'",
-    ],
+    sql: ["SELECT name, price", "FROM products", "WHERE category = 'Road Bikes'"],
     table: { name: "products", cols: PRODUCT_COLS, rows: PRODUCT_ROWS },
     steps: [
       st(

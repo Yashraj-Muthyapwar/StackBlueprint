@@ -303,7 +303,12 @@ function shuffled<T>(arr: T[]): T[] {
 function buildOptions(correct: string, type: string, extras: string[]): string[] {
   const opts = new Set<string>([correct]);
   if (type === "bool") {
-    const flips: Record<string, string> = { true: "false", false: "true", True: "False", False: "True" };
+    const flips: Record<string, string> = {
+      true: "false",
+      false: "true",
+      True: "False",
+      False: "True",
+    };
     opts.add(flips[correct] ?? "True");
   } else if (type === "int" || type === "float") {
     const n = Number(correct);
@@ -332,10 +337,10 @@ function makePrediction(cur: Snapshot, next: Snapshot, targetIdx: number): Predi
       const f = next.frames.at(-1);
       const argHint = f
         ? Object.entries(f.locals)
-          .filter(([, v]) => v.kind === "prim")
-          .slice(0, 3)
-          .map(([k, v]) => `${k}=${String((v as PrimVal).value)}`)
-          .join(", ")
+            .filter(([, v]) => v.kind === "prim")
+            .slice(0, 3)
+            .map(([k, v]) => `${k}=${String((v as PrimVal).value)}`)
+            .join(", ")
         : "";
       const correct = String(rv.value);
       return {
@@ -379,7 +384,11 @@ function makePrediction(cur: Snapshot, next: Snapshot, targetIdx: number): Predi
         targetIdx,
         prompt: `The highlighted line is about to run. What value will ${k} get?`,
         correct,
-        options: buildOptions(correct, v.type, framePrims.filter((s) => s !== correct)),
+        options: buildOptions(
+          correct,
+          v.type,
+          framePrims.filter((s) => s !== correct),
+        ),
         answered: null,
       };
     }
@@ -425,8 +434,7 @@ function narrate(snap: Snapshot, prev?: Snapshot): string {
   Object.entries(top.locals).forEach(([k, v]) => {
     const pv = prevTop?.locals[k];
     if (!pv) changes.push(`${k} = ${valuePlain(v, snap.heap)} (new)`);
-    else if (valueKey(pv) !== valueKey(v))
-      changes.push(`${k} → ${valuePlain(v, snap.heap)}`);
+    else if (valueKey(pv) !== valueKey(v)) changes.push(`${k} → ${valuePlain(v, snap.heap)}`);
   });
   let base = !changes.length
     ? `Running line ${snap.line} in ${top.name}.`
@@ -475,11 +483,7 @@ function HeapCard({
 }) {
   const popStyle = isNew ? { animation: "sb-pop 0.35s ease-out" } : undefined;
   const shortId = id.slice(-4);
-  const ringClass = isNew
-    ? "ring-1 ring-mint/50"
-    : live
-      ? "ring-1 ring-violet/30"
-      : "";
+  const ringClass = isNew ? "ring-1 ring-mint/50" : live ? "ring-1 ring-violet/30" : "";
   const aliasBar =
     aliases.length > 0 ? (
       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -506,7 +510,9 @@ function HeapCard({
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           <span>{obj.type}</span>
-          <span>#{shortId} · len={obj.size}</span>
+          <span>
+            #{shortId} · len={obj.size}
+          </span>
         </div>
         <div className="flex flex-wrap items-end gap-1 font-mono text-[12px]">
           <span className="self-center text-muted-foreground">{open}</span>
@@ -521,10 +527,11 @@ function HeapCard({
                 key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
                 style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${changedItems.has(i)
+                className={`rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                  changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
                     : "border-hairline bg-background"
-                  }`}
+                }`}
               >
                 {valueLabel(v)}
               </span>
@@ -547,7 +554,9 @@ function HeapCard({
       >
         <div className="mb-1.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           <span>dict</span>
-          <span>#{shortId} · len={obj.size}</span>
+          <span>
+            #{shortId} · len={obj.size}
+          </span>
         </div>
         <div className="grid grid-cols-[auto_auto_1fr] items-center gap-x-2 gap-y-1 font-mono text-[12px]">
           {obj.items.map(([k, v], i) => (
@@ -558,10 +567,11 @@ function HeapCard({
                 key={changedItems.has(i) ? `c-${stepIdx}` : "s"}
                 ref={(el) => registerRef(`heap:${id}:${i}`, el)}
                 style={changedItems.has(i) ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${changedItems.has(i)
+                className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                  changedItems.has(i)
                     ? "border-amber/70 bg-amber/10"
                     : "border-hairline bg-background"
-                  }`}
+                }`}
               >
                 {valueLabel(v)}
               </span>
@@ -619,7 +629,7 @@ export function PythonPlayground() {
 
   // Breakpoints: line numbers with a red dot in the gutter.
   const [breakpoints, setBreakpoints] = useState<Set<number>>(new Set());
-  const breakpointsCbRef = useRef<(lines: Set<number>) => void>(() => { });
+  const breakpointsCbRef = useRef<(lines: Set<number>) => void>(() => {});
   breakpointsCbRef.current = setBreakpoints;
 
   const editorExtensions = useMemo<Extension[]>(() => {
@@ -1010,7 +1020,6 @@ export function PythonPlayground() {
     return c;
   }, [snap, idx, snapshots]);
 
-
   // Event ribbon content
   const eventBadge = useMemo(() => {
     if (!snap) return null;
@@ -1117,7 +1126,9 @@ export function PythonPlayground() {
           size="sm"
           onClick={stepForward}
           disabled={
-            !snapshots.length || idx >= snapshots.length - 1 || !!(prediction && !prediction.answered)
+            !snapshots.length ||
+            idx >= snapshots.length - 1 ||
+            !!(prediction && !prediction.answered)
           }
           title="Step forward (→)"
         >
@@ -1201,9 +1212,7 @@ export function PythonPlayground() {
           />
           {/* Progress fill plus an event map: violet ticks are calls, mint ticks are returns */}
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-1.5 -translate-y-1/2 overflow-visible rounded-full bg-hairline/60">
-            <div
-              className="h-full overflow-hidden rounded-full"
-            >
+            <div className="h-full overflow-hidden rounded-full">
               <div
                 className="h-full bg-mint/60 transition-all"
                 style={{
@@ -1254,12 +1263,13 @@ export function PythonPlayground() {
       {/* Predict mode question card */}
       {prediction && (
         <div
-          className={`rounded-lg border px-3 py-2.5 transition ${prediction.answered
+          className={`rounded-lg border px-3 py-2.5 transition ${
+            prediction.answered
               ? prediction.answered.ok
                 ? "border-mint/50 bg-mint/5"
                 : "border-rose/50 bg-rose/5"
               : "border-amber/50 bg-amber/5"
-            }`}
+          }`}
         >
           <div className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
             <Brain className="size-3 text-amber" />
@@ -1422,8 +1432,9 @@ export function PythonPlayground() {
                         <div
                           key={fi}
                           style={{ marginLeft: Math.min(fi, 4) * 10 }}
-                          className={`rounded-lg border p-2 transition ${isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
-                            }`}
+                          className={`rounded-lg border p-2 transition ${
+                            isTop ? "border-mint/50 bg-mint/5" : "border-hairline bg-background"
+                          }`}
                         >
                           <div className="mb-1.5 flex items-center justify-between font-mono text-[11px]">
                             <span className={isTop ? "text-mint" : "text-foreground/80"}>
@@ -1442,19 +1453,22 @@ export function PythonPlayground() {
                                 return (
                                   <div key={isChanged ? `${k}-${idx}` : k} className="contents">
                                     <span
-                                      className={
-                                        isChanged ? "text-amber" : "text-muted-foreground"
-                                      }
+                                      className={isChanged ? "text-amber" : "text-muted-foreground"}
                                     >
                                       {k}
                                     </span>
                                     <span
                                       ref={(el) => registerRef(`var:${fi}:${k}`, el)}
-                                      style={isChanged ? { animation: "sb-flash 0.6s ease-out" } : undefined}
-                                      className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${isChanged
+                                      style={
+                                        isChanged
+                                          ? { animation: "sb-flash 0.6s ease-out" }
+                                          : undefined
+                                      }
+                                      className={`justify-self-start rounded border px-1.5 py-0.5 ${valueClass(v)} ${
+                                        isChanged
                                           ? "border-amber/70 bg-amber/10"
                                           : "border-hairline bg-surface"
-                                        }`}
+                                      }`}
                                     >
                                       {valueLabel(v)}
                                     </span>
@@ -1477,7 +1491,9 @@ export function PythonPlayground() {
                       <div className="mb-1 text-[10px] uppercase tracking-wider text-mint">
                         returns
                       </div>
-                      <span className={`rounded border border-mint/40 bg-background px-1.5 py-0.5 ${valueClass(snap.returnValue)}`}>
+                      <span
+                        className={`rounded border border-mint/40 bg-background px-1.5 py-0.5 ${valueClass(snap.returnValue)}`}
+                      >
                         {valueLabel(snap.returnValue)}
                       </span>
                     </div>

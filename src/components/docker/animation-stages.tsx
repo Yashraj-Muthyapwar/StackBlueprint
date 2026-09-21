@@ -59,9 +59,24 @@ const vmVsContainer: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1, 2, 3, 4], "kept",
+      st(
+        [0, 1, 2, 3, 4],
+        "kept",
         "A VM virtualizes hardware. Each one boots its own kernel and ships a full OS. Powerful isolation, but you pay in disk, RAM, and boot time.",
-        { side: sidePanel("VM cost", ["• Full guest OS per app", "• GB-sized images", "• Minutes to boot", "• Strong isolation"], "rose", HardDrive) }),
+        {
+          side: sidePanel(
+            "VM cost",
+            [
+              "• Full guest OS per app",
+              "• GB-sized images",
+              "• Minutes to boot",
+              "• Strong isolation",
+            ],
+            "rose",
+            HardDrive,
+          ),
+        },
+      ),
     ],
   },
   {
@@ -84,9 +99,19 @@ const vmVsContainer: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1, 2, 3, 4], "kept",
+      st(
+        [0, 1, 2, 3, 4],
+        "kept",
         "Containers skip the guest OS entirely. They share the host kernel and start as a process. Same portability, fraction of the weight.",
-        { side: sidePanel("Container win", ["• No guest OS", "• MB-sized images", "• Seconds to start", "• Near-native speed"], "mint", Container) }),
+        {
+          side: sidePanel(
+            "Container win",
+            ["• No guest OS", "• MB-sized images", "• Seconds to start", "• Near-native speed"],
+            "mint",
+            Container,
+          ),
+        },
+      ),
     ],
   },
   {
@@ -110,12 +135,18 @@ const vmVsContainer: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1, 2], "kept",
+      st(
+        [0, 1, 2],
+        "kept",
         "Run uname -r on the host and inside any container. The version matches because the container borrows the host kernel.",
-        { noteTone: "mint", highlightCols: [2] }),
-      st([4, 5, 6], "kept",
+        { noteTone: "mint", highlightCols: [2] },
+      ),
+      st(
+        [4, 5, 6],
+        "kept",
         "The container feels like its own machine (own filesystem, own IP, own PID 1) but it is a process with a mask, not a separate computer.",
-        { noteTone: "violet" }),
+        { noteTone: "violet" },
+      ),
     ],
   },
 ];
@@ -139,9 +170,19 @@ const clientServer: Stage[] = [
       ],
     },
     steps: [
-      st([0, 2, 3], "kept",
+      st(
+        [0, 2, 3],
+        "kept",
         "Every docker command you type is translated into an HTTP request. The CLI never touches containers directly.",
-        { side: sidePanel("Remember", ["• CLI = client", "• Sends REST API calls", "• Works even over TCP"], "mint", Server) }),
+        {
+          side: sidePanel(
+            "Remember",
+            ["• CLI = client", "• Sends REST API calls", "• Works even over TCP"],
+            "mint",
+            Server,
+          ),
+        },
+      ),
     ],
   },
   {
@@ -166,9 +207,12 @@ const clientServer: Stage[] = [
       ],
     },
     steps: [
-      st([0, 2, 3, 4, 5], "kept",
+      st(
+        [0, 2, 3, 4, 5],
+        "kept",
         "The daemon is a persistent background process. It owns every Docker object on the machine and executes whatever the client requests.",
-        { noteTone: "violet", highlightCols: [1] }),
+        { noteTone: "violet", highlightCols: [1] },
+      ),
     ],
   },
   {
@@ -188,18 +232,21 @@ const clientServer: Stage[] = [
     table: {
       name: "docker version",
       cols: ["state", "client", "server"],
-      rows: [
-        r(1, "Engine stopped", "OK", "FAILED"),
-        r(2, "Engine running", "OK", "OK"),
-      ],
+      rows: [r(1, "Engine stopped", "OK", "FAILED"), r(2, "Engine running", "OK", "OK")],
     },
     steps: [
-      st([3, 4, 5], (row) => (row.key === 1 ? "dropped" : "kept"),
+      st(
+        [3, 4, 5],
+        (row) => (row.key === 1 ? "dropped" : "kept"),
         "If the daemon is not running, the client cannot connect. You will see: Cannot connect to the Docker daemon.",
-        { noteTone: "rose", highlightCols: [2] }),
-      st([7, 8, 9], "kept",
+        { noteTone: "rose", highlightCols: [2] },
+      ),
+      st(
+        [7, 8, 9],
+        "kept",
         "Start Docker Desktop or run systemctl start docker. Once the engine is up, every command works.",
-        { noteTone: "mint", highlightCols: [2] }),
+        { noteTone: "mint", highlightCols: [2] },
+      ),
     ],
   },
 ];

@@ -43,7 +43,10 @@ export function parseIntPairs(raw: string): [number, number][] {
     .map((s) => s.trim())
     .filter(Boolean)
     .map((s) => {
-      const parts = s.split(/[,\s]+/).filter(Boolean).map(Number);
+      const parts = s
+        .split(/[,\s]+/)
+        .filter(Boolean)
+        .map(Number);
       if (parts.length !== 2 || parts.some((n) => !Number.isFinite(n))) {
         throw new Error(`"${s}" is not a pair`);
       }

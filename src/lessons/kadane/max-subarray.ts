@@ -26,7 +26,9 @@ function build({ arr }: Inputs): Step[] {
     bestL = 0,
     bestR = 0;
   const ptrs = (i: number) => [{ name: "i", index: i, color: "amber" as const }];
-  const winBest = () => [{ from: bestL, to: bestR, tone: "mid" as const, label: `best ${bestSum}` }];
+  const winBest = () => [
+    { from: bestL, to: bestR, tone: "mid" as const, label: `best ${bestSum}` },
+  ];
 
   steps.push({
     line: 1,
@@ -79,7 +81,10 @@ function build({ arr }: Inputs): Step[] {
         array: [...arr],
         pointers: ptrs(i),
         partitions: winBest(),
-        highlight: { kind: "match", indices: Array.from({ length: bestR - bestL + 1 }, (_, k) => bestL + k) },
+        highlight: {
+          kind: "match",
+          indices: Array.from({ length: bestR - bestL + 1 }, (_, k) => bestL + k),
+        },
         status: `best_sum=${bestSum}`,
         narration: `New best ${bestSum} on [${bestL}..${bestR}].`,
       });
@@ -100,7 +105,8 @@ export const kadane: LessonBuilder<Inputs> = {
   slug: "max-subarray",
   title: "Kadane's — Max Subarray Sum",
   subtitle: "At each index, decide: extend the current subarray or restart fresh.",
-  problem: "Given an integer array, return the largest sum achievable by any contiguous non-empty subarray.",
+  problem:
+    "Given an integer array, return the largest sum achievable by any contiguous non-empty subarray.",
   spotIt: [
     "'Maximum sum contiguous subarray' or any variant ('circular', 'with one deletion').",
     "Array contains negatives — otherwise the answer is just the total sum.",
@@ -119,7 +125,8 @@ export const kadane: LessonBuilder<Inputs> = {
   validate: ({ arr }) => {
     const w: string[] = [];
     if (arr.length === 0) w.push("Array is empty.");
-    if (arr.every((v) => v < 0)) w.push("All negatives — the answer is the single largest element.");
+    if (arr.every((v) => v < 0))
+      w.push("All negatives — the answer is the single largest element.");
     return w;
   },
   build,

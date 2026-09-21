@@ -31,7 +31,12 @@ function build({ arr, target }: Inputs): Step[] {
   let left = 0,
     window_sum = 0,
     best = 0;
-  steps.push({ line: 2, array: [...arr], pointers: ptrs(0, 0), narration: `Initialize left, window_sum, and best to 0.` });
+  steps.push({
+    line: 2,
+    array: [...arr],
+    pointers: ptrs(0, 0),
+    narration: `Initialize left, window_sum, and best to 0.`,
+  });
 
   for (let right = 0; right < n; right++) {
     steps.push({
@@ -101,7 +106,13 @@ function build({ arr, target }: Inputs): Step[] {
       });
     }
   }
-  steps.push({ line: 11, array: [...arr], pointers: ptrs(left, n - 1), status: `return ${best}`, narration: `Return the best length: ${best}.` });
+  steps.push({
+    line: 11,
+    array: [...arr],
+    pointers: ptrs(left, n - 1),
+    status: `return ${best}`,
+    narration: `Return the best length: ${best}.`,
+  });
   return steps;
 }
 
@@ -109,7 +120,8 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
   slug: "variable-expand-shrink",
   title: "Sliding Window — Variable (Expand & Shrink)",
   subtitle: "Expand the right edge; shrink from the left whenever a constraint is violated.",
-  problem: "Given an array of non-negative integers and a target sum, find the length of the longest contiguous subarray whose sum is less than or equal to the target.",
+  problem:
+    "Given an array of non-negative integers and a target sum, find the length of the longest contiguous subarray whose sum is less than or equal to the target.",
   spotIt: [
     "'Longest / shortest substring or subarray satisfying a condition' on a contiguous range.",
     "Condition can be checked incrementally as you add or remove one element.",
@@ -130,7 +142,10 @@ export const variableExpandShrink: LessonBuilder<Inputs> = {
   ],
   validate: ({ arr }) => {
     const w: string[] = [];
-    if (arr.some((v) => v < 0)) w.push("Expand-shrink relies on a monotonic metric. With negative values shrinking from the left may not restore the constraint.");
+    if (arr.some((v) => v < 0))
+      w.push(
+        "Expand-shrink relies on a monotonic metric. With negative values shrinking from the left may not restore the constraint.",
+      );
     return w;
   },
   build,

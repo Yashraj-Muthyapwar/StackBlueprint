@@ -22,13 +22,24 @@ function build({ s }: Inputs): Step[] {
   ];
 
   if (n < 2) {
-    steps.push({ line: 7, array: arr, pointers: [], status: "True", narration: "0/1 chars — palindrome." });
+    steps.push({
+      line: 7,
+      array: arr,
+      pointers: [],
+      status: "True",
+      narration: "0/1 chars — palindrome.",
+    });
     return steps;
   }
 
   let left = 0;
   let right = n - 1;
-  steps.push({ line: 2, array: arr, pointers: ptrs(left, right), narration: "Place left at the start, right at the end." });
+  steps.push({
+    line: 2,
+    array: arr,
+    pointers: ptrs(left, right),
+    narration: "Place left at the start, right at the end.",
+  });
 
   while (left < right) {
     steps.push({

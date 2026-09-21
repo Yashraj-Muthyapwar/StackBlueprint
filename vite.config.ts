@@ -15,13 +15,13 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
-  
+
   vite: {
     build: {
       chunkSizeWarningLimit: 1000,
     },
     optimizeDeps: {
-      exclude: ["@electric-sql/pglite", "@duckdb/duckdb-wasm", "sql.js"]
-    }
-  }
+      exclude: ["@electric-sql/pglite", "@duckdb/duckdb-wasm", "sql.js"],
+    },
+  },
 });

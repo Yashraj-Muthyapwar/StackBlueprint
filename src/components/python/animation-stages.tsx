@@ -42,60 +42,50 @@ const fileIo: Stage[] = [
   {
     name: "1. Open the file",
     blurb: "Requesting access from the Operating System",
-    sql: [
-      "f = open('data.txt', 'r')",
-      "line1 = f.readline()",
-      "line2 = f.readline()",
-      "f.close()",
-    ],
+    sql: ["f = open('data.txt', 'r')", "line1 = f.readline()", "line2 = f.readline()", "f.close()"],
     table: {
       name: "File State",
       cols: ["property", "status"],
-      rows: [
-        r(1, "Status", "Opened (Locked)"),
-        r(2, "Cursor", "Line 1"),
-        r(3, "Memory", "Empty"),
-      ],
+      rows: [r(1, "Status", "Opened (Locked)"), r(2, "Cursor", "Line 1"), r(3, "Memory", "Empty")],
     },
     steps: [
-      st([0], (row) => row.key === 1 ? "kept" : row.key === 2 ? "added" : "dropped",
+      st(
+        [0],
+        (row) => (row.key === 1 ? "kept" : row.key === 2 ? "added" : "dropped"),
         "Calling open() tells the OS to find 'data.txt' and prepare it for reading. The OS returns a file object (pointer).",
-        { side: sidePanel("OS Level", ["• Checks file permissions", "• Locks file for reading", "• Sets cursor to beginning"], "violet", FileText) }),
+        {
+          side: sidePanel(
+            "OS Level",
+            ["• Checks file permissions", "• Locks file for reading", "• Sets cursor to beginning"],
+            "violet",
+            FileText,
+          ),
+        },
+      ),
     ],
   },
   {
     name: "2. Read Line 1",
     blurb: "Fetching the first line",
-    sql: [
-      "f = open('data.txt', 'r')",
-      "line1 = f.readline()",
-      "line2 = f.readline()",
-      "f.close()",
-    ],
+    sql: ["f = open('data.txt', 'r')", "line1 = f.readline()", "line2 = f.readline()", "f.close()"],
     table: {
       name: "File State",
       cols: ["property", "status"],
-      rows: [
-        r(1, "Status", "Opened"),
-        r(2, "Cursor", "Line 2"),
-        r(3, "Memory", "line1 = 'Hello'"),
-      ],
+      rows: [r(1, "Status", "Opened"), r(2, "Cursor", "Line 2"), r(3, "Memory", "line1 = 'Hello'")],
     },
     steps: [
-      st([1], "kept",
+      st(
+        [1],
+        "kept",
         "readline() reads characters until it hits a newline (\\n). The cursor automatically advances to the next line.",
-        { noteTone: "mint", highlightCols: [2] }),
+        { noteTone: "mint", highlightCols: [2] },
+      ),
     ],
   },
   {
     name: "3. Read Line 2",
     blurb: "Fetching the second line",
-    sql: [
-      "f = open('data.txt', 'r')",
-      "line1 = f.readline()",
-      "line2 = f.readline()",
-      "f.close()",
-    ],
+    sql: ["f = open('data.txt', 'r')", "line1 = f.readline()", "line2 = f.readline()", "f.close()"],
     table: {
       name: "File State",
       cols: ["property", "status"],
@@ -106,20 +96,15 @@ const fileIo: Stage[] = [
       ],
     },
     steps: [
-      st([2], "kept",
-        "The next readline() picks up exactly where the last one left off.",
-        { noteTone: "mint" }),
+      st([2], "kept", "The next readline() picks up exactly where the last one left off.", {
+        noteTone: "mint",
+      }),
     ],
   },
   {
     name: "4. Close the file",
     blurb: "Releasing resources",
-    sql: [
-      "f = open('data.txt', 'r')",
-      "line1 = f.readline()",
-      "line2 = f.readline()",
-      "f.close()",
-    ],
+    sql: ["f = open('data.txt', 'r')", "line1 = f.readline()", "line2 = f.readline()", "f.close()"],
     table: {
       name: "File State",
       cols: ["property", "status"],
@@ -130,9 +115,20 @@ const fileIo: Stage[] = [
       ],
     },
     steps: [
-      st([3], "kept",
+      st(
+        [3],
+        "kept",
         "You MUST close the file. If you don't, the file remains locked, and you can leak memory or prevent other programs from reading it.",
-        { noteTone: "rose", side: sidePanel("Warning", ["• Open files consume RAM", "• OS limits open files", "• Writes might not flush!"], "rose", AlertCircle) }),
+        {
+          noteTone: "rose",
+          side: sidePanel(
+            "Warning",
+            ["• Open files consume RAM", "• OS limits open files", "• Writes might not flush!"],
+            "rose",
+            AlertCircle,
+          ),
+        },
+      ),
     ],
   },
 ];
@@ -146,19 +142,27 @@ const contextManager: Stage[] = [
       "    data = f.read()",
       "    # Do something with data",
       "",
-      "# File is already closed here"
+      "# File is already closed here",
     ],
     table: {
       name: "Resource Flow",
       cols: ["action", "status"],
-      rows: [
-        r(1, "Enter block", "Acquiring lock..."),
-      ],
+      rows: [r(1, "Enter block", "Acquiring lock...")],
     },
     steps: [
-      st([0], "kept",
+      st(
+        [0],
+        "kept",
         "The 'with' statement creates a context manager. It automatically calls a setup method (__enter__) to open the file.",
-        { side: sidePanel("Context Manager", ["• Automatic setup", "• Guarantees teardown", "• Cleaner syntax"], "mint", Lock) }),
+        {
+          side: sidePanel(
+            "Context Manager",
+            ["• Automatic setup", "• Guarantees teardown", "• Cleaner syntax"],
+            "mint",
+            Lock,
+          ),
+        },
+      ),
     ],
   },
   {
@@ -169,20 +173,20 @@ const contextManager: Stage[] = [
       "    data = f.read()",
       "    # Do something with data",
       "",
-      "# File is already closed here"
+      "# File is already closed here",
     ],
     table: {
       name: "Resource Flow",
       cols: ["action", "status"],
-      rows: [
-        r(1, "Enter block", "File Opened (Locked)"),
-        r(2, "Inside block", "Reading data"),
-      ],
+      rows: [r(1, "Enter block", "File Opened (Locked)"), r(2, "Inside block", "Reading data")],
     },
     steps: [
-      st([1, 2], "kept",
+      st(
+        [1, 2],
+        "kept",
         "As long as you are indented inside the 'with' block, the file is open and available.",
-        { noteTone: "mint" }),
+        { noteTone: "mint" },
+      ),
     ],
   },
   {
@@ -193,7 +197,7 @@ const contextManager: Stage[] = [
       "    data = f.read()",
       "    # Do something with data",
       "",
-      "# File is already closed here"
+      "# File is already closed here",
     ],
     table: {
       name: "Resource Flow",
@@ -205,9 +209,20 @@ const contextManager: Stage[] = [
       ],
     },
     steps: [
-      st([4], (row) => row.key === 3 ? "added" : "kept",
+      st(
+        [4],
+        (row) => (row.key === 3 ? "added" : "kept"),
         "As soon as you unindent (exit the block), Python automatically calls a teardown method (__exit__) to close the file. Even if an error happens inside the block!",
-        { noteTone: "violet", side: sidePanel("Guaranteed Safety", ["• No need for f.close()", "• Safe from exceptions", "• Prevents resource leaks"], "mint", Unlock) }),
+        {
+          noteTone: "violet",
+          side: sidePanel(
+            "Guaranteed Safety",
+            ["• No need for f.close()", "• Safe from exceptions", "• Prevents resource leaks"],
+            "mint",
+            Unlock,
+          ),
+        },
+      ),
     ],
   },
 ];
@@ -225,15 +240,15 @@ const fileBasics: Stage[] = [
     table: {
       name: "Environment State",
       cols: ["location", "content"],
-      rows: [
-        r(1, "Memory", "contacts = ['Ada Reed', 'John Doe', ...]"),
-        r(2, "Disk", "Empty"),
-      ],
+      rows: [r(1, "Memory", "contacts = ['Ada Reed', 'John Doe', ...]"), r(2, "Disk", "Empty")],
     },
     steps: [
-      st([3], (row) => row.key === 1 ? "added" : "kept",
+      st(
+        [3],
+        (row) => (row.key === 1 ? "added" : "kept"),
         "Variables live in memory. When the program ends, this 'contacts' list is cleared.",
-        { noteTone: "violet" }),
+        { noteTone: "violet" },
+      ),
     ],
   },
   {
@@ -253,9 +268,20 @@ const fileBasics: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1, 2], (row) => row.key === 2 ? "added" : "kept",
+      st(
+        [0, 1, 2],
+        (row) => (row.key === 2 ? "added" : "kept"),
         "Opening in 'w' mode creates the file. The names are now safely stored on disk.",
-        { noteTone: "mint", side: sidePanel("Write Mode", ["• Creates missing files", "• Overwrites existing data", "• Must add \\n manually"], "mint", FileText) }),
+        {
+          noteTone: "mint",
+          side: sidePanel(
+            "Write Mode",
+            ["• Creates missing files", "• Overwrites existing data", "• Must add \\n manually"],
+            "mint",
+            FileText,
+          ),
+        },
+      ),
     ],
   },
   {
@@ -276,11 +302,17 @@ const fileBasics: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1], "kept",
-        "We open the same file in 'r' (read) mode. file.read() returns the entire text block."),
-      st([3], (row) => row.key === 2 ? "added" : "kept",
+      st(
+        [0, 1],
+        "kept",
+        "We open the same file in 'r' (read) mode. file.read() returns the entire text block.",
+      ),
+      st(
+        [3],
+        (row) => (row.key === 2 ? "added" : "kept"),
         "The text is printed identically to how it was generated on the previous run.",
-        { noteTone: "mint" }),
+        { noteTone: "mint" },
+      ),
     ],
   },
 ];
@@ -289,10 +321,7 @@ const workingWithPaths: Stage[] = [
   {
     name: "1. Absolute vs Relative Paths",
     blurb: "Paths tell Python where a file lives",
-    sql: [
-      "Absolute: /Users/sam/project/data/contacts.txt",
-      "Relative: data/contacts.txt",
-    ],
+    sql: ["Absolute: /Users/sam/project/data/contacts.txt", "Relative: data/contacts.txt"],
     table: {
       name: "Path Types",
       cols: ["type", "description"],
@@ -302,26 +331,30 @@ const workingWithPaths: Stage[] = [
       ],
     },
     steps: [
-      st([0, 1], "kept", "Absolute paths are rigid. Relative paths are flexible and work on any computer if the project structure is the same.", { noteTone: "violet" }),
+      st(
+        [0, 1],
+        "kept",
+        "Absolute paths are rigid. Relative paths are flexible and work on any computer if the project structure is the same.",
+        { noteTone: "violet" },
+      ),
     ],
   },
   {
     name: "2. The Current Working Directory",
     blurb: "Where does a relative path start?",
-    sql: [
-      "from pathlib import Path",
-      "",
-      "print(Path.cwd())",
-    ],
+    sql: ["from pathlib import Path", "", "print(Path.cwd())"],
     table: {
       name: "Environment",
       cols: ["location", "path"],
-      rows: [
-        r(1, "CWD", "/Users/sam/project"),
-      ],
+      rows: [r(1, "CWD", "/Users/sam/project")],
     },
     steps: [
-      st([2], "kept", "Path.cwd() reveals the folder from where you ran the Python script. If relative paths fail, this is the first thing to check.", { noteTone: "mint" }),
+      st(
+        [2],
+        "kept",
+        "Path.cwd() reveals the folder from where you ran the Python script. If relative paths fail, this is the first thing to check.",
+        { noteTone: "mint" },
+      ),
     ],
   },
   {
@@ -337,14 +370,16 @@ const workingWithPaths: Stage[] = [
     table: {
       name: "Path Objects",
       cols: ["object", "value"],
-      rows: [
-        r(1, "data_folder", "data"),
-        r(2, "contacts_path", "data/contacts.txt"),
-      ],
+      rows: [r(1, "data_folder", "data"), r(2, "contacts_path", "data/contacts.txt")],
     },
     steps: [
       st([2], "kept", "Path('data') creates a Path object representing the folder location."),
-      st([3], (row) => row.key === 2 ? "added" : "kept", "The '/' operator joins Path parts using the correct separator for the OS (like '\\' on Windows and '/' on Mac/Linux).", { noteTone: "mint" }),
+      st(
+        [3],
+        (row) => (row.key === 2 ? "added" : "kept"),
+        "The '/' operator joins Path parts using the correct separator for the OS (like '\\' on Windows and '/' on Mac/Linux).",
+        { noteTone: "mint" },
+      ),
     ],
   },
   {
@@ -360,16 +395,23 @@ const workingWithPaths: Stage[] = [
     table: {
       name: "File System",
       cols: ["action", "result"],
-      rows: [
-        r(1, "mkdir()", "Creates 'data' folder"),
-        r(2, "open('w')", "Creates 'contacts.txt'"),
-      ],
+      rows: [r(1, "mkdir()", "Creates 'data' folder"), r(2, "open('w')", "Creates 'contacts.txt'")],
     },
     steps: [
-      st([1], "kept", "contacts_path.parent gets the 'data' folder part. mkdir(exist_ok=True) creates it if it doesn't exist.", { noteTone: "violet" }),
-      st([3, 4], (row) => row.key === 2 ? "added" : "kept", "Now we can safely open the file for writing because its parent folder definitely exists.", { noteTone: "mint" }),
+      st(
+        [1],
+        "kept",
+        "contacts_path.parent gets the 'data' folder part. mkdir(exist_ok=True) creates it if it doesn't exist.",
+        { noteTone: "violet" },
+      ),
+      st(
+        [3, 4],
+        (row) => (row.key === 2 ? "added" : "kept"),
+        "Now we can safely open the file for writing because its parent folder definitely exists.",
+        { noteTone: "mint" },
+      ),
     ],
-  }
+  },
 ];
 
 export const STAGES_REGISTRY = {

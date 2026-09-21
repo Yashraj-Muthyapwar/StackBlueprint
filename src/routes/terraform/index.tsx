@@ -21,8 +21,7 @@ export const Route = createFileRoute("/terraform/")({
       { title: "Terraform — StackBlueprint" },
       {
         name: "description",
-        content:
-          "Infrastructure as Code for provisioning and managing cloud resources.",
+        content: "Infrastructure as Code for provisioning and managing cloud resources.",
       },
       { property: "og:title", content: "Terraform — StackBlueprint" },
       {
@@ -56,15 +55,19 @@ type Section = {
 const sections: Section[] = [
   {
     group: "Foundations",
-    groupBlurb:
-      "The mental model for Infrastructure as Code and the core Terraform workflow.",
+    groupBlurb: "The mental model for Infrastructure as Code and the core Terraform workflow.",
     topics: [
       {
         slug: "iac-fundamentals",
         title: "Infrastructure as Code",
         blurb: "Why IaC, declarative vs imperative, and Terraform vs the rest.",
         icon: Lightbulb,
-        modules: ["Why IaC?", "Declarative vs Imperative", "Terraform vs Ansible", "The Core Workflow"],
+        modules: [
+          "Why IaC?",
+          "Declarative vs Imperative",
+          "Terraform vs Ansible",
+          "The Core Workflow",
+        ],
         unlocked: false,
         routeBase: "foundations",
       },
@@ -142,8 +145,8 @@ const sections: Section[] = [
         modules: ["GitHub Actions for TF", "Atlantis", "Terraform Cloud", "Drift Detection"],
         unlocked: false,
         routeBase: "production",
-      }
-    ]
+      },
+    ],
   },
   {
     group: "Capstone",
@@ -154,11 +157,16 @@ const sections: Section[] = [
         title: "Terraform Capstone",
         blurb: "Provision a highly-available cloud architecture from scratch.",
         icon: Server,
-        modules: ["Network & VPC", "Compute & Load Balancing", "Database Provisioning", "CI/CD Pipeline Setup"],
+        modules: [
+          "Network & VPC",
+          "Compute & Load Balancing",
+          "Database Provisioning",
+          "CI/CD Pipeline Setup",
+        ],
         unlocked: false,
         routeBase: "capstone",
-      }
-    ]
+      },
+    ],
   },
 ];
 
@@ -170,13 +178,18 @@ function TerraformIndex() {
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mx-auto mb-6 flex justify-center">
-            <img src={terraformLogo} alt="Terraform Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
+            <img
+              src={terraformLogo}
+              alt="Terraform Logo"
+              className="size-16 object-contain drop-shadow-sm lg:size-20"
+            />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Terraform
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Infrastructure as Code. Learn how to provision, manage, and scale cloud resources automatically and reliably.
+            Infrastructure as Code. Learn how to provision, manage, and scale cloud resources
+            automatically and reliably.
           </p>
         </div>
       </div>
@@ -190,9 +203,7 @@ function TerraformIndex() {
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
                   </div>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground">
-                    {sec.group}
-                  </h2>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">{sec.group}</h2>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {sec.groupBlurb}
@@ -203,7 +214,7 @@ function TerraformIndex() {
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
-                  
+
                   const completedCount = t.completedCount || 0;
                   const totalCount = t.modules.length;
 
@@ -243,12 +254,12 @@ function TerraformIndex() {
                             </span>
                           ))}
                         </div>
-                        
+
                         {!isLocked && (
                           <div className="mt-6 flex items-center gap-2">
                             <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
-                              <div 
-                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                              <div
+                                className="h-full bg-mint transition-all duration-500 ease-out"
                                 style={{ width: `${(completedCount / totalCount) * 100}%` }}
                               />
                             </div>

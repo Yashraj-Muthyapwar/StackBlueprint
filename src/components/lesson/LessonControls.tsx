@@ -36,7 +36,10 @@ function defaultsToRaw(builder: LessonBuilder): RawValues {
   return out;
 }
 
-function parseRaw(builder: LessonBuilder, raw: RawValues): { inputs?: Record<string, unknown>; error?: string } {
+function parseRaw(
+  builder: LessonBuilder,
+  raw: RawValues,
+): { inputs?: Record<string, unknown>; error?: string } {
   const out: Record<string, unknown> = {};
   try {
     for (const f of builder.inputs) {
@@ -90,7 +93,9 @@ export function LessonControls({
   const reset = () => {
     setRaw(defaultsToRaw(builder));
     setParseError(null);
-    const w = builder.validate ? builder.validate(builder.defaultInputs as Record<string, unknown>) : [];
+    const w = builder.validate
+      ? builder.validate(builder.defaultInputs as Record<string, unknown>)
+      : [];
     setWarnings(w);
     setIsDirty(false);
     onRun(builder.defaultInputs as Record<string, unknown>, w, false);
@@ -110,15 +115,27 @@ export function LessonControls({
             <RotateCcw className="mr-1 size-3.5" /> Default
           </Button>
           {isDirty ? (
-            <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
+            <Button
+              size="sm"
+              onClick={run}
+              className="bg-mint text-primary-foreground hover:bg-mint/90"
+            >
               <Play className="mr-1 size-3.5" /> Run
             </Button>
           ) : playing ? (
-            <Button size="sm" onClick={onPlayToggle} className="bg-amber text-primary-foreground hover:bg-amber/90">
+            <Button
+              size="sm"
+              onClick={onPlayToggle}
+              className="bg-amber text-primary-foreground hover:bg-amber/90"
+            >
               <Pause className="mr-1 size-3.5" /> Pause
             </Button>
           ) : (
-            <Button size="sm" onClick={onPlayToggle} className="bg-mint text-primary-foreground hover:bg-mint/90">
+            <Button
+              size="sm"
+              onClick={onPlayToggle}
+              className="bg-mint text-primary-foreground hover:bg-mint/90"
+            >
               <Play className="mr-1 size-3.5" /> Play
             </Button>
           )}
@@ -141,19 +158,19 @@ export function LessonControls({
                 setIsDirty(true);
 
                 if (f.kind === "select") {
-                const { inputs, error } = parseRaw(builder, finalRaw);
-                if (!error && inputs) {
-                  setParseError(null);
-                  const w = builder.validate ? builder.validate(inputs) : [];
-                  setWarnings(w);
-                  setIsDirty(false);
-                  onRun(inputs, w, true);
-                } else {
-                  setParseError(error ?? "Invalid input");
+                  const { inputs, error } = parseRaw(builder, finalRaw);
+                  if (!error && inputs) {
+                    setParseError(null);
+                    const w = builder.validate ? builder.validate(inputs) : [];
+                    setWarnings(w);
+                    setIsDirty(false);
+                    onRun(inputs, w, true);
+                  } else {
+                    setParseError(error ?? "Invalid input");
+                  }
                 }
-              }
-            }}
-          />
+              }}
+            />
           );
         })}
       </div>
@@ -203,7 +220,9 @@ function FieldEditor({
   return (
     <label className="block">
       <div className="mb-1 flex items-baseline justify-between">
-        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{field.label}</span>
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+          {field.label}
+        </span>
         {field.help && <span className="text-[10px] text-muted-foreground/60">{field.help}</span>}
       </div>
       {isSelect ? (

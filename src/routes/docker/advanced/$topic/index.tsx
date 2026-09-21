@@ -9,13 +9,9 @@ export const Route = createFileRoute("/docker/advanced/$topic/")({
 function DockerTopicPage() {
   const { topic } = Route.useParams();
   const cat = CATEGORY_BY_SLUG["docker"];
-  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
+  const t =
+    cat?.patterns.find((p) => p.slug === topic) ||
+    cat?.sections?.flatMap((s) => s.patterns).find((p) => p.slug === topic);
 
-  return (
-    <ChapterIndexLayout
-      trackTitle="Docker"
-      trackPath="/docker"
-      topic={t as any}
-    />
-  );
+  return <ChapterIndexLayout trackTitle="Docker" trackPath="/docker" topic={t as any} />;
 }

@@ -46,11 +46,9 @@ export function TrackCard({
           </h3>
           {isLocked && <LockKeyhole className="size-5 shrink-0 text-muted-foreground" />}
         </div>
-        
+
         {blurb && (
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">
-            {blurb}
-          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-2">{blurb}</p>
         )}
 
         <div className="mt-auto flex flex-wrap items-center gap-2 pr-12">

@@ -10,11 +10,5 @@ function PandasTopicPage() {
   const { topic } = Route.useParams();
   const t = PANDAS_SECTIONS.flatMap((s) => s.patterns).find((p) => p.slug === topic);
 
-  return (
-    <ChapterIndexLayout
-      trackTitle="Pandas"
-      trackPath="/pandas"
-      topic={t as any}
-    />
-  );
+  return <ChapterIndexLayout trackTitle="Pandas" trackPath="/pandas" topic={t as any} />;
 }

@@ -9,8 +9,7 @@ export const Route = createFileRoute("/mongodb/")({
       { title: "MongoDB — StackBlueprint" },
       {
         name: "description",
-        content:
-          "Master MongoDB: from NoSQL concepts to aggregations and Python integration.",
+        content: "Master MongoDB: from NoSQL concepts to aggregations and Python integration.",
       },
       { property: "og:title", content: "MongoDB — StackBlueprint" },
       {
@@ -38,4 +37,3 @@ function MongoDbIndex() {
     />
   );
 }
-

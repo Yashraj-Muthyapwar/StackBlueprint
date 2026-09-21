@@ -18,8 +18,9 @@ function build({ arr, k }: Inputs): Step[] {
     steps.push({ line: 1, narration: "Invalid k for the array.", array: [...arr], pointers: [] });
     return steps;
   }
-  const win = (left: number, right: number) =>
-    [{ from: left, to: right, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) => [
+    { from: left, to: right, tone: "mid" as const, label: "window" },
+  ];
   const ptrs = (left: number, right: number) => [
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
@@ -103,8 +104,10 @@ function build({ arr, k }: Inputs): Step[] {
 export const fixedSize: LessonBuilder<Inputs> = {
   slug: "fixed-size",
   title: "Sliding Window — Fixed Size",
-  subtitle: "A window of size k slides across the array. Each step add the new element, drop the old one.",
-  problem: "Given an array of integers and a window size k, return the maximum sum of any contiguous subarray of length exactly k.",
+  subtitle:
+    "A window of size k slides across the array. Each step add the new element, drop the old one.",
+  problem:
+    "Given an array of integers and a window size k, return the maximum sum of any contiguous subarray of length exactly k.",
   spotIt: [
     "Problem explicitly gives a window size k and asks for a stat over every window.",
     "Phrases: 'max / min / sum / average of every subarray of size k'.",

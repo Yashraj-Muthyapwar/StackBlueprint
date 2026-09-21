@@ -1,8 +1,13 @@
 import { roadmap, type RoadmapPattern } from "@/lessons/roadmap";
 
 export type SearchItem = {
-  id: string; title: string; context: string; track: string;
-  path: string; kind: "topic" | "lesson"; terms: string;
+  id: string;
+  title: string;
+  context: string;
+  track: string;
+  path: string;
+  kind: "topic" | "lesson";
+  terms: string;
 };
 
 // Jargon that appears in NO title and NO slug. Keyed by lesson/pattern slug.
@@ -26,17 +31,42 @@ function pushPattern(out: SearchItem[], p: RoadmapPattern, track: string, ctx: s
   if (p.locked) return;
   if (p.path) {
     out.push({
-      id: p.path, title: p.title, context: ctx, track, path: p.path, kind: "topic",
-      terms: [p.title, ctx, p.blurb, slugWords(p.slug),
-              ...(p.keywords ?? []), ...(ALIASES[p.slug] ?? [])].join(" ").toLowerCase(),
+      id: p.path,
+      title: p.title,
+      context: ctx,
+      track,
+      path: p.path,
+      kind: "topic",
+      terms: [
+        p.title,
+        ctx,
+        p.blurb,
+        slugWords(p.slug),
+        ...(p.keywords ?? []),
+        ...(ALIASES[p.slug] ?? []),
+      ]
+        .join(" ")
+        .toLowerCase(),
     });
   }
   for (const l of p.lessons ?? []) {
     out.push({
-      id: l.path, title: l.title, context: `${ctx} › ${p.title}`, track,
-      path: l.path, kind: "lesson",
-      terms: [l.title, p.title, ctx, slugWords(l.slug),
-              ...(l.keywords ?? []), ...(ALIASES[l.slug] ?? [])].join(" ").toLowerCase(),
+      id: l.path,
+      title: l.title,
+      context: `${ctx} › ${p.title}`,
+      track,
+      path: l.path,
+      kind: "lesson",
+      terms: [
+        l.title,
+        p.title,
+        ctx,
+        slugWords(l.slug),
+        ...(l.keywords ?? []),
+        ...(ALIASES[l.slug] ?? []),
+      ]
+        .join(" ")
+        .toLowerCase(),
     });
   }
 }
@@ -52,7 +82,8 @@ export function buildSearchItems(): SearchItem[] {
       pushPattern(out, p, c.title, ctx);
     };
     if (c.sections?.length) {
-      for (const s of c.sections) for (const p of s.patterns ?? []) visit(p, `${c.title} › ${s.title}`);
+      for (const s of c.sections)
+        for (const p of s.patterns ?? []) visit(p, `${c.title} › ${s.title}`);
     } else {
       for (const p of c.patterns ?? []) visit(p, c.title);
     }
@@ -76,7 +107,7 @@ function score(i: SearchItem, q: string): number {
   else if (title.includes(query)) s = 200;
   else if (toks.every((t) => new RegExp(`\\b${esc(t)}`).test(title))) s = 150;
   else s = 50; // matched only via slug / alias / context
-  
+
   let finalScore = s + (i.kind === "lesson" ? 10 : 0);
   if (i.kind === "topic" && (title === query || title === query + "s" || title + "s" === query)) {
     finalScore += 20; // Topic exact match beats lesson exact match
@@ -85,7 +116,10 @@ function score(i: SearchItem, q: string): number {
 }
 
 export function searchItems(items: SearchItem[], q: string, limit = 40): SearchItem[] {
-  return items.map((i) => [i, score(i, q)] as const)
-    .filter(([, s]) => s > 0).sort((a, b) => b[1] - a[1])
-    .slice(0, limit).map(([i]) => i);
+  return items
+    .map((i) => [i, score(i, q)] as const)
+    .filter(([, s]) => s > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([i]) => i);
 }

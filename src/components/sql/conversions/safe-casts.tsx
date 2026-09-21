@@ -1,12 +1,7 @@
 import type { Row, Stage } from "@/components/lesson/MultiStage";
 import { r, st } from "../animation-shared";
 
-const INCOMING_ROWS: Row[] = [
-  r(1, "'1'"),
-  r(2, "'3'"),
-  r(3, "''"),
-  r(4, "'bike-7'"),
-];
+const INCOMING_ROWS: Row[] = [r(1, "'1'"), r(2, "'3'"), r(3, "''"), r(4, "'bike-7'")];
 
 const VALIDATION_ROWS: Row[] = [
   r(1, "'1'", "true"),

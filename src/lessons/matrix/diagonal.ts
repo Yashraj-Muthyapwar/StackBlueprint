@@ -31,7 +31,11 @@ function build({ matrix }: Inputs): Step[] {
   const result: number[] = [];
   const visited: Array<{ r: number; c: number; tone: "visit" }> = [];
 
-  steps.push({ line: 4, matrix, narration: `Walk ${rows + cols - 1} anti-diagonals, alternating direction.` });
+  steps.push({
+    line: 4,
+    matrix,
+    narration: `Walk ${rows + cols - 1} anti-diagonals, alternating direction.`,
+  });
 
   const visit = (line: number, r: number, c: number, narr: string) => {
     result.push(matrix[r][c]);
@@ -79,7 +83,8 @@ export const diagonal: LessonBuilder<Inputs> = {
   slug: "diagonal-traversal",
   title: "Matrix Diagonal Traversal",
   subtitle: "Walk anti-diagonals; alternate the direction so the zigzag is continuous.",
-  problem: "Given an m×n matrix, traverse it diagonally in a zigzag pattern: alternate going up-right and down-left along each anti-diagonal.",
+  problem:
+    "Given an m×n matrix, traverse it diagonally in a zigzag pattern: alternate going up-right and down-left along each anti-diagonal.",
   spotIt: [
     "'Traverse the matrix diagonally', zigzag, or anti-diagonal order.",
     "Problems grouping elements by r+c (anti-diagonal) or r-c (main diagonal).",
@@ -101,6 +106,7 @@ export const diagonal: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Matrix", kind: "intMatrix" }],
-  validate: ({ matrix }) => (matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : []),
+  validate: ({ matrix }) =>
+    matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : [],
   build,
 };

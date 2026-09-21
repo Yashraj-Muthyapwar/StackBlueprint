@@ -112,10 +112,10 @@ import mapGcpServicesImg from "@/images/data-engineering-fundamentals/foundation
 import azureStreamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/azure-streaming-option.png";
 import gcpStreamingOptionImg from "@/images/data-engineering-fundamentals/foundations/Selecting-right-technologies/gcp-streaming-option.png";
 
-
-
-
-export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
+export const FOUNDATION_TOPICS: Record<
+  string,
+  { title: string; slug: string; lessons: LessonContent[] }
+> = {
   "data-engineering-described": {
     title: "1. Understanding the Data Engineering Discipline",
     slug: "data-engineering-described",
@@ -123,7 +123,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
       {
         slug: "what-data-engineering-means",
         title: "1.1 What Data Engineering Means",
-        subtitle: "The process of building systems that collect, store, process, and deliver data so it can be used effectively.",
+        subtitle:
+          "The process of building systems that collect, store, process, and deliver data so it can be used effectively.",
         sections: [
           {
             kind: "prose",
@@ -132,22 +133,22 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data engineering is the process of building systems that collect, store, process, and deliver data so it can be used effectively.",
               "A simple way to think about it is:",
               "**Raw Data → Reliable Data → Useful Information**",
-              "Data engineers make sure data gets from its source to the people and systems that need it, such as analysts, applications, and machine-learning systems."
-            ]
+              "Data engineers make sure data gets from its source to the people and systems that need it, such as analysts, applications, and machine-learning systems.",
+            ],
           },
           {
             kind: "prose",
             heading: "The Data Engineering Lifecycle",
             body: [
               "The lifecycle describes the journey of data:",
-              "**Generation → Ingestion → Transformation → Storage → Serving**"
-            ]
+              "**Generation → Ingestion → Transformation → Storage → Serving**",
+            ],
           },
           {
             kind: "image",
             src: dataLifecycleImg,
             alt: "The Data Engineering Lifecycle",
-            caption: "Generation → Ingestion → Transformation → Storage → Serving"
+            caption: "Generation → Ingestion → Transformation → Storage → Serving",
           },
           {
             kind: "list",
@@ -156,20 +157,20 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Ingestion:** Data is collected and brought into the data platform.",
               "**Transformation:** Data is cleaned, combined, and prepared for use.",
               "**Storage:** Data is stored so it can be processed and accessed reliably.",
-              "**Serving:** Data is delivered to analytics, machine learning, applications, and other consumers."
-            ]
+              "**Serving:** Data is delivered to analytics, machine learning, applications, and other consumers.",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "The lifecycle is the journey; a data pipeline is the system that moves data through that journey."
-            ]
+              "The lifecycle is the journey; a data pipeline is the system that moves data through that journey.",
+            ],
           },
           {
             kind: "list",
             heading: "What Makes Data Engineering More Than Just Moving Data?",
             body: [
-              "A data engineer must also consider the foundations that run across the entire lifecycle:"
+              "A data engineer must also consider the foundations that run across the entire lifecycle:",
             ],
             items: [
               "**Security:** Protecting data from unauthorized access.",
@@ -177,41 +178,39 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**DataOps:** Practices for improving the speed and quality of data analytics.",
               "**Data Architecture:** Designing the structure of data systems.",
               "**Orchestration:** Coordinating data workflows and processes.",
-              "**Software Engineering:** Applying software development principles to data systems."
-            ]
+              "**Software Engineering:** Applying software development principles to data systems.",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "These help ensure that data systems are secure, reliable, scalable, maintainable, and easy to operate."
-            ]
+              "These help ensure that data systems are secure, reliable, scalable, maintainable, and easy to operate.",
+            ],
           },
           {
             kind: "prose",
             heading: "From Lifecycle to Real-World Systems",
             body: [
               "Understanding the lifecycle is only the beginning. A data engineer also needs to answer:",
-              "*What does the business need, and how should we build the system to provide it?*"
-            ]
+              "*What does the business need, and how should we build the system to provide it?*",
+            ],
           },
           {
             kind: "image",
             src: scenarioImg,
             alt: "Real-World Data Scenario",
-            caption: "A real-world business scenario"
+            caption: "A real-world business scenario",
           },
           {
             kind: "prose",
-            body: [
-              "This leads to four important ideas:"
-            ]
+            body: ["This leads to four important ideas:"],
           },
           {
             kind: "prose",
             heading: "1. Understand the Requirement",
             body: [
-              "First, understand who needs the data, what they need, and how they will use it."
-            ]
+              "First, understand who needs the data, what they need, and how they will use it.",
+            ],
           },
           {
             kind: "list",
@@ -219,7 +218,7 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "Create the blueprint for how data will flow, be stored, processed, and consumed.",
               "**Sources → Pipelines → Storage → Processing → Consumers**",
-              "**Key Components:**"
+              "**Key Components:**",
             ],
             items: [
               "**Data Sources:** Where data comes from, such as APIs, databases, applications, and devices.",
@@ -228,31 +227,31 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                 text: "**Storage:** Systems used to persist data reliably for processing and future use.",
                 subitems: [
                   "**Data Warehouses:** Central repositories for storing and analyzing large amounts of structured data.",
-                  "**Data Lakes:** Storage for large amounts of raw, structured, semi-structured, and unstructured data."
-                ]
+                  "**Data Lakes:** Storage for large amounts of raw, structured, semi-structured, and unstructured data.",
+                ],
               },
               "**Data Processing:** The stage where data is cleaned, transformed, joined, enriched, and prepared for downstream use.",
-              "**Consumers:** The people, applications, or systems that use the processed data, such as analysts, dashboards, applications, and machine-learning systems."
-            ]
+              "**Consumers:** The people, applications, or systems that use the processed data, such as analysts, dashboards, applications, and machine-learning systems.",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "Data architecture connects these components into one system that moves data from its source to the people and systems that need it."
-            ]
+              "Data architecture connects these components into one system that moves data from its source to the people and systems that need it.",
+            ],
           },
           {
             kind: "list",
             heading: "3. Choose the Right Technology",
             body: [
               "The technology should follow the requirement—not the other way around.",
-              "Examples include:"
+              "Examples include:",
             ],
             items: [
               "**Data Processing:** Spark, Flink",
               "**Data Warehousing:** BigQuery, Redshift",
-              "**Data Integration:** NiFi, Talend"
-            ]
+              "**Data Integration:** NiFi, Talend",
+            ],
           },
           {
             kind: "prose",
@@ -260,34 +259,34 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "Create a plan for how the data system will be built, how data will flow through it, and how each component will work together.",
               "The design should also allow the system to continue working effectively as data volume, users, and workloads grow.",
-              "**Good system design = Clear architecture + Efficient data flow + Scalability**"
-            ]
+              "**Good system design = Clear architecture + Efficient data flow + Scalability**",
+            ],
           },
           {
             kind: "callout",
             tone: "info",
             title: "A Simple Data Engineering Mindset",
-            body: "When designing a data system, think in this order:\n\n**Requirement → Architecture → Technology → Implementation → Scale**\n\nThis prevents the common mistake of choosing tools first and figuring out the problem later."
+            body: "When designing a data system, think in this order:\n\n**Requirement → Architecture → Technology → Implementation → Scale**\n\nThis prevents the common mistake of choosing tools first and figuring out the problem later.",
           },
           {
             kind: "prose",
             heading: "How Data Engineering Evolved",
             body: [
-              "As data became larger, faster, and more varied, the technologies and architectures used to manage it evolved as well—from traditional databases and warehouses to distributed systems, cloud platforms, streaming systems, and modern AI-driven data platforms."
-            ]
+              "As data became larger, faster, and more varied, the technologies and architectures used to manage it evolved as well—from traditional databases and warehouses to distributed systems, cloud platforms, streaming systems, and modern AI-driven data platforms.",
+            ],
           },
           {
             kind: "image",
             src: evolutionImg,
             alt: "Evolution of Data Engineering",
-            caption: "The evolution of data engineering over time"
+            caption: "The evolution of data engineering over time",
           },
           {
             kind: "prose",
             body: [
               "The important takeaway is not to memorize every technology or date.",
-              "Data engineering evolved because the way organizations generate and use data kept changing."
-            ]
+              "Data engineering evolved because the way organizations generate and use data kept changing.",
+            ],
           },
           {
             kind: "takeaways",
@@ -298,8 +297,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Undercurrents** = What keeps the system reliable",
               "**Architecture** = How the system is designed",
               "**Technology** = How we implement it",
-              "**Goal** = Deliver useful, trusted data"
-            ]
+              "**Goal** = Deliver useful, trusted data",
+            ],
           },
           {
             kind: "quiz",
@@ -311,64 +310,63 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "To analyze data and create business dashboards.",
                   "To build systems that collect, store, process, and deliver data.",
                   "To train machine learning models for predictive analytics.",
-                  "To manually move data from one place to another."
+                  "To manually move data from one place to another.",
                 ],
                 correctIndex: 1,
-                explanation: "Data engineering is the process of building systems that collect, store, process, and deliver data so it can be used effectively."
+                explanation:
+                  "Data engineering is the process of building systems that collect, store, process, and deliver data so it can be used effectively.",
               },
               {
                 id: "de-fundamentals-2",
-                question: "According to the Data Engineering Mindset, what is the first step when designing a data system?",
-                options: [
-                  "Technology",
-                  "Architecture",
-                  "Requirement",
-                  "Scale"
-                ],
+                question:
+                  "According to the Data Engineering Mindset, what is the first step when designing a data system?",
+                options: ["Technology", "Architecture", "Requirement", "Scale"],
                 correctIndex: 2,
-                explanation: "You must first understand who needs the data, what they need, and how they will use it (the Requirement)."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "You must first understand who needs the data, what they need, and how they will use it (the Requirement).",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "skills-and-responsibilities",
         title: "1.3 Data Engineering Skills and Responsibilities",
-        subtitle: "Understand what data engineers do, which skills matter most, and how their work helps a company use data reliably.",
+        subtitle:
+          "Understand what data engineers do, which skills matter most, and how their work helps a company use data reliably.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "A ^^data engineer^^ builds the systems that move data from where it is created to where people can use it. Without that foundation, dashboards become unreliable, analysts lose time, and machine learning projects struggle to get useful data.",
-              "A **data engineer** is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time."
-            ]
+              "A **data engineer** is not usually the person making the dashboard or training the model. They make sure the right data reaches those people safely, accurately, and on time.",
+            ],
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
               "Data engineering is part technical work and part problem solving for the business.",
-              "The technical side is about collecting, storing, cleaning, and delivering data. The business side is about understanding what people need, choosing a sensible solution, and keeping costs under control."
-            ]
+              "The technical side is about collecting, storing, cleaning, and delivering data. The business side is about understanding what people need, choosing a sensible solution, and keeping costs under control.",
+            ],
           },
           {
             kind: "image",
             src: sixPartBalanceImg,
             alt: "The six-part balance",
-            caption: "The six-part balance of a data engineer"
+            caption: "The six-part balance of a data engineer",
           },
           {
             kind: "prose",
             heading: "What a data engineer is responsible for",
-            body: []
+            body: [],
           },
           {
             kind: "image",
             src: deResponsibilityImg,
             alt: "Data engineer responsibilities",
-            caption: "Core responsibilities of a data engineer"
+            caption: "Core responsibilities of a data engineer",
           },
           {
             kind: "prose",
@@ -396,8 +394,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Security is not a final checklist item. It is part of how the system is designed.",
               "### 6. Working with people across the company",
               "Data engineers work with analysts, data scientists, software engineers, product managers, and business teams.",
-              "A request such as “We need customer churn data” is not yet a technical requirement. The engineer needs to ask follow-up questions:"
-            ]
+              "A request such as “We need customer churn data” is not yet a technical requirement. The engineer needs to ask follow-up questions:",
+            ],
           },
           {
             kind: "list",
@@ -405,33 +403,31 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "What counts as a churned customer?",
               "How quickly does the data need to update?",
               "Who will use it?",
-              "What decision will it support?"
-            ]
+              "What decision will it support?",
+            ],
           },
           {
             kind: "prose",
-            body: [
-              "Clear communication prevents teams from building the wrong thing efficiently."
-            ]
+            body: ["Clear communication prevents teams from building the wrong thing efficiently."],
           },
           {
             kind: "prose",
             heading: "Skills to build first",
             body: [
-              "You do not need to learn every data tool before starting. Focus on these foundations:"
-            ]
+              "You do not need to learn every data tool before starting. Focus on these foundations:",
+            ],
           },
           {
             kind: "image",
             src: skillsToBuildFirstImg,
             alt: "Skills to build first",
-            caption: "Core skills for data engineers"
+            caption: "Core skills for data engineers",
           },
           {
             kind: "prose",
             body: [
-              "Start with SQL. It is the language you will use often, even when working with modern cloud tools."
-            ]
+              "Start with SQL. It is the language you will use often, even when working with modern cloud tools.",
+            ],
           },
           {
             kind: "prose",
@@ -439,20 +435,20 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "Imagine a fitness app where every time a user completes a workout, the app records an event.",
               "If the product team wants a weekly retention report, a data engineer would build a pipeline to reliably collect, clean, and deliver that data.",
-              "Here is what that process might look like:"
-            ]
+              "Here is what that process might look like:",
+            ],
           },
           {
             kind: "image",
             src: fitnessAppImg,
             alt: "Fitness app data pipeline",
-            caption: "A simple fitness app data pipeline"
+            caption: "A simple fitness app data pipeline",
           },
           {
             kind: "prose",
             body: [
-              "The analyst can now build the report without manually combining raw files every week."
-            ]
+              "The analyst can now build the report without manually combining raw files every week.",
+            ],
           },
           {
             kind: "list",
@@ -461,8 +457,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Learning tools before fundamentals:** Learn how data moves and changes before chasing every new platform.",
               "**Treating data quality as someone else’s problem:** Unclear or broken data reduces trust in every downstream report.",
               "**Building too much too early:** Use the simplest system that meets the current need and can grow with the company.",
-              "**Ignoring the business question:** A technically impressive pipeline is still a failure if it does not support a useful decision."
-            ]
+              "**Ignoring the business question:** A technically impressive pipeline is still a failure if it does not support a useful decision.",
+            ],
           },
           {
             kind: "takeaways",
@@ -470,8 +466,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data engineers create reliable paths from raw data to useful data.",
               "Their responsibilities include data quality, system design, reliability, security, and collaboration.",
               "Strong fundamentals matter more than knowing every tool.",
-              "Good data engineering balances business value with cost, simplicity, and scale."
-            ]
+              "Good data engineering balances business value with cost, simplicity, and scale.",
+            ],
           },
           {
             kind: "quiz",
@@ -483,10 +479,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "To build machine learning models.",
                   "To make useful data available reliably.",
                   "To design business dashboards.",
-                  "To manually combine raw files every week."
+                  "To manually combine raw files every week.",
                 ],
                 correctIndex: 1,
-                explanation: "The main goal of a data pipeline is to reliably move data from its source to where it can be used."
+                explanation:
+                  "The main goal of a data pipeline is to reliably move data from its source to where it can be used.",
               },
               {
                 id: "skills-quiz-2",
@@ -495,26 +492,23 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "To write Python scripts faster.",
                   "To manage their team's vacation schedule.",
                   "To turn business needs into clear data requirements.",
-                  "To memorize every new data tool."
+                  "To memorize every new data tool.",
                 ],
                 correctIndex: 2,
-                explanation: "A data engineer must ask the right questions to understand what the business actually needs before building a solution."
+                explanation:
+                  "A data engineer must ask the right questions to understand what the business actually needs before building a solution.",
               },
               {
                 id: "skills-quiz-3",
                 question: "Which skill should most beginners prioritize first?",
-                options: [
-                  "SQL",
-                  "Advanced orchestration",
-                  "Machine learning",
-                  "Kubernetes"
-                ],
+                options: ["SQL", "Advanced orchestration", "Machine learning", "Kubernetes"],
                 correctIndex: 0,
-                explanation: "Start with SQL. It is the core language used to query, combine, and transform data."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Start with SQL. It is the core language used to query, combine, and transform data.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "within-organization",
@@ -526,53 +520,56 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             heading: "Why this matters",
             body: [
               "Data engineers do not work alone. They sit between the systems that produce data and the people or products that need it.",
-              "Understanding this position helps you design better pipelines, ask better questions, and avoid building data systems nobody can use."
-            ]
+              "Understanding this position helps you design better pipelines, ask better questions, and avoid building data systems nobody can use.",
+            ],
           },
           {
             kind: "image",
             src: dataEngineerBridgeImg,
             alt: "Data Engineer at the core of Data Infrastructure",
-            caption: "The Data Engineer sits at the center of the data ecosystem, connecting data sources to data consumers."
+            caption:
+              "The Data Engineer sits at the center of the data ecosystem, connecting data sources to data consumers.",
           },
           {
             kind: "prose",
             heading: "The core idea",
-            body: ["A data engineer connects two sides of an organization:",
+            body: [
+              "A data engineer connects two sides of an organization:",
               "**Upstream:** Systems and teams that create raw data.",
               "**Downstream:** People and systems that use prepared data.",
-            ]
+            ],
           },
           {
             kind: "image",
             src: upstreamDownstreamImg,
             alt: "Upstream vs Downstream",
-            caption: "Connecting data producers to data consumers"
+            caption: "Connecting data producers to data consumers",
           },
           {
             kind: "prose",
             body: [
-              "For example, a checkout service produces order events. A data engineer collects and prepares those events. An analyst then uses the prepared data to understand weekly sales."
-            ]
+              "For example, a checkout service produces order events. A data engineer collects and prepares those events. An analyst then uses the prepared data to understand weekly sales.",
+            ],
           },
           {
             kind: "prose",
             heading: "Internal-facing and external-facing work",
-            body: []
+            body: [],
           },
           {
             kind: "image",
             src: internalExternalFacingImg,
             alt: "Internal vs External",
-            caption: "Internal dashboard with daily refresh versus customer app with near real-time updates."
+            caption:
+              "Internal dashboard with daily refresh versus customer app with near real-time updates.",
           },
           {
             kind: "prose",
             body: [
               "### 1. Internal-facing data engineering",
               "Internal-facing data engineers build systems for people inside the company.",
-              "Their work often supports:"
-            ]
+              "Their work often supports:",
+            ],
           },
           {
             kind: "list",
@@ -581,14 +578,14 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Business operations",
               "Analyst queries",
               "Data science projects",
-              "Machine learning models"
-            ]
+              "Machine learning models",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "For example, an internal sales dashboard may show revenue, refunds, and conversion rate. The data engineer makes sure its underlying data is accurate and updated at the right time."
-            ]
+              "For example, an internal sales dashboard may show revenue, refunds, and conversion rate. The data engineer makes sure its underlying data is accurate and updated at the right time.",
+            ],
           },
 
           {
@@ -596,8 +593,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "### 2. External-facing data engineering",
               "External-facing data engineers build systems that directly support customer-facing products.",
-              "Examples include:"
-            ]
+              "Examples include:",
+            ],
           },
           {
             kind: "list",
@@ -606,14 +603,14 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Live delivery tracking",
               "Customer activity feeds",
               "Connected device data",
-              "In-app analytics"
-            ]
+              "In-app analytics",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "This work often has stricter requirements. A customer-facing system may need to serve many users at once, respond quickly, and carefully separate one customer’s data from another’s."
-            ]
+              "This work often has stricter requirements. A customer-facing system may need to serve many users at once, respond quickly, and carefully separate one customer’s data from another’s.",
+            ],
           },
           {
             kind: "prose",
@@ -621,8 +618,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "### 3. Most roles are a blend",
               "A company may use the same clean order data for an internal finance report and a customer-facing order tracking feature.",
               "The needs differ. Internal teams may accept a daily refresh. A customer checking their delivery status expects a much faster answer.",
-              "The data engineer must understand who uses the data and what “good enough” means for that use case."
-            ]
+              "The data engineer must understand who uses the data and what “good enough” means for that use case.",
+            ],
           },
           {
             kind: "prose",
@@ -632,14 +629,14 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "The app creates order, driver location, and delivery events. A data engineer prepares this information in two ways:",
               "A fast data stream powers the delivery estimate shown to customers.",
               "A daily dataset helps operations teams find slow delivery areas.",
-              "The raw data is similar, but the consumers and requirements are different."
-            ]
+              "The raw data is similar, but the consumers and requirements are different.",
+            ],
           },
           {
             kind: "image",
             src: foodDeliveryExampleImg,
             alt: "Food delivery example",
-            caption: "Food delivery data pipeline for different requirements"
+            caption: "Food delivery data pipeline for different requirements",
           },
           {
             kind: "takeaways",
@@ -647,8 +644,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data engineers connect data producers with data consumers.",
               "Internal-facing work supports teams inside the company.",
               "External-facing work supports customer-facing products.",
-              "The same raw data can serve different users with different requirements."
-            ]
+              "The same raw data can serve different users with different requirements.",
+            ],
           },
           {
             kind: "quiz",
@@ -660,10 +657,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A person or system that creates or provides source data.",
                   "A person or system that uses prepared data.",
                   "An analyst building dashboards.",
-                  "A customer viewing their activity feed."
+                  "A customer viewing their activity feed.",
                 ],
                 correctIndex: 0,
-                explanation: "Upstream stakeholders (producers) are the source of the data."
+                explanation: "Upstream stakeholders (producers) are the source of the data.",
               },
               {
                 id: "org-quiz-2",
@@ -672,10 +669,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A person or system that creates or provides source data.",
                   "A person or system that uses prepared data.",
                   "A database server generating logs.",
-                  "A third-party API."
+                  "A third-party API.",
                 ],
                 correctIndex: 1,
-                explanation: "Downstream stakeholders (consumers) use the data that has been prepared."
+                explanation:
+                  "Downstream stakeholders (consumers) use the data that has been prepared.",
               },
               {
                 id: "org-quiz-3",
@@ -684,33 +682,35 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Because internal teams don't care about data quality.",
                   "They can have different needs for speed, scale, security, and reliability.",
                   "External data systems always use SQL, while internal systems use Python.",
-                  "Internal systems never need to be updated."
+                  "Internal systems never need to be updated.",
                 ],
                 correctIndex: 1,
-                explanation: "Customer-facing (external) systems often have stricter requirements for speed, uptime, and security compared to an internal daily report."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Customer-facing (external) systems often have stricter requirements for speed, uptime, and security compared to an internal daily report.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "working-with-stakeholders",
         title: "1.5 Working With Stakeholders and Data Requirements",
-        subtitle: "Learn how data engineers collaborate with other teams and turn vague requests into useful data systems.",
+        subtitle:
+          "Learn how data engineers collaborate with other teams and turn vague requests into useful data systems.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "A data request often begins with a broad statement such as, “We need customer data” or “Can we track campaign performance?”",
-              "Those statements are not enough to build a pipeline. A data engineer must discover the real goal, define the needed data, and agree on how the result should work."
-            ]
+              "Those statements are not enough to build a pipeline. A data engineer must discover the real goal, define the needed data, and agree on how the result should work.",
+            ],
           },
           {
             kind: "image",
             src: vagueRequestsImg,
             alt: "Vague requests vs useful systems",
-            caption: "Turning vague requests into actionable pipelines"
+            caption: "Turning vague requests into actionable pipelines",
           },
           {
             kind: "prose",
@@ -719,20 +719,20 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Upstream stakeholders: the data producers**",
               "Upstream stakeholders own or influence the systems that generate data.",
               "**Downstream stakeholders: the data consumers**",
-              "Downstream stakeholders use prepared data to make decisions, build models, or power products."
-            ]
+              "Downstream stakeholders use prepared data to make decisions, build models, or power products.",
+            ],
           },
           {
             kind: "image",
             src: peopleDEWorksWithImg,
             alt: "People a data engineer works with",
-            caption: "Upstream producers and downstream consumers"
+            caption: "Upstream producers and downstream consumers",
           },
           {
             kind: "prose",
             body: [
-              "The goal is not to give every team all available data. The goal is to provide the right data in a form they can understand and trust."
-            ]
+              "The goal is not to give every team all available data. The goal is to provide the right data in a form they can understand and trust.",
+            ],
           },
           {
             kind: "prose",
@@ -743,23 +743,23 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "### 2. Define Freshness",
               "Balance business needs against cost and effort. Real-time streaming adds massive complexity, so choose the slowest update frequency (monthly, daily, or hourly) that still serves the goal.",
               "### 3. Agree on Definitions",
-              "Document exact business logic for shared terms like \"daily sales\" (orders placed vs. payments completed vs. net revenue). One shared definition keeps dashboards from contradicting each other.",
+              'Document exact business logic for shared terms like "daily sales" (orders placed vs. payments completed vs. net revenue). One shared definition keeps dashboards from contradicting each other.',
               "### 4. Include Non-Functional Requirements",
-              "A good data solution needs to be more than just correct. Plan upfront for security, budget limits, query speed, uptime, maintainability, and legal compliance."
-            ]
+              "A good data solution needs to be more than just correct. Plan upfront for security, budget limits, query speed, uptime, maintainability, and legal compliance.",
+            ],
           },
           {
             kind: "image",
             src: requestsIntoRequirementsImg,
             alt: "Requests into requirements",
-            caption: "The process of defining requirements"
+            caption: "The process of defining requirements",
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
               "Here is how asking the right questions turns a vague stakeholder request into a clear technical execution plan, saving engineering time and cloud costs.",
-            ]
+            ],
           },
           {
             kind: "list",
@@ -768,20 +768,20 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "They need paid orders, not all orders.",
               "Refunds can wait until the next day.",
               "The report should show campaign, region, and revenue.",
-              "Only the marketing team should access customer-level details."
-            ]
+              "Only the marketing team should access customer-level details.",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "The original request becomes a clear plan: refresh an aggregate sales table every hour, define paid revenue, restrict access to customer details, and publish the table to the reporting tool."
-            ]
+              "The original request becomes a clear plan: refresh an aggregate sales table every hour, define paid revenue, restrict access to customer details, and publish the table to the reporting tool.",
+            ],
           },
           {
             kind: "image",
             src: marketingTeamExampleImg,
             alt: "Marketing team example",
-            caption: "Turning a marketing request into a data pipeline plan"
+            caption: "Turning a marketing request into a data pipeline plan",
           },
           {
             kind: "list",
@@ -791,8 +791,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Skipping data definitions:** Agree on important terms before building.",
               "**Assuming real time is required:** Match refresh speed to the actual business need.",
               "**Ignoring upstream changes:** Stay in contact with source-system owners so pipeline changes do not surprise you.",
-              "**Building without feedback:** Show early versions and adjust before investing heavily."
-            ]
+              "**Building without feedback:** Show early versions and adjust before investing heavily.",
+            ],
           },
           {
             kind: "takeaways",
@@ -800,8 +800,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data engineers work with both data producers and data consumers.",
               "Clear requirements begin with a business decision, not a tool choice.",
               "Freshness, definitions, security, cost, and access all shape a data system.",
-              "Frequent feedback makes the final system more useful and reliable."
-            ]
+              "Frequent feedback makes the final system more useful and reliable.",
+            ],
           },
           {
             kind: "quiz",
@@ -813,10 +813,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "What database should we use?",
                   "What decision or outcome will this data support?",
                   "How fast can we build this pipeline?",
-                  "Which dashboard tool does the stakeholder prefer?"
+                  "Which dashboard tool does the stakeholder prefer?",
                 ],
                 correctIndex: 1,
-                explanation: "Always understand the business goal and decision before designing a solution."
+                explanation:
+                  "Always understand the business goal and decision before designing a solution.",
               },
               {
                 id: "req-quiz-2",
@@ -825,10 +826,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "How recently the data was updated.",
                   "How clean the data is.",
                   "How secure the data is.",
-                  "How long the data has been stored."
+                  "How long the data has been stored.",
                 ],
                 correctIndex: 0,
-                explanation: "Data freshness refers to the frequency at which data is updated (e.g., hourly, daily, real-time)."
+                explanation:
+                  "Data freshness refers to the frequency at which data is updated (e.g., hourly, daily, real-time).",
               },
               {
                 id: "req-quiz-3",
@@ -837,56 +839,62 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "They make SQL queries run faster.",
                   "They reduce the cost of cloud storage.",
                   "They keep teams from measuring the same metric in different ways.",
-                  "They eliminate the need for data security."
+                  "They eliminate the need for data security.",
                 ],
                 correctIndex: 2,
-                explanation: "Shared definitions (like 'daily sales') ensure everyone in the company is looking at the same reality and dashboards do not contradict each other."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Shared definitions (like 'daily sales') ensure everyone in the company is looking at the same reality and dashboards do not contradict each other.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "data-engineering-on-the-cloud",
         title: "1.6 Data Engineering on the Cloud",
-        subtitle: "Learn how cloud platforms support the data engineering lifecycle and how AWS, Google Cloud, and Azure map to the same core jobs.",
+        subtitle:
+          "Learn how cloud platforms support the data engineering lifecycle and how AWS, Google Cloud, and Azure map to the same core jobs.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "Cloud platforms let data teams store, process, and serve data without owning physical servers. Instead of starting by managing infrastructure, a team can focus on building reliable data products.",
-              "The tools have different names across AWS, Google Cloud, and Azure. The underlying data engineering work stays the same."
-            ]
+              "The tools have different names across AWS, Google Cloud, and Azure. The underlying data engineering work stays the same.",
+            ],
           },
           {
             kind: "image",
             src: deOnCloudImg,
             alt: "DE on cloud",
-            caption: "The underlying data engineering work stays the same across clouds."
+            caption: "The underlying data engineering work stays the same across clouds.",
           },
           {
             kind: "prose",
             heading: "The core idea",
-            body: [
-              "Every cloud data platform follows a similar flow:"
-            ]
+            body: ["Every cloud data platform follows a similar flow:"],
           },
           {
             kind: "pipeline-flow",
             steps: [
-              { title: "Generate", description: "An app, database, device, API, or SaaS tool creates data." },
+              {
+                title: "Generate",
+                description: "An app, database, device, API, or SaaS tool creates data.",
+              },
               { title: "Ingest", description: "The data enters the platform." },
               { title: "Store", description: "The platform keeps raw and prepared data." },
               { title: "Transform", description: "Raw data is cleaned, joined, and modeled." },
-              { title: "Serve", description: "People, applications, and models use the prepared data." }
-            ]
+              {
+                title: "Serve",
+                description: "People, applications, and models use the prepared data.",
+              },
+            ],
           },
           {
             kind: "prose",
             body: [
-              "Security, access control, cost management, testing, and monitoring apply at every stage."
-            ]
+              "Security, access control, cost management, testing, and monitoring apply at every stage.",
+            ],
           },
           {
             kind: "prose",
@@ -897,16 +905,28 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "There are two common ingestion patterns:",
               "Batch ingestion: Data arrives on a schedule, such as every hour or every night.",
               "Streaming ingestion: Events arrive continuously or with very low delay.",
-              "A daily finance report may work well with batch ingestion. A fraud detection system may need streaming data."
-            ]
+              "A daily finance report may work well with batch ingestion. A fraud detection system may need streaming data.",
+            ],
           },
           {
             kind: "cloud-provider-grid",
             items: [
-              { provider: "AWS", content: "**Amazon Kinesis** or **Amazon Data Firehose** can receive and deliver streaming data." },
-              { provider: "Google Cloud", content: "**Pub/Sub** receives messages, while **Dataflow** can process batch and streaming pipelines." },
-              { provider: "Azure", content: "**Event Hubs** handles event streams, while **Data Factory** is commonly used for scheduled data movement." }
-            ]
+              {
+                provider: "AWS",
+                content:
+                  "**Amazon Kinesis** or **Amazon Data Firehose** can receive and deliver streaming data.",
+              },
+              {
+                provider: "Google Cloud",
+                content:
+                  "**Pub/Sub** receives messages, while **Dataflow** can process batch and streaming pipelines.",
+              },
+              {
+                provider: "Azure",
+                content:
+                  "**Event Hubs** handles event streams, while **Data Factory** is commonly used for scheduled data movement.",
+              },
+            ],
           },
           {
             kind: "prose",
@@ -914,31 +934,31 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "### 2. Store data",
               "Cloud data is commonly stored in one of two places.",
               "**Data lake**",
-              "A data lake stores raw, semi-structured, and unstructured data. Files such as JSON, CSV, logs, images, and Parquet files can live there."
-            ]
+              "A data lake stores raw, semi-structured, and unstructured data. Files such as JSON, CSV, logs, images, and Parquet files can live there.",
+            ],
           },
           {
             kind: "cloud-provider-grid",
             items: [
               { provider: "AWS", content: "**Amazon S3**" },
               { provider: "Google Cloud", content: "**Cloud Storage**" },
-              { provider: "Azure", content: "**Azure Data Lake Storage Gen2**" }
-            ]
+              { provider: "Azure", content: "**Azure Data Lake Storage Gen2**" },
+            ],
           },
           {
             kind: "prose",
             body: [
               "**Data warehouse**",
-              "A data warehouse stores curated data for reporting and analytics. It is usually organized into tables that analysts can query with SQL."
-            ]
+              "A data warehouse stores curated data for reporting and analytics. It is usually organized into tables that analysts can query with SQL.",
+            ],
           },
           {
             kind: "cloud-provider-grid",
             items: [
               { provider: "AWS", content: "**Amazon Redshift**" },
               { provider: "Google Cloud", content: "**BigQuery**" },
-              { provider: "Azure", content: "**Azure Synapse Analytics**" }
-            ]
+              { provider: "Azure", content: "**Azure Synapse Analytics**" },
+            ],
           },
           {
             kind: "prose",
@@ -947,44 +967,68 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "### 3. Transform data",
               "Transformation turns raw data into reliable data.",
               "A transformation might **remove duplicate events, convert timestamps to a shared time zone, standardize country codes, join orders with customer data, calculate daily revenue**, and **create a table ready for a dashboard**.",
-              "This work may happen before loading into a warehouse, called ETL, or after loading, called ELT. Cloud warehouses often make ELT practical because they can process large SQL workloads."
-            ]
+              "This work may happen before loading into a warehouse, called ETL, or after loading, called ELT. Cloud warehouses often make ELT practical because they can process large SQL workloads.",
+            ],
           },
           {
             kind: "cloud-provider-grid",
             items: [
-              { provider: "AWS", content: "**AWS Glue** can prepare and integrate data. **Amazon EMR** is another option for managed big-data frameworks." },
-              { provider: "Google Cloud", content: "**Dataflow** runs **Apache Beam** pipelines for batch and streaming transformations." },
-              { provider: "Azure", content: "**Azure Databricks** and **Azure Synapse** can clean, transform, and process data." }
-            ]
+              {
+                provider: "AWS",
+                content:
+                  "**AWS Glue** can prepare and integrate data. **Amazon EMR** is another option for managed big-data frameworks.",
+              },
+              {
+                provider: "Google Cloud",
+                content:
+                  "**Dataflow** runs **Apache Beam** pipelines for batch and streaming transformations.",
+              },
+              {
+                provider: "Azure",
+                content:
+                  "**Azure Databricks** and **Azure Synapse** can clean, transform, and process data.",
+              },
+            ],
           },
           {
             kind: "prose",
             body: [
               "### 4. Serve data",
               "Serving makes prepared data useful.",
-              "The destination may be **a business dashboard**, **a SQL query used by an analyst**, **a recommendation service in an application**, **a machine learning training dataset**, or **an operational report**."
-            ]
+              "The destination may be **a business dashboard**, **a SQL query used by an analyst**, **a recommendation service in an application**, **a machine learning training dataset**, or **an operational report**.",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "The right serving pattern depends on the need. A weekly executive report can refresh daily. A delivery-tracking screen may need updates within seconds."
-            ]
+              "The right serving pattern depends on the need. A weekly executive report can refresh daily. A delivery-tracking screen may need updates within seconds.",
+            ],
           },
           {
             kind: "cloud-provider-grid",
             items: [
-              { provider: "AWS", content: "**Athena** can query data in S3 with SQL. **QuickSight** can create dashboards." },
-              { provider: "Google Cloud", content: "**BigQuery** can serve analytics queries, with **Looker** for reporting and exploration." },
-              { provider: "Azure", content: "**Synapse Analytics** can serve SQL workloads, with **Power BI** for dashboards." }
-            ]
+              {
+                provider: "AWS",
+                content:
+                  "**Athena** can query data in S3 with SQL. **QuickSight** can create dashboards.",
+              },
+              {
+                provider: "Google Cloud",
+                content:
+                  "**BigQuery** can serve analytics queries, with **Looker** for reporting and exploration.",
+              },
+              {
+                provider: "Azure",
+                content:
+                  "**Synapse Analytics** can serve SQL workloads, with **Power BI** for dashboards.",
+              },
+            ],
           },
           {
             kind: "image",
             src: cloudVsOnPremisesImg,
             alt: "Cloud vs on-premises",
-            caption: "On-Premises Infrastructure vs. Cloud Data Platform"
+            caption: "On-Premises Infrastructure vs. Cloud Data Platform",
           },
           {
             kind: "prose",
@@ -1000,21 +1044,21 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Move one pipeline, validate the results against the old system, and fix gaps. This creates a repeatable pattern for later migrations.",
               "### 4. Optimize after moving",
               "Review query cost, storage layout, pipeline speed, access policies, and reliability. Migration is not finished when the data arrives in the cloud.",
-              "AWS describes a similar progression as assess, mobilize, and migrate. The important principle applies across all cloud providers: understand the current state before moving at scale."
-            ]
+              "AWS describes a similar progression as assess, mobilize, and migrate. The important principle applies across all cloud providers: understand the current state before moving at scale.",
+            ],
           },
           {
             kind: "prose",
             heading: "A Simple Example",
             body: [
-              "Here is how a single pipeline transforms raw website and mobile app events into clean, trusted data to power BI dashboards, analytics, and personalization models across major cloud platforms."
-            ]
+              "Here is how a single pipeline transforms raw website and mobile app events into clean, trusted data to power BI dashboards, analytics, and personalization models across major cloud platforms.",
+            ],
           },
           {
             kind: "image",
             src: retailCompanyExampleImg,
             alt: "Retail company example",
-            caption: "A cross-cloud example of a retail data pipeline."
+            caption: "A cross-cloud example of a retail data pipeline.",
           },
           {
             kind: "list",
@@ -1024,8 +1068,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Assuming streaming is always better:** It adds complexity and cost. Use it when low latency creates real value.",
               "**Skipping governance:** Access controls, data definitions, and lineage matter from the first pipeline.",
               "**Treating migration as a one-time copy:** Validate, monitor, and optimize after every move.",
-              "**Trying to learn every cloud at once:** Learn the lifecycle first, then go deep on one platform."
-            ]
+              "**Trying to learn every cloud at once:** Learn the lifecycle first, then go deep on one platform.",
+            ],
           },
           {
             kind: "takeaways",
@@ -1033,8 +1077,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "AWS, Google Cloud, and Azure use different names for similar data engineering jobs.",
               "The lifecycle is more important than any single service.",
               "Data lakes store broad and often raw data. Warehouses organize curated data for analytics.",
-              "Cloud simplifies infrastructure management, but it does not remove responsibility for security, quality, or cost."
-            ]
+              "Cloud simplifies infrastructure management, but it does not remove responsibility for security, quality, or cost.",
+            ],
           },
           {
             kind: "quiz",
@@ -1046,10 +1090,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Batch is for small data; streaming is for large data.",
                   "Batch moves data on a schedule. Streaming processes events continuously or with low delay.",
                   "Batch is used only by AWS; streaming is used by Google Cloud.",
-                  "Batch requires SQL; streaming requires Python."
+                  "Batch requires SQL; streaming requires Python.",
                 ],
                 correctIndex: 1,
-                explanation: "Batch ingestion runs at set intervals (e.g., daily), while streaming ingestion handles data as it arrives."
+                explanation:
+                  "Batch ingestion runs at set intervals (e.g., daily), while streaming ingestion handles data as it arrives.",
               },
               {
                 id: "cloud-quiz-2",
@@ -1058,10 +1103,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "When you need to store raw or varied data types, including files and semi-structured data.",
                   "When analysts only need to run fast SQL queries on highly structured data.",
                   "When you want to replace your product database.",
-                  "When you need to build business dashboards directly."
+                  "When you need to build business dashboards directly.",
                 ],
                 correctIndex: 0,
-                explanation: "Data lakes are flexible storage repositories that can hold all types of data (structured, semi-structured, unstructured)."
+                explanation:
+                  "Data lakes are flexible storage repositories that can hold all types of data (structured, semi-structured, unstructured).",
               },
               {
                 id: "cloud-quiz-3",
@@ -1070,41 +1116,43 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Because cloud providers require monthly data re-uploads.",
                   "The system still needs validation, security controls, monitoring, and cost optimization.",
                   "Because on-premises servers must be kept running as backups forever.",
-                  "Data instantly becomes corrupted in the cloud and must be cleaned manually."
+                  "Data instantly becomes corrupted in the cloud and must be cleaned manually.",
                 ],
                 correctIndex: 1,
-                explanation: "Moving data is only one step; ensuring the system is secure, performant, and cost-effective is an ongoing process."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Moving data is only one step; ensuring the system is secure, performant, and cost-effective is an ongoing process.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "cloud-networking-basics",
         title: "1.7 Cloud Networking Basics: VPCs, Subnets, and CIDR",
-        subtitle: "Learn how cloud networks organize resources and how to read IP ranges across AWS, Google Cloud, and Azure.",
+        subtitle:
+          "Learn how cloud networks organize resources and how to read IP ranges across AWS, Google Cloud, and Azure.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "Data pipelines, warehouses, databases, and compute resources need a secure way to communicate. Cloud networking defines which resources can reach each other, which can reach the internet, and which should remain private.",
-              "Before deploying a data platform, you need to understand three building blocks: **Virtual private network, Subnet, CIDR range**"
-            ]
+              "Before deploying a data platform, you need to understand three building blocks: **Virtual private network, Subnet, CIDR range**",
+            ],
           },
           {
             kind: "image",
             src: cloudNetworkingImg,
             alt: "Cloud networking building blocks",
-            caption: "Cloud networking building blocks: VPC, Subnet, and CIDR range"
+            caption: "Cloud networking building blocks: VPC, Subnet, and CIDR range",
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
               "A cloud virtual network is your private network space inside a cloud provider.",
-              "Inside that network, you divide IP addresses into smaller ranges called subnets. Each resource, such as a virtual machine or managed service endpoint, receives an IP address from a subnet."
-            ]
+              "Inside that network, you divide IP addresses into smaller ranges called subnets. Each resource, such as a virtual machine or managed service endpoint, receives an IP address from a subnet.",
+            ],
           },
           {
             kind: "code",
@@ -1112,7 +1160,7 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
 │
 ├── Ingestion subnet: 10.0.1.0/24
 ├── Processing subnet: 10.0.2.0/24
-└── Data subnet: 10.0.3.0/24`
+└── Data subnet: 10.0.3.0/24`,
           },
           {
             kind: "prose",
@@ -1120,8 +1168,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "This structure helps you organize resources, control traffic, and leave room for growth.",
               "### 1. What is a VPC?",
               "A VPC, or Virtual Private Cloud, is a logically isolated network in the cloud. It is the private boundary around your resources.",
-              "Cloud providers use different names:"
-            ]
+              "Cloud providers use different names:",
+            ],
           },
           {
             kind: "table",
@@ -1129,8 +1177,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             rows: [
               ["AWS", "Virtual Private Cloud (VPC)"],
               ["Google Cloud", "Virtual Private Cloud (VPC) network"],
-              ["Azure", "Virtual Network (VNet)"]
-            ]
+              ["Azure", "Virtual Network (VNet)"],
+            ],
           },
           {
             kind: "prose",
@@ -1138,8 +1186,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "The concept is the same: create a private address space, place resources inside it, and define how traffic enters, leaves, and moves within it.",
               "### 2. What is a subnet?",
               "A subnet is a smaller range of IP addresses inside a VPC or VNet.",
-              "Think of a VPC as an office building and subnets as separate rooms. You might place web servers in one room, data-processing jobs in another, and databases in a third."
-            ]
+              "Think of a VPC as an office building and subnets as separate rooms. You might place web servers in one room, data-processing jobs in another, and databases in a third.",
+            ],
           },
           {
             kind: "code",
@@ -1147,25 +1195,26 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
 ├── Web subnet
 ├── Application subnet
 ├── Data processing subnet
-└── Database subnet`
+└── Database subnet`,
           },
           {
             kind: "prose",
             body: [
-              "Subnets make it easier to **organize resources by purpose**, **apply traffic rules**, **route traffic through a firewall or gateway**, **keep databases away from direct internet access**, and **plan IP address capacity**."
-            ]
+              "Subnets make it easier to **organize resources by purpose**, **apply traffic rules**, **route traffic through a firewall or gateway**, **keep databases away from direct internet access**, and **plan IP address capacity**.",
+            ],
           },
           {
             kind: "image",
             src: subnetsInActionImg,
             alt: "Subnets in action",
-            caption: "Subnets in action: Organizing resources by purpose and applying traffic rules"
+            caption:
+              "Subnets in action: Organizing resources by purpose and applying traffic rules",
           },
           {
             kind: "callout",
             tone: "warn",
             title: "Security Boundary",
-            body: "A subnet alone is not always a security boundary. You still need security rules, firewalls, network security groups, or equivalent controls to restrict traffic."
+            body: "A subnet alone is not always a security boundary. You still need security rules, firewalls, network security groups, or equivalent controls to restrict traffic.",
           },
           {
             kind: "prose",
@@ -1173,8 +1222,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "CIDR, short for Classless Inter-Domain Routing, is a compact way to describe an IP address range.",
               "For example: `10.0.0.0/16`",
-              "This means the network begins at `10.0.0.0` and has a large range of addresses available. The number after the slash controls the size of the range:"
-            ]
+              "This means the network begins at `10.0.0.0` and has a large range of addresses available. The number after the slash controls the size of the range:",
+            ],
           },
           {
             kind: "table",
@@ -1183,33 +1232,33 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               ["/16", "65,536", "A large VPC or VNet"],
               ["/20", "4,096", "A large workload subnet"],
               ["/24", "256", "A common application subnet"],
-              ["/28", "16", "A small subnet for a specific service"]
-            ]
+              ["/28", "16", "A small subnet for a specific service"],
+            ],
           },
           {
             kind: "prose",
             body: [
-              "**A smaller number after the slash means a larger network.** For example, `10.0.0.0/16` is larger than `10.0.1.0/24`."
-            ]
+              "**A smaller number after the slash means a larger network.** For example, `10.0.0.0/16` is larger than `10.0.1.0/24`.",
+            ],
           },
           {
             kind: "image",
             src: cidrInActionImg,
             alt: "CIDR in action",
-            caption: "CIDR in action: A smaller number after the slash means a larger network"
+            caption: "CIDR in action: A smaller number after the slash means a larger network",
           },
           {
             kind: "prose",
             heading: "How the Platforms Differ",
             body: [
-              "AWS, Google Cloud, and Azure share the same core networking goals, but differ in scope: AWS ties subnets to single Availability Zones, Google Cloud uses a global VPC with regional subnets, and Azure uses regional VNets that span zones."
-            ]
+              "AWS, Google Cloud, and Azure share the same core networking goals, but differ in scope: AWS ties subnets to single Availability Zones, Google Cloud uses a global VPC with regional subnets, and Azure uses regional VNets that span zones.",
+            ],
           },
           {
             kind: "image",
             src: howPlatformsDifferImg,
             alt: "How platforms differ",
-            caption: "How platforms differ: AWS vs. Google Cloud vs. Azure network scopes"
+            caption: "How platforms differ: AWS vs. Google Cloud vs. Azure network scopes",
           },
           {
             kind: "prose",
@@ -1220,21 +1269,22 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "A public subnet can support resources that need internet-facing access, such as a load balancer or public web server.",
               "**Private subnet**",
               "A private subnet contains resources that should not accept direct internet traffic, such as **data processing workers**, **databases**, **internal APIs**, **data warehouse components**, or **private service endpoints**.",
-              "For a data platform, keep sensitive processing and storage access in private network paths whenever possible. In AWS, public internet access requires an appropriate route through an internet gateway. AWS does not expose a VPC CIDR range directly to the internet."
-            ]
+              "For a data platform, keep sensitive processing and storage access in private network paths whenever possible. In AWS, public internet access requires an appropriate route through an internet gateway. AWS does not expose a VPC CIDR range directly to the internet.",
+            ],
           },
           {
             kind: "prose",
             heading: "A Data Engineering Network Example",
             body: [
-              "Segmenting a cloud network keeps public-facing entry points isolated from core storage and processing layers. If a public component gets compromised, strict subnet boundaries limit the blast radius and protect critical data."
-            ]
+              "Segmenting a cloud network keeps public-facing entry points isolated from core storage and processing layers. If a public component gets compromised, strict subnet boundaries limit the blast radius and protect critical data.",
+            ],
           },
           {
             kind: "image",
             src: deNetworkExampleImg,
             alt: "DE Network Example",
-            caption: "A Data Engineering Network Example: Segmenting a cloud network to keep public-facing entry points isolated"
+            caption:
+              "A Data Engineering Network Example: Segmenting a cloud network to keep public-facing entry points isolated",
           },
           {
             kind: "prose",
@@ -1248,8 +1298,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**3. Separate by responsibility**",
               "Use subnets for meaningful groups, not for every individual service. A simple data platform might have: Ingestion, Compute, Data access, Management, and Private endpoints.",
               "**4. Use private address ranges**",
-              "Most internal cloud networks use RFC 1918 private ranges: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`. Choose ranges that fit your company-wide IP plan. Google Cloud and Azure both document these private ranges for internal network planning."
-            ]
+              "Most internal cloud networks use RFC 1918 private ranges: `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`. Choose ranges that fit your company-wide IP plan. Google Cloud and Azure both document these private ranges for internal network planning.",
+            ],
           },
           {
             kind: "prose",
@@ -1259,8 +1309,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Making every workload public:** Most data infrastructure should use private access.",
               "**Creating subnets that are too small:** Autoscaling and managed services can consume more IP addresses than expected.",
               "**Treating a subnet as a security policy:** Use firewalls, security groups, NSGs, and route controls too.",
-              "**Learning provider names before the concept:** Understand network, subnet, CIDR, routing, and security first."
-            ]
+              "**Learning provider names before the concept:** Understand network, subnet, CIDR, routing, and security first.",
+            ],
           },
           {
             kind: "takeaways",
@@ -1269,8 +1319,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Subnets divide a network into smaller, purposeful IP ranges.",
               "CIDR notation defines the size of each IP range.",
               "Good network planning supports security, scaling, and future cloud or hybrid connectivity.",
-              "Data systems should keep processing and sensitive data paths private by default."
-            ]
+              "Data systems should keep processing and sensitive data paths private by default.",
+            ],
           },
           {
             kind: "quiz",
@@ -1282,10 +1332,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A VPC or VNet is the larger private network. A subnet is a smaller IP range within it.",
                   "A subnet is the entire cloud network, and a VPC is a small section of it.",
                   "They are the exact same thing.",
-                  "A VPC is for databases, and subnets are for web servers."
+                  "A VPC is for databases, and subnets are for web servers.",
                 ],
                 correctIndex: 0,
-                explanation: "A VPC (or VNet) represents the overall network boundary, while subnets divide that space into manageable segments."
+                explanation:
+                  "A VPC (or VNet) represents the overall network boundary, while subnets divide that space into manageable segments.",
               },
               {
                 id: "cn-2",
@@ -1294,10 +1345,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "/24 is larger.",
                   "/16 is larger.",
                   "They are the same size.",
-                  "It depends on the cloud provider."
+                  "It depends on the cloud provider.",
                 ],
                 correctIndex: 1,
-                explanation: "In CIDR notation, a smaller suffix number indicates a larger number of available IP addresses. A /16 has 65,536 addresses, while a /24 has only 256."
+                explanation:
+                  "In CIDR notation, a smaller suffix number indicates a larger number of available IP addresses. A /16 has 65,536 addresses, while a /24 has only 256.",
               },
               {
                 id: "cn-3",
@@ -1306,10 +1358,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It causes servers to run out of memory.",
                   "Overlap makes routing between those networks unreliable or impossible.",
                   "Cloud providers charge extra for overlapping ranges.",
-                  "It is a strict legal requirement."
+                  "It is a strict legal requirement.",
                 ],
                 correctIndex: 1,
-                explanation: "If two networks use the same IP addresses, a router won't know which network a packet should go to."
+                explanation:
+                  "If two networks use the same IP addresses, a router won't know which network a packet should go to.",
               },
               {
                 id: "cn-4",
@@ -1318,19 +1371,21 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Yes, private subnets block all inbound and outbound traffic by default.",
                   "No. Security also requires traffic rules, firewall controls, and identity-based access.",
                   "Yes, if it has a /24 CIDR block.",
-                  "No, private subnets are inherently less secure than public ones."
+                  "No, private subnets are inherently less secure than public ones.",
                 ],
                 correctIndex: 1,
-                explanation: "A subnet is just a logical grouping of IP addresses. It does not provide security unless paired with strict rules (like security groups or Network ACLs)."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "A subnet is just a logical grouping of IP addresses. It does not provide security unless paired with strict rules (like security groups or Network ACLs).",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "controlling-cloud-traffic",
         title: "1.8 Controlling Cloud Traffic: Routing, Gateways, NAT, and Firewalls",
-        subtitle: "Learn how cloud platforms decide where traffic goes and whether that traffic is allowed.",
+        subtitle:
+          "Learn how cloud platforms decide where traffic goes and whether that traffic is allowed.",
         sections: [
           {
             kind: "prose",
@@ -1339,40 +1394,43 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "A private subnet is not automatically secure, and a public IP does not automatically make a service reachable.",
               "Every connection needs two decisions:",
               "**Routing:** Where should the traffic go?",
-              "**Security:** Is that traffic allowed?"
-            ]
+              "**Security:** Is that traffic allowed?",
+            ],
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
-              "A route does not grant access. A firewall rule does not create a path. You need both."
-            ]
+              "A route does not grant access. A firewall rule does not create a path. You need both.",
+            ],
           },
           {
             kind: "pipeline-flow",
             steps: [
               {
                 title: "Workload",
-                description: "The application, virtual machine, container, or database initiating the connection."
+                description:
+                  "The application, virtual machine, container, or database initiating the connection.",
               },
               {
                 title: "Route table",
-                description: "Chooses a path based on the destination IP address."
+                description: "Chooses a path based on the destination IP address.",
               },
               {
                 title: "Gateway",
-                description: "Connects a private network to another network, such as the internet. (e.g., NAT lets private resources start outbound connections without accepting inbound)."
+                description:
+                  "Connects a private network to another network, such as the internet. (e.g., NAT lets private resources start outbound connections without accepting inbound).",
               },
               {
                 title: "Security rules",
-                description: "Allows or blocks traffic by source, destination, port, protocol, and direction."
+                description:
+                  "Allows or blocks traffic by source, destination, port, protocol, and direction.",
               },
               {
                 title: "Destination",
-                description: "The final target endpoint receiving the network traffic."
-              }
-            ]
+                description: "The final target endpoint receiving the network traffic.",
+              },
+            ],
           },
           {
             kind: "prose",
@@ -1384,8 +1442,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "`0.0.0.0/0 → Internet gateway`",
               "`0.0.0.0/0` means “every IPv4 destination not matched by a more specific route.” It is often called the default route.",
               "A route table may also send traffic to: Another VPC or VNet, An on-premises network through VPN or private connectivity, A firewall appliance, A NAT gateway, or A private cloud-service endpoint.",
-              "When more than one route could apply, platforms usually select the most specific matching range. A route to `10.20.0.0/16` is more specific than a route to `0.0.0.0/0`."
-            ]
+              "When more than one route could apply, platforms usually select the most specific matching range. A route to `10.20.0.0/16` is more specific than a route to `0.0.0.0/0`.",
+            ],
           },
           {
             kind: "prose",
@@ -1400,61 +1458,61 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "For a VM to reach the internet directly, it needs an allowed egress firewall rule and either an external IP address or Cloud NAT.",
               "**Azure**",
               "Azure uses system routes and explicit outbound options instead of an AWS-style internet gateway resource. A subnet has a default route to the internet unless you override it with a user-defined route.",
-              "For production private workloads, use an explicit outbound method such as Azure NAT Gateway rather than relying on default outbound access."
-            ]
+              "For production private workloads, use an explicit outbound method such as Azure NAT Gateway rather than relying on default outbound access.",
+            ],
           },
           {
             kind: "prose",
             heading: "3. NAT: private outbound access",
             body: [
               "NAT, or Network Address Translation, lets a private resource start an internet connection using a public IP owned by the NAT service.",
-              "The resource can download updates, call an API, or access a package registry. Internet users cannot initiate a new connection back to that private resource through NAT."
-            ]
+              "The resource can download updates, call an API, or access a package registry. Internet users cannot initiate a new connection back to that private resource through NAT.",
+            ],
           },
           {
             kind: "image",
             src: natImg,
             alt: "NAT",
-            caption: "NAT: Allowing private outbound access"
+            caption: "NAT: Allowing private outbound access",
           },
           {
             kind: "prose",
             heading: "4. Firewalls and Security Rules",
             body: [
-              "Security rules act as network gatekeepers, controlling traffic based on source, destination, protocol, port, direction, and action. AWS Security Groups, Google Cloud Firewall Rules, and Azure NSGs all use different names, but they share the same goal: restricting communication to only authorized paths."
-            ]
+              "Security rules act as network gatekeepers, controlling traffic based on source, destination, protocol, port, direction, and action. AWS Security Groups, Google Cloud Firewall Rules, and Azure NSGs all use different names, but they share the same goal: restricting communication to only authorized paths.",
+            ],
           },
           {
             kind: "image",
             src: firewallsImg,
             alt: "Firewalls and Security Rules",
-            caption: "Firewalls and Security Rules: Network gatekeepers"
+            caption: "Firewalls and Security Rules: Network gatekeepers",
           },
           {
             kind: "prose",
             heading: "A Cloud-Neutral Data Platform Design",
             body: [
-              "This architecture applies the principle of **least privilege** across cloud providers. By restricting public access to an entry-point load balancer and locking downstream traffic into private subnets, each processing step only receives the specific access it needs to function safely."
-            ]
+              "This architecture applies the principle of **least privilege** across cloud providers. By restricting public access to an entry-point load balancer and locking downstream traffic into private subnets, each processing step only receives the specific access it needs to function safely.",
+            ],
           },
           {
             kind: "image",
             src: dataPlatformDesignImg,
             alt: "Data Platform Design",
-            caption: "Data Platform Design: Applying the principle of least privilege"
+            caption: "Data Platform Design: Applying the principle of least privilege",
           },
           {
             kind: "prose",
             heading: "Platform Mapping",
             body: [
-              "Every major cloud provider uses different product names for the exact same networking primitives. Whether managing routing, internet access, firewalls, or private endpoints, AWS, Google Cloud, and Azure all achieve identical architectural outcomes."
-            ]
+              "Every major cloud provider uses different product names for the exact same networking primitives. Whether managing routing, internet access, firewalls, or private endpoints, AWS, Google Cloud, and Azure all achieve identical architectural outcomes.",
+            ],
           },
           {
             kind: "image",
             src: platformMappingImg,
             alt: "Platform Mapping",
-            caption: "Platform Mapping: Provider names for networking primitives"
+            caption: "Platform Mapping: Provider names for networking primitives",
           },
           {
             kind: "prose",
@@ -1465,8 +1523,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Giving private workloads public IP addresses:** Prefer NAT for outbound access.",
               "**Allowing 0.0.0.0/0 to sensitive ports:** Never expose database or admin ports broadly.",
               "**Using only IP addresses for access rules:** Use workload or service groups when the platform supports them.",
-              "**Forgetting return traffic:** This matters especially with stateless controls such as AWS Network ACLs."
-            ]
+              "**Forgetting return traffic:** This matters especially with stateless controls such as AWS Network ACLs.",
+            ],
           },
           {
             kind: "takeaways",
@@ -1475,8 +1533,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Security controls decide whether traffic is allowed.",
               "Internet gateways support direct internet paths.",
               "NAT gives private workloads safe outbound internet access.",
-              "AWS Security Groups, Google Cloud firewall rules, and Azure NSGs all control network access in different ways."
-            ]
+              "AWS Security Groups, Google Cloud firewall rules, and Azure NSGs all control network access in different ways.",
+            ],
           },
           {
             kind: "quiz",
@@ -1488,10 +1546,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It allows or denies traffic.",
                   "It chooses the next path for traffic based on the destination address.",
                   "It provides a public IP to private resources.",
-                  "It restricts communication to only authorized paths."
+                  "It restricts communication to only authorized paths.",
                 ],
                 correctIndex: 1,
-                explanation: "A route table selects a path based on the destination IP. It does not enforce security."
+                explanation:
+                  "A route table selects a path based on the destination IP. It does not enforce security.",
               },
               {
                 id: "ct-2",
@@ -1500,10 +1559,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Outbound internet access for private resources without accepting unsolicited inbound connections.",
                   "Inbound internet access directly to databases.",
                   "A way to block all traffic entering the VPC.",
-                  "A method for routing traffic to another VPC."
+                  "A method for routing traffic to another VPC.",
                 ],
                 correctIndex: 0,
-                explanation: "Network Address Translation allows resources in a private subnet to securely initiate outbound connections to the internet."
+                explanation:
+                  "Network Address Translation allows resources in a private subnet to securely initiate outbound connections to the internet.",
               },
               {
                 id: "ct-3",
@@ -1512,10 +1572,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Yes, if the rule is configured with an IP address.",
                   "No. A firewall rule allows or denies traffic. A route decides where it goes.",
                   "Yes, in Google Cloud.",
-                  "No, but a route can replace a firewall rule."
+                  "No, but a route can replace a firewall rule.",
                 ],
                 correctIndex: 1,
-                explanation: "Routing and security are two distinct networking functions. You always need both."
+                explanation:
+                  "Routing and security are two distinct networking functions. You always need both.",
               },
               {
                 id: "ct-4",
@@ -1524,10 +1585,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Azure NAT Gateway",
                   "Azure VNet",
                   "A Network Security Group",
-                  "Azure Firewall Appliance"
+                  "Azure Firewall Appliance",
                 ],
                 correctIndex: 2,
-                explanation: "Azure Network Security Groups (NSGs) function similarly to AWS Security Groups by enforcing traffic rules at the subnet or network interface level."
+                explanation:
+                  "Azure Network Security Groups (NSGs) function similarly to AWS Security Groups by enforcing traffic rules at the subnet or network interface level.",
               },
               {
                 id: "ct-5",
@@ -1536,19 +1598,21 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "To save on cloud costs.",
                   "It should accept traffic only from approved internal workloads, not directly from the internet.",
                   "Because databases do not have IP addresses.",
-                  "Because they require a NAT Gateway to function."
+                  "Because they require a NAT Gateway to function.",
                 ],
                 correctIndex: 1,
-                explanation: "Keeping databases in private subnets is a core security practice to prevent unauthorized internet exposure."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Keeping databases in private subnets is a core security practice to prevent unauthorized internet exposure.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "foundations-quiz",
         title: "1.9 Foundations Quiz",
-        subtitle: "Test your knowledge of the core concepts covered in the Data Engineering Foundations track.",
+        subtitle:
+          "Test your knowledge of the core concepts covered in the Data Engineering Foundations track.",
         sections: [
           {
             kind: "quiz",
@@ -1556,15 +1620,17 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             questions: [
               {
                 id: "fq-1",
-                question: "What is the primary role of a data engineer compared to a data scientist?",
+                question:
+                  "What is the primary role of a data engineer compared to a data scientist?",
                 options: [
                   "To train machine learning models to predict future trends.",
                   "To build and maintain systems that collect, clean, and deliver data reliably.",
                   "To design the user interface for internal business dashboards.",
-                  "To manage the company's financial budget for cloud resources."
+                  "To manage the company's financial budget for cloud resources.",
                 ],
                 correctIndex: 1,
-                explanation: "While data scientists focus on analyzing data and building models, data engineers build the infrastructure and pipelines that make that data available in the first place."
+                explanation:
+                  "While data scientists focus on analyzing data and building models, data engineers build the infrastructure and pipelines that make that data available in the first place.",
               },
               {
                 id: "fq-2",
@@ -1573,22 +1639,25 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Because they sit between the systems that produce data and the people or products that need to consume it.",
                   "Because they are responsible for physically connecting server racks.",
                   "Because they write the software that customers interact with directly.",
-                  "Because they translate business language into foreign languages."
+                  "Because they translate business language into foreign languages.",
                 ],
                 correctIndex: 0,
-                explanation: "Data engineers connect upstream data producers (like software applications) to downstream data consumers (like analysts and dashboards)."
+                explanation:
+                  "Data engineers connect upstream data producers (like software applications) to downstream data consumers (like analysts and dashboards).",
               },
               {
                 id: "fq-3",
-                question: "What is the main difference between an OLTP database and an OLAP data warehouse?",
+                question:
+                  "What is the main difference between an OLTP database and an OLAP data warehouse?",
                 options: [
                   "OLTP is for slow, analytical queries; OLAP is for fast, single-row transactions.",
                   "OLTP handles fast, everyday application transactions; OLAP is designed for complex analytical queries over large datasets.",
                   "OLTP is strictly for unstructured data; OLAP is strictly for structured data.",
-                  "There is no difference; the terms are used interchangeably."
+                  "There is no difference; the terms are used interchangeably.",
                 ],
                 correctIndex: 1,
-                explanation: "Online Transaction Processing (OLTP) is optimized for quick reads/writes of individual records, whereas Online Analytical Processing (OLAP) is optimized for scanning and aggregating large volumes of data."
+                explanation:
+                  "Online Transaction Processing (OLTP) is optimized for quick reads/writes of individual records, whereas Online Analytical Processing (OLAP) is optimized for scanning and aggregating large volumes of data.",
               },
               {
                 id: "fq-4",
@@ -1597,46 +1666,48 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A strictly formatted CSV file containing daily sales totals.",
                   "A relational database table of user profiles.",
                   "A folder full of customer support audio recordings.",
-                  "A spreadsheet with rows and columns."
+                  "A spreadsheet with rows and columns.",
                 ],
                 correctIndex: 2,
-                explanation: "Audio recordings, raw text, and images are unstructured data because they do not fit neatly into tabular rows and columns."
+                explanation:
+                  "Audio recordings, raw text, and images are unstructured data because they do not fit neatly into tabular rows and columns.",
               },
               {
                 id: "fq-5",
-                question: "Which language is the most universally essential for a data engineer when filtering, aggregating, and joining data across almost all modern data warehouses?",
-                options: [
-                  "Java",
-                  "C++",
-                  "SQL",
-                  "Rust"
-                ],
+                question:
+                  "Which language is the most universally essential for a data engineer when filtering, aggregating, and joining data across almost all modern data warehouses?",
+                options: ["Java", "C++", "SQL", "Rust"],
                 correctIndex: 2,
-                explanation: "SQL (Structured Query Language) is the lingua franca of data engineering, used to query and transform data in nearly every relational database and data warehouse."
+                explanation:
+                  "SQL (Structured Query Language) is the lingua franca of data engineering, used to query and transform data in nearly every relational database and data warehouse.",
               },
               {
                 id: "fq-6",
-                question: "What is the purpose of a data orchestration tool (like Airflow or Dagster)?",
+                question:
+                  "What is the purpose of a data orchestration tool (like Airflow or Dagster)?",
                 options: [
                   "To generate beautiful charts and graphs for executives.",
                   "To schedule, run, and monitor data pipelines in the correct order while handling failures.",
                   "To compress data files before sending them over the internet.",
-                  "To secure passwords and sensitive API keys."
+                  "To secure passwords and sensitive API keys.",
                 ],
                 correctIndex: 1,
-                explanation: "Orchestration tools manage the complex dependencies of data pipelines, ensuring tasks run in the right sequence and providing alerts if something breaks."
+                explanation:
+                  "Orchestration tools manage the complex dependencies of data pipelines, ensuring tasks run in the right sequence and providing alerts if something breaks.",
               },
               {
                 id: "fq-7",
-                question: "In the context of a data pipeline, who are typically considered 'upstream' stakeholders?",
+                question:
+                  "In the context of a data pipeline, who are typically considered 'upstream' stakeholders?",
                 options: [
                   "Data analysts who write SQL queries against the final data warehouse.",
                   "Executives who consume weekly sales dashboards.",
                   "Software engineers who build the application that generates the raw data.",
-                  "Machine learning models that require training data."
+                  "Machine learning models that require training data.",
                 ],
                 correctIndex: 2,
-                explanation: "Upstream stakeholders own or influence the source systems that produce the raw data entering the pipeline."
+                explanation:
+                  "Upstream stakeholders own or influence the source systems that produce the raw data entering the pipeline.",
               },
               {
                 id: "fq-8",
@@ -1645,46 +1716,53 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Building a recommendation engine that suggests products to customers on an e-commerce website.",
                   "Providing a live dashboard showing delivery times to external clients.",
                   "Creating a clean dataset of daily sales so the company's finance team can run their monthly reports.",
-                  "Sending automated marketing emails to users."
+                  "Sending automated marketing emails to users.",
                 ],
                 correctIndex: 2,
-                explanation: "Internal-facing work supports the company's own employees, such as analysts, executives, or finance teams."
+                explanation:
+                  "Internal-facing work supports the company's own employees, such as analysts, executives, or finance teams.",
               },
               {
                 id: "fq-9",
-                question: "When gathering requirements for a new data pipeline, why is defining 'data freshness' critical?",
+                question:
+                  "When gathering requirements for a new data pipeline, why is defining 'data freshness' critical?",
                 options: [
                   "It determines whether data needs to be updated continuously or on a schedule, which massively impacts system cost and complexity.",
                   "It is a legal requirement for compliance with privacy laws.",
                   "It dictates which programming language must be used to write the code.",
-                  "It ensures the data has a pleasant visual design on dashboards."
+                  "It ensures the data has a pleasant visual design on dashboards.",
                 ],
                 correctIndex: 0,
-                explanation: "Building a real-time streaming pipeline is much more complex and expensive than a daily batch pipeline, so determining how 'fresh' the data actually needs to be is crucial."
+                explanation:
+                  "Building a real-time streaming pipeline is much more complex and expensive than a daily batch pipeline, so determining how 'fresh' the data actually needs to be is crucial.",
               },
               {
                 id: "fq-10",
-                question: "Why is it important for a data engineer to agree on 'shared definitions' (e.g., what constitutes a 'daily sale') before building a pipeline?",
+                question:
+                  "Why is it important for a data engineer to agree on 'shared definitions' (e.g., what constitutes a 'daily sale') before building a pipeline?",
                 options: [
                   "So that the code executes faster in the cloud.",
                   "Because without shared definitions, different dashboards might calculate the same metric in different ways, leading to confusion and mistrust.",
                   "It reduces the amount of storage space needed in a data lake.",
-                  "It allows the pipeline to skip the transformation phase entirely."
+                  "It allows the pipeline to skip the transformation phase entirely.",
                 ],
                 correctIndex: 1,
-                explanation: "A single, agreed-upon definition (the 'single source of truth') ensures consistency across all reporting and analysis within the organization."
+                explanation:
+                  "A single, agreed-upon definition (the 'single source of truth') ensures consistency across all reporting and analysis within the organization.",
               },
               {
                 id: "fq-11",
-                question: "In the typical cloud data lifecycle, what happens during the 'Ingest' phase?",
+                question:
+                  "In the typical cloud data lifecycle, what happens during the 'Ingest' phase?",
                 options: [
                   "Data is presented to users via a BI dashboard.",
                   "Data is collected from various sources and enters the data platform.",
                   "Data is joined, cleaned, and heavily modeled.",
-                  "A user clicks a button on a website, generating an event."
+                  "A user clicks a button on a website, generating an event.",
                 ],
                 correctIndex: 1,
-                explanation: "The ingestion phase is where data is moved from its source (like a database or API) into the cloud data platform."
+                explanation:
+                  "The ingestion phase is where data is moved from its source (like a database or API) into the cloud data platform.",
               },
               {
                 id: "fq-12",
@@ -1693,10 +1771,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A data lake stores raw, varied data types (JSON, CSV, images), while a data warehouse stores highly curated, structured data organized for fast analytical querying.",
                   "A data lake is used exclusively for financial data; a data warehouse is used for user behavior data.",
                   "A data warehouse can hold infinitely more data than a data lake.",
-                  "A data lake only exists on-premises, while data warehouses only exist in the cloud."
+                  "A data lake only exists on-premises, while data warehouses only exist in the cloud.",
                 ],
                 correctIndex: 0,
-                explanation: "Data lakes are flexible repositories for all raw data, whereas warehouses are structured and optimized specifically for SQL-based analytics."
+                explanation:
+                  "Data lakes are flexible repositories for all raw data, whereas warehouses are structured and optimized specifically for SQL-based analytics.",
               },
               {
                 id: "fq-13",
@@ -1705,40 +1784,45 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A script that downloads a CSV of daily expenses every night at midnight.",
                   "A pipeline that loads historical tax records from the previous decade once a year.",
                   "A fraud detection system that analyzes and ingests credit card swipes in near real-time as they happen.",
-                  "A monthly payroll report generation task."
+                  "A monthly payroll report generation task.",
                 ],
                 correctIndex: 2,
-                explanation: "Streaming ingestion processes events continuously and with very low latency, which is essential for immediate actions like fraud detection."
+                explanation:
+                  "Streaming ingestion processes events continuously and with very low latency, which is essential for immediate actions like fraud detection.",
               },
               {
                 id: "fq-14",
-                question: "Which set of cloud services correctly corresponds to the 'Data Warehouse' concept across AWS, Google Cloud, and Azure?",
+                question:
+                  "Which set of cloud services correctly corresponds to the 'Data Warehouse' concept across AWS, Google Cloud, and Azure?",
                 options: [
                   "Amazon S3, Cloud Storage, Azure Data Lake Storage",
                   "Amazon Redshift, Google BigQuery, Azure Synapse Analytics",
                   "Amazon Kinesis, Google Pub/Sub, Azure Event Hubs",
-                  "AWS Glue, Google Dataflow, Azure Databricks"
+                  "AWS Glue, Google Dataflow, Azure Databricks",
                 ],
                 correctIndex: 1,
-                explanation: "Redshift (AWS), BigQuery (Google Cloud), and Synapse Analytics (Azure) are the primary managed data warehouse solutions for their respective platforms."
+                explanation:
+                  "Redshift (AWS), BigQuery (Google Cloud), and Synapse Analytics (Azure) are the primary managed data warehouse solutions for their respective platforms.",
               },
               {
                 id: "fq-15",
-                question: "Why is it a mistake to treat a cloud migration simply as a 'one-time copy' of data?",
+                question:
+                  "Why is it a mistake to treat a cloud migration simply as a 'one-time copy' of data?",
                 options: [
                   "Because cloud providers require you to manually click 'copy' every single day.",
                   "Because moving the data is only the first step; the system still requires validation, security controls, monitoring, and continuous cost optimization.",
                   "Because data automatically corrupts after 24 hours in the cloud if not re-copied.",
-                  "Because you cannot delete on-premises servers after moving to the cloud."
+                  "Because you cannot delete on-premises servers after moving to the cloud.",
                 ],
                 correctIndex: 1,
-                explanation: "A successful migration involves ongoing tuning of query performance, managing access policies, and optimizing cloud costs long after the initial data transfer is complete."
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                explanation:
+                  "A successful migration involves ongoing tuning of query performance, managing access policies, and optimizing cloud costs long after the initial data transfer is complete.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   "data-engineering-lifecycle": {
     title: "2. The Data Engineering Lifecycle",
@@ -1747,29 +1831,31 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
       {
         slug: "data-generation-and-source-systems",
         title: "2.1 Data Generation and Source Systems",
-        subtitle: "Learn where data begins and how to evaluate a source before building a pipeline.",
+        subtitle:
+          "Learn where data begins and how to evaluate a source before building a pipeline.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "Every data pipeline starts with a source system. If you do not understand how that system creates, stores, and changes data, your pipeline will eventually produce incorrect results or break unexpectedly.",
-              "Data engineers usually do not own source systems. They need to work closely with the teams that do."
-            ]
+              "Data engineers usually do not own source systems. They need to work closely with the teams that do.",
+            ],
           },
           {
             kind: "image",
             src: sourceSystemsImg,
             alt: "Source Systems",
-            caption: "Application database, SaaS tool, API, and IoT devices all send data toward one pipeline."
+            caption:
+              "Application database, SaaS tool, API, and IoT devices all send data toward one pipeline.",
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
               "A source system is the original location where data is created.",
-              "Common sources include:"
-            ]
+              "Common sources include:",
+            ],
           },
           {
             kind: "list",
@@ -1780,21 +1866,19 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "SaaS tools such as CRM or payment platforms",
               "Message queues",
               "Log files",
-              "Sensors and IoT devices"
-            ]
+              "Sensors and IoT devices",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "A checkout database, for example, may create an order record when a customer completes a purchase. That record can later be used for finance reporting, marketing analysis, and product insights."
-            ]
+              "A checkout database, for example, may create an order record when a customer completes a purchase. That record can later be used for finance reporting, marketing analysis, and product insights.",
+            ],
           },
           {
             kind: "prose",
             heading: "Understand the source before ingesting it",
-            body: [
-              "Ask these questions before you build:"
-            ]
+            body: ["Ask these questions before you build:"],
           },
           {
             kind: "list",
@@ -1803,14 +1887,14 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**What does the data mean?** Confirm the meaning of fields such as status, revenue, or created_at.",
               "**How is data stored?** It may live in a relational database, a document store, a queue, or short-lived logs.",
               "**How fast does it arrive?** A daily CSV file and thousands of events per second need different designs.",
-              "**How long is it retained?** Some source data is deleted quickly. Capture it before it is lost if you need historical analysis."
-            ]
+              "**How long is it retained?** Some source data is deleted quickly. Capture it before it is lost if you need historical analysis.",
+            ],
           },
           {
             kind: "callout",
             tone: "info",
             title: "Source-System Checklist",
-            body: "A source-system checklist fills in ownership, schema, frequency, volume, and retention."
+            body: "A source-system checklist fills in ownership, schema, frequency, volume, and retention.",
           },
           {
             kind: "prose",
@@ -1818,21 +1902,21 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "A schema describes the structure of data, such as field names, types, and relationships.",
               "A source team may rename customer_email, change a number into text, or add a new order status. These changes can break transformations and dashboards.",
-              "Treat the source schema as a contract. Document it, monitor it, and agree with source owners on how changes will be communicated."
-            ]
+              "Treat the source schema as a contract. Document it, monitor it, and agree with source owners on how changes will be communicated.",
+            ],
           },
           {
             kind: "prose",
             heading: "A simple example",
             body: [
-              "Unannounced schema changes break downstream dashboards. Establishing a formal data contract ensures source teams communicate updates early, letting pipelines handle field migrations smoothly without disrupting business reporting."
-            ]
+              "Unannounced schema changes break downstream dashboards. Establishing a formal data contract ensures source teams communicate updates early, letting pipelines handle field migrations smoothly without disrupting business reporting.",
+            ],
           },
           {
             kind: "image",
             src: journeyFitnessAppImg,
             alt: "Fitness app schema change example",
-            caption: "A fitness app schema change example"
+            caption: "A fitness app schema change example",
           },
           {
             kind: "list",
@@ -1841,16 +1925,16 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Assuming source data is clean:** Application data is built for operations, not always analytics.",
               "**Ignoring source ownership:** Every important source needs a clear owner.",
               "**Skipping schema monitoring:** Small source changes can cause large downstream problems.",
-              "**Collecting sensitive fields without a purpose:** Ingest only what you need."
-            ]
+              "**Collecting sensitive fields without a purpose:** Ingest only what you need.",
+            ],
           },
           {
             kind: "takeaways",
             items: [
               "Source systems create the data used by pipelines.",
               "Data engineers need to understand source ownership, schema, frequency, volume, and retention.",
-              "Source changes should be treated as planned changes, not surprises."
-            ]
+              "Source changes should be treated as planned changes, not surprises.",
+            ],
           },
           {
             kind: "quiz",
@@ -1862,10 +1946,10 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The system where data originates.",
                   "A dashboard used by executives.",
                   "The data warehouse where data is stored.",
-                  "The team that writes SQL queries."
+                  "The team that writes SQL queries.",
                 ],
                 correctIndex: 0,
-                explanation: "A source system is the original location where data is created."
+                explanation: "A source system is the original location where data is created.",
               },
               {
                 id: "ds-quiz-2",
@@ -1874,10 +1958,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "To know who to fire when data goes missing.",
                   "To understand the data and respond when the source changes.",
                   "Because data engineers never write their own code.",
-                  "To give them access to the data warehouse."
+                  "To give them access to the data warehouse.",
                 ],
                 correctIndex: 1,
-                explanation: "Knowing the source owner allows you to communicate effectively when fields change or data is missing."
+                explanation:
+                  "Knowing the source owner allows you to communicate effectively when fields change or data is missing.",
               },
               {
                 id: "ds-quiz-3",
@@ -1886,76 +1971,75 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The structure and meaning of a dataset’s fields.",
                   "A tool for moving data.",
                   "A type of data pipeline.",
-                  "A common mistake when collecting data."
+                  "A common mistake when collecting data.",
                 ],
                 correctIndex: 0,
-                explanation: "A schema describes the structure of data, such as field names, types, and relationships."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "A schema describes the structure of data, such as field names, types, and relationships.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "data-ingestion-and-storage",
         title: "2.2 Data Ingestion and Storage",
-        subtitle: "Learn how to move data from sources into storage, and how to choose the right storage for your needs.",
+        subtitle:
+          "Learn how to move data from sources into storage, and how to choose the right storage for your needs.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "Data has little value if it cannot move reliably from its source to the people and systems that need it.",
-              "Ingestion brings data into the platform. Storage makes it available for processing, analysis, and future use."
-            ]
+              "Ingestion brings data into the platform. Storage makes it available for processing, analysis, and future use.",
+            ],
           },
           {
             kind: "image",
             src: ingestionVsStorageImg,
             alt: "Ingestion vs Storage",
-            caption: "Ingestion is moving data; storage is keeping it."
+            caption: "Ingestion is moving data; storage is keeping it.",
           },
           {
             kind: "prose",
             heading: "The core idea",
             body: [
-              "Ingestion is the process of getting data from source systems into your data platform. Storage is where you keep that data once it arrives. These two stages are tightly connected: how you ingest affects where and how you store, and your storage choices affect how you can ingest in the future."
-            ]
+              "Ingestion is the process of getting data from source systems into your data platform. Storage is where you keep that data once it arrives. These two stages are tightly connected: how you ingest affects where and how you store, and your storage choices affect how you can ingest in the future.",
+            ],
           },
           {
             kind: "prose",
             heading: "Step-by-step",
             body: [
               "**1. Choose between batch and streaming ingestion**",
-              "Virtually all data is generated continuously, but you can ingest it in two main ways:"
-            ]
+              "Virtually all data is generated continuously, but you can ingest it in two main ways:",
+            ],
           },
           {
             kind: "list",
             items: [
               "**Batch ingestion** - Moves data on a set schedule or threshold (nightly exports, hourly updates). It is simpler, cheaper, and ideal when real-time availability is unnecessary.",
-              "**Streaming ingestion:** Processes events continuously in near-real time (fraud detection, live clickstreams). It adds technical complexity and cost, so use it only when speed directly enables a real business action."
-            ]
+              "**Streaming ingestion:** Processes events continuously in near-real time (fraud detection, live clickstreams). It adds technical complexity and cost, so use it only when speed directly enables a real business action.",
+            ],
           },
           {
             kind: "image",
             src: batchVsStreamingImg,
             alt: "Batch vs Streaming Ingestion",
-            caption: "Batch runs on a schedule; Streaming processes events as they happen."
+            caption: "Batch runs on a schedule; Streaming processes events as they happen.",
           },
           {
             kind: "prose",
-            body: [
-              "**2. Push, pull, and CDC**",
-              "Data can enter a pipeline in different ways:"
-            ]
+            body: ["**2. Push, pull, and CDC**", "Data can enter a pipeline in different ways:"],
           },
           {
             kind: "list",
             items: [
               "**Push:** The source sends data to the pipeline.",
               "**Pull:** The pipeline retrieves data from the source.",
-              "**Change Data Capture, or CDC:** The pipeline captures inserted, updated, or deleted records from a database."
-            ]
+              "**Change Data Capture, or CDC:** The pipeline captures inserted, updated, or deleted records from a database.",
+            ],
           },
           {
             kind: "prose",
@@ -1963,18 +2047,18 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "For example, a scheduled pipeline may pull newly created orders every hour. A CDC pipeline can capture each order update as it happens.",
               "**3. Storage: keeping data available**",
               "Storage is not just a final destination. It supports ingestion, transformation, analysis, and serving.",
-              "Common storage systems include:"
-            ]
+              "Common storage systems include:",
+            ],
           },
           {
             kind: "list",
             items: [
               "**Databases (DBMS)** – for structured, transactional data. Great for fast reads and writes on individual records.",
-              "**Object storage** – like Amazon S3. Stores files as \"objects\" – cheap, scalable, and perfect for large volumes of raw data.",
+              '**Object storage** – like Amazon S3. Stores files as "objects" – cheap, scalable, and perfect for large volumes of raw data.',
               "**Data warehouses** – optimised for analytical queries. They store structured data from multiple sources and make it easy to run complex SELECT statements.",
               "**Data lakes** – hold raw data in its native format. Useful when you don't yet know how you'll use the data.",
-              "**Data lakehouses** – a hybrid that combines the flexibility of lakes with the performance of warehouses."
-            ]
+              "**Data lakehouses** – a hybrid that combines the flexibility of lakes with the performance of warehouses.",
+            ],
           },
           {
             kind: "prose",
@@ -1982,21 +2066,19 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "You'll often use more than one of these in a single architecture.",
               "**4. Consider data temperature**",
               "Not all data needs to be stored the same way. Hot data is accessed frequently maybe several times a second – and needs fast retrieval. Cold data is rarely queried and can be stored cheaply, even if retrieval is slow. Lukewarm sits in between.",
-              "Cloud providers offer different storage tiers for each temperature. Hot storage costs more per month but has low retrieval fees; cold storage is cheap to keep but expensive to access. Match your storage to how often you actually use the data."
-            ]
+              "Cloud providers offer different storage tiers for each temperature. Hot storage costs more per month but has low retrieval fees; cold storage is cheap to keep but expensive to access. Match your storage to how often you actually use the data.",
+            ],
           },
           {
             kind: "image",
             src: storageHierarchyImg,
             alt: "Storage Hierarchy by Temperature",
-            caption: "Match your storage tier to data temperature to balance cost and speed."
+            caption: "Match your storage tier to data temperature to balance cost and speed.",
           },
           {
             kind: "prose",
             heading: "Choosing the right approach",
-            body: [
-              "Ask these questions:"
-            ]
+            body: ["Ask these questions:"],
           },
           {
             kind: "list",
@@ -2006,27 +2088,28 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "What formats will arrive?",
               "Who will query the data later?",
               "What are the cost limits?",
-              "Can the storage system scale with future demand?"
-            ]
+              "Can the storage system scale with future demand?",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "Do not use row-by-row inserts for large data loads when a bulk load is available. Bulk loading is often faster and cheaper."
-            ]
+              "Do not use row-by-row inserts for large data loads when a bulk load is available. Bulk loading is often faster and cheaper.",
+            ],
           },
           {
             kind: "prose",
             heading: "A Simple Example",
             body: [
-              "This pipeline captures raw user events via Kafka and stores them in S3 before transforming them with Databricks. Cleaned aggregates then load into Snowflake, powering fast BI dashboards for business analysts."
-            ]
+              "This pipeline captures raw user events via Kafka and stores them in S3 before transforming them with Databricks. Cleaned aggregates then load into Snowflake, powering fast BI dashboards for business analysts.",
+            ],
           },
           {
             kind: "image",
             src: realTimeClicksExampleImg,
             alt: "Real-time Clicks Example",
-            caption: "A real-time clicks pipeline capturing events via Kafka, storing in S3, processing with Databricks, and loading to Snowflake."
+            caption:
+              "A real-time clicks pipeline capturing events via Kafka, storing in S3, processing with Databricks, and loading to Snowflake.",
           },
           {
             kind: "list",
@@ -2034,8 +2117,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             items: [
               "**Choosing streaming when batch would do:** Streaming adds complexity and cost. Only use it when you genuinely need sub‑second latency.",
               "**Storing everything in a data warehouse:** Warehouses are great for analytics but expensive for raw, rarely‑used data. Use object storage for cold data.",
-              "**Ignoring retrieval costs:** Cold storage is cheap to keep but can be surprisingly expensive to read from. Factor that into your planning."
-            ]
+              "**Ignoring retrieval costs:** Cold storage is cheap to keep but can be surprisingly expensive to read from. Factor that into your planning.",
+            ],
           },
           {
             kind: "takeaways",
@@ -2043,8 +2126,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Ingestion moves data from source systems into the platform.",
               "Batch, streaming, push, pull, and CDC solve different needs.",
               "Storage supports the entire lifecycle, not only one stage.",
-              "Choose tools based on freshness, scale, cost, and intended use."
-            ]
+              "Choose tools based on freshness, scale, cost, and intended use.",
+            ],
           },
           {
             kind: "quiz",
@@ -2056,10 +2139,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Batch moves data on a schedule. Streaming processes events continuously or with low delay.",
                   "Batch is only used for databases, while streaming is for logs.",
                   "Streaming is always cheaper than batch ingestion.",
-                  "Batch ingestion requires object storage, while streaming uses databases."
+                  "Batch ingestion requires object storage, while streaming uses databases.",
                 ],
                 correctIndex: 0,
-                explanation: "Batch ingestion processes data at set intervals (e.g. nightly), whereas streaming processes data as it arrives in near-real time."
+                explanation:
+                  "Batch ingestion processes data at set intervals (e.g. nightly), whereas streaming processes data as it arrives in near-real time.",
               },
               {
                 id: "is-quiz-2",
@@ -2068,10 +2152,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The location of the customer who made a purchase.",
                   "Changes made to records in a source database.",
                   "The total volume of data in object storage.",
-                  "The cost of running a data warehouse."
+                  "The cost of running a data warehouse.",
                 ],
                 correctIndex: 1,
-                explanation: "Change Data Capture (CDC) captures inserts, updates, and deletes from a source database."
+                explanation:
+                  "Change Data Capture (CDC) captures inserts, updates, and deletes from a source database.",
               },
               {
                 id: "is-quiz-3",
@@ -2080,33 +2165,35 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Relational database (DBMS)",
                   "Data warehouse",
                   "Object storage or a data lake",
-                  "A fast caching layer"
+                  "A fast caching layer",
                 ],
                 correctIndex: 2,
-                explanation: "Object storage (like Amazon S3) is cheap, scalable, and perfect for large volumes of raw files and logs, making it the foundation of a data lake."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Object storage (like Amazon S3) is cheap, scalable, and perfect for large volumes of raw files and logs, making it the foundation of a data lake.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "transforming-and-serving",
         title: "2.3 Transforming and Serving Data",
-        subtitle: "Learn how data becomes trustworthy, useful, and available to the people and products that need it.",
+        subtitle:
+          "Learn how data becomes trustworthy, useful, and available to the people and products that need it.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "Raw data is rarely ready for a dashboard, model, or customer-facing feature.",
-              "Transformation makes data understandable and reliable. Serving puts that prepared data in the hands of people and systems that can use it."
-            ]
+              "Transformation makes data understandable and reliable. Serving puts that prepared data in the hands of people and systems that can use it.",
+            ],
           },
           {
             kind: "image",
             src: rawToRealWorldImg,
             alt: "Raw to Real World",
-            caption: "Raw data transformed into real-world insights."
+            caption: "Raw data transformed into real-world insights.",
           },
           {
             kind: "prose",
@@ -2115,8 +2202,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Transformation is the work of changing raw data into a reliable structure for a specific use.",
               "It may make data cleaner, more consistent, easier to query, or more useful for a report or model.",
               "**What transformations do**",
-              "A transformation might:"
-            ]
+              "A transformation might:",
+            ],
           },
           {
             kind: "list",
@@ -2127,48 +2214,46 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Join related data together",
               "Calculate a new metric",
               "Group data into daily, weekly, or monthly totals",
-              "Create features for a machine learning model"
-            ]
+              "Create features for a machine learning model",
+            ],
           },
           {
             kind: "image",
             src: transformationImg,
             alt: "Transformation",
-            caption: "Various ways to transform data."
+            caption: "Various ways to transform data.",
           },
           {
             kind: "prose",
             heading: "Queries: Asking Data a Question",
             body: [
-              "A query translates a plain business question into structured SQL code that a database can execute. By filtering, joining, and aggregating raw records, it transforms raw data into clear, actionable answers."
-            ]
+              "A query translates a plain business question into structured SQL code that a database can execute. By filtering, joining, and aggregating raw records, it transforms raw data into clear, actionable answers.",
+            ],
           },
           {
             kind: "image",
             src: queriesImg,
             alt: "Queries",
-            caption: "A query asks a data system a question."
+            caption: "A query asks a data system a question.",
           },
           {
             kind: "prose",
             heading: "Watch out for poor queries",
-            body: [
-              "A poorly designed query can cause two major problems."
-            ]
+            body: ["A poorly designed query can cause two major problems."],
           },
           {
             kind: "list",
             items: [
               "**Slow performance:** The database scans too much data or performs unnecessary work.",
-              "**Row explosion:** A join creates far more rows than expected."
-            ]
+              "**Row explosion:** A join creates far more rows than expected.",
+            ],
           },
           {
             kind: "prose",
             body: [
               "For example, if one customer has three orders and two marketing records, joining both tables without care can produce six rows instead of three.",
-              "Before trusting a query, check:"
-            ]
+              "Before trusting a query, check:",
+            ],
           },
           {
             kind: "list",
@@ -2176,102 +2261,101 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Does the row count make sense?",
               "Is each join using the correct key?",
               "Does the output match the business definition?",
-              "Is the query reading more data than necessary?"
-            ]
+              "Is the query reading more data than necessary?",
+            ],
           },
           {
             kind: "prose",
             heading: "Data Modeling: Organizing Data for Use",
             body: [
-              "Data modeling transforms raw source tables into structured dimensional models. This eliminates the need for analysts to write complex joins while enforcing consistent business logic across all reporting."
-            ]
+              "Data modeling transforms raw source tables into structured dimensional models. This eliminates the need for analysts to write complex joins while enforcing consistent business logic across all reporting.",
+            ],
           },
           {
             kind: "image",
             src: dataModelingImg,
             alt: "Data Modeling",
-            caption: "Organizing data for clear and repeatable use."
+            caption: "Organizing data for clear and repeatable use.",
           },
           {
             kind: "prose",
             heading: "When transformation happens",
-            body: [
-              "Transformation does not only happen after ingestion."
-            ]
+            body: ["Transformation does not only happen after ingestion."],
           },
           {
             kind: "list",
             items: [
               "**Before ingestion:** A source application adds an event timestamp",
               "**During ingestion:** Convert incoming text values into correct data types",
-              "**After ingestion:** Build clean reporting tables and aggregates"
-            ]
+              "**After ingestion:** Build clean reporting tables and aggregates",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "The best location depends on the use case. Keep transformations close to where they create the most value and are easiest to maintain."
-            ]
+              "The best location depends on the use case. Keep transformations close to where they create the most value and are easiest to maintain.",
+            ],
           },
           {
             kind: "prose",
             heading: "Common Transformation Patterns",
             body: [
-              "Data transformations shape raw events into reliable inputs for analytics and machine learning. Through standardization, enrichment, aggregation, and featurization, pipelines turn messy records into consistent business insights and predictive signals."
-            ]
+              "Data transformations shape raw events into reliable inputs for analytics and machine learning. Through standardization, enrichment, aggregation, and featurization, pipelines turn messy records into consistent business insights and predictive signals.",
+            ],
           },
           {
             kind: "image",
             src: commonTransformationPatternsImg,
             alt: "Common Transformation Patterns",
-            caption: "Standardization, enrichment, aggregation, and featurization."
+            caption: "Standardization, enrichment, aggregation, and featurization.",
           },
           {
             kind: "prose",
             heading: "Part 2: Serving data",
             body: [
               "Serving is the final step: making prepared data available to a person, product, or system.",
-              "Data is not valuable because it is stored. It becomes valuable when it supports a decision or action."
-            ]
+              "Data is not valuable because it is stored. It becomes valuable when it supports a decision or action.",
+            ],
           },
           {
             kind: "prose",
             heading: "Three Common Ways to Serve Data",
             body: [
-              "Data serving targets three distinct user needs: Business Intelligence for historical decisions, Operational Analytics for immediate action, and Embedded Analytics for customer-facing applications. Matching the consumption pattern to the right delivery method ensures data drives practical value."
-            ]
+              "Data serving targets three distinct user needs: Business Intelligence for historical decisions, Operational Analytics for immediate action, and Embedded Analytics for customer-facing applications. Matching the consumption pattern to the right delivery method ensures data drives practical value.",
+            ],
           },
           {
             kind: "image",
             src: threeCommonWaysServeImg,
             alt: "Three Common Ways to Serve Data",
-            caption: "BI, Operational Analytics, and Embedded Analytics."
+            caption: "BI, Operational Analytics, and Embedded Analytics.",
           },
           {
             kind: "prose",
             heading: "Closing the Loop: From ML Predictions to Business Action",
             body: [
-              "Serving data to machine learning models provides the consistent features needed for accurate predictions. Reverse ETL takes those calculated insights and syncs them back into daily tools like CRMs, turning raw analytics into direct business action."
-            ]
+              "Serving data to machine learning models provides the consistent features needed for accurate predictions. Reverse ETL takes those calculated insights and syncs them back into daily tools like CRMs, turning raw analytics into direct business action.",
+            ],
           },
           {
             kind: "image",
             src: closingLoopImg,
             alt: "Closing the Loop",
-            caption: "Syncing data from the data platform back into operational tools via Reverse ETL."
+            caption:
+              "Syncing data from the data platform back into operational tools via Reverse ETL.",
           },
           {
             kind: "prose",
             heading: "Turning Data into Action: Reducing Product Returns",
             body: [
-              "This end-to-end flow demonstrates how raw order events are ingested, transformed, modeled, and queried to drive business decisions. By surfacing return rates on a BI dashboard, product teams can address root causes directly rather than relying on unvalidated data."
-            ]
+              "This end-to-end flow demonstrates how raw order events are ingested, transformed, modeled, and queried to drive business decisions. By surfacing return rates on a BI dashboard, product teams can address root causes directly rather than relying on unvalidated data.",
+            ],
           },
           {
             kind: "image",
             src: dataIntoActionImg,
             alt: "Data into Action",
-            caption: "End-to-end flow: Ingest, transform, model, query, and take action."
+            caption: "End-to-end flow: Ingest, transform, model, query, and take action.",
           },
           {
             kind: "list",
@@ -2282,8 +2366,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Ignoring row explosion:** Check row counts after joins.",
               "**Serving raw sensitive data:** Give users only the fields and access they need.",
               "**Building dashboards nobody uses:** Start with a real question or workflow.",
-              "**Treating reverse ETL as an afterthought:** Validate what is written back into operational tools."
-            ]
+              "**Treating reverse ETL as an afterthought:** Validate what is written back into operational tools.",
+            ],
           },
           {
             kind: "takeaways",
@@ -2292,8 +2376,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Queries retrieve and shape data to answer questions.",
               "Data modeling organizes information for repeatable business use.",
               "Serving delivers data to analysts, products, and ML systems.",
-              "Reverse ETL turns analytical output into operational action."
-            ]
+              "Reverse ETL turns analytical output into operational action.",
+            ],
           },
           {
             kind: "quiz",
@@ -2305,10 +2389,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Changing raw data into a reliable structure for a specific use.",
                   "Moving data from a database to object storage.",
                   "Securing data from unauthorized access.",
-                  "Connecting a dashboard to a data warehouse."
+                  "Connecting a dashboard to a data warehouse.",
                 ],
                 correctIndex: 0,
-                explanation: "Transformation takes raw data and modifies it (e.g., standardizing formats or aggregating records) to make it ready for analysis."
+                explanation:
+                  "Transformation takes raw data and modifies it (e.g., standardizing formats or aggregating records) to make it ready for analysis.",
               },
               {
                 id: "ts-quiz-2",
@@ -2317,10 +2402,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A request to read or work with records in a data system.",
                   "A tool for moving data into object storage.",
                   "A method for changing source data.",
-                  "A common mistake in data pipelines."
+                  "A common mistake in data pipelines.",
                 ],
                 correctIndex: 0,
-                explanation: "A query asks a question of your data by filtering, joining, and aggregating raw records."
+                explanation:
+                  "A query asks a question of your data by filtering, joining, and aggregating raw records.",
               },
               {
                 id: "ts-quiz-3",
@@ -2329,10 +2415,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A database crash caused by too much storage.",
                   "When a join creates more records than expected.",
                   "A sudden increase in user activity.",
-                  "The process of deleting old records."
+                  "The process of deleting old records.",
                 ],
                 correctIndex: 1,
-                explanation: "Row explosion happens when a poorly designed join matches multiple rows in both tables, multiplying the record count."
+                explanation:
+                  "Row explosion happens when a poorly designed join matches multiple rows in both tables, multiplying the record count.",
               },
               {
                 id: "ts-quiz-4",
@@ -2341,10 +2428,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "BI explores business performance and trends. Operational analytics supports immediate action.",
                   "BI is used for real-time data, while operational analytics is used for batch data.",
                   "BI only uses object storage, while operational analytics uses databases.",
-                  "BI is for engineers, while operational analytics is for managers."
+                  "BI is for engineers, while operational analytics is for managers.",
                 ],
                 correctIndex: 0,
-                explanation: "BI typically powers dashboards for strategic or historical decisions, whereas operational analytics drives day-to-day or automated actions."
+                explanation:
+                  "BI typically powers dashboards for strategic or historical decisions, whereas operational analytics drives day-to-day or automated actions.",
               },
               {
                 id: "ts-quiz-5",
@@ -2353,124 +2441,126 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Extracting data from a warehouse into a data lake.",
                   "Sending prepared data from the data platform back into operational tools.",
                   "The process of cleaning raw data.",
-                  "Deleting sensitive data from source systems."
+                  "Deleting sensitive data from source systems.",
                 ],
                 correctIndex: 1,
-                explanation: "Reverse ETL takes transformed data or insights from the data platform and syncs them back into SaaS tools like CRMs."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "Reverse ETL takes transformed data or insights from the data platform and syncs them back into SaaS tools like CRMs.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "undercurrents-reliable-data",
         title: "2.4 The Undercurrents: Practices That Keep Data Reliable",
-        subtitle: "Learn the six practices that make data systems secure, trusted, reliable, and easier to change.",
+        subtitle:
+          "Learn the six practices that make data systems secure, trusted, reliable, and easier to change.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
               "A pipeline can run on schedule and still fail the business.",
-              "It may expose private data, produce an incorrect metric, cost far more than expected, or break without anyone noticing. The undercurrents are the engineering practices that prevent those failures across every lifecycle stage."
-            ]
+              "It may expose private data, produce an incorrect metric, cost far more than expected, or break without anyone noticing. The undercurrents are the engineering practices that prevent those failures across every lifecycle stage.",
+            ],
           },
           {
             kind: "image",
             src: strongFoundationsImg,
             alt: "Strong Foundations",
-            caption: "Engineering practices that prevent data failures."
+            caption: "Engineering practices that prevent data failures.",
           },
           {
             kind: "prose",
             heading: "1. Security: Protect Data by Default",
             body: [
-              "Data security relies on least privilege access and minimizing sensitive data collection at every pipeline stage. Applying role-based controls, encryption, and strict audit logging ensures users and systems only access what they need to fulfill their specific purpose."
-            ]
+              "Data security relies on least privilege access and minimizing sensitive data collection at every pipeline stage. Applying role-based controls, encryption, and strict audit logging ensures users and systems only access what they need to fulfill their specific purpose.",
+            ],
           },
           {
             kind: "image",
             src: securityImg,
             alt: "Security",
-            caption: "Role-based controls, encryption, and strict audit logging."
+            caption: "Role-based controls, encryption, and strict audit logging.",
           },
           {
             kind: "prose",
             heading: "2. Data Management: Make Data Understandable and Trusted",
             body: [
-              "Effective data management establishes clear ownership, metadata, lineage, and quality checks across the entire data lifecycle. Defining rules and context upfront turns raw tables into trusted assets, eliminating ambiguity so users can make confident decisions."
-            ]
+              "Effective data management establishes clear ownership, metadata, lineage, and quality checks across the entire data lifecycle. Defining rules and context upfront turns raw tables into trusted assets, eliminating ambiguity so users can make confident decisions.",
+            ],
           },
           {
             kind: "image",
             src: dataManagementImg,
             alt: "Data Management",
-            caption: "Ownership, metadata, lineage, and quality checks."
+            caption: "Ownership, metadata, lineage, and quality checks.",
           },
           {
             kind: "prose",
             heading: "3. DataOps: Operate Data Products Reliably",
             body: [
-              "DataOps combines automation, observability, and incident response to deploy pipelines smoothly and catch failures early. Proactive monitoring alerts teams to broken jobs or bad data before downstream dashboards reflect incorrect metrics."
-            ]
+              "DataOps combines automation, observability, and incident response to deploy pipelines smoothly and catch failures early. Proactive monitoring alerts teams to broken jobs or bad data before downstream dashboards reflect incorrect metrics.",
+            ],
           },
           {
             kind: "image",
             src: dataopsImg,
             alt: "DataOps",
-            caption: "Automation, observability, and incident response."
+            caption: "Automation, observability, and incident response.",
           },
           {
             kind: "prose",
             heading: "4. Data Architecture: Design for Change and Tradeoffs",
             body: [
-              "Effective data architecture balances business value against key tradeoffs like cost, speed, and complexity. Choosing scalable, loosely coupled components ensures your system meets current requirements while remaining adaptable to future needs."
-            ]
+              "Effective data architecture balances business value against key tradeoffs like cost, speed, and complexity. Choosing scalable, loosely coupled components ensures your system meets current requirements while remaining adaptable to future needs.",
+            ],
           },
           {
             kind: "image",
             src: dataArchitectureImg,
             alt: "Data Architecture",
-            caption: "Design for change and balance key tradeoffs."
+            caption: "Design for change and balance key tradeoffs.",
           },
           {
             kind: "prose",
             heading: "5. Orchestration: Coordinate Dependent Work",
             body: [
-              "Orchestration manages task dependencies using a DAG to execute workflows in the correct order. If an upstream step fails, it automatically pauses downstream execution to prevent corrupt or incomplete data from reaching reports."
-            ]
+              "Orchestration manages task dependencies using a DAG to execute workflows in the correct order. If an upstream step fails, it automatically pauses downstream execution to prevent corrupt or incomplete data from reaching reports.",
+            ],
           },
           {
             kind: "image",
             src: orchestrationImg,
             alt: "Orchestration",
-            caption: "Coordinate dependent work using directed acyclic graphs."
+            caption: "Coordinate dependent work using directed acyclic graphs.",
           },
           {
             kind: "prose",
             heading: "6. Software Engineering: Treat Pipelines as Production Code",
             body: [
-              "Treating data pipelines as production code applies engineering rigor through version control, code review, and automated testing. Defining infrastructure as code creates repeatable environments, making pipeline deployments trackable and error recovery fast."
-            ]
+              "Treating data pipelines as production code applies engineering rigor through version control, code review, and automated testing. Defining infrastructure as code creates repeatable environments, making pipeline deployments trackable and error recovery fast.",
+            ],
           },
           {
             kind: "image",
             src: softwareEngineeringImg,
             alt: "Software Engineering",
-            caption: "Treating data pipelines as production code applies engineering rigor."
+            caption: "Treating data pipelines as production code applies engineering rigor.",
           },
           {
             kind: "prose",
             heading: "A Simple Example",
             body: [
-              "A daily revenue dashboard relies on security, data management, DataOps, architecture, orchestration, and software engineering working as a cohesive system. Governing the complete pipeline infrastructure ensures that reports remain accurate, secure, and delivered on schedule."
-            ]
+              "A daily revenue dashboard relies on security, data management, DataOps, architecture, orchestration, and software engineering working as a cohesive system. Governing the complete pipeline infrastructure ensures that reports remain accurate, secure, and delivered on schedule.",
+            ],
           },
           {
             kind: "image",
             src: trustworthyDashboardImg,
             alt: "Trustworthy Dashboard",
-            caption: "Software engineering practices lead to trustworthy outputs."
+            caption: "Software engineering practices lead to trustworthy outputs.",
           },
           {
             kind: "list",
@@ -2482,8 +2572,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "**Waiting for users to report failures:** Monitor freshness, quality, and job status proactively.",
               "**Managing complex dependencies with cron alone:** Use orchestration when workflows grow.",
               "**Building the most advanced system first:** Choose the simplest design that solves the real need.",
-              "**Making production changes manually:** Use version control and repeatable deployments."
-            ]
+              "**Making production changes manually:** Use version control and repeatable deployments.",
+            ],
           },
           {
             kind: "takeaways",
@@ -2493,8 +2583,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "DataOps makes pipelines observable and reliable in production.",
               "Architecture balances business needs with cost, simplicity, and future change.",
               "Orchestration coordinates dependent work.",
-              "Software engineering practices make data systems safer to change and maintain."
-            ]
+              "Software engineering practices make data systems safer to change and maintain.",
+            ],
           },
           {
             kind: "quiz",
@@ -2506,10 +2596,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Grant only the access required for a task.",
                   "Give everyone access so work is not blocked.",
                   "Only managers should have access to the data warehouse.",
-                  "All databases must be publicly accessible."
+                  "All databases must be publicly accessible.",
                 ],
                 correctIndex: 0,
-                explanation: "Least privilege is the security principle of giving a user or system only the bare minimum permissions needed to do their job."
+                explanation:
+                  "Least privilege is the security principle of giving a user or system only the bare minimum permissions needed to do their job.",
               },
               {
                 id: "uc-quiz-2",
@@ -2518,10 +2609,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The total cost of running a data platform.",
                   "Where data originated and how it changed on the way to its destination.",
                   "The code used to deploy infrastructure.",
-                  "The organizational chart of the data team."
+                  "The organizational chart of the data team.",
                 ],
                 correctIndex: 1,
-                explanation: "Data lineage tracks the flow of data from its source, through various transformations, to its final consumption point."
+                explanation:
+                  "Data lineage tracks the flow of data from its source, through various transformations, to its final consumption point.",
               },
               {
                 id: "uc-quiz-3",
@@ -2530,10 +2622,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It automatically writes data to a data lake.",
                   "Dependency management, retries, monitoring, history, and alerts.",
                   "It generates machine learning models from raw data.",
-                  "It translates business questions into SQL."
+                  "It translates business questions into SQL.",
                 ],
                 correctIndex: 1,
-                explanation: "Unlike simple cron schedules, orchestration manages task dependencies (DAGs) and handles failures smoothly."
+                explanation:
+                  "Unlike simple cron schedules, orchestration manages task dependencies (DAGs) and handles failures smoothly.",
               },
               {
                 id: "uc-quiz-4",
@@ -2542,10 +2635,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Build the most complex architecture possible.",
                   "Ensure all data is stored in object storage.",
                   "Deliver reliable data products through automation, observability, and effective incident response.",
-                  "Eliminate the need for data engineers."
+                  "Eliminate the need for data engineers.",
                 ],
                 correctIndex: 2,
-                explanation: "DataOps applies operational rigor to data, focusing on monitoring, automated testing, and fast incident recovery."
+                explanation:
+                  "DataOps applies operational rigor to data, focusing on monitoring, automated testing, and fast incident recovery.",
               },
               {
                 id: "uc-quiz-5",
@@ -2554,19 +2648,21 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The cost and value of cloud and data-platform decisions.",
                   "The schema of a data warehouse.",
                   "The network security of a VPC.",
-                  "The code review process."
+                  "The code review process.",
                 ],
                 correctIndex: 0,
-                explanation: "FinOps focuses on understanding and optimizing the financial cost of cloud operations, ensuring money is spent efficiently."
-              }
-            ]
-          }
-        ]
+                explanation:
+                  "FinOps focuses on understanding and optimizing the financial cost of cloud operations, ensuring money is spent efficiently.",
+              },
+            ],
+          },
+        ],
       },
       {
         slug: "data-journey-quiz",
         title: "2.5 The Data Journey Quiz",
-        subtitle: "Test your knowledge on data generation, ingestion, transformation, serving, and the undercurrents.",
+        subtitle:
+          "Test your knowledge on data generation, ingestion, transformation, serving, and the undercurrents.",
         sections: [
           {
             kind: "quiz",
@@ -2574,27 +2670,31 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             questions: [
               {
                 id: "ch2-quiz-1",
-                question: "Which pattern moves data from an operational system into a data platform continuously as changes occur?",
+                question:
+                  "Which pattern moves data from an operational system into a data platform continuously as changes occur?",
                 options: [
                   "Batch ingestion",
                   "Reverse ETL",
                   "Change Data Capture (CDC)",
-                  "Data modeling"
+                  "Data modeling",
                 ],
                 correctIndex: 2,
-                explanation: "Change Data Capture (CDC) reads the source database log and streams inserts, updates, and deletes in near-real time."
+                explanation:
+                  "Change Data Capture (CDC) reads the source database log and streams inserts, updates, and deletes in near-real time.",
               },
               {
                 id: "ch2-quiz-2",
-                question: "What is the primary difference between a Data Lake and a Data Warehouse?",
+                question:
+                  "What is the primary difference between a Data Lake and a Data Warehouse?",
                 options: [
                   "Data Lakes store structured relational tables, while Warehouses store raw unstructured files.",
                   "Data Lakes store raw data in object storage cheaply, while Warehouses store structured, modeled data optimized for fast querying.",
                   "Data Lakes only support batch ingestion, while Warehouses only support streaming.",
-                  "Data Lakes are on-premises, while Warehouses are in the cloud."
+                  "Data Lakes are on-premises, while Warehouses are in the cloud.",
                 ],
                 correctIndex: 1,
-                explanation: "Data Lakes use cheap object storage for raw, unstructured data. Data Warehouses use optimized relational databases for clean, structured analytics."
+                explanation:
+                  "Data Lakes use cheap object storage for raw, unstructured data. Data Warehouses use optimized relational databases for clean, structured analytics.",
               },
               {
                 id: "ch2-quiz-3",
@@ -2603,10 +2703,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A database running out of storage space.",
                   "A query join that produces far more records than expected due to a lack of a proper key.",
                   "A sudden spike in streaming events.",
-                  "When reverse ETL writes too much data back to a CRM."
+                  "When reverse ETL writes too much data back to a CRM.",
                 ],
                 correctIndex: 1,
-                explanation: "Row explosion happens when a poorly constructed join matches multiple rows to multiple rows, multiplying the output size unintentionally."
+                explanation:
+                  "Row explosion happens when a poorly constructed join matches multiple rows to multiple rows, multiplying the output size unintentionally.",
               },
               {
                 id: "ch2-quiz-4",
@@ -2615,10 +2716,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A quarterly revenue report for the board of directors.",
                   "A dashboard tracking historical customer churn.",
                   "An automated system that blocks a credit card transaction suspected of fraud in real-time.",
-                  "A year-over-year sales comparison."
+                  "A year-over-year sales comparison.",
                 ],
                 correctIndex: 2,
-                explanation: "Operational Analytics is used to drive immediate, day-to-day actions or automated responses, rather than historical reporting."
+                explanation:
+                  "Operational Analytics is used to drive immediate, day-to-day actions or automated responses, rather than historical reporting.",
               },
               {
                 id: "ch2-quiz-5",
@@ -2627,10 +2729,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It automatically provisions cloud infrastructure.",
                   "It writes complex SQL transformations for you.",
                   "It ensures that tasks run in the correct order, handles dependencies, and pauses downstream work if upstream steps fail.",
-                  "It encrypts sensitive data automatically."
+                  "It encrypts sensitive data automatically.",
                 ],
                 correctIndex: 2,
-                explanation: "Orchestration uses a Directed Acyclic Graph (DAG) to coordinate dependent tasks reliably and prevent corrupt data from reaching reports."
+                explanation:
+                  "Orchestration uses a Directed Acyclic Graph (DAG) to coordinate dependent tasks reliably and prevent corrupt data from reaching reports.",
               },
               {
                 id: "ch2-quiz-6",
@@ -2639,22 +2742,25 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "A dashboard where business users view reports.",
                   "The original location where data is created, such as an application database or IoT sensor.",
                   "A storage layer optimized for analytical queries.",
-                  "A tool used to orchestrate pipeline tasks."
+                  "A tool used to orchestrate pipeline tasks.",
                 ],
                 correctIndex: 1,
-                explanation: "A source system is where data is born. Without understanding how a source system operates, data pipelines are prone to unexpected breakages."
+                explanation:
+                  "A source system is where data is born. Without understanding how a source system operates, data pipelines are prone to unexpected breakages.",
               },
               {
                 id: "ch2-quiz-7",
-                question: "Why might a data engineer choose a pull-based ingestion tool like Fivetran?",
+                question:
+                  "Why might a data engineer choose a pull-based ingestion tool like Fivetran?",
                 options: [
                   "To query the source system on a schedule and extract new records automatically.",
                   "To force the source system to send real-time streams of data.",
                   "To build a machine learning model on the source database.",
-                  "To delete old records from the source system."
+                  "To delete old records from the source system.",
                 ],
                 correctIndex: 0,
-                explanation: "Pull-based ingestion reaches into the source system on a set schedule (batch) to extract data, which is simpler to set up than waiting for the source to push events."
+                explanation:
+                  "Pull-based ingestion reaches into the source system on a set schedule (batch) to extract data, which is simpler to set up than waiting for the source to push events.",
               },
               {
                 id: "ch2-quiz-8",
@@ -2663,10 +2769,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The physical temperature of the server racks in a data center.",
                   "How recently the data was created.",
                   "Matching storage tiers to how frequently data is accessed (hot vs cold) to balance cost and speed.",
-                  "The severity of a security breach."
+                  "The severity of a security breach.",
                 ],
                 correctIndex: 2,
-                explanation: "Hot data is accessed frequently and requires fast, expensive storage. Cold data is rarely accessed and can be stored cheaply."
+                explanation:
+                  "Hot data is accessed frequently and requires fast, expensive storage. Cold data is rarely accessed and can be stored cheaply.",
               },
               {
                 id: "ch2-quiz-9",
@@ -2675,10 +2782,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It eliminates the need for orchestration tools.",
                   "It allows data to be stored securely on-premises.",
                   "It organizes raw tables into structured dimensional models, eliminating the need for analysts to repeatedly write complex joins.",
-                  "It converts relational databases into object storage."
+                  "It converts relational databases into object storage.",
                 ],
                 correctIndex: 2,
-                explanation: "Data modeling enforces consistent business logic and structures data so it is easy to query and report on repeatedly."
+                explanation:
+                  "Data modeling enforces consistent business logic and structures data so it is easy to query and report on repeatedly.",
               },
               {
                 id: "ch2-quiz-10",
@@ -2687,10 +2795,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "The database will run out of storage immediately.",
                   "You waste engineering effort and compute costs building tables and dashboards that nobody uses.",
                   "The source system will crash under the load.",
-                  "Reverse ETL will fail to sync the data."
+                  "Reverse ETL will fail to sync the data.",
                 ],
                 correctIndex: 1,
-                explanation: "Every transformation should support a specific user, decision, or product feature. Transforming data 'just in case' leads to bloated and confusing data platforms."
+                explanation:
+                  "Every transformation should support a specific user, decision, or product feature. Transforming data 'just in case' leads to bloated and confusing data platforms.",
               },
               {
                 id: "ch2-quiz-11",
@@ -2699,10 +2808,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Giving every user admin access to reduce bottlenecks.",
                   "Ensuring users and systems only have the bare minimum access necessary to fulfill their specific purpose.",
                   "Storing sensitive data in plain text so it is easier to read.",
-                  "Allowing public access to data lakes to increase transparency."
+                  "Allowing public access to data lakes to increase transparency.",
                 ],
                 correctIndex: 1,
-                explanation: "Least privilege minimizes the risk of unauthorized access or accidental data leaks by restricting permissions strictly to what is required."
+                explanation:
+                  "Least privilege minimizes the risk of unauthorized access or accidental data leaks by restricting permissions strictly to what is required.",
               },
               {
                 id: "ch2-quiz-12",
@@ -2711,10 +2821,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "By manually checking every row of data before it is loaded.",
                   "By applying automation, proactive observability, and incident response to catch bad data before it reaches downstream users.",
                   "By rewriting all SQL queries in Python.",
-                  "By completely eliminating the need for a data warehouse."
+                  "By completely eliminating the need for a data warehouse.",
                 ],
                 correctIndex: 1,
-                explanation: "DataOps brings software engineering operational rigor to data, focusing on monitoring, testing, and fast incident recovery."
+                explanation:
+                  "DataOps brings software engineering operational rigor to data, focusing on monitoring, testing, and fast incident recovery.",
               },
               {
                 id: "ch2-quiz-13",
@@ -2723,10 +2834,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It automatically scales cloud infrastructure up and down.",
                   "It provides visibility into where data originated and how it was transformed before arriving at a dashboard.",
                   "It encrypts passwords in the database.",
-                  "It schedules tasks to run at midnight."
+                  "It schedules tasks to run at midnight.",
                 ],
                 correctIndex: 1,
-                explanation: "Data lineage helps teams trace back to the root cause of an error by showing the exact path the data took through the pipeline."
+                explanation:
+                  "Data lineage helps teams trace back to the root cause of an error by showing the exact path the data took through the pipeline.",
               },
               {
                 id: "ch2-quiz-14",
@@ -2735,10 +2847,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "So that they can be sold as commercial software.",
                   "To enforce version control, code reviews, and automated testing, making deployments trackable and safe to change.",
                   "Because all pipelines must be written in C++.",
-                  "To prevent data analysts from writing SQL."
+                  "To prevent data analysts from writing SQL.",
                 ],
                 correctIndex: 1,
-                explanation: "Treating infrastructure and pipelines as code creates repeatable environments and prevents brittle, manual pipeline deployments."
+                explanation:
+                  "Treating infrastructure and pipelines as code creates repeatable environments and prevents brittle, manual pipeline deployments.",
               },
               {
                 id: "ch2-quiz-15",
@@ -2747,105 +2860,105 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "Extracting data from a warehouse and moving it back into the data lake.",
                   "Syncing calculated insights from the data platform back into operational tools (like CRMs) so business teams can act on them.",
                   "Reversing a failed database transaction.",
-                  "Deleting old data to save money."
+                  "Deleting old data to save money.",
                 ],
                 correctIndex: 1,
-                explanation: "Reverse ETL 'closes the loop' by taking analytical outputs and pushing them back into the day-to-day tools that operations, marketing, and sales teams use."
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                explanation:
+                  "Reverse ETL 'closes the loop' by taking analytical outputs and pushing them back into the day-to-day tools that operations, marketing, and sales teams use.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   "designing-scalable-data-platforms": {
-    "title": "3. Designing Scalable Data Platforms",
-    "slug": "designing-scalable-data-platforms",
-    "lessons": [
+    title: "3. Designing Scalable Data Platforms",
+    slug: "designing-scalable-data-platforms",
+    lessons: [
       {
-        "slug": "fundamentals-of-data-architecture",
-        "title": "3.1 Fundamentals of Data Architecture",
-        "subtitle": "Understand what data architecture is and how it connects business goals to data systems.",
-        "sections": [
+        slug: "fundamentals-of-data-architecture",
+        title: "3.1 Fundamentals of Data Architecture",
+        subtitle:
+          "Understand what data architecture is and how it connects business goals to data systems.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "A pipeline can run successfully but still fail the business. It may deliver the wrong metric, refresh too late, cost too much, or become difficult to change.",
-              "Data architecture helps a team make intentional decisions before those problems grow."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Enterprise architecture and data architecture",
-            "body": [
-              "Enterprise architecture looks at how an organization\u2019s business, applications, technology, and data fit together.",
-              "Data architecture is the data-focused part of that picture. It decides how data is created, moved, stored, transformed, governed, and served."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": enterpriseArchImg,
-            "alt": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture.",
-            "caption": "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture."
-          },
-          {
-            "kind": "list",
-            "heading": "A practical definition",
-            "body": [
-              "Data architecture is the design of systems that support an organization’s changing data needs.",
-              "It includes decisions about:"
+              "Data architecture helps a team make intentional decisions before those problems grow.",
             ],
-            "items": [
+          },
+          {
+            kind: "prose",
+            heading: "Enterprise architecture and data architecture",
+            body: [
+              "Enterprise architecture looks at how an organization\u2019s business, applications, technology, and data fit together.",
+              "Data architecture is the data-focused part of that picture. It decides how data is created, moved, stored, transformed, governed, and served.",
+            ],
+          },
+          {
+            kind: "image",
+            src: enterpriseArchImg,
+            alt: "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture.",
+            caption:
+              "A large “Enterprise Architecture” container holding Business, Applications, Technology, and Data Architecture.",
+          },
+          {
+            kind: "list",
+            heading: "A practical definition",
+            body: [
+              "Data architecture is the design of systems that support an organization’s changing data needs.",
+              "It includes decisions about:",
+            ],
+            items: [
               "**Data sources and ownership**",
               "**Ingestion, storage, and transformation**",
               "**Analytics and application serving**",
               "**Security and governance**",
               "**Reliability and recovery**",
               "**Scalability and cost**",
-              "**People, processes, and tools**"
-            ]
+              "**People, processes, and tools**",
+            ],
           },
           {
-            "kind": "image",
-            "src": dataArchPatternsImg,
-            "alt": "Data Architecture Patterns",
-            "caption": "Data Architecture Patterns"
+            kind: "image",
+            src: dataArchPatternsImg,
+            alt: "Data Architecture Patterns",
+            caption: "Data Architecture Patterns",
           },
           {
-            "kind": "prose",
-            "heading": "Operational versus technical architecture",
-            "body": [
+            kind: "prose",
+            heading: "Operational versus technical architecture",
+            body: [
               "**Operational architecture** explains what the business needs.",
               "Example: Finance needs a trusted daily revenue report before 9 AM.",
               "**Technical architecture** explains how the platform will meet that need.",
               "Example: Ingest order and refund data, validate it, create a revenue model, and refresh a dashboard.",
-              "Start with the operational need. Then choose the technical design."
-            ]
+              "Start with the operational need. Then choose the technical design.",
+            ],
           },
           {
-            "kind": "prose",
-            "heading": "Conway\u2019s Law",
-            "body": [
+            kind: "prose",
+            heading: "Conway\u2019s Law",
+            body: [
               "Systems often reflect the communication structure of the teams that build them.",
               "If application, analytics, and data teams work separately without clear contracts, the company may create disconnected systems and conflicting definitions.",
-              "Healthy communication, shared ownership, and documented interfaces improve both the organization and the architecture."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": conwayLawImg,
-            "alt": "Conway\'s Law showing alignment between teams and software architecture.",
-            "caption": "Conway\'s Law"
-          },
-          {
-            "kind": "list",
-            "heading": "Who participates in architecture decisions?",
-            "body": [
-              "Architecture is a team activity.",
-              "People involved may include:"
+              "Healthy communication, shared ownership, and documented interfaces improve both the organization and the architecture.",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: conwayLawImg,
+            alt: "Conway\'s Law showing alignment between teams and software architecture.",
+            caption: "Conway\'s Law",
+          },
+          {
+            kind: "list",
+            heading: "Who participates in architecture decisions?",
+            body: ["Architecture is a team activity.", "People involved may include:"],
+            items: [
               "Data engineers",
               "Analytics engineers",
               "Software and platform engineers",
@@ -2853,489 +2966,447 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data scientists",
               "Analysts",
               "Product managers",
-              "Business stakeholders"
-            ]
+              "Business stakeholders",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Architecture connects business outcomes to technical systems.",
               "Start with requirements, not tools.",
               "Operational architecture defines what is needed.",
-              "Technical architecture defines how it will be delivered."
-            ]
+              "Technical architecture defines how it will be delivered.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "fundamentals-of-data-architecture-quiz",
-                "question": "What is data architecture?",
-                "options": [
+                id: "fundamentals-of-data-architecture-quiz",
+                question: "What is data architecture?",
+                options: [
                   "The design of systems that support an organization\u2019s data needs as those needs change.",
                   "Option 2",
                   "Option 3",
-                  "Option 4"
+                  "Option 4",
                 ],
-                "correctIndex": 0,
-                "explanation": "The design of systems that support an organization\u2019s data needs as those needs change."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation:
+                  "The design of systems that support an organization\u2019s data needs as those needs change.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "principles-for-reliable-and-scalable-systems",
-        "title": "3.2 Principles for Reliable and Scalable Systems",
-        "subtitle": "Learn the nine principles that guide good data architecture decisions.",
-        "sections": [
+        slug: "principles-for-reliable-and-scalable-systems",
+        title: "3.2 Principles for Reliable and Scalable Systems",
+        subtitle: "Learn the nine principles that guide good data architecture decisions.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "A good platform is not just fast. It is secure, maintainable, recoverable, cost-aware, and able to evolve.",
-              "Use these principles when reviewing a design."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": principlesForReliableSystemsImg,
-            "alt": "Nine principles for reliable systems",
-            "caption": "Principles for Reliable Systems"
-          },
-          {
-            "kind": "list",
-            "heading": "1. Choose common components wisely",
-            "body": [
-              "Use shared building blocks when they benefit multiple teams.",
-              "Examples:"
+              "Use these principles when reviewing a design.",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: principlesForReliableSystemsImg,
+            alt: "Nine principles for reliable systems",
+            caption: "Principles for Reliable Systems",
+          },
+          {
+            kind: "list",
+            heading: "1. Choose common components wisely",
+            body: ["Use shared building blocks when they benefit multiple teams.", "Examples:"],
+            items: [
               "Object storage",
               "Orchestration",
               "Monitoring",
               "Version control",
               "Metadata catalogs",
-              "Identity and access management"
-            ]
+              "Identity and access management",
+            ],
           },
           {
-            "kind": "prose",
-            "body": [
-              "Shared components reduce duplicated work. Do not force every team into the same tool when a specialized need requires something else."
-            ]
+            kind: "prose",
+            body: [
+              "Shared components reduce duplicated work. Do not force every team into the same tool when a specialized need requires something else.",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "2. Plan for failure",
-            "body": [
+            kind: "list",
+            heading: "2. Plan for failure",
+            body: [
               "Failures are normal.",
               "A source can go offline. A job can run twice. A schema can change. A cloud service can fail.",
               "Design for alerts, retries, backups, recovery, and safe reruns.",
-              "Important terms:"
+              "Important terms:",
             ],
-            "items": [
+            items: [
               "**Availability:** How often a service is usable.",
               "**Reliability:** Whether it produces the expected result.",
               "**RTO:** Maximum acceptable recovery time.",
-              "**RPO:** Maximum acceptable data loss."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "3. Architect for scalability",
-            "body": [
-              "Scalability means handling more data, users, queries, and workloads as demand grows.",
-              "Measure current load, likely spikes, future growth, and cost. Do not build a highly complex distributed system before it is needed."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "4. Architecture is leadership",
-            "body": [
-              "Architects guide technical decisions, help teams understand trade-offs, and create shared standards.",
-              "Good architecture leadership enables teams. It should not become a command-and-control bottleneck."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "5. Always be architecting",
-            "body": [
-              "Architecture is ongoing work.",
-              "Review the current state, identify the next important problem, make a small improvement, measure the result, and reassess."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "6. Build loosely coupled systems",
-            "body": [
-              "Components should communicate through stable APIs, events, or data contracts.",
-              "This allows one component to change without breaking every downstream consumer."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "7. Make reversible decisions",
-            "body": [
-              "Prefer small decisions that can be tested, changed, or rolled back.",
-              "A pilot with one dataset is easier to reverse than migrating every pipeline at once."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "8. Prioritize security",
-            "body": [
-              "Every data engineer shares responsibility for the security of the systems they build.",
-              "Use least privilege, encryption, audit logs, secure network controls, and masking for sensitive data."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "9. Embrace FinOps",
-            "body": [
-              "FinOps connects cloud spending to business value.",
-              "Monitor storage, compute, queries, data transfer, failed jobs, and idle resources. The goal is useful outcomes for an acceptable cost."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "A practical review lens",
-            "body": [
-              "AWS Well-Architected principles are useful for reviewing systems:"
+              "**RPO:** Maximum acceptable data loss.",
             ],
-            "items": [
+          },
+          {
+            kind: "prose",
+            heading: "3. Architect for scalability",
+            body: [
+              "Scalability means handling more data, users, queries, and workloads as demand grows.",
+              "Measure current load, likely spikes, future growth, and cost. Do not build a highly complex distributed system before it is needed.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "4. Architecture is leadership",
+            body: [
+              "Architects guide technical decisions, help teams understand trade-offs, and create shared standards.",
+              "Good architecture leadership enables teams. It should not become a command-and-control bottleneck.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "5. Always be architecting",
+            body: [
+              "Architecture is ongoing work.",
+              "Review the current state, identify the next important problem, make a small improvement, measure the result, and reassess.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "6. Build loosely coupled systems",
+            body: [
+              "Components should communicate through stable APIs, events, or data contracts.",
+              "This allows one component to change without breaking every downstream consumer.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "7. Make reversible decisions",
+            body: [
+              "Prefer small decisions that can be tested, changed, or rolled back.",
+              "A pilot with one dataset is easier to reverse than migrating every pipeline at once.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "8. Prioritize security",
+            body: [
+              "Every data engineer shares responsibility for the security of the systems they build.",
+              "Use least privilege, encryption, audit logs, secure network controls, and masking for sensitive data.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "9. Embrace FinOps",
+            body: [
+              "FinOps connects cloud spending to business value.",
+              "Monitor storage, compute, queries, data transfer, failed jobs, and idle resources. The goal is useful outcomes for an acceptable cost.",
+            ],
+          },
+          {
+            kind: "list",
+            heading: "A practical review lens",
+            body: ["AWS Well-Architected principles are useful for reviewing systems:"],
+            items: [
               "Operational excellence",
               "Security",
               "Reliability",
               "Performance efficiency",
               "Cost optimization",
-              "Sustainability"
-            ]
+              "Sustainability",
+            ],
           },
           {
-            "kind": "image",
-            "src": awsVsGcpPrinciplesImg,
-            "alt": "AWS vs GCP Well-Architected Principles",
-            "caption": "Well-Architected Frameworks"
+            kind: "image",
+            src: awsVsGcpPrinciplesImg,
+            alt: "AWS vs GCP Well-Architected Principles",
+            caption: "Well-Architected Frameworks",
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Good architecture plans for failure and change.",
               "Shared components should help, not restrict, teams.",
               "Loose coupling makes systems safer to evolve.",
-              "Security and cost are design decisions."
-            ]
+              "Security and cost are design decisions.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "principles-for-reliable-and-scalable-systems-quiz",
-                "question": "What does RPO measure?",
-                "options": [
+                id: "principles-for-reliable-and-scalable-systems-quiz",
+                question: "What does RPO measure?",
+                options: [
                   "The maximum acceptable amount of data loss after a failure.",
                   "Option 2",
                   "Option 3",
-                  "Option 4"
+                  "Option 4",
                 ],
-                "correctIndex": 0,
-                "explanation": "The maximum acceptable amount of data loss after a failure."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation: "The maximum acceptable amount of data loss after a failure.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "designing-modular-and-event-driven-systems",
-        "title": "3.3 Designing Modular and Event-Driven Systems",
-        "subtitle": "Learn how services communicate, scale, and remain independent.",
-        "sections": [
+        slug: "designing-modular-and-event-driven-systems",
+        title: "3.3 Designing Modular and Event-Driven Systems",
+        subtitle: "Learn how services communicate, scale, and remain independent.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "As an organization grows, one application and one database cannot own every responsibility forever.",
-              "A modular system gives teams clear boundaries while allowing data to move safely between them."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": designingModularEventDrivenSystemsImg,
-            "alt": "Coupled vs decoupled systems",
-            "caption": "Designing Modular and Event-Driven Systems"
-          },
-          {
-            "kind": "list",
-            "heading": "Domains and services",
-            "body": [
-              "A **domain** is an area of the business.",
-              "Examples:"
+              "A modular system gives teams clear boundaries while allowing data to move safely between them.",
             ],
-            "items": [
-              "Sales",
-              "Payments",
-              "Inventory",
-              "Customer support"
-            ]
           },
           {
-            "kind": "list",
-            "body": [
+            kind: "image",
+            src: designingModularEventDrivenSystemsImg,
+            alt: "Coupled vs decoupled systems",
+            caption: "Designing Modular and Event-Driven Systems",
+          },
+          {
+            kind: "list",
+            heading: "Domains and services",
+            body: ["A **domain** is an area of the business.", "Examples:"],
+            items: ["Sales", "Payments", "Inventory", "Customer support"],
+          },
+          {
+            kind: "list",
+            body: [
               "A **service** has a focused responsibility within a domain.",
-              "For example, the sales domain may contain:"
+              "For example, the sales domain may contain:",
             ],
-            "items": [
-              "Order service",
-              "Product service",
-              "Pricing service"
-            ]
+            items: ["Order service", "Product service", "Pricing service"],
           },
           {
-            "kind": "prose",
-            "body": [
-              "Data engineers need to understand domains because each domain creates, owns, and changes data differently."
-            ]
+            kind: "prose",
+            body: [
+              "Data engineers need to understand domains because each domain creates, owns, and changes data differently.",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "Distributed systems",
-            "body": [
+            kind: "list",
+            heading: "Distributed systems",
+            body: [
               "A distributed system uses multiple computers or services that work together.",
-              "This can improve scale and availability, but it also adds complexity:"
+              "This can improve scale and availability, but it also adds complexity:",
             ],
-            "items": [
+            items: [
               "Network delays",
               "Duplicate events",
               "Partial failures",
               "Data consistency challenges",
-              "More monitoring and recovery work"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "Use distributed systems when the benefits justify their operational cost."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Tiers, monoliths, and microservices",
-            "body": [
-              "A basic architecture may have:"
+              "More monitoring and recovery work",
             ],
-            "items": [
-              "Application tier",
-              "Database tier",
-              "Analytics tier"
-            ]
           },
           {
-            "kind": "prose",
-            "body": [
+            kind: "prose",
+            body: ["Use distributed systems when the benefits justify their operational cost."],
+          },
+          {
+            kind: "list",
+            heading: "Tiers, monoliths, and microservices",
+            body: ["A basic architecture may have:"],
+            items: ["Application tier", "Database tier", "Analytics tier"],
+          },
+          {
+            kind: "prose",
+            body: [
               "A **monolith** keeps many responsibilities in one application or codebase.",
               "It is often a good starting point because it is simple to build and deploy.",
               "**Microservices** split responsibilities into separate services.",
               "They allow independent scaling and releases, but require stronger operations, monitoring, and communication.",
-              "Choose the simplest structure that works for the team and product."
-            ]
+              "Choose the simplest structure that works for the team and product.",
+            ],
           },
           {
-            "kind": "prose",
-            "heading": "Single tenant and multitenant systems",
-            "body": [
+            kind: "prose",
+            heading: "Single tenant and multitenant systems",
+            body: [
               "A **single-tenant** system serves one customer or team with isolated data or infrastructure.",
               "A **multitenant** system serves multiple customers or teams on shared infrastructure while keeping their data isolated.",
-              "Multitenancy can reduce cost but requires strong access controls and tenant isolation."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Event-driven architecture",
-            "body": [
-              "An event records that something happened.",
-              "Examples:"
+              "Multitenancy can reduce cost but requires strong access controls and tenant isolation.",
             ],
-            "items": [
-              "Order placed",
-              "Payment completed",
-              "Product returned",
-              "User signed up"
-            ]
           },
           {
-            "kind": "prose",
-            "body": [
-              "In an event-driven system, one service publishes an event and other systems react to it."
-            ]
+            kind: "list",
+            heading: "Event-driven architecture",
+            body: ["An event records that something happened.", "Examples:"],
+            items: ["Order placed", "Payment completed", "Product returned", "User signed up"],
           },
           {
-            "kind": "image",
-            "src": eventDrivenSystemsImg,
-            "alt": "Event-driven architecture diagram",
-            "caption": "Event-Driven Systems"
+            kind: "prose",
+            body: [
+              "In an event-driven system, one service publishes an event and other systems react to it.",
+            ],
+          },
+          {
+            kind: "image",
+            src: eventDrivenSystemsImg,
+            alt: "Event-driven architecture diagram",
+            caption: "Event-Driven Systems",
           },
 
           {
-            "kind": "prose",
-            "body": [
-              "The order service does not need to know how every downstream system works."
-            ]
+            kind: "prose",
+            body: ["The order service does not need to know how every downstream system works."],
           },
           {
-            "kind": "list",
-            "heading": "Event processing risks",
-            "body": [
-              "Events may arrive late, arrive twice, or arrive out of order.",
-              "Plan for:"
-            ],
-            "items": [
+            kind: "list",
+            heading: "Event processing risks",
+            body: ["Events may arrive late, arrive twice, or arrive out of order.", "Plan for:"],
+            items: [
               "Unique event IDs",
               "Idempotent processing",
               "Schema versioning",
               "Retries",
               "Dead-letter queues",
-              "Monitoring"
-            ]
+              "Monitoring",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Domains define business ownership areas.",
               "Services should have focused responsibilities.",
               "Distributed systems add both scale and complexity.",
-              "Events help systems communicate without tight coupling."
-            ]
+              "Events help systems communicate without tight coupling.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "designing-modular-and-event-driven-systems-quiz",
-                "question": "Why is loose coupling useful?",
-                "options": [
+                id: "designing-modular-and-event-driven-systems-quiz",
+                question: "Why is loose coupling useful?",
+                options: [
                   "It lets teams and components change independently through stable interfaces.",
                   "Option 2",
                   "Option 3",
-                  "Option 4"
+                  "Option 4",
                 ],
-                "correctIndex": 0,
-                "explanation": "It lets teams and components change independently through stable interfaces."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation:
+                  "It lets teams and components change independently through stable interfaces.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "batch-streaming-and-modern-data-platform-patterns",
-        "title": "3.4 Batch, Streaming, and Modern Data Platform Patterns",
-        "subtitle": "Learn the major patterns used to store, process, and serve data at scale.",
-        "sections": [
+        slug: "batch-streaming-and-modern-data-platform-patterns",
+        title: "3.4 Batch, Streaming, and Modern Data Platform Patterns",
+        subtitle: "Learn the major patterns used to store, process, and serve data at scale.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "There is no one best architecture pattern.",
-              "The right choice depends on data volume, freshness requirements, users, team skills, governance needs, and cost."
-            ]
+              "The right choice depends on data volume, freshness requirements, users, team skills, governance needs, and cost.",
+            ],
           },
           {
-            "kind": "image",
-            "src": dataPlatformPatternsImg,
-            "alt": "Data Platform Patterns",
-            "caption": "Data Platform Patterns"
+            kind: "image",
+            src: dataPlatformPatternsImg,
+            alt: "Data Platform Patterns",
+            caption: "Data Platform Patterns",
           },
           {
-            "kind": "prose",
-            "heading": "Batch architecture",
-            "body": [
-              "Batch systems process accumulated data on a schedule."
-            ]
+            kind: "prose",
+            heading: "Batch architecture",
+            body: ["Batch systems process accumulated data on a schedule."],
           },
 
           {
-            "kind": "prose",
-            "body": [
-              "Batch is often cheaper and easier to debug than streaming."
-            ]
+            kind: "prose",
+            body: ["Batch is often cheaper and easier to debug than streaming."],
           },
           {
-            "kind": "image",
-            "src": batchArchitectureImg,
-            "alt": "Batch architecture diagram",
-            "caption": "Batch Architecture"
+            kind: "image",
+            src: batchArchitectureImg,
+            alt: "Batch architecture diagram",
+            caption: "Batch Architecture",
           },
           {
-            "kind": "prose",
-            "heading": "Streaming architecture",
-            "body": [
+            kind: "prose",
+            heading: "Streaming architecture",
+            body: [
               "Streaming systems process events continuously as they arrive.",
-              "Use streaming when fresh data creates real value, such as fraud detection, live inventory, device monitoring, or operational alerts."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": streamingArchitectureImg,
-            "alt": "Streaming architecture diagram",
-            "caption": "Streaming Architecture"
-          },
-          {
-            "kind": "list",
-            "heading": "Data warehouse",
-            "body": [
-              "A data warehouse stores structured, modeled data for analytics.",
-              "It is a strong choice for:"
+              "Use streaming when fresh data creates real value, such as fraud detection, live inventory, device monitoring, or operational alerts.",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: streamingArchitectureImg,
+            alt: "Streaming architecture diagram",
+            caption: "Streaming Architecture",
+          },
+          {
+            kind: "list",
+            heading: "Data warehouse",
+            body: [
+              "A data warehouse stores structured, modeled data for analytics.",
+              "It is a strong choice for:",
+            ],
+            items: [
               "Business intelligence",
               "Dashboards",
               "SQL analysis",
               "Standardized metrics",
-              "Historical reporting"
-            ]
+              "Historical reporting",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "Data lake",
-            "body": [
+            kind: "list",
+            heading: "Data lake",
+            body: [
               "A data lake stores large volumes of raw data, usually in object storage.",
-              "It is useful for:"
+              "It is useful for:",
             ],
-            "items": [
+            items: [
               "Logs and events",
               "JSON files",
               "Images and documents",
               "Historical retention",
-              "Data science and machine learning"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "Without ownership, metadata, quality checks, and governance, a data lake can become a data swamp."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Data lakehouse",
-            "body": [
-              "A lakehouse combines flexible object storage with stronger table management and governance.",
-              "It can support analytics and machine learning workloads from the same broad platform."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": warehouseLakeLakehouseImg,
-            "alt": "Comparison of Data Warehouse, Data Lake, and Data Lakehouse",
-            "caption": "Warehouse vs Lake vs Lakehouse"
-          },
-          {
-            "kind": "list",
-            "heading": "Modern data stack",
-            "body": [
-              "The modern data stack usually combines managed tools for:"
+              "Data science and machine learning",
             ],
-            "items": [
+          },
+          {
+            kind: "prose",
+            body: [
+              "Without ownership, metadata, quality checks, and governance, a data lake can become a data swamp.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "Data lakehouse",
+            body: [
+              "A lakehouse combines flexible object storage with stronger table management and governance.",
+              "It can support analytics and machine learning workloads from the same broad platform.",
+            ],
+          },
+          {
+            kind: "image",
+            src: warehouseLakeLakehouseImg,
+            alt: "Comparison of Data Warehouse, Data Lake, and Data Lakehouse",
+            caption: "Warehouse vs Lake vs Lakehouse",
+          },
+          {
+            kind: "list",
+            heading: "Modern data stack",
+            body: ["The modern data stack usually combines managed tools for:"],
+            items: [
               "Ingestion",
               "Storage",
               "Transformation",
@@ -3343,476 +3414,423 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data quality",
               "Cataloging",
               "Analytics",
-              "Observability"
-            ]
+              "Observability",
+            ],
           },
           {
-            "kind": "image",
-            "src": modernDataStackImg,
-            "alt": "Modern data stack diagram",
-            "caption": "Modern Data Stack"
+            kind: "image",
+            src: modernDataStackImg,
+            alt: "Modern data stack diagram",
+            caption: "Modern Data Stack",
           },
           {
-            "kind": "prose",
-            "body": [
-              "The goal is not to collect more tools. It is to make delivery and self-service easier."
-            ]
+            kind: "prose",
+            body: [
+              "The goal is not to collect more tools. It is to make delivery and self-service easier.",
+            ],
           },
           {
-            "kind": "prose",
-            "heading": "Lambda, Kappa, and Dataflow",
-            "body": [
+            kind: "prose",
+            heading: "Lambda, Kappa, and Dataflow",
+            body: [
               "**Lambda architecture** uses a batch path for complete historical data and a speed path for recent events. It can be powerful but often creates duplicate logic.",
               "**Kappa architecture** uses an event stream as the main source of truth. Teams can replay events to rebuild results.",
-              "**The Dataflow model** helps teams think about batch and streaming as related processing problems rather than fully separate worlds."
-            ]
+              "**The Dataflow model** helps teams think about batch and streaming as related processing problems rather than fully separate worlds.",
+            ],
           },
           {
-            "kind": "image",
-            "src": lambdaKappaDataflowImg,
-            "alt": "Lambda, Kappa, and Dataflow architecture diagram",
-            "caption": "Lambda, Kappa, and Dataflow"
+            kind: "image",
+            src: lambdaKappaDataflowImg,
+            alt: "Lambda, Kappa, and Dataflow architecture diagram",
+            caption: "Lambda, Kappa, and Dataflow",
           },
           {
-            "kind": "prose",
-            "heading": "IoT and data mesh",
-            "body": [
+            kind: "prose",
+            heading: "IoT and data mesh",
+            body: [
               "**IoT architecture** handles data from devices such as sensors, cameras, and vehicles. It must account for intermittent connectivity, device identity, and large event volumes.",
-              "**Data mesh** is an organizational approach where domains own and publish their data as products, supported by self-service infrastructure and shared governance."
-            ]
+              "**Data mesh** is an organizational approach where domains own and publish their data as products, supported by self-service infrastructure and shared governance.",
+            ],
           },
           {
-            "kind": "image",
-            "src": iotDataMeshImg,
-            "alt": "IoT and Data Mesh diagram",
-            "caption": "IoT and Data Mesh"
+            kind: "image",
+            src: iotDataMeshImg,
+            alt: "IoT and Data Mesh diagram",
+            caption: "IoT and Data Mesh",
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Batch is often the simplest choice for scheduled reporting.",
               "Streaming is useful when low latency creates real value.",
               "Warehouses, lakes, and lakehouses solve different problems.",
-              "Architecture patterns should follow requirements, not hype."
-            ]
+              "Architecture patterns should follow requirements, not hype.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "batch-streaming-and-modern-data-platform-patterns-quiz",
-                "question": "When is streaming a better choice than batch?",
-                "options": [
+                id: "batch-streaming-and-modern-data-platform-patterns-quiz",
+                question: "When is streaming a better choice than batch?",
+                options: [
                   "When the business needs to react to new data within seconds or minutes.",
                   "Option 2",
                   "Option 3",
-                  "Option 4"
+                  "Option 4",
                 ],
-                "correctIndex": 0,
-                "explanation": "When the business needs to react to new data within seconds or minutes."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation:
+                  "When the business needs to react to new data within seconds or minutes.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "a-complete-example",
-        "title": "3.5 A Complete Example: Designing a Scalable Retail Data Platform",
-        "subtitle": "Bring together the architecture concepts from Lessons 3.1 to 3.4 by designing a practical platform for an online retailer.",
-        "sections": [
+        slug: "a-complete-example",
+        title: "3.5 A Complete Example: Designing a Scalable Retail Data Platform",
+        subtitle:
+          "Bring together the architecture concepts from Lessons 3.1 to 3.4 by designing a practical platform for an online retailer.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "Architecture ideas become useful when you can apply them to a real problem.",
-              "This lesson follows a fictional retailer, **Northstar Retail**, as it designs a platform for analytics, operational reporting, and growing data volume."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": northstarRetailImg,
-            "alt": "Northstar Retail",
-            "caption": "Northstar Retail"
-          },
-          {
-            "kind": "prose",
-            "heading": "The business problem",
-            "body": [
-              "Northstar Retail sells products through a **website** and **mobile app**."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": northstarBusinessProblemImg,
-            "alt": "Northstar Business Problem",
-            "caption": "The messy current data situation"
-          },
-          {
-            "kind": "prose",
-            "heading": "Step 1: Define the operational requirements",
-            "body": [
-              "Before choosing tools, the team agrees on the outcomes."
-            ]
-          },
-          {
-            "kind": "table",
-            "headers": [
-              "Need",
-              "Requirement"
+              "This lesson follows a fictional retailer, **Northstar Retail**, as it designs a platform for analytics, operational reporting, and growing data volume.",
             ],
-            "rows": [
-              [
-                "Daily revenue dashboard",
-                "Ready by 8 AM each day"
-              ],
-              [
-                "Inventory updates",
-                "Available within five minutes"
-              ],
-              [
-                "Payment failure alerts",
-                "Visible within one minute"
-              ],
-              [
-                "Historical analysis",
-                "Keep order history for at least three years"
-              ],
-              [
-                "Access",
-                "Analysts should not query production databases"
-              ],
-              [
-                "Reliability",
-                "A failed pipeline must alert the data team"
-              ]
-            ]
           },
           {
-            "kind": "prose",
-            "body": [
-              "This is the operational architecture. It explains what the business needs."
-            ]
+            kind: "image",
+            src: northstarRetailImg,
+            alt: "Northstar Retail",
+            caption: "Northstar Retail",
           },
           {
-            "kind": "prose",
-            "heading": "Step 2: Design the technical architecture",
-            "body": [
-              "The technical architecture explains how the platform will deliver those outcomes."
-            ]
+            kind: "prose",
+            heading: "The business problem",
+            body: ["Northstar Retail sells products through a **website** and **mobile app**."],
           },
           {
-            "kind": "image",
-            "src": northstarRetailTechnicalArchImg,
-            "alt": "Technical Architecture",
-            "caption": "Technical Architecture"
+            kind: "image",
+            src: northstarBusinessProblemImg,
+            alt: "Northstar Business Problem",
+            caption: "The messy current data situation",
           },
           {
-            "kind": "prose",
-            "heading": "Step 3: Define domains and ownership",
-            "body": [
-              "Northstar separates responsibilities by business domain."
-            ]
+            kind: "prose",
+            heading: "Step 1: Define the operational requirements",
+            body: ["Before choosing tools, the team agrees on the outcomes."],
           },
           {
-            "kind": "image",
-            "src": northstarRetailDomainOwnershipImg,
-            "alt": "Domain Ownership",
-            "caption": "Domain Ownership"
+            kind: "table",
+            headers: ["Need", "Requirement"],
+            rows: [
+              ["Daily revenue dashboard", "Ready by 8 AM each day"],
+              ["Inventory updates", "Available within five minutes"],
+              ["Payment failure alerts", "Visible within one minute"],
+              ["Historical analysis", "Keep order history for at least three years"],
+              ["Access", "Analysts should not query production databases"],
+              ["Reliability", "A failed pipeline must alert the data team"],
+            ],
           },
           {
-            "kind": "prose",
-            "body": [
+            kind: "prose",
+            body: ["This is the operational architecture. It explains what the business needs."],
+          },
+          {
+            kind: "prose",
+            heading: "Step 2: Design the technical architecture",
+            body: [
+              "The technical architecture explains how the platform will deliver those outcomes.",
+            ],
+          },
+          {
+            kind: "image",
+            src: northstarRetailTechnicalArchImg,
+            alt: "Technical Architecture",
+            caption: "Technical Architecture",
+          },
+          {
+            kind: "prose",
+            heading: "Step 3: Define domains and ownership",
+            body: ["Northstar separates responsibilities by business domain."],
+          },
+          {
+            kind: "image",
+            src: northstarRetailDomainOwnershipImg,
+            alt: "Domain Ownership",
+            caption: "Domain Ownership",
+          },
+          {
+            kind: "prose",
+            body: [
               "Each domain owns the meaning and quality of the data it creates.",
-              "The data platform team does not redefine what an **“order”** means alone. It works with the **sales domain** to create a documented contract."
-            ]
+              "The data platform team does not redefine what an **“order”** means alone. It works with the **sales domain** to create a documented contract.",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "Step 4: Choose batch and streaming where each fits",
-            "body": [
-              "Northstar does not use streaming for everything.",
-              "**Batch workloads**"
-            ],
-            "items": [
+            kind: "list",
+            heading: "Step 4: Choose batch and streaming where each fits",
+            body: ["Northstar does not use streaming for everything.", "**Batch workloads**"],
+            items: [
               "Daily sales dashboard",
               "Weekly refund analysis",
               "Monthly customer-retention reporting",
-              "Historical revenue models"
-            ]
+              "Historical revenue models",
+            ],
           },
           {
-            "kind": "list",
-            "body": [
+            kind: "list",
+            body: [
               "These run on a schedule because waiting until morning is acceptable.",
-              "**Streaming workloads**"
+              "**Streaming workloads**",
             ],
-            "items": [
+            items: [
               "Payment failure alerts",
               "Inventory updates",
               "Fraud signals",
-              "Live operational monitoring"
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "These need fast updates because delayed data can affect customers or revenue."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Step 5: Select the data platform pattern",
-            "body": [
-              "Northstar uses a lakehouse-style design."
+              "Live operational monitoring",
             ],
-            "items": [
+          },
+          {
+            kind: "prose",
+            body: ["These need fast updates because delayed data can affect customers or revenue."],
+          },
+          {
+            kind: "list",
+            heading: "Step 5: Select the data platform pattern",
+            body: ["Northstar uses a lakehouse-style design."],
+            items: [
               "Raw events and files land in object storage.",
               "Curated tables hold validated, business-ready data.",
               "Analysts query trusted tables instead of raw files.",
-              "Data scientists can access historical data without copying it into another platform."
-            ]
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "This design supports both batch reporting and streaming use cases while keeping storage flexible."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Step 6: Design for failure",
-            "body": [
-              "The team assumes failures will happen."
-            ]
-          },
-          {
-            "kind": "table",
-            "headers": [
-              "Failure",
-              "Design response"
+              "Data scientists can access historical data without copying it into another platform.",
             ],
-            "rows": [
-              [
-                "Payment service is temporarily unavailable",
-                "Retry safely and alert the owner"
-              ],
-              [
-                "An event arrives twice",
-                "Use an event ID to prevent duplicate processing"
-              ],
-              [
-                "Inventory schema changes",
-                "Validate the schema before loading"
-              ],
-              [
-                "Daily pipeline misses 8 AM",
-                "Alert the data team and delay dashboard refresh"
-              ],
-              [
-                "Transformation fails",
-                "Keep the previous trusted dashboard data available"
-              ]
-            ]
           },
           {
-            "kind": "list",
-            "body": [
-              "The daily dashboard has:"
+            kind: "prose",
+            body: [
+              "This design supports both batch reporting and streaming use cases while keeping storage flexible.",
             ],
-            "items": [
-              "**RTO:** Four hours",
-              "**RPO:** One day of acceptable data loss"
-            ]
           },
           {
-            "kind": "prose",
-            "body": [
-              "The payment-failure alert has stricter expectations because it supports a live business process."
-            ]
+            kind: "prose",
+            heading: "Step 6: Design for failure",
+            body: ["The team assumes failures will happen."],
           },
           {
-            "kind": "prose",
-            "heading": "Step 7: Keep the architecture loosely coupled",
-            "body": [
+            kind: "table",
+            headers: ["Failure", "Design response"],
+            rows: [
+              ["Payment service is temporarily unavailable", "Retry safely and alert the owner"],
+              ["An event arrives twice", "Use an event ID to prevent duplicate processing"],
+              ["Inventory schema changes", "Validate the schema before loading"],
+              ["Daily pipeline misses 8 AM", "Alert the data team and delay dashboard refresh"],
+              ["Transformation fails", "Keep the previous trusted dashboard data available"],
+            ],
+          },
+          {
+            kind: "list",
+            body: ["The daily dashboard has:"],
+            items: ["**RTO:** Four hours", "**RPO:** One day of acceptable data loss"],
+          },
+          {
+            kind: "prose",
+            body: [
+              "The payment-failure alert has stricter expectations because it supports a live business process.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "Step 7: Keep the architecture loosely coupled",
+            body: [
               "The order service publishes an `OrderPlaced` event.",
               "It does not directly write into analytics tables or the inventory database.",
-              "Other systems can subscribe to that event:"
-            ]
-          },
-          {
-            "kind": "image",
-            "src": northstarRetailLooselyCoupledImg,
-            "alt": "Loosely Coupled Architecture",
-            "caption": "Loosely Coupled Architecture"
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "This lets teams improve their systems independently."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Step 8: Apply the principles of good architecture",
-            "body": [
-              "Northstar uses these principles:"
+              "Other systems can subscribe to that event:",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: northstarRetailLooselyCoupledImg,
+            alt: "Loosely Coupled Architecture",
+            caption: "Loosely Coupled Architecture",
+          },
+          {
+            kind: "prose",
+            body: ["This lets teams improve their systems independently."],
+          },
+          {
+            kind: "list",
+            heading: "Step 8: Apply the principles of good architecture",
+            body: ["Northstar uses these principles:"],
+            items: [
               "**Common components:** Shared storage, orchestration, monitoring, and metadata catalog.",
               "**Scalability:** Compute can increase during large sales events.",
               "**Security:** Analysts use curated tables with role-based access.",
               "**Reversibility:** The team pilots a new streaming pipeline with inventory before moving payments.",
               "**FinOps:** The team tracks query and compute cost by workload.",
-              "**Continuous architecture:** The platform is reviewed as business needs change."
-            ]
+              "**Continuous architecture:** The platform is reviewed as business needs change.",
+            ],
           },
           {
-            "kind": "prose",
-            "heading": "The final architecture",
-            "body": []
+            kind: "prose",
+            heading: "The final architecture",
+            body: [],
           },
           {
-            "kind": "image",
-            "src": northstarRetailFinalArchImg,
-            "alt": "Final Architecture",
-            "caption": "The final architecture"
+            kind: "image",
+            src: northstarRetailFinalArchImg,
+            alt: "Final Architecture",
+            caption: "The final architecture",
           },
           {
-            "kind": "list",
-            "heading": "Common mistakes to avoid",
-            "items": [
+            kind: "list",
+            heading: "Common mistakes to avoid",
+            items: [
               "Using real-time pipelines for every use case.",
               "Allowing analysts to query production systems.",
               "Creating a separate copy of the same data for every team.",
               "Building tightly coupled pipelines that depend on another team’s database.",
               "Ignoring failure handling until the first outage.",
-              "Choosing tools before agreeing on the business requirement."
-            ]
+              "Choosing tools before agreeing on the business requirement.",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Start architecture with business requirements.",
               "Separate domain ownership from shared platform responsibilities.",
               "Use batch and streaming only where each creates value.",
               "Plan for failure with validation, retries, alerts, and recovery targets.",
               "Prefer loosely coupled systems and reversible decisions.",
-              "A scalable platform is not one giant tool. It is a set of clear, well-connected responsibilities."
-            ]
+              "A scalable platform is not one giant tool. It is a set of clear, well-connected responsibilities.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "retail-platform-quiz-1",
-                "question": "Why does Northstar use both batch and streaming?",
-                "options": [
+                id: "retail-platform-quiz-1",
+                question: "Why does Northstar use both batch and streaming?",
+                options: [
                   "Batch is sufficient for scheduled reporting, while streaming is needed for fast operational actions such as payment failure alerts and inventory updates.",
                   "Because they wanted to try all available technologies.",
                   "Streaming is too cheap and batch is too expensive.",
-                  "Batch is for payments and streaming is for historical reports."
+                  "Batch is for payments and streaming is for historical reports.",
                 ],
-                "correctIndex": 0,
-                "explanation": "Batch handles scheduled reporting cost-effectively, while streaming is for actions needing immediate response."
+                correctIndex: 0,
+                explanation:
+                  "Batch handles scheduled reporting cost-effectively, while streaming is for actions needing immediate response.",
               },
               {
-                "id": "retail-platform-quiz-2",
-                "question": "Why does the order service publish an event instead of writing directly to analytics tables?",
-                "options": [
+                id: "retail-platform-quiz-2",
+                question:
+                  "Why does the order service publish an event instead of writing directly to analytics tables?",
+                options: [
                   "Events keep systems loosely coupled, allowing downstream teams and services to evolve independently.",
                   "It is faster to write an event.",
                   "Analytics tables cannot handle direct writes.",
-                  "It saves storage space."
+                  "It saves storage space.",
                 ],
-                "correctIndex": 0,
-                "explanation": "Events decouple the producer from the consumers, so systems can be updated independently."
+                correctIndex: 0,
+                explanation:
+                  "Events decouple the producer from the consumers, so systems can be updated independently.",
               },
               {
-                "id": "retail-platform-quiz-3",
-                "question": "What makes the platform scalable?",
-                "options": [
+                id: "retail-platform-quiz-3",
+                question: "What makes the platform scalable?",
+                options: [
                   "Shared storage, independent compute, modular services, event-based communication, and the ability to increase resources when workloads grow.",
                   "Buying the most expensive software available.",
                   "Keeping all data in a single massive database.",
-                  "Having a large team manually manage queries."
+                  "Having a large team manually manage queries.",
                 ],
-                "correctIndex": 0,
-                "explanation": "Scalability comes from separating storage from compute, loose coupling via events, and elasticity."
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                correctIndex: 0,
+                explanation:
+                  "Scalability comes from separating storage from compute, loose coupling via events, and elasticity.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   "selecting-the-right-data-technologies": {
-    "title": "4. Selecting the Right Data Technologies",
-    "slug": "selecting-the-right-data-technologies",
-    "lessons": [
+    title: "4. Selecting the Right Data Technologies",
+    slug: "selecting-the-right-data-technologies",
+    lessons: [
       {
-        "slug": "evaluating-technology-choices",
-        "title": "4.1 Evaluating Technology Choices",
-        "subtitle": "Learn how to choose data tools from requirements, trade-offs, and long-term ownership instead of popularity.",
-        "sections": [
+        slug: "evaluating-technology-choices",
+        title: "4.1 Evaluating Technology Choices",
+        subtitle:
+          "Learn how to choose data tools from requirements, trade-offs, and long-term ownership instead of popularity.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "Tools do not create a good data platform by themselves.",
-              "A tool may have impressive features but still be the wrong choice if it is too costly, difficult to operate, insecure, or poorly suited to the team's skills."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": startWithProblemImg,
-            "alt": "Start with the problem",
-            "caption": "Start with the problem"
-          },
-          {
-            "kind": "prose",
-            "heading": "Decision Scorecards and Shared Components",
-            "body": [
-              "Evaluating platforms with a decision scorecard balances criteria like security, reliability, and cost to identify the best tool fit. Pairing this framework with common infrastructure components accelerates development across engineering and analytics teams without imposing rigid constraints."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": decisionScorecardImg,
-            "alt": "Decision Scorecards and Shared Components",
-            "caption": "Decision Scorecards and Shared Components"
-          },
-          {
-            "kind": "prose",
-            "heading": "Build, self-manage, or buy?",
-            "body": []
-          },
-          {
-            "kind": "table",
-            "headers": [
-              "Approach",
-              "Good fit",
-              "Main trade-off"
+              "A tool may have impressive features but still be the wrong choice if it is too costly, difficult to operate, insecure, or poorly suited to the team's skills.",
             ],
-            "rows": [
-              ["Build internally", "The capability creates a real business advantage", "High development and maintenance effort"],
-              ["Self-manage open-source software", "The team needs control and has strong platform skills", "The team owns upgrades, security, and failures"],
-              ["Use managed or commercial software", "The capability is common and speed matters", "Ongoing cost and potential vendor dependence"]
-            ]
           },
           {
-            "kind": "prose",
-            "body": [
-              "Start with existing solutions. Build custom software only when it creates meaningful value."
-            ]
+            kind: "image",
+            src: startWithProblemImg,
+            alt: "Start with the problem",
+            caption: "Start with the problem",
           },
           {
-            "kind": "list",
-            "heading": "Think about total cost of ownership",
-            "body": [
-              "The listed price is not the full cost.",
-              "Consider:"
+            kind: "prose",
+            heading: "Decision Scorecards and Shared Components",
+            body: [
+              "Evaluating platforms with a decision scorecard balances criteria like security, reliability, and cost to identify the best tool fit. Pairing this framework with common infrastructure components accelerates development across engineering and analytics teams without imposing rigid constraints.",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: decisionScorecardImg,
+            alt: "Decision Scorecards and Shared Components",
+            caption: "Decision Scorecards and Shared Components",
+          },
+          {
+            kind: "prose",
+            heading: "Build, self-manage, or buy?",
+            body: [],
+          },
+          {
+            kind: "table",
+            headers: ["Approach", "Good fit", "Main trade-off"],
+            rows: [
+              [
+                "Build internally",
+                "The capability creates a real business advantage",
+                "High development and maintenance effort",
+              ],
+              [
+                "Self-manage open-source software",
+                "The team needs control and has strong platform skills",
+                "The team owns upgrades, security, and failures",
+              ],
+              [
+                "Use managed or commercial software",
+                "The capability is common and speed matters",
+                "Ongoing cost and potential vendor dependence",
+              ],
+            ],
+          },
+          {
+            kind: "prose",
+            body: [
+              "Start with existing solutions. Build custom software only when it creates meaningful value.",
+            ],
+          },
+          {
+            kind: "list",
+            heading: "Think about total cost of ownership",
+            body: ["The listed price is not the full cost.", "Consider:"],
+            items: [
               "Compute and storage",
               "Subscription or licensing fees",
               "Data transfer",
@@ -3821,236 +3839,243 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Engineering time",
               "Monitoring and maintenance",
               "Downtime and recovery",
-              "Future migration cost"
-            ]
+              "Future migration cost",
+            ],
           },
           {
-            "kind": "prose",
-            "body": [
-              "A free tool can be expensive if it consumes too much engineering time."
-            ]
+            kind: "prose",
+            body: ["A free tool can be expensive if it consumes too much engineering time."],
           },
           {
-            "kind": "prose",
-            "heading": "Make Uncertain Decisions Reversible",
-            "body": [
-              "Testing small workloads through a targeted pilot minimizes risk before committing to large-scale migrations. By evaluating real-world value, cost, and reliability upfront, teams can confidently decide whether to adopt, adapt, or reject a platform choice."
-            ]
+            kind: "prose",
+            heading: "Make Uncertain Decisions Reversible",
+            body: [
+              "Testing small workloads through a targeted pilot minimizes risk before committing to large-scale migrations. By evaluating real-world value, cost, and reliability upfront, teams can confidently decide whether to adopt, adapt, or reject a platform choice.",
+            ],
           },
           {
-            "kind": "image",
-            "src": decisionsReversibleImg,
-            "alt": "Make Uncertain Decisions Reversible",
-            "caption": "Make Uncertain Decisions Reversible"
+            kind: "image",
+            src: decisionsReversibleImg,
+            alt: "Make Uncertain Decisions Reversible",
+            caption: "Make Uncertain Decisions Reversible",
           },
           {
-            "kind": "list",
-            "heading": "Common mistakes",
-            "items": [
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
               "Choosing tools because they are popular.",
               "Evaluating features but not operations.",
               "Ignoring maintenance and training cost.",
               "Building a custom tool for a common problem.",
-              "Committing before running a small pilot."
-            ]
+              "Committing before running a small pilot.",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Start with the problem, not the product.",
               "Compare tools using consistent criteria.",
               "Consider operations, governance, and exit paths.",
-              "Prefer small, reversible pilots."
-            ]
+              "Prefer small, reversible pilots.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "evaluating-technology-choices-quiz",
-                "question": "What should come before selecting a technology?",
-                "options": [
+                id: "evaluating-technology-choices-quiz",
+                question: "What should come before selecting a technology?",
+                options: [
                   "Clear business requirements, constraints, ownership, and success criteria.",
                   "Choosing the most popular tool in the market.",
                   "Building a custom solution from scratch.",
-                  "Hiring a team of specialists to manage the tool."
+                  "Hiring a team of specialists to manage the tool.",
                 ],
-                "correctIndex": 0,
-                "explanation": "Clear business requirements, constraints, ownership, and success criteria."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation:
+                  "Clear business requirements, constraints, ownership, and success criteria.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "cloud-infrastructure-and-deployment-models",
-        "title": "4.2 Cloud, Infrastructure, and Deployment Models",
-        "subtitle": "Understand how location, infrastructure, and compute choices affect performance, cost, and operations.",
-        "sections": [
+        slug: "cloud-infrastructure-and-deployment-models",
+        title: "4.2 Cloud, Infrastructure, and Deployment Models",
+        subtitle:
+          "Understand how location, infrastructure, and compute choices affect performance, cost, and operations.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "Where a system runs and how it is deployed affects latency, reliability, compliance, cost, and the amount of infrastructure the team must manage.",
-              "There is no default best option. Choose the model that fits the workload."
-            ]
+              "There is no default best option. Choose the model that fits the workload.",
+            ],
           },
           {
-            "kind": "image",
-            "src": startWithLocationImg,
-            "alt": "Start with location",
-            "caption": "Start with location"
+            kind: "image",
+            src: startWithLocationImg,
+            alt: "Start with location",
+            caption: "Start with location",
           },
           {
-            "kind": "prose",
-            "heading": "Cloud, on-premises, and hybrid",
-            "body": [
+            kind: "prose",
+            heading: "Cloud, on-premises, and hybrid",
+            body: [
               "**Cloud** is useful for flexible scaling, managed services, and fast provisioning.",
               "**On-premises** may fit legacy systems, specialized hardware, strict requirements, or existing investments.",
               "**Hybrid** combines cloud and on-premises systems. It is common when a company is gradually modernizing or must keep some workloads in a controlled environment.",
-              "Choose based on requirements, not ideology."
-            ]
-          },
-          {
-            "kind": "prose",
-            "heading": "Servers, containers, and serverless",
-            "body": []
-          },
-          {
-            "kind": "table",
-            "headers": [
-              "Option",
-              "Good fit",
-              "What the team manages"
+              "Choose based on requirements, not ideology.",
             ],
-            "rows": [
-              ["Virtual machine or server", "Long-running or specialized workloads", "Operating system, patching, runtime, capacity"],
-              ["Container", "Portable, repeatable services", "Images, orchestration, monitoring, scaling"],
-              ["Serverless", "Short-lived, event-driven workloads", "Function code, configuration, limits, cost controls"]
-            ]
           },
           {
-            "kind": "image",
-            "src": computeWorkloadImg,
-            "alt": "Servers, containers, and serverless",
-            "caption": "Servers, containers, and serverless"
+            kind: "prose",
+            heading: "Servers, containers, and serverless",
+            body: [],
           },
           {
-            "kind": "prose",
-            "heading": "Separate storage and compute",
-            "body": [
-              "Modern platforms often separate data storage from the compute used to process it."
-            ]
+            kind: "table",
+            headers: ["Option", "Good fit", "What the team manages"],
+            rows: [
+              [
+                "Virtual machine or server",
+                "Long-running or specialized workloads",
+                "Operating system, patching, runtime, capacity",
+              ],
+              [
+                "Container",
+                "Portable, repeatable services",
+                "Images, orchestration, monitoring, scaling",
+              ],
+              [
+                "Serverless",
+                "Short-lived, event-driven workloads",
+                "Function code, configuration, limits, cost controls",
+              ],
+            ],
           },
           {
-            "kind": "image",
-            "src": separateStorageComputeImg,
-            "alt": "Separate storage and compute",
-            "caption": "Separate storage and compute"
+            kind: "image",
+            src: computeWorkloadImg,
+            alt: "Servers, containers, and serverless",
+            caption: "Servers, containers, and serverless",
           },
           {
-            "kind": "prose",
-            "body": [
-              "This allows several workloads to use shared data while compute grows or shrinks independently."
-            ]
+            kind: "prose",
+            heading: "Separate storage and compute",
+            body: [
+              "Modern platforms often separate data storage from the compute used to process it.",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "Common mistakes",
-            "items": [
+            kind: "image",
+            src: separateStorageComputeImg,
+            alt: "Separate storage and compute",
+            caption: "Separate storage and compute",
+          },
+          {
+            kind: "prose",
+            body: [
+              "This allows several workloads to use shared data while compute grows or shrinks independently.",
+            ],
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
               "Choosing serverless only because it sounds cheaper.",
               "Keeping large resources running when no work exists.",
               "Ignoring data transfer cost.",
               "Placing data far from the systems that use it.",
-              "Treating cloud infrastructure as unlimited and free."
-            ]
+              "Treating cloud infrastructure as unlimited and free.",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Location affects latency, cost, and compliance.",
               "Servers, containers, and serverless fit different workloads.",
               "Separate storage and compute when flexibility is valuable.",
-              "Choose infrastructure based on workload behavior."
-            ]
+              "Choose infrastructure based on workload behavior.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "cloud-infrastructure-and-deployment-models-quiz",
-                "question": "When is serverless a strong option?",
-                "options": [
+                id: "cloud-infrastructure-and-deployment-models-quiz",
+                question: "When is serverless a strong option?",
+                options: [
                   "For short-lived, event-driven, or intermittent workloads.",
                   "For long-running, continuous tasks.",
                   "When you need maximum control over the operating system.",
-                  "When workloads require specialized hardware."
+                  "When workloads require specialized hardware.",
                 ],
-                "correctIndex": 0,
-                "explanation": "For short-lived, event-driven, or intermittent workloads."
-              }
-            ]
-          }
-        ]
+                correctIndex: 0,
+                explanation: "For short-lived, event-driven, or intermittent workloads.",
+              },
+            ],
+          },
+        ],
       },
       {
-        "slug": "security-compliance-and-governance-by-design",
-        "title": "4.3 Security, Compliance, and Governance by Design",
-        "subtitle": "Learn how to design and select data systems that protect sensitive data, meet requirements, and remain reliable in production.",
-        "sections": [
+        slug: "security-compliance-and-governance-by-design",
+        title: "4.3 Security, Compliance, and Governance by Design",
+        subtitle:
+          "Learn how to design and select data systems that protect sensitive data, meet requirements, and remain reliable in production.",
+        sections: [
           {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
+            kind: "prose",
+            heading: "Why this matters",
+            body: [
               "Security, compliance, governance, and reliability are not final checks before launch.",
-              "They determine which tools are acceptable, where data can live, who can access it, how long it is retained, and how the team proves that the platform works as intended."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": dataClassificationImg,
-            "alt": "Start with data classification",
-            "caption": "Start with data classification"
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "**Personal data** may include a **name**, **email address**, **device identifier**, **location history**, or **payment detail**.",
-              "Classification drives **access**, **masking**, **retention**, **encryption**, and **monitoring rules**."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": architectFullDataLifecycleImg,
-            "alt": "Architect for the full data lifecycle",
-            "caption": "Architect for the full data lifecycle"
-          },
-          {
-            "kind": "prose",
-            "heading": "Design for deletion and policy changes",
-            "body": [
-              "Personal data may appear in raw files, warehouse tables, dashboards, machine learning features, exports, and backups. **Use lineage to trace where it moves**."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": designForDeletionImg,
-            "alt": "Design for deletion",
-            "caption": "Design for deletion"
-          },
-          {
-            "kind": "prose",
-            "body": [
-              "**Loosely coupled components** make policy changes easier. A **retention or deletion workflow** can be updated without rewriting every pipeline."
-            ]
-          },
-          {
-            "kind": "list",
-            "heading": "Evaluate security capabilities in every tool",
-            "body": [
-              "Ask:"
+              "They determine which tools are acceptable, where data can live, who can access it, how long it is retained, and how the team proves that the platform works as intended.",
             ],
-            "items": [
+          },
+          {
+            kind: "image",
+            src: dataClassificationImg,
+            alt: "Start with data classification",
+            caption: "Start with data classification",
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Personal data** may include a **name**, **email address**, **device identifier**, **location history**, or **payment detail**.",
+              "Classification drives **access**, **masking**, **retention**, **encryption**, and **monitoring rules**.",
+            ],
+          },
+          {
+            kind: "image",
+            src: architectFullDataLifecycleImg,
+            alt: "Architect for the full data lifecycle",
+            caption: "Architect for the full data lifecycle",
+          },
+          {
+            kind: "prose",
+            heading: "Design for deletion and policy changes",
+            body: [
+              "Personal data may appear in raw files, warehouse tables, dashboards, machine learning features, exports, and backups. **Use lineage to trace where it moves**.",
+            ],
+          },
+          {
+            kind: "image",
+            src: designForDeletionImg,
+            alt: "Design for deletion",
+            caption: "Design for deletion",
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Loosely coupled components** make policy changes easier. A **retention or deletion workflow** can be updated without rewriting every pipeline.",
+            ],
+          },
+          {
+            kind: "list",
+            heading: "Evaluate security capabilities in every tool",
+            body: ["Ask:"],
+            items: [
               "Does it support role-based access?",
               "Can it enforce least privilege?",
               "Can secrets be stored securely?",
@@ -4058,17 +4083,17 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Can sensitive fields be masked or tokenized?",
               "Are actions recorded in audit logs?",
               "Can access be temporary and reviewed?",
-              "Is the tool from a trustworthy source?"
-            ]
+              "Is the tool from a trustworthy source?",
+            ],
           },
           {
-            "kind": "list",
-            "heading": "Governance creates trust",
-            "body": [
+            kind: "list",
+            heading: "Governance creates trust",
+            body: [
               "Governance helps people find, understand, and use data safely.",
-              "Core practices include:"
+              "Core practices include:",
             ],
-            "items": [
+            items: [
               "Named data owners",
               "Clear definitions",
               "Metadata and documentation",
@@ -4076,210 +4101,209 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Data quality checks",
               "Retention policies",
               "Privacy rules",
-              "Incident response procedures"
-            ]
+              "Incident response procedures",
+            ],
           },
           {
-            "kind": "prose",
-            "heading": "The undercurrents affect every decision",
-            "body": []
+            kind: "prose",
+            heading: "The undercurrents affect every decision",
+            body: [],
           },
           {
-            "kind": "image",
-            "src": undercurrentsGuideDecisionImg,
-            "alt": "The undercurrents affect every decision",
-            "caption": "The undercurrents affect every decision"
+            kind: "image",
+            src: undercurrentsGuideDecisionImg,
+            alt: "The undercurrents affect every decision",
+            caption: "The undercurrents affect every decision",
           },
           {
-            "kind": "list",
-            "heading": "Common mistakes",
-            "items": [
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
               "Giving every user broad access to raw data.",
               "Treating deletion as a manual task.",
               "Ignoring metadata and lineage.",
               "Choosing a tool without checking its security capabilities.",
-              "Adding compliance controls only after launch."
-            ]
+              "Adding compliance controls only after launch.",
+            ],
           },
           {
-            "kind": "takeaways",
-            "items": [
+            kind: "takeaways",
+            items: [
               "Compliance is an architecture concern from the beginning.",
               "Classify sensitive data early.",
               "Design for access, retention, deletion, and auditability.",
               "Evaluate technology through all six undercurrents.",
-              "Use service targets to define required reliability."
-            ]
+              "Use service targets to define required reliability.",
+            ],
           },
           {
-            "kind": "quiz",
-            "questions": [
+            kind: "quiz",
+            questions: [
               {
-                "id": "security-compliance-and-governance-by-design-quiz",
-                "question": "Why is lineage important for compliance?",
-                "options": [
+                id: "security-compliance-and-governance-by-design-quiz",
+                question: "Why is lineage important for compliance?",
+                options: [
                   "It shows where sensitive data came from, where it moved, and which systems may need updates or deletion.",
                   "It automatically encrypts sensitive data.",
                   "It deletes personal data when requested.",
-                  "It reduces the size of stored datasets."
+                  "It reduces the size of stored datasets.",
                 ],
-                "correctIndex": 0,
-                "explanation": "It shows where sensitive data came from, where it moved, and which systems may need updates or deletion."
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "slug": "cost-migration-and-continuous-architecture",
-        "title": "4.4 Cost, Migration, and Continuous Architecture",
-        "subtitle": "Learn how to manage platform cost, modernize existing systems safely, and keep architecture useful as business needs change.",
-        "sections": [
-          {
-            "kind": "prose",
-            "heading": "Why this matters",
-            "body": [
-              "A platform can be technically sound and still fail if it costs more than the value it creates.",
-              "Most companies also cannot stop using existing systems while they build a replacement. Data engineers must control cost, improve platforms gradually, and keep architecture aligned with changing needs."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": costToBusinessImg,
-            "alt": "Connect cost to business value",
-            "caption": "Connect cost to business value"
-          },
-          {
-            "kind": "prose",
-            "heading": "Total cost of ownership",
-            "body": []
-          },
-          {
-            "kind": "image",
-            "src": tcoImg,
-            "alt": "Total cost of ownership",
-            "caption": "Total cost of ownership"
-          },
-          {
-            "kind": "prose",
-            "heading": "FinOps in practice",
-            "body": []
-          },
-          {
-            "kind": "image",
-            "src": finopsInPracticeImg,
-            "alt": "FinOps in practice",
-            "caption": "FinOps in practice"
-          },
-          {
-            "kind": "prose",
-            "heading": "Greenfield and brownfield projects",
-            "body": [
-              "A **greenfield** project starts with few existing constraints.",
-              "Example: Building analytics for a new product.",
-              "A **brownfield** project improves existing systems that people already depend on.",
-              "Example: Replacing spreadsheet reporting while the business still uses it every day.",
-              "Most real data engineering work is brownfield work."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": greenfieldBrownfieldImg,
-            "alt": "Greenfield and brownfield projects",
-            "caption": "Greenfield and brownfield projects"
-          },
-          {
-            "kind": "prose",
-            "heading": "Avoid big-bang migrations",
-            "body": [
-              "Replacing every pipeline and database at once creates unnecessary risk.",
-              "Use incremental migration."
-            ]
-          },
-          {
-            "kind": "image",
-            "src": avoidBigBangImg,
-            "alt": "Avoid big-bang migrations",
-            "caption": "Avoid big-bang migrations"
-          },
-          {
-            "kind": "list",
-            "heading": "Keep decisions reversible",
-            "body": [
-              "Examples of reversible migration steps:"
+                correctIndex: 0,
+                explanation:
+                  "It shows where sensitive data came from, where it moved, and which systems may need updates or deletion.",
+              },
             ],
-            "items": [
-              "Move one source before moving all sources.",
-              "Test a new storage format with one dataset.",
-              "Run a new transformation beside the old version.",
-              "Migrate one dashboard after validating its metrics.",
-              "Pilot a managed service before retiring a self-managed tool."
-            ]
           },
-          {
-            "kind": "prose",
-            "heading": "Continue architectural improvement",
-            "body": []
-          },
-          {
-            "kind": "image",
-            "src": continuousArchitectureImg,
-            "alt": "Continuous architecture",
-            "caption": "Continuous architecture"
-          },
-          {
-            "kind": "list",
-            "heading": "Common mistakes",
-            "items": [
-              "Optimizing cost without understanding value.",
-              "Ignoring engineering and maintenance cost.",
-              "Running resources continuously when workloads are scheduled.",
-              "Attempting a big-bang migration.",
-              "Retiring the old system before validating the replacement.",
-              "Treating architecture as finished after launch."
-            ]
-          },
-          {
-            "kind": "takeaways",
-            "items": [
-              "Cost should be connected to useful business outcomes.",
-              "Total cost of ownership includes far more than subscription fees.",
-              "FinOps makes spending visible and manageable.",
-              "Most platform work improves existing systems.",
-              "Good architecture evolves through continuous review."
-            ]
-          },
-          {
-            "kind": "quiz",
-            "questions": [
-              {
-                "id": "cost-migration-and-continuous-architecture-quiz",
-                "question": "Why are incremental migrations safer than big-bang migrations?",
-                "options": [
-                  "They reduce risk, allow validation at each step, and make rollback possible.",
-                  "They are always faster to complete.",
-                  "They require fewer resources and zero planning.",
-                  "They eliminate the need to run old and new systems simultaneously."
-                ],
-                "correctIndex": 0,
-                "explanation": "They reduce risk, allow validation at each step, and make rollback possible."
-              }
-            ]
-          }
-        ]
+        ],
       },
       {
-        slug: "translating-requirements-into-architecture",
-        title: "4.5 Translating Requirements into Architecture",
-        subtitle: "Learn how to turn a business request into clear requirements, a practical data architecture, and an appropriate batch or streaming implementation.",
+        slug: "cost-migration-and-continuous-architecture",
+        title: "4.4 Cost, Migration, and Continuous Architecture",
+        subtitle:
+          "Learn how to manage platform cost, modernize existing systems safely, and keep architecture useful as business needs change.",
         sections: [
           {
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Stakeholders rarely ask for a data pipeline.",
-              "They ask for outcomes:"
-            ]
+              "A platform can be technically sound and still fail if it costs more than the value it creates.",
+              "Most companies also cannot stop using existing systems while they build a replacement. Data engineers must control cost, improve platforms gradually, and keep architecture aligned with changing needs.",
+            ],
+          },
+          {
+            kind: "image",
+            src: costToBusinessImg,
+            alt: "Connect cost to business value",
+            caption: "Connect cost to business value",
+          },
+          {
+            kind: "prose",
+            heading: "Total cost of ownership",
+            body: [],
+          },
+          {
+            kind: "image",
+            src: tcoImg,
+            alt: "Total cost of ownership",
+            caption: "Total cost of ownership",
+          },
+          {
+            kind: "prose",
+            heading: "FinOps in practice",
+            body: [],
+          },
+          {
+            kind: "image",
+            src: finopsInPracticeImg,
+            alt: "FinOps in practice",
+            caption: "FinOps in practice",
+          },
+          {
+            kind: "prose",
+            heading: "Greenfield and brownfield projects",
+            body: [
+              "A **greenfield** project starts with few existing constraints.",
+              "Example: Building analytics for a new product.",
+              "A **brownfield** project improves existing systems that people already depend on.",
+              "Example: Replacing spreadsheet reporting while the business still uses it every day.",
+              "Most real data engineering work is brownfield work.",
+            ],
+          },
+          {
+            kind: "image",
+            src: greenfieldBrownfieldImg,
+            alt: "Greenfield and brownfield projects",
+            caption: "Greenfield and brownfield projects",
+          },
+          {
+            kind: "prose",
+            heading: "Avoid big-bang migrations",
+            body: [
+              "Replacing every pipeline and database at once creates unnecessary risk.",
+              "Use incremental migration.",
+            ],
+          },
+          {
+            kind: "image",
+            src: avoidBigBangImg,
+            alt: "Avoid big-bang migrations",
+            caption: "Avoid big-bang migrations",
+          },
+          {
+            kind: "list",
+            heading: "Keep decisions reversible",
+            body: ["Examples of reversible migration steps:"],
+            items: [
+              "Move one source before moving all sources.",
+              "Test a new storage format with one dataset.",
+              "Run a new transformation beside the old version.",
+              "Migrate one dashboard after validating its metrics.",
+              "Pilot a managed service before retiring a self-managed tool.",
+            ],
+          },
+          {
+            kind: "prose",
+            heading: "Continue architectural improvement",
+            body: [],
+          },
+          {
+            kind: "image",
+            src: continuousArchitectureImg,
+            alt: "Continuous architecture",
+            caption: "Continuous architecture",
+          },
+          {
+            kind: "list",
+            heading: "Common mistakes",
+            items: [
+              "Optimizing cost without understanding value.",
+              "Ignoring engineering and maintenance cost.",
+              "Running resources continuously when workloads are scheduled.",
+              "Attempting a big-bang migration.",
+              "Retiring the old system before validating the replacement.",
+              "Treating architecture as finished after launch.",
+            ],
+          },
+          {
+            kind: "takeaways",
+            items: [
+              "Cost should be connected to useful business outcomes.",
+              "Total cost of ownership includes far more than subscription fees.",
+              "FinOps makes spending visible and manageable.",
+              "Most platform work improves existing systems.",
+              "Good architecture evolves through continuous review.",
+            ],
+          },
+          {
+            kind: "quiz",
+            questions: [
+              {
+                id: "cost-migration-and-continuous-architecture-quiz",
+                question: "Why are incremental migrations safer than big-bang migrations?",
+                options: [
+                  "They reduce risk, allow validation at each step, and make rollback possible.",
+                  "They are always faster to complete.",
+                  "They require fewer resources and zero planning.",
+                  "They eliminate the need to run old and new systems simultaneously.",
+                ],
+                correctIndex: 0,
+                explanation:
+                  "They reduce risk, allow validation at each step, and make rollback possible.",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        slug: "translating-requirements-into-architecture",
+        title: "4.5 Translating Requirements into Architecture",
+        subtitle:
+          "Learn how to turn a business request into clear requirements, a practical data architecture, and an appropriate batch or streaming implementation.",
+        sections: [
+          {
+            kind: "prose",
+            heading: "Why this matters",
+            body: ["Stakeholders rarely ask for a data pipeline.", "They ask for outcomes:"],
           },
           {
             kind: "list",
@@ -4287,83 +4311,79 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "“Help us keep customers.”",
               "“Show us demand spikes.”",
               "“Recommend better products.”",
-              "“Detect fraud quickly.”"
-            ]
+              "“Detect fraud quickly.”",
+            ],
           },
           {
             kind: "prose",
             body: [
-              "Your job as a data engineer is to translate those requests into systems that can be built, operated, measured, and improved."
-            ]
+              "Your job as a data engineer is to translate those requests into systems that can be built, operated, measured, and improved.",
+            ],
           },
           {
             kind: "prose",
             heading: "1. Start with the hierarchy of needs",
-            body: [
-              "A good architecture begins with the business, not the technology."
-            ]
+            body: ["A good architecture begins with the business, not the technology."],
           },
           {
             kind: "image",
             src: hierarchyOfNeedsImg,
             alt: "Hierarchy of Needs",
-            caption: "Business goals → Stakeholder needs → System requirements → Architecture and technology choices"
+            caption:
+              "Business goals → Stakeholder needs → System requirements → Architecture and technology choices",
           },
           {
             kind: "prose",
             heading: "2. Functional and non-functional requirements",
-            body: []
+            body: [],
           },
           {
             kind: "prose",
             body: [
-              "A dashboard chart or metric is not automatically a requirement for the data engineer. It may be a data scientist’s or analyst’s responsibility. The data engineer’s requirement is to serve trusted, timely data that makes the chart possible."
-            ]
+              "A dashboard chart or metric is not automatically a requirement for the data engineer. It may be a data scientist’s or analyst’s responsibility. The data engineer’s requirement is to serve trusted, timely data that makes the chart possible.",
+            ],
           },
           {
             kind: "image",
             src: functionalNfrImg,
             alt: "Analytics dashboard requirements",
-            caption: "Highlighting freshness, quality checks, and schema-change adaptability."
+            caption: "Highlighting freshness, quality checks, and schema-change adaptability.",
           },
           {
             kind: "prose",
             heading: "3. Gather requirements before designing",
-            body: [
-              "Requirements gathering is a conversation, not a form to complete once."
-            ]
+            body: ["Requirements gathering is a conversation, not a form to complete once."],
           },
           {
             kind: "image",
             src: requirementsGatheringImg,
             alt: "Key Elements of Requirements Gathering",
-            caption: "Present each question as a step in a discovery conversation."
+            caption: "Present each question as a step in a discovery conversation.",
           },
           {
             kind: "prose",
             heading: "4. Use the right mental model",
-            body: [
-              "Use the right mental model to break down a complex request",
-            ]
+            body: ["Use the right mental model to break down a complex request"],
           },
           {
             kind: "image",
             src: rightMentalModelImg,
             alt: "Use the right mental model",
-            caption: "Use the right mental model to break down a complex request."
+            caption: "Use the right mental model to break down a complex request.",
           },
           {
             kind: "prose",
             heading: "5. Document the requirement",
             body: [
-              "A short requirements document avoids assumptions and gives the team a shared reference."
-            ]
+              "A short requirements document avoids assumptions and gives the team a shared reference.",
+            ],
           },
           {
             kind: "image",
             src: documentTheRequirementImg,
             alt: "Documenting Requirements",
-            caption: "Business Goals at the top, Stakeholder Needs in the middle, and Requirements at the bottom."
+            caption:
+              "Business Goals at the top, Stakeholder Needs in the middle, and Requirements at the bottom.",
           },
           {
             kind: "prose",
@@ -4371,47 +4391,44 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
             body: [
               "An e-commerce company wants to increase customer retention by recommending relevant products.",
               "This use case needs two pipelines because model training and live recommendations have different requirements.",
-            ]
+            ],
           },
           {
             kind: "image",
             src: recommendationSystemImg,
             alt: "Recommender system requirement",
-            caption: "The model output returning to the sales platform, and the fallback path to popular products."
-
+            caption:
+              "The model output returning to the sales platform, and the fallback path to popular products.",
           },
           {
             kind: "prose",
             heading: "7. Work safely with source systems",
-            body: [
-              "Do not overload the production database with analytical queries."
-            ]
+            body: ["Do not overload the production database with analytical queries."],
           },
           {
             kind: "image",
             src: workWithSourceSystemsImg,
             alt: "Read replica and notification path",
-            caption: "A read replica visual including the notification path for outages and schema changes."
+            caption:
+              "A read replica visual including the notification path for outages and schema changes.",
           },
           {
             kind: "prose",
             heading: "8. Manage scope, timeline, and cost",
             body: [
-              "Balancing scope, timeline, and cost requires making trade-offs visible and prioritizing incremental value. Delivering an initial release with a limited scope allows teams to validate core features quickly while maintaining open communication with stakeholders to guide future expansion."
-            ]
+              "Balancing scope, timeline, and cost requires making trade-offs visible and prioritizing incremental value. Delivering an initial release with a limited scope allows teams to validate core features quickly while maintaining open communication with stakeholders to guide future expansion.",
+            ],
           },
           {
             kind: "image",
             src: scopeTimeCostImg,
             alt: "The Iron Triangle",
-            caption: "Managing the trade-offs between scope, timeline, and cost."
+            caption: "Managing the trade-offs between scope, timeline, and cost.",
           },
           {
             kind: "prose",
             heading: "9. Map architecture to Cloud Services",
-            body: [
-              "Choose services after understanding the requirement."
-            ]
+            body: ["Choose services after understanding the requirement."],
           },
           {
             kind: "image-carousel",
@@ -4419,26 +4436,26 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               {
                 src: mapAzureServicesImg,
                 alt: "Azure Services",
-                caption: "Mapping architecture to Azure data services."
+                caption: "Mapping architecture to Azure data services.",
               },
               {
                 src: mapAwsServicesImg,
                 alt: "EMR versus Glue",
-                caption: "EMR provides more control, while Glue provides more convenience."
+                caption: "EMR provides more control, while Glue provides more convenience.",
               },
               {
                 src: mapGcpServicesImg,
                 alt: "Google Cloud Services",
-                caption: "Mapping architecture to Google Cloud data services."
-              }
-            ]
+                caption: "Mapping architecture to Google Cloud data services.",
+              },
+            ],
           },
           {
             kind: "prose",
             heading: "10. Choose the right streaming option",
             body: [
-              "Selecting a streaming service depends on balancing control, operational overhead, and workload type."
-            ]
+              "Selecting a streaming service depends on balancing control, operational overhead, and workload type.",
+            ],
           },
           {
             kind: "image-carousel",
@@ -4446,32 +4463,33 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               {
                 src: azureStreamingOptionImg,
                 alt: "Azure Streaming Options",
-                caption: "Azure services for event streaming and delivery."
+                caption: "Azure services for event streaming and delivery.",
               },
               {
                 src: streamingOptionImg,
                 alt: "Streaming options comparison",
-                caption: "MSK for control, Kinesis Data Streams for convenience, and Firehose for delivery."
+                caption:
+                  "MSK for control, Kinesis Data Streams for convenience, and Firehose for delivery.",
               },
               {
                 src: gcpStreamingOptionImg,
                 alt: "Google Cloud Streaming Options",
-                caption: "Google Cloud services for event streaming and delivery."
-              }
-            ]
+                caption: "Google Cloud services for event streaming and delivery.",
+              },
+            ],
           },
           {
             kind: "prose",
             heading: "11. The data engineer’s role",
             body: [
-              "A data engineer builds and maintains the core infrastructure powering end-to-end analytics and machine learning applications."
-            ]
+              "A data engineer builds and maintains the core infrastructure powering end-to-end analytics and machine learning applications.",
+            ],
           },
           {
             kind: "image",
             src: dataEngineerRoleImg,
             alt: "The data engineer's role",
-            caption: "Core responsibilities of the data engineer."
+            caption: "Core responsibilities of the data engineer.",
           },
           {
             kind: "list",
@@ -4484,8 +4502,8 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Using streaming when scheduled batch processing is sufficient.",
               "Using Lambda for workloads that exceed its runtime or resource limits.",
               "Skipping fallback behavior for customer-facing systems.",
-              "Failing to document assumptions and ownership."
-            ]
+              "Failing to document assumptions and ownership.",
+            ],
           },
           {
             kind: "takeaways",
@@ -4496,35 +4514,39 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
               "Use batch for scheduled historical processing and streaming for low-latency action.",
               "Design graceful fallback behavior for customer-facing systems.",
               "Make scope, timeline, and cost trade-offs visible.",
-              "Select AWS services only after the architecture and workload needs are clear."
-            ]
+              "Select AWS services only after the architecture and workload needs are clear.",
+            ],
           },
           {
             kind: "quiz",
             questions: [
               {
                 id: "translating-requirements-quiz-1",
-                question: "What is the difference between functional and non-functional requirements?",
+                question:
+                  "What is the difference between functional and non-functional requirements?",
                 options: [
                   "Functional requirements describe what the system must do. Non-functional requirements describe how well it must do it.",
                   "Functional requirements apply only to batch systems. Non-functional requirements apply only to streaming systems.",
                   "Functional requirements are about cost. Non-functional requirements are about scale.",
-                  "There is no difference."
+                  "There is no difference.",
                 ],
                 correctIndex: 0,
-                explanation: "Functional requirements describe what the system must do. Non-functional requirements describe how well it must do it, including latency, reliability, scalability, security, and cost."
+                explanation:
+                  "Functional requirements describe what the system must do. Non-functional requirements describe how well it must do it, including latency, reliability, scalability, security, and cost.",
               },
               {
                 id: "translating-requirements-quiz-2",
-                question: "Why does the recommender system need both batch and streaming pipelines?",
+                question:
+                  "Why does the recommender system need both batch and streaming pipelines?",
                 options: [
                   "Because Kafka requires a batch pipeline to function.",
                   "Batch prepares historical training data for the model. Streaming uses recent customer behavior to return timely recommendations.",
                   "Batch is for marketing, streaming is for finance.",
-                  "AWS does not allow doing both in one pipeline."
+                  "AWS does not allow doing both in one pipeline.",
                 ],
                 correctIndex: 1,
-                explanation: "Batch prepares historical training data for the model. Streaming uses recent customer behavior to return timely recommendations."
+                explanation:
+                  "Batch prepares historical training data for the model. Streaming uses recent customer behavior to return timely recommendations.",
               },
               {
                 id: "translating-requirements-quiz-3",
@@ -4533,10 +4555,11 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "It reduces the risk that analytics and machine learning workloads will slow down the production database.",
                   "It makes the data instantly available everywhere without latency.",
                   "Read replicas automatically format the data for machine learning models.",
-                  "It is a strict requirement for AWS Glue."
+                  "It is a strict requirement for AWS Glue.",
                 ],
                 correctIndex: 0,
-                explanation: "It reduces the risk that analytics and machine learning workloads will slow down the production database."
+                explanation:
+                  "It reduces the risk that analytics and machine learning workloads will slow down the production database.",
               },
               {
                 id: "translating-requirements-quiz-4",
@@ -4545,15 +4568,16 @@ export const FOUNDATION_TOPICS: Record<string, { title: string; slug: string; le
                   "When the team needs a fully managed service with absolutely no operational overhead.",
                   "When the team is doing simple batch ETL processing.",
                   "When a team needs Kafka compatibility and is willing to accept more complexity in return for greater control.",
-                  "When only dealing with XML format data."
+                  "When only dealing with XML format data.",
                 ],
                 correctIndex: 2,
-                explanation: "When a team needs Kafka compatibility and is willing to accept more complexity in return for greater control."
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                explanation:
+                  "When a team needs Kafka compatibility and is willing to accept more complexity in return for greater control.",
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
 };

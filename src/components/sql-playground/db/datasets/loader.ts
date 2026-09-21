@@ -69,7 +69,9 @@ function createTable(table: ManifestTable): string {
         `  "${c.name}" ${c.type}${c.notNull ? " NOT NULL" : ""}${c.defaultValue ? ` DEFAULT ${c.defaultValue}` : ""}`,
     )
     .join(",\n");
-  const constraints = (table.inlineConstraints ?? []).map((constraint) => `  ${constraint}`).join(",\n");
+  const constraints = (table.inlineConstraints ?? [])
+    .map((constraint) => `  ${constraint}`)
+    .join(",\n");
   return `CREATE TABLE ${qualify(table)} (\n${cols}${constraints ? `,\n${constraints}` : ""}\n);`;
 }
 

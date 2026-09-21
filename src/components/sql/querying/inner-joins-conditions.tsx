@@ -14,20 +14,11 @@ const CUSTOMER_ROWS: Row[] = [
   r(4, "1", "Avery", "Chen"),
 ];
 
-const OPTIONAL_ORDER_CODE_ROWS: Row[] = [
-  r(1, "1", "WELCOME"),
-  r(2, "2", null),
-];
+const OPTIONAL_ORDER_CODE_ROWS: Row[] = [r(1, "1", "WELCOME"), r(2, "2", null)];
 
-const OPTIONAL_CUSTOMER_CODE_ROWS: Row[] = [
-  r(1, "1785", "WELCOME"),
-  r(2, "797", null),
-];
+const OPTIONAL_CUSTOMER_CODE_ROWS: Row[] = [r(1, "1785", "WELCOME"), r(2, "797", null)];
 
-const NULL_SAFE_RESULT_ROWS: Row[] = [
-  r(1, "1", "1785", "WELCOME"),
-  r(2, "2", "797", null),
-];
+const NULL_SAFE_RESULT_ROWS: Row[] = [r(1, "1", "1785", "WELCOME"), r(2, "2", "797", null)];
 
 const JOINED_ROWS: Row[] = [
   r(1, "1", "1785", "Sofia", "Diaz", "277.59"),
@@ -65,7 +56,10 @@ export const shopflowInnerJoinStages: Stage[] = [
         [0, 1, 2, 4, 5],
         "kept",
         "The mint table is the three selected orders. The violet table includes their three matching customers plus Avery, a real customer row that is outside this selected-order input.",
-        { leftStates: ["pending", "pending", "pending"], rightStates: ["pending", "pending", "pending", "pending"] },
+        {
+          leftStates: ["pending", "pending", "pending"],
+          rightStates: ["pending", "pending", "pending", "pending"],
+        },
       ),
       st(
         [3],
@@ -108,13 +102,22 @@ export const shopflowInnerJoinStages: Stage[] = [
         [0, 1, 3, 4],
         "kept",
         "The same mint orders and violet customers are visible again. Both tables intentionally call the shared key customer_id, so the shorter USING form is available.",
-        { leftStates: ["pending", "pending", "pending"], rightStates: ["pending", "pending", "pending", "pending"] },
+        {
+          leftStates: ["pending", "pending", "pending"],
+          rightStates: ["pending", "pending", "pending", "pending"],
+        },
       ),
       st(
         [2],
         "kept",
         "USING (customer_id) means the same equality relationship as ON o.customer_id = c.customer_id. It exposes one shared customer_id output column, rather than one from each table.",
-        { leftStates: ["kept", "kept", "kept"], rightStates: ["kept", "kept", "kept", "dropped"], resultRows: JOINED_ROWS, resultCols: ["order_id", "customer_id", "first_name", "last_name", "total_amount"], resultTitle: "INNER JOIN result" },
+        {
+          leftStates: ["kept", "kept", "kept"],
+          rightStates: ["kept", "kept", "kept", "dropped"],
+          resultRows: JOINED_ROWS,
+          resultCols: ["order_id", "customer_id", "first_name", "last_name", "total_amount"],
+          resultTitle: "INNER JOIN result",
+        },
       ),
     ],
   },
@@ -186,7 +189,13 @@ export const shopflowInnerJoinStages: Stage[] = [
         [7],
         "kept",
         "IS NOT DISTINCT FROM treats equal text values as equal and also treats NULL with NULL as a match. Ordinary equals would leave the second pair unmatched because NULL = NULL is UNKNOWN.",
-        { leftStates: ["kept", "kept"], rightStates: ["kept", "kept"], resultRows: NULL_SAFE_RESULT_ROWS, resultCols: ["order_id", "customer_id", "referral_code"], resultTitle: "null-safe result" },
+        {
+          leftStates: ["kept", "kept"],
+          rightStates: ["kept", "kept"],
+          resultRows: NULL_SAFE_RESULT_ROWS,
+          resultCols: ["order_id", "customer_id", "referral_code"],
+          resultTitle: "null-safe result",
+        },
       ),
     ],
   },
@@ -221,13 +230,22 @@ export const shopflowInnerJoinStages: Stage[] = [
         [0, 1],
         "pending",
         "NATURAL JOIN is risky because the database chooses all same-named columns for you. It happens to use customer_id today, but a later shared name can silently change the relationship.",
-        { leftStates: ["pending", "pending", "pending"], rightStates: ["pending", "pending", "pending", "pending"] },
+        {
+          leftStates: ["pending", "pending", "pending"],
+          rightStates: ["pending", "pending", "pending", "pending"],
+        },
       ),
       st(
         [3, 4, 5, 6, 7, 8],
         "kept",
         "Write the intended relationship with ON instead. The condition is reviewable, stable as schemas evolve, and produces the three expected customer pairs.",
-        { leftStates: ["kept", "kept", "kept"], rightStates: ["kept", "kept", "kept", "dropped"], resultRows: JOINED_ROWS, resultCols: ["order_id", "customer_id", "first_name", "last_name", "total_amount"], resultTitle: "explicit ON result" },
+        {
+          leftStates: ["kept", "kept", "kept"],
+          rightStates: ["kept", "kept", "kept", "dropped"],
+          resultRows: JOINED_ROWS,
+          resultCols: ["order_id", "customer_id", "first_name", "last_name", "total_amount"],
+          resultTitle: "explicit ON result",
+        },
       ),
     ],
   },

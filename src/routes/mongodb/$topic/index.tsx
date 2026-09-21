@@ -13,11 +13,5 @@ function MongoDbTopicPage() {
     cat?.patterns.find((p) => p.slug === topic) ||
     cat?.sections?.flatMap((s) => s.patterns).find((p) => p.slug === topic);
 
-  return (
-    <ChapterIndexLayout
-      trackTitle="MongoDB"
-      trackPath="/mongodb"
-      topic={t as any}
-    />
-  );
+  return <ChapterIndexLayout trackTitle="MongoDB" trackPath="/mongodb" topic={t as any} />;
 }

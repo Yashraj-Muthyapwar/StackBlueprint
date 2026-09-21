@@ -18,7 +18,7 @@ function shiftKey(s: string): string {
   if (s.length <= 1) return "·";
   const diffs: number[] = [];
   for (let i = 1; i < s.length; i++) {
-    diffs.push(((s.charCodeAt(i) - s.charCodeAt(i - 1)) % 26 + 26) % 26);
+    diffs.push((((s.charCodeAt(i) - s.charCodeAt(i - 1)) % 26) + 26) % 26);
   }
   return diffs.join(",");
 }
@@ -28,7 +28,10 @@ function fmtGroups(g: Map<string, string[]>) {
 }
 
 function parseWords(s: string): string[] {
-  return s.split(/[\s,]+/).map((w) => w.trim()).filter(Boolean);
+  return s
+    .split(/[\s,]+/)
+    .map((w) => w.trim())
+    .filter(Boolean);
 }
 
 function build({ words }: Inputs): Step[] {
@@ -76,7 +79,8 @@ export const groupShiftedStrings: LessonBuilder<Inputs> = {
   slug: "group-shifted-strings",
   title: "Hash Map — Group Shifted Strings",
   subtitle: "Two strings are 'shift-equal' iff their inter-letter deltas match — that's the key.",
-  problem: "Group strings such that each group contains shifts of one another, e.g. 'abc' ↔ 'bcd' ↔ 'xyz'.",
+  problem:
+    "Group strings such that each group contains shifts of one another, e.g. 'abc' ↔ 'bcd' ↔ 'xyz'.",
   spotIt: [
     "Equivalence under a transformation (shift, rotation, reflection).",
     "You can encode the *shape* of the data independently of its absolute values.",

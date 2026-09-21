@@ -15,12 +15,14 @@ function DataWarehousesLessonPage() {
   const { isCompleted, markComplete, markIncomplete } = useProgress();
 
   const cat = CATEGORY_BY_SLUG["data-warehouses"];
-  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
+  const t =
+    cat?.patterns.find((p) => p.slug === topic) ||
+    cat?.sections?.flatMap((s) => s.patterns).find((p) => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 
-  const content = FOUNDATION_TOPICS[topic]?.lessons.find(x => x.slug === lesson);
-  const hasQuiz = content?.sections.some(s => s.kind === "quiz") ?? false;
+  const content = FOUNDATION_TOPICS[topic]?.lessons.find((x) => x.slug === lesson);
+  const hasQuiz = content?.sections.some((s) => s.kind === "quiz") ?? false;
 
   useEffect(() => {
     if (!l) return;
@@ -51,10 +53,12 @@ function DataWarehousesLessonPage() {
       lesson={l}
       hasQuiz={hasQuiz}
       isCompleted={isCompleted(l.slug)}
-      onToggleComplete={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
+      onToggleComplete={() => (isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug))}
       isPlaceholder={!content}
       sections={content?.sections}
-      renderSection={(s, onQuizActiveChange) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />}
+      renderSection={(s, onQuizActiveChange) => (
+        <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />
+      )}
     />
   );
 }

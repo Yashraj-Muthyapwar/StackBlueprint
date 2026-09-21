@@ -10,8 +10,8 @@ export const Route = createFileRoute("/pandas/$topic/$lesson")({
 function PandasLessonPlaceholder() {
   const { topic, lesson } = Route.useParams();
   const { isCompleted, markComplete, markIncomplete } = useProgress();
-  
-  const t = PANDAS_SECTIONS.flatMap(s => s.patterns).find(p => p.slug === topic);
+
+  const t = PANDAS_SECTIONS.flatMap((s) => s.patterns).find((p) => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 
@@ -35,7 +35,9 @@ function PandasLessonPlaceholder() {
       topic={t as any}
       lesson={l}
       isCompleted={isCompleted(lessonSlug)}
-      onToggleComplete={() => isCompleted(lessonSlug) ? markIncomplete(lessonSlug) : markComplete(lessonSlug)}
+      onToggleComplete={() =>
+        isCompleted(lessonSlug) ? markIncomplete(lessonSlug) : markComplete(lessonSlug)
+      }
       isPlaceholder={true}
     >
       {null}

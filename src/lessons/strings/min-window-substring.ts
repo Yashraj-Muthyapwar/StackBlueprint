@@ -46,8 +46,9 @@ function build({ s, t }: Inputs): Step[] {
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (left: number, right: number) =>
-    [{ from: left, to: right, tone: "mid" as const, label: `formed ${formed}/${required}` }];
+  const win = (left: number, right: number) => [
+    { from: left, to: right, tone: "mid" as const, label: `formed ${formed}/${required}` },
+  ];
   const secondary = () => ({
     label: `need vs have`,
     array: [...need.keys()].map((k) => `${k}:${have.get(k) ?? 0}/${need.get(k)}`),
@@ -89,7 +90,10 @@ function build({ s, t }: Inputs): Step[] {
           array: arr,
           pointers: ptrs(left, right),
           partitions: win(left, right),
-          highlight: { kind: "match", indices: Array.from({ length: bestLen }, (_, i) => left + i) },
+          highlight: {
+            kind: "match",
+            indices: Array.from({ length: bestLen }, (_, i) => left + i),
+          },
           secondary: secondary(),
           status: `best ${bestLen}`,
           narration: `Valid window "${chars.slice(left, right + 1).join("")}" — new best (${bestLen}).`,
@@ -114,10 +118,19 @@ function build({ s, t }: Inputs): Step[] {
     line: 19,
     array: arr,
     pointers: [],
-    partitions: bestRange[1] >= 0 ? [{ from: bestRange[0], to: bestRange[1], tone: "mid", label: "answer" }] : [],
+    partitions:
+      bestRange[1] >= 0
+        ? [{ from: bestRange[0], to: bestRange[1], tone: "mid", label: "answer" }]
+        : [],
     highlight:
       bestRange[1] >= 0
-        ? { kind: "match", indices: Array.from({ length: bestRange[1] - bestRange[0] + 1 }, (_, i) => bestRange[0] + i) }
+        ? {
+            kind: "match",
+            indices: Array.from(
+              { length: bestRange[1] - bestRange[0] + 1 },
+              (_, i) => bestRange[0] + i,
+            ),
+          }
         : undefined,
     status: bestRange[1] >= 0 ? `"${chars.slice(bestRange[0], bestRange[1] + 1).join("")}"` : `""`,
     narration:
@@ -131,8 +144,10 @@ function build({ s, t }: Inputs): Step[] {
 export const minWindowSubstring: LessonBuilder<Inputs> = {
   slug: "min-window-substring",
   title: "Sliding Window — Minimum Window Substring",
-  subtitle: "Grow right until the window covers pattern, then shrink left while the cover survives — track the smallest cover seen.",
-  problem: "Given strings text and pattern, return the smallest substring of text that contains every character of pattern (with multiplicity), or '' if no such window exists.",
+  subtitle:
+    "Grow right until the window covers pattern, then shrink left while the cover survives — track the smallest cover seen.",
+  problem:
+    "Given strings text and pattern, return the smallest substring of text that contains every character of pattern (with multiplicity), or '' if no such window exists.",
   spotIt: [
     "Find the smallest / shortest window that 'contains' another string or multiset.",
     "Constraint is a coverage condition (have ≥ need for every key).",

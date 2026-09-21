@@ -12,7 +12,11 @@ const code = `def is_happy(n):
 
 function sumSquares(n: number): number {
   let s = 0;
-  while (n > 0) { const d = n % 10; s += d * d; n = (n - d) / 10; }
+  while (n > 0) {
+    const d = n % 10;
+    s += d * d;
+    n = (n - d) / 10;
+  }
   return s;
 }
 
@@ -63,7 +67,8 @@ export const happyNumber: LessonBuilder<Inputs> = {
   slug: "happy-number",
   title: "Hash Set — Tracking Unique Visited States",
   subtitle: "Detect cycles in a deterministic process by remembering every state you have seen.",
-  problem: "Starting from n, replace it by the sum of squares of its digits. n is 'happy' iff this reaches 1.",
+  problem:
+    "Starting from n, replace it by the sum of squares of its digits. n is 'happy' iff this reaches 1.",
   spotIt: [
     "A deterministic transition function f(x) → x' that either terminates or loops.",
     "You don't have an upper bound on iterations but the state space is finite.",

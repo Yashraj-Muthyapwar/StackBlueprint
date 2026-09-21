@@ -1,6 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Server, MonitorSmartphone, FileDown, Tv, RotateCcw, AlertTriangle, CheckCircle2, Play, FileIcon, Video } from "lucide-react";
+import {
+  Server,
+  MonitorSmartphone,
+  FileDown,
+  Tv,
+  RotateCcw,
+  AlertTriangle,
+  CheckCircle2,
+  Play,
+  FileIcon,
+  Video,
+} from "lucide-react";
 
 export function TcpUdpDiagram() {
   const [protocol, setProtocol] = useState<"TCP" | "UDP">("TCP");
@@ -20,7 +31,7 @@ export function TcpUdpDiagram() {
           }
           return s + 1;
         });
-      }, 2500); 
+      }, 2500);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
     }
@@ -48,7 +59,9 @@ export function TcpUdpDiagram() {
             <button
               onClick={() => handleProtocolSwitch("TCP")}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                protocol === "TCP" ? "bg-mint text-mint-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                protocol === "TCP"
+                  ? "bg-mint text-mint-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               TCP (Reliable)
@@ -56,7 +69,9 @@ export function TcpUdpDiagram() {
             <button
               onClick={() => handleProtocolSwitch("UDP")}
               className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                protocol === "UDP" ? "bg-amber text-amber-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                protocol === "UDP"
+                  ? "bg-amber text-amber-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               UDP (Fast)
@@ -91,7 +106,7 @@ export function TcpUdpDiagram() {
         <div className="absolute left-4 md:left-12 top-1/2 flex -translate-y-1/2 flex-col items-center gap-3 w-[140px] z-20">
           <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-muted-foreground/20 bg-background shadow-lg relative">
             <MonitorSmartphone className="size-8 text-foreground" />
-            
+
             {/* Client Context UI Box */}
             <div className="absolute -bottom-14 w-32 bg-background border border-hairline rounded-md p-2 shadow-sm flex items-center justify-center gap-2">
               {protocol === "TCP" ? (
@@ -99,11 +114,16 @@ export function TcpUdpDiagram() {
                   <FileIcon className="size-3 text-mint" />
                   <div className="flex-1 space-y-1">
                     <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-mint transition-all duration-700" style={{ 
-                        width: step >= 9 ? '100%' : step >= 7 ? '66%' : step >= 5 ? '33%' : '0%' 
-                      }} />
+                      <div
+                        className="h-full bg-mint transition-all duration-700"
+                        style={{
+                          width: step >= 9 ? "100%" : step >= 7 ? "66%" : step >= 5 ? "33%" : "0%",
+                        }}
+                      />
                     </div>
-                    <span className="text-[8px] font-mono text-muted-foreground block text-center">Downloading</span>
+                    <span className="text-[8px] font-mono text-muted-foreground block text-center">
+                      Downloading
+                    </span>
                   </div>
                 </>
               ) : (
@@ -111,9 +131,13 @@ export function TcpUdpDiagram() {
                   <Video className="size-3 text-amber" />
                   <div className="flex-1 flex items-center justify-center">
                     {step === 2 ? (
-                      <span className="text-[9px] font-mono text-destructive flex items-center gap-1"><AlertTriangle className="size-3" /> Glitch</span>
+                      <span className="text-[9px] font-mono text-destructive flex items-center gap-1">
+                        <AlertTriangle className="size-3" /> Glitch
+                      </span>
                     ) : (
-                      <span className="text-[9px] font-mono text-muted-foreground flex items-center gap-1"><Play className="size-3 text-amber" /> Live</span>
+                      <span className="text-[9px] font-mono text-muted-foreground flex items-center gap-1">
+                        <Play className="size-3 text-amber" /> Live
+                      </span>
                     )}
                   </div>
                 </>
@@ -129,9 +153,13 @@ export function TcpUdpDiagram() {
             <Server className="size-8 text-foreground" />
             <div className="absolute -bottom-14 w-32 bg-background border border-hairline rounded-md p-2 shadow-sm flex items-center justify-center gap-2">
               {protocol === "TCP" ? (
-                <span className="text-[9px] font-mono font-medium text-muted-foreground flex items-center gap-1"><FileDown className="size-3" /> Sending File</span>
+                <span className="text-[9px] font-mono font-medium text-muted-foreground flex items-center gap-1">
+                  <FileDown className="size-3" /> Sending File
+                </span>
               ) : (
-                <span className="text-[9px] font-mono font-medium text-muted-foreground flex items-center gap-1"><Tv className="size-3" /> Broadcasting</span>
+                <span className="text-[9px] font-mono font-medium text-muted-foreground flex items-center gap-1">
+                  <Tv className="size-3" /> Broadcasting
+                </span>
               )}
             </div>
           </div>
@@ -181,18 +209,28 @@ export function TcpUdpDiagram() {
               {protocol === "TCP" && step === 0 && "Step 0: Ready to download file."}
               {protocol === "TCP" && step === 1 && "Step 1 (SYN): Client requests connection."}
               {protocol === "TCP" && step === 2 && "Step 2 (SYN-ACK): Server accepts connection."}
-              {protocol === "TCP" && step === 3 && "Step 3 (ACK): Client acknowledges connection. Handshake complete!"}
+              {protocol === "TCP" &&
+                step === 3 &&
+                "Step 3 (ACK): Client acknowledges connection. Handshake complete!"}
               {protocol === "TCP" && step === 4 && "Step 4: Server sends Chunk 1."}
               {protocol === "TCP" && step === 5 && "Step 5 (ACK): Client acknowledges Chunk 1."}
               {protocol === "TCP" && step === 6 && "Step 6: Server sends Chunk 2."}
               {protocol === "TCP" && step === 7 && "Step 7 (ACK): Client acknowledges Chunk 2."}
               {protocol === "TCP" && step === 8 && "Step 8: Server sends Chunk 3."}
-              {protocol === "TCP" && step === 9 && "Step 9 (ACK): Client acknowledges Chunk 3. File download complete!"}
-              
+              {protocol === "TCP" &&
+                step === 9 &&
+                "Step 9 (ACK): Client acknowledges Chunk 3. File download complete!"}
+
               {protocol === "UDP" && step === 0 && "Step 0: Ready to broadcast stream."}
-              {protocol === "UDP" && step === 1 && "Step 1: Server blasts Frames 1 & 2. No handshake required."}
-              {protocol === "UDP" && step === 2 && "Step 2: Server blasts Frames 3 & 4. Frame 3 drops in transit. Video player glitches briefly but keeps playing."}
-              {protocol === "UDP" && step === 3 && "Step 3: Server blasts Frames 5 & 6. Stream continues smoothly. No retransmissions."}
+              {protocol === "UDP" &&
+                step === 1 &&
+                "Step 1: Server blasts Frames 1 & 2. No handshake required."}
+              {protocol === "UDP" &&
+                step === 2 &&
+                "Step 2: Server blasts Frames 3 & 4. Frame 3 drops in transit. Video player glitches briefly but keeps playing."}
+              {protocol === "UDP" &&
+                step === 3 &&
+                "Step 3: Server blasts Frames 5 & 6. Stream continues smoothly. No retransmissions."}
             </p>
           </div>
         </div>
@@ -201,7 +239,19 @@ export function TcpUdpDiagram() {
   );
 }
 
-function Packet({ label, from, color, delay = 0, dropped = false }: { label: React.ReactNode, from: "left" | "right", color: "mint" | "violet" | "blue" | "amber", delay?: number, dropped?: boolean }) {
+function Packet({
+  label,
+  from,
+  color,
+  delay = 0,
+  dropped = false,
+}: {
+  label: React.ReactNode;
+  from: "left" | "right";
+  color: "mint" | "violet" | "blue" | "amber";
+  delay?: number;
+  dropped?: boolean;
+}) {
   const startLeft = from === "left" ? "0%" : "100%";
   const endLeft = from === "left" ? "100%" : "0%";
   const dropLeft = "50%";
@@ -221,11 +271,11 @@ function Packet({ label, from, color, delay = 0, dropped = false }: { label: Rea
           ? { left: dropLeft, opacity: [0, 1, 0], scale: [1, 1, 0.5] }
           : { left: endLeft, opacity: [0, 1, 1, 0] }
       }
-      transition={{ 
-        duration: 1.8, 
-        ease: "linear", 
+      transition={{
+        duration: 1.8,
+        ease: "linear",
         delay,
-        times: dropped ? [0, 0.5, 1] : [0, 0.1, 0.9, 1] 
+        times: dropped ? [0, 0.5, 1] : [0, 0.1, 0.9, 1],
       }}
       className={`absolute top-1/2 flex items-center justify-center h-8 px-3 rounded-full border shadow-sm backdrop-blur text-[10px] font-bold ${colorMap[color]} whitespace-nowrap`}
     >
@@ -239,39 +289,120 @@ function TcpAnimation({ trackStep }: { trackStep: number }) {
     <div className="relative w-full h-full">
       <AnimatePresence>
         {trackStep === 1 && (
-          <Packet key="syn" label={<>SYN <div className="ml-1 h-1.5 w-1.5 rounded-full bg-mint animate-pulse" /></>} from="left" color="mint" />
+          <Packet
+            key="syn"
+            label={
+              <>
+                SYN <div className="ml-1 h-1.5 w-1.5 rounded-full bg-mint animate-pulse" />
+              </>
+            }
+            from="left"
+            color="mint"
+          />
         )}
-        
+
         {trackStep === 2 && (
-          <Packet key="synack" label={<><div className="mr-1 h-1.5 w-1.5 rounded-full bg-violet animate-pulse" /> SYN-ACK</>} from="right" color="violet" />
+          <Packet
+            key="synack"
+            label={
+              <>
+                <div className="mr-1 h-1.5 w-1.5 rounded-full bg-violet animate-pulse" /> SYN-ACK
+              </>
+            }
+            from="right"
+            color="violet"
+          />
         )}
-        
+
         {trackStep === 3 && (
-          <Packet key="ack" label={<>ACK <CheckCircle2 className="ml-1 size-3" /></>} from="left" color="mint" />
+          <Packet
+            key="ack"
+            label={
+              <>
+                ACK <CheckCircle2 className="ml-1 size-3" />
+              </>
+            }
+            from="left"
+            color="mint"
+          />
         )}
-        
+
         {trackStep === 4 && (
-          <Packet key="chunk1" label={<><FileIcon className="size-3 mr-1" /> Chunk 1</>} from="right" color="blue" />
+          <Packet
+            key="chunk1"
+            label={
+              <>
+                <FileIcon className="size-3 mr-1" /> Chunk 1
+              </>
+            }
+            from="right"
+            color="blue"
+          />
         )}
-        
+
         {trackStep === 5 && (
-          <Packet key="ack1" label={<>ACK 1 <CheckCircle2 className="ml-1 size-3" /></>} from="left" color="mint" />
+          <Packet
+            key="ack1"
+            label={
+              <>
+                ACK 1 <CheckCircle2 className="ml-1 size-3" />
+              </>
+            }
+            from="left"
+            color="mint"
+          />
         )}
 
         {trackStep === 6 && (
-          <Packet key="chunk2" label={<><FileIcon className="size-3 mr-1" /> Chunk 2</>} from="right" color="blue" />
+          <Packet
+            key="chunk2"
+            label={
+              <>
+                <FileIcon className="size-3 mr-1" /> Chunk 2
+              </>
+            }
+            from="right"
+            color="blue"
+          />
         )}
-        
+
         {trackStep === 7 && (
-          <Packet key="ack2" label={<>ACK 2 <CheckCircle2 className="ml-1 size-3" /></>} from="left" color="mint" />
+          <Packet
+            key="ack2"
+            label={
+              <>
+                ACK 2 <CheckCircle2 className="ml-1 size-3" />
+              </>
+            }
+            from="left"
+            color="mint"
+          />
         )}
 
         {trackStep === 8 && (
-          <Packet key="chunk3" label={<><FileIcon className="size-3 mr-1" /> Chunk 3</>} from="right" color="blue" />
+          <Packet
+            key="chunk3"
+            label={
+              <>
+                <FileIcon className="size-3 mr-1" /> Chunk 3
+              </>
+            }
+            from="right"
+            color="blue"
+          />
         )}
-        
+
         {trackStep === 9 && (
-          <Packet key="ack3" label={<>ACK 3 <CheckCircle2 className="ml-1 size-3" /></>} from="left" color="mint" />
+          <Packet
+            key="ack3"
+            label={
+              <>
+                ACK 3 <CheckCircle2 className="ml-1 size-3" />
+              </>
+            }
+            from="left"
+            color="mint"
+          />
         )}
       </AnimatePresence>
     </div>
@@ -284,22 +415,80 @@ function UdpAnimation({ trackStep }: { trackStep: number }) {
       <AnimatePresence>
         {trackStep === 1 && (
           <>
-            <Packet key="f1" label={<><Video className="size-3 mr-1" /> Frame 1</>} from="right" color="amber" />
-            <Packet key="f2" label={<><Video className="size-3 mr-1" /> Frame 2</>} from="right" color="amber" delay={0.8} />
+            <Packet
+              key="f1"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 1
+                </>
+              }
+              from="right"
+              color="amber"
+            />
+            <Packet
+              key="f2"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 2
+                </>
+              }
+              from="right"
+              color="amber"
+              delay={0.8}
+            />
           </>
         )}
-        
+
         {trackStep === 2 && (
           <>
-            <Packet key="f3" label={<><Video className="size-3 mr-1" /> Frame 3</>} from="right" color="amber" dropped={true} />
-            <Packet key="f4" label={<><Video className="size-3 mr-1" /> Frame 4</>} from="right" color="amber" delay={0.8} />
+            <Packet
+              key="f3"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 3
+                </>
+              }
+              from="right"
+              color="amber"
+              dropped={true}
+            />
+            <Packet
+              key="f4"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 4
+                </>
+              }
+              from="right"
+              color="amber"
+              delay={0.8}
+            />
           </>
         )}
 
         {trackStep === 3 && (
           <>
-            <Packet key="f5" label={<><Video className="size-3 mr-1" /> Frame 5</>} from="right" color="amber" />
-            <Packet key="f6" label={<><Video className="size-3 mr-1" /> Frame 6</>} from="right" color="amber" delay={0.8} />
+            <Packet
+              key="f5"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 5
+                </>
+              }
+              from="right"
+              color="amber"
+            />
+            <Packet
+              key="f6"
+              label={
+                <>
+                  <Video className="size-3 mr-1" /> Frame 6
+                </>
+              }
+              from="right"
+              color="amber"
+              delay={0.8}
+            />
           </>
         )}
       </AnimatePresence>

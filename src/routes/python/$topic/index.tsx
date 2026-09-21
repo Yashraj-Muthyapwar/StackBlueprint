@@ -10,11 +10,5 @@ function PythonTopicPage() {
   const { topic } = Route.useParams();
   const t = PYTHON_SECTIONS.flatMap((s) => s.patterns).find((p) => p.slug === topic);
 
-  return (
-    <ChapterIndexLayout
-      trackTitle="Python"
-      trackPath="/python"
-      topic={t as any}
-    />
-  );
+  return <ChapterIndexLayout trackTitle="Python" trackPath="/python" topic={t as any} />;
 }

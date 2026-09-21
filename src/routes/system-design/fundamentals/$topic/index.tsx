@@ -53,14 +53,10 @@ function FoundationTopicPage() {
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
               Foundations · Topic
             </p>
-            <h1 className="mt-1 text-3xl font-semibold tracking-tight lg:text-4xl">
-              {t.title}
-            </h1>
+            <h1 className="mt-1 text-3xl font-semibold tracking-tight lg:text-4xl">{t.title}</h1>
           </div>
         </div>
-        <p className="mt-4 max-w-2xl text-balance text-muted-foreground lg:text-lg">
-          {t.blurb}
-        </p>
+        <p className="mt-4 max-w-2xl text-balance text-muted-foreground lg:text-lg">{t.blurb}</p>
 
         <div className="mt-10 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {t.lessons.map((les, i) => (
@@ -72,8 +68,7 @@ function FoundationTopicPage() {
             >
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[11px] text-muted-foreground">
-                  {String(i + 1).padStart(2, "0")} /{" "}
-                  {String(t.lessons.length).padStart(2, "0")}
+                  {String(i + 1).padStart(2, "0")} / {String(t.lessons.length).padStart(2, "0")}
                 </span>
                 {isCompleted(les.slug) ? (
                   <div className="grid size-5 place-items-center rounded-full bg-mint/15 text-mint ring-1 ring-mint/30">
@@ -86,9 +81,7 @@ function FoundationTopicPage() {
                 )}
               </div>
               <h2 className="mt-4 text-base font-medium">{les.title}</h2>
-              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                {les.subtitle}
-              </p>
+              <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{les.subtitle}</p>
               <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-mint">
                 Open lesson
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />

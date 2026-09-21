@@ -30,7 +30,11 @@ export const whereFilteringStages: Stage[] = [
     sql: ["SELECT name, country", "FROM customers", "WHERE country = 'USA';"],
     table: { name: "customers", cols: ["name", "country", "city"], rows: CUSTOMERS },
     steps: [
-      st([0, 1], "pending", "Every customer row reaches WHERE. The condition is checked once for each row."),
+      st(
+        [0, 1],
+        "pending",
+        "Every customer row reaches WHERE. The condition is checked once for each row.",
+      ),
       st(
         [2],
         pass((row) => row.cells[1] === "USA"),

@@ -9,14 +9,12 @@ export const Route = createFileRoute("/data-engineering/")({
       { title: "Data Engineering — StackBlueprint" },
       {
         name: "description",
-        content:
-          "Fundamentals of Data Engineering: Lifecycle, Architecture, and Storage.",
+        content: "Fundamentals of Data Engineering: Lifecycle, Architecture, and Storage.",
       },
       { property: "og:title", content: "Data Engineering — StackBlueprint" },
       {
         property: "og:description",
-        content:
-          "Core principles, lifecycle, architecture, and undercurrents of data engineering.",
+        content: "Core principles, lifecycle, architecture, and undercurrents of data engineering.",
       },
     ],
   }),
@@ -25,7 +23,7 @@ export const Route = createFileRoute("/data-engineering/")({
 
 function DataEngineeringIndex() {
   const category = CATEGORY_BY_SLUG["data-engineering"]!;
-  
+
   return (
     <TrackIndexLayout
       title={category.title}

@@ -37,9 +37,7 @@ function loadScript(src: string): Promise<void> {
   });
 }
 
-export async function getPyodide(
-  onProgress?: (msg: string) => void,
-): Promise<Pyodide> {
+export async function getPyodide(onProgress?: (msg: string) => void): Promise<Pyodide> {
   if (typeof window === "undefined") throw new Error("Pyodide is client-only");
   if (window.__pyodide) return window.__pyodide;
   if (window.__pyodideLoading) return window.__pyodideLoading;

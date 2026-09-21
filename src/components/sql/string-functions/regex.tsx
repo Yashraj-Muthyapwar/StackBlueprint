@@ -46,10 +46,7 @@ const WORD_RUN_ROWS: Row[] = [
   r(3, "11-Speed Cassette", "11|Speed|Cassette"),
 ];
 
-const FULLY_SHAPED_NAMES: Row[] = [
-  r(1, "Trailhead 29 Hardtail"),
-  r(2, "Trailhead 29 Carbon"),
-];
+const FULLY_SHAPED_NAMES: Row[] = [r(1, "Trailhead 29 Hardtail"), r(2, "Trailhead 29 Carbon")];
 
 const SHAPE_CHECK_SOURCE: Row[] = [
   r(1, "Trailhead 29 Hardtail"),
@@ -64,12 +61,7 @@ export const regexStages: Stage[] = [
   {
     name: "A regex tests each product name",
     canvasMinHeight: 420,
-    sql: [
-      "SELECT name",
-      "FROM   products",
-      "WHERE  name ~ '[0-9]+'",
-      "ORDER  BY id",
-    ],
+    sql: ["SELECT name", "FROM   products", "WHERE  name ~ '[0-9]+'", "ORDER  BY id"],
     table: { name: "products preview", cols: ["name"], rows: PRODUCT_PREVIEW },
     steps: [
       st(

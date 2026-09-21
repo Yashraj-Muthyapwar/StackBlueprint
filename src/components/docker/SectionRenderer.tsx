@@ -10,9 +10,28 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
-    "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
-    "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
-    "RUN", "ENV", "EXPOSE", "VOLUME", "ENTRYPOINT",
+    "docker",
+    "run",
+    "build",
+    "pull",
+    "push",
+    "ps",
+    "stop",
+    "start",
+    "exec",
+    "systemctl",
+    "sudo",
+    "open",
+    "uname",
+    "FROM",
+    "WORKDIR",
+    "COPY",
+    "CMD",
+    "RUN",
+    "ENV",
+    "EXPOSE",
+    "VOLUME",
+    "ENTRYPOINT",
   ]);
   const nodes: React.ReactNode[] = [];
   let i = 0;
@@ -23,7 +42,12 @@ export function highlightShell(line: string, isTerminal?: boolean) {
       const newlineIdx = line.indexOf("\n", i);
       const end = newlineIdx === -1 ? line.length : newlineIdx;
       nodes.push(
-        <span key={key++} className={isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"}>
+        <span
+          key={key++}
+          className={
+            isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"
+          }
+        >
           {line.slice(i, end)}
         </span>,
       );
@@ -115,8 +139,6 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-
-
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
 
@@ -147,15 +169,19 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
+export function SectionRenderer({
+  section,
+  onQuizActiveChange,
+}: {
+  section: Section;
+  onQuizActiveChange?: (active: boolean) => void;
+}) {
   switch (section.kind) {
     case "prose":
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body.map((p, i) => (
             <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
@@ -169,7 +195,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       const lines = section.code.split("\n");
       let langLabel = section.language || "docker";
       if (section.language === "bash") {
-        const hasLinuxCmd = section.code.includes("sudo ") || section.code.includes("apt-get") || section.code.includes("nano ") || section.code.includes("systemctl ");
+        const hasLinuxCmd =
+          section.code.includes("sudo ") ||
+          section.code.includes("apt-get") ||
+          section.code.includes("nano ") ||
+          section.code.includes("systemctl ");
         langLabel = hasLinuxCmd ? "bash" : "docker";
       }
       return (
@@ -278,9 +308,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               };
       const Icon = tone.Icon;
       return (
-        <aside
-          className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}
-        >
+        <aside className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}>
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
@@ -310,7 +338,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="flex w-full justify-center bg-surface-2/30 py-4">
-            <ZoomableImage src={section.src} alt={section.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
+            <ZoomableImage
+              src={section.src}
+              alt={section.alt}
+              className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+            />
           </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
@@ -362,10 +394,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           </p>
           <ul className="mt-3 space-y-2">
             {section.items.map((it, i) => (
-              <li
-                key={i}
-                className="flex gap-2.5 text-sm leading-relaxed text-foreground/90"
-              >
+              <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
@@ -378,9 +407,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => (
             <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">

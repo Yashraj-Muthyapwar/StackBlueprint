@@ -39,14 +39,54 @@ const DEFAULTS: Record<Mode, number[]> = {
 };
 
 const practiceLadder: PracticeProblem[] = [
-  { name: "Two Sum II - Input Array Is Sorted", difficulty: "easy", hint: "The canonical elimination proof. Before each move, say WHY that end is dead. Out loud.", link: "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" },
-  { name: "Squares of a Sorted Array", difficulty: "easy", hint: "Twist: the biggest square is at one of the two ends. Fill the result array from the back.", link: "https://leetcode.com/problems/squares-of-a-sorted-array/" },
-  { name: "Boats to Save People", difficulty: "medium", hint: "Greedy pairing: heaviest person plus lightest person. If they fit, both board. If not, the heaviest boards alone. Find the proof for why pairing heaviest with lightest is safe.", link: "https://leetcode.com/problems/boats-to-save-people/" },
-  { name: "Container With Most Water", difficulty: "medium", hint: "The proof is about the shorter wall. Write the proof in one sentence before writing any code.", link: "https://leetcode.com/problems/container-with-most-water/" },
-  { name: "3Sum", difficulty: "medium", hint: "Fix one element with an outer loop, then run this exact pattern on the rest. Big lesson: patterns compose.", link: "https://leetcode.com/problems/3sum/" },
-  { name: "3Sum Closest", difficulty: "medium", hint: "Same skeleton, but instead of returning on exact match, track the best distance seen so far.", link: "https://leetcode.com/problems/3sum-closest/" },
-  { name: "Trapping Rain Water", difficulty: "hard", hint: "The proof: the smaller of the two boundary maxes decides the water level on its own side, no matter what is in the middle. Settle that side.", link: "https://leetcode.com/problems/trapping-rain-water/" },
-  { name: "4Sum", difficulty: "hard", hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.", link: "https://leetcode.com/problems/4sum/" },
+  {
+    name: "Two Sum II - Input Array Is Sorted",
+    difficulty: "easy",
+    hint: "The canonical elimination proof. Before each move, say WHY that end is dead. Out loud.",
+    link: "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
+  },
+  {
+    name: "Squares of a Sorted Array",
+    difficulty: "easy",
+    hint: "Twist: the biggest square is at one of the two ends. Fill the result array from the back.",
+    link: "https://leetcode.com/problems/squares-of-a-sorted-array/",
+  },
+  {
+    name: "Boats to Save People",
+    difficulty: "medium",
+    hint: "Greedy pairing: heaviest person plus lightest person. If they fit, both board. If not, the heaviest boards alone. Find the proof for why pairing heaviest with lightest is safe.",
+    link: "https://leetcode.com/problems/boats-to-save-people/",
+  },
+  {
+    name: "Container With Most Water",
+    difficulty: "medium",
+    hint: "The proof is about the shorter wall. Write the proof in one sentence before writing any code.",
+    link: "https://leetcode.com/problems/container-with-most-water/",
+  },
+  {
+    name: "3Sum",
+    difficulty: "medium",
+    hint: "Fix one element with an outer loop, then run this exact pattern on the rest. Big lesson: patterns compose.",
+    link: "https://leetcode.com/problems/3sum/",
+  },
+  {
+    name: "3Sum Closest",
+    difficulty: "medium",
+    hint: "Same skeleton, but instead of returning on exact match, track the best distance seen so far.",
+    link: "https://leetcode.com/problems/3sum-closest/",
+  },
+  {
+    name: "Trapping Rain Water",
+    difficulty: "hard",
+    hint: "The proof: the smaller of the two boundary maxes decides the water level on its own side, no matter what is in the middle. Settle that side.",
+    link: "https://leetcode.com/problems/trapping-rain-water/",
+  },
+  {
+    name: "4Sum",
+    difficulty: "hard",
+    hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.",
+    link: "https://leetcode.com/problems/4sum/",
+  },
 ];
 
 function buildTwoSum({ arr, target }: Inputs): Step[] {
@@ -67,11 +107,19 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
 
   let left = 0,
     right = arr.length - 1;
-  push({ line: 2, pointers: ptrs(left, right), narration: "Place left at the start and right at the end." });
+  push({
+    line: 2,
+    pointers: ptrs(left, right),
+    narration: "Place left at the start and right at the end.",
+  });
 
   let safety = 0;
   while (left < right && safety++ < 200) {
-    push({ line: 3, pointers: ptrs(left, right), narration: `Guard: left (${left}) < right (${right}).` });
+    push({
+      line: 3,
+      pointers: ptrs(left, right),
+      narration: `Guard: left (${left}) < right (${right}).`,
+    });
     const total = arr[left] + arr[right];
     push({
       line: 4,
@@ -91,16 +139,28 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
       return steps;
     }
     if (total < target) {
-      push({ line: 7, pointers: ptrs(left, right), narration: `${total} < ${target} — need larger sum, left += 1.` });
+      push({
+        line: 7,
+        pointers: ptrs(left, right),
+        narration: `${total} < ${target} — need larger sum, left += 1.`,
+      });
       left += 1;
       push({ line: 8, pointers: ptrs(left, right), narration: `left → ${left}.` });
     } else {
-      push({ line: 9, pointers: ptrs(left, right), narration: `${total} > ${target} — need smaller sum, right -= 1.` });
+      push({
+        line: 9,
+        pointers: ptrs(left, right),
+        narration: `${total} > ${target} — need smaller sum, right -= 1.`,
+      });
       right -= 1;
       push({ line: 10, pointers: ptrs(left, right), narration: `right → ${right}.` });
     }
   }
-  push({ line: 11, pointers: ptrs(left, right), narration: "Pointers crossed — no pair found, return None." });
+  push({
+    line: 11,
+    pointers: ptrs(left, right),
+    narration: "Pointers crossed — no pair found, return None.",
+  });
   return steps;
 }
 
@@ -109,8 +169,14 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
   const n = arr.length;
   const waterLevels = new Array(n).fill(0);
 
-  const push = (s: Omit<Step, "array" | "waterLevels"> & { array?: number[], waterLevels?: number[] }) =>
-    steps.push({ ...s, array: s.array ?? [...arr], waterLevels: s.waterLevels ?? [...waterLevels] });
+  const push = (
+    s: Omit<Step, "array" | "waterLevels"> & { array?: number[]; waterLevels?: number[] },
+  ) =>
+    steps.push({
+      ...s,
+      array: s.array ?? [...arr],
+      waterLevels: s.waterLevels ?? [...waterLevels],
+    });
 
   const ptrs = (l: number, r: number) => [
     { name: "left", index: l, color: "mint" as const, placement: "below" as const },
@@ -122,53 +188,119 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
     return steps;
   }
 
-  let left = 0, right = n - 1;
+  let left = 0,
+    right = n - 1;
   let left_max = arr[left];
   let right_max = arr[right];
   let water = 0;
 
   const st = () => `water = ${water} | L_max = ${left_max} | R_max = ${right_max}`;
 
-  push({ line: 4, pointers: ptrs(left, right), narration: "Start left and right pointers at the boundaries." });
-  push({ line: 5, pointers: ptrs(left, right), status: st(), narration: "Initialize left_max and right_max with the boundary heights." });
+  push({
+    line: 4,
+    pointers: ptrs(left, right),
+    narration: "Start left and right pointers at the boundaries.",
+  });
+  push({
+    line: 5,
+    pointers: ptrs(left, right),
+    status: st(),
+    narration: "Initialize left_max and right_max with the boundary heights.",
+  });
 
   let safety = 0;
   while (left < right && safety++ < 200) {
-    push({ line: 7, pointers: ptrs(left, right), status: st(), narration: `Guard: left (${left}) < right (${right}).` });
-    push({ line: 8, pointers: ptrs(left, right), status: st(), highlight: { kind: "compare", indices: [left, right] }, narration: `Compare max boundaries: ${left_max} < ${right_max}?` });
+    push({
+      line: 7,
+      pointers: ptrs(left, right),
+      status: st(),
+      narration: `Guard: left (${left}) < right (${right}).`,
+    });
+    push({
+      line: 8,
+      pointers: ptrs(left, right),
+      status: st(),
+      highlight: { kind: "compare", indices: [left, right] },
+      narration: `Compare max boundaries: ${left_max} < ${right_max}?`,
+    });
 
     if (left_max < right_max) {
-      push({ line: 8, pointers: ptrs(left, right), status: st(), narration: `left_max (${left_max}) < right_max (${right_max}). We know the right side can safely trap water.` });
+      push({
+        line: 8,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `left_max (${left_max}) < right_max (${right_max}). We know the right side can safely trap water.`,
+      });
       left += 1;
-      push({ line: 9, pointers: ptrs(left, right), status: st(), narration: `Advance left to ${left}.` });
+      push({
+        line: 9,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Advance left to ${left}.`,
+      });
 
       const prev_left_max = left_max;
       left_max = Math.max(left_max, arr[left]);
-      push({ line: 10, pointers: ptrs(left, right), status: st(), narration: `Update left_max = max(${prev_left_max}, ${arr[left]}) → ${left_max}.` });
+      push({
+        line: 10,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Update left_max = max(${prev_left_max}, ${arr[left]}) → ${left_max}.`,
+      });
 
       const trapped = left_max - arr[left];
       waterLevels[left] = trapped;
       water += trapped;
 
-      push({ line: 11, pointers: ptrs(left, right), status: st(), narration: `Water added at left: ${left_max} - ${arr[left]} = ${trapped}.` });
+      push({
+        line: 11,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Water added at left: ${left_max} - ${arr[left]} = ${trapped}.`,
+      });
     } else {
-      push({ line: 12, pointers: ptrs(left, right), status: st(), narration: `right_max (${right_max}) <= left_max (${left_max}). We know the left side can safely trap water.` });
+      push({
+        line: 12,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `right_max (${right_max}) <= left_max (${left_max}). We know the left side can safely trap water.`,
+      });
       right -= 1;
-      push({ line: 13, pointers: ptrs(left, right), status: st(), narration: `Advance right to ${right}.` });
+      push({
+        line: 13,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Advance right to ${right}.`,
+      });
 
       const prev_right_max = right_max;
       right_max = Math.max(right_max, arr[right]);
-      push({ line: 14, pointers: ptrs(left, right), status: st(), narration: `Update right_max = max(${prev_right_max}, ${arr[right]}) → ${right_max}.` });
+      push({
+        line: 14,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Update right_max = max(${prev_right_max}, ${arr[right]}) → ${right_max}.`,
+      });
 
       const trapped = right_max - arr[right];
       waterLevels[right] = trapped;
       water += trapped;
 
-      push({ line: 15, pointers: ptrs(left, right), status: st(), narration: `Water added at right: ${right_max} - ${arr[right]} = ${trapped}.` });
+      push({
+        line: 15,
+        pointers: ptrs(left, right),
+        status: st(),
+        narration: `Water added at right: ${right_max} - ${arr[right]} = ${trapped}.`,
+      });
     }
   }
 
-  push({ line: 16, pointers: ptrs(left, right), status: st(), narration: `Pointers met. Total water trapped: ${water}.` });
+  push({
+    line: 16,
+    pointers: ptrs(left, right),
+    status: st(),
+    narration: `Pointers met. Total water trapped: ${water}.`,
+  });
 
   return steps;
 }
@@ -176,7 +308,8 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
 export const oppositeEnds: LessonBuilder<Inputs> = {
   slug: "opposite-ends",
   title: "Two Pointers — Opposite Ends",
-  subtitle: "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
+  subtitle:
+    "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
   problem: (inputs) =>
     inputs.mode === "trapping-rain-water"
       ? "Given an array of non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining."
@@ -193,7 +326,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
   ],
   practiceLadder,
   variant: "opposite-ends",
-  view: (inputs) => inputs.mode === "trapping-rain-water" ? "elevation-map" : "array",
+  view: (inputs) => (inputs.mode === "trapping-rain-water" ? "elevation-map" : "array"),
   code: codeTwoSum,
   codeFor: (inputs) => (inputs.mode === "trapping-rain-water" ? codeTrappingRainWater : codeTwoSum),
   defaultInputs: { mode: "two-sum", arr: [1, 3, 4, 5, 7, 10, 11], target: 9 },
@@ -208,13 +341,21 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
       ],
     },
     { key: "arr", label: "Array", kind: "intArray", help: "comma-separated" },
-    { key: "target", label: "Target sum", kind: "int", hidden: (v: any) => v.mode === "trapping-rain-water" },
+    {
+      key: "target",
+      label: "Target sum",
+      kind: "int",
+      hidden: (v: any) => v.mode === "trapping-rain-water",
+    },
   ],
   validate: (inputs) => {
     const { mode, arr, target } = inputs;
     const w: string[] = [];
     if (mode === "two-sum") {
-      if (!isSortedAsc(arr)) w.push("Two-Sum with opposite-ends pointers requires a sorted array. With an unsorted array the algorithm can miss valid pairs or report wrong indices.");
+      if (!isSortedAsc(arr))
+        w.push(
+          "Two-Sum with opposite-ends pointers requires a sorted array. With an unsorted array the algorithm can miss valid pairs or report wrong indices.",
+        );
       if (arr.length < 2) w.push("Array has fewer than 2 elements.");
       if (target === undefined || !Number.isInteger(target)) w.push("Target should be an integer.");
     }
@@ -228,6 +369,8 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
     return null;
   },
   build: (inputs) => {
-    return inputs.mode === "trapping-rain-water" ? buildTrappingRainWater(inputs) : buildTwoSum(inputs);
+    return inputs.mode === "trapping-rain-water"
+      ? buildTrappingRainWater(inputs)
+      : buildTwoSum(inputs);
   },
 };

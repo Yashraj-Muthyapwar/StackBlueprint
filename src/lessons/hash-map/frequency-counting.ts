@@ -39,9 +39,15 @@ function build({ nums }: Inputs): Step[] {
   }
   let bestK = nums[0];
   let bestV = -1;
-  for (const [k, v] of freq) if (v > bestV) { bestK = k; bestV = v; }
+  for (const [k, v] of freq)
+    if (v > bestV) {
+      bestK = k;
+      bestV = v;
+    }
   const matchIdx: number[] = [];
-  nums.forEach((num, i) => { if (num === bestK) matchIdx.push(i); });
+  nums.forEach((num, i) => {
+    if (num === bestK) matchIdx.push(i);
+  });
   steps.push({
     line: 5,
     array: arr,
@@ -58,7 +64,8 @@ export const frequencyCounting: LessonBuilder<Inputs> = {
   slug: "frequency-counting",
   title: "Hash Map — Frequency Counting & Tracking",
   subtitle: "One pass over the array, one map keyed by value — counts in O(n).",
-  problem: "Given an array nums, return a map from value → number of occurrences (and identify the mode).",
+  problem:
+    "Given an array nums, return a map from value → number of occurrences (and identify the mode).",
   spotIt: [
     "Problem asks 'how many times does X appear' or 'most common element'.",
     "Sort-then-scan is O(n log n) but the interviewer wants O(n).",

@@ -24,21 +24,25 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
     dataset: "sql_lab",
     engine: "postgres",
     challengeId: "shopflow-find-customer-without-qualifying-order",
-    starterSql: "-- Find the selected customer without a qualifying order.\n-- Return customer_id and first_name.\n-- Use NOT EXISTS with orders 2 and 3.\n-- Order by customer_id.",
+    starterSql:
+      "-- Find the selected customer without a qualifying order.\n-- Return customer_id and first_name.\n-- Use NOT EXISTS with orders 2 and 3.\n-- Order by customer_id.",
   },
   "shopflow-generate-customer-channel-combinations": {
     id: "shopflow-generate-customer-channel-combinations",
     title: "Generate ShopFlow customer-channel combinations",
-    prompt: "Create every combination of customers 797, 1600, and 1619 with email and sms using a query-local list and CROSS JOIN.",
+    prompt:
+      "Create every combination of customers 797, 1600, and 1619 with email and sms using a query-local list and CROSS JOIN.",
     dataset: "sql_lab",
     engine: "postgres",
     challengeId: "shopflow-generate-customer-channel-combinations",
-    starterSql: "-- Generate every selected customer-channel combination.\n-- Define email and sms in a channels CTE.\n-- Return first_name and channel for customers 797, 1600, and 1619.\n-- Use CROSS JOIN and order by customer_id, channel.",
+    starterSql:
+      "-- Generate every selected customer-channel combination.\n-- Define email and sms in a channels CTE.\n-- Return first_name and channel for customers 797, 1600, and 1619.\n-- Use CROSS JOIN and order by customer_id, channel.",
   },
   "shopflow-preserve-customers-with-left-join": {
     id: "shopflow-preserve-customers-with-left-join",
     title: "Preserve ShopFlow customers with LEFT JOIN",
-    prompt: "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order values by putting the order filter in the LEFT JOIN ON condition.",
+    prompt:
+      "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order values by putting the order filter in the LEFT JOIN ON condition.",
     dataset: "sql_lab",
     engine: "postgres",
     challengeId: "shopflow-preserve-customers-with-left-join",
@@ -50,7 +54,8 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
   "shopflow-join-orders-customers": {
     id: "shopflow-join-orders-customers",
     title: "Join ShopFlow orders to customers",
-    prompt: "Return five ShopFlow orders with customer_id and their customer's first and last name. Use an explicit JOIN ... ON customer_id relationship.",
+    prompt:
+      "Return five ShopFlow orders with customer_id and their customer's first and last name. Use an explicit JOIN ... ON customer_id relationship.",
     dataset: "sql_lab",
     engine: "postgres",
     challengeId: "shopflow-join-orders-customers",
@@ -499,10 +504,50 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use date subtraction for the calendar count and EXTRACT(EPOCH) / 86400.0 rounded to 2 decimals.
 -- Keep only delivered rows, ordered by purchase timestamp and order ID, with 5 rows.`,
   },
-  "olist-anchored-purchase-lookback": { id: "olist-anchored-purchase-lookback", title: "Build an anchored Olist lookback", prompt: "Return order_id and order_purchase_timestamp for the first five purchases in the 30 days ending at the latest Olist purchase timestamp. Use a bounds CTE with MAX(order_purchase_timestamp), then order by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-anchored-purchase-lookback", starterSql: "-- Anchor a 30-day historical Olist lookback.\n-- Use MAX(order_purchase_timestamp) in a bounds CTE.\n-- Return order_id and order_purchase_timestamp, then order and limit 5." },
-  "olist-calendar-reporting-fields": { id: "olist-calendar-reporting-fields", title: "Create Olist calendar reporting fields", prompt: "Return order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday for the first five purchases. Use EXTRACT and TO_CHAR(..., 'FMDay'), ordered by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-calendar-reporting-fields", starterSql: "-- Olist calendar reporting fields.\n-- Return ISO year, ISO week, quarter, and a weekday label.\n-- Order by purchase timestamp and order ID, then limit 5." },
-  "olist-compare-delivery-windows": { id: "olist-compare-delivery-windows", title: "Compare actual and estimated Olist delivery windows", prompt: "For five delivered orders, return order_id, actual_window, estimated_window, and delivered_late. Build half-open daterange values from purchase through each end date plus one day, then order by purchase timestamp and order ID.", dataset: "olist", engine: "postgres", challengeId: "olist-compare-delivery-windows", starterSql: "-- Olist actual and estimated delivery windows.\n-- Build two half-open daterange values and a delivered_late boolean.\n-- Keep delivered rows, order by purchase timestamp and order ID, limit 5." },
-  "olist-fill-purchase-date-gaps": { id: "olist-fill-purchase-date-gaps", title: "Fill quiet Olist purchase days", prompt: "Generate dates from 2016-09-04 through 2016-09-08. Left join orders with a half-open daily predicate and return purchase_date plus COUNT(order_id) AS order_count in ascending date order.", dataset: "olist", engine: "postgres", challengeId: "olist-fill-purchase-date-gaps", starterSql: "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count." },
+  "olist-anchored-purchase-lookback": {
+    id: "olist-anchored-purchase-lookback",
+    title: "Build an anchored Olist lookback",
+    prompt:
+      "Return order_id and order_purchase_timestamp for the first five purchases in the 30 days ending at the latest Olist purchase timestamp. Use a bounds CTE with MAX(order_purchase_timestamp), then order by purchase timestamp and order ID.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-anchored-purchase-lookback",
+    starterSql:
+      "-- Anchor a 30-day historical Olist lookback.\n-- Use MAX(order_purchase_timestamp) in a bounds CTE.\n-- Return order_id and order_purchase_timestamp, then order and limit 5.",
+  },
+  "olist-calendar-reporting-fields": {
+    id: "olist-calendar-reporting-fields",
+    title: "Create Olist calendar reporting fields",
+    prompt:
+      "Return order_id, order_purchase_timestamp, iso_year, iso_week, purchase_quarter, and purchase_weekday for the first five purchases. Use EXTRACT and TO_CHAR(..., 'FMDay'), ordered by purchase timestamp and order ID.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-calendar-reporting-fields",
+    starterSql:
+      "-- Olist calendar reporting fields.\n-- Return ISO year, ISO week, quarter, and a weekday label.\n-- Order by purchase timestamp and order ID, then limit 5.",
+  },
+  "olist-compare-delivery-windows": {
+    id: "olist-compare-delivery-windows",
+    title: "Compare actual and estimated Olist delivery windows",
+    prompt:
+      "For five delivered orders, return order_id, actual_window, estimated_window, and delivered_late. Build half-open daterange values from purchase through each end date plus one day, then order by purchase timestamp and order ID.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-compare-delivery-windows",
+    starterSql:
+      "-- Olist actual and estimated delivery windows.\n-- Build two half-open daterange values and a delivered_late boolean.\n-- Keep delivered rows, order by purchase timestamp and order ID, limit 5.",
+  },
+  "olist-fill-purchase-date-gaps": {
+    id: "olist-fill-purchase-date-gaps",
+    title: "Fill quiet Olist purchase days",
+    prompt:
+      "Generate dates from 2016-09-04 through 2016-09-08. Left join orders with a half-open daily predicate and return purchase_date plus COUNT(order_id) AS order_count in ascending date order.",
+    dataset: "olist",
+    engine: "postgres",
+    challengeId: "olist-fill-purchase-date-gaps",
+    starterSql:
+      "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count.",
+  },
 };
 
 export function getPractice(id: string | null): PlaygroundPractice | null {

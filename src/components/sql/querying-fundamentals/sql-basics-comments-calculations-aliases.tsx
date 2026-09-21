@@ -35,10 +35,7 @@ export const commentsStages: Stage[] = [
   {
     name: "A comment can follow SQL",
     blurb: "Everything after `--` on that line is a note",
-    sql: [
-      "SELECT name, price  -- keep the original price too",
-      "FROM products;",
-    ],
+    sql: ["SELECT name, price  -- keep the original price too", "FROM products;"],
     table: { name: "products", cols: PRODUCT_COLUMNS, rows: PRODUCTS },
     steps: [
       st(
@@ -70,11 +67,7 @@ export const calculationAliasStages: Stage[] = [
   {
     name: "Multiply to calculate tax",
     blurb: "`price * 1.08` creates a value for each result row",
-    sql: [
-      "SELECT name, price,",
-      "       price * 1.08 AS price_with_tax",
-      "FROM products;",
-    ],
+    sql: ["SELECT name, price,", "       price * 1.08 AS price_with_tax", "FROM products;"],
     table: { name: "products", cols: PRODUCT_COLUMNS, rows: PRODUCTS },
     steps: [
       st(
@@ -98,11 +91,7 @@ export const calculationAliasStages: Stage[] = [
   {
     name: "AS names the result column",
     blurb: "A clear output label makes a calculation easier to use",
-    sql: [
-      "SELECT name, price,",
-      "       price * 1.08 AS price_with_tax",
-      "FROM products;",
-    ],
+    sql: ["SELECT name, price,", "       price * 1.08 AS price_with_tax", "FROM products;"],
     table: { name: "products", cols: PRODUCT_COLUMNS, rows: PRODUCTS },
     steps: [
       st(

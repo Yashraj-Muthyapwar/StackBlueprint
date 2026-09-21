@@ -21,12 +21,20 @@ export const nullThreeValuedLogicStages: Stage[] = [
     sql: ["SELECT id, name, city", "FROM   customers", "WHERE  city = NULL"],
     table: { name: "customers", cols: COLUMNS, rows: CUSTOMERS },
     steps: [
-      st([0, 1], "pending", "Two known-city rows and five missing-city Cycle Depot rows enter the WHERE condition."),
+      st(
+        [0, 1],
+        "pending",
+        "Two known-city rows and five missing-city Cycle Depot rows enter the WHERE condition.",
+      ),
       st(
         [2],
         () => "dropped" as RowState,
         "`city = NULL` is UNKNOWN for every row, including rows whose city is NULL. WHERE keeps only TRUE, so the result is empty.",
-        { highlightCols: [2], noteTone: "rose", side: sidePanel("WHERE rule", ["TRUE: keep", "FALSE: drop", "UNKNOWN: drop"], "rose") },
+        {
+          highlightCols: [2],
+          noteTone: "rose",
+          side: sidePanel("WHERE rule", ["TRUE: keep", "FALSE: drop", "UNKNOWN: drop"], "rose"),
+        },
       ),
     ],
   },
@@ -67,7 +75,11 @@ export const nullThreeValuedLogicStages: Stage[] = [
   {
     name: "COALESCE labels missing data",
     blurb: "Choose a display value without changing stored data",
-    sql: ["SELECT id, name,", "       COALESCE(city, 'Missing') AS city_status", "FROM   customers"],
+    sql: [
+      "SELECT id, name,",
+      "       COALESCE(city, 'Missing') AS city_status",
+      "FROM   customers",
+    ],
     table: { name: "customers", cols: COLUMNS, rows: CUSTOMERS },
     steps: [
       st(
@@ -75,7 +87,9 @@ export const nullThreeValuedLogicStages: Stage[] = [
         "added",
         "COALESCE returns the first non-NULL value. It is useful for display labels, but it does not change the city stored in the table.",
         {
-          rowsOverride: CUSTOMERS.map((row) => r(row.key, row.cells[0]!, row.cells[1]!, row.cells[2] ?? "Missing", row.cells[3]!)),
+          rowsOverride: CUSTOMERS.map((row) =>
+            r(row.key, row.cells[0]!, row.cells[1]!, row.cells[2] ?? "Missing", row.cells[3]!),
+          ),
           colsOverride: ["id", "name", "city_status", "country"],
           highlightCols: [2],
           noteTone: "violet",

@@ -77,7 +77,11 @@ export const aggrStages: Stage[] = [
         [0],
         () => "kept" as RowState,
         "USA and UK appear more than once in this preview, but DISTINCT keeps each country value once. Across all customers, Cycle Depot has 6 distinct countries.",
-        { highlightCols: [3], side: sumPanel("COUNT(DISTINCT country)", "6 countries"), noteTone: "violet" },
+        {
+          highlightCols: [3],
+          side: sumPanel("COUNT(DISTINCT country)", "6 countries"),
+          noteTone: "violet",
+        },
       ),
     ],
   },
@@ -90,7 +94,10 @@ export const aggrStages: Stage[] = [
         [0],
         () => "kept" as RowState,
         "These reducers answer different questions about the same price column: total, typical value, cheapest value, and most expensive value. They all ignore NULL inputs.",
-        { highlightCols: [1], side: sumPanel("all 30 product prices", "Σ $32,515 · avg $1,083.83 · $28 to $5,400") },
+        {
+          highlightCols: [1],
+          side: sumPanel("all 30 product prices", "Σ $32,515 · avg $1,083.83 · $28 to $5,400"),
+        },
       ),
     ],
   },
@@ -193,7 +200,12 @@ export const grpStages: Stage[] = [
   },
   {
     name: "Apply COUNT and combine the results",
-    sql: ["SELECT status, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status", "ORDER  BY status"],
+    sql: [
+      "SELECT status, COUNT(*) AS order_count",
+      "FROM   orders",
+      "GROUP  BY status",
+      "ORDER  BY status",
+    ],
     table: { name: "orders preview", cols: GROUP_ORDER_COLS, rows: GROUP_ORDER_PREVIEW },
     steps: [
       st(
@@ -223,8 +235,17 @@ export const grpStages: Stage[] = [
   },
   {
     name: "Two columns make more detailed groups",
-    sql: ["SELECT status, channel, COUNT(*) AS order_count", "FROM   orders", "GROUP  BY status, channel", "ORDER  BY status, channel"],
-    table: { name: "orders", cols: ["status", "channel", "order_count"], rows: STATUS_CHANNEL_PREVIEW },
+    sql: [
+      "SELECT status, channel, COUNT(*) AS order_count",
+      "FROM   orders",
+      "GROUP  BY status, channel",
+      "ORDER  BY status, channel",
+    ],
+    table: {
+      name: "orders",
+      cols: ["status", "channel", "order_count"],
+      rows: STATUS_CHANNEL_PREVIEW,
+    },
     steps: [
       st(
         [2],

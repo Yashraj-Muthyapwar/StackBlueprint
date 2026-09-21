@@ -37,7 +37,8 @@ function build({ s }: Inputs): Step[] {
       { name: "write", index: w, color: "mint" },
       { name: "i", index: i, color: "amber", placement: "below" },
     ];
-    if (right !== undefined && right < n) out.push({ name: "right", index: right, color: "violet", placement: "below" });
+    if (right !== undefined && right < n)
+      out.push({ name: "right", index: right, color: "violet", placement: "below" });
     return out;
   };
 
@@ -55,7 +56,9 @@ function build({ s }: Inputs): Step[] {
       line: 5,
       array: snap(),
       pointers: ptrs(write, i, right),
-      partitions: [{ from: i, to: right - 1, tone: "mid", label: `run '${chars[i]}'×${right - i}` }],
+      partitions: [
+        { from: i, to: right - 1, tone: "mid", label: `run '${chars[i]}'×${right - i}` },
+      ],
       narration: `Run of '${chars[i]}' spans [${i}..${right - 1}], length ${right - i}.`,
     });
     chars[write] = chars[i];
@@ -107,8 +110,10 @@ function build({ s }: Inputs): Step[] {
 export const stringCompression: LessonBuilder<Inputs> = {
   slug: "string-compression",
   title: "Two Pointers — Run-Length Compression",
-  subtitle: "Read with i/right, write with write — O(n) time, O(1) extra space in-place compression.",
-  problem: "Given a mutable char array, compress runs of repeated characters in place to '<char><count>' (omit count when run length is 1) and return the new length.",
+  subtitle:
+    "Read with i/right, write with write — O(n) time, O(1) extra space in-place compression.",
+  problem:
+    "Given a mutable char array, compress runs of repeated characters in place to '<char><count>' (omit count when run length is 1) and return the new length.",
   spotIt: [
     "In-place transformation where output is shorter than (or equal to) the input.",
     "Two cursors: one reads contiguous runs, the other writes the compact form.",

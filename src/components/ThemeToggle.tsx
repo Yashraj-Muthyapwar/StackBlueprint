@@ -8,10 +8,10 @@ export function ThemeToggle() {
   useEffect(() => {
     // Check initial theme from localStorage or default to light
     const storedTheme = localStorage.getItem("theme");
-    
+
     // We default to light if no preference is found
     const initialDark = storedTheme === "dark";
-    
+
     setIsDark(initialDark);
     if (initialDark) {
       document.documentElement.classList.add("dark");
@@ -40,15 +40,15 @@ export function ThemeToggle() {
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
           toggleTheme();
         }
       }}
     >
-      <div 
+      <div
         className={`text-[1.35rem] ${
-          !isDark 
+          !isDark
             ? "text-[#d97706]" // bold amber-600 color for strong glowing effect
             : "text-muted-foreground"
         }`}
@@ -56,11 +56,7 @@ export function ThemeToggle() {
         {(() => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const AnyLightbulb = Lightbulb as any;
-          return (
-            <AnyLightbulb
-              className="pointer-events-none" 
-            />
-          );
+          return <AnyLightbulb className="pointer-events-none" />;
         })()}
       </div>
     </div>

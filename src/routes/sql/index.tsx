@@ -212,7 +212,8 @@ const sections: Section[] = [
       {
         slug: "datetime-functions",
         title: "Date & Time",
-        blurb: "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
+        blurb:
+          "Time zones, interval math, and date arithmetic for scheduling and temporal overlaps.",
         icon: Calendar,
         modules: [
           "Current Time & Time Zones",
@@ -246,10 +247,15 @@ const sections: Section[] = [
       {
         slug: "error-handling",
         title: "Error Handling",
-        blurb:
-          "Defensive queries, transactions, savepoints, and PostgreSQL exception blocks.",
+        blurb: "Defensive queries, transactions, savepoints, and PostgreSQL exception blocks.",
         icon: AlertTriangle,
-        modules: ["Defensive Querying", "Transactions", "Savepoints", "PostgreSQL Exceptions", "Final quiz"],
+        modules: [
+          "Defensive Querying",
+          "Transactions",
+          "Savepoints",
+          "PostgreSQL Exceptions",
+          "Final quiz",
+        ],
         unlocked: true,
         routeBase: "specialized",
       },

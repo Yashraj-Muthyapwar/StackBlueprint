@@ -19,12 +19,12 @@ export function useProgress() {
   useEffect(() => {
     loadProgress();
     const handleStorage = () => loadProgress();
-    
+
     // Listen for custom event triggered by other components within the same window
     window.addEventListener("lesson-progress-updated", handleStorage);
     // Listen for standard storage event triggered by other tabs
     window.addEventListener("storage", handleStorage);
-    
+
     return () => {
       window.removeEventListener("lesson-progress-updated", handleStorage);
       window.removeEventListener("storage", handleStorage);

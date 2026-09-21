@@ -1,6 +1,9 @@
 import type { Row, RowState, StageStep, Tone } from "@/components/lesson/MultiStage";
 
-export const r = (key: string | number, ...cells: (string | number | null)[]): Row => ({ key, cells });
+export const r = (key: string | number, ...cells: (string | number | null)[]): Row => ({
+  key,
+  cells,
+});
 
 export const st = (
   activeLines: number[],
@@ -24,7 +27,10 @@ export const pass =
 export const bucketPanel = (groups: { k: string; sum: number }[]) => (
   <div className="grid gap-2">
     {groups.map((group) => (
-      <div key={group.k} className="flex items-center justify-between rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]">
+      <div
+        key={group.k}
+        className="flex items-center justify-between rounded-md border border-violet/40 bg-violet/5 px-3 py-2 font-mono text-[12px]"
+      >
         <span className="text-violet">{group.k}</span>
         <span className="text-mint">Σ = ${group.sum}</span>
       </div>
@@ -45,7 +51,9 @@ export const sidePanel = (title: string, lines: string[], tone: Tone = "violet")
     <div className={`rounded-lg border p-3 ${toneClasses[tone]}`}>
       <div className="font-mono text-[10px] uppercase tracking-[0.14em]">{title}</div>
       {lines.map((line, index) => (
-        <div key={index} className="mt-1 font-mono text-[12px] text-foreground/85">{line}</div>
+        <div key={index} className="mt-1 font-mono text-[12px] text-foreground/85">
+          {line}
+        </div>
       ))}
     </div>
   );

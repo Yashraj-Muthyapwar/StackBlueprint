@@ -33,8 +33,7 @@ export type FoundationTopicMeta = {
 const whyDockerExists: LessonContent = {
   slug: "why-docker-exists",
   title: "Why Docker Exists",
-  subtitle:
-    "The pain that made Docker inevitable, and the standardized box that fixes it.",
+  subtitle: "The pain that made Docker inevitable, and the standardized box that fixes it.",
   sections: [
     {
       kind: "prose",
@@ -116,7 +115,8 @@ const whyDockerExists: LessonContent = {
       kind: "image",
       src: dockerAnalogyImg,
       alt: "Docker shipping container analogy",
-      caption: "Standardized containers for software, inspired by standardized containers for cargo.",
+      caption:
+        "Standardized containers for software, inspired by standardized containers for cargo.",
     },
     {
       kind: "callout",
@@ -127,7 +127,7 @@ const whyDockerExists: LessonContent = {
     {
       kind: "takeaways",
       items: [
-        "Environment drift, not bad code, causes most \"works on my machine\" failures.",
+        'Environment drift, not bad code, causes most "works on my machine" failures.',
         "A container bundles your app with its runtime, libraries, and config so it behaves identically everywhere.",
         "Docker did not invent portability. It borrowed the idea from standardized shipping containers.",
         "Complexity does not disappear. It moves from unpredictable runtime surprises to explicit, versioned build-time declarations.",
@@ -138,7 +138,7 @@ const whyDockerExists: LessonContent = {
       questions: [
         {
           id: "why-docker-cause-easy",
-          question: "What actually causes most \"works on my machine\" failures?",
+          question: 'What actually causes most "works on my machine" failures?',
           options: [
             "Bad code written by the developer",
             "Small differences between environments, like OS or library versions",
@@ -172,12 +172,12 @@ const whyDockerExists: LessonContent = {
             "The registry where the blueprint is stored",
           ],
           correctIndex: 1,
-          explanation:
-            "A container is a live, running instance of a read-only image.",
+          explanation: "A container is a live, running instance of a read-only image.",
         },
         {
           id: "why-docker-engine-hard-1",
-          question: "Which of the following correctly describes 'Docker' as a platform versus a 'Container'?",
+          question:
+            "Which of the following correctly describes 'Docker' as a platform versus a 'Container'?",
           options: [
             "Docker is the operating system; a container is an application.",
             "Docker is the set of tools (engine, CLI) used to manage and run containers, while a container is the actual running application.",
@@ -190,7 +190,8 @@ const whyDockerExists: LessonContent = {
         },
         {
           id: "why-docker-state-hard-2",
-          question: "Why does building an application inside a container resolve the 'cryptic libssl version' issue?",
+          question:
+            "Why does building an application inside a container resolve the 'cryptic libssl version' issue?",
           options: [
             "Containers bypass SSL entirely, removing the need for the library.",
             "Containers enforce a standardized build-time declaration, ensuring the exact same library version runs everywhere.",
@@ -200,7 +201,7 @@ const whyDockerExists: LessonContent = {
           correctIndex: 1,
           explanation:
             "By declaring the environment at build-time within an image, Docker guarantees that the exact same dependencies (like libssl) are shipped and run everywhere.",
-        }
+        },
       ],
     },
   ],
@@ -209,14 +210,13 @@ const whyDockerExists: LessonContent = {
 const containersVsVms: LessonContent = {
   slug: "containers-vs-vms",
   title: "Containers vs Virtual Machines",
-  subtitle:
-    "Two different answers to \"how do I isolate my app,\" and why one of them won.",
+  subtitle: 'Two different answers to "how do I isolate my app," and why one of them won.',
   sections: [
     {
       kind: "prose",
       heading: "Before containers, there were VMs",
       body: [
-        "Before containers, the standard answer to \"it works on my machine\" was the virtual machine. To understand why containers won, it helps to see what VMs actually cost.",
+        'Before containers, the standard answer to "it works on my machine" was the virtual machine. To understand why containers won, it helps to see what VMs actually cost.',
       ],
     },
     {
@@ -381,7 +381,8 @@ const containersVsVms: LessonContent = {
         },
         {
           id: "vms-overhead-hard-2",
-          question: "Which of the following is the primary cause of overhead in Virtual Machines compared to Containers?",
+          question:
+            "Which of the following is the primary cause of overhead in Virtual Machines compared to Containers?",
           options: [
             "Network latency caused by the hypervisor",
             "The duplication of the guest OS kernel and background system processes for every VM",
@@ -391,7 +392,7 @@ const containersVsVms: LessonContent = {
           correctIndex: 1,
           explanation:
             "Every VM requires its own complete operating system (kernel, init system, background daemons). Running 10 VMs means running 10 operating systems, consuming massive amounts of RAM and CPU just to idle.",
-        }
+        },
       ],
     },
   ],
@@ -400,8 +401,7 @@ const containersVsVms: LessonContent = {
 const dockerArchitecture: LessonContent = {
   slug: "docker-architecture",
   title: "Docker Architecture",
-  subtitle:
-    "Why `docker run` feels like magic, and what's actually happening underneath.",
+  subtitle: "Why `docker run` feels like magic, and what's actually happening underneath.",
   sections: [
     {
       kind: "prose",
@@ -427,7 +427,7 @@ const dockerArchitecture: LessonContent = {
       kind: "prose",
       heading: "The Restaurant Analogy",
       body: [
-        "Think of Docker like ordering food at a restaurant. You (the customer) never walk into the kitchen and cook your own meal. You tell the waiter what you want, the waiter tells the kitchen, the kitchen tells the chef, and the chef actually cooks the food using the stove and ingredients. Docker works the same way. You type a command, and that request quietly travels through several \"staff members\" before a container actually starts running.",
+        'Think of Docker like ordering food at a restaurant. You (the customer) never walk into the kitchen and cook your own meal. You tell the waiter what you want, the waiter tells the kitchen, the kitchen tells the chef, and the chef actually cooks the food using the stove and ingredients. Docker works the same way. You type a command, and that request quietly travels through several "staff members" before a container actually starts running.',
       ],
     },
     {
@@ -461,9 +461,7 @@ c83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc`,
     },
     {
       kind: "prose",
-      body: [
-        "Now check your local machine. It will be completely empty!",
-      ],
+      body: ["Now check your local machine. It will be completely empty!"],
     },
     {
       kind: "terminal-animation",
@@ -475,9 +473,7 @@ c83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc`,
     },
     {
       kind: "prose",
-      body: [
-        "Query the remote server using the `-H` flag to verify it's running there:",
-      ],
+      body: ["Query the remote server using the `-H` flag to verify it's running there:"],
     },
     {
       kind: "terminal-animation",
@@ -597,7 +593,7 @@ c83d5a21e49b   nginx     "/docker-entrypoint.…"   10 seconds ago   Up 9 second
       kind: "prose",
       body: [
         "• **Namespaces (pid, net, mnt, ipc, uts, user, cgroup):** Provide the illusion of a dedicated operating system by isolating process IDs (pid), network interfaces (net), mount points (mnt), file systems, user privileges (critical for rootless security), and cgroup boundaries.",
-      ]
+      ],
     },
     {
       kind: "image",
@@ -611,7 +607,7 @@ c83d5a21e49b   nginx     "/docker-entrypoint.…"   10 seconds ago   Up 9 second
         "• **Cgroups (Control Groups):** Enforce strict resource limits, making sure a single container cannot hog all of your CPU, memory, or I/O.",
         "You can tap into these control groups directly from your terminal by passing specific flags to cap how much juice a container is allowed to sip.",
         "For example, you can easily restrict a process to half a CPU core. Cap this container to 50% of a single CPU core:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -628,9 +624,7 @@ Status: Downloaded newer image for ubuntu:latest`,
     },
     {
       kind: "prose",
-      body: [
-        "Or restrict this container to a maximum of 100 megabytes of memory:",
-      ]
+      body: ["Or restrict this container to a maximum of 100 megabytes of memory:"],
     },
     {
       kind: "terminal-animation",
@@ -663,7 +657,7 @@ Status: Downloaded newer image for ubuntu:latest`,
       kind: "prose",
       body: [
         "**7. Docker Registry (The Warehouse That Stores Ingredients)**",
-        "A container image has to come from somewhere. That's the job of the Docker Registry. When you run docker run nginx, Docker first checks whether the image already exists locally. If it doesn't, containerd pulls only the missing image layers from a registry such as Docker Hub or a private registry. Since layers are reusable and immutable, Docker downloads only what it needs, saving both storage and bandwidth."
+        "A container image has to come from somewhere. That's the job of the Docker Registry. When you run docker run nginx, Docker first checks whether the image already exists locally. If it doesn't, containerd pulls only the missing image layers from a registry such as Docker Hub or a private registry. Since layers are reusable and immutable, Docker downloads only what it needs, saving both storage and bandwidth.",
       ],
     },
     {
@@ -676,7 +670,7 @@ Status: Downloaded newer image for ubuntu:latest`,
       kind: "prose",
       body: [
         "**8. Docker Images & Layers (The Recipe Built from LEGO Blocks)**",
-        "A Docker image isn't one giant file - it's a stack of read-only layers. Each instruction in a Dockerfile, like RUN or COPY, typically creates a new layer. Because these layers are cached and shared between images, Docker only rebuilds or downloads the parts that have changed, making builds and deployments much faster."
+        "A Docker image isn't one giant file - it's a stack of read-only layers. Each instruction in a Dockerfile, like RUN or COPY, typically creates a new layer. Because these layers are cached and shared between images, Docker only rebuilds or downloads the parts that have changed, making builds and deployments much faster.",
       ],
     },
     {
@@ -689,7 +683,7 @@ Status: Downloaded newer image for ubuntu:latest`,
       kind: "prose",
       body: [
         "**9. Overlay2 (The Transparent Notebook)**",
-        "Since image layers are read-only, Docker needs a place for containers to store changes. That's the job of Overlay2, Docker's default storage driver on Linux. It creates a thin writable layer on top of the image, and any file modifications happen there using a technique called Copy-on-Write (CoW). The original image always remains unchanged, allowing many containers to safely share the same base image."
+        "Since image layers are read-only, Docker needs a place for containers to store changes. That's the job of Overlay2, Docker's default storage driver on Linux. It creates a thin writable layer on top of the image, and any file modifications happen there using a technique called Copy-on-Write (CoW). The original image always remains unchanged, allowing many containers to safely share the same base image.",
       ],
     },
     {
@@ -727,9 +721,7 @@ Status: Downloaded newer image for ubuntu:latest`,
     {
       kind: "prose",
       heading: "The End-to-End Flow: Running a Container",
-      body: [
-        "Let us trace exactly what happens when you hit Enter on `$ docker run nginx`:",
-      ],
+      body: ["Let us trace exactly what happens when you hit Enter on `$ docker run nginx`:"],
     },
     {
       kind: "docker-run-under-the-hood",
@@ -754,15 +746,12 @@ Status: Downloaded newer image for ubuntu:latest`,
       questions: [
         {
           id: "docker-architecture-dockerd-easy",
-          question: "Which component is responsible for accepting API requests from the CLI but does NOT actually run containers itself?",
-          options: [
-            "containerd",
-            "runc",
-            "dockerd (Docker Daemon)",
-            "Docker Registry"
-          ],
+          question:
+            "Which component is responsible for accepting API requests from the CLI but does NOT actually run containers itself?",
+          options: ["containerd", "runc", "dockerd (Docker Daemon)", "Docker Registry"],
           correctIndex: 2,
-          explanation: "dockerd is the high-level orchestration layer that receives API requests from the CLI, but it delegates the actual container runtime execution to containerd."
+          explanation:
+            "dockerd is the high-level orchestration layer that receives API requests from the CLI, but it delegates the actual container runtime execution to containerd.",
         },
         {
           id: "docker-architecture-shim-medium-1",
@@ -771,49 +760,56 @@ Status: Downloaded newer image for ubuntu:latest`,
             "To make the container run faster",
             "To keep the container running if containerd crashes or restarts",
             "To translate Linux commands into macOS commands",
-            "To download image layers from Docker Hub"
+            "To download image layers from Docker Hub",
           ],
           correctIndex: 1,
-          explanation: "The shim keeps the container's standard I/O streams open and reports its status, allowing the container to survive independently even if containerd is upgraded or restarted."
+          explanation:
+            "The shim keeps the container's standard I/O streams open and reports its status, allowing the container to survive independently even if containerd is upgraded or restarted.",
         },
         {
           id: "docker-architecture-runc-medium-2",
-          question: "What happens to the 'runc' process immediately after the container starts running?",
+          question:
+            "What happens to the 'runc' process immediately after the container starts running?",
           options: [
             "It continues running to monitor the container's CPU usage",
             "It waits for the container to finish before exiting",
             "It exits immediately, leaving the shim to supervise the container",
-            "It transforms into the container process itself"
+            "It transforms into the container process itself",
           ],
           correctIndex: 2,
-          explanation: "runc has exactly one job: configuring the kernel boundaries and starting the process. The moment the process goes live, runc exits completely."
+          explanation:
+            "runc has exactly one job: configuring the kernel boundaries and starting the process. The moment the process goes live, runc exits completely.",
         },
         {
           id: "docker-architecture-oci-hard-1",
-          question: "What is the primary purpose of the Open Container Initiative (OCI) standard in Docker's architecture?",
+          question:
+            "What is the primary purpose of the Open Container Initiative (OCI) standard in Docker's architecture?",
           options: [
             "To ensure that containers are completely secure and cannot be hacked",
             "To define a standard for container images and runtimes so tools can interoperate",
             "To replace Docker entirely with a new command line tool",
-            "To provide a standard operating system for all containers to use"
+            "To provide a standard operating system for all containers to use",
           ],
           correctIndex: 1,
-          explanation: "The OCI standard ensures that any OCI-compliant runtime (like runc) can run any OCI-compliant image. It's what allows Docker to play nicely with other container ecosystems."
+          explanation:
+            "The OCI standard ensures that any OCI-compliant runtime (like runc) can run any OCI-compliant image. It's what allows Docker to play nicely with other container ecosystems.",
         },
         {
           id: "docker-architecture-flow-hard-2",
-          question: "Trace the flow of a 'docker run' command through the architecture. Which order is correct?",
+          question:
+            "Trace the flow of a 'docker run' command through the architecture. Which order is correct?",
           options: [
             "CLI -> containerd -> dockerd -> containerd-shim -> runc",
             "CLI -> dockerd -> containerd -> runc -> containerd-shim",
             "CLI -> dockerd -> containerd -> containerd-shim -> runc",
-            "CLI -> dockerd -> runc -> containerd -> containerd-shim"
+            "CLI -> dockerd -> runc -> containerd -> containerd-shim",
           ],
           correctIndex: 2,
-          explanation: "The CLI talks to dockerd, which tells containerd to start a container. containerd spawns a shim, and the shim invokes runc to actually build and launch the container."
-        }
-      ]
-    }
+          explanation:
+            "The CLI talks to dockerd, which tells containerd to start a container. containerd spawns a shim, and the shim invokes runc to actually build and launch the container.",
+        },
+      ],
+    },
   ],
 };
 
@@ -851,8 +847,7 @@ const settingUpDocker: LessonContent = {
       kind: "image",
       src: dockerDesktopImg,
       alt: "Docker Desktop overview showing its major components and hidden Linux virtual machine",
-      caption:
-        "Docker Desktop bundles everything needed to build, run, and manage containers.",
+      caption: "Docker Desktop bundles everything needed to build, run, and manage containers.",
     },
     {
       kind: "prose",
@@ -912,8 +907,7 @@ Is the docker daemon running?`,
       kind: "callout",
       tone: "success",
       title: "Ready to Install?",
-      body:
-        "Now that you understand what Docker Desktop is and why it's needed, let's install Docker on your operating system.",
+      body: "Now that you understand what Docker Desktop is and why it's needed, let's install Docker on your operating system.",
     },
     {
       kind: "image",
@@ -1127,20 +1121,17 @@ docker run hello-world`,
       questions: [
         {
           id: "setup-verification-easy",
-          question: "Which command is commonly used to verify that Docker can successfully run containers?",
-          options: [
-            "docker build",
-            "docker images",
-            "docker run hello-world",
-            "docker inspect",
-          ],
+          question:
+            "Which command is commonly used to verify that Docker can successfully run containers?",
+          options: ["docker build", "docker images", "docker run hello-world", "docker inspect"],
           correctIndex: 2,
           explanation:
             "`docker run hello-world` downloads a small image (if necessary), creates a container, runs it, and prints a success message, confirming that your Docker installation is working correctly.",
         },
         {
           id: "setup-docker-desktop-medium-1",
-          question: "Why do macOS and Windows use Docker Desktop instead of Docker Engine directly?",
+          question:
+            "Why do macOS and Windows use Docker Desktop instead of Docker Engine directly?",
           options: [
             "Docker Engine only works with graphical interfaces.",
             "macOS and Windows don't include a Linux kernel, so Docker Desktop provides the Linux environment containers need.",
@@ -1153,7 +1144,8 @@ docker run hello-world`,
         },
         {
           id: "setup-engine-running-medium-2",
-          question: "Why must Docker Desktop be running before executing Docker commands in your terminal?",
+          question:
+            "Why must Docker Desktop be running before executing Docker commands in your terminal?",
           options: [
             "The Docker CLI starts Docker Engine automatically.",
             "The Docker CLI communicates with Docker Engine via an API, so the engine must already be running.",
@@ -1171,30 +1163,25 @@ docker run hello-world`,
             "Linux still requires a lightweight VM to run Docker securely.",
             "Linux runs the Docker Daemon directly on the host OS without needing a hidden VM.",
             "Linux uses Docker Desktop exclusively to manage containers.",
-            "Linux requires you to compile containers from source code every time."
+            "Linux requires you to compile containers from source code every time.",
           ],
           correctIndex: 1,
           explanation:
-            "Because Linux already has the required kernel features (namespaces and cgroups), the Docker daemon runs natively as a system service. There is no need for a hidden VM."
+            "Because Linux already has the required kernel features (namespaces and cgroups), the Docker daemon runs natively as a system service. There is no need for a hidden VM.",
         },
         {
           id: "setup-vm-under-hood-hard-2",
-          question: "What technology does Docker Desktop use under the hood on modern Windows to provide the Linux kernel?",
-          options: [
-            "VirtualBox",
-            "VMware Fusion",
-            "Windows Subsystem for Linux (WSL 2)",
-            "Cygwin"
-          ],
+          question:
+            "What technology does Docker Desktop use under the hood on modern Windows to provide the Linux kernel?",
+          options: ["VirtualBox", "VMware Fusion", "Windows Subsystem for Linux (WSL 2)", "Cygwin"],
           correctIndex: 2,
           explanation:
-            "On modern Windows, Docker Desktop utilizes WSL 2 to run a lightweight, highly integrated Linux utility VM, which is much faster and more efficient than traditional hypervisors."
-        }
+            "On modern Windows, Docker Desktop utilizes WSL 2 to run a lightweight, highly integrated Linux utility VM, which is much faster and more efficient than traditional hypervisors.",
+        },
       ],
     },
   ],
 };
-
 
 const terminalPrerequisites: LessonContent = {
   slug: "terminal-prerequisites",
@@ -1220,13 +1207,16 @@ const terminalPrerequisites: LessonContent = {
         ["tail -f <file>", "Watches a file in real-time as it grows (great for logs)"],
         ["less <file>", "Scrolls through large config files or logs safely"],
         ["touch <file-name>", "Creates an empty file"],
-        ["echo \"<text>\"", "Prints <text> to the console"],
+        ['echo "<text>"', "Prints <text> to the console"],
         ["<command> > <file>", "Overwrites <file> with the output of <command>"],
         ["<command> >> <file>", "Appends the output of <command> to the end of <file>"],
         ["ls -a", "Lists all files in the current directory, including hidden ones"],
         ["pwd", "Prints the working directory (your exact path)"],
         ["cd <dir>", "Changes the current directory to <dir>"],
-        ["tree", "Visualizes the directory structure as a tree (may require 'apt install tree' on minimal images)"],
+        [
+          "tree",
+          "Visualizes the directory structure as a tree (may require 'apt install tree' on minimal images)",
+        ],
         ["rm <file-name>", "Deletes a file"],
         ["rmdir <dir-name>", "Deletes an empty directory"],
         ["rm -rf <dir>", "Force deletes a directory and everything inside it"],
@@ -1323,8 +1313,8 @@ ls: cannot access 'my-app': No such file or directory
       heading: "Understanding Ports",
       body: [
         "Since we are going to be connecting to containers and running web servers, you need to understand **ports**. If an IP address (like `127.0.0.1` or `localhost`) is the street address of an apartment building, a port is the specific apartment number.",
-        "There are 65,535 possible ports on any given computer. The first **1,024** ports are considered \"privileged\" and usually require admin rights. Beyond that, many ports are officially registered to specific applications by the **IANA** (Internet Assigned Numbers Authority). For example, a **web server** usually \"listens\" on **port** `80` **(HTTP)** or `443` **(HTTPS)**, **PostgreSQL** uses `5432`, and **MySQL** uses `3306`.",
-        "When we run Docker containers later, we will frequently **map** a port from our host machine to a port inside the container. This acts like a mailroom forwarding traffic from the building's main entrance to the specific container's apartment."
+        'There are 65,535 possible ports on any given computer. The first **1,024** ports are considered "privileged" and usually require admin rights. Beyond that, many ports are officially registered to specific applications by the **IANA** (Internet Assigned Numbers Authority). For example, a **web server** usually "listens" on **port** `80` **(HTTP)** or `443` **(HTTPS)**, **PostgreSQL** uses `5432`, and **MySQL** uses `3306`.',
+        "When we run Docker containers later, we will frequently **map** a port from our host machine to a port inside the container. This acts like a mailroom forwarding traffic from the building's main entrance to the specific container's apartment.",
       ],
     },
     {
@@ -1344,7 +1334,7 @@ ls: cannot access 'my-app': No such file or directory
         "Use `ls`, `cd`, and `pwd` to navigate the file system and confirm where you are.",
         "Use `cat`, `grep`, and `tail` to read, search, and monitor files (especially logs).",
         "Use `rm`, `rmdir`, and `mkdir` to manage files and folders.",
-        "Ports are like apartment numbers that determine which specific application receives network traffic."
+        "Ports are like apartment numbers that determine which specific application receives network traffic.",
       ],
     },
     {
@@ -1354,71 +1344,82 @@ ls: cannot access 'my-app': No such file or directory
           id: "prereq-cmd-pwd",
           question: "Print the working directory (your exact path).",
           commandAnswer: "pwd",
-          explanation: "`pwd` stands for 'print working directory'. It tells you exactly where you are in the filesystem."
+          explanation:
+            "`pwd` stands for 'print working directory'. It tells you exactly where you are in the filesystem.",
         },
         {
           id: "prereq-cmd-ls",
           question: "List all files in the current directory, including hidden ones.",
           commandAnswer: ["ls -a", "ls -al", "ls -la"],
-          explanation: "`ls` lists files, and the `-a` (all) flag ensures hidden files (those starting with a dot) are included."
+          explanation:
+            "`ls` lists files, and the `-a` (all) flag ensures hidden files (those starting with a dot) are included.",
         },
         {
           id: "prereq-cmd-touch",
           question: "Create an empty file named `config.yml`.",
           commandAnswer: "touch config.yml",
-          explanation: "`touch` is the quickest way to create a new, empty file."
+          explanation: "`touch` is the quickest way to create a new, empty file.",
         },
         {
           id: "prereq-cmd-cat",
           question: "Print the entire contents of `app.log` to the console.",
           commandAnswer: "cat app.log",
-          explanation: "`cat` (concatenate) reads a file and dumps its entire content to the standard output."
+          explanation:
+            "`cat` (concatenate) reads a file and dumps its entire content to the standard output.",
         },
         {
           id: "prereq-cmd-grep",
           question: "Search for the word 'Error' inside `app.log`.",
           commandAnswer: ["grep Error app.log", "grep 'Error' app.log", 'grep "Error" app.log'],
-          explanation: "`grep` is an essential tool for searching plain-text data sets for lines that match a regular expression."
+          explanation:
+            "`grep` is an essential tool for searching plain-text data sets for lines that match a regular expression.",
         },
         {
           id: "prereq-cmd-rm",
-          question: "Force delete a directory named `old-logs` and everything inside it without prompting.",
+          question:
+            "Force delete a directory named `old-logs` and everything inside it without prompting.",
           commandAnswer: ["rm -rf old-logs", "rm -r -f old-logs", "rm -f -r old-logs"],
-          explanation: "`rm` removes files. `-r` (recursive) removes directories and their contents. `-f` (force) ignores nonexistent files and never prompts."
+          explanation:
+            "`rm` removes files. `-r` (recursive) removes directories and their contents. `-f` (force) ignores nonexistent files and never prompts.",
         },
         {
           id: "prereq-cmd-tail",
           question: "Watch the file `server.log` in real-time as it grows.",
           commandAnswer: ["tail -f server.log"],
-          explanation: "`tail -f` outputs the last part of files and keeps reading as the file grows, which is perfect for live server logs."
+          explanation:
+            "`tail -f` outputs the last part of files and keeps reading as the file grows, which is perfect for live server logs.",
         },
         {
           id: "prereq-cmd-chmod",
           question: "Make the script `run.sh` executable.",
           commandAnswer: ["chmod +x run.sh", "chmod a+x run.sh"],
-          explanation: "`chmod` changes file modes or Access Control Lists. `+x` adds the execute permission."
+          explanation:
+            "`chmod` changes file modes or Access Control Lists. `+x` adds the execute permission.",
         },
         {
           id: "prereq-cmd-apt",
-          question: "Install `curl` using `apt-get install` without it hanging on a confirmation prompt.",
+          question:
+            "Install `curl` using `apt-get install` without it hanging on a confirmation prompt.",
           commandAnswer: ["apt-get install -y curl", "apt-get install curl -y"],
-          explanation: "The `-y` flag answers 'yes' automatically. Without it, automated scripts (like Docker image builds) will hang forever waiting for user input."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "The `-y` flag answers 'yes' automatically. Without it, automated scripts (like Docker image builds) will hang forever waiting for user input.",
+        },
+      ],
+    },
+  ],
 };
 
 const yourFirstContainer: LessonContent = {
   slug: "your-first-container",
   title: "Your First Container",
-  subtitle:
-    "Stop reading, start running: from a one-off command to a web server you can visit.",
+  subtitle: "Stop reading, start running: from a one-off command to a web server you can visit.",
   sections: [
     {
       kind: "prose",
       heading: "Running a single command",
-      body: ["Time to stop reading and start running things. The classic first step is the `hello-world` image."],
+      body: [
+        "Time to stop reading and start running things. The classic first step is the `hello-world` image.",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1563,43 +1564,55 @@ b904c9ea8942622d6fb3980c28db4e86db07465ca7aafc6b3bcbbdb3306df4d7`,
           id: "first-container-cmd-0",
           question: "Run the official `hello-world` image to verify Docker is working.",
           commandAnswer: "docker run hello-world",
-          explanation: "This simple command pulls the `hello-world` image (if not already local) and runs it in the foreground to print a confirmation message."
+          explanation:
+            "This simple command pulls the `hello-world` image (if not already local) and runs it in the foreground to print a confirmation message.",
         },
         {
           id: "first-container-cmd-1",
           question: "Run an Ubuntu container interactively with a pseudo-terminal.",
-          commandAnswer: ["docker run -it ubuntu", "docker run -ti ubuntu", "docker run -i -t ubuntu", "docker run -t -i ubuntu"],
-          explanation: "The `-i` flag keeps STDIN open, and `-t` allocates a pseudo-terminal. Together `-it` gives you an interactive shell inside the container."
+          commandAnswer: [
+            "docker run -it ubuntu",
+            "docker run -ti ubuntu",
+            "docker run -i -t ubuntu",
+            "docker run -t -i ubuntu",
+          ],
+          explanation:
+            "The `-i` flag keeps STDIN open, and `-t` allocates a pseudo-terminal. Together `-it` gives you an interactive shell inside the container.",
         },
         {
           id: "first-container-cmd-2",
           question: "Run an Nginx container in the background (detached mode).",
           commandAnswer: ["docker run -d nginx", "docker run --detach nginx"],
-          explanation: "The `-d` flag runs the container in detached mode, meaning it runs in the background and frees up your terminal."
+          explanation:
+            "The `-d` flag runs the container in detached mode, meaning it runs in the background and frees up your terminal.",
         },
         {
           id: "first-container-cmd-3",
-          question: "Run an Nginx container in the background, mapping port 8080 on your host to port 80 inside the container.",
+          question:
+            "Run an Nginx container in the background, mapping port 8080 on your host to port 80 inside the container.",
           commandAnswer: [
             "docker run -d -p 8080:80 nginx",
             "docker run -p 8080:80 -d nginx",
             "docker run -dp 8080:80 nginx",
-            "docker run -pd 8080:80 nginx"
+            "docker run -pd 8080:80 nginx",
           ],
-          explanation: "The `-p` flag maps ports in the format `host:container`. `-d` keeps it in the background."
+          explanation:
+            "The `-p` flag maps ports in the format `host:container`. `-d` keeps it in the background.",
         },
         {
           id: "first-container-pull-hard-2",
-          question: "If you run `docker run ubuntu` and Docker says 'Unable to find image locally', what happens next?",
+          question:
+            "If you run `docker run ubuntu` and Docker says 'Unable to find image locally', what happens next?",
           options: [
             "The command fails and exits immediately.",
             "Docker automatically reaches out to Docker Hub, downloads the image, and then runs it.",
             "Docker prompts you for a URL to download the image from.",
-            "Docker builds a new Ubuntu image from scratch using your local OS."
+            "Docker builds a new Ubuntu image from scratch using your local OS.",
           ],
           correctIndex: 1,
-          explanation: "Docker's default behavior is to transparently pull missing images from the configured registry (usually Docker Hub) before running."
-        }
+          explanation:
+            "Docker's default behavior is to transparently pull missing images from the configured registry (usually Docker Hub) before running.",
+        },
       ],
     },
   ],
@@ -1608,14 +1621,15 @@ b904c9ea8942622d6fb3980c28db4e86db07465ca7aafc6b3bcbbdb3306df4d7`,
 const basicDockerCommands: LessonContent = {
   slug: "basic-docker-commands",
   title: "Basic Docker Commands",
-  subtitle: "Before you run a single container, it helps to know what Docker is actually doing behind the scenes.",
+  subtitle:
+    "Before you run a single container, it helps to know what Docker is actually doing behind the scenes.",
   sections: [
     {
       kind: "prose",
       heading: "Checking your Docker setup",
       body: [
         "Two commands are worth knowing before you run anything at all. `docker version` tells you which version of the Docker client and server (the daemon) you have installed, and confirms they can actually talk to each other:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1654,7 +1668,7 @@ Server: Docker Desktop 4.81.0 (232925)
       kind: "prose",
       body: [
         "`docker info` goes further and gives you a snapshot of the whole Docker environment: how many containers and images you have, how much CPU and memory Docker can see, which storage driver it's using, and more:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1768,14 +1782,12 @@ Server:
       kind: "prose",
       body: [
         "If something feels off later on (a container behaving strangely, an image acting different than expected), these two commands are a reasonable first stop, just to confirm you're running the version you think you're running.",
-      ]
+      ],
     },
     {
       kind: "prose",
       heading: "Running a container",
-      body: [
-        "`docker run` is the command that starts a container from an image:",
-      ]
+      body: ["`docker run` is the command that starts a container from an image:"],
     },
     {
       kind: "terminal-animation",
@@ -1793,14 +1805,12 @@ Status: Downloaded newer image for httpd:latest`,
       body: [
         "If the `httpd` (Apache) image isn't already sitting on your machine, Docker fetches it from Docker Hub first, then starts the container.",
         "Run that same command again, and there is no download step this time. Docker already has the image, so it just starts the container immediately.",
-      ]
+      ],
     },
     {
       kind: "prose",
       heading: "Listing containers",
-      body: [
-        "`docker ps` shows you every container that is currently running:",
-      ]
+      body: ["`docker ps` shows you every container that is currently running:"],
     },
     {
       kind: "terminal-animation",
@@ -1814,7 +1824,7 @@ Status: Downloaded newer image for httpd:latest`,
       kind: "prose",
       body: [
         "Stopped and exited containers do not show up here by default. Add `-a` to see the full picture, running and not:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1828,15 +1838,15 @@ b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 min
     {
       kind: "prose",
       body: [
-        "That `-a` flag is one you'll reach for constantly, mainly to answer the question \"where did that container actually go?\"",
-      ]
+        'That `-a` flag is one you\'ll reach for constantly, mainly to answer the question "where did that container actually go?"',
+      ],
     },
     {
       kind: "prose",
       heading: "Stopping and removing containers",
       body: [
         "Stopping a container needs its ID or name, both of which you can grab from `docker ps`:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1849,7 +1859,7 @@ b118cc02a94f   alpine    "/bin/sh"             2 minutes ago    Exited (0) 2 min
       kind: "prose",
       body: [
         "Once stopped, the container still exists, just not running. To get rid of it for good:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1863,16 +1873,14 @@ b118cc02a94f   alpine    "/bin/sh"             3 minutes ago    Exited (0) 3 min
     },
     {
       kind: "prose",
-      body: [
-        "The container will no longer show up anywhere, including in `docker ps -a`.",
-      ]
+      body: ["The container will no longer show up anywhere, including in `docker ps -a`."],
     },
     {
       kind: "prose",
       heading: "Managing images",
       body: [
         "Every image you've pulled or run lives locally until you remove it. See the full list with:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1888,7 +1896,7 @@ alpine:latest              3fd9065eaf02        4.14MB         2.10MB   Unused`,
       kind: "prose",
       body: [
         "If you want to grab an image ahead of time, without starting a container from it right away, `docker pull` does exactly that:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1911,7 +1919,7 @@ What's next:
       kind: "prose",
       body: [
         "And when an image is no longer needed, remove it with `docker rmi`, as long as no container (even a stopped one) still depends on it:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1925,14 +1933,14 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
       kind: "prose",
       body: [
         "If Docker refuses because a container is still referencing that image, remove the container first, then try again.",
-      ]
+      ],
     },
     {
       kind: "prose",
       heading: "Inspecting a container in detail",
       body: [
         "`docker ps` gives you a quick overview. When you need the full picture, every configuration detail Docker knows about a container, use `docker inspect`:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1960,14 +1968,14 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
       kind: "prose",
       body: [
         "This is where you'd look to confirm a container's internal IP address, check what command it actually started with, or see every environment variable it's running with.",
-      ]
+      ],
     },
     {
       kind: "prose",
       heading: "Viewing logs",
       body: [
         "If a container is running in the background (more on that in the next lesson), you can't see its output just by looking at your terminal. `docker logs` shows you what it has printed since it started:",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1982,7 +1990,7 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
       body: [
         "Worth knowing: those timestamps aren't when you happened to run the command, they're whatever the container's own internal clock recorded the moment each line was written. If a container's clock is off (wrong timezone, wrong date entirely), its logs will confidently report the wrong time right along with it. That's a real thing to check before you spend twenty minutes wondering why a log entry looks like it's from the future or the past.",
         "By default, `docker logs` prints what's already been written and then exits, it does not sit there waiting for new lines. If you want to watch a container's output as it happens, the way you'd `tail -f` a log file, add `-f` (follow):",
-      ]
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1998,7 +2006,7 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
       body: [
         "New lines print as the container produces them, in real time, until you press `Ctrl+C` to stop watching. That doesn't stop the container itself, it just ends your view into it, the same idea as detaching without touching the process underneath.",
         "This is usually the very first thing to check whenever a container isn't behaving the way you expect, before touching anything else.",
-      ]
+      ],
     },
     {
       kind: "takeaways",
@@ -2010,101 +2018,103 @@ Deleted: sha256:3fd9065eaf02feaf94d68376da52541925a1b73da7ce3b4a0e5763fa5ffdb2f`
         "`docker images`, `docker pull`, and `docker rmi` list, download, and remove images locally.",
         "`docker inspect` returns full configuration detail for a container as JSON.",
         "`docker logs` shows what it has printed, and `docker logs -f` follows new output live instead of just dumping what's already there.",
-        "Log timestamps come from the container's own internal clock, not your host's, so a container with the wrong system time will produce logs with the wrong time too."
-      ]
+        "Log timestamps come from the container's own internal clock, not your host's, so a container with the wrong system time will produce logs with the wrong time too.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "basic-cmd-version",
-          question: "Check the installed Docker client and server versions to ensure they can talk to each other.",
+          question:
+            "Check the installed Docker client and server versions to ensure they can talk to each other.",
           commandAnswer: ["docker version", "docker --version", "docker -v"],
-          explanation: "`docker version` checks both client and server, while `docker --version` just checks the client."
+          explanation:
+            "`docker version` checks both client and server, while `docker --version` just checks the client.",
         },
         {
           id: "basic-cmd-info",
-          question: "View a high-level summary of your Docker environment (total containers, CPU, memory).",
+          question:
+            "View a high-level summary of your Docker environment (total containers, CPU, memory).",
           commandAnswer: "docker info",
-          explanation: "`docker info` is great for a quick health and capacity check of your Docker daemon."
+          explanation:
+            "`docker info` is great for a quick health and capacity check of your Docker daemon.",
         },
         {
           id: "basic-cmd-ps",
           question: "List only the containers that are currently running.",
           commandAnswer: "docker ps",
-          explanation: "`docker ps` (process status) shows live containers."
+          explanation: "`docker ps` (process status) shows live containers.",
         },
         {
           id: "basic-cmd-ps-a",
           question: "List all containers, including stopped and exited ones.",
           commandAnswer: ["docker ps -a", "docker ps --all"],
-          explanation: "The `-a` flag gives you the full picture."
+          explanation: "The `-a` flag gives you the full picture.",
         },
         {
           id: "basic-cmd-stop",
           question: "Stop a running container named `my-web-app`.",
           commandAnswer: "docker stop my-web-app",
-          explanation: "`docker stop` sends a SIGTERM signal to gracefully halt the container."
+          explanation: "`docker stop` sends a SIGTERM signal to gracefully halt the container.",
         },
         {
           id: "basic-cmd-rm",
           question: "Remove a stopped container named `my-web-app`.",
           commandAnswer: "docker rm my-web-app",
-          explanation: "`docker rm` deletes the container from your system permanently."
+          explanation: "`docker rm` deletes the container from your system permanently.",
         },
         {
           id: "basic-cmd-images",
           question: "List all Docker images stored locally on your machine.",
           commandAnswer: ["docker images", "docker image ls"],
-          explanation: "`docker images` gives you a quick overview of what's taking up disk space."
+          explanation: "`docker images` gives you a quick overview of what's taking up disk space.",
         },
         {
           id: "basic-cmd-pull",
           question: "Download the `nginx` image from Docker Hub without starting a container.",
           commandAnswer: "docker pull nginx",
-          explanation: "`docker pull` fetches the image so it's ready for later use."
+          explanation: "`docker pull` fetches the image so it's ready for later use.",
         },
         {
           id: "basic-cmd-rmi",
           question: "Delete the local `nginx` image.",
           commandAnswer: ["docker rmi nginx", "docker image rm nginx"],
-          explanation: "`docker rmi` removes the image (as long as no containers are using it)."
+          explanation: "`docker rmi` removes the image (as long as no containers are using it).",
         },
         {
           id: "basic-cmd-inspect",
           question: "View the full JSON configuration for a container named `my-web-app`.",
           commandAnswer: "docker inspect my-web-app",
-          explanation: "`docker inspect` dumps every detail, from networking to mounted volumes."
+          explanation: "`docker inspect` dumps every detail, from networking to mounted volumes.",
         },
         {
           id: "basic-cmd-logs",
           question: "View the existing output/logs for a container named `my-web-app`.",
           commandAnswer: "docker logs my-web-app",
-          explanation: "`docker logs` shows you what the process printed since it started."
+          explanation: "`docker logs` shows you what the process printed since it started.",
         },
         {
           id: "basic-cmd-logs-f",
           question: "Follow the logs for a container named `my-web-app` live in real time.",
           commandAnswer: ["docker logs -f my-web-app", "docker logs --follow my-web-app"],
-          explanation: "The `-f` flag turns `docker logs` into a live tailing session."
-        }
-      ]
-    }
-  ]
+          explanation: "The `-f` flag turns `docker logs` into a live tailing session.",
+        },
+      ],
+    },
+  ],
 };
-
 
 const dockerRunCommands: LessonContent = {
   slug: "docker-run-commands",
   title: "Docker Run Commands",
-  subtitle: "`docker run` looks like one simple command, but the flags around it change almost everything about how a container behaves.",
+  subtitle:
+    "`docker run` looks like one simple command, but the flags around it change almost everything about how a container behaves.",
   sections: [
     {
       kind: "prose",
       heading: "Choosing a version with tags",
-      body: [
-        "Left on its own, `docker run` grabs whichever image is tagged `latest`:"
-      ]
+      body: ["Left on its own, `docker run` grabs whichever image is tagged `latest`:"],
     },
     {
       kind: "terminal-animation",
@@ -2117,9 +2127,7 @@ Status: Downloaded newer image for postgres:latest`,
     },
     {
       kind: "prose",
-      body: [
-        "If you need a specific version instead, add a colon and the tag:"
-      ]
+      body: ["If you need a specific version instead, add a colon and the tag:"],
     },
     {
       kind: "terminal-animation",
@@ -2133,15 +2141,15 @@ Status: Downloaded newer image for postgres:13`,
     {
       kind: "prose",
       body: [
-        "Two completely different versions of Postgres, both available on your machine at the same time, each addressed by its own tag. Check an image's Docker Hub page for the full list of tags it publishes before assuming \"latest\" is what you actually want, especially for anything going into production."
-      ]
+        'Two completely different versions of Postgres, both available on your machine at the same time, each addressed by its own tag. Check an image\'s Docker Hub page for the full list of tags it publishes before assuming "latest" is what you actually want, especially for anything going into production.',
+      ],
     },
     {
       kind: "prose",
       heading: "Interactive input: `-i` alone isn't enough",
       body: [
-        "Some programs expect you to type something back. Picture a small script that asks for your name before greeting you:"
-      ]
+        "Some programs expect you to type something back. Picture a small script that asks for your name before greeting you:",
+      ],
     },
     {
       kind: "code",
@@ -2151,8 +2159,8 @@ Status: Downloaded newer image for postgres:13`,
     {
       kind: "prose",
       body: [
-        "Run that same program in a container with no flags, and it never gets the chance to ask:"
-      ]
+        "Run that same program in a container with no flags, and it never gets the chance to ask:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2164,8 +2172,8 @@ Status: Downloaded newer image for postgres:13`,
     {
       kind: "prose",
       body: [
-        "Containers run non-interactively by default, so there's nothing there to receive typed input. Adding just `-i` (keep stdin open) still isn't enough on its own:"
-      ]
+        "Containers run non-interactively by default, so there's nothing there to receive typed input. Adding just `-i` (keep stdin open) still isn't enough on its own:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2178,8 +2186,8 @@ Hello, Riya!`,
     {
       kind: "prose",
       body: [
-        "Notice the prompt text itself never appears, only your typed answer and the final greeting. That's because `-i` keeps input open, but there's no terminal for the prompt to be displayed on. Add `-t` (allocate a pseudo-terminal) alongside it, and the container behaves exactly like running the program directly on your machine:"
-      ]
+        "Notice the prompt text itself never appears, only your typed answer and the final greeting. That's because `-i` keeps input open, but there's no terminal for the prompt to be displayed on. Add `-t` (allocate a pseudo-terminal) alongside it, and the container behaves exactly like running the program directly on your machine:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2192,15 +2200,15 @@ Hello, Riya!`,
     {
       kind: "prose",
       body: [
-        "`-it` together, not just `-i`, is the combination to reach for anytime a container needs to prompt for input or give you an interactive shell."
-      ]
+        "`-it` together, not just `-i`, is the combination to reach for anytime a container needs to prompt for input or give you an interactive shell.",
+      ],
     },
     {
       kind: "prose",
       heading: "Publishing ports so others can reach your app",
       body: [
-        "A container's own IP address (something like `172.17.0.2`) only exists inside Docker's internal network, it isn't reachable from your browser or from anywhere outside the host. Say a small web app inside a container is listening on port 5000:"
-      ]
+        "A container's own IP address (something like `172.17.0.2`) only exists inside Docker's internal network, it isn't reachable from your browser or from anywhere outside the host. Say a small web app inside a container is listening on port 5000:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2212,8 +2220,8 @@ Hello, Riya!`,
     {
       kind: "prose",
       body: [
-        "To reach it from outside the container, map a port on your host to that container port with `-p`:"
-      ]
+        "To reach it from outside the container, map a port on your host to that container port with `-p`:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2225,8 +2233,8 @@ Hello, Riya!`,
     {
       kind: "prose",
       body: [
-        "Now anyone hitting `http://<your-host-ip>:80` gets routed straight to port 5000 inside the container. Nothing stops you from running several instances of the same app side by side, each on its own host port:"
-      ]
+        "Now anyone hitting `http://<your-host-ip>:80` gets routed straight to port 5000 inside the container. Nothing stops you from running several instances of the same app side by side, each on its own host port:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2242,15 +2250,15 @@ $ docker run -p 8001:5000 StackBlueprint/simple-webapp
     {
       kind: "prose",
       body: [
-        "Three separate containers, three separate host ports, all pointing at copies of the same image."
-      ]
+        "Three separate containers, three separate host ports, all pointing at copies of the same image.",
+      ],
     },
     {
       kind: "prose",
       heading: "A word on volumes",
       body: [
-        "A container's filesystem disappears the moment the container is removed. That's fine for a stateless web server, but a real problem for something like a database:"
-      ]
+        "A container's filesystem disappears the moment the container is removed. That's fine for a stateless web server, but a real problem for something like a database:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2261,13 +2269,14 @@ notesdb
 $ docker rm notesdb
 notesdb`,
       buttonLabel: "Run Session",
-      caption: "Data disappears with the container (Note: Your output may vary based on your system.)",
+      caption:
+        "Data disappears with the container (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
       body: [
-        "Every row that database ever wrote is gone along with the container. Mounting a folder from your host into the container with `-v` keeps the data outside the container's own lifecycle:"
-      ]
+        "Every row that database ever wrote is gone along with the container. Mounting a folder from your host into the container with `-v` keeps the data outside the container's own lifecycle:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2279,15 +2288,15 @@ notesdb`,
     {
       kind: "prose",
       body: [
-        "That's the short version. Volumes have enough nuance (bind mounts vs named volumes, permissions, sharing across containers) that they get a full lesson of their own in the Storage chapter. For now, just know the flag exists and roughly what problem it solves."
-      ]
+        "That's the short version. Volumes have enough nuance (bind mounts vs named volumes, permissions, sharing across containers) that they get a full lesson of their own in the Storage chapter. For now, just know the flag exists and roughly what problem it solves.",
+      ],
     },
     {
       kind: "prose",
       heading: "Inspecting a running container for its address",
       body: [
-        "Once a container is up, `docker inspect` is how you find details that don't show up in `docker ps`, like its internal IP address:"
-      ]
+        "Once a container is up, `docker inspect` is how you find details that don't show up in `docker ps`, like its internal IP address:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2314,15 +2323,15 @@ notesdb`,
     {
       kind: "prose",
       body: [
-        "That address is only reachable from inside the Docker host itself, which is exactly why port mapping with `-p` matters for anything you need to reach from outside."
-      ]
+        "That address is only reachable from inside the Docker host itself, which is exactly why port mapping with `-p` matters for anything you need to reach from outside.",
+      ],
     },
     {
       kind: "prose",
       heading: "Checking on a container running in the background",
       body: [
-        "Combine everything above and you get the shape most real containers actually run in: detached, port mapped, and named so you can find it again:"
-      ]
+        "Combine everything above and you get the shape most real containers actually run in: detached, port mapped, and named so you can find it again:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2333,9 +2342,7 @@ notesdb`,
     },
     {
       kind: "prose",
-      body: [
-        "Check that it's actually up, and watch what it has printed so far:"
-      ]
+      body: ["Check that it's actually up, and watch what it has printed so far:"],
     },
     {
       kind: "terminal-animation",
@@ -2351,8 +2358,8 @@ Connected to database`,
     {
       kind: "prose",
       body: [
-        "That's a one-time dump though, it prints what's already there and exits. To watch new lines as they arrive, add `-f`:"
-      ]
+        "That's a one-time dump though, it prints what's already there and exits. To watch new lines as they arrive, add `-f`:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2368,8 +2375,8 @@ Request received: POST /notes`,
       kind: "prose",
       body: [
         "New output streams in live from here on, until you press `Ctrl+C` to stop watching. The container keeps running either way, you're only ending your own view into it.",
-        "If you ever need to reattach directly to a detached container's console instead of just reading its logs, `docker attach` does that, using either the full container ID or a short unique prefix:"
-      ]
+        "If you ever need to reattach directly to a detached container's console instead of just reading its logs, `docker attach` does that, using either the full container ID or a short unique prefix:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2384,8 +2391,8 @@ Connected to database`,
       heading: "Detaching without stopping the container",
       body: [
         "Once you're attached, leaving carelessly can cost you. Pressing `Ctrl+C` doesn't just disconnect your terminal, it sends an interrupt signal straight to the container's main process, which will often stop it entirely. If that process is your web server, you've just taken it down by trying to walk away from it.",
-        "The safe way to detach is a different key combination: `Ctrl+P` followed by `Ctrl+Q`. This disconnects your terminal from the container without touching the process running inside it:"
-      ]
+        "The safe way to detach is a different key combination: `Ctrl+P` followed by `Ctrl+Q`. This disconnects your terminal from the container without touching the process running inside it:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2399,8 +2406,8 @@ read escape sequence`,
     {
       kind: "prose",
       body: [
-        "Press `Ctrl+P`, then `Ctrl+Q`, and you're back at your own shell. Check that the container is still running exactly as it was:"
-      ]
+        "Press `Ctrl+P`, then `Ctrl+Q`, and you're back at your own shell. Check that the container is still running exactly as it was:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -2413,8 +2420,8 @@ a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 minutes ago   Up 2 m
     {
       kind: "prose",
       body: [
-        "Still up, still serving requests, exactly as if you'd never attached at all. You can reattach with `docker attach notes-api` any time you need to check on it again, using `Ctrl+P Ctrl+Q` to step away safely each time."
-      ]
+        "Still up, still serving requests, exactly as if you'd never attached at all. You can reattach with `docker attach notes-api` any time you need to check on it again, using `Ctrl+P Ctrl+Q` to step away safely each time.",
+      ],
     },
     {
       kind: "takeaways",
@@ -2424,8 +2431,8 @@ a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 minutes ago   Up 2 m
         "`-p <host-port>:<container-port>` is what makes a container reachable from outside the Docker host, and you can map several host ports to run multiple instances at once.",
         "Container filesystems are temporary; `-v` mounts a host folder into the container so data survives even after the container is removed (covered fully in the Storage chapter).",
         "`docker inspect` reveals a container's internal IP and configuration; `docker logs` shows its output; `docker attach` reconnects your terminal directly to it.",
-        "To leave an attached container safely, use `Ctrl+P` then `Ctrl+Q`, not `Ctrl+C`. `Ctrl+C` sends an interrupt straight to the container's process and can stop it."
-      ]
+        "To leave an attached container safely, use `Ctrl+P` then `Ctrl+Q`, not `Ctrl+C`. `Ctrl+C` sends an interrupt straight to the container's process and can stop it.",
+      ],
     },
     {
       kind: "quiz",
@@ -2434,54 +2441,74 @@ a1e6d9f27b3c   StackBlueprint/notes-api   "node app.js"   2 minutes ago   Up 2 m
           id: "run-cmd-tag",
           question: "Run the `postgres` image with a specific version tag: `13`.",
           commandAnswer: "docker run postgres:13",
-          explanation: "Adding `:<tag>` specifies which version of the image to run."
+          explanation: "Adding `:<tag>` specifies which version of the image to run.",
         },
         {
           id: "run-cmd-it",
-          question: "Run the `StackBlueprint/name-prompt` image with an interactive pseudo-terminal so it can ask for your name.",
-          commandAnswer: ["docker run -it StackBlueprint/name-prompt", "docker run -ti StackBlueprint/name-prompt", "docker run -i -t StackBlueprint/name-prompt"],
-          explanation: "`-it` keeps stdin open (`-i`) and allocates a pseudo-TTY (`-t`), which is required for interactive prompts."
+          question:
+            "Run the `StackBlueprint/name-prompt` image with an interactive pseudo-terminal so it can ask for your name.",
+          commandAnswer: [
+            "docker run -it StackBlueprint/name-prompt",
+            "docker run -ti StackBlueprint/name-prompt",
+            "docker run -i -t StackBlueprint/name-prompt",
+          ],
+          explanation:
+            "`-it` keeps stdin open (`-i`) and allocates a pseudo-TTY (`-t`), which is required for interactive prompts.",
         },
         {
           id: "run-cmd-port",
-          question: "Run the `StackBlueprint/simple-webapp` image, mapping port 80 on your host to port 5000 inside the container.",
+          question:
+            "Run the `StackBlueprint/simple-webapp` image, mapping port 80 on your host to port 5000 inside the container.",
           commandAnswer: ["docker run -p 80:5000 StackBlueprint/simple-webapp"],
-          explanation: "`-p host_port:container_port` publishes the internal port to your external host interface."
+          explanation:
+            "`-p host_port:container_port` publishes the internal port to your external host interface.",
         },
         {
           id: "run-cmd-volume",
-          question: "Run the `postgres` image, mounting your host directory `/opt/pgdata` into `/var/lib/postgresql/data` inside the container.",
+          question:
+            "Run the `postgres` image, mounting your host directory `/opt/pgdata` into `/var/lib/postgresql/data` inside the container.",
           commandAnswer: ["docker run -v /opt/pgdata:/var/lib/postgresql/data postgres"],
-          explanation: "`-v host_dir:container_dir` persists data by keeping it on the host rather than inside the ephemeral container."
+          explanation:
+            "`-v host_dir:container_dir` persists data by keeping it on the host rather than inside the ephemeral container.",
         },
         {
           id: "run-cmd-combo",
-          question: "Run the `StackBlueprint/notes-api` image in the background (detached), map host port 3000 to container port 3000, and name the container `notes-api`.",
+          question:
+            "Run the `StackBlueprint/notes-api` image in the background (detached), map host port 3000 to container port 3000, and name the container `notes-api`.",
           commandAnswer: [
             "docker run -d -p 3000:3000 --name notes-api StackBlueprint/notes-api",
             "docker run -p 3000:3000 -d --name notes-api StackBlueprint/notes-api",
             "docker run --name notes-api -d -p 3000:3000 StackBlueprint/notes-api",
-            "docker run -dp 3000:3000 --name notes-api StackBlueprint/notes-api"
+            "docker run -dp 3000:3000 --name notes-api StackBlueprint/notes-api",
           ],
-          explanation: "You can combine multiple flags. `-d` runs it in the background, `-p` publishes ports, and `--name` gives it a friendly identifier."
+          explanation:
+            "You can combine multiple flags. `-d` runs it in the background, `-p` publishes ports, and `--name` gives it a friendly identifier.",
         },
         {
           id: "run-cmd-attach",
           question: "Reattach your terminal to a background container named `notes-api`.",
           commandAnswer: "docker attach notes-api",
-          explanation: "`docker attach` connects your local standard input, output, and error streams to a running container."
+          explanation:
+            "`docker attach` connects your local standard input, output, and error streams to a running container.",
         },
         {
           id: "run-cmd-detach",
-          question: "You are attached to a container's console. What keyboard combination safely detaches your terminal without stopping the container? (Type exactly as pressed, separated by a space)",
-          commandAnswer: ["Ctrl+P Ctrl+Q", "ctrl+p ctrl+q", "Ctrl-P Ctrl-Q", "ctrl-p ctrl-q", "Ctrl+P, Ctrl+Q"],
-          explanation: "`Ctrl+P` followed by `Ctrl+Q` escapes the session, leaving the container running in the background."
-        }
-      ]
-    }
-  ]
+          question:
+            "You are attached to a container's console. What keyboard combination safely detaches your terminal without stopping the container? (Type exactly as pressed, separated by a space)",
+          commandAnswer: [
+            "Ctrl+P Ctrl+Q",
+            "ctrl+p ctrl+q",
+            "Ctrl-P Ctrl-Q",
+            "ctrl-p ctrl-q",
+            "Ctrl+P, Ctrl+Q",
+          ],
+          explanation:
+            "`Ctrl+P` followed by `Ctrl+Q` escapes the session, leaving the container running in the background.",
+        },
+      ],
+    },
+  ],
 };
-
 
 import { IMAGES_CONTAINERS_TOPICS } from "./images-containers-content";
 

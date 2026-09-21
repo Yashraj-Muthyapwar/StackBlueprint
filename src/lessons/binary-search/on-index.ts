@@ -29,12 +29,20 @@ function build({ arr, target }: Inputs): Step[] {
       { name: "low", index: low, color: "mint", placement: "above" },
       { name: "high", index: high, color: "amber", placement: "above" },
     ];
-    if (mid !== undefined) out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
+    if (mid !== undefined)
+      out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
     return out;
   };
-  const partFor = (): Step["partitions"] => (low <= high ? [{ from: low, to: high, tone: "mid", label: "search" }] : []);
+  const partFor = (): Step["partitions"] =>
+    low <= high ? [{ from: low, to: high, tone: "mid", label: "search" }] : [];
 
-  steps.push({ line: 1, array: [...arr], pointers: ptrs(), partitions: partFor(), narration: `Search for ${target}.` });
+  steps.push({
+    line: 1,
+    array: [...arr],
+    pointers: ptrs(),
+    partitions: partFor(),
+    narration: `Search for ${target}.`,
+  });
 
   let safety = 0;
   while (low <= high && safety++ < 50) {
@@ -61,13 +69,31 @@ function build({ arr, target }: Inputs): Step[] {
     }
     if (arr[mid] < target) {
       low = mid + 1;
-      steps.push({ line: 7, array: [...arr], pointers: ptrs(), partitions: partFor(), narration: `arr[mid] < target — discard left half, low = ${low}.` });
+      steps.push({
+        line: 7,
+        array: [...arr],
+        pointers: ptrs(),
+        partitions: partFor(),
+        narration: `arr[mid] < target — discard left half, low = ${low}.`,
+      });
     } else {
       high = mid - 1;
-      steps.push({ line: 9, array: [...arr], pointers: ptrs(), partitions: partFor(), narration: `arr[mid] > target — discard right half, high = ${high}.` });
+      steps.push({
+        line: 9,
+        array: [...arr],
+        pointers: ptrs(),
+        partitions: partFor(),
+        narration: `arr[mid] > target — discard right half, high = ${high}.`,
+      });
     }
   }
-  steps.push({ line: 10, array: [...arr], pointers: [], status: "return -1", narration: "Range collapsed — target not present." });
+  steps.push({
+    line: 10,
+    array: [...arr],
+    pointers: [],
+    status: "return -1",
+    narration: "Range collapsed — target not present.",
+  });
   return steps;
 }
 
@@ -75,7 +101,8 @@ export const bsearchIndex: LessonBuilder<Inputs> = {
   slug: "on-index",
   title: "Binary Search on Index",
   subtitle: "Search a sorted array by halving the index range each step.",
-  problem: "Given a sorted array and a target value, return the index of the target if present, otherwise -1, in O(log n) time.",
+  problem:
+    "Given a sorted array and a target value, return the index of the target if present, otherwise -1, in O(log n) time.",
   spotIt: [
     "Sorted array (or rotated sorted) and a target / boundary lookup.",
     "Required complexity is O(log n).",
@@ -94,6 +121,9 @@ export const bsearchIndex: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (sorted)", kind: "intArray" },
     { key: "target", label: "Target", kind: "int" },
   ],
-  validate: ({ arr }) => (isSortedAsc(arr) ? [] : ["Binary search requires a sorted array. On unsorted data it returns wrong indices or -1."]),
+  validate: ({ arr }) =>
+    isSortedAsc(arr)
+      ? []
+      : ["Binary search requires a sorted array. On unsorted data it returns wrong indices or -1."],
   build,
 };

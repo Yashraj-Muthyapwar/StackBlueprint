@@ -51,7 +51,9 @@ function build({ nums, k }: Inputs): Step[] {
     pointers: [],
     secondary: {
       label: "buckets[count] (count → values)",
-      array: buckets.map((b, c) => (b.length ? `${c}:[${b.join(",")}]` : null)).filter(Boolean) as string[],
+      array: buckets
+        .map((b, c) => (b.length ? `${c}:[${b.join(",")}]` : null))
+        .filter(Boolean) as string[],
     },
     narration: "Each bucket holds the values that appeared that many times.",
   });
@@ -60,7 +62,9 @@ function build({ nums, k }: Inputs): Step[] {
     for (const num of buckets[count]) {
       out.push(num);
       const matchIdx: number[] = [];
-      nums.forEach((v, i) => { if (out.includes(v)) matchIdx.push(i); });
+      nums.forEach((v, i) => {
+        if (out.includes(v)) matchIdx.push(i);
+      });
       steps.push({
         line: 12,
         array: arr,

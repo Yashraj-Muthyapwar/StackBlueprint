@@ -124,14 +124,20 @@ export async function buildMarvel({ sourceDir } = {}) {
       throw new Error(`marvel: ${matrixKey} node count does not match matrixObject-alt.json`);
     }
     matrixNodes.forEach((node, index) => {
-      if (expectName(node, `${matrixKey}.nodes[${index}]`) !== expectName(nodes[index], `nodes[${index}]`)) {
+      if (
+        expectName(node, `${matrixKey}.nodes[${index}]`) !==
+        expectName(nodes[index], `nodes[${index}]`)
+      ) {
         throw new Error(`marvel: ${matrixKey} node order does not match matrixObject-alt.json`);
       }
       if (!Number.isInteger(node.count)) {
         throw new Error(`marvel: ${matrixKey}.nodes[${index}].count is not an integer`);
       }
     });
-    countsByKind.set(kind, matrixNodes.map((node) => node.count));
+    countsByKind.set(
+      kind,
+      matrixNodes.map((node) => node.count),
+    );
   }
 
   const characterRows = nodes.map((node, index) => [
@@ -151,7 +157,12 @@ export async function buildMarvel({ sourceDir } = {}) {
           throw new Error(`marvel: ${linksKey}[${index}].${key} is not an integer`);
         }
       }
-      if (link.source < 0 || link.source >= nodes.length || link.target < 0 || link.target >= nodes.length) {
+      if (
+        link.source < 0 ||
+        link.source >= nodes.length ||
+        link.target < 0 ||
+        link.target >= nodes.length
+      ) {
         throw new Error(`marvel: ${linksKey}[${index}] has an out-of-range character index`);
       }
       linkRows.push([kind, link.source, link.target, link.value]);
@@ -182,33 +193,42 @@ export async function buildMarvel({ sourceDir } = {}) {
             catalog,
             titlePosition,
             characterPosition,
-            expectName(character, `${filename}.films[${titlePosition}].characters[${characterPosition}]`),
+            expectName(
+              character,
+              `${filename}.films[${titlePosition}].characters[${characterPosition}]`,
+            ),
             character.mainseries ?? "",
           ]);
         },
       );
 
-      expectArray(title.endCreditsLink ?? [], `${filename}.films[${titlePosition}].endCreditsLink`).forEach(
-        (linkedTitleName, linkPosition) => {
-          if (typeof linkedTitleName !== "string") {
-            throw new Error(`marvel: ${filename}.films[${titlePosition}].endCreditsLink has a non-string entry`);
-          }
-          endCreditRows.push([catalog, titlePosition, linkPosition, linkedTitleName]);
-        },
-      );
+      expectArray(
+        title.endCreditsLink ?? [],
+        `${filename}.films[${titlePosition}].endCreditsLink`,
+      ).forEach((linkedTitleName, linkPosition) => {
+        if (typeof linkedTitleName !== "string") {
+          throw new Error(
+            `marvel: ${filename}.films[${titlePosition}].endCreditsLink has a non-string entry`,
+          );
+        }
+        endCreditRows.push([catalog, titlePosition, linkPosition, linkedTitleName]);
+      });
     });
   }
 
   const definitions = [
-    table("characters", "characters.csv.gz", CHARACTER_COLUMNS, characterRows.length, ["character_id"]),
-    table(
-      "character_links",
-      "character_links.csv.gz",
-      LINK_COLUMNS,
-      linkRows.length,
-      ["network", "source_character_id", "target_character_id"],
-    ),
-    table("screen_titles", "screen_titles.csv.gz", TITLE_COLUMNS, titleRows.length, ["catalog", "title_position"]),
+    table("characters", "characters.csv.gz", CHARACTER_COLUMNS, characterRows.length, [
+      "character_id",
+    ]),
+    table("character_links", "character_links.csv.gz", LINK_COLUMNS, linkRows.length, [
+      "network",
+      "source_character_id",
+      "target_character_id",
+    ]),
+    table("screen_titles", "screen_titles.csv.gz", TITLE_COLUMNS, titleRows.length, [
+      "catalog",
+      "title_position",
+    ]),
     table(
       "screen_title_characters",
       "screen_title_characters.csv.gz",
@@ -216,13 +236,11 @@ export async function buildMarvel({ sourceDir } = {}) {
       titleCharacterRows.length,
       ["catalog", "title_position", "character_position"],
     ),
-    table(
-      "end_credit_links",
-      "end_credit_links.csv.gz",
-      END_CREDIT_COLUMNS,
-      endCreditRows.length,
-      ["catalog", "title_position", "link_position"],
-    ),
+    table("end_credit_links", "end_credit_links.csv.gz", END_CREDIT_COLUMNS, endCreditRows.length, [
+      "catalog",
+      "title_position",
+      "link_position",
+    ]),
   ];
 
   const rowsByTable = new Map([

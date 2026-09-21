@@ -36,7 +36,11 @@ export const sargabilityStages: Stage[] = [
     ],
     table: { name: "orders · date-sorted sample", cols: COLUMNS, rows: ORDERS },
     steps: [
-      st([0, 1], "pending", "The orders are arranged by date in this small Cycle Depot sample. A real table may be stored differently, but an index on order_date is ordered this way."),
+      st(
+        [0, 1],
+        "pending",
+        "The orders are arranged by date in this small Cycle Depot sample. A real table may be stored differently, but an index on order_date is ordered this way.",
+      ),
       st(
         [2, 3],
         pass(isMarch2024),
@@ -45,7 +49,11 @@ export const sargabilityStages: Stage[] = [
           highlightCols: [1],
           side: sidePanel(
             "Sargable predicate",
-            ["Bare column: order_date", "Constants define a tight range", "Possible index range scan"],
+            [
+              "Bare column: order_date",
+              "Constants define a tight range",
+              "Possible index range scan",
+            ],
             "mint",
           ),
         },
@@ -73,7 +81,11 @@ export const sargabilityStages: Stage[] = [
           noteTone: "amber",
           side: sidePanel(
             "Non-sargable shape",
-            ["Function wraps order_date", "Normal order_date index may not help", "Rewrite as a range instead"],
+            [
+              "Function wraps order_date",
+              "Normal order_date index may not help",
+              "Rewrite as a range instead",
+            ],
             "amber",
           ),
         },
@@ -98,7 +110,11 @@ export const sargabilityStages: Stage[] = [
           highlightCols: [1],
           side: sidePanel(
             "Date versus timestamp",
-            ["DATE: equality is often right", "TIMESTAMP: >= start AND < next day", "Do not use a midnight end value"],
+            [
+              "DATE: equality is often right",
+              "TIMESTAMP: >= start AND < next day",
+              "Do not use a midnight end value",
+            ],
             "violet",
           ),
         },

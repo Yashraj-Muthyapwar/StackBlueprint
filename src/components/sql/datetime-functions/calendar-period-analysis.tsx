@@ -20,8 +20,21 @@ export const olistCalendarPeriodStages: Stage[] = [
     ],
     table: { name: "orders", cols: ["order_id", "order_purchase_timestamp"], rows: SUNDAY_ORDER },
     steps: [
-      st([3], "kept", "The WHERE clause selects one real Sunday Olist purchase. It is only choosing the source row, not calculating a calendar value yet."),
-      st([0, 1], "kept", "The two EXTRACT expressions turn that timestamp into the ISO key 2016 / week 35. Keep both pieces together when grouping weekly data.", { rowsOverride: [r(1, "2016", "35")], colsOverride: ["iso_year", "iso_week"], highlightCols: [0, 1] }),
+      st(
+        [3],
+        "kept",
+        "The WHERE clause selects one real Sunday Olist purchase. It is only choosing the source row, not calculating a calendar value yet.",
+      ),
+      st(
+        [0, 1],
+        "kept",
+        "The two EXTRACT expressions turn that timestamp into the ISO key 2016 / week 35. Keep both pieces together when grouping weekly data.",
+        {
+          rowsOverride: [r(1, "2016", "35")],
+          colsOverride: ["iso_year", "iso_week"],
+          highlightCols: [0, 1],
+        },
+      ),
     ],
   },
   {
@@ -36,8 +49,21 @@ export const olistCalendarPeriodStages: Stage[] = [
     ],
     table: { name: "orders", cols: ["order_id", "order_purchase_timestamp"], rows: SUNDAY_ORDER },
     steps: [
-      st([4], "kept", "The same Olist purchase is the input again. This step locates the source row before projecting its reporting fields."),
-      st([0, 1, 2], "kept", "The timestamp falls in quarter 3. ISODOW supplies the sortable value 7, while TO_CHAR supplies the reader-facing label Sunday.", { rowsOverride: [r(1, "3", "7", "Sunday")], colsOverride: ["purchase_quarter", "iso_weekday", "purchase_weekday"], highlightCols: [0, 1, 2] }),
+      st(
+        [4],
+        "kept",
+        "The same Olist purchase is the input again. This step locates the source row before projecting its reporting fields.",
+      ),
+      st(
+        [0, 1, 2],
+        "kept",
+        "The timestamp falls in quarter 3. ISODOW supplies the sortable value 7, while TO_CHAR supplies the reader-facing label Sunday.",
+        {
+          rowsOverride: [r(1, "3", "7", "Sunday")],
+          colsOverride: ["purchase_quarter", "iso_weekday", "purchase_weekday"],
+          highlightCols: [0, 1, 2],
+        },
+      ),
     ],
   },
   {
@@ -53,8 +79,21 @@ export const olistCalendarPeriodStages: Stage[] = [
     ],
     table: { name: "orders", cols: ["order_id", "order_purchase_timestamp"], rows: WEEKDAY_ORDERS },
     steps: [
-      st([3, 4], "kept", "The WHERE clause selects a real Sunday and Monday purchase. Both rows remain before calendar fields are projected."),
-      st([0, 1, 5], "kept", "ISODOW gives Monday the key 1 and Sunday the key 7, so ORDER BY produces business-week order. The formatted names remain display labels.", { rowsOverride: [r(1, "1", "Monday"), r(2, "7", "Sunday")], colsOverride: ["iso_weekday", "purchase_weekday"], highlightCols: [0, 1] }),
+      st(
+        [3, 4],
+        "kept",
+        "The WHERE clause selects a real Sunday and Monday purchase. Both rows remain before calendar fields are projected.",
+      ),
+      st(
+        [0, 1, 5],
+        "kept",
+        "ISODOW gives Monday the key 1 and Sunday the key 7, so ORDER BY produces business-week order. The formatted names remain display labels.",
+        {
+          rowsOverride: [r(1, "1", "Monday"), r(2, "7", "Sunday")],
+          colsOverride: ["iso_weekday", "purchase_weekday"],
+          highlightCols: [0, 1],
+        },
+      ),
     ],
   },
 ];

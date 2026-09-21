@@ -67,9 +67,7 @@ export function MatrixCanvas({ step }: { step: Step }) {
 
   const padding = 48; // px-6 is 24px each side
   const scale =
-    containerWidth > 0 && width > containerWidth - padding
-      ? (containerWidth - padding) / width
-      : 1;
+    containerWidth > 0 && width > containerWidth - padding ? (containerWidth - padding) / width : 1;
 
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-hidden">
@@ -86,7 +84,10 @@ export function MatrixCanvas({ step }: { step: Step }) {
         </div>
       )}
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative origin-center shrink-0" style={{ width, height, transform: `scale(${scale})` }}>
+        <div
+          className="relative origin-center shrink-0"
+          style={{ width, height, transform: `scale(${scale})` }}
+        >
           {/* rect overlay */}
           {rect && (
             <motion.div
@@ -128,7 +129,11 @@ export function MatrixCanvas({ step }: { step: Step }) {
                   animate={{ scale: tone === "match" ? 1.06 : tone === "swap" ? 1.04 : 1 }}
                   transition={{ type: "spring", stiffness: 280, damping: 22 }}
                 >
-                  <motion.span key={String(v) + "-" + k} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <motion.span
+                    key={String(v) + "-" + k}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
                     {v}
                   </motion.span>
                   {ps.length > 0 && (

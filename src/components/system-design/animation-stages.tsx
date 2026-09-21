@@ -51,12 +51,15 @@ const ipClientServer: Stage[] = [
     table: {
       name: "Client State",
       cols: ["layer", "data"],
-      rows: [
-        r(1, "Application", "GET /"),
-      ],
+      rows: [r(1, "Application", "GET /")],
     },
     steps: [
-      st([1, 2, 4], "kept", "Your browser generates an application-level request asking for the webpage.", { noteTone: "violet" }),
+      st(
+        [1, 2, 4],
+        "kept",
+        "Your browser generates an application-level request asking for the webpage.",
+        { noteTone: "violet" },
+      ),
     ],
   },
   {
@@ -82,7 +85,12 @@ const ipClientServer: Stage[] = [
       ],
     },
     steps: [
-      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"), "The OS wraps the payload in an IP packet, adding the source and destination IP addresses so routers know where to send it.", { noteTone: "mint" }),
+      st(
+        [3, 4],
+        (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"),
+        "The OS wraps the payload in an IP packet, adding the source and destination IP addresses so routers know where to send it.",
+        { noteTone: "mint" },
+      ),
     ],
   },
   {
@@ -108,77 +116,78 @@ const ipClientServer: Stage[] = [
       ],
     },
     steps: [
-      st([3, 4], (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"), "The server processes the request and sends a response. The Source and Destination IPs are swapped to route it back to you.", { noteTone: "amber" }),
+      st(
+        [3, 4],
+        (row) => (row.key === 1 || row.key === 2 ? "added" : "kept"),
+        "The server processes the request and sends a response. The Source and Destination IPs are swapped to route it back to you.",
+        { noteTone: "amber" },
+      ),
     ],
-  }
+  },
 ];
 
 const availabilityAnimation: Stage[] = [
   {
     name: "1. Sequential Dependency",
     blurb: "Both must work for the system to be available",
-    sql: [
-      "Client Request",
-      "  └─► [Service A: 99.9%]",
-      "        └─► [Service B: 99.9%]"
-    ],
+    sql: ["Client Request", "  └─► [Service A: 99.9%]", "        └─► [Service B: 99.9%]"],
     table: {
       name: "Total Availability",
       cols: ["Calculation", "Result"],
-      rows: [
-        r(1, "0.999 × 0.999", "99.8001%")
-      ]
+      rows: [r(1, "0.999 × 0.999", "99.8001%")],
     },
     steps: [
-      st([1, 2], "kept", "In sequence, failure probabilities multiply. More components mean higher chance of failure.", { noteTone: "rose" })
-    ]
+      st(
+        [1, 2],
+        "kept",
+        "In sequence, failure probabilities multiply. More components mean higher chance of failure.",
+        { noteTone: "rose" },
+      ),
+    ],
   },
   {
     name: "2. Parallel Redundancy",
     blurb: "Only one needs to work for the system to be available",
-    sql: [
-      "Client Request",
-      "  ├─► [Service A: 99.9%]",
-      "  └─► [Service B: 99.9%]"
-    ],
+    sql: ["Client Request", "  ├─► [Service A: 99.9%]", "  └─► [Service B: 99.9%]"],
     table: {
       name: "Total Availability",
       cols: ["Calculation", "Result"],
-      rows: [
-        r(1, "1 - (0.001 × 0.001)", "99.9999%")
-      ]
+      rows: [r(1, "1 - (0.001 × 0.001)", "99.9999%")],
     },
     steps: [
-      st([1, 2], "kept", "In parallel, both must fail simultaneously for an outage to occur. Redundancy dramatically improves availability.", { noteTone: "mint" })
-    ]
-  }
+      st(
+        [1, 2],
+        "kept",
+        "In parallel, both must fail simultaneously for an outage to occur. Redundancy dramatically improves availability.",
+        { noteTone: "mint" },
+      ),
+    ],
+  },
 ];
 
 const reliabilityAnimation: Stage[] = [
   {
     name: "1. Circuit Breaker: CLOSED",
     blurb: "Traffic flows normally to the healthy dependency",
-    sql: [
-      "Service A ────► Service B (Healthy)",
-      "",
-      "State: [CLOSED]"
-    ],
+    sql: ["Service A ────► Service B (Healthy)", "", "State: [CLOSED]"],
     steps: [
-      st([0], "kept", "Under normal conditions, requests pass through and succeed.", { noteTone: "mint" })
-    ]
+      st([0], "kept", "Under normal conditions, requests pass through and succeed.", {
+        noteTone: "mint",
+      }),
+    ],
   },
   {
     name: "2. Dependency Fails",
     blurb: "Errors spike, causing latency to build up",
-    sql: [
-      "Service A ────► Service B (Failing!)",
-      "  ERROR: Timeout",
-      "",
-      "State: [CLOSED]"
-    ],
+    sql: ["Service A ────► Service B (Failing!)", "  ERROR: Timeout", "", "State: [CLOSED]"],
     steps: [
-      st([0, 1], "kept", "Service B stops responding. Waiting for timeouts consumes resources on Service A, risking cascading failure.", { noteTone: "rose" })
-    ]
+      st(
+        [0, 1],
+        "kept",
+        "Service B stops responding. Waiting for timeouts consumes resources on Service A, risking cascading failure.",
+        { noteTone: "rose" },
+      ),
+    ],
   },
   {
     name: "3. Circuit Breaker: OPEN",
@@ -187,12 +196,17 @@ const reliabilityAnimation: Stage[] = [
       "Service A ──X── Service B (Failing)",
       "  ↳ FALLBACK: Return cached data",
       "",
-      "State: [OPEN]"
+      "State: [OPEN]",
     ],
     steps: [
-      st([0, 1], "kept", "The breaker trips. Subsequent requests fail immediately (or fallback) without waiting, allowing Service B time to recover.", { noteTone: "amber" })
-    ]
-  }
+      st(
+        [0, 1],
+        "kept",
+        "The breaker trips. Subsequent requests fail immediately (or fallback) without waiting, allowing Service B time to recover.",
+        { noteTone: "amber" },
+      ),
+    ],
+  },
 ];
 
 const consistencyAnimation: Stage[] = [
@@ -204,12 +218,19 @@ const consistencyAnimation: Stage[] = [
       "2. Leader replicates X=50 to Followers",
       "3. Followers ACK to Leader",
       "4. Leader ACKs to Client",
-      "5. Client reads X from Follower -> gets 50"
+      "5. Client reads X from Follower -> gets 50",
     ],
     steps: [
-      st([1, 2], "kept", "The write operation blocks until replication is confirmed.", { noteTone: "amber" }),
-      st([4], "kept", "Because of the synchronous coordination, any subsequent read is guaranteed to see the latest data.", { noteTone: "mint" })
-    ]
+      st([1, 2], "kept", "The write operation blocks until replication is confirmed.", {
+        noteTone: "amber",
+      }),
+      st(
+        [4],
+        "kept",
+        "Because of the synchronous coordination, any subsequent read is guaranteed to see the latest data.",
+        { noteTone: "mint" },
+      ),
+    ],
   },
   {
     name: "2. Eventual Consistency",
@@ -218,14 +239,23 @@ const consistencyAnimation: Stage[] = [
       "1. Client writes X=50 to Leader",
       "2. Leader ACKs to Client",
       "3. Client reads X from Follower -> gets OLD_VALUE",
-      "4. Leader replicates X=50 to Followers (later)"
+      "4. Leader replicates X=50 to Followers (later)",
     ],
     steps: [
-      st([1], "kept", "The system replies faster because it doesn't wait for replication.", { noteTone: "mint" }),
-      st([2], "kept", "However, a read can hit a replica that hasn't caught up yet, returning stale data.", { noteTone: "rose" }),
-      st([3], "kept", "Eventually, the replicas converge and all hold the same value.", { noteTone: "violet" })
-    ]
-  }
+      st([1], "kept", "The system replies faster because it doesn't wait for replication.", {
+        noteTone: "mint",
+      }),
+      st(
+        [2],
+        "kept",
+        "However, a read can hit a replica that hasn't caught up yet, returning stale data.",
+        { noteTone: "rose" },
+      ),
+      st([3], "kept", "Eventually, the replicas converge and all hold the same value.", {
+        noteTone: "violet",
+      }),
+    ],
+  },
 ];
 
 const capTheoremAnimation: Stage[] = [
@@ -235,11 +265,16 @@ const capTheoremAnimation: Stage[] = [
     sql: [
       "Node A (Inventory: 1)  <-X->  Node B (Inventory: 1)",
       "",
-      "User requests to buy item from Node B."
+      "User requests to buy item from Node B.",
     ],
     steps: [
-      st([0], "kept", "The nodes are online but cannot communicate with each other. This is the 'P' (Partition) in CAP.", { noteTone: "rose" })
-    ]
+      st(
+        [0],
+        "kept",
+        "The nodes are online but cannot communicate with each other. This is the 'P' (Partition) in CAP.",
+        { noteTone: "rose" },
+      ),
+    ],
   },
   {
     name: "2. CP (Consistency Preferred)",
@@ -247,11 +282,16 @@ const capTheoremAnimation: Stage[] = [
     sql: [
       "Node A (Inventory: 1)  <-X->  Node B (Inventory: 1)",
       "",
-      "Node B: 'I cannot verify with A. Purchase REJECTED.'"
+      "Node B: 'I cannot verify with A. Purchase REJECTED.'",
     ],
     steps: [
-      st([2], "kept", "Sacrifice Availability: B rejects the request to ensure we don't accidentally oversell the last item.", { noteTone: "amber" })
-    ]
+      st(
+        [2],
+        "kept",
+        "Sacrifice Availability: B rejects the request to ensure we don't accidentally oversell the last item.",
+        { noteTone: "amber" },
+      ),
+    ],
   },
   {
     name: "3. AP (Availability Preferred)",
@@ -259,12 +299,17 @@ const capTheoremAnimation: Stage[] = [
     sql: [
       "Node A (Inventory: 1)  <-X->  Node B (Inventory: 1)",
       "",
-      "Node B: 'I will assume we have it. Purchase ACCEPTED.'"
+      "Node B: 'I will assume we have it. Purchase ACCEPTED.'",
     ],
     steps: [
-      st([2], "kept", "Sacrifice Consistency: B accepts the request. We stay available, but if A also sold the item, we have an oversell conflict to resolve later.", { noteTone: "violet" })
-    ]
-  }
+      st(
+        [2],
+        "kept",
+        "Sacrifice Consistency: B accepts the request. We stay available, but if A also sold the item, we have an oversell conflict to resolve later.",
+        { noteTone: "violet" },
+      ),
+    ],
+  },
 ];
 
 const pacelcTheoremAnimation: Stage[] = [
@@ -276,24 +321,29 @@ const pacelcTheoremAnimation: Stage[] = [
       "              │",
       "           (Ocean)",
       "              │",
-      "           [EU Region]"
+      "           [EU Region]",
     ],
     steps: [
-      st([1, 2, 3], "kept", "During normal operation, the network round-trip between regions takes time.", { noteTone: "violet" })
-    ]
+      st(
+        [1, 2, 3],
+        "kept",
+        "During normal operation, the network round-trip between regions takes time.",
+        { noteTone: "violet" },
+      ),
+    ],
   },
   {
     name: "2. Optimizing for Consistency (EC)",
     blurb: "Wait for the long round trip",
-    sql: [
-      "Client ──► [US] ──► [EU] ──► [US] ──► ACK",
-      "",
-      "Latency: HIGH",
-      "Consistency: STRONG"
-    ],
+    sql: ["Client ──► [US] ──► [EU] ──► [US] ──► ACK", "", "Latency: HIGH", "Consistency: STRONG"],
     steps: [
-      st([0], "kept", "Synchronous replication forces the client to wait for the cross-ocean trip, hurting latency but ensuring EU is instantly consistent.", { noteTone: "amber" })
-    ]
+      st(
+        [0],
+        "kept",
+        "Synchronous replication forces the client to wait for the cross-ocean trip, hurting latency but ensuring EU is instantly consistent.",
+        { noteTone: "amber" },
+      ),
+    ],
   },
   {
     name: "3. Optimizing for Latency (EL)",
@@ -303,12 +353,17 @@ const pacelcTheoremAnimation: Stage[] = [
       "            ↳ ──► [EU] (Background)",
       "",
       "Latency: LOW",
-      "Consistency: EVENTUAL"
+      "Consistency: EVENTUAL",
     ],
     steps: [
-      st([0, 1], "kept", "Asynchronous replication gives the client a fast response, but EU will be temporarily stale.", { noteTone: "mint" })
-    ]
-  }
+      st(
+        [0, 1],
+        "kept",
+        "Asynchronous replication gives the client a fast response, but EU will be temporarily stale.",
+        { noteTone: "mint" },
+      ),
+    ],
+  },
 ];
 
 const systemDesignEvolution: Stage[] = [
@@ -319,19 +374,24 @@ const systemDesignEvolution: Stage[] = [
       "Client ──► Application ──► Database",
       "",
       "Constraint: modest traffic",
-      "Decision: keep the architecture small"
+      "Decision: keep the architecture small",
     ],
     table: {
       name: "What the baseline owns",
       cols: ["component", "responsibility"],
       rows: [
         r(1, "Application", "Request handling and business logic"),
-        r(2, "Database", "Durable application data")
-      ]
+        r(2, "Database", "Durable application data"),
+      ],
     },
     steps: [
-      st([0, 2, 3], "kept", "A simple request path is easier to operate and reason about. Keep it until a concrete constraint says otherwise.", { noteTone: "mint" })
-    ]
+      st(
+        [0, 2, 3],
+        "kept",
+        "A simple request path is easier to operate and reason about. Keep it until a concrete constraint says otherwise.",
+        { noteTone: "mint" },
+      ),
+    ],
   },
   {
     name: "2. Reads become the bottleneck",
@@ -340,19 +400,24 @@ const systemDesignEvolution: Stage[] = [
       "Client ──► Application ──► Cache ──► Database",
       "                         │ hit",
       "                         └────► return quickly",
-      "Constraint: high repeated-read traffic"
+      "Constraint: high repeated-read traffic",
     ],
     table: {
       name: "New trade-off",
       cols: ["gain", "cost"],
       rows: [
         r(1, "Lower read latency", "Invalidation rules"),
-        r(2, "Less database load", "Stale data is possible")
-      ]
+        r(2, "Less database load", "Stale data is possible"),
+      ],
     },
     steps: [
-      st([0, 1, 2, 3], (row) => row.key === 1 ? "added" : "kept", "A cache is justified by a read bottleneck. It speeds repeated reads, but the design must define when data can be stale.", { noteTone: "amber" })
-    ]
+      st(
+        [0, 1, 2, 3],
+        (row) => (row.key === 1 ? "added" : "kept"),
+        "A cache is justified by a read bottleneck. It speeds repeated reads, but the design must define when data can be stale.",
+        { noteTone: "amber" },
+      ),
+    ],
   },
   {
     name: "3. Work arrives in bursts",
@@ -361,20 +426,25 @@ const systemDesignEvolution: Stage[] = [
       "Client ──► Application ──► Database",
       "                 │",
       "                 └──► Queue ──► Worker",
-      "Constraint: bursty, slow background work"
+      "Constraint: bursty, slow background work",
     ],
     table: {
       name: "New trade-off",
       cols: ["gain", "cost"],
       rows: [
         r(1, "Absorb bursts", "Results can be delayed"),
-        r(2, "Protect request latency", "Backlog and retry handling")
-      ]
+        r(2, "Protect request latency", "Backlog and retry handling"),
+      ],
     },
     steps: [
-      st([1, 2, 3, 4], (row) => row.key === 1 ? "added" : "kept", "A queue decouples background work such as notifications or media processing. The request can finish sooner, while a worker processes the job later.", { noteTone: "violet" })
-    ]
-  }
+      st(
+        [1, 2, 3, 4],
+        (row) => (row.key === 1 ? "added" : "kept"),
+        "A queue decouples background work such as notifications or media processing. The request can finish sooner, while a worker processes the job later.",
+        { noteTone: "violet" },
+      ),
+    ],
+  },
 ];
 
 export const STAGES_REGISTRY: Record<string, Stage[]> = {

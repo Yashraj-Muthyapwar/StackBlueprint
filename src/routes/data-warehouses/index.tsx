@@ -15,7 +15,7 @@ export const Route = createFileRoute("/data-warehouses/")({
 
 function DataWarehousesIndex() {
   const category = CATEGORY_BY_SLUG["data-warehouses"]!;
-  
+
   return (
     <TrackIndexLayout
       title={category.title}

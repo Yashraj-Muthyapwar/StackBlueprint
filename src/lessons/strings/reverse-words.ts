@@ -96,7 +96,8 @@ export const reverseWords: LessonBuilder<Inputs> = {
   slug: "reverse-words",
   title: "Two Pointers — Reverse Words In-Place",
   subtitle: "Reverse the whole array, then reverse each word — O(n) time, O(1) extra space.",
-  problem: "Given a string of words separated by single spaces, reverse the order of the words in place (treating string as a char array).",
+  problem:
+    "Given a string of words separated by single spaces, reverse the order of the words in place (treating string as a char array).",
   spotIt: [
     "In-place reversal of segments inside a buffer (chars / bytes).",
     "Question asks for O(1) extra space, no extra arrays.",

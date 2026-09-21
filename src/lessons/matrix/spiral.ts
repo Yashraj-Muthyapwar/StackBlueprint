@@ -51,20 +51,28 @@ function build({ matrix }: Inputs): Step[] {
     });
   };
 
-  steps.push({ line: 4, matrix, narration: `Spiral over ${rows}×${cols}. Bounds: top, bottom, left, right.` });
+  steps.push({
+    line: 4,
+    matrix,
+    narration: `Spiral over ${rows}×${cols}. Bounds: top, bottom, left, right.`,
+  });
 
   let safety = 0;
   while (top <= bottom && left <= right && safety++ < 400) {
-    for (let col = left; col <= right; col++) push(6, top, col, `→ (${top},${col}) = ${matrix[top][col]}`);
+    for (let col = left; col <= right; col++)
+      push(6, top, col, `→ (${top},${col}) = ${matrix[top][col]}`);
     top++;
-    for (let row = top; row <= bottom; row++) push(9, row, right, `↓ (${row},${right}) = ${matrix[row][right]}`);
+    for (let row = top; row <= bottom; row++)
+      push(9, row, right, `↓ (${row},${right}) = ${matrix[row][right]}`);
     right--;
     if (top <= bottom) {
-      for (let col = right; col >= left; col--) push(13, bottom, col, `← (${bottom},${col}) = ${matrix[bottom][col]}`);
+      for (let col = right; col >= left; col--)
+        push(13, bottom, col, `← (${bottom},${col}) = ${matrix[bottom][col]}`);
       bottom--;
     }
     if (left <= right) {
-      for (let row = bottom; row >= top; row--) push(17, row, left, `↑ (${row},${left}) = ${matrix[row][left]}`);
+      for (let row = bottom; row >= top; row--)
+        push(17, row, left, `↑ (${row},${left}) = ${matrix[row][left]}`);
       left++;
     }
   }
@@ -83,7 +91,8 @@ export const spiral: LessonBuilder<Inputs> = {
   slug: "spiral-traversal",
   title: "Matrix Spiral Traversal",
   subtitle: "Four shrinking bounds — top, bottom, left, right — peel the matrix layer by layer.",
-  problem: "Given an m×n matrix, return all its elements in spiral order, starting from the top-left and moving inward.",
+  problem:
+    "Given an m×n matrix, return all its elements in spiral order, starting from the top-left and moving inward.",
   spotIt: [
     "'Print / collect the matrix in spiral order from outside in.'",
     "Output must follow a layered traversal pattern.",
@@ -106,6 +115,7 @@ export const spiral: LessonBuilder<Inputs> = {
     ],
   },
   inputs: [{ key: "matrix", label: "Matrix", kind: "intMatrix" }],
-  validate: ({ matrix }) => (matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : []),
+  validate: ({ matrix }) =>
+    matrix.length === 0 || matrix[0]?.length === 0 ? ["Matrix is empty."] : [],
   build,
 };

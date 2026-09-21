@@ -43,18 +43,18 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
     (e.target as HTMLElement).releasePointerCapture(e.pointerId);
 
     // Keep it within vertical screen bounds
-    const element = (e.target as HTMLElement).closest('.fixed');
+    const element = (e.target as HTMLElement).closest(".fixed");
     if (element) {
       const rect = element.getBoundingClientRect();
       let newY = position.y;
-      
+
       // Clamp to top/bottom with 24px padding
       if (rect.top < 24) {
         newY = position.y + (24 - rect.top);
       } else if (rect.bottom > window.innerHeight - 24) {
         newY = position.y - (rect.bottom - (window.innerHeight - 24));
       }
-      
+
       setPosition({ x: 0, y: newY });
     }
   };
@@ -63,17 +63,19 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
     if (items.length === 0) return;
 
     const handleScroll = () => {
-      const headingElements = items.map(item => ({
-        item,
-        el: document.getElementById(item.targetId)
-      })).filter(x => x.el !== null);
+      const headingElements = items
+        .map((item) => ({
+          item,
+          el: document.getElementById(item.targetId),
+        }))
+        .filter((x) => x.el !== null);
 
       if (headingElements.length === 0) return;
 
       const scrollPosition = window.scrollY + 120; // Offset for navbar and padding
 
       let currentActiveId = headingElements[0].item.id;
-      
+
       for (const { item, el } of headingElements) {
         const top = el!.getBoundingClientRect().top + window.scrollY;
         if (top <= scrollPosition) {
@@ -106,7 +108,7 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
@@ -116,7 +118,7 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
       className="fixed bottom-6 right-6 z-50 flex flex-col items-end lg:bottom-auto lg:top-32"
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
-        touchAction: "none"
+        touchAction: "none",
       }}
       onMouseEnter={() => !isDragging && setIsHovered(true)}
       onMouseLeave={() => !isDragging && setIsHovered(false)}
@@ -136,7 +138,9 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerUp}
         >
-          <div className={`flex items-center gap-2 overflow-hidden whitespace-nowrap transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0 w-0"}`}>
+          <div
+            className={`flex items-center gap-2 overflow-hidden whitespace-nowrap transition-opacity duration-300 ${isHovered ? "opacity-100" : "opacity-0 w-0"}`}
+          >
             <GripHorizontal className="size-3.5 text-muted-foreground/50 mr-1" />
             <span className="text-xs font-mono font-medium uppercase tracking-wider text-mint select-none">
               Table of Contents
@@ -155,7 +159,7 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
           <div className="relative flex flex-col gap-1 p-3 pt-0">
             {/* Connecting Timeline Line */}
             <div className="absolute bottom-6 left-[31px] top-5 w-px bg-hairline/60 -z-10" />
-            
+
             {items.map((item) => {
               const isActive = activeId === item.id;
               return (
@@ -174,8 +178,8 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
                   <div className="flex h-5 w-4 shrink-0 items-center justify-center relative">
                     <div
                       className={`h-1.5 w-1.5 rounded-full transition-all duration-300 ${
-                        isActive 
-                          ? "bg-mint scale-125 shadow-[0_0_8px_rgba(45,212,191,0.5)]" 
+                        isActive
+                          ? "bg-mint scale-125 shadow-[0_0_8px_rgba(45,212,191,0.5)]"
                           : "bg-muted-foreground/40 scale-75 group-hover/btn:scale-100 group-hover/btn:bg-foreground/50"
                       }`}
                     />

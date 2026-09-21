@@ -31,12 +31,20 @@ function build({ x }: Inputs): Step[] {
       { name: "low", index: low, color: "mint", placement: "above" },
       { name: "high", index: high, color: "amber", placement: "above" },
     ];
-    if (mid !== undefined) out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
+    if (mid !== undefined)
+      out.push({ name: "mid", index: mid, color: "violet", placement: "below" });
     return out;
   };
-  const partFor = (): Step["partitions"] => (low <= high ? [{ from: low, to: high, tone: "mid", label: "feasible?" }] : []);
+  const partFor = (): Step["partitions"] =>
+    low <= high ? [{ from: low, to: high, tone: "mid", label: "feasible?" }] : [];
 
-  steps.push({ line: 3, array: [...space], pointers: ptrs(), partitions: partFor(), narration: `Search the answer space [0, ${x}].` });
+  steps.push({
+    line: 3,
+    array: [...space],
+    pointers: ptrs(),
+    partitions: partFor(),
+    narration: `Search the answer space [0, ${x}].`,
+  });
   let safety = 0;
   while (low <= high && safety++ < 64) {
     const mid = (low + high) >> 1;
@@ -54,10 +62,23 @@ function build({ x }: Inputs): Step[] {
     if (ok) {
       ans = mid;
       low = mid + 1;
-      steps.push({ line: 7, array: [...space], pointers: ptrs(), partitions: partFor(), status: `ans=${ans}`, narration: `Feasible — record ans=${ans} and push low to ${low}.` });
+      steps.push({
+        line: 7,
+        array: [...space],
+        pointers: ptrs(),
+        partitions: partFor(),
+        status: `ans=${ans}`,
+        narration: `Feasible — record ans=${ans} and push low to ${low}.`,
+      });
     } else {
       high = mid - 1;
-      steps.push({ line: 9, array: [...space], pointers: ptrs(), partitions: partFor(), narration: `Infeasible — pull high to ${high}.` });
+      steps.push({
+        line: 9,
+        array: [...space],
+        pointers: ptrs(),
+        partitions: partFor(),
+        narration: `Infeasible — pull high to ${high}.`,
+      });
     }
   }
   steps.push({
@@ -74,8 +95,10 @@ function build({ x }: Inputs): Step[] {
 export const bsearchAnswer: LessonBuilder<Inputs> = {
   slug: "on-answer",
   title: "Binary Search on Answer",
-  subtitle: "When the answer space is monotonic (feasible / infeasible), binary search the answer itself.",
-  problem: "Given a non-negative integer x, compute the integer square root: the largest integer r such that r*r <= x.",
+  subtitle:
+    "When the answer space is monotonic (feasible / infeasible), binary search the answer itself.",
+  problem:
+    "Given a non-negative integer x, compute the integer square root: the largest integer r such that r*r <= x.",
   spotIt: [
     "'Minimum / maximum value such that a check passes' with a clear feasible/infeasible boundary.",
     "You can write a fast feasibility check but can't enumerate all answers.",

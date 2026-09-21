@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowLeft,
@@ -49,7 +44,11 @@ export function WorkingWithJSONCustomAnimation() {
   }, []);
 
   return (
-    <div className="relative z-10 flex w-full flex-col" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <div
+      className="relative z-10 flex w-full flex-col"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="relative flex h-[600px] w-full min-w-0 items-center justify-center overflow-hidden px-4 py-7 lg:px-8 lg:py-9">
         <AnimatePresence mode="wait">
           {step === 0 && <DecodeScene key="decode" />}
@@ -88,11 +87,7 @@ export function WorkingWithJSONCustomAnimation() {
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
             aria-label={playing ? "Pause animation" : "Play animation"}
           >
-            {playing ? (
-              <Pause className="size-3.5" />
-            ) : (
-              <Play className="size-3.5" />
-            )}
+            {playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
           </button>
 
           <button
@@ -122,7 +117,10 @@ function DecodeScene() {
       <CodeCard accent="sky">
         <Muted># JSON text → Python values</Muted>
         <br />
-        text = <StringToken>'{"{"}"name":"Ana","active":true,"note":null{"}"}'</StringToken>
+        text ={" "}
+        <StringToken>
+          '{"{"}"name":"Ana","active":true,"note":null{"}"}'
+        </StringToken>
         <br />
         user = json.<FunctionToken>loads</FunctionToken>(text)
       </CodeCard>
@@ -152,9 +150,7 @@ function DecodeScene() {
               className="flex size-20 flex-col items-center justify-center rounded-2xl border border-sky-500/25 bg-sky-500/[0.07]"
             >
               <Braces className="mb-1 size-5 text-sky-500" />
-              <span className="font-mono text-[10px] font-bold text-sky-500">
-                loads()
-              </span>
+              <span className="font-mono text-[10px] font-bold text-sky-500">loads()</span>
             </motion.div>
 
             <motion.div
@@ -168,31 +164,17 @@ function DecodeScene() {
 
           <Workbench title="Python object" icon={<Braces className="size-4" />} tone="emerald">
             <div className="min-h-[190px] rounded-xl border border-emerald-500/20 bg-emerald-500/[0.05] p-4">
-              <PythonValueRow
-                delay={0.8}
-                keyName='"name"'
-                value='"Ana"'
-                type="str"
-              />
-              <PythonValueRow
-                delay={1.25}
-                keyName='"active"'
-                value="True"
-                type="bool"
-              />
-              <PythonValueRow
-                delay={1.7}
-                keyName='"note"'
-                value="None"
-                type="NoneType"
-              />
+              <PythonValueRow delay={0.8} keyName='"name"' value='"Ana"' type="str" />
+              <PythonValueRow delay={1.25} keyName='"active"' value="True" type="bool" />
+              <PythonValueRow delay={1.7} keyName='"note"' value="None" type="NoneType" />
             </div>
           </Workbench>
         </div>
       </div>
 
       <MemoryLine delay={2.05}>
-        <b>true → True</b> and <b>null → None</b>. After parsing, you work with normal Python values.
+        <b>true → True</b> and <b>null → None</b>. After parsing, you work with normal Python
+        values.
       </MemoryLine>
     </Scene>
   );
@@ -203,8 +185,7 @@ function JsonTextRows() {
     <>
       <div>{"{"}</div>
       <div className="pl-4">
-        <span className="text-amber">"name"</span>:{" "}
-        <span className="text-amber">"Ana"</span>,
+        <span className="text-amber">"name"</span>: <span className="text-amber">"Ana"</span>,
       </div>
       <div className="pl-4">
         <span className="text-amber">"active"</span>:{" "}
@@ -272,8 +253,10 @@ function EncodeScene() {
       <CodeCard accent="emerald">
         <Muted># Python values → JSON text</Muted>
         <br />
-        user = {"{"}<StringToken>"name"</StringToken>: <StringToken>"Ana"</StringToken>,{" "}
-        <StringToken>"active"</StringToken>: <BoolToken>True</BoolToken>{"}"}
+        user = {"{"}
+        <StringToken>"name"</StringToken>: <StringToken>"Ana"</StringToken>,{" "}
+        <StringToken>"active"</StringToken>: <BoolToken>True</BoolToken>
+        {"}"}
         <br />
         text = json.<FunctionToken>dumps</FunctionToken>(user)
       </CodeCard>
@@ -287,24 +270,9 @@ function EncodeScene() {
               <SmallLabel>PYTHON VALUES</SmallLabel>
 
               <div className="space-y-2">
-                <PackingChip
-                  delay={0.15}
-                  left='"name"'
-                  right='"Ana"'
-                  tone="emerald"
-                />
-                <PackingChip
-                  delay={0.45}
-                  left='"active"'
-                  right="True"
-                  tone="emerald"
-                />
-                <PackingChip
-                  delay={0.75}
-                  left='"score"'
-                  right="9.5"
-                  tone="emerald"
-                />
+                <PackingChip delay={0.15} left='"name"' right='"Ana"' tone="emerald" />
+                <PackingChip delay={0.45} left='"active"' right="True" tone="emerald" />
+                <PackingChip delay={0.75} left='"score"' right="9.5" tone="emerald" />
               </div>
             </div>
 
@@ -321,9 +289,7 @@ function EncodeScene() {
                   className="text-center"
                 >
                   <Sparkles className="mx-auto mb-2 size-5 text-violet" />
-                  <div className="font-mono text-[10px] font-bold text-violet">
-                    dumps()
-                  </div>
+                  <div className="font-mono text-[10px] font-bold text-violet">dumps()</div>
                 </motion.div>
               </motion.div>
 
@@ -362,7 +328,9 @@ function EncodeScene() {
                 className="mt-3 flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2 font-mono text-[10px] text-muted-foreground"
               >
                 <FileText className="size-4 text-sky-500" />
-                <span>type(text) → <b className="text-foreground">str</b></span>
+                <span>
+                  type(text) → <b className="text-foreground">str</b>
+                </span>
               </motion.div>
             </div>
           </div>
@@ -396,9 +364,7 @@ function PackingChip({
     >
       <span className="text-amber">{left}</span>
       <ArrowRight className="size-3.5 text-muted-foreground" />
-      <span className={tone === "emerald" ? "font-bold text-emerald-500" : ""}>
-        {right}
-      </span>
+      <span className={tone === "emerald" ? "font-bold text-emerald-500" : ""}>{right}</span>
     </motion.div>
   );
 }
@@ -413,11 +379,11 @@ function FourFunctionsScene() {
       <CodeCard accent="amber">
         <Muted># The only question: STRING or FILE?</Muted>
         <br />
-        json.<FunctionToken>loads</FunctionToken>(text) &nbsp;&nbsp;
-        json.<FunctionToken>load</FunctionToken>(file)
+        json.<FunctionToken>loads</FunctionToken>(text) &nbsp;&nbsp; json.
+        <FunctionToken>load</FunctionToken>(file)
         <br />
-        json.<FunctionToken>dumps</FunctionToken>(data) &nbsp;&nbsp;
-        json.<FunctionToken>dump</FunctionToken>(data, file)
+        json.<FunctionToken>dumps</FunctionToken>(data) &nbsp;&nbsp; json.
+        <FunctionToken>dump</FunctionToken>(data, file)
       </CodeCard>
 
       <div className="w-full max-w-4xl">
@@ -426,9 +392,7 @@ function FourFunctionsScene() {
         <div className="relative mx-auto h-[305px] max-w-3xl">
           <div className="absolute left-1/2 top-1/2 z-20 flex size-36 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/[0.07] shadow-sm">
             <Braces className="mb-2 size-7 text-emerald-500" />
-            <div className="font-mono text-xs font-bold text-emerald-500">
-              PYTHON
-            </div>
+            <div className="font-mono text-xs font-bold text-emerald-500">PYTHON</div>
             <div className="mt-1 font-mono text-[9px] text-muted-foreground">
               dict · list · str...
             </div>
@@ -448,31 +412,11 @@ function FourFunctionsScene() {
             note="open text file"
           />
 
-          <FunctionArrow
-            from="left"
-            direction="toward"
-            label="loads()"
-            delay={0.35}
-          />
-          <FunctionArrow
-            from="left"
-            direction="away"
-            label="dumps()"
-            delay={0.95}
-          />
+          <FunctionArrow from="left" direction="toward" label="loads()" delay={0.35} />
+          <FunctionArrow from="left" direction="away" label="dumps()" delay={0.95} />
 
-          <FunctionArrow
-            from="right"
-            direction="toward"
-            label="load()"
-            delay={0.65}
-          />
-          <FunctionArrow
-            from="right"
-            direction="away"
-            label="dump()"
-            delay={1.25}
-          />
+          <FunctionArrow from="right" direction="toward" label="load()" delay={0.65} />
+          <FunctionArrow from="right" direction="away" label="dump()" delay={1.25} />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.85 }}
@@ -508,8 +452,9 @@ function Door({
       initial={{ opacity: 0, x: side === "left" ? -12 : 12 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.12 }}
-      className={`absolute top-1/2 w-44 -translate-y-1/2 rounded-2xl border border-hairline bg-surface p-4 text-center shadow-sm ${side === "left" ? "left-0" : "right-0"
-        }`}
+      className={`absolute top-1/2 w-44 -translate-y-1/2 rounded-2xl border border-hairline bg-surface p-4 text-center shadow-sm ${
+        side === "left" ? "left-0" : "right-0"
+      }`}
     >
       <div className="mx-auto mb-2 flex size-11 items-center justify-center rounded-xl bg-surface-2 text-sky-500">
         {icon}
@@ -533,31 +478,22 @@ function FunctionArrow({
 }) {
   const leftSide = from === "left";
 
-  const position =
-    leftSide
-      ? direction === "toward"
-        ? "left-[23%] top-[37%]"
-        : "left-[23%] top-[61%]"
-      : direction === "toward"
-        ? "right-[23%] top-[37%]"
-        : "right-[23%] top-[61%]";
+  const position = leftSide
+    ? direction === "toward"
+      ? "left-[23%] top-[37%]"
+      : "left-[23%] top-[61%]"
+    : direction === "toward"
+      ? "right-[23%] top-[37%]"
+      : "right-[23%] top-[61%]";
 
   let arrow: ReactNode;
 
   if (leftSide) {
     arrow =
-      direction === "toward" ? (
-        <ArrowRight className="size-4" />
-      ) : (
-        <ArrowLeft className="size-4" />
-      );
+      direction === "toward" ? <ArrowRight className="size-4" /> : <ArrowLeft className="size-4" />;
   } else {
     arrow =
-      direction === "toward" ? (
-        <ArrowLeft className="size-4" />
-      ) : (
-        <ArrowRight className="size-4" />
-      );
+      direction === "toward" ? <ArrowLeft className="size-4" /> : <ArrowRight className="size-4" />;
   }
 
   return (
@@ -622,10 +558,11 @@ function FormattingScene() {
       <CodeCard accent="violet">
         <Muted># Same data. Only the whitespace changes.</Muted>
         <br />
-        pretty = json.<FunctionToken>dumps</FunctionToken>(data, indent=<NumberToken>2</NumberToken>)
+        pretty = json.<FunctionToken>dumps</FunctionToken>(data, indent=<NumberToken>2</NumberToken>
+        )
         <br />
-        compact = json.<FunctionToken>dumps</FunctionToken>(
-        data, separators=(<StringToken>","</StringToken>, <StringToken>":"</StringToken>))
+        compact = json.<FunctionToken>dumps</FunctionToken>( data, separators=(
+        <StringToken>","</StringToken>, <StringToken>":"</StringToken>))
       </CodeCard>
 
       <div className="w-full max-w-3xl">
@@ -659,10 +596,9 @@ function FormattingScene() {
                 key={mode}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className={`rounded-full px-2.5 py-1 font-mono text-[9px] font-bold ${pretty
-                  ? "bg-violet/10 text-violet"
-                  : "bg-amber/10 text-amber"
-                  }`}
+                className={`rounded-full px-2.5 py-1 font-mono text-[9px] font-bold ${
+                  pretty ? "bg-violet/10 text-violet" : "bg-amber/10 text-amber"
+                }`}
               >
                 {pretty ? "HUMAN FRIENDLY" : "SPACE EFFICIENT"}
               </motion.span>
@@ -739,13 +675,7 @@ function FormattingScene() {
   );
 }
 
-function DataPill({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function DataPill({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2/55 px-3 py-1.5 font-mono text-[10px]">
       <span className="text-muted-foreground">{label}</span>
@@ -754,23 +684,16 @@ function DataPill({
   );
 }
 
-function FormatModePill({
-  active,
-  label,
-}: {
-  active: boolean;
-  label: string;
-}) {
+function FormatModePill({ active, label }: { active: boolean; label: string }) {
   return (
     <motion.div
       animate={{
         opacity: active ? 1 : 0.42,
         scale: active ? 1 : 0.97,
       }}
-      className={`rounded-lg px-3 py-1.5 font-mono text-[9px] font-bold ${active
-        ? "bg-surface text-foreground shadow-sm"
-        : "text-muted-foreground"
-        }`}
+      className={`rounded-lg px-3 py-1.5 font-mono text-[9px] font-bold ${
+        active ? "bg-surface text-foreground shadow-sm" : "text-muted-foreground"
+      }`}
     >
       {label}
     </motion.div>
@@ -791,8 +714,7 @@ function ValidationScene() {
         <br />
         <span className="text-mint font-medium">if</span>{" "}
         <span className="text-blue-400">type</span>(settings[<StringToken>"version"</StringToken>]){" "}
-        <span className="text-mint font-medium">is not</span>{" "}
-        <NumberToken>int</NumberToken>: ...
+        <span className="text-mint font-medium">is not</span> <NumberToken>int</NumberToken>: ...
       </CodeCard>
 
       <div className="w-full max-w-4xl">
@@ -804,8 +726,7 @@ function ValidationScene() {
               <div className="rounded-xl border border-sky-500/25 bg-sky-500/[0.06] p-4 font-mono text-[11px] leading-5">
                 {"{"}
                 <br />
-                &nbsp;&nbsp;"version":{" "}
-                <span className="font-bold text-amber">"one"</span>,
+                &nbsp;&nbsp;"version": <span className="font-bold text-amber">"one"</span>,
                 <br />
                 &nbsp;&nbsp;"columns": ["name"]
                 <br />
@@ -829,7 +750,7 @@ function ValidationScene() {
               question="Is the JSON syntax valid?"
               success
               answer="YES"
-              detail='Quotes, braces and commas are valid.'
+              detail="Quotes, braces and commas are valid."
             />
 
             <Checkpoint
@@ -889,37 +810,36 @@ function Checkpoint({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className={`rounded-2xl border p-4 ${success
-        ? "border-emerald-500/25 bg-emerald-500/[0.05]"
-        : "border-rose-500/25 bg-rose-500/[0.05]"
-        }`}
+      className={`rounded-2xl border p-4 ${
+        success
+          ? "border-emerald-500/25 bg-emerald-500/[0.05]"
+          : "border-rose-500/25 bg-rose-500/[0.05]"
+      }`}
     >
-      <div className={`mb-3 flex items-center gap-2 font-mono text-[10px] font-bold ${success ? "text-emerald-500" : "text-rose-500"
-        }`}>
+      <div
+        className={`mb-3 flex items-center gap-2 font-mono text-[10px] font-bold ${
+          success ? "text-emerald-500" : "text-rose-500"
+        }`}
+      >
         {icon}
         {title}
       </div>
 
-      <div className="font-mono text-[10px] leading-5 text-muted-foreground">
-        {question}
-      </div>
+      <div className="font-mono text-[10px] leading-5 text-muted-foreground">{question}</div>
 
       <motion.div
         initial={{ scale: 0.82, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: delay + 0.28, type: "spring" }}
-        className={`my-3 flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-[11px] font-bold ${success
-          ? "bg-emerald-500/10 text-emerald-500"
-          : "bg-rose-500/10 text-rose-500"
-          }`}
+        className={`my-3 flex items-center gap-2 rounded-lg px-3 py-2 font-mono text-[11px] font-bold ${
+          success ? "bg-emerald-500/10 text-emerald-500" : "bg-rose-500/10 text-rose-500"
+        }`}
       >
         {success ? <Check className="size-4" /> : <X className="size-4" />}
         {answer}
       </motion.div>
 
-      <div className="font-mono text-[9px] leading-4 text-muted-foreground">
-        {detail}
-      </div>
+      <div className="font-mono text-[9px] leading-4 text-muted-foreground">{detail}</div>
     </motion.div>
   );
 }
@@ -977,9 +897,7 @@ function SafeSaveScene() {
                 <div className="flex min-w-0 items-center gap-2">
                   <FileJson className="size-5 shrink-0 text-muted-foreground" />
                   <div className="min-w-0">
-                    <div className="truncate font-mono text-[11px] font-bold">
-                      settings.json
-                    </div>
+                    <div className="truncate font-mono text-[11px] font-bold">settings.json</div>
                     <div className="mt-0.5 font-mono text-[9px] text-muted-foreground">
                       {"{"}"theme":"light"{"}"}
                     </div>
@@ -1026,12 +944,7 @@ function SafeSaveScene() {
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-teal-500/10">
                     <motion.div
                       animate={{
-                        width:
-                          phase === 0
-                            ? "0%"
-                            : phase === 1
-                              ? "55%"
-                              : "100%",
+                        width: phase === 0 ? "0%" : phase === 1 ? "55%" : "100%",
                       }}
                       transition={{ duration: 0.45 }}
                       className="h-full rounded-full bg-teal-500"
@@ -1133,8 +1046,9 @@ function SaveStatus({
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -4 }}
-      className={`flex items-center gap-2 text-center font-mono text-[10px] ${tone === "teal" ? "text-teal-500" : "text-muted-foreground"
-        }`}
+      className={`flex items-center gap-2 text-center font-mono text-[10px] ${
+        tone === "teal" ? "text-teal-500" : "text-muted-foreground"
+      }`}
     >
       {icon}
       {children}
@@ -1202,10 +1116,11 @@ function JsonLinesScene() {
                         scale: selected ? 1 : 0.985,
                       }}
                       transition={{ duration: 0.22 }}
-                      className={`flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 ${selected
-                        ? "border-teal-500/35 bg-teal-500/[0.08]"
-                        : "border-hairline bg-surface"
-                        }`}
+                      className={`flex min-w-0 items-center gap-2 rounded-lg border px-2.5 py-2 ${
+                        selected
+                          ? "border-teal-500/35 bg-teal-500/[0.08]"
+                          : "border-hairline bg-surface"
+                      }`}
                     >
                       <motion.span
                         animate={{
@@ -1311,13 +1226,7 @@ function JsonLinesScene() {
   );
 }
 
-function JsonlAction({
-  number,
-  label,
-}: {
-  number: string;
-  label: string;
-}) {
+function JsonlAction({ number, label }: { number: string; label: string }) {
   return (
     <div className="flex items-center justify-center gap-2 rounded-lg bg-surface-2/50 px-2 py-2 font-mono text-[9px]">
       <span className="flex size-5 items-center justify-center rounded-full bg-teal-500/10 font-bold text-teal-500">
@@ -1390,8 +1299,7 @@ function Workbench({
   tone: "sky" | "emerald";
   children: ReactNode;
 }) {
-  const toneClass =
-    tone === "sky" ? "text-sky-500" : "text-emerald-500";
+  const toneClass = tone === "sky" ? "text-sky-500" : "text-emerald-500";
 
   return (
     <div className="rounded-2xl border border-hairline bg-surface p-5 shadow-sm">
@@ -1406,13 +1314,7 @@ function Workbench({
   );
 }
 
-function MemoryLine({
-  children,
-  delay,
-}: {
-  children: ReactNode;
-  delay: number;
-}) {
+function MemoryLine({ children, delay }: { children: ReactNode; delay: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 7 }}

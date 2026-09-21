@@ -32,7 +32,10 @@ function build({ arr, k }: Inputs): Step[] {
     label: `deque (indices, values decreasing)  ·  output`,
     array: window_dq.map((i) => `${i}:${arr[i]}`),
     pointers: window_dq.length
-      ? [{ name: "front", index: 0, color: "mint" as const }, { name: "back", index: window_dq.length - 1, color: "amber" as const }]
+      ? [
+          { name: "front", index: 0, color: "mint" as const },
+          { name: "back", index: window_dq.length - 1, color: "amber" as const },
+        ]
       : [],
   });
 
@@ -92,7 +95,7 @@ function build({ arr, k }: Inputs): Step[] {
       secondary: secondary(),
       narration: `Push index ${right} to the back of the deque.`,
     });
-    
+
     steps.push({
       line: 8,
       array: [...arr],
@@ -112,7 +115,7 @@ function build({ arr, k }: Inputs): Step[] {
         narration: `Index ${out0} fell out of the window. Pop it from the front.`,
       });
     }
-    
+
     steps.push({
       line: 10,
       array: [...arr],
@@ -150,7 +153,8 @@ export const monotonicWindow: LessonBuilder<Inputs> = {
   slug: "monotonic-window",
   title: "Sliding Window — Monotonic Deque",
   subtitle: "Maintain a deque of decreasing values so the front is always the window's max.",
-  problem: "Given an array and a window size k, return the maximum of every contiguous subarray of length k in O(n) time.",
+  problem:
+    "Given an array and a window size k, return the maximum of every contiguous subarray of length k in O(n) time.",
   spotIt: [
     "'Max / min in every window of size k' or 'next greater element in a window'.",
     "You need O(n) and a plain heap gives O(n log k) \u2014 deque is the trick.",

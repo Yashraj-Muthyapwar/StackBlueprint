@@ -1,13 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Database,
-  FunctionSquare,
-  Box,
-  GitBranch,
-  FileText,
-  Zap,
-  Code2,
-} from "lucide-react";
+import { Database, FunctionSquare, Box, GitBranch, FileText, Zap, Code2 } from "lucide-react";
 import pythonLogo from "@/images/logos/python-logo.png";
 import { TrackIndexLayout } from "@/components/learning-paths/TrackIndexLayout";
 
@@ -83,15 +75,45 @@ export const PYTHON_SECTIONS = [
         locked: false,
         path: "/python/oop",
         lessons: [
-          { slug: "classes-and-objects", title: "Classes and Objects", icon: Box, path: "/python/oop/classes-and-objects" },
-          { slug: "instance-and-class-attributes", title: "Instance and Class Attributes", icon: Box, path: "/python/oop/instance-and-class-attributes" },
-          { slug: "types-of-methods", title: "Types of Methods", icon: Box, path: "/python/oop/types-of-methods" },
-          { slug: "encapsulation", title: "Encapsulation", icon: Box, path: "/python/oop/encapsulation" },
+          {
+            slug: "classes-and-objects",
+            title: "Classes and Objects",
+            icon: Box,
+            path: "/python/oop/classes-and-objects",
+          },
+          {
+            slug: "instance-and-class-attributes",
+            title: "Instance and Class Attributes",
+            icon: Box,
+            path: "/python/oop/instance-and-class-attributes",
+          },
+          {
+            slug: "types-of-methods",
+            title: "Types of Methods",
+            icon: Box,
+            path: "/python/oop/types-of-methods",
+          },
+          {
+            slug: "encapsulation",
+            title: "Encapsulation",
+            icon: Box,
+            path: "/python/oop/encapsulation",
+          },
           { slug: "inheritance", title: "Inheritance", icon: Box, path: "/python/oop/inheritance" },
-          { slug: "polymorphism", title: "Polymorphism", icon: Box, path: "/python/oop/polymorphism" },
+          {
+            slug: "polymorphism",
+            title: "Polymorphism",
+            icon: Box,
+            path: "/python/oop/polymorphism",
+          },
           { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
           { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
-          { slug: "special-methods", title: "Special Methods", icon: Code2, path: "/python/oop/special-methods" },
+          {
+            slug: "special-methods",
+            title: "Special Methods",
+            icon: Code2,
+            path: "/python/oop/special-methods",
+          },
         ],
       },
       {
@@ -101,17 +123,72 @@ export const PYTHON_SECTIONS = [
         locked: false,
         path: "/python/file-handling",
         lessons: [
-          { slug: "file-basics", title: "File Basics", icon: FileText, path: "/python/file-handling/file-basics" },
-          { slug: "working-with-paths", title: "Working with Paths", icon: FileText, path: "/python/file-handling/working-with-paths" },
-          { slug: "reading-files", title: "Reading Files", icon: FileText, path: "/python/file-handling/reading-files" },
-          { slug: "writing-files", title: "Writing Files", icon: FileText, path: "/python/file-handling/writing-files" },
-          { slug: "file-modes", title: "File Modes", icon: FileText, path: "/python/file-handling/file-modes" },
-          { slug: "file-methods", title: "File Methods", icon: FileText, path: "/python/file-handling/file-methods" },
-          { slug: "os-module", title: "OS Module", icon: FileText, path: "/python/file-handling/os-module" },
-          { slug: "working-with-json", title: "Working with JSON", icon: FileText, path: "/python/file-handling/working-with-json" },
-          { slug: "working-with-csv", title: "Working with CSV", icon: FileText, path: "/python/file-handling/working-with-csv" },
-          { slug: "pickle-module", title: "Pickle Module", icon: FileText, path: "/python/file-handling/pickle-module" },
-          { slug: "shutil-module", title: "Shutil Module", icon: FileText, path: "/python/file-handling/shutil-module" },
+          {
+            slug: "file-basics",
+            title: "File Basics",
+            icon: FileText,
+            path: "/python/file-handling/file-basics",
+          },
+          {
+            slug: "working-with-paths",
+            title: "Working with Paths",
+            icon: FileText,
+            path: "/python/file-handling/working-with-paths",
+          },
+          {
+            slug: "reading-files",
+            title: "Reading Files",
+            icon: FileText,
+            path: "/python/file-handling/reading-files",
+          },
+          {
+            slug: "writing-files",
+            title: "Writing Files",
+            icon: FileText,
+            path: "/python/file-handling/writing-files",
+          },
+          {
+            slug: "file-modes",
+            title: "File Modes",
+            icon: FileText,
+            path: "/python/file-handling/file-modes",
+          },
+          {
+            slug: "file-methods",
+            title: "File Methods",
+            icon: FileText,
+            path: "/python/file-handling/file-methods",
+          },
+          {
+            slug: "os-module",
+            title: "OS Module",
+            icon: FileText,
+            path: "/python/file-handling/os-module",
+          },
+          {
+            slug: "working-with-json",
+            title: "Working with JSON",
+            icon: FileText,
+            path: "/python/file-handling/working-with-json",
+          },
+          {
+            slug: "working-with-csv",
+            title: "Working with CSV",
+            icon: FileText,
+            path: "/python/file-handling/working-with-csv",
+          },
+          {
+            slug: "pickle-module",
+            title: "Pickle Module",
+            icon: FileText,
+            path: "/python/file-handling/pickle-module",
+          },
+          {
+            slug: "shutil-module",
+            title: "Shutil Module",
+            icon: FileText,
+            path: "/python/file-handling/shutil-module",
+          },
         ],
       },
     ],

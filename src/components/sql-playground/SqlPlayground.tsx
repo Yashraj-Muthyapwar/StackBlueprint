@@ -465,7 +465,7 @@ export function SqlPlayground() {
     targetChoice: "workspace" | "current",
   ) => {
     let targetDataset = dataset;
-    let targetEngine = engine;
+    const targetEngine = engine;
 
     if (targetChoice === "workspace" && dataset !== "my-workspace") {
       targetDataset = "my-workspace";

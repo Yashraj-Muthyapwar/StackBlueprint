@@ -69,9 +69,7 @@ function emitManifest(results) {
         `  bytes: ${r.bytes},\n` +
         `  tables: [\n${tables}\n  ],\n` +
         `  foreignKeys: [\n${fks}\n  ],\n` +
-        (r.setup
-          ? `  setup: ${JSON.stringify(r.setup, null, 2).replace(/\n/g, "\n  ")},\n`
-          : "") +
+        (r.setup ? `  setup: ${JSON.stringify(r.setup, null, 2).replace(/\n/g, "\n  ")},\n` : "") +
         `};`
       );
     })

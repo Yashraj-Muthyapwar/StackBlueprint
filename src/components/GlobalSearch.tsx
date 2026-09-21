@@ -2,7 +2,12 @@ import * as React from "react";
 import { Search } from "lucide-react";
 import { useRouter } from "@tanstack/react-router";
 import {
-  CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
 } from "@/components/ui/command";
 import { buildSearchItems, searchItems, type SearchItem } from "@/lib/lesson-search";
 
@@ -31,7 +36,11 @@ export function GlobalSearch() {
     return [...m.entries()];
   }, [results]);
 
-  const go = (path: string) => { setOpen(false); setQuery(""); router.navigate({ to: path }); };
+  const go = (path: string) => {
+    setOpen(false);
+    setQuery("");
+    router.navigate({ to: path });
+  };
   const [isMac, setIsMac] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
@@ -42,26 +51,40 @@ export function GlobalSearch() {
 
   return (
     <>
-      <button type="button" aria-label="Search" onClick={() => setOpen(true)}
-        className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground md:hidden">
+      <button
+        type="button"
+        aria-label="Search"
+        onClick={() => setOpen(true)}
+        className="flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground md:hidden"
+      >
         <Search className="size-5" />
       </button>
-      <button type="button" onClick={() => setOpen(true)}
-        className="hidden items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors md:flex border-hairline bg-background text-muted-foreground hover:bg-accent hover:text-foreground dark:border-mint/20 dark:bg-mint/10 dark:text-mint/90 dark:hover:bg-mint/20 dark:hover:text-mint">
-        <Search className="size-4" /><span>Search…</span>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="hidden items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors md:flex border-hairline bg-background text-muted-foreground hover:bg-accent hover:text-foreground dark:border-mint/20 dark:bg-mint/10 dark:text-mint/90 dark:hover:bg-mint/20 dark:hover:text-mint"
+      >
+        <Search className="size-4" />
+        <span>Search…</span>
         <kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 font-mono text-[10px] font-medium dark:bg-mint/20 dark:border-mint/30 dark:text-mint">
-          <span className={mounted ? "opacity-100" : "opacity-0"}>
-            {isMac ? "⌘ K" : "Ctrl K"}
-          </span>
+          <span className={mounted ? "opacity-100" : "opacity-0"}>{isMac ? "⌘ K" : "Ctrl K"}</span>
         </kbd>
       </button>
 
       <CommandDialog open={open} onOpenChange={setOpen} shouldFilter={false}>
-        <CommandInput placeholder="Search lessons and topics…" value={query} onValueChange={setQuery} />
+        <CommandInput
+          placeholder="Search lessons and topics…"
+          value={query}
+          onValueChange={setQuery}
+        />
         <CommandList>
-          {query.trim() === ""
-            ? <div className="py-6 text-center text-sm text-muted-foreground">Start typing to search every lesson and topic.</div>
-            : <CommandEmpty>No results for “{query}”.</CommandEmpty>}
+          {query.trim() === "" ? (
+            <div className="py-6 text-center text-sm text-muted-foreground">
+              Start typing to search every lesson and topic.
+            </div>
+          ) : (
+            <CommandEmpty>No results for “{query}”.</CommandEmpty>
+          )}
           {groups.map(([track, items]) => (
             <CommandGroup key={track} heading={track}>
               {items.map((item) => (
@@ -69,7 +92,8 @@ export function GlobalSearch() {
                   <div className="flex flex-col gap-0.5">
                     <span className="font-medium text-foreground">{item.title}</span>
                     <span className="text-xs text-muted-foreground">
-                      {item.context}{item.kind === "topic" ? " · topic" : ""}
+                      {item.context}
+                      {item.kind === "topic" ? " · topic" : ""}
                     </span>
                   </div>
                 </CommandItem>

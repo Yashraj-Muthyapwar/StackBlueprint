@@ -48,7 +48,8 @@ const booleanLogic: LessonContent = {
       kind: "image",
       src: booleanLogicImg,
       alt: "Cycle Depot products flowing through AND, OR, and NOT filters into the rows each condition keeps.",
-      caption: "AND requires both checks, OR accepts either check, and NOT excludes the rows that match its condition.",
+      caption:
+        "AND requires both checks, OR accepts either check, and NOT excludes the rows that match its condition.",
     },
     {
       kind: "code",
@@ -72,7 +73,8 @@ ORDER BY id;`,
     {
       kind: "animation",
       variant: "q-bool",
-      caption: "See the same Cycle Depot rows pass through AND, OR, NOT, and a parenthesized combined condition.",
+      caption:
+        "See the same Cycle Depot rows pass through AND, OR, NOT, and a parenthesized combined condition.",
     },
     {
       kind: "prose",
@@ -117,7 +119,8 @@ ORDER BY id;`,
     {
       kind: "playground-practice",
       title: "Build a featured product list",
-      prompt: "Return name, category, price, and in_stock for Road Bikes with at least 90 units in stock, or products that are not Road Bikes and cost at least 4000. Use AND, OR, NOT, and parentheses in the checked Cycle Depot exercise.",
+      prompt:
+        "Return name, category, price, and in_stock for Road Bikes with at least 90 units in stock, or products that are not Road Bikes and cost at least 4000. Use AND, OR, NOT, and parentheses in the checked Cycle Depot exercise.",
       tables: ["products"],
       successCheck: "3 rows with the columns name, category, price, and in_stock.",
       href: "/sql-playground?practice=cycle-depot-featured-products-logic",
@@ -136,7 +139,8 @@ ORDER BY id;`,
       questions: [
         {
           id: "boolean-logic-and",
-          question: "Which operator should you use when a product must be a Road Bike and have at least 90 units in stock?",
+          question:
+            "Which operator should you use when a product must be a Road Bike and have at least 90 units in stock?",
           options: ["OR", "AND", "NOT", "DISTINCT"],
           correctIndex: 1,
           explanation: "AND requires both conditions to be true for the same row.",
@@ -163,7 +167,8 @@ ORDER BY id;`,
             "They remove duplicate rows.",
           ],
           correctIndex: 1,
-          explanation: "Parentheses make the intended logical groups explicit, rather than relying on precedence alone.",
+          explanation:
+            "Parentheses make the intended logical groups explicit, rather than relying on precedence alone.",
         },
       ],
     },
@@ -174,7 +179,8 @@ ORDER BY id;`,
 const inBetween: LessonContent = {
   slug: "in-between",
   title: "Set, Range & Array Filtering",
-  subtitle: "Match a list with IN, an inclusive range with BETWEEN, exclude values with NOT IN, and read PostgreSQL arrays with @>.",
+  subtitle:
+    "Match a list with IN, an inclusive range with BETWEEN, exclude values with NOT IN, and read PostgreSQL arrays with @>.",
   sections: [
     {
       kind: "prose",
@@ -188,7 +194,8 @@ const inBetween: LessonContent = {
       kind: "image",
       src: rangeSetFiltersImg,
       alt: "Cycle Depot products flowing through IN, BETWEEN, NOT IN, and PostgreSQL array containment filters.",
-      caption: "IN checks a list, BETWEEN checks an inclusive range, NOT IN excludes a list, and PostgreSQL @> checks that an array contains requested values.",
+      caption:
+        "IN checks a list, BETWEEN checks an inclusive range, NOT IN excludes a list, and PostgreSQL @> checks that an array contains requested values.",
     },
     {
       kind: "code",
@@ -213,7 +220,8 @@ ORDER BY id;`,
     {
       kind: "animation",
       variant: "q-range",
-      caption: "Watch real Cycle Depot products pass through IN, BETWEEN, NOT IN, and a separate PostgreSQL @> array-containment example.",
+      caption:
+        "Watch real Cycle Depot products pass through IN, BETWEEN, NOT IN, and a separate PostgreSQL @> array-containment example.",
     },
     {
       kind: "prose",
@@ -288,7 +296,8 @@ WHERE tags @> ARRAY['road'];`,
     {
       kind: "playground-practice",
       title: "Build a premium bike range",
-      prompt: "Return name, category, and price for Road, Mountain, or City Bikes priced from 2000 to 4000, but exclude City Bikes. Use IN, NOT IN, and BETWEEN in the checked Cycle Depot exercise.",
+      prompt:
+        "Return name, category, and price for Road, Mountain, or City Bikes priced from 2000 to 4000, but exclude City Bikes. Use IN, NOT IN, and BETWEEN in the checked Cycle Depot exercise.",
       tables: ["products"],
       successCheck: "3 rows with the columns name, category, and price.",
       href: "/sql-playground?practice=cycledepot-premium-bike-range",
@@ -307,7 +316,8 @@ WHERE tags @> ARRAY['road'];`,
       questions: [
         {
           id: "range-set-in",
-          question: "Which condition keeps products in either the Road Bikes or Mountain Bikes category?",
+          question:
+            "Which condition keeps products in either the Road Bikes or Mountain Bikes category?",
           options: [
             "category BETWEEN 'Road Bikes' AND 'Mountain Bikes'",
             "category IN ('Road Bikes', 'Mountain Bikes')",
@@ -334,7 +344,8 @@ WHERE tags @> ARRAY['road'];`,
             "Whether tags is sorted by road",
           ],
           correctIndex: 1,
-          explanation: "@> is the PostgreSQL array-contains operator: the left array must contain every value requested on the right.",
+          explanation:
+            "@> is the PostgreSQL array-contains operator: the left array must contain every value requested on the right.",
         },
       ],
     },
@@ -345,7 +356,8 @@ WHERE tags @> ARRAY['road'];`,
 const likeIlike: LessonContent = {
   slug: "like-ilike",
   title: "Pattern Matching (LIKE / ILIKE)",
-  subtitle: "Search Cycle Depot product names with %, _, ILIKE, NOT LIKE, and safe literal matching.",
+  subtitle:
+    "Search Cycle Depot product names with %, _, ILIKE, NOT LIKE, and safe literal matching.",
   sections: [
     {
       kind: "prose",
@@ -359,7 +371,8 @@ const likeIlike: LessonContent = {
       kind: "image",
       src: patternMatchingImg,
       alt: "Cycle Depot product-name searches showing LIKE Volt percent matching two Volt products, LIKE percent Road percent matching three products containing Road, and ILIKE volt e hyphen percent matching the two Volt products regardless of case.",
-      caption: "Prefix, contains, and case-insensitive patterns can return different product sets. The contains search includes Shellcap Road Helmet because the word Road occurs in its name.",
+      caption:
+        "Prefix, contains, and case-insensitive patterns can return different product sets. The contains search includes Shellcap Road Helmet because the word Road occurs in its name.",
     },
     {
       kind: "code",
@@ -382,7 +395,8 @@ ORDER BY id;`,
     {
       kind: "animation",
       variant: "q-like",
-      caption: "Follow the same Cycle Depot names through prefix, contains, single-character, case-insensitive, and exclusion patterns.",
+      caption:
+        "Follow the same Cycle Depot names through prefix, contains, single-character, case-insensitive, and exclusion patterns.",
     },
     {
       kind: "table",
@@ -392,8 +406,16 @@ ORDER BY id;`,
         ["'Volt%'", "Starts with Volt", "Volt E-Commuter and Volt E-Cargo"],
         ["'%Road%'", "Contains Road anywhere", "Both Meridian Road bikes and Shellcap Road Helmet"],
         ["'%Helmet'", "Ends with Helmet", "Shellcap Road Helmet"],
-        ["'Volt _-%'", "One character after Volt, then a hyphen and any ending", "Both Volt E- products"],
-        ["'Road\\_Bikes' ESCAPE '\\'", "A literal underscore, not a wildcard", "The text Road_Bikes"],
+        [
+          "'Volt _-%'",
+          "One character after Volt, then a hyphen and any ending",
+          "Both Volt E- products",
+        ],
+        [
+          "'Road\\_Bikes' ESCAPE '\\'",
+          "A literal underscore, not a wildcard",
+          "The text Road_Bikes",
+        ],
       ],
     },
     {
@@ -432,9 +454,21 @@ WHERE LOWER(name) LIKE 'volt%';`,
       caption: "How wildcard position changes the usual B-tree opportunity",
       headers: ["Pattern", "Can an ordinary name B-tree seek by prefix?", "What to remember"],
       rows: [
-        ["name LIKE 'Volt%'", "Usually, with a compatible index and collation", "The first letters are known."],
-        ["name LIKE '%Road%'", "No", "The first letters are unknown, so a prefix seek is unavailable."],
-        ["name ILIKE 'volt%'", "Not with a normal case-sensitive name index", "Use a case-insensitive or functional index when this search is important."],
+        [
+          "name LIKE 'Volt%'",
+          "Usually, with a compatible index and collation",
+          "The first letters are known.",
+        ],
+        [
+          "name LIKE '%Road%'",
+          "No",
+          "The first letters are unknown, so a prefix seek is unavailable.",
+        ],
+        [
+          "name ILIKE 'volt%'",
+          "Not with a normal case-sensitive name index",
+          "Use a case-insensitive or functional index when this search is important.",
+        ],
       ],
     },
     {
@@ -498,7 +532,8 @@ WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
     {
       kind: "playground-practice",
       title: "Search the Road product catalog",
-      prompt: "Return name and category for product names that contain road without letter-case sensitivity, but exclude any name containing Helmet. Use ILIKE and NOT LIKE in the checked Cycle Depot exercise.",
+      prompt:
+        "Return name and category for product names that contain road without letter-case sensitivity, but exclude any name containing Helmet. Use ILIKE and NOT LIKE in the checked Cycle Depot exercise.",
       tables: ["products"],
       successCheck: "2 rows with the columns name and category.",
       href: "/sql-playground?practice=cycledepot-road-product-search",
@@ -518,16 +553,23 @@ WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
         {
           id: "pattern-matching-percent",
           question: "What does the % wildcard represent in a LIKE pattern?",
-          options: ["Exactly one character", "Zero or more characters", "A numeric value", "Any SQL keyword"],
+          options: [
+            "Exactly one character",
+            "Zero or more characters",
+            "A numeric value",
+            "Any SQL keyword",
+          ],
           correctIndex: 1,
           explanation: "% can match any sequence of characters, including an empty sequence.",
         },
         {
           id: "pattern-matching-underscore",
-          question: "Which pattern matches Volt E-Commuter and Volt E-Cargo by requiring exactly one character before the hyphen?",
+          question:
+            "Which pattern matches Volt E-Commuter and Volt E-Cargo by requiring exactly one character before the hyphen?",
           options: ["'Volt %'", "'Volt _-%'", "'Volt __-%'", "'%Volt E-'"],
           correctIndex: 1,
-          explanation: "_ matches the one E character, the hyphen is literal, and % accepts the remaining text.",
+          explanation:
+            "_ matches the one E character, the hyphen is literal, and % accepts the remaining text.",
         },
         {
           id: "pattern-matching-ilike",
@@ -551,7 +593,8 @@ WHERE label LIKE 'Road\\_Bikes' ESCAPE '\\';`,
             "Use NOT LIKE 'Road_Bikes'.",
           ],
           correctIndex: 1,
-          explanation: "The escape character tells LIKE to treat the following underscore as ordinary text.",
+          explanation:
+            "The escape character tells LIKE to treat the following underscore as ordinary text.",
         },
       ],
     },
@@ -576,7 +619,8 @@ const nullPitfalls: LessonContent = {
       kind: "image",
       src: nullThreeValuedLogicImg,
       alt: "Cycle Depot customer records flowing through city equals NULL, city IS NULL, and city not equal to Austin conditions. The equals NULL condition produces UNKNOWN and keeps no rows, while IS NULL keeps the missing-city rows.",
-      caption: "WHERE keeps only TRUE. A comparison with NULL produces UNKNOWN, so use IS NULL or IS NOT NULL when you mean to test whether data is missing.",
+      caption:
+        "WHERE keeps only TRUE. A comparison with NULL produces UNKNOWN, so use IS NULL or IS NOT NULL when you mean to test whether data is missing.",
     },
     {
       kind: "code",
@@ -608,7 +652,8 @@ ORDER BY id;`,
     {
       kind: "animation",
       variant: "q-null3vl",
-      caption: "Watch the same Cycle Depot customers fall through = NULL, pass IS NULL, disappear from a normal comparison, and receive a display label with COALESCE.",
+      caption:
+        "Watch the same Cycle Depot customers fall through = NULL, pass IS NULL, disappear from a normal comparison, and receive a display label with COALESCE.",
     },
     {
       kind: "prose",
@@ -666,7 +711,8 @@ ORDER BY id;`,
     {
       kind: "playground-practice",
       title: "Find customers without a city",
-      prompt: "Return id, name, and email for Cycle Depot customers whose city is missing. Use IS NULL, not = NULL, in the checked data-quality exercise.",
+      prompt:
+        "Return id, name, and email for Cycle Depot customers whose city is missing. Use IS NULL, not = NULL, in the checked data-quality exercise.",
       tables: ["customers"],
       successCheck: "5 rows with the columns id, name, and email.",
       href: "/sql-playground?practice=cycledepot-customers-without-city",
@@ -712,7 +758,8 @@ ORDER BY id;`,
             "Sorts cities alphabetically.",
           ],
           correctIndex: 1,
-          explanation: "COALESCE returns the first non-NULL argument without changing the stored value.",
+          explanation:
+            "COALESCE returns the first non-NULL argument without changing the stored value.",
         },
         {
           id: "null-logic-not-in",
@@ -724,7 +771,8 @@ ORDER BY id;`,
             "It automatically converts NULL to an empty string.",
           ],
           correctIndex: 1,
-          explanation: "A NULL in the list makes comparisons that do not otherwise match evaluate to UNKNOWN.",
+          explanation:
+            "A NULL in the list makes comparisons that do not otherwise match evaluate to UNKNOWN.",
         },
       ],
     },
@@ -735,7 +783,8 @@ ORDER BY id;`,
 const sargability: LessonContent = {
   slug: "writing-efficient-where-predicates",
   title: "Writing Efficient WHERE Predicates",
-  subtitle: "Write index-friendly filters and use safe date ranges without changing the result you mean.",
+  subtitle:
+    "Write index-friendly filters and use safe date ranges without changing the result you mean.",
   sections: [
     {
       kind: "prose",
@@ -749,7 +798,8 @@ const sargability: LessonContent = {
       kind: "image",
       src: sargabilityImg,
       alt: "A conceptual comparison of an index-friendly date range that seeks a small section of an orders-date index and a function-on-column predicate that sweeps many order rows.",
-      caption: "A range on an indexed date can give the planner a narrow place to start. Transforming the column first can hide that range from a normal index.",
+      caption:
+        "A range on an indexed date can give the planner a narrow place to start. Transforming the column first can hide that range from a normal index.",
     },
     {
       kind: "code",
@@ -776,7 +826,8 @@ ORDER BY order_date, id;`,
     {
       kind: "animation",
       variant: "q-sargability",
-      caption: "Compare a March range, the same condition with DATE_TRUNC wrapped around the column, and a direct single-day lookup using real Cycle Depot orders.",
+      caption:
+        "Compare a March range, the same condition with DATE_TRUNC wrapped around the column, and a direct single-day lookup using real Cycle Depot orders.",
     },
     {
       kind: "prose",
@@ -806,9 +857,17 @@ WHERE order_date >= DATE '2024-03-01'
       caption: "Common WHERE predicate rewrites",
       headers: ["Prefer", "Avoid when a normal index must help", "Why"],
       rows: [
-        ["order_date >= start AND order_date < finish", "DATE_TRUNC('month', order_date) = start", "The range compares the stored value directly."],
+        [
+          "order_date >= start AND order_date < finish",
+          "DATE_TRUNC('month', order_date) = start",
+          "The range compares the stored value directly.",
+        ],
         ["price >= 2000", "price / 100 >= 20", "Calculate the boundary, not every stored price."],
-        ["name LIKE 'Volt%'", "name LIKE '%Volt%'", "A known prefix can support an ordered index range."],
+        [
+          "name LIKE 'Volt%'",
+          "name LIKE '%Volt%'",
+          "A known prefix can support an ordered index range.",
+        ],
         ["id = 39", "CAST(id AS TEXT) = '39'", "Avoid converting an indexed value for comparison."],
       ],
     },
@@ -850,7 +909,8 @@ WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
     {
       kind: "playground-practice",
       title: "Find March orders with a date range",
-      prompt: "Return id, customer_id, and order_date for Cycle Depot orders placed in March 2024. Use a start boundary of March 1 and an exclusive finish boundary of April 1, then order by order_date and id.",
+      prompt:
+        "Return id, customer_id, and order_date for Cycle Depot orders placed in March 2024. Use a start boundary of March 1 and an exclusive finish boundary of April 1, then order by order_date and id.",
       tables: ["orders"],
       successCheck: "5 rows with the columns id, customer_id, and order_date in date order.",
       href: "/sql-playground?practice=cycledepot-march-order-range",
@@ -889,14 +949,21 @@ WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
             "It excludes every order on March 31.",
           ],
           correctIndex: 0,
-          explanation: "The next boundary is exclusive, so every instant before April 1 is included.",
+          explanation:
+            "The next boundary is exclusive, so every instant before April 1 is included.",
         },
         {
           id: "sargability-index-promise",
           question: "Does a sargable predicate guarantee that the database will use an index?",
-          options: ["Yes, always", "No, the planner still chooses based on cost and estimates", "Only for text columns", "Only when the result has one row"],
+          options: [
+            "Yes, always",
+            "No, the planner still chooses based on cost and estimates",
+            "Only for text columns",
+            "Only when the result has one row",
+          ],
           correctIndex: 1,
-          explanation: "A sargable predicate gives the planner an option. Index availability, selectivity, statistics, and cost still matter.",
+          explanation:
+            "A sargable predicate gives the planner an option. Index availability, selectivity, statistics, and cost still matter.",
         },
       ],
     },
@@ -907,7 +974,8 @@ WHERE placed_at >= TIMESTAMP '2024-03-01 00:00:00'
 const filteringFinalQuiz: LessonContent = {
   slug: "filtering-predicates-quiz",
   title: "Filtering & Predicates: Final Quiz",
-  subtitle: "Test your command of boolean logic, filter operators, NULL behavior, patterns, and efficient date predicates.",
+  subtitle:
+    "Test your command of boolean logic, filter operators, NULL behavior, patterns, and efficient date predicates.",
   sections: [
     {
       kind: "quiz",
@@ -915,7 +983,8 @@ const filteringFinalQuiz: LessonContent = {
       questions: [
         {
           id: "filtering-final-boolean-parentheses",
-          question: "Why are parentheses useful in WHERE (category = 'Road Bikes' AND in_stock >= 90) OR price >= 4000?",
+          question:
+            "Why are parentheses useful in WHERE (category = 'Road Bikes' AND in_stock >= 90) OR price >= 4000?",
           options: [
             "They rename category.",
             "They make the first business rule a clear unit before OR combines it with the price rule.",
@@ -923,11 +992,13 @@ const filteringFinalQuiz: LessonContent = {
             "They make SELECT run before FROM.",
           ],
           correctIndex: 1,
-          explanation: "Parentheses show exactly which conditions belong together, making a mixed boolean rule safer to read and change.",
+          explanation:
+            "Parentheses show exactly which conditions belong together, making a mixed boolean rule safer to read and change.",
         },
         {
           id: "filtering-final-between",
-          question: "Which condition keeps a product priced from 2000 through 4000, including both endpoints?",
+          question:
+            "Which condition keeps a product priced from 2000 through 4000, including both endpoints?",
           options: [
             "price IN (2000, 4000)",
             "price BETWEEN 2000 AND 4000",
@@ -947,7 +1018,8 @@ const filteringFinalQuiz: LessonContent = {
             "The tags column must be text, not an array.",
           ],
           correctIndex: 1,
-          explanation: "@> is PostgreSQL array containment: the left array contains every requested value on the right.",
+          explanation:
+            "@> is PostgreSQL array containment: the left array contains every requested value on the right.",
         },
         {
           id: "filtering-final-not-in-null",
@@ -959,7 +1031,8 @@ const filteringFinalQuiz: LessonContent = {
             "It automatically turns NULL into an empty string.",
           ],
           correctIndex: 1,
-          explanation: "A NULL in a NOT IN list can turn a comparison into UNKNOWN instead of TRUE.",
+          explanation:
+            "A NULL in a NOT IN list can turn a comparison into UNKNOWN instead of TRUE.",
         },
         {
           id: "filtering-final-like-percent",
@@ -983,18 +1056,21 @@ const filteringFinalQuiz: LessonContent = {
             "NOT LIKE is required before every ILIKE search.",
           ],
           correctIndex: 0,
-          explanation: "ILIKE ignores letter case. In a LIKE pattern, _ is a one-character wildcard unless an escape character makes it literal.",
+          explanation:
+            "ILIKE ignores letter case. In a LIKE pattern, _ is a one-character wildcard unless an escape character makes it literal.",
         },
         {
           id: "filtering-final-null-test",
           question: "Which condition correctly finds Cycle Depot customers whose city is missing?",
           options: ["city = NULL", "city <> NULL", "city IS NULL", "city IN (NULL)"],
           correctIndex: 2,
-          explanation: "Normal comparisons with NULL are UNKNOWN. IS NULL is the missing-value test.",
+          explanation:
+            "Normal comparisons with NULL are UNKNOWN. IS NULL is the missing-value test.",
         },
         {
           id: "filtering-final-not",
-          question: "For a product with a known category, what does WHERE NOT category = 'Road Bikes' keep?",
+          question:
+            "For a product with a known category, what does WHERE NOT category = 'Road Bikes' keep?",
           options: [
             "Only Road Bikes",
             "Every product that is not a Road Bike",
@@ -1002,7 +1078,8 @@ const filteringFinalQuiz: LessonContent = {
             "Every product, regardless of category",
           ],
           correctIndex: 1,
-          explanation: "NOT reverses the category comparison. The question specifies a known category because NOT UNKNOWN is still UNKNOWN for a NULL value.",
+          explanation:
+            "NOT reverses the category comparison. The question specifies a known category because NOT UNKNOWN is still UNKNOWN for a NULL value.",
         },
         {
           id: "filtering-final-date-range",
@@ -1014,11 +1091,13 @@ const filteringFinalQuiz: LessonContent = {
             "placed_at = DATE '2024-03-01'",
           ],
           correctIndex: 2,
-          explanation: "The half-open range includes every instant after March begins and before April begins.",
+          explanation:
+            "The half-open range includes every instant after March begins and before April begins.",
         },
         {
           id: "filtering-final-sargability",
-          question: "Why is order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' usually more index-friendly than DATE_TRUNC('month', order_date) = DATE '2024-03-01'?",
+          question:
+            "Why is order_date >= DATE '2024-03-01' AND order_date < DATE '2024-04-01' usually more index-friendly than DATE_TRUNC('month', order_date) = DATE '2024-03-01'?",
           options: [
             "It changes the result to include fewer rows.",
             "It compares the stored date directly with boundaries instead of applying a function to each date value.",
@@ -1026,7 +1105,8 @@ const filteringFinalQuiz: LessonContent = {
             "It guarantees an index scan.",
           ],
           correctIndex: 1,
-          explanation: "The bare-column range provides a direct search argument. The planner may then choose a suitable index, but it is not guaranteed.",
+          explanation:
+            "The bare-column range provides a direct search argument. The planner may then choose a suitable index, but it is not guaranteed.",
         },
       ],
     },
@@ -1055,12 +1135,14 @@ const aggregateFns: LessonContent = {
       kind: "image",
       src: aggregateFunctionsImg,
       alt: "A conceptual illustration of order, customer, and product records flowing into a single aggregation step, then producing count, distinct count, total, average, minimum, and maximum metrics.",
-      caption: "Conceptual view: aggregation collapses many records into summary metrics. The code and result tables below use the exact Cycle Depot schema and values.",
+      caption:
+        "Conceptual view: aggregation collapses many records into summary metrics. The code and result tables below use the exact Cycle Depot schema and values.",
     },
     {
       kind: "animation",
       variant: "q-aggr",
-      caption: "Cycle Depot rows collapse into one answer. The previews use real rows from the generated dataset; the result cards show the full-table totals.",
+      caption:
+        "Cycle Depot rows collapse into one answer. The previews use real rows from the generated dataset; the result cards show the full-table totals.",
     },
     {
       kind: "prose",
@@ -1138,10 +1220,18 @@ FROM products;`,
       rows: [
         ["COUNT(*)", "Every row", "How many orders exist?"],
         ["COUNT(city)", "Non-NULL values", "How many customers supplied a city?"],
-        ["COUNT(DISTINCT country)", "Unique non-NULL values", "How many customer countries are represented?"],
+        [
+          "COUNT(DISTINCT country)",
+          "Unique non-NULL values",
+          "How many customer countries are represented?",
+        ],
         ["SUM(price)", "A total", "What is the combined catalogue price?"],
         ["AVG(price)", "An average", "What is the typical product price?"],
-        ["MIN / MAX(price)", "The lowest or highest value", "What are the cheapest and most expensive products?"],
+        [
+          "MIN / MAX(price)",
+          "The lowest or highest value",
+          "What are the cheapest and most expensive products?",
+        ],
       ],
     },
     {
@@ -1153,9 +1243,11 @@ FROM products;`,
     {
       kind: "playground-practice",
       title: "Build a customer coverage summary",
-      prompt: "Return one Cycle Depot summary row with the number of customers, the number with a city, and the number of distinct countries. Use COUNT(*), COUNT(city), and COUNT(DISTINCT country).",
+      prompt:
+        "Return one Cycle Depot summary row with the number of customers, the number with a city, and the number of distinct countries. Use COUNT(*), COUNT(city), and COUNT(DISTINCT country).",
       tables: ["customers"],
-      successCheck: "One row with customer_count = 60, customers_with_city = 55, and country_count = 6.",
+      successCheck:
+        "One row with customer_count = 60, customers_with_city = 55, and country_count = 6.",
       href: "/sql-playground?practice=cycledepot-customer-coverage-summary",
     },
     {
@@ -1221,7 +1313,8 @@ FROM products;`,
 const groupByLesson: LessonContent = {
   slug: "group-by",
   title: "GROUP BY: One Summary per Group",
-  subtitle: "Organise Cycle Depot orders into groups, then return one useful summary row for each group.",
+  subtitle:
+    "Organise Cycle Depot orders into groups, then return one useful summary row for each group.",
   sections: [
     {
       kind: "prose",
@@ -1235,7 +1328,8 @@ const groupByLesson: LessonContent = {
       kind: "image",
       src: groupByImg,
       alt: "A conceptual Cycle Depot diagram showing raw order rows flowing through GROUP BY status into Delivered, Shipped, Pending, Returned, and Cancelled buckets, then becoming one result row per status.",
-      caption: "GROUP BY puts rows with the same status into the same bucket. An aggregate such as COUNT(*) then produces one summary row for each bucket.",
+      caption:
+        "GROUP BY puts rows with the same status into the same bucket. An aggregate such as COUNT(*) then produces one summary row for each bucket.",
     },
     {
       kind: "prose",
@@ -1258,7 +1352,8 @@ const groupByLesson: LessonContent = {
     {
       kind: "animation",
       variant: "q-grpby",
-      caption: "GROUP BY splits alike rows, applies an aggregate to each bucket, and combines the results.",
+      caption:
+        "GROUP BY splits alike rows, applies an aggregate to each bucket, and combines the results.",
     },
     {
       kind: "prose",
@@ -1391,7 +1486,8 @@ ORDER BY price_band;`,
     {
       kind: "code",
       language: "sql",
-      caption: "Convenient ad hoc shortcut. Prefer explicit GROUP BY expressions in maintained SQL.",
+      caption:
+        "Convenient ad hoc shortcut. Prefer explicit GROUP BY expressions in maintained SQL.",
       code: `SELECT
   EXTRACT(YEAR FROM order_date) AS order_year,
   status,
@@ -1403,7 +1499,8 @@ ORDER BY 1, 2;`,
     {
       kind: "playground-practice",
       title: "Count orders by status",
-      prompt: "Return one row for each Cycle Depot order status and the number of orders with that status. Select status and COUNT(*) AS order_count, group by status, and sort alphabetically by status.",
+      prompt:
+        "Return one row for each Cycle Depot order status and the number of orders with that status. Select status and COUNT(*) AS order_count, group by status, and sort alphabetically by status.",
       tables: ["orders"],
       successCheck: "Five rows: cancelled 9, delivered 84, pending 13, returned 4, and shipped 32.",
       href: "/sql-playground?practice=cycledepot-order-counts-by-status",
@@ -1424,7 +1521,8 @@ ORDER BY 1, 2;`,
       questions: [
         {
           id: "group-by-result-grain",
-          question: "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
+          question:
+            "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
           options: [
             "One row per distinct status",
             "One row per order",
@@ -1497,7 +1595,8 @@ const havingLesson: LessonContent = {
       kind: "image",
       src: havingImg,
       alt: "Cycle Depot orders flowing from a WHERE channel equals web row filter, through GROUP BY status summaries, to a HAVING count threshold that keeps delivered, shipped, and pending groups.",
-      caption: "WHERE removes individual non-web orders first. GROUP BY counts the surviving web orders by status. HAVING then keeps only status groups with ten or more orders.",
+      caption:
+        "WHERE removes individual non-web orders first. GROUP BY counts the surviving web orders by status. HAVING then keeps only status groups with ten or more orders.",
     },
     {
       kind: "code",
@@ -1581,7 +1680,8 @@ ORDER BY order_count DESC, status ASC;`,
     {
       kind: "playground-practice",
       title: "Find active order-status groups",
-      prompt: "Return each Cycle Depot order status with at least ten orders. Select status and COUNT(*) AS order_count, group by status, filter the groups with HAVING COUNT(*) >= 10, and sort from largest count to smallest.",
+      prompt:
+        "Return each Cycle Depot order status with at least ten orders. Select status and COUNT(*) AS order_count, group by status, filter the groups with HAVING COUNT(*) >= 10, and sort from largest count to smallest.",
       tables: ["orders"],
       successCheck: "Three rows: delivered 84, shipped 32, and pending 13.",
       href: "/sql-playground?practice=cycledepot-order-statuses-with-at-least-ten-orders",
@@ -1613,7 +1713,8 @@ ORDER BY order_count DESC, status ASC;`,
         },
         {
           id: "having-row-filter",
-          question: "Where should channel = 'web' go when the query first keeps web orders, then groups them by status?",
+          question:
+            "Where should channel = 'web' go when the query first keeps web orders, then groups them by status?",
           options: ["WHERE", "HAVING", "SELECT", "ORDER BY"],
           correctIndex: 0,
           explanation:
@@ -1634,7 +1735,8 @@ ORDER BY order_count DESC, status ASC;`,
         },
         {
           id: "having-filter-order",
-          question: "What is the useful order for a query that filters web orders and then keeps only large status groups?",
+          question:
+            "What is the useful order for a query that filters web orders and then keeps only large status groups?",
           options: [
             "WHERE, GROUP BY, HAVING",
             "HAVING, WHERE, GROUP BY",
@@ -1697,14 +1799,16 @@ const aggregationsFinalQuiz: LessonContent = {
         },
         {
           id: "aggregations-final-aggregate-choice",
-          question: "Which aggregate answers: What is the total catalogue price of all Cycle Depot products?",
+          question:
+            "Which aggregate answers: What is the total catalogue price of all Cycle Depot products?",
           options: ["AVG(price)", "COUNT(price)", "SUM(price)", "MAX(price)"],
           correctIndex: 2,
           explanation: "SUM adds the numeric values together to produce a total.",
         },
         {
           id: "aggregations-final-grain",
-          question: "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
+          question:
+            "What is the result grain of SELECT status, COUNT(*) FROM orders GROUP BY status?",
           options: [
             "One row for the whole orders table",
             "One row per order",
@@ -1717,7 +1821,8 @@ const aggregationsFinalQuiz: LessonContent = {
         },
         {
           id: "aggregations-final-group-rule",
-          question: "Why is this query invalid? SELECT status, channel, COUNT(*) FROM orders GROUP BY status;",
+          question:
+            "Why is this query invalid? SELECT status, channel, COUNT(*) FROM orders GROUP BY status;",
           options: [
             "COUNT(*) cannot be used with GROUP BY",
             "channel is neither aggregated nor included in GROUP BY",
@@ -1743,7 +1848,8 @@ const aggregationsFinalQuiz: LessonContent = {
         },
         {
           id: "aggregations-final-expression",
-          question: "When SELECT includes DATE_TRUNC('month', order_date) AS order_month, what should a portable grouped query use to define the same groups?",
+          question:
+            "When SELECT includes DATE_TRUNC('month', order_date) AS order_month, what should a portable grouped query use to define the same groups?",
           options: [
             "GROUP BY order_date",
             "GROUP BY DATE_TRUNC('month', order_date)",
@@ -1789,7 +1895,8 @@ const aggregationsFinalQuiz: LessonContent = {
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
   title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
-  subtitle: "Build related detail rows and subtotals in one grouped query, without separate UNION ALL queries.",
+  subtitle:
+    "Build related detail rows and subtotals in one grouped query, without separate UNION ALL queries.",
   sections: [
     {
       kind: "prose",
@@ -1858,9 +1965,17 @@ GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dim
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [1303]", "Find the Team Size", "Basic GROUP BY producing per-key totals (warmup for marginal sums)."],
+        [
+          "Warm-up [1303]",
+          "Find the Team Size",
+          "Basic GROUP BY producing per-key totals (warmup for marginal sums).",
+        ],
         ["Drill [1393]", "Capital Gain/Loss", "Multi-dimensional aggregation across two pivots."],
-        ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
+        [
+          "Challenge [1212]",
+          "Team Scores in Football Tournament",
+          "Multi-grain totals fused with self-join / UNION ALL alternatives.",
+        ],
       ],
     },
     {
@@ -1895,38 +2010,250 @@ GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dim
 const innerJoinsConditions: LessonContent = {
   slug: "inner-joins-conditions",
   title: "Inner Joins & Join Conditions",
-  subtitle: "JOIN … ON / equi-join / USING / multi-column keys / IS NOT DISTINCT FROM (null-safe) / NATURAL JOIN (and why to avoid it)",
+  subtitle:
+    "JOIN … ON / equi-join / USING / multi-column keys / IS NOT DISTINCT FROM (null-safe) / NATURAL JOIN (and why to avoid it)",
   sections: [
-    { kind: "prose", heading: "An inner join keeps matching pairs", body: ["ShopFlow stores each order separately from the customer who placed it. An `INNER JOIN` combines an order with its customer only when the `ON` join condition is true. The resulting row grain is one row per matching order.", "ShopFlow enforces `orders.customer_id` as a `FOREIGN KEY` to `customers.customer_id`, making this a clear `equi-join`."] },
     {
-      kind: "image-carousel", images: [
-        { src: shopflowInnerJoinExampleRowsImg, alt: "ShopFlow example rows show three matching customer IDs flowing from orders and customers into an INNER JOIN result, while two unmatched rows are excluded.", caption: "The three mint customer_id values match and become joined rows. Order 4 and customer 2000 have no partner, so an INNER JOIN excludes them." },
-        { src: shopflowInnerJoinVennImg, alt: "A Venn diagram that places matching ShopFlow customer IDs 1785, 797, and 1600 in the INNER JOIN overlap, while unmatched IDs 9999 and 2000 remain outside it.", caption: "The overlap keeps 1785, 797, and 1600 because each ID exists in both tables. 9999 and 2000 have no counterpart, so INNER JOIN excludes them." },
-      ]
+      kind: "prose",
+      heading: "An inner join keeps matching pairs",
+      body: [
+        "ShopFlow stores each order separately from the customer who placed it. An `INNER JOIN` combines an order with its customer only when the `ON` join condition is true. The resulting row grain is one row per matching order.",
+        "ShopFlow enforces `orders.customer_id` as a `FOREIGN KEY` to `customers.customer_id`, making this a clear `equi-join`.",
+      ],
     },
-    { kind: "code", language: "sql", caption: "Match each ShopFlow order to its customer", code: ["SELECT o.order_id, o.customer_id, o.order_date, c.first_name, c.last_name, o.total_amount", "FROM orders AS o", "JOIN customers AS c", "  ON o.customer_id = c.customer_id", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
-    { kind: "animation", variant: "q-shopflow-inner-joins", caption: "Follow complete examples for ON, USING, composite keys, null-safe equality, and why an explicit ON is safer than NATURAL JOIN." },
-    { kind: "prose", heading: "ON states the relationship", body: ["The ON clause is a boolean condition. o.customer_id = c.customer_id is an equi-join because it compares related keys with equals. Qualify columns with aliases so the source of each value remains obvious.", "USING (customer_id) is concise when both tables intentionally use exactly the same key name. Prefer ON when names differ, when a condition has more than one comparison, or when you want the relationship unmistakable."] },
-    { kind: "code", language: "sql", caption: "Use USING for intentionally same-named keys", code: ["SELECT o.order_id, customer_id, c.first_name, c.last_name", "FROM orders AS o", "JOIN customers AS c USING (customer_id)", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
-    { kind: "prose", heading: "Match every part of a key", body: ["ShopFlow order_items has the composite primary key (order_id, product_id). A multi-column relationship must compare every key column; joining only part of a composite key changes the row grain and can multiply rows.", "Ordinary equality does not match NULL to NULL. When two absent optional values should match, use IS NOT DISTINCT FROM. Avoid NATURAL JOIN: it automatically joins every shared column name, so a schema change can silently change the result."] },
-    { kind: "code", language: "sql", caption: "A complete multi-column join condition", code: ["SELECT a.product_id, a.warehouse_id, a.quantity", "FROM inventory AS a", "JOIN inventory AS b", "  ON a.product_id = b.product_id", " AND a.warehouse_id = b.warehouse_id", "WHERE a.product_id = 1", "ORDER BY a.warehouse_id;", "", "-- Null-safe equality: a.optional_code IS NOT DISTINCT FROM b.optional_code"].join("\n") },
-    { kind: "prose", heading: "Use null-safe equality only when missing means the same thing", body: ["`=` does not consider NULL equal to NULL. If a join key is optional and two missing values are supposed to represent the same bucket, use `IS NOT DISTINCT FROM` in the ON condition. It matches equal non-NULL values and matches NULL with NULL.", "ShopFlow does not store a nullable shared join key, so the runnable example uses small query-local code lists. In production, apply this deliberately to an optional key with documented missing-value semantics."] },
-    { kind: "code", language: "sql", caption: "Null-safe equality matches the two NULL code values", code: ["WITH order_codes(order_id, referral_code) AS (", "  VALUES (1, 'WELCOME'), (2, NULL)", "), customer_codes(customer_id, referral_code) AS (", "  VALUES (1785, 'WELCOME'), (797, NULL)", ")", "SELECT o.order_id, c.customer_id, o.referral_code", "FROM order_codes AS o", "JOIN customer_codes AS c", "  ON o.referral_code IS NOT DISTINCT FROM c.referral_code", "ORDER BY o.order_id;"].join("\n") },
-    { kind: "callout", tone: "info", title: "Null-safe equality is deliberate", body: "`a.code = b.code` becomes unknown when either value is NULL, including when both are NULL. `a.code IS NOT DISTINCT FROM b.code` treats two NULL values as equal. Use it only when missing values mean the same thing for this relationship." },
-    { kind: "prose", heading: "NATURAL JOIN hides the most important line", body: ["`NATURAL JOIN` finds every shared column name and makes them join conditions. Today, ShopFlow orders and customers share `customer_id`, so it can appear to work. It is fragile because adding another shared name later changes the query without changing its text.", "The safe form says the one relationship you intend. This is the query to write in application code and reviews."] },
-    { kind: "code", language: "sql", caption: "A fragile NATURAL JOIN and its explicit, reviewable replacement", code: ["-- Avoid: the condition is inferred from every same-named column.", "-- SELECT o.order_id, customer_id, c.first_name", "-- FROM orders AS o NATURAL JOIN customers AS c;", "", "SELECT o.order_id, o.customer_id, c.first_name, c.last_name", "FROM orders AS o", "JOIN customers AS c", "  ON o.customer_id = c.customer_id", "ORDER BY o.order_id", "LIMIT 5;"].join("\n") },
-    { kind: "callout", tone: "warn", title: "Avoid NATURAL JOIN", body: "NATURAL JOIN chooses every shared column automatically. Adding country, status, or another shared name later can silently tighten the condition. Write ON or USING explicitly." },
-    { kind: "playground-practice", title: "Join ShopFlow orders to customers", prompt: "Use an explicit `JOIN ... ON` to return each order, its customer_id, date, and amount beside the customer's first and last name. The checked ShopFlow exercise verifies the columns, relationship, and row order.", tables: ["orders", "customers"], successCheck: "Five ordered ShopFlow rows with the join key and its matched customer.", href: "/sql-playground?practice=shopflow-join-orders-customers" },
-    { kind: "takeaways", items: ["INNER JOIN returns only pairs satisfying ON.", "An equi-join compares related keys with equals.", "USING is for intentionally same-named keys.", "Composite relationships require every key column.", "Use IS NOT DISTINCT FROM for null-safe equality; avoid NATURAL JOIN."] },
     {
-      kind: "quiz", questions: [
-        { id: "join-inner-grain", question: "What does an INNER JOIN keep?", options: ["Only pairs whose ON condition is true", "Every left row", "Every possible pair", "Only NULL keys"], correctIndex: 0, explanation: "Inner joins discard unmatched rows from both inputs." },
-        { id: "join-equi", question: "Why is o.customer_id = c.customer_id an equi-join?", options: ["It compares related keys with equals", "It keeps every left row", "It matches NULL values", "It creates every possible pair"], correctIndex: 0, explanation: "An equi-join uses equality to relate key values." },
-        { id: "join-using", question: "When is USING (customer_id) appropriate?", options: ["Both tables intentionally share the same key name", "Keys have different names", "The join needs no keys", "You want every shared column matched"], correctIndex: 0, explanation: "USING is shorthand for one or more intentionally same-named join columns." },
-        { id: "join-composite", question: "How should a composite inventory key of (product_id, warehouse_id) be joined?", options: ["Compare both product_id and warehouse_id", "Compare product_id only", "Use NATURAL JOIN", "Compare warehouse_id only"], correctIndex: 0, explanation: "Every column that identifies the relationship belongs in the join condition." },
-        { id: "join-null-safe", question: "Which operator treats NULL and NULL as equal?", options: ["IS NOT DISTINCT FROM", "=", "<>", "LIKE"], correctIndex: 0, explanation: "IS NOT DISTINCT FROM is null-safe equality." },
-        { id: "join-natural", question: "Why avoid NATURAL JOIN?", options: ["Schema changes can silently change its condition", "It cannot join keys", "It creates a cross join", "It rejects aliases"], correctIndex: 0, explanation: "It joins every current shared column name automatically." },
-      ]
+      kind: "image-carousel",
+      images: [
+        {
+          src: shopflowInnerJoinExampleRowsImg,
+          alt: "ShopFlow example rows show three matching customer IDs flowing from orders and customers into an INNER JOIN result, while two unmatched rows are excluded.",
+          caption:
+            "The three mint customer_id values match and become joined rows. Order 4 and customer 2000 have no partner, so an INNER JOIN excludes them.",
+        },
+        {
+          src: shopflowInnerJoinVennImg,
+          alt: "A Venn diagram that places matching ShopFlow customer IDs 1785, 797, and 1600 in the INNER JOIN overlap, while unmatched IDs 9999 and 2000 remain outside it.",
+          caption:
+            "The overlap keeps 1785, 797, and 1600 because each ID exists in both tables. 9999 and 2000 have no counterpart, so INNER JOIN excludes them.",
+        },
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Match each ShopFlow order to its customer",
+      code: [
+        "SELECT o.order_id, o.customer_id, o.order_date, c.first_name, c.last_name, o.total_amount",
+        "FROM orders AS o",
+        "JOIN customers AS c",
+        "  ON o.customer_id = c.customer_id",
+        "ORDER BY o.order_id",
+        "LIMIT 5;",
+      ].join("\n"),
+    },
+    {
+      kind: "animation",
+      variant: "q-shopflow-inner-joins",
+      caption:
+        "Follow complete examples for ON, USING, composite keys, null-safe equality, and why an explicit ON is safer than NATURAL JOIN.",
+    },
+    {
+      kind: "prose",
+      heading: "ON states the relationship",
+      body: [
+        "The ON clause is a boolean condition. o.customer_id = c.customer_id is an equi-join because it compares related keys with equals. Qualify columns with aliases so the source of each value remains obvious.",
+        "USING (customer_id) is concise when both tables intentionally use exactly the same key name. Prefer ON when names differ, when a condition has more than one comparison, or when you want the relationship unmistakable.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Use USING for intentionally same-named keys",
+      code: [
+        "SELECT o.order_id, customer_id, c.first_name, c.last_name",
+        "FROM orders AS o",
+        "JOIN customers AS c USING (customer_id)",
+        "ORDER BY o.order_id",
+        "LIMIT 5;",
+      ].join("\n"),
+    },
+    {
+      kind: "prose",
+      heading: "Match every part of a key",
+      body: [
+        "ShopFlow order_items has the composite primary key (order_id, product_id). A multi-column relationship must compare every key column; joining only part of a composite key changes the row grain and can multiply rows.",
+        "Ordinary equality does not match NULL to NULL. When two absent optional values should match, use IS NOT DISTINCT FROM. Avoid NATURAL JOIN: it automatically joins every shared column name, so a schema change can silently change the result.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A complete multi-column join condition",
+      code: [
+        "SELECT a.product_id, a.warehouse_id, a.quantity",
+        "FROM inventory AS a",
+        "JOIN inventory AS b",
+        "  ON a.product_id = b.product_id",
+        " AND a.warehouse_id = b.warehouse_id",
+        "WHERE a.product_id = 1",
+        "ORDER BY a.warehouse_id;",
+        "",
+        "-- Null-safe equality: a.optional_code IS NOT DISTINCT FROM b.optional_code",
+      ].join("\n"),
+    },
+    {
+      kind: "prose",
+      heading: "Use null-safe equality only when missing means the same thing",
+      body: [
+        "`=` does not consider NULL equal to NULL. If a join key is optional and two missing values are supposed to represent the same bucket, use `IS NOT DISTINCT FROM` in the ON condition. It matches equal non-NULL values and matches NULL with NULL.",
+        "ShopFlow does not store a nullable shared join key, so the runnable example uses small query-local code lists. In production, apply this deliberately to an optional key with documented missing-value semantics.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Null-safe equality matches the two NULL code values",
+      code: [
+        "WITH order_codes(order_id, referral_code) AS (",
+        "  VALUES (1, 'WELCOME'), (2, NULL)",
+        "), customer_codes(customer_id, referral_code) AS (",
+        "  VALUES (1785, 'WELCOME'), (797, NULL)",
+        ")",
+        "SELECT o.order_id, c.customer_id, o.referral_code",
+        "FROM order_codes AS o",
+        "JOIN customer_codes AS c",
+        "  ON o.referral_code IS NOT DISTINCT FROM c.referral_code",
+        "ORDER BY o.order_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Null-safe equality is deliberate",
+      body: "`a.code = b.code` becomes unknown when either value is NULL, including when both are NULL. `a.code IS NOT DISTINCT FROM b.code` treats two NULL values as equal. Use it only when missing values mean the same thing for this relationship.",
+    },
+    {
+      kind: "prose",
+      heading: "NATURAL JOIN hides the most important line",
+      body: [
+        "`NATURAL JOIN` finds every shared column name and makes them join conditions. Today, ShopFlow orders and customers share `customer_id`, so it can appear to work. It is fragile because adding another shared name later changes the query without changing its text.",
+        "The safe form says the one relationship you intend. This is the query to write in application code and reviews.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A fragile NATURAL JOIN and its explicit, reviewable replacement",
+      code: [
+        "-- Avoid: the condition is inferred from every same-named column.",
+        "-- SELECT o.order_id, customer_id, c.first_name",
+        "-- FROM orders AS o NATURAL JOIN customers AS c;",
+        "",
+        "SELECT o.order_id, o.customer_id, c.first_name, c.last_name",
+        "FROM orders AS o",
+        "JOIN customers AS c",
+        "  ON o.customer_id = c.customer_id",
+        "ORDER BY o.order_id",
+        "LIMIT 5;",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Avoid NATURAL JOIN",
+      body: "NATURAL JOIN chooses every shared column automatically. Adding country, status, or another shared name later can silently tighten the condition. Write ON or USING explicitly.",
+    },
+    {
+      kind: "playground-practice",
+      title: "Join ShopFlow orders to customers",
+      prompt:
+        "Use an explicit `JOIN ... ON` to return each order, its customer_id, date, and amount beside the customer's first and last name. The checked ShopFlow exercise verifies the columns, relationship, and row order.",
+      tables: ["orders", "customers"],
+      successCheck: "Five ordered ShopFlow rows with the join key and its matched customer.",
+      href: "/sql-playground?practice=shopflow-join-orders-customers",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "INNER JOIN returns only pairs satisfying ON.",
+        "An equi-join compares related keys with equals.",
+        "USING is for intentionally same-named keys.",
+        "Composite relationships require every key column.",
+        "Use IS NOT DISTINCT FROM for null-safe equality; avoid NATURAL JOIN.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "join-inner-grain",
+          question: "What does an INNER JOIN keep?",
+          options: [
+            "Only pairs whose ON condition is true",
+            "Every left row",
+            "Every possible pair",
+            "Only NULL keys",
+          ],
+          correctIndex: 0,
+          explanation: "Inner joins discard unmatched rows from both inputs.",
+        },
+        {
+          id: "join-equi",
+          question: "Why is o.customer_id = c.customer_id an equi-join?",
+          options: [
+            "It compares related keys with equals",
+            "It keeps every left row",
+            "It matches NULL values",
+            "It creates every possible pair",
+          ],
+          correctIndex: 0,
+          explanation: "An equi-join uses equality to relate key values.",
+        },
+        {
+          id: "join-using",
+          question: "When is USING (customer_id) appropriate?",
+          options: [
+            "Both tables intentionally share the same key name",
+            "Keys have different names",
+            "The join needs no keys",
+            "You want every shared column matched",
+          ],
+          correctIndex: 0,
+          explanation: "USING is shorthand for one or more intentionally same-named join columns.",
+        },
+        {
+          id: "join-composite",
+          question: "How should a composite inventory key of (product_id, warehouse_id) be joined?",
+          options: [
+            "Compare both product_id and warehouse_id",
+            "Compare product_id only",
+            "Use NATURAL JOIN",
+            "Compare warehouse_id only",
+          ],
+          correctIndex: 0,
+          explanation:
+            "Every column that identifies the relationship belongs in the join condition.",
+        },
+        {
+          id: "join-null-safe",
+          question: "Which operator treats NULL and NULL as equal?",
+          options: ["IS NOT DISTINCT FROM", "=", "<>", "LIKE"],
+          correctIndex: 0,
+          explanation: "IS NOT DISTINCT FROM is null-safe equality.",
+        },
+        {
+          id: "join-natural",
+          question: "Why avoid NATURAL JOIN?",
+          options: [
+            "Schema changes can silently change its condition",
+            "It cannot join keys",
+            "It creates a cross join",
+            "It rejects aliases",
+          ],
+          correctIndex: 0,
+          explanation: "It joins every current shared column name automatically.",
+        },
+      ],
     },
   ],
 };
@@ -1935,34 +2262,235 @@ const innerJoinsConditions: LessonContent = {
 const outerJoinsNull: LessonContent = {
   slug: "outer-joins-null",
   title: "Outer Joins & NULL Semantics",
-  subtitle: "LEFT / RIGHT / FULL OUTER JOIN / unmatched rows → NULL / filter in ON vs WHERE / FULL JOIN for table diffs",
+  subtitle:
+    "LEFT / RIGHT / FULL OUTER JOIN / unmatched rows → NULL / filter in ON vs WHERE / FULL JOIN for table diffs",
   sections: [
-    { kind: "prose", heading: "Outer joins preserve a side of the relationship", body: ["An `INNER JOIN` returns only matching pairs. An outer join also keeps rows from a chosen input when no partner exists. The missing side is represented with `NULL`, not a made-up order or customer.", "In ShopFlow, customer 1619, Hana Morgan, has no order. A `LEFT JOIN` from customers to orders keeps Hana in the output and fills the order columns with NULL. That makes quiet customers visible in a customer report."] },
-    { kind: "image-carousel", images: [
-      { src: shopflowOuterJoinImg, alt: "A ShopFlow LEFT JOIN diagram showing customers Priya, Miles, and Hana next to two matched orders. Hana has no matching order and receives NULL order values.", caption: "LEFT JOIN preserves every customer. Priya and Miles match orders; Hana remains with NULL order_id and total_amount." },
-      { src: shopflowFullJoinDiffImg, alt: "A FULL OUTER JOIN table-diff diagram showing customer IDs shared by two scoped lists, one ID only in the report list, and one only in the recent-order list.", caption: "FULL OUTER JOIN makes differences visible: 1619 occurs only in the report list, while 1261 occurs only in the recent-order list." },
-      { src: shopflowOuterJoinVennImg, alt: "Three Venn diagrams comparing ShopFlow customer IDs retained by LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN. Customer IDs 797 and 1600 overlap; 1619 is only in customers and 1261 only in orders.", caption: "The shaded area is the result: LEFT keeps customers, RIGHT keeps orders, and FULL OUTER keeps both lists. IDs 797 and 1600 match in every version." },
-    ] },
-    { kind: "code", language: "sql", caption: "Keep every selected customer, even without an order", code: ["SELECT c.customer_id, c.first_name, o.order_id, o.total_amount", "FROM customers AS c", "LEFT JOIN orders AS o", "  ON c.customer_id = o.customer_id", " AND o.order_id IN (2, 3)", "WHERE c.customer_id IN (797, 1600, 1619)", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "table", caption: "The preserved customer gets NULLs for missing order columns", headers: ["customer_id", "first_name", "order_id", "total_amount"], rows: [["797", "Priya", "2", "659.70"], ["1600", "Miles", "3", "377.61"], ["1619", "Hana", "NULL", "NULL"]] },
-    { kind: "animation", variant: "q-shopflow-outer-joins", caption: "Step through preservation, NULL padding, predicate placement, and a FULL JOIN table diff using real ShopFlow values." },
-    { kind: "prose", heading: "LEFT and RIGHT are mirror images", body: ["`LEFT JOIN` preserves every row from the table on the left of the join. `RIGHT JOIN` preserves every row from the table on the right. They can express the same result by swapping table order, but `LEFT JOIN` is usually easier to read because the preserved entity appears first.", "For example, `customers LEFT JOIN orders` and `orders RIGHT JOIN customers` both keep Hana. Choose the spelling that makes the report's primary entity clear."] },
-    { kind: "code", language: "sql", caption: "The same preserved-customer result written with RIGHT JOIN", code: ["SELECT c.customer_id, c.first_name, o.order_id, o.total_amount", "FROM orders AS o", "RIGHT JOIN customers AS c", "  ON c.customer_id = o.customer_id", " AND o.order_id IN (2, 3)", "WHERE c.customer_id IN (797, 1600, 1619)", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "prose", heading: "ON decides matching; WHERE filters finished rows", body: ["With an outer join, the placement of a condition changes the meaning. Put a condition on the optional table in `ON` when you still want every preserved row. If an order is not paid, it simply fails to match and its order columns become NULL.", "A right-table condition in `WHERE` runs after the join. NULL does not satisfy `o.status = 'paid'`, so the WHERE clause removes unmatched customers too. That often turns a LEFT JOIN into an inner join by accident."] },
-    { kind: "code", language: "sql", caption: "Keep all customers while matching paid orders only", code: ["SELECT c.customer_id, c.first_name, o.order_id, o.status", "FROM customers AS c", "LEFT JOIN orders AS o", "  ON c.customer_id = o.customer_id", " AND o.order_id IN (2, 3)", " AND o.status = 'paid'", "WHERE c.customer_id IN (797, 1600, 1619)", "ORDER BY c.customer_id;", "", "-- Do not move o.status = 'paid' into WHERE when Hana must remain."].join("\n") },
-    { kind: "callout", tone: "warn", title: "The ON vs WHERE outer-join trap", body: "`ON` controls whether an optional-side row matches. `WHERE` removes rows from the joined result. With a LEFT JOIN, `WHERE o.status = 'paid'` discards every row whose order columns are NULL, including customers with no order." },
-    { kind: "prose", heading: "FULL OUTER JOIN reveals a table difference", body: ["`FULL OUTER JOIN` preserves both inputs. A matching key produces one combined row; a key found on only one side gets NULL values for the other side. It is a useful reconciliation pattern for two scoped lists, imports, snapshots, or reports.", "The query below compares a report's customer list with customers who placed a recent order. The lists are deliberately scoped: customer 1261 is a real ShopFlow customer, but is absent from the report list, while Hana is absent from the recent-order list."] },
-    { kind: "code", language: "sql", caption: "Find IDs that occur on only one side", code: ["WITH report_customers(customer_id) AS (", "  VALUES (797), (1600), (1619)", "), recent_order_customers(customer_id) AS (", "  VALUES (797), (1600), (1261)", ")", "SELECT COALESCE(r.customer_id, o.customer_id) AS customer_id,", "       r.customer_id IS NOT NULL AS in_report,", "       o.customer_id IS NOT NULL AS in_recent_orders", "FROM report_customers AS r", "FULL OUTER JOIN recent_order_customers AS o", "  ON r.customer_id = o.customer_id", "ORDER BY customer_id;"].join("\n") },
-    { kind: "playground-practice", title: "Preserve ShopFlow customers with LEFT JOIN", prompt: "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order columns by putting the order filter in `ON`.", tables: ["customers", "orders"], successCheck: "Three ordered customers, including Hana with NULL order_id and total_amount.", href: "/sql-playground?practice=shopflow-preserve-customers-with-left-join" },
-    { kind: "takeaways", items: ["LEFT JOIN preserves every left row; RIGHT JOIN preserves every right row.", "An unmatched preserved row has NULLs on the missing side.", "Put optional-side match conditions in ON when preserved rows must remain.", "A right-side WHERE condition removes NULL-padded rows.", "FULL OUTER JOIN preserves both lists and is useful for reconciliation and table diffs."] },
-    { kind: "quiz", questions: [
-      { id: "outer-left", question: "Which rows does customers LEFT JOIN orders preserve?", options: ["Every customer", "Every order", "Only matching pairs", "Only customers with NULL IDs"], correctIndex: 0, explanation: "LEFT JOIN preserves all rows from the left input, customers." },
-      { id: "outer-null", question: "What appears in order columns for a preserved customer with no matching order?", options: ["NULL", "0", "An empty customer row", "The previous order"], correctIndex: 0, explanation: "Outer joins NULL-pad values from the missing side." },
-      { id: "outer-right", question: "What does RIGHT JOIN preserve?", options: ["Every row from the right input", "Every row from the left input", "Only matching rows", "Only NULL rows"], correctIndex: 0, explanation: "RIGHT JOIN is the mirror of LEFT JOIN: it preserves the right table." },
-      { id: "outer-on", question: "Where should o.status = 'paid' go if every customer must remain?", options: ["In the LEFT JOIN ON condition", "In WHERE", "In GROUP BY", "In SELECT only"], correctIndex: 0, explanation: "A condition in ON controls whether an optional order matches without removing a preserved customer." },
-      { id: "outer-where", question: "Why can WHERE o.status = 'paid' break a LEFT JOIN report?", options: ["It removes NULL-padded customers after the join", "It changes all amounts to NULL", "It creates duplicate customers", "It converts status to text"], correctIndex: 0, explanation: "NULL does not satisfy the WHERE predicate, so unmatched left rows are filtered out." },
-      { id: "outer-full", question: "Which join is best for finding keys present in either of two lists?", options: ["FULL OUTER JOIN", "INNER JOIN", "CROSS JOIN", "NATURAL JOIN"], correctIndex: 0, explanation: "FULL OUTER JOIN preserves both inputs, exposing keys that occur on only one side." },
-    ] },
+    {
+      kind: "prose",
+      heading: "Outer joins preserve a side of the relationship",
+      body: [
+        "An `INNER JOIN` returns only matching pairs. An outer join also keeps rows from a chosen input when no partner exists. The missing side is represented with `NULL`, not a made-up order or customer.",
+        "In ShopFlow, customer 1619, Hana Morgan, has no order. A `LEFT JOIN` from customers to orders keeps Hana in the output and fills the order columns with NULL. That makes quiet customers visible in a customer report.",
+      ],
+    },
+    {
+      kind: "image-carousel",
+      images: [
+        {
+          src: shopflowOuterJoinImg,
+          alt: "A ShopFlow LEFT JOIN diagram showing customers Priya, Miles, and Hana next to two matched orders. Hana has no matching order and receives NULL order values.",
+          caption:
+            "LEFT JOIN preserves every customer. Priya and Miles match orders; Hana remains with NULL order_id and total_amount.",
+        },
+        {
+          src: shopflowFullJoinDiffImg,
+          alt: "A FULL OUTER JOIN table-diff diagram showing customer IDs shared by two scoped lists, one ID only in the report list, and one only in the recent-order list.",
+          caption:
+            "FULL OUTER JOIN makes differences visible: 1619 occurs only in the report list, while 1261 occurs only in the recent-order list.",
+        },
+        {
+          src: shopflowOuterJoinVennImg,
+          alt: "Three Venn diagrams comparing ShopFlow customer IDs retained by LEFT JOIN, RIGHT JOIN, and FULL OUTER JOIN. Customer IDs 797 and 1600 overlap; 1619 is only in customers and 1261 only in orders.",
+          caption:
+            "The shaded area is the result: LEFT keeps customers, RIGHT keeps orders, and FULL OUTER keeps both lists. IDs 797 and 1600 match in every version.",
+        },
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep every selected customer, even without an order",
+      code: [
+        "SELECT c.customer_id, c.first_name, o.order_id, o.total_amount",
+        "FROM customers AS c",
+        "LEFT JOIN orders AS o",
+        "  ON c.customer_id = o.customer_id",
+        " AND o.order_id IN (2, 3)",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "The preserved customer gets NULLs for missing order columns",
+      headers: ["customer_id", "first_name", "order_id", "total_amount"],
+      rows: [
+        ["797", "Priya", "2", "659.70"],
+        ["1600", "Miles", "3", "377.61"],
+        ["1619", "Hana", "NULL", "NULL"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-shopflow-outer-joins",
+      caption:
+        "Step through preservation, NULL padding, predicate placement, and a FULL JOIN table diff using real ShopFlow values.",
+    },
+    {
+      kind: "prose",
+      heading: "LEFT and RIGHT are mirror images",
+      body: [
+        "`LEFT JOIN` preserves every row from the table on the left of the join. `RIGHT JOIN` preserves every row from the table on the right. They can express the same result by swapping table order, but `LEFT JOIN` is usually easier to read because the preserved entity appears first.",
+        "For example, `customers LEFT JOIN orders` and `orders RIGHT JOIN customers` both keep Hana. Choose the spelling that makes the report's primary entity clear.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "The same preserved-customer result written with RIGHT JOIN",
+      code: [
+        "SELECT c.customer_id, c.first_name, o.order_id, o.total_amount",
+        "FROM orders AS o",
+        "RIGHT JOIN customers AS c",
+        "  ON c.customer_id = o.customer_id",
+        " AND o.order_id IN (2, 3)",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "prose",
+      heading: "ON decides matching; WHERE filters finished rows",
+      body: [
+        "With an outer join, the placement of a condition changes the meaning. Put a condition on the optional table in `ON` when you still want every preserved row. If an order is not paid, it simply fails to match and its order columns become NULL.",
+        "A right-table condition in `WHERE` runs after the join. NULL does not satisfy `o.status = 'paid'`, so the WHERE clause removes unmatched customers too. That often turns a LEFT JOIN into an inner join by accident.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Keep all customers while matching paid orders only",
+      code: [
+        "SELECT c.customer_id, c.first_name, o.order_id, o.status",
+        "FROM customers AS c",
+        "LEFT JOIN orders AS o",
+        "  ON c.customer_id = o.customer_id",
+        " AND o.order_id IN (2, 3)",
+        " AND o.status = 'paid'",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "ORDER BY c.customer_id;",
+        "",
+        "-- Do not move o.status = 'paid' into WHERE when Hana must remain.",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "The ON vs WHERE outer-join trap",
+      body: "`ON` controls whether an optional-side row matches. `WHERE` removes rows from the joined result. With a LEFT JOIN, `WHERE o.status = 'paid'` discards every row whose order columns are NULL, including customers with no order.",
+    },
+    {
+      kind: "prose",
+      heading: "FULL OUTER JOIN reveals a table difference",
+      body: [
+        "`FULL OUTER JOIN` preserves both inputs. A matching key produces one combined row; a key found on only one side gets NULL values for the other side. It is a useful reconciliation pattern for two scoped lists, imports, snapshots, or reports.",
+        "The query below compares a report's customer list with customers who placed a recent order. The lists are deliberately scoped: customer 1261 is a real ShopFlow customer, but is absent from the report list, while Hana is absent from the recent-order list.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find IDs that occur on only one side",
+      code: [
+        "WITH report_customers(customer_id) AS (",
+        "  VALUES (797), (1600), (1619)",
+        "), recent_order_customers(customer_id) AS (",
+        "  VALUES (797), (1600), (1261)",
+        ")",
+        "SELECT COALESCE(r.customer_id, o.customer_id) AS customer_id,",
+        "       r.customer_id IS NOT NULL AS in_report,",
+        "       o.customer_id IS NOT NULL AS in_recent_orders",
+        "FROM report_customers AS r",
+        "FULL OUTER JOIN recent_order_customers AS o",
+        "  ON r.customer_id = o.customer_id",
+        "ORDER BY customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "playground-practice",
+      title: "Preserve ShopFlow customers with LEFT JOIN",
+      prompt:
+        "Return customers 797, 1600, and 1619 beside orders 2 and 3. Keep Hana's NULL order columns by putting the order filter in `ON`.",
+      tables: ["customers", "orders"],
+      successCheck: "Three ordered customers, including Hana with NULL order_id and total_amount.",
+      href: "/sql-playground?practice=shopflow-preserve-customers-with-left-join",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "LEFT JOIN preserves every left row; RIGHT JOIN preserves every right row.",
+        "An unmatched preserved row has NULLs on the missing side.",
+        "Put optional-side match conditions in ON when preserved rows must remain.",
+        "A right-side WHERE condition removes NULL-padded rows.",
+        "FULL OUTER JOIN preserves both lists and is useful for reconciliation and table diffs.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "outer-left",
+          question: "Which rows does customers LEFT JOIN orders preserve?",
+          options: [
+            "Every customer",
+            "Every order",
+            "Only matching pairs",
+            "Only customers with NULL IDs",
+          ],
+          correctIndex: 0,
+          explanation: "LEFT JOIN preserves all rows from the left input, customers.",
+        },
+        {
+          id: "outer-null",
+          question:
+            "What appears in order columns for a preserved customer with no matching order?",
+          options: ["NULL", "0", "An empty customer row", "The previous order"],
+          correctIndex: 0,
+          explanation: "Outer joins NULL-pad values from the missing side.",
+        },
+        {
+          id: "outer-right",
+          question: "What does RIGHT JOIN preserve?",
+          options: [
+            "Every row from the right input",
+            "Every row from the left input",
+            "Only matching rows",
+            "Only NULL rows",
+          ],
+          correctIndex: 0,
+          explanation: "RIGHT JOIN is the mirror of LEFT JOIN: it preserves the right table.",
+        },
+        {
+          id: "outer-on",
+          question: "Where should o.status = 'paid' go if every customer must remain?",
+          options: ["In the LEFT JOIN ON condition", "In WHERE", "In GROUP BY", "In SELECT only"],
+          correctIndex: 0,
+          explanation:
+            "A condition in ON controls whether an optional order matches without removing a preserved customer.",
+        },
+        {
+          id: "outer-where",
+          question: "Why can WHERE o.status = 'paid' break a LEFT JOIN report?",
+          options: [
+            "It removes NULL-padded customers after the join",
+            "It changes all amounts to NULL",
+            "It creates duplicate customers",
+            "It converts status to text",
+          ],
+          correctIndex: 0,
+          explanation:
+            "NULL does not satisfy the WHERE predicate, so unmatched left rows are filtered out.",
+        },
+        {
+          id: "outer-full",
+          question: "Which join is best for finding keys present in either of two lists?",
+          options: ["FULL OUTER JOIN", "INNER JOIN", "CROSS JOIN", "NATURAL JOIN"],
+          correctIndex: 0,
+          explanation:
+            "FULL OUTER JOIN preserves both inputs, exposing keys that occur on only one side.",
+        },
+      ],
+    },
   ],
 };
 
@@ -1970,34 +2498,236 @@ const outerJoinsNull: LessonContent = {
 const crossSelfJoins: LessonContent = {
   slug: "cross-self-joins",
   title: "Cross Joins & Self Joins",
-  subtitle: "CROSS JOIN / Cartesian product / self-join with aliases / pairwise comparison / generating combinations",
+  subtitle:
+    "CROSS JOIN / Cartesian product / self-join with aliases / pairwise comparison / generating combinations",
   sections: [
-    { kind: "prose", heading: "Cross joins deliberately make every pairing", body: ["A CROSS JOIN has no ON condition. It returns the Cartesian product: every row on the left paired with every row on the right. If the inputs contain m and n rows, the result contains m × n rows.", "That can be exactly what a report needs. For example, start with selected ShopFlow customers and a short list of contact channels to generate a complete customer-channel plan, including combinations that have not happened yet."] },
-    { kind: "image-carousel", images: [
-      { src: shopflowCrossJoinImg, alt: "A ShopFlow CROSS JOIN diagram showing three customers paired with two contact channels to make six rows.", caption: "CROSS JOIN repeats each customer once per channel. Three customers multiplied by two channels produces six planned combinations." },
-      { src: shopflowSelfJoinImg, alt: "A self-join diagram showing ShopFlow customers aliased as a and b, then producing one unique same-country pair between Priya Singh and Hana Morgan.", caption: "Aliases let the same customers table play two roles. The less-than test removes self-pairs and reverse duplicates." },
-      { src: shopflowCrossSelfVennComparisonImg, alt: "A side-by-side Venn-style comparison of a ShopFlow CROSS JOIN and a ShopFlow self join with aliases and unique pairs.", caption: "Compare the shapes: CROSS JOIN pairs two separate inputs in full; a self join gives one table two aliases, then a condition such as a.customer_id < b.customer_id keeps only unique pairs." },
-    ] },
-    { kind: "code", language: "sql", caption: "Generate every selected customer-channel combination", code: ["WITH channels(channel) AS (", "  VALUES ('email'), ('sms')", ")", "SELECT c.first_name, ch.channel", "FROM customers AS c", "CROSS JOIN channels AS ch", "WHERE c.customer_id IN (797, 1600, 1619)", "ORDER BY c.customer_id, ch.channel;"].join("\n") },
-    { kind: "table", caption: "Deterministic preview: 3 customers × 2 channels", headers: ["first_name", "channel"], rows: [["Priya", "email"], ["Priya", "sms"], ["Miles", "email"], ["Miles", "sms"], ["Hana", "email"], ["Hana", "sms"]] },
-    { kind: "animation", variant: "q-shopflow-cross-self-joins", caption: "Watch the Cartesian product expand, then see aliases turn one table into two roles for pairwise and manager comparisons." },
-    { kind: "prose", heading: "Cartesian products grow quickly", body: ["A CROSS JOIN is not an accidental substitute for a missing join condition. With 2,000 ShopFlow customers and 30 categories, it would produce 60,000 rows before later clauses run. Estimate the multiplication before you execute it.", "Use it intentionally to create calendars, parameter grids, missing-report rows, or every possible pairing. Otherwise, write an explicit join condition that states the relationship you mean."] },
-    { kind: "code", language: "sql", caption: "Measure a CROSS JOIN before selecting its rows", code: ["SELECT COUNT(*) AS combination_count", "FROM customers AS c", "CROSS JOIN (VALUES ('email'), ('sms')) AS ch(channel)", "WHERE c.customer_id IN (797, 1600, 1619);"].join("\n") },
-    { kind: "callout", tone: "warn", title: "No ON condition means multiplication", body: "A CROSS JOIN is intentional only when you want every pairing. If you expected matching keys, a missing ON clause can turn a small query into millions of rows." },
-    { kind: "prose", heading: "A self-join compares a table with itself", body: ["A self-join uses the same table twice, with aliases that give each copy a distinct role. Here a is the first customer and b is the second customer. The join finds customers in the same country.", "Pairwise queries need an inequality such as a.customer_id < b.customer_id. It excludes each row matched to itself and prevents the duplicate reverse pair: Priya-Hana is kept, while Hana-Priya is not."] },
-    { kind: "code", language: "sql", caption: "Find unique selected customer pairs in the same country", code: ["SELECT a.first_name AS customer_a,", "       b.first_name AS customer_b,", "       a.country", "FROM customers AS a", "JOIN customers AS b", "  ON a.country = b.country", " AND a.customer_id < b.customer_id", "WHERE a.customer_id IN (797, 1600, 1619)", "  AND b.customer_id IN (797, 1600, 1619);"].join("\n") },
-    { kind: "prose", heading: "Aliases also expose hierarchies", body: ["ShopFlow employees stores an employee's manager as another employee ID in the same table. A self-join reads employees AS e as the worker and employees AS m as the manager, then turns an ID relationship into names.", "The same pattern supports referral trees, previous-versus-current snapshots, duplicate detection, and pairwise comparisons. The aliases are not cosmetic: they name the two roles in the relationship."] },
-    { kind: "code", language: "sql", caption: "Resolve ShopFlow employees to their managers", code: ["SELECT e.employee_name,", "       m.employee_name AS manager_name", "FROM employees AS e", "JOIN employees AS m", "  ON e.manager_id = m.employee_id", "WHERE e.employee_id IN (2, 4, 5)", "ORDER BY e.employee_id;"].join("\n") },
-    { kind: "playground-practice", title: "Generate ShopFlow customer-channel combinations", prompt: "Create the six combinations of customers 797, 1600, and 1619 with the channels email and sms. Use a query-local channel list and CROSS JOIN.", tables: ["customers"], successCheck: "Six ordered rows: every selected customer paired with both channels.", href: "/sql-playground?practice=shopflow-generate-customer-channel-combinations" },
-    { kind: "takeaways", items: ["CROSS JOIN returns every left-row and right-row pairing.", "Cartesian-product size is left rows × right rows.", "Use CROSS JOIN deliberately to generate complete combinations.", "A self-join uses aliases to assign one table two roles.", "Use an inequality such as a.id < b.id for unique unordered pairs."] },
-    { kind: "quiz", questions: [
-      { id: "cross-product", question: "What does a CROSS JOIN return?", options: ["Every possible left-right row pair", "Only equal keys", "Only left rows", "Only unmatched rows"], correctIndex: 0, explanation: "CROSS JOIN has no match condition and creates the Cartesian product." },
-      { id: "cross-count", question: "How many rows result from 3 customers CROSS JOIN 2 channels?", options: ["6", "5", "3", "2"], correctIndex: 0, explanation: "The product is 3 × 2 = 6." },
-      { id: "cross-use", question: "When is CROSS JOIN appropriate?", options: ["Generating a complete intentional matrix", "Matching a foreign key", "Removing duplicate rows", "Keeping unmatched left rows"], correctIndex: 0, explanation: "It is useful when every combination is genuinely required." },
-      { id: "self-alias", question: "Why use aliases in a self-join?", options: ["To give the two table roles distinct names", "To prevent every join", "To create NULL values", "To avoid selecting columns"], correctIndex: 0, explanation: "Aliases distinguish the two logical roles played by one physical table." },
-      { id: "self-pairs", question: "Why use a.customer_id < b.customer_id for pairwise combinations?", options: ["It removes self-pairs and reverse duplicates", "It includes every direction twice", "It matches NULL values", "It sorts the table"], correctIndex: 0, explanation: "Only one ordering of each pair can satisfy the less-than condition." },
-      { id: "self-manager", question: "Which self-join condition resolves an employee's manager?", options: ["e.manager_id = m.employee_id", "e.employee_id < m.employee_id", "e.department = m.department", "e.employee_id = m.manager_id"], correctIndex: 0, explanation: "The employee's manager_id references another row's employee_id." },
-    ] },
+    {
+      kind: "prose",
+      heading: "Cross joins deliberately make every pairing",
+      body: [
+        "A CROSS JOIN has no ON condition. It returns the Cartesian product: every row on the left paired with every row on the right. If the inputs contain m and n rows, the result contains m × n rows.",
+        "That can be exactly what a report needs. For example, start with selected ShopFlow customers and a short list of contact channels to generate a complete customer-channel plan, including combinations that have not happened yet.",
+      ],
+    },
+    {
+      kind: "image-carousel",
+      images: [
+        {
+          src: shopflowCrossJoinImg,
+          alt: "A ShopFlow CROSS JOIN diagram showing three customers paired with two contact channels to make six rows.",
+          caption:
+            "CROSS JOIN repeats each customer once per channel. Three customers multiplied by two channels produces six planned combinations.",
+        },
+        {
+          src: shopflowSelfJoinImg,
+          alt: "A self-join diagram showing ShopFlow customers aliased as a and b, then producing one unique same-country pair between Priya Singh and Hana Morgan.",
+          caption:
+            "Aliases let the same customers table play two roles. The less-than test removes self-pairs and reverse duplicates.",
+        },
+        {
+          src: shopflowCrossSelfVennComparisonImg,
+          alt: "A side-by-side Venn-style comparison of a ShopFlow CROSS JOIN and a ShopFlow self join with aliases and unique pairs.",
+          caption:
+            "Compare the shapes: CROSS JOIN pairs two separate inputs in full; a self join gives one table two aliases, then a condition such as a.customer_id < b.customer_id keeps only unique pairs.",
+        },
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Generate every selected customer-channel combination",
+      code: [
+        "WITH channels(channel) AS (",
+        "  VALUES ('email'), ('sms')",
+        ")",
+        "SELECT c.first_name, ch.channel",
+        "FROM customers AS c",
+        "CROSS JOIN channels AS ch",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "ORDER BY c.customer_id, ch.channel;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "Deterministic preview: 3 customers × 2 channels",
+      headers: ["first_name", "channel"],
+      rows: [
+        ["Priya", "email"],
+        ["Priya", "sms"],
+        ["Miles", "email"],
+        ["Miles", "sms"],
+        ["Hana", "email"],
+        ["Hana", "sms"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-shopflow-cross-self-joins",
+      caption:
+        "Watch the Cartesian product expand, then see aliases turn one table into two roles for pairwise and manager comparisons.",
+    },
+    {
+      kind: "prose",
+      heading: "Cartesian products grow quickly",
+      body: [
+        "A CROSS JOIN is not an accidental substitute for a missing join condition. With 2,000 ShopFlow customers and 30 categories, it would produce 60,000 rows before later clauses run. Estimate the multiplication before you execute it.",
+        "Use it intentionally to create calendars, parameter grids, missing-report rows, or every possible pairing. Otherwise, write an explicit join condition that states the relationship you mean.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Measure a CROSS JOIN before selecting its rows",
+      code: [
+        "SELECT COUNT(*) AS combination_count",
+        "FROM customers AS c",
+        "CROSS JOIN (VALUES ('email'), ('sms')) AS ch(channel)",
+        "WHERE c.customer_id IN (797, 1600, 1619);",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "No ON condition means multiplication",
+      body: "A CROSS JOIN is intentional only when you want every pairing. If you expected matching keys, a missing ON clause can turn a small query into millions of rows.",
+    },
+    {
+      kind: "prose",
+      heading: "A self-join compares a table with itself",
+      body: [
+        "A self-join uses the same table twice, with aliases that give each copy a distinct role. Here a is the first customer and b is the second customer. The join finds customers in the same country.",
+        "Pairwise queries need an inequality such as a.customer_id < b.customer_id. It excludes each row matched to itself and prevents the duplicate reverse pair: Priya-Hana is kept, while Hana-Priya is not.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Find unique selected customer pairs in the same country",
+      code: [
+        "SELECT a.first_name AS customer_a,",
+        "       b.first_name AS customer_b,",
+        "       a.country",
+        "FROM customers AS a",
+        "JOIN customers AS b",
+        "  ON a.country = b.country",
+        " AND a.customer_id < b.customer_id",
+        "WHERE a.customer_id IN (797, 1600, 1619)",
+        "  AND b.customer_id IN (797, 1600, 1619);",
+      ].join("\n"),
+    },
+    {
+      kind: "prose",
+      heading: "Aliases also expose hierarchies",
+      body: [
+        "ShopFlow employees stores an employee's manager as another employee ID in the same table. A self-join reads employees AS e as the worker and employees AS m as the manager, then turns an ID relationship into names.",
+        "The same pattern supports referral trees, previous-versus-current snapshots, duplicate detection, and pairwise comparisons. The aliases are not cosmetic: they name the two roles in the relationship.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Resolve ShopFlow employees to their managers",
+      code: [
+        "SELECT e.employee_name,",
+        "       m.employee_name AS manager_name",
+        "FROM employees AS e",
+        "JOIN employees AS m",
+        "  ON e.manager_id = m.employee_id",
+        "WHERE e.employee_id IN (2, 4, 5)",
+        "ORDER BY e.employee_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "playground-practice",
+      title: "Generate ShopFlow customer-channel combinations",
+      prompt:
+        "Create the six combinations of customers 797, 1600, and 1619 with the channels email and sms. Use a query-local channel list and CROSS JOIN.",
+      tables: ["customers"],
+      successCheck: "Six ordered rows: every selected customer paired with both channels.",
+      href: "/sql-playground?practice=shopflow-generate-customer-channel-combinations",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "CROSS JOIN returns every left-row and right-row pairing.",
+        "Cartesian-product size is left rows × right rows.",
+        "Use CROSS JOIN deliberately to generate complete combinations.",
+        "A self-join uses aliases to assign one table two roles.",
+        "Use an inequality such as a.id < b.id for unique unordered pairs.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "cross-product",
+          question: "What does a CROSS JOIN return?",
+          options: [
+            "Every possible left-right row pair",
+            "Only equal keys",
+            "Only left rows",
+            "Only unmatched rows",
+          ],
+          correctIndex: 0,
+          explanation: "CROSS JOIN has no match condition and creates the Cartesian product.",
+        },
+        {
+          id: "cross-count",
+          question: "How many rows result from 3 customers CROSS JOIN 2 channels?",
+          options: ["6", "5", "3", "2"],
+          correctIndex: 0,
+          explanation: "The product is 3 × 2 = 6.",
+        },
+        {
+          id: "cross-use",
+          question: "When is CROSS JOIN appropriate?",
+          options: [
+            "Generating a complete intentional matrix",
+            "Matching a foreign key",
+            "Removing duplicate rows",
+            "Keeping unmatched left rows",
+          ],
+          correctIndex: 0,
+          explanation: "It is useful when every combination is genuinely required.",
+        },
+        {
+          id: "self-alias",
+          question: "Why use aliases in a self-join?",
+          options: [
+            "To give the two table roles distinct names",
+            "To prevent every join",
+            "To create NULL values",
+            "To avoid selecting columns",
+          ],
+          correctIndex: 0,
+          explanation: "Aliases distinguish the two logical roles played by one physical table.",
+        },
+        {
+          id: "self-pairs",
+          question: "Why use a.customer_id < b.customer_id for pairwise combinations?",
+          options: [
+            "It removes self-pairs and reverse duplicates",
+            "It includes every direction twice",
+            "It matches NULL values",
+            "It sorts the table",
+          ],
+          correctIndex: 0,
+          explanation: "Only one ordering of each pair can satisfy the less-than condition.",
+        },
+        {
+          id: "self-manager",
+          question: "Which self-join condition resolves an employee's manager?",
+          options: [
+            "e.manager_id = m.employee_id",
+            "e.employee_id < m.employee_id",
+            "e.department = m.department",
+            "e.employee_id = m.manager_id",
+          ],
+          correctIndex: 0,
+          explanation: "The employee's manager_id references another row's employee_id.",
+        },
+      ],
+    },
   ],
 };
 
@@ -2005,38 +2735,286 @@ const crossSelfJoins: LessonContent = {
 const semiAntiJoins: LessonContent = {
   slug: "semi-anti-joins",
   title: "Semi-Joins & Anti-Joins",
-  subtitle: "EXISTS / NOT EXISTS / IN / NOT IN (the NULL trap) / LEFT JOIN … IS NULL / EXCEPT as anti-join",
+  subtitle:
+    "EXISTS / NOT EXISTS / IN / NOT IN (the NULL trap) / LEFT JOIN … IS NULL / EXCEPT as anti-join",
   sections: [
-    { kind: "prose", heading: "Filter by relationship without bringing in right-side columns", body: ["A semi-join answers: does a related row exist? It keeps rows from the left input only. An anti-join answers the opposite question: which left rows have no related row? Neither pattern needs columns from the matching table.", "In ShopFlow, orders 2 and 3 belong to Priya (797) and Miles (1600). When we check those orders against selected customers, `EXISTS` keeps Priya and Miles; `NOT EXISTS` keeps Hana (1619). The resulting row grain stays one row per customer."] },
-    { kind: "image-carousel", images: [
-      { src: shopflowSemiJoinExistsImg, alt: "A ShopFlow semi-join diagram where customers Priya and Miles have matching orders and appear in the result, while Hana does not.", caption: "EXISTS is a membership test. It keeps matching customer rows but does not attach order columns or multiply a customer by the number of matching orders." },
-      { src: shopflowAntiJoinNullTrapImg, alt: "A ShopFlow anti-join and NULL-trap diagram. NOT EXISTS returns Hana, while NOT IN against a list containing NULL returns no rows.", caption: "NOT EXISTS, LEFT JOIN followed by IS NULL, and EXCEPT can express an anti-join. NOT IN is different when its subquery can return NULL." },
-    ] },
-    { kind: "code", language: "sql", caption: "EXISTS: return selected customers with a qualifying order", code: ["SELECT c.customer_id, c.first_name", "FROM customers AS c", "WHERE c.customer_id IN (797, 1600, 1619)", "  AND EXISTS (", "    SELECT 1", "    FROM orders AS o", "    WHERE o.customer_id = c.customer_id", "      AND o.order_id IN (2, 3)", "  )", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "table", caption: "EXISTS result: one row per matching customer", headers: ["customer_id", "first_name"], rows: [["797", "Priya"], ["1600", "Miles"]] },
-    { kind: "animation", variant: "q-shopflow-semi-anti-joins", caption: "Trace the membership test, reverse it with NOT EXISTS, see why a NULL breaks NOT IN, and finish with EXCEPT set difference." },
-    { kind: "prose", heading: "EXISTS and IN can express the same positive membership test", body: ["For one non-NULL key, `IN (subquery)` is often a compact way to write the same positive question. The database can optimize either form, so choose the version that makes the relationship clearest to the reader.", "Use `EXISTS` when the subquery naturally refers to the outer row, especially when its conditions are more involved. Use `IN` when you are clearly comparing one expression to a readable list of one column."] },
-    { kind: "code", language: "sql", caption: "IN: the same two ShopFlow customers", code: ["SELECT c.customer_id, c.first_name", "FROM customers AS c", "WHERE c.customer_id IN (797, 1600, 1619)", "  AND c.customer_id IN (", "    SELECT o.customer_id", "    FROM orders AS o", "    WHERE o.order_id IN (2, 3)", "  )", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "callout", tone: "info", title: "Semi-join versus INNER JOIN", body: "An INNER JOIN returns a row for each matching pair. EXISTS returns each qualifying left row once, even if several related rows exist. That makes EXISTS a natural choice when you only need to test membership." },
-    { kind: "prose", heading: "NOT EXISTS is the safest anti-join default", body: ["Put `NOT` in front of EXISTS to keep the selected customer only when no qualifying order is found. It remains well-defined even when nullable columns appear inside the related-table logic.", "For the same fixed order scope, Hana is the only selected customer without a qualifying order."] },
-    { kind: "code", language: "sql", caption: "NOT EXISTS: find the selected customer without a qualifying order", code: ["SELECT c.customer_id, c.first_name", "FROM customers AS c", "WHERE c.customer_id IN (797, 1600, 1619)", "  AND NOT EXISTS (", "    SELECT 1", "    FROM orders AS o", "    WHERE o.customer_id = c.customer_id", "      AND o.order_id IN (2, 3)", "  )", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "table", caption: "NOT EXISTS result", headers: ["customer_id", "first_name"], rows: [["1619", "Hana"]] },
-    { kind: "prose", heading: "NOT IN changes meaning when NULL enters the list", body: ["`x NOT IN (a, b)` means `x <> a AND x <> b`. If the list also contains NULL, one comparison becomes unknown. In SQL's three-valued logic, `true AND unknown` is unknown, and WHERE keeps only true rows.", "The CTE below is intentionally synthetic. ShopFlow's `orders.customer_id` is NOT NULL, but imported lists and optional lookup columns often are nullable. Treat `NOT IN` as safe only after proving or filtering away NULL values."] },
-    { kind: "code", language: "sql", caption: "The NULL trap: this returns no rows", code: ["WITH blocked_customer_ids(customer_id) AS (", "  VALUES (797), (NULL)", ")", "SELECT c.customer_id, c.first_name", "FROM customers AS c", "WHERE c.customer_id IN (797, 1600, 1619)", "  AND c.customer_id NOT IN (", "    SELECT customer_id", "    FROM blocked_customer_ids", "  )", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "callout", tone: "warn", title: "The NOT IN NULL trap", body: "A NULL from a NOT IN subquery can make every candidate evaluate to unknown, yielding no rows. Prefer NOT EXISTS, or add WHERE key IS NOT NULL inside the subquery when NOT IN is genuinely the clearest choice." },
-    { kind: "prose", heading: "Two other anti-join spellings", body: ["`LEFT JOIN ... IS NULL` is useful when you want to see the attempted relationship and then keep only left rows whose right-side key is NULL. Check a right-side key that is non-NULL for genuine matches, such as `o.order_id`.", "`EXCEPT` is set difference. It is concise when both queries produce the same key shape. Like other set operators, it removes duplicate rows, so use it when a distinct key set is the intended output."] },
-    { kind: "code", language: "sql", caption: "LEFT JOIN ... IS NULL: the same Hana anti-join", code: ["SELECT c.customer_id, c.first_name", "FROM customers AS c", "LEFT JOIN orders AS o", "  ON o.customer_id = c.customer_id", " AND o.order_id IN (2, 3)", "WHERE c.customer_id IN (797, 1600, 1619)", "  AND o.order_id IS NULL", "ORDER BY c.customer_id;"].join("\n") },
-    { kind: "code", language: "sql", caption: "EXCEPT: selected customer IDs minus qualifying order customer IDs", code: ["SELECT customer_id", "FROM customers", "WHERE customer_id IN (797, 1600, 1619)", "EXCEPT", "SELECT customer_id", "FROM orders", "WHERE order_id IN (2, 3);"].join("\n") },
-    { kind: "playground-practice", title: "Find a ShopFlow customer without a qualifying order", prompt: "Return the selected customer with no order among order IDs 2 and 3. Use NOT EXISTS so the query remains safe even if a future lookup can contain NULL.", tables: ["customers", "orders"], successCheck: "One ordered row: customer 1619, Hana.", href: "/sql-playground?practice=shopflow-find-customer-without-qualifying-order" },
-    { kind: "takeaways", items: ["EXISTS is a semi-join: it keeps each qualifying left row without adding right-side columns.", "NOT EXISTS is an anti-join: it keeps each left row with no qualifying related row.", "IN is concise for a one-column positive membership test.", "Avoid NOT IN when the subquery can return NULL, or filter NULL explicitly.", "LEFT JOIN ... IS NULL and EXCEPT are useful alternative anti-join shapes with different output and duplicate behavior."] },
-    { kind: "quiz", questions: [
-      { id: "semi-exists-purpose", question: "What does EXISTS test for each customer row?", options: ["Whether at least one related row satisfies the subquery", "Whether every order is paid", "Whether the customer ID is NULL", "Whether two tables have equal row counts"], correctIndex: 0, explanation: "EXISTS is true as soon as at least one qualifying related row is found." },
-      { id: "semi-grain", question: "Why can EXISTS be preferable to an INNER JOIN for a membership check?", options: ["It keeps a qualifying customer once even if several orders match", "It automatically selects order columns", "It returns unmatched orders", "It changes NULL to zero"], correctIndex: 0, explanation: "A semi-join filters the left rows rather than returning one row per matching pair." },
-      { id: "semi-in", question: "Which positive membership form can often express the same idea as EXISTS for one key?", options: ["IN (subquery)", "NOT IN (subquery)", "FULL OUTER JOIN", "CROSS JOIN"], correctIndex: 0, explanation: "IN compares a value to the one-column set returned by a subquery." },
-      { id: "anti-not-exists", question: "Which pattern safely finds selected customers with no qualifying order?", options: ["NOT EXISTS", "EXISTS", "INNER JOIN", "CROSS JOIN"], correctIndex: 0, explanation: "NOT EXISTS is the standard anti-join expression." },
-      { id: "anti-null-trap", question: "Why can NOT IN (subquery) unexpectedly return no rows?", options: ["A NULL in the subquery makes comparisons unknown", "It always removes duplicates", "It cannot read customer IDs", "It converts every ID to text"], correctIndex: 0, explanation: "WHERE retains only true; unknown results from a NULL comparison are filtered out." },
-      { id: "anti-alternatives", question: "Which pair can also express an anti-join depending on the desired output?", options: ["LEFT JOIN ... IS NULL and EXCEPT", "RIGHT JOIN and CROSS JOIN", "GROUP BY and HAVING", "ORDER BY and LIMIT"], correctIndex: 0, explanation: "A NULL right-side match key after LEFT JOIN and a set difference with EXCEPT can both identify left-only values." },
-    ] },
+    {
+      kind: "prose",
+      heading: "Filter by relationship without bringing in right-side columns",
+      body: [
+        "A semi-join answers: does a related row exist? It keeps rows from the left input only. An anti-join answers the opposite question: which left rows have no related row? Neither pattern needs columns from the matching table.",
+        "In ShopFlow, orders 2 and 3 belong to Priya (797) and Miles (1600). When we check those orders against selected customers, `EXISTS` keeps Priya and Miles; `NOT EXISTS` keeps Hana (1619). The resulting row grain stays one row per customer.",
+      ],
+    },
+    {
+      kind: "image-carousel",
+      images: [
+        {
+          src: shopflowSemiJoinExistsImg,
+          alt: "A ShopFlow semi-join diagram where customers Priya and Miles have matching orders and appear in the result, while Hana does not.",
+          caption:
+            "EXISTS is a membership test. It keeps matching customer rows but does not attach order columns or multiply a customer by the number of matching orders.",
+        },
+        {
+          src: shopflowAntiJoinNullTrapImg,
+          alt: "A ShopFlow anti-join and NULL-trap diagram. NOT EXISTS returns Hana, while NOT IN against a list containing NULL returns no rows.",
+          caption:
+            "NOT EXISTS, LEFT JOIN followed by IS NULL, and EXCEPT can express an anti-join. NOT IN is different when its subquery can return NULL.",
+        },
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "EXISTS: return selected customers with a qualifying order",
+      code: [
+        "SELECT c.customer_id, c.first_name",
+        "FROM customers AS c",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "  AND EXISTS (",
+        "    SELECT 1",
+        "    FROM orders AS o",
+        "    WHERE o.customer_id = c.customer_id",
+        "      AND o.order_id IN (2, 3)",
+        "  )",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "EXISTS result: one row per matching customer",
+      headers: ["customer_id", "first_name"],
+      rows: [
+        ["797", "Priya"],
+        ["1600", "Miles"],
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "q-shopflow-semi-anti-joins",
+      caption:
+        "Trace the membership test, reverse it with NOT EXISTS, see why a NULL breaks NOT IN, and finish with EXCEPT set difference.",
+    },
+    {
+      kind: "prose",
+      heading: "EXISTS and IN can express the same positive membership test",
+      body: [
+        "For one non-NULL key, `IN (subquery)` is often a compact way to write the same positive question. The database can optimize either form, so choose the version that makes the relationship clearest to the reader.",
+        "Use `EXISTS` when the subquery naturally refers to the outer row, especially when its conditions are more involved. Use `IN` when you are clearly comparing one expression to a readable list of one column.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "IN: the same two ShopFlow customers",
+      code: [
+        "SELECT c.customer_id, c.first_name",
+        "FROM customers AS c",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "  AND c.customer_id IN (",
+        "    SELECT o.customer_id",
+        "    FROM orders AS o",
+        "    WHERE o.order_id IN (2, 3)",
+        "  )",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Semi-join versus INNER JOIN",
+      body: "An INNER JOIN returns a row for each matching pair. EXISTS returns each qualifying left row once, even if several related rows exist. That makes EXISTS a natural choice when you only need to test membership.",
+    },
+    {
+      kind: "prose",
+      heading: "NOT EXISTS is the safest anti-join default",
+      body: [
+        "Put `NOT` in front of EXISTS to keep the selected customer only when no qualifying order is found. It remains well-defined even when nullable columns appear inside the related-table logic.",
+        "For the same fixed order scope, Hana is the only selected customer without a qualifying order.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "NOT EXISTS: find the selected customer without a qualifying order",
+      code: [
+        "SELECT c.customer_id, c.first_name",
+        "FROM customers AS c",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "  AND NOT EXISTS (",
+        "    SELECT 1",
+        "    FROM orders AS o",
+        "    WHERE o.customer_id = c.customer_id",
+        "      AND o.order_id IN (2, 3)",
+        "  )",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "table",
+      caption: "NOT EXISTS result",
+      headers: ["customer_id", "first_name"],
+      rows: [["1619", "Hana"]],
+    },
+    {
+      kind: "prose",
+      heading: "NOT IN changes meaning when NULL enters the list",
+      body: [
+        "`x NOT IN (a, b)` means `x <> a AND x <> b`. If the list also contains NULL, one comparison becomes unknown. In SQL's three-valued logic, `true AND unknown` is unknown, and WHERE keeps only true rows.",
+        "The CTE below is intentionally synthetic. ShopFlow's `orders.customer_id` is NOT NULL, but imported lists and optional lookup columns often are nullable. Treat `NOT IN` as safe only after proving or filtering away NULL values.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "The NULL trap: this returns no rows",
+      code: [
+        "WITH blocked_customer_ids(customer_id) AS (",
+        "  VALUES (797), (NULL)",
+        ")",
+        "SELECT c.customer_id, c.first_name",
+        "FROM customers AS c",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "  AND c.customer_id NOT IN (",
+        "    SELECT customer_id",
+        "    FROM blocked_customer_ids",
+        "  )",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "The NOT IN NULL trap",
+      body: "A NULL from a NOT IN subquery can make every candidate evaluate to unknown, yielding no rows. Prefer NOT EXISTS, or add WHERE key IS NOT NULL inside the subquery when NOT IN is genuinely the clearest choice.",
+    },
+    {
+      kind: "prose",
+      heading: "Two other anti-join spellings",
+      body: [
+        "`LEFT JOIN ... IS NULL` is useful when you want to see the attempted relationship and then keep only left rows whose right-side key is NULL. Check a right-side key that is non-NULL for genuine matches, such as `o.order_id`.",
+        "`EXCEPT` is set difference. It is concise when both queries produce the same key shape. Like other set operators, it removes duplicate rows, so use it when a distinct key set is the intended output.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "LEFT JOIN ... IS NULL: the same Hana anti-join",
+      code: [
+        "SELECT c.customer_id, c.first_name",
+        "FROM customers AS c",
+        "LEFT JOIN orders AS o",
+        "  ON o.customer_id = c.customer_id",
+        " AND o.order_id IN (2, 3)",
+        "WHERE c.customer_id IN (797, 1600, 1619)",
+        "  AND o.order_id IS NULL",
+        "ORDER BY c.customer_id;",
+      ].join("\n"),
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "EXCEPT: selected customer IDs minus qualifying order customer IDs",
+      code: [
+        "SELECT customer_id",
+        "FROM customers",
+        "WHERE customer_id IN (797, 1600, 1619)",
+        "EXCEPT",
+        "SELECT customer_id",
+        "FROM orders",
+        "WHERE order_id IN (2, 3);",
+      ].join("\n"),
+    },
+    {
+      kind: "playground-practice",
+      title: "Find a ShopFlow customer without a qualifying order",
+      prompt:
+        "Return the selected customer with no order among order IDs 2 and 3. Use NOT EXISTS so the query remains safe even if a future lookup can contain NULL.",
+      tables: ["customers", "orders"],
+      successCheck: "One ordered row: customer 1619, Hana.",
+      href: "/sql-playground?practice=shopflow-find-customer-without-qualifying-order",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "EXISTS is a semi-join: it keeps each qualifying left row without adding right-side columns.",
+        "NOT EXISTS is an anti-join: it keeps each left row with no qualifying related row.",
+        "IN is concise for a one-column positive membership test.",
+        "Avoid NOT IN when the subquery can return NULL, or filter NULL explicitly.",
+        "LEFT JOIN ... IS NULL and EXCEPT are useful alternative anti-join shapes with different output and duplicate behavior.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "semi-exists-purpose",
+          question: "What does EXISTS test for each customer row?",
+          options: [
+            "Whether at least one related row satisfies the subquery",
+            "Whether every order is paid",
+            "Whether the customer ID is NULL",
+            "Whether two tables have equal row counts",
+          ],
+          correctIndex: 0,
+          explanation: "EXISTS is true as soon as at least one qualifying related row is found.",
+        },
+        {
+          id: "semi-grain",
+          question: "Why can EXISTS be preferable to an INNER JOIN for a membership check?",
+          options: [
+            "It keeps a qualifying customer once even if several orders match",
+            "It automatically selects order columns",
+            "It returns unmatched orders",
+            "It changes NULL to zero",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A semi-join filters the left rows rather than returning one row per matching pair.",
+        },
+        {
+          id: "semi-in",
+          question:
+            "Which positive membership form can often express the same idea as EXISTS for one key?",
+          options: ["IN (subquery)", "NOT IN (subquery)", "FULL OUTER JOIN", "CROSS JOIN"],
+          correctIndex: 0,
+          explanation: "IN compares a value to the one-column set returned by a subquery.",
+        },
+        {
+          id: "anti-not-exists",
+          question: "Which pattern safely finds selected customers with no qualifying order?",
+          options: ["NOT EXISTS", "EXISTS", "INNER JOIN", "CROSS JOIN"],
+          correctIndex: 0,
+          explanation: "NOT EXISTS is the standard anti-join expression.",
+        },
+        {
+          id: "anti-null-trap",
+          question: "Why can NOT IN (subquery) unexpectedly return no rows?",
+          options: [
+            "A NULL in the subquery makes comparisons unknown",
+            "It always removes duplicates",
+            "It cannot read customer IDs",
+            "It converts every ID to text",
+          ],
+          correctIndex: 0,
+          explanation:
+            "WHERE retains only true; unknown results from a NULL comparison are filtered out.",
+        },
+        {
+          id: "anti-alternatives",
+          question: "Which pair can also express an anti-join depending on the desired output?",
+          options: [
+            "LEFT JOIN ... IS NULL and EXCEPT",
+            "RIGHT JOIN and CROSS JOIN",
+            "GROUP BY and HAVING",
+            "ORDER BY and LIMIT",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A NULL right-side match key after LEFT JOIN and a set difference with EXCEPT can both identify left-only values.",
+        },
+      ],
+    },
   ],
 };
 
@@ -2044,7 +3022,8 @@ const semiAntiJoins: LessonContent = {
 const nonEquiRangeAsof: LessonContent = {
   slug: "non-equi-range-asof",
   title: "Non-Equi, Range & ASOF Joins",
-  subtitle: "ON a BETWEEN b.lo AND b.hi / inequality joins / interval-overlap joins / ASOF JOIN (nearest-match, DuckDB)",
+  subtitle:
+    "ON a BETWEEN b.lo AND b.hi / inequality joins / interval-overlap joins / ASOF JOIN (nearest-match, DuckDB)",
   sections: [],
 };
 
@@ -2052,7 +3031,8 @@ const nonEquiRangeAsof: LessonContent = {
 const joinsAggregationFanOut: LessonContent = {
   slug: "joins-aggregation-fan-out",
   title: "Joins + Aggregation",
-  subtitle: "row multiplication / aggregate before joining / COUNT(DISTINCT) workaround / pre-aggregated subquery / matching GROUP BY grain",
+  subtitle:
+    "row multiplication / aggregate before joining / COUNT(DISTINCT) workaround / pre-aggregated subquery / matching GROUP BY grain",
   sections: [],
 };
 
@@ -2060,7 +3040,8 @@ const joinsAggregationFanOut: LessonContent = {
 const lateralJoins: LessonContent = {
   slug: "lateral-joins",
   title: "LATERAL Joins",
-  subtitle: "LATERAL / CROSS JOIN LATERAL / LEFT JOIN LATERAL / top-N per group / per-row correlated table expression",
+  subtitle:
+    "LATERAL / CROSS JOIN LATERAL / LEFT JOIN LATERAL / top-N per group / per-row correlated table expression",
   sections: [],
 };
 
@@ -2068,7 +3049,8 @@ const lateralJoins: LessonContent = {
 const joinOrderInternals: LessonContent = {
   slug: "join-order-internals",
   title: "Join Order, Internals & Performance",
-  subtitle: "driving table / chained joins & readability / nested loop vs hash vs merge / indexes on join keys / EXPLAIN / predicate pushdown",
+  subtitle:
+    "driving table / chained joins & readability / nested loop vs hash vs merge / indexes on join keys / EXPLAIN / predicate pushdown",
   sections: [],
 };
 
@@ -2088,7 +3070,8 @@ const joinsFinalQuiz: LessonContent = {
 const scalarSubqueries: LessonContent = {
   slug: "scalar-subqueries",
   title: "Scalar Subqueries",
-  subtitle: "Nested atomic expressions returning exactly one row, one column — used inside SELECT, WHERE, or expressions.",
+  subtitle:
+    "Nested atomic expressions returning exactly one row, one column — used inside SELECT, WHERE, or expressions.",
   sections: [
     {
       kind: "prose",
@@ -2151,7 +3134,11 @@ FROM   orders;                                       -- /* single-value lookup *
       rows: [
         ["Warm-up [595]", "Big Countries", "Scalar comparison in WHERE — pure syntax."],
         ["Drill [176]", "Second Highest Salary", "Scalar subquery with LIMIT/OFFSET for ranking."],
-        ["Challenge [177]", "Nth Highest Salary", "Scalar subquery wrapped in a function fused with parameter logic."],
+        [
+          "Challenge [177]",
+          "Nth Highest Salary",
+          "Scalar subquery wrapped in a function fused with parameter logic.",
+        ],
       ],
     },
     {
@@ -2244,9 +3231,21 @@ WHERE salary > dept_avg;             -- /* one pass, no per-row re-execution */`
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [181]", "Employees Earning More Than Their Managers", "Basic correlated reference."],
-        ["Drill [184]", "Department Highest Salary", "Correlated MAX rewritten via window function."],
-        ["Challenge [185]", "Department Top Three Salaries", "Correlated + DENSE_RANK fused with grouping."],
+        [
+          "Warm-up [181]",
+          "Employees Earning More Than Their Managers",
+          "Basic correlated reference.",
+        ],
+        [
+          "Drill [184]",
+          "Department Highest Salary",
+          "Correlated MAX rewritten via window function.",
+        ],
+        [
+          "Challenge [185]",
+          "Department Top Three Salaries",
+          "Correlated + DENSE_RANK fused with grouping.",
+        ],
       ],
     },
     {
@@ -2335,7 +3334,12 @@ WHERE  c.id NOT IN (
       rows: [
         ["EXISTS / NOT EXISTS", "Yes", "Hash Semi/Anti Join", "Default for any anti-join"],
         ["IN (subquery)", "Yes", "Hash Semi Join", "Small inner sets, no NULL risk"],
-        ["NOT IN (subquery)", "No (NULL = disaster)", "Anti Join only after NULL strip", "Avoid unless NULL-stripped"],
+        [
+          "NOT IN (subquery)",
+          "No (NULL = disaster)",
+          "Anti Join only after NULL strip",
+          "Avoid unless NULL-stripped",
+        ],
         ["= ANY(subquery)", "Yes", "Same as IN", "Verbose, rarely used"],
       ],
     },
@@ -2344,9 +3348,17 @@ WHERE  c.id NOT IN (
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [183]", "Customers Who Never Order", "Pure NOT EXISTS / LEFT JOIN syntactic validation."],
+        [
+          "Warm-up [183]",
+          "Customers Who Never Order",
+          "Pure NOT EXISTS / LEFT JOIN syntactic validation.",
+        ],
         ["Drill [1045]", "Customers Who Bought All Products", "EXISTS-style universal quantifier."],
-        ["Challenge [1565]", "Unique Orders and Customers Per Month", "EXISTS fused with aggregation and threshold logic."],
+        [
+          "Challenge [1565]",
+          "Unique Orders and Customers Per Month",
+          "EXISTS fused with aggregation and threshold logic.",
+        ],
       ],
     },
     {
@@ -2377,7 +3389,8 @@ WHERE  c.id NOT IN (
 const setOps: LessonContent = {
   slug: "set-ops",
   title: "Set Operations (UNION / INTERSECT / EXCEPT)",
-  subtitle: "Vertical schema concatenation, dedup overhead, and the UNION vs UNION ALL performance cliff.",
+  subtitle:
+    "Vertical schema concatenation, dedup overhead, and the UNION vs UNION ALL performance cliff.",
   sections: [
     {
       kind: "prose",
@@ -2446,9 +3459,21 @@ LIMIT  100;`,
       caption: "4. Progression Path — curated LeetCode matrix",
       headers: ["Tier", "Problem", "Focus"],
       rows: [
-        ["Warm-up [1795]", "Rearrange Products Table", "Basic UNION ALL vs UNION syntactic validation."],
-        ["Drill [602]", "Friend Requests II: Who Has the Most Friends", "UNION fused with aggregation and de-duplication."],
-        ["Challenge [1412]", "Find the Quiet Students in All Exams", "Multi-set composition combined with ranking and filtering."],
+        [
+          "Warm-up [1795]",
+          "Rearrange Products Table",
+          "Basic UNION ALL vs UNION syntactic validation.",
+        ],
+        [
+          "Drill [602]",
+          "Friend Requests II: Who Has the Most Friends",
+          "UNION fused with aggregation and de-duplication.",
+        ],
+        [
+          "Challenge [1412]",
+          "Find the Quiet Students in All Exams",
+          "Multi-set composition combined with ranking and filtering.",
+        ],
       ],
     },
     {
@@ -2514,7 +3539,17 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "table",
     blurb:
       "Core shapes, self joins, semi/anti filtering joins, and the Nested Loop vs Hash vs Sort-Merge planner decisions.",
-    lessons: [innerJoinsConditions, outerJoinsNull, crossSelfJoins, semiAntiJoins, nonEquiRangeAsof, joinsAggregationFanOut, lateralJoins, joinOrderInternals, joinsFinalQuiz],
+    lessons: [
+      innerJoinsConditions,
+      outerJoinsNull,
+      crossSelfJoins,
+      semiAntiJoins,
+      nonEquiRangeAsof,
+      joinsAggregationFanOut,
+      lateralJoins,
+      joinOrderInternals,
+      joinsFinalQuiz,
+    ],
   },
   subqueries: {
     slug: "subqueries",

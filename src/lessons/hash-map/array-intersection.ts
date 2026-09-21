@@ -40,9 +40,7 @@ function build({ a, b }: Inputs): Step[] {
       highlight: hit ? { kind: "match", indices: [i] } : { kind: "compare", indices: [i] },
       secondary: { label: `out { ${out.size} }`, array: [...out].map(String) },
       status: hit ? `hit ${num}` : `miss`,
-      narration: hit
-        ? `${num} is in the set — add to result.`
-        : `${num} not in set — skip.`,
+      narration: hit ? `${num} is in the set — add to result.` : `${num} not in set — skip.`,
     });
   }
   steps.push({

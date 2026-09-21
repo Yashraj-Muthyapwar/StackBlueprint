@@ -15,7 +15,7 @@ export const Route = createFileRoute("/docker/")({
 
 function DockerIndex() {
   const category = CATEGORY_BY_SLUG["docker"]!;
-  
+
   return (
     <TrackIndexLayout
       title={category.title}

@@ -26,7 +26,7 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
   const array = (step.array as number[]) ?? [];
   const waterLevels = step.waterLevels ?? new Array(array.length).fill(0);
   const pointers = step.pointers ?? [];
-  
+
   const n = array.length;
   if (n === 0) return null;
 
@@ -35,7 +35,8 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
   const maxH = Math.max(maxWater, 1);
 
   // Parse L_max and R_max from status if they exist
-  let lMax = 0, rMax = 0;
+  let lMax = 0,
+    rMax = 0;
   if (step.status) {
     const lMatch = step.status.match(/L_max = (\d+)/);
     const rMatch = step.status.match(/R_max = (\d+)/);
@@ -48,13 +49,16 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
   const GAP = n > 15 ? 1 : 2; // small gap between bars
   const desiredWidth = containerWidth > 0 ? containerWidth - padding * 2 : 600;
   const CELL = Math.max((desiredWidth - (n - 1) * GAP) / n, 8); // at least 8px wide bars
-  
+
   // Height math
   const CHART_HEIGHT = 180;
   const unitHeight = CHART_HEIGHT / maxH;
-  
+
   return (
-    <div ref={containerRef} className="relative h-full w-full overflow-hidden flex flex-col items-center justify-center pt-8 pb-24">
+    <div
+      ref={containerRef}
+      className="relative h-full w-full overflow-hidden flex flex-col items-center justify-center pt-8 pb-24"
+    >
       {/* Status */}
       {step.status && (
         <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
@@ -70,20 +74,21 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
       )}
 
       {/* Chart Container */}
-      <div 
+      <div
         className="relative flex items-end"
         style={{ width: n * CELL + (n - 1) * GAP, height: CHART_HEIGHT, gap: GAP }}
       >
         {/* Background Grid Lines */}
-        {Array.from({ length: maxH + 1 }).map((_, i) => (
-          i > 0 && (
-            <div 
-              key={i} 
-              className="absolute w-full border-b border-hairline/30 z-0"
-              style={{ bottom: i * unitHeight }}
-            />
-          )
-        ))}
+        {Array.from({ length: maxH + 1 }).map(
+          (_, i) =>
+            i > 0 && (
+              <div
+                key={i}
+                className="absolute w-full border-b border-hairline/30 z-0"
+                style={{ bottom: i * unitHeight }}
+              />
+            ),
+        )}
 
         {/* Left Max Guide */}
         <motion.div
@@ -93,9 +98,11 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
           className="absolute left-0 w-[45%] border-t-2 border-dashed border-mint/60 z-30 pointer-events-none"
           style={{ bottom: 0 }}
         >
-          <span className="absolute -top-6 left-0 text-[10px] font-mono text-mint font-bold bg-surface/90 px-1.5 py-0.5 rounded-sm shadow-sm backdrop-blur-sm">L_max = {lMax}</span>
+          <span className="absolute -top-6 left-0 text-[10px] font-mono text-mint font-bold bg-surface/90 px-1.5 py-0.5 rounded-sm shadow-sm backdrop-blur-sm">
+            L_max = {lMax}
+          </span>
         </motion.div>
-        
+
         {/* Right Max Guide */}
         <motion.div
           initial={false}
@@ -104,7 +111,9 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
           className="absolute right-0 w-[45%] border-t-2 border-dashed border-amber/60 z-30 pointer-events-none"
           style={{ bottom: 0 }}
         >
-          <span className="absolute -top-6 right-0 text-[10px] font-mono text-amber font-bold bg-surface/90 px-1.5 py-0.5 rounded-sm shadow-sm backdrop-blur-sm">R_max = {rMax}</span>
+          <span className="absolute -top-6 right-0 text-[10px] font-mono text-amber font-bold bg-surface/90 px-1.5 py-0.5 rounded-sm shadow-sm backdrop-blur-sm">
+            R_max = {rMax}
+          </span>
         </motion.div>
 
         {array.map((val, i) => {
@@ -112,7 +121,11 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
           const isHighlighted = step.highlight?.indices.includes(i);
 
           return (
-            <div key={i} className="relative flex flex-col justify-end group" style={{ width: CELL, height: CHART_HEIGHT }}>
+            <div
+              key={i}
+              className="relative flex flex-col justify-end group"
+              style={{ width: CELL, height: CHART_HEIGHT }}
+            >
               {/* Water Block */}
               <AnimatePresence>
                 {water > 0 && (
@@ -122,11 +135,11 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                     className="w-full bg-gradient-to-t from-sky-500/40 to-sky-400/70 backdrop-blur-[2px] border-t border-sky-300/80 shadow-[0_0_15px_rgba(14,165,233,0.3)] rounded-t-[2px]"
-                    style={{ position: 'absolute', bottom: val * unitHeight, zIndex: 10 }}
+                    style={{ position: "absolute", bottom: val * unitHeight, zIndex: 10 }}
                   />
                 )}
               </AnimatePresence>
-              
+
               {/* Terrain Block */}
               <motion.div
                 initial={false}
@@ -134,16 +147,20 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
                 transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
                 className={cn(
                   "w-full rounded-t-[3px] shadow-sm transition-colors border-t border-white/10",
-                  isHighlighted ? "bg-gradient-to-t from-amber-500 to-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)]" : "bg-gradient-to-t from-slate-800 to-slate-500 dark:from-slate-700 dark:to-slate-400"
+                  isHighlighted
+                    ? "bg-gradient-to-t from-amber-500 to-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.4)]"
+                    : "bg-gradient-to-t from-slate-800 to-slate-500 dark:from-slate-700 dark:to-slate-400",
                 )}
                 style={{ zIndex: 20 }}
               />
-              
+
               {/* Value Label (only shown if val > 0 or if we hover) */}
-              <div className={cn(
-                "absolute -bottom-7 w-full text-center font-mono text-[10px] transition-opacity",
-                val > 0 ? "text-foreground/70" : "text-foreground/30"
-              )}>
+              <div
+                className={cn(
+                  "absolute -bottom-7 w-full text-center font-mono text-[10px] transition-opacity",
+                  val > 0 ? "text-foreground/70" : "text-foreground/30",
+                )}
+              >
                 {val}
               </div>
             </div>
@@ -155,7 +172,7 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
           const x = p.index * (CELL + GAP) + CELL / 2;
           const color = COLOR_MAP[p.color];
           const isHighlight = step.highlight?.indices.includes(p.index);
-          
+
           return (
             <motion.div
               key={p.name}
@@ -167,25 +184,25 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
             >
               {/* Connection line shooting up to the terrain */}
               {isHighlight && (
-                <motion.div 
+                <motion.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: CHART_HEIGHT + 30, opacity: 0.3 }}
                   className="absolute bottom-10 w-px border-l border-dashed z-0"
                   style={{ borderColor: color }}
                 />
               )}
-              
-              <div
-                className="mb-1 h-3 w-0.5 z-10"
-                style={{ backgroundColor: color }}
-              />
+
+              <div className="mb-1 h-3 w-0.5 z-10" style={{ backgroundColor: color }} />
               <div
                 className="flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-md z-10"
                 style={{ backgroundColor: color }}
               >
                 {p.name.slice(0, 1).toUpperCase()}
               </div>
-              <div className="mt-0.5 text-[9px] font-mono font-bold uppercase tracking-wider opacity-90 z-10" style={{ color }}>
+              <div
+                className="mt-0.5 text-[9px] font-mono font-bold uppercase tracking-wider opacity-90 z-10"
+                style={{ color }}
+              >
                 {p.name}
               </div>
             </motion.div>

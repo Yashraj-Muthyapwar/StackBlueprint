@@ -33,12 +33,42 @@ const DEFAULTS: Record<Mode, number[]> = {
 };
 
 const practiceLadder: PracticeProblem[] = [
-  { name: "Linked List Cycle", difficulty: "easy", hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.", link: "https://leetcode.com/problems/linked-list-cycle/" },
-  { name: "Remove Duplicates from Sorted Array", difficulty: "easy", hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.", link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/" },
-  { name: "Linked List Cycle II", difficulty: "medium", hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.", link: "https://leetcode.com/problems/linked-list-cycle-ii/" },
-  { name: "Find the Duplicate Number", difficulty: "medium", hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.", link: "https://leetcode.com/problems/find-the-duplicate-number/" },
-  { name: "Minimum Window Substring", difficulty: "hard", hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.", link: "https://leetcode.com/problems/minimum-window-substring/" },
-  { name: "Subarrays with K Different Integers", difficulty: "hard", hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.", link: "https://leetcode.com/problems/subarrays-with-k-different-integers/" },
+  {
+    name: "Linked List Cycle",
+    difficulty: "easy",
+    hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.",
+    link: "https://leetcode.com/problems/linked-list-cycle/",
+  },
+  {
+    name: "Remove Duplicates from Sorted Array",
+    difficulty: "easy",
+    hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.",
+    link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+  },
+  {
+    name: "Linked List Cycle II",
+    difficulty: "medium",
+    hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.",
+    link: "https://leetcode.com/problems/linked-list-cycle-ii/",
+  },
+  {
+    name: "Find the Duplicate Number",
+    difficulty: "medium",
+    hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.",
+    link: "https://leetcode.com/problems/find-the-duplicate-number/",
+  },
+  {
+    name: "Minimum Window Substring",
+    difficulty: "hard",
+    hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.",
+    link: "https://leetcode.com/problems/minimum-window-substring/",
+  },
+  {
+    name: "Subarrays with K Different Integers",
+    difficulty: "hard",
+    hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.",
+    link: "https://leetcode.com/problems/subarrays-with-k-different-integers/",
+  },
 ];
 
 function ptrs(slow: number, fast: number, n: number) {
@@ -71,9 +101,9 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     line: 2,
     array: [...data],
     pointers: ptrs(0, 0, n),
-    narration: "Check if array is empty."
+    narration: "Check if array is empty.",
   });
-  
+
   steps.push({
     line: 4,
     array: [...data],
@@ -91,7 +121,6 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     narration: "for loop: fast advances to index 1 to scan ahead; slow stays at 0.",
   });
 
-
   for (let fast = 1; fast < n; fast++) {
     const same = data[fast] === data[slow];
     if (fast > 1) {
@@ -101,10 +130,10 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
         pointers: ptrs(slow, fast, n),
         partitions: win(slow),
         status: `fast = ${fast}`,
-        narration: `for loop: fast moves to index ${fast}.`
+        narration: `for loop: fast moves to index ${fast}.`,
       });
     }
-    
+
     if (same) {
       steps.push({
         line: 6,
@@ -213,9 +242,9 @@ function buildFindDuplicate(arr: number[]): Step[] {
       line: 3,
       array: [...arr],
       pointers: ptrs(slow, fast, n),
-      narration: "while True: start next iteration."
+      narration: "while True: start next iteration.",
     });
-    
+
     const ns = arr[slow];
     steps.push({
       line: 4,
@@ -240,9 +269,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
       array: [...arr],
       pointers: ptrs(ns, f2, n),
       highlight:
-        ns === f2
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, f2] },
+        ns === f2 ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, f2] },
       status: `fast hop 2/2: ${f1} → nums[${f1}] = ${f2}`,
       narration:
         ns === f2
@@ -254,9 +281,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
       array: [...arr],
       pointers: ptrs(ns, f2, n),
       highlight:
-        ns === f2
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, f2] },
+        ns === f2 ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, f2] },
       status:
         ns === f2
           ? `slow (${ns}) == fast (${f2}) → break`
@@ -273,7 +298,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
         line: 7,
         array: [...arr],
         pointers: ptrs(slow, fast, n),
-        narration: `break: slow equals fast, cycle detected.`
+        narration: `break: slow equals fast, cycle detected.`,
       });
       break;
     }
@@ -313,9 +338,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
       array: [...arr],
       pointers: ptrs(ns, nf, n),
       highlight:
-        ns === nf
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, nf] },
+        ns === nf ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, nf] },
       status: `fast: ${fast} → nums[${fast}] = ${nf}`,
       narration:
         ns === nf
@@ -325,7 +348,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
     slow = ns;
     fast = nf;
   }
-  
+
   steps.push({
     line: 9,
     array: [...arr],

@@ -11,7 +11,14 @@ import {
   type ManifestTable,
 } from "./manifest.generated";
 
-export type DatasetId = "cosmetics_48h" | "cycledepot" | "ergast" | "marvel" | "olist" | "sql_lab" | "my-workspace";
+export type DatasetId =
+  | "cosmetics_48h"
+  | "cycledepot"
+  | "ergast"
+  | "marvel"
+  | "olist"
+  | "sql_lab"
+  | "my-workspace";
 
 export type Difficulty = "beginner" | "intermediate" | "advanced";
 
@@ -26,10 +33,7 @@ export interface DatasetDef {
   /** Engines this dataset can run on. */
   engines: Engine[];
   /** How the data gets into the engine. */
-  source:
-  | { kind: "generated" }
-  | { kind: "blank" }
-  | { kind: "csv"; manifest: DatasetManifest };
+  source: { kind: "generated" } | { kind: "blank" } | { kind: "csv"; manifest: DatasetManifest };
   /** Compressed bytes fetched on first use. 0 means nothing is downloaded. */
   bytes: number;
   /** Headline numbers for the picker. */
@@ -159,7 +163,7 @@ export const DATASETS: DatasetDef[] = [
     caveats: [
       "Synthetic, deterministic data (seed 42). Both engines share the schema; inspect plans and behavior instead of assuming they match.",
     ],
-  }
+  },
 ];
 
 export const DEFAULT_DATASET: DatasetId = "cycledepot";

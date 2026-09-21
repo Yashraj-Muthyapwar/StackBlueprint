@@ -23,7 +23,13 @@ function build({ arr, k }: Inputs): Step[] {
     array: [...seen.entries()].map(([key, v]) => `${key}:${v}`),
   });
 
-  steps.push({ line: 3, array: [...arr], pointers: [], secondary: sec(`count=${count}`), narration: `Looking for subarrays with XOR = ${k}.` });
+  steps.push({
+    line: 3,
+    array: [...arr],
+    pointers: [],
+    secondary: sec(`count=${count}`),
+    narration: `Looking for subarrays with XOR = ${k}.`,
+  });
   for (let i = 0; i < arr.length; i++) {
     prefix ^= arr[i];
     const need = prefix ^ k;
@@ -40,7 +46,13 @@ function build({ arr, k }: Inputs): Step[] {
     });
     seen.set(prefix, (seen.get(prefix) ?? 0) + 1);
   }
-  steps.push({ line: 8, array: [...arr], status: `return ${count}`, narration: `Total subarrays with XOR ${k}: ${count}.`, pointers: [] });
+  steps.push({
+    line: 8,
+    array: [...arr],
+    status: `return ${count}`,
+    narration: `Total subarrays with XOR ${k}: ${count}.`,
+    pointers: [],
+  });
   return steps;
 }
 
@@ -48,7 +60,8 @@ export const subarrayGivenXor: LessonBuilder<Inputs> = {
   slug: "subarray-given-xor",
   title: "Subarrays with Given XOR",
   subtitle: "If prefix XOR up to i is P, count earlier prefixes equal to P ^ k.",
-  problem: "Given an array and an integer k, count the number of contiguous subarrays whose XOR equals k.",
+  problem:
+    "Given an array and an integer k, count the number of contiguous subarrays whose XOR equals k.",
   spotIt: [
     "'Count / find subarrays whose XOR equals K'.",
     "Range XOR + hash map of prefix XOR counts.",
@@ -67,6 +80,7 @@ export const subarrayGivenXor: LessonBuilder<Inputs> = {
     { key: "arr", label: "Array (non-negative ints)", kind: "intArray" },
     { key: "k", label: "Target XOR k", kind: "int" },
   ],
-  validate: ({ arr }) => (arr.some((v) => v < 0) ? ["Use non-negative ints for XOR in this demo."] : []),
+  validate: ({ arr }) =>
+    arr.some((v) => v < 0) ? ["Use non-negative ints for XOR in this demo."] : [],
   build,
 };

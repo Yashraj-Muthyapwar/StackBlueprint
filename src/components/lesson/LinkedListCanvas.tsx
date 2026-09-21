@@ -16,8 +16,6 @@ function sizing(n: number) {
   return { NODE: 28, GAP_X: 12 };
 }
 
-
-
 export function LinkedListCanvas({
   step,
   shape,
@@ -74,7 +72,10 @@ export function LinkedListCanvas({
       )}
 
       <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative origin-center shrink-0" style={{ width: desiredWidth, height: 260, transform: `scale(${scale})` }}>
+        <div
+          className="relative origin-center shrink-0"
+          style={{ width: desiredWidth, height: 260, transform: `scale(${scale})` }}
+        >
           <svg
             width={desiredWidth}
             height={260}
@@ -135,9 +136,7 @@ export function LinkedListCanvas({
           {/* nodes */}
           {positions.map((cx, i) => {
             const hit =
-              step.highlight && step.highlight.indices.includes(i)
-                ? step.highlight.kind
-                : null;
+              step.highlight && step.highlight.indices.includes(i) ? step.highlight.kind : null;
             const ring =
               hit === "match" ? "var(--mint)" : hit === "compare" ? "var(--violet)" : "transparent";
             return (
@@ -192,7 +191,6 @@ export function LinkedListCanvas({
               />
             ),
           )}
-
         </div>
       </div>
     </div>
@@ -214,7 +212,11 @@ function PointerCaret({
     <motion.div
       layoutId={`ll-caret-${ps.map((p) => p.name).join("|")}-${direction}`}
       className="absolute flex flex-col items-center"
-      style={{ left: x, top: y, transform: "translate(-50%, " + (direction === "down" ? "-100%" : "0") + ")" }}
+      style={{
+        left: x,
+        top: y,
+        transform: "translate(-50%, " + (direction === "down" ? "-100%" : "0") + ")",
+      }}
       transition={{ type: "spring", stiffness: 320, damping: 28 }}
     >
       {direction === "down" && (

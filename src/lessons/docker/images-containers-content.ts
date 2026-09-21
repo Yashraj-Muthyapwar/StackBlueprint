@@ -20,27 +20,27 @@ const whatIsImage: LessonContent = {
         "Every container you've run so far, whether it's `hello-world`, an Ubuntu shell, or Nginx, started from something. That something is a **Docker image**. An image is a read-only template that packages an application's filesystem, libraries, dependencies, configuration, and everything else it needs to run.",
         "Think of an image as the blueprint for a house. The blueprint never becomes a house itself. It simply describes how to build one. Every time Docker creates a container, it is like constructing a new house from the same blueprint. Each house can be lived in independently, but the blueprint never changes.",
         "If you're familiar with object-oriented programming, you can think of an image as a **class** and a container as an **instance** of that class.",
-        "An image never runs by itself. It simply exists on your computer or in a container registry such as Docker Hub, waiting to be used. When you run:"
-      ]
+        "An image never runs by itself. It simply exists on your computer or in a container registry such as Docker Hub, waiting to be used. When you run:",
+      ],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run nginx"
+      code: "docker run nginx",
     },
     {
       kind: "prose",
       body: [
         "Docker takes the `nginx` image, adds a thin writable layer on top of it, and creates a container.",
         "Any files you create, logs you generate, or changes you make while the container is running are stored only in that writable layer. If you remove the container, those changes disappear unless they were stored somewhere persistent, such as a Docker volume, which we'll cover later.",
-        "The original image underneath never changes. That is why you can start ten containers from the same image and each one runs independently without affecting the others."
-      ]
+        "The original image underneath never changes. That is why you can start ten containers from the same image and each one runs independently without affecting the others.",
+      ],
     },
     {
       kind: "callout",
       tone: "warn",
       title: "Important",
-      body: "Docker images are **immutable**. Once an image has been built, its contents never change. If you need to update your application or install new software, you build a new image instead of modifying the existing one. This makes deployments predictable, repeatable, and easy to reproduce."
+      body: "Docker images are **immutable**. Once an image has been built, its contents never change. If you need to update your application or install new software, you build a new image instead of modifying the existing one. This makes deployments predictable, repeatable, and easy to reproduce.",
     },
     {
       kind: "image",
@@ -61,15 +61,13 @@ const whatIsImage: LessonContent = {
         "• **Image metadata**, such as the default command to run",
         "One thing an image does **not** contain is the operating system kernel.",
         "Unlike virtual machines, Docker containers share the host machine's kernel. Because of this, containers are much lighter than virtual machines. They use fewer resources and usually start in just a few seconds.",
-        "Since an image packages everything except the kernel, the same image can run consistently on a developer's laptop, a testing environment, or a production server without needing to be changed."
-      ]
+        "Since an image packages everything except the kernel, the same image can run consistently on a developer's laptop, a testing environment, or a production server without needing to be changed.",
+      ],
     },
     {
       kind: "prose",
       heading: "Where do images come from?",
-      body: [
-        "Most Docker images come from one of two places."
-      ]
+      body: ["Most Docker images come from one of two places."],
     },
     {
       kind: "prose",
@@ -77,8 +75,8 @@ const whatIsImage: LessonContent = {
       body: [
         "Many developers start by downloading pre-built images from a container registry such as Docker Hub.",
         "Examples include:\n\n **nginx**,\n **ubuntu**,\n **postgres**, and \n **redis**",
-        "These images are maintained by software vendors or the open source community and are ready to use."
-      ]
+        "These images are maintained by software vendors or the open source community and are ready to use.",
+      ],
     },
     {
       kind: "prose",
@@ -86,8 +84,8 @@ const whatIsImage: LessonContent = {
       body: [
         "When you're developing your own application, you'll write a **Dockerfile**. A Dockerfile contains instructions that tell Docker how to build your image.",
         "Docker executes those instructions and packages your application into a reusable image.",
-        "Whether an image is downloaded from Docker Hub or built from your own Dockerfile, Docker treats them exactly the same. Both are reusable templates that can be used to create containers."
-      ]
+        "Whether an image is downloaded from Docker Hub or built from your own Dockerfile, Docker treats them exactly the same. Both are reusable templates that can be used to create containers.",
+      ],
     },
     {
       kind: "prose",
@@ -95,73 +93,69 @@ const whatIsImage: LessonContent = {
       body: [
         "A Docker image is not one large file. Instead, it is made up of a stack of read-only layers.",
         "Most filesystem-changing Dockerfile instructions, such as `RUN`, `COPY`, and `ADD`, create new filesystem layers. Other instructions, such as `CMD`, `ENTRYPOINT`, and `ENV`, store metadata instead of creating filesystem layers.",
-        "Consider this Dockerfile:"
-      ]
+        "Consider this Dockerfile:",
+      ],
     },
     {
       kind: "code",
       language: "dockerfile",
-      code: "FROM ubuntu\nRUN apt-get update && apt-get install -y python3\nRUN pip install flask\nCOPY . /opt/source-code"
+      code: "FROM ubuntu\nRUN apt-get update && apt-get install -y python3\nRUN pip install flask\nCOPY . /opt/source-code",
     },
     {
       kind: "prose",
       body: [
-        "Docker begins with the layers from the Ubuntu base image and then adds new layers as it processes each instruction."
-      ]
+        "Docker begins with the layers from the Ubuntu base image and then adds new layers as it processes each instruction.",
+      ],
     },
     {
       kind: "code",
       language: "text",
-      code: "Application Code\nCOPY . /opt/source-code\n\nPython Packages\nRUN pip install flask\n\nUbuntu Packages\nRUN apt-get update && apt-get install -y python3\n\nUbuntu Base Image\nFROM ubuntu"
+      code: "Application Code\nCOPY . /opt/source-code\n\nPython Packages\nRUN pip install flask\n\nUbuntu Packages\nRUN apt-get update && apt-get install -y python3\n\nUbuntu Base Image\nFROM ubuntu",
     },
     {
       kind: "prose",
-      body: [
-        "When you start a container, Docker adds one final writable layer on top."
-      ]
+      body: ["When you start a container, Docker adds one final writable layer on top."],
     },
     {
       kind: "code",
       language: "text",
-      code: "┌──────────────────────────────┐\n│ Writable Container Layer     │\n├──────────────────────────────┤\n│ Application Code             │\n├──────────────────────────────┤\n│ Python Packages              │\n├──────────────────────────────┤\n│ Ubuntu Packages              │\n├──────────────────────────────┤\n│ Ubuntu Base Image            │\n└──────────────────────────────┘"
+      code: "┌──────────────────────────────┐\n│ Writable Container Layer     │\n├──────────────────────────────┤\n│ Application Code             │\n├──────────────────────────────┤\n│ Python Packages              │\n├──────────────────────────────┤\n│ Ubuntu Packages              │\n├──────────────────────────────┤\n│ Ubuntu Base Image            │\n└──────────────────────────────┘",
     },
     {
       kind: "prose",
       body: [
-        "The image layers are read-only and can be shared by every container created from that image. Only the writable layer belongs to a specific container."
-      ]
+        "The image layers are read-only and can be shared by every container created from that image. Only the writable layer belongs to a specific container.",
+      ],
     },
     {
       kind: "prose",
       heading: "Why layers matter",
-      body: [
-        "Layers provide two major benefits."
-      ]
+      body: ["Layers provide two major benefits."],
     },
     {
       kind: "prose",
       heading: "Storage efficiency",
       body: [
         "Docker stores each layer only once on your machine.",
-        "Imagine you build three different images that all start with the Ubuntu base image."
-      ]
+        "Imagine you build three different images that all start with the Ubuntu base image.",
+      ],
     },
     {
       kind: "code",
       language: "text",
-      code: "Image A          Image B          Image C\n├── Ubuntu       ├── Ubuntu       ├── Ubuntu\n├── Python       ├── Java         ├── Node.js\n└── App A        └── App B        └── App C"
+      code: "Image A          Image B          Image C\n├── Ubuntu       ├── Ubuntu       ├── Ubuntu\n├── Python       ├── Java         ├── Node.js\n└── App A        └── App B        └── App C",
     },
     {
       kind: "prose",
       body: [
-        "Docker stores the Ubuntu layer only once. Every image references that shared layer, which saves disk space."
-      ]
+        "Docker stores the Ubuntu layer only once. Every image references that shared layer, which saves disk space.",
+      ],
     },
     {
       kind: "callout",
       tone: "info",
       title: "Did you know?",
-      body: "Some official base images are shared by millions of containers worldwide. Docker stores each shared layer only once on your machine, no matter how many images use it."
+      body: "Some official base images are shared by millions of containers worldwide. Docker stores each shared layer only once on your machine, no matter how many images use it.",
     },
     {
       kind: "prose",
@@ -169,8 +163,8 @@ const whatIsImage: LessonContent = {
       body: [
         "Docker also caches the layers it builds.",
         "Suppose you change a single line of application code. Docker does not need to rebuild the entire image. Instead, it reuses the unchanged layers from the cache and rebuilds only the changed layer and the layers that follow.",
-        "This makes rebuilding images after small code changes much faster."
-      ]
+        "This makes rebuilding images after small code changes much faster.",
+      ],
     },
     {
       kind: "prose",
@@ -178,8 +172,8 @@ const whatIsImage: LessonContent = {
       body: [
         "Later in the course, you'll learn about **multi-stage builds**.",
         "A multi-stage build lets you compile your application using large build tools in one stage and then copy only the finished application into a smaller production image.",
-        "The final image contains only what is needed to run the application. This makes it smaller, faster to download, and more secure."
-      ]
+        "The final image contains only what is needed to run the application. This makes it smaller, faster to download, and more secure.",
+      ],
     },
     {
       kind: "image",
@@ -190,51 +184,44 @@ const whatIsImage: LessonContent = {
     {
       kind: "prose",
       heading: "Tags: naming different versions of an image",
-      body: [
-        "When you type:"
-      ]
+      body: ["When you type:"],
     },
     {
       kind: "code",
       language: "text",
-      code: "nginx"
+      code: "nginx",
     },
     {
       kind: "prose",
-      body: [
-        "Docker assumes:"
-      ]
+      body: ["Docker assumes:"],
     },
     {
       kind: "code",
       language: "text",
-      code: "nginx:latest"
+      code: "nginx:latest",
     },
     {
       kind: "prose",
-      body: [
-        "The part after the colon is called the **tag**.",
-        "For example:"
-      ]
+      body: ["The part after the colon is called the **tag**.", "For example:"],
     },
     {
       kind: "code",
       language: "text",
-      code: "nginx:latest\nnginx:1.25\nnginx:1.25-alpine"
+      code: "nginx:latest\nnginx:1.25\nnginx:1.25-alpine",
     },
     {
       kind: "prose",
       body: [
         "Although these images share the same repository name, they can be very different.",
         "They may use different versions of Nginx, different Linux distributions, different installed packages, or have completely different image sizes.",
-        "A tag is simply a human-readable name for a particular version of an image."
-      ]
+        "A tag is simply a human-readable name for a particular version of an image.",
+      ],
     },
     {
       kind: "callout",
       tone: "warn",
       title: "Important",
-      body: "The `latest` tag is not special. It is simply the default tag Docker uses when you do not specify one. Whether it points to the newest version depends entirely on how the image publisher manages it. In production environments, it is usually better to use a specific version such as `nginx:1.25` so deployments remain predictable."
+      body: "The `latest` tag is not special. It is simply the default tag Docker uses when you do not specify one. Whether it points to the newest version depends entirely on how the image publisher manages it. In production environments, it is usually better to use a specific version such as `nginx:1.25` so deployments remain predictable.",
     },
     {
       kind: "prose",
@@ -242,13 +229,13 @@ const whatIsImage: LessonContent = {
       body: [
         "Every Docker image also has a **digest**.",
         "A digest is a SHA256 hash that uniquely identifies the exact contents of an image.",
-        "For example:"
-      ]
+        "For example:",
+      ],
     },
     {
       kind: "code",
       language: "text",
-      code: "sha256:3f1d7d..."
+      code: "sha256:3f1d7d...",
     },
     {
       kind: "prose",
@@ -258,16 +245,16 @@ const whatIsImage: LessonContent = {
         "• **Multiple tags can point to the same digest.**",
         "• **A tag can later point to a different digest if a newer image is published.**",
         "• **A digest always identifies one exact image.**",
-        "If you need to guarantee that every environment runs the exact same image, use the digest instead of the tag."
-      ]
+        "If you need to guarantee that every environment runs the exact same image, use the digest instead of the tag.",
+      ],
     },
     {
       kind: "prose",
       heading: "The distinction that matters",
       body: [
         "A Docker image is immutable, reusable, and shared.",
-        "A Docker container is a running instance created from that image."
-      ]
+        "A Docker container is a running instance created from that image.",
+      ],
     },
 
     {
@@ -280,8 +267,8 @@ const whatIsImage: LessonContent = {
     {
       kind: "prose",
       body: [
-        "In practice, you'll build an image occasionally, but you'll create, stop, remove, and recreate containers many times. That separation between an unchanging image and disposable containers is one of Docker's biggest strengths."
-      ]
+        "In practice, you'll build an image occasionally, but you'll create, stop, remove, and recreate containers many times. That separation between an unchanging image and disposable containers is one of Docker's biggest strengths.",
+      ],
     },
     {
       kind: "takeaways",
@@ -294,15 +281,15 @@ const whatIsImage: LessonContent = {
         "Docker images are built from read-only layers that can be shared across many images and containers.",
         "Layer caching speeds up image rebuilds by reusing unchanged layers.",
         "Tags provide human-readable version names, while digests uniquely identify the exact contents of an image.",
-        "In production, specific version tags or image digests are safer than relying on `latest`."
-      ]
+        "In production, specific version tags or image digests are safer than relying on `latest`.",
+      ],
     },
     {
       kind: "prose",
       heading: "What's Next?",
       body: [
-        "Now that you understand what a Docker image is, the next step is learning how to find, download, and inspect images. In the next lesson, you'll explore commands such as `docker pull`, `docker image ls`, `docker inspect`, and `docker history` to see how Docker stores and manages images locally."
-      ]
+        "Now that you understand what a Docker image is, the next step is learning how to find, download, and inspect images. In the next lesson, you'll explore commands such as `docker pull`, `docker image ls`, `docker inspect`, and `docker history` to see how Docker stores and manages images locally.",
+      ],
     },
     {
       kind: "quiz",
@@ -317,7 +304,8 @@ const whatIsImage: LessonContent = {
             "A writable layer where application logs are stored",
           ],
           correctIndex: 2,
-          explanation: "An image is a read-only template that packages everything an application needs to run. A running instance is called a container.",
+          explanation:
+            "An image is a read-only template that packages everything an application needs to run. A running instance is called a container.",
         },
         {
           id: "what-is-image-q2",
@@ -329,7 +317,8 @@ const whatIsImage: LessonContent = {
             "Configuration files",
           ],
           correctIndex: 1,
-          explanation: "Unlike virtual machines, Docker containers share the host machine's kernel. The image contains everything else (code, libraries, OS filesystem).",
+          explanation:
+            "Unlike virtual machines, Docker containers share the host machine's kernel. The image contains everything else (code, libraries, OS filesystem).",
         },
         {
           id: "what-is-image-q3",
@@ -341,7 +330,8 @@ const whatIsImage: LessonContent = {
             "It merges with the writable layer permanently",
           ],
           correctIndex: 1,
-          explanation: "Images are immutable (read-only). When a container runs, Docker adds a thin writable layer on top of the image for any changes.",
+          explanation:
+            "Images are immutable (read-only). When a container runs, Docker adds a thin writable layer on top of the image for any changes.",
         },
         {
           id: "what-is-image-q4",
@@ -353,11 +343,13 @@ const whatIsImage: LessonContent = {
             "They do not contain any application dependencies",
           ],
           correctIndex: 1,
-          explanation: "Containers don't need to boot a separate operating system kernel. They share the host's kernel, making them lightweight and extremely fast to start.",
+          explanation:
+            "Containers don't need to boot a separate operating system kernel. They share the host's kernel, making them lightweight and extremely fast to start.",
         },
         {
           id: "what-is-image-q5",
-          question: "Which of the following provides a unique, unchangeable identifier for a specific Docker image?",
+          question:
+            "Which of the following provides a unique, unchangeable identifier for a specific Docker image?",
           options: [
             "The image tag (e.g., `latest`)",
             "The image repository name",
@@ -365,10 +357,11 @@ const whatIsImage: LessonContent = {
             "The image writable layer",
           ],
           correctIndex: 2,
-          explanation: "Tags can point to different images over time, but an image digest (a SHA256 hash) always identifies the exact contents of an image and never changes.",
-        }
-      ]
-    }
+          explanation:
+            "Tags can point to different images over time, but an image digest (a SHA256 hash) always identifies the exact contents of an image and never changes.",
+        },
+      ],
+    },
   ],
 };
 
@@ -380,22 +373,20 @@ const pullingImages: LessonContent = {
     {
       kind: "prose",
       heading: "Pulling an image",
-      body: [
-        "In the previous lesson, you learned that running:",
-      ]
+      body: ["In the previous lesson, you learned that running:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run nginx # docker run <Image Name>"
+      code: "docker run nginx # docker run <Image Name>",
     },
     {
       kind: "prose",
       body: [
         "automatically downloads the image if it doesn't already exist on your machine.",
         "Docker first checks your local image cache. If the image isn't found, it downloads the image and then starts the container.",
-        "Before pulling an image, you might want to search Docker Hub to see what's available. The `docker search` command lets you do exactly that from your terminal:"
-      ]
+        "Before pulling an image, you might want to search Docker Hub to see what's available. The `docker search` command lets you do exactly that from your terminal:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -432,8 +423,8 @@ dockette/nginx                           Nginx SSL / HSTS / HTTP2               
     {
       kind: "prose",
       body: [
-        "Once you've found what you need, you might want to download an image without running it yet. That's exactly what \`docker pull\` does:"
-      ]
+        "Once you've found what you need, you might want to download an image without running it yet. That's exactly what \`docker pull\` does:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -453,8 +444,8 @@ Status: Downloaded newer image for nginx:latest`,
       body: [
         "Each hash represents one image layer being downloaded. These are the same read-only layers you learned about in the previous lesson.",
         "If you already have the latest version of an image on your machine, running `docker pull` again usually downloads nothing. Docker compares the layers you already have with those available in the registry and downloads only what is missing or has changed.",
-        "However, tags like `:latest` are mutable. If a developer pushes a new build to `:latest` on Docker Hub, running `docker pull` will actually pull down the new layers. In this way, `docker pull` acts as an update mechanism to ensure you have the absolute newest version of that tag."
-      ]
+        "However, tags like `:latest` are mutable. If a developer pushes a new build to `:latest` on Docker Hub, running `docker pull` will actually pull down the new layers. In this way, `docker pull` acts as an update mechanism to ensure you have the absolute newest version of that tag.",
+      ],
     },
     {
       kind: "image",
@@ -465,14 +456,12 @@ Status: Downloaded newer image for nginx:latest`,
     {
       kind: "prose",
       heading: "Official images and organization repositories",
-      body: [
-        "When you run:"
-      ]
+      body: ["When you run:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker pull nginx"
+      code: "docker pull nginx",
     },
     {
       kind: "prose",
@@ -480,13 +469,13 @@ Status: Downloaded newer image for nginx:latest`,
         "Docker downloads the **official Nginx image** from Docker Hub.",
         "Official images are maintained by Docker or trusted software maintainers and don't include a username or organization name.",
         "In many companies, you'll also work with images published by your own organization.",
-        "For example:"
-      ]
+        "For example:",
+      ],
     },
     {
-      "kind": "code",
-      "language": "bash",
-      "code": "# Syntax:\n# docker pull <Registry-or-Username>/<Image-Name>:<Tag>\n\n# Example:\ndocker pull stackblueprint/python-api:v1.0.0"
+      kind: "code",
+      language: "bash",
+      code: "# Syntax:\n# docker pull <Registry-or-Username>/<Image-Name>:<Tag>\n\n# Example:\ndocker pull stackblueprint/python-api:v1.0.0",
     },
     {
       kind: "prose",
@@ -495,16 +484,16 @@ Status: Downloaded newer image for nginx:latest`,
         "• **`your-org` or `stackblueprint`** is the repository owner.",
         "• **`payment-service` or `python-api`** is the image repository.",
         "• **`2.3.1` or `v1.0.0`** is the image tag.",
-        "This is very common in real-world environments where teams build and publish their own Docker images instead of relying only on public images."
-      ]
+        "This is very common in real-world environments where teams build and publish their own Docker images instead of relying only on public images.",
+      ],
     },
     {
       kind: "prose",
       heading: "Pulling a specific version",
       body: [
         "If you don't specify a tag, Docker automatically assumes the `latest` tag.",
-        "Sometimes you'll want a particular version instead."
-      ]
+        "Sometimes you'll want a particular version instead.",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -538,19 +527,20 @@ What's next:
     {
       kind: "prose",
       body: [
-        "Using specific version tags makes deployments more predictable because everyone runs the same version of the software."
-      ]
+        "Using specific version tags makes deployments more predictable because everyone runs the same version of the software.",
+      ],
     },
     {
       kind: "prose",
       heading: "Viewing your local images",
       body: [
-        "Once you've downloaded a few images, you can see everything stored on your machine with `docker images` or `docker image ls` :"
-      ]
+        "Once you've downloaded a few images, you can see everything stored on your machine with `docker images` or `docker image ls` :",
+      ],
     },
     {
       kind: "terminal-animation",
-      command: "docker images # docker images [OPTIONS] [REPOSITORY[:TAG]]\n// Note: 'docker image ls' works too!",
+      command:
+        "docker images # docker images [OPTIONS] [REPOSITORY[:TAG]]\n// Note: 'docker image ls' works too!",
       output: `REPOSITORY   TAG      IMAGE ID       CREATED        SIZE
     postgres     15       bcab099bfaab   15 months ago  300MB
     postgres     10.3     cbb7481ff9d5   4 years ago    232MB
@@ -560,9 +550,7 @@ What's next:
     },
     {
       kind: "prose",
-      body: [
-        "You can also use `docker image ls` which does exactly the same thing."
-      ]
+      body: ["You can also use `docker image ls` which does exactly the same thing."],
     },
     {
       kind: "prose",
@@ -572,8 +560,8 @@ What's next:
         "You may also notice the **IMAGE ID** column.",
         "Earlier, you learned about image **digests**. While they both look like hashes, they are different:",
         "• **The IMAGE ID** is a shortened identifier Docker uses locally.",
-        "• **The digest** uniquely identifies the exact image contents across registries."
-      ]
+        "• **The digest** uniquely identifies the exact image contents across registries.",
+      ],
     },
     {
       kind: "prose",
@@ -581,8 +569,8 @@ What's next:
       body: [
         "Listing an image tells you that it exists.",
         "Inspecting an image tells you how it is configured.",
-        "Run:"
-      ]
+        "Run:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -668,13 +656,13 @@ What's next:
       kind: "prose",
       body: [
         "**A crucial note on inspect:** `docker inspect` works on containers, images, volumes, and networks. If you accidentally name a container the exact same thing as an image, Docker might return the container's data instead of the image's data.",
-        "As shown above, using `docker image inspect` prevents bugs because you are explicitly declaring the type. Alternatively, you can explicitly declare the type with a flag:"
-      ]
+        "As shown above, using `docker image inspect` prevents bugs because you are explicitly declaring the type. Alternatively, you can explicitly declare the type with a flag:",
+      ],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker image inspect bcab099bfaab # docker image inspect <Image ID>\n\n# Or explicitly declare the type:\ndocker inspect --type=image bcab099bfaab"
+      code: "docker image inspect bcab099bfaab # docker image inspect <Image ID>\n\n# Or explicitly declare the type:\ndocker inspect --type=image bcab099bfaab",
     },
     {
       kind: "prose",
@@ -688,8 +676,8 @@ What's next:
         "• Architecture",
         "• Operating system",
         "• Layer information",
-        "This command is especially useful when you're trying to understand how an image was built or troubleshoot unexpected behavior."
-      ]
+        "This command is especially useful when you're trying to understand how an image was built or troubleshoot unexpected behavior.",
+      ],
     },
     {
       kind: "prose",
@@ -697,38 +685,37 @@ What's next:
       body: [
         "The JSON output can be overwhelming.",
         "Instead of reading hundreds of lines, you can extract a single value with the `--format` option.",
-        "For example, to display the **default command**:"
-      ]
+        "For example, to display the **default command**:",
+      ],
     },
     {
       kind: "terminal-animation",
-      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the default command\ndocker image inspect --format='{{.Config.Cmd}}' bcab099bfaab",
+      command:
+        "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the default command\ndocker image inspect --format='{{.Config.Cmd}}' bcab099bfaab",
       output: "[postgres]",
       buttonLabel: "Run Command",
       caption: "Reading default command (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
-      body: [
-        "To display the **operating system**:"
-      ]
+      body: ["To display the **operating system**:"],
     },
     {
       kind: "terminal-animation",
-      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the Operating System\ndocker image inspect --format='{{.Os}}' bcab099bfaab",
+      command:
+        "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the Operating System\ndocker image inspect --format='{{.Os}}' bcab099bfaab",
       output: "linux",
       buttonLabel: "Run Command",
       caption: "Reading operating system (Note: Your output may vary based on your system.)",
     },
     {
       kind: "prose",
-      body: [
-        "To display the **CPU architecture**:"
-      ]
+      body: ["To display the **CPU architecture**:"],
     },
     {
       kind: "terminal-animation",
-      command: "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the CPU Architecture\ndocker image inspect --format='{{.Architecture}}' bcab099bfaab",
+      command:
+        "# Syntax:\n# docker image inspect --format='<Template>' <Image ID>\n\n# Example: Get the CPU Architecture\ndocker image inspect --format='{{.Architecture}}' bcab099bfaab",
       output: "arm64",
       buttonLabel: "Run Command",
       caption: "Reading CPU architecture (Note: Your output may vary based on your system.)",
@@ -736,16 +723,16 @@ What's next:
     {
       kind: "prose",
       body: [
-        "Don't worry about the template syntax yet. The important idea is that `--format` lets you display only the information you care about."
-      ]
+        "Don't worry about the template syntax yet. The important idea is that `--format` lets you display only the information you care about.",
+      ],
     },
     {
       kind: "prose",
       heading: "Understanding an image's history",
       body: [
         "Every Docker image keeps a record of how it was built.",
-        "You can view that history with:"
-      ]
+        "You can view that history with:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -787,26 +774,25 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
         "The history command is useful for understanding how an image was built, identifying unusually large layers, or investigating why an image consumes more space than expected.",
         "It also teaches an important security lesson.",
         "If a developer accidentally includes a secret during the image build process, that information can become part of the image's history. Anyone who has access to the image may also be able to see that history.",
-        "We'll revisit this topic later when we discuss build arguments, environment variables, and image security."
-      ]
+        "We'll revisit this topic later when we discuss build arguments, environment variables, and image security.",
+      ],
     },
     {
       kind: "prose",
       heading: "A typical workflow",
-      body: [
-        "When working with a new image, you'll often follow a workflow like this:"
-      ]
+      body: ["When working with a new image, you'll often follow a workflow like this:"],
     },
     {
       kind: "diagram",
-      ascii: "docker search\n      │\n      ▼\ndocker pull\n      │\n      ▼\ndocker images\n      │\n      ▼\ndocker inspect\n      │\n      ▼\ndocker run",
-      caption: "Common Docker image workflow"
+      ascii:
+        "docker search\n      │\n      ▼\ndocker pull\n      │\n      ▼\ndocker images\n      │\n      ▼\ndocker inspect\n      │\n      ▼\ndocker run",
+      caption: "Common Docker image workflow",
     },
     {
       kind: "prose",
       body: [
-        "Search for an image, download it, verify that you have the correct version, inspect its configuration if needed, and then create a container."
-      ]
+        "Search for an image, download it, verify that you have the correct version, inspect its configuration if needed, and then create a container.",
+      ],
     },
     {
       kind: "table",
@@ -816,9 +802,12 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
         ["`docker search <term>`", "Searches Docker Hub for public images"],
         ["`docker pull <image>`", "Downloads an image from a registry"],
         ["`docker images` / `docker image ls`", "Lists all images stored locally on your machine"],
-        ["`docker inspect <Image ID>`", "Displays detailed configuration and metadata for an image"],
-        ["`docker history <Image ID>`", "Shows the layers and commands used to build an image"]
-      ]
+        [
+          "`docker inspect <Image ID>`",
+          "Displays detailed configuration and metadata for an image",
+        ],
+        ["`docker history <Image ID>`", "Shows the layers and commands used to build an image"],
+      ],
     },
     {
       kind: "takeaways",
@@ -829,16 +818,16 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
         "Real-world teams commonly publish images under organization repositories such as `your-org/application:version`.",
         "`docker images` and `docker image ls` both list the images stored on your machine.",
         "`docker inspect` displays detailed information about an image, and `--format` lets you extract only the values you need.",
-        "`docker history` shows the build history of an image and can help with debugging, optimization, and security reviews."
-      ]
+        "`docker history` shows the build history of an image and can help with debugging, optimization, and security reviews.",
+      ],
     },
     {
       kind: "prose",
       heading: "What's Next?",
       body: [
         "So far you've downloaded and explored Docker images, but an image by itself doesn't do anything.",
-        "In the next lesson, you'll learn how to turn an image into a running container using `docker run`. You'll explore interactive mode (`-it`), detached mode (`-d`), port mapping (`-p`), and how to access applications through `localhost`."
-      ]
+        "In the next lesson, you'll learn how to turn an image into a running container using `docker run`. You'll explore interactive mode (`-it`), detached mode (`-d`), port mapping (`-p`), and how to access applications through `localhost`.",
+      ],
     },
     {
       kind: "quiz",
@@ -853,13 +842,15 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
             "Builds a new image from a Dockerfile",
           ],
           correctIndex: 1,
-          explanation: "`docker pull` only downloads the image layers to your local machine so it's ready to use.",
+          explanation:
+            "`docker pull` only downloads the image layers to your local machine so it's ready to use.",
         },
         {
           id: "pulling-inspecting-q2",
           question: "Write the command to download the official `nginx` image without running it.",
           commandAnswer: "docker pull nginx",
-          explanation: "The `docker pull` command downloads an image. For official images, you don't need a repository prefix.",
+          explanation:
+            "The `docker pull` command downloads an image. For official images, you don't need a repository prefix.",
         },
         {
           id: "pulling-inspecting-q3",
@@ -871,17 +862,20 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
             "Organization images do not have tags",
           ],
           correctIndex: 2,
-          explanation: "Official images (like `nginx` or `ubuntu`) are maintained centrally and omit the organization prefix. Organization images (like `your-org/app`) include the namespace.",
+          explanation:
+            "Official images (like `nginx` or `ubuntu`) are maintained centrally and omit the organization prefix. Organization images (like `your-org/app`) include the namespace.",
         },
         {
           id: "pulling-inspecting-q4",
           question: "Write the command to download version `15` of the `postgres` image.",
           commandAnswer: "docker pull postgres:15",
-          explanation: "You append a colon and the tag to the image name to pull a specific version.",
+          explanation:
+            "You append a colon and the tag to the image name to pull a specific version.",
         },
         {
           id: "pulling-inspecting-q5",
-          question: "What happens if you run `docker pull` on an image you already have the latest version of?",
+          question:
+            "What happens if you run `docker pull` on an image you already have the latest version of?",
           options: [
             "It downloads the entire image again",
             "It deletes the old image and downloads the new one",
@@ -889,17 +883,20 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
             "It throws an error",
           ],
           correctIndex: 2,
-          explanation: "Docker layer caching ensures that it only downloads layers that you don't already have.",
+          explanation:
+            "Docker layer caching ensures that it only downloads layers that you don't already have.",
         },
         {
           id: "pulling-inspecting-q6",
           question: "Write the command to list all Docker images stored locally on your machine.",
           commandAnswer: ["docker images", "docker image ls"],
-          explanation: "Both `docker images` and `docker image ls` display a list of all images currently downloaded to your system.",
+          explanation:
+            "Both `docker images` and `docker image ls` display a list of all images currently downloaded to your system.",
         },
         {
           id: "pulling-inspecting-q7",
-          question: "In `docker images` output, what is the difference between an IMAGE ID and a digest?",
+          question:
+            "In `docker images` output, what is the difference between an IMAGE ID and a digest?",
           options: [
             "IMAGE ID is used globally, digest is used locally",
             "IMAGE ID is a short local identifier, digest uniquely identifies exact contents across registries",
@@ -907,13 +904,16 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
             "IMAGE ID is a tag, digest is a label",
           ],
           correctIndex: 1,
-          explanation: "The IMAGE ID is an identifier generated and used locally by your Docker engine, while the digest is a cryptographic hash (SHA256) used universally.",
+          explanation:
+            "The IMAGE ID is an identifier generated and used locally by your Docker engine, while the digest is a cryptographic hash (SHA256) used universally.",
         },
         {
           id: "pulling-inspecting-q8",
-          question: "Write the command to view the detailed configuration and metadata for the `nginx` image.",
+          question:
+            "Write the command to view the detailed configuration and metadata for the `nginx` image.",
           commandAnswer: "docker inspect nginx",
-          explanation: "`docker inspect` returns a large JSON document with detailed configurations like environment variables and open ports.",
+          explanation:
+            "`docker inspect` returns a large JSON document with detailed configurations like environment variables and open ports.",
         },
         {
           id: "pulling-inspecting-q9",
@@ -925,30 +925,41 @@ bcab099bfaab   5 days ago    CMD ["postgres"]                                0B 
             "To understand how an image was built or investigate unusually large layers",
           ],
           correctIndex: 3,
-          explanation: "`docker history` shows each layer (or instruction) used to build the image, which helps with debugging size issues or checking for accidentally included secrets.",
+          explanation:
+            "`docker history` shows each layer (or instruction) used to build the image, which helps with debugging size issues or checking for accidentally included secrets.",
         },
         {
           id: "pulling-inspecting-q10",
-          question: "Write the command to extract only the CPU Architecture from the `nginx` image using `docker inspect`.",
-          commandAnswer: ["docker inspect --format='{{.Architecture}}' nginx", "docker inspect -f '{{.Architecture}}' nginx", "docker inspect --format '{{.Architecture}}' nginx", "docker inspect -f='{{.Architecture}}' nginx", "docker inspect --format=\"{{.Architecture}}\" nginx", "docker inspect -f \"{{.Architecture}}\" nginx"],
-          explanation: "You can use the `--format` (or `-f`) option with a template string `{{.Architecture}}` to avoid scrolling through the full JSON output.",
-        }
-      ]
-    }
-  ]
+          question:
+            "Write the command to extract only the CPU Architecture from the `nginx` image using `docker inspect`.",
+          commandAnswer: [
+            "docker inspect --format='{{.Architecture}}' nginx",
+            "docker inspect -f '{{.Architecture}}' nginx",
+            "docker inspect --format '{{.Architecture}}' nginx",
+            "docker inspect -f='{{.Architecture}}' nginx",
+            'docker inspect --format="{{.Architecture}}" nginx',
+            'docker inspect -f "{{.Architecture}}" nginx',
+          ],
+          explanation:
+            "You can use the `--format` (or `-f`) option with a template string `{{.Architecture}}` to avoid scrolling through the full JSON output.",
+        },
+      ],
+    },
+  ],
 };
 
 const runningContainers: LessonContent = {
   slug: "running-containers",
   title: "Running Containers",
-  subtitle: "docker container run, interactive mode -it, detached mode -d, port mapping -p, and accessing localhost.",
+  subtitle:
+    "docker container run, interactive mode -it, detached mode -d, port mapping -p, and accessing localhost.",
   sections: [
     {
       kind: "prose",
       body: [
         "This is the point where Docker becomes hands-on.",
-        "An image is just a packaged blueprint until you start it as a container, and `docker container run` is the command that makes that happen."
-      ]
+        "An image is just a packaged blueprint until you start it as a container, and `docker container run` is the command that makes that happen.",
+      ],
     },
     {
       kind: "prose",
@@ -956,15 +967,13 @@ const runningContainers: LessonContent = {
       body: [
         "Docker commands follow a logical hierarchy. Historically, you'd type `docker run` or `docker ps` directly.",
         "We adopt the modern grouped syntax for clarity (like `docker container run`).",
-        "Both forms do exactly the same thing, but the grouped syntax makes it obvious what type of resource you are managing."
-      ]
+        "Both forms do exactly the same thing, but the grouped syntax makes it obvious what type of resource you are managing.",
+      ],
     },
     {
       kind: "prose",
       heading: "What docker container run does",
-      body: [
-        "At its simplest, the command looks like this:"
-      ]
+      body: ["At its simplest, the command looks like this:"],
     },
     {
       kind: "terminal-animation",
@@ -980,8 +989,8 @@ const runningContainers: LessonContent = {
         "1. It checks whether the image already exists on your machine.",
         "2. It pulls the image if it does not exist locally.",
         "3. It creates a new container from that image.",
-        "4. It starts the container's main process."
-      ]
+        "4. It starts the container's main process.",
+      ],
     },
     {
       kind: "image",
@@ -991,14 +1000,13 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "A quick first test is the `hello-world` image:"
-      ]
+      body: ["A quick first test is the `hello-world` image:"],
     },
     {
       kind: "terminal-animation",
       command: "docker container run hello-world",
-      output: "Unable to find image 'hello-world:latest' locally\nlatest: Pulling from library/hello-world\nc1ec31eb5944: Pull complete\nDigest: sha256:d000bc5694fc70fced86fdcd8b725c88b0a94cb22c54bc0898555c1e0e8e6dd1\nStatus: Downloaded newer image for hello-world:latest\n\nHello from Docker!\nThis message shows that your installation appears to be working correctly.",
+      output:
+        "Unable to find image 'hello-world:latest' locally\nlatest: Pulling from library/hello-world\nc1ec31eb5944: Pull complete\nDigest: sha256:d000bc5694fc70fced86fdcd8b725c88b0a94cb22c54bc0898555c1e0e8e6dd1\nStatus: Downloaded newer image for hello-world:latest\n\nHello from Docker!\nThis message shows that your installation appears to be working correctly.",
       buttonLabel: "Run Hello World",
       caption: "Running your first container",
     },
@@ -1007,28 +1015,25 @@ const runningContainers: LessonContent = {
       body: [
         "This is a good confidence check because it proves Docker can download an image, create a container, start it, and print output to your terminal.",
         "When that message finishes, the container stops because its job is complete.",
-        "To see it, list all containers, including stopped ones:"
-      ]
+        "To see it, list all containers, including stopped ones:",
+      ],
     },
     {
       kind: "terminal-animation",
       command: "docker container ls -a",
-      output: "CONTAINER ID   IMAGE         COMMAND    CREATED         STATUS                     PORTS     NAMES\na1b2c3d4e5f6   hello-world   \"/hello\"   2 minutes ago   Exited (0) 2 minutes ago             trusting_turing",
+      output:
+        'CONTAINER ID   IMAGE         COMMAND    CREATED         STATUS                     PORTS     NAMES\na1b2c3d4e5f6   hello-world   "/hello"   2 minutes ago   Exited (0) 2 minutes ago             trusting_turing',
       buttonLabel: "List All",
       caption: "Viewing stopped containers",
     },
     {
       kind: "prose",
-      body: [
-        "You should see a `hello-world` container with a status like `Exited`."
-      ]
+      body: ["You should see a `hello-world` container with a status like `Exited`."],
     },
     {
       kind: "prose",
       heading: "Why containers sometimes stop immediately",
-      body: [
-        "Now try running Ubuntu without giving it an interactive session:"
-      ]
+      body: ["Now try running Ubuntu without giving it an interactive session:"],
     },
     {
       kind: "terminal-animation",
@@ -1039,15 +1044,13 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "At first, it may seem like nothing happened.",
-        "Check again with:"
-      ]
+      body: ["At first, it may seem like nothing happened.", "Check again with:"],
     },
     {
       kind: "terminal-animation",
       command: "docker container ls -a",
-      output: "CONTAINER ID   IMAGE     COMMAND       STATUS                    NAMES\nb8f4c2d91a7e   ubuntu    \"/bin/bash\"   Exited (0) 8 seconds ago   ubuntu-shell-check",
+      output:
+        'CONTAINER ID   IMAGE     COMMAND       STATUS                    NAMES\nb8f4c2d91a7e   ubuntu    "/bin/bash"   Exited (0) 8 seconds ago   ubuntu-shell-check',
       buttonLabel: "Check Status",
       caption: "Confirming the container exited immediately",
     },
@@ -1057,8 +1060,8 @@ const runningContainers: LessonContent = {
         "That is expected behavior, not a failure.",
         "A container stays alive only while its main process is still running.",
         "In this case, the Ubuntu image starts a shell by default, but because no interactive terminal was attached, the shell had nothing to do and exited.",
-        "Remove that stopped container before moving on:"
-      ]
+        "Remove that stopped container before moving on:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1070,14 +1073,13 @@ const runningContainers: LessonContent = {
     {
       kind: "prose",
       heading: "Run a command inside a container",
-      body: [
-        "You can tell Docker to run a specific command by placing it after the image name:"
-      ]
+      body: ["You can tell Docker to run a specific command by placing it after the image name:"],
     },
     {
       kind: "terminal-animation",
       command: "docker container run ubuntu cat /etc/os-release",
-      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      output:
+        'PRETTY_NAME="Ubuntu 24.04.1 LTS"\nNAME="Ubuntu"\nVERSION_ID="24.04"\nVERSION="24.04.1 LTS (Noble Numbat)"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL="https://www.ubuntu.com/"\nSUPPORT_URL="https://help.ubuntu.com/"\nBUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"\nPRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo',
       buttonLabel: "Run Command",
       caption: "Executing a one-off command",
     },
@@ -1085,34 +1087,36 @@ const runningContainers: LessonContent = {
       kind: "prose",
       body: [
         "This starts a container from the Ubuntu image, runs `cat /etc/os-release`, prints the operating system details, and then exits.",
-        "For one-time commands, it is cleaner to remove the container automatically when it finishes:"
-      ]
+        "For one-time commands, it is cleaner to remove the container automatically when it finishes:",
+      ],
     },
     {
       kind: "terminal-animation",
       command: "docker container run --rm ubuntu cat /etc/os-release",
-      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      output:
+        'PRETTY_NAME="Ubuntu 24.04.1 LTS"\nNAME="Ubuntu"\nVERSION_ID="24.04"\nVERSION="24.04.1 LTS (Noble Numbat)"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL="https://www.ubuntu.com/"\nSUPPORT_URL="https://help.ubuntu.com/"\nBUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"\nPRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo',
       buttonLabel: "Run with --rm",
       caption: "Running a command and automatically cleaning up",
     },
     {
       kind: "prose",
       body: [
-        "The `--rm` flag tells Docker to delete the container as soon as it exits, which is useful for quick experiments and temporary checks."
-      ]
+        "The `--rm` flag tells Docker to delete the container as soon as it exits, which is useful for quick experiments and temporary checks.",
+      ],
     },
     {
       kind: "prose",
       heading: "Use an explicit tag",
       body: [
         "If you do not specify a tag, Docker uses `latest` by default.",
-        "For learning, it is better to be explicit so your result is predictable:"
-      ]
+        "For learning, it is better to be explicit so your result is predictable:",
+      ],
     },
     {
       kind: "terminal-animation",
       command: "docker container run --rm ubuntu:24.04 cat /etc/os-release",
-      output: "PRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo",
+      output:
+        'PRETTY_NAME="Ubuntu 24.04.1 LTS"\nNAME="Ubuntu"\nVERSION_ID="24.04"\nVERSION="24.04.1 LTS (Noble Numbat)"\nVERSION_CODENAME=noble\nID=ubuntu\nID_LIKE=debian\nHOME_URL="https://www.ubuntu.com/"\nSUPPORT_URL="https://help.ubuntu.com/"\nBUG_REPORT_URL="https://bugs.launchpad.net/ubuntu/"\nPRIVACY_POLICY_URL="https://www.ubuntu.com/legal/terms-and-policies/privacy-policy"\nUBUNTU_CODENAME=noble\nLOGO=ubuntu-logo',
       buttonLabel: "Run Specific Tag",
       caption: "Running a specific image tag",
     },
@@ -1120,36 +1124,35 @@ const runningContainers: LessonContent = {
       kind: "prose",
       body: [
         "In `ubuntu:24.04`, the part after the colon is the tag.",
-        "Tags let you choose a specific version or variant instead of depending on whatever `latest` happens to point to."
-      ]
+        "Tags let you choose a specific version or variant instead of depending on whatever `latest` happens to point to.",
+      ],
     },
     {
       kind: "prose",
       heading: "Use -it for an interactive shell",
-      body: [
-        "If you want to type commands inside a container, run it interactively:"
-      ]
+      body: ["If you want to type commands inside a container, run it interactively:"],
     },
     {
       kind: "terminal-animation",
       command: "# Start an interactive bash session and explore\n",
-      output: "$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# whoami\nroot\nroot@b8f4c2d91a7e:/# pwd\n/\nroot@b8f4c2d91a7e:/# ls\nbin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var\nroot@b8f4c2d91a7e:/# cat /etc/os-release\nPRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\nNAME=\"Ubuntu\"\nVERSION_ID=\"24.04\"\nVERSION=\"24.04.1 LTS (Noble Numbat)\"\nroot@b8f4c2d91a7e:/# exit\nexit",
+      output:
+        '$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# whoami\nroot\nroot@b8f4c2d91a7e:/# pwd\n/\nroot@b8f4c2d91a7e:/# ls\nbin  boot  dev  etc  home  lib  media  mnt  opt  proc  root  run  sbin  srv  sys  tmp  usr  var\nroot@b8f4c2d91a7e:/# cat /etc/os-release\nPRETTY_NAME="Ubuntu 24.04.1 LTS"\nNAME="Ubuntu"\nVERSION_ID="24.04"\nVERSION="24.04.1 LTS (Noble Numbat)"\nroot@b8f4c2d91a7e:/# exit\nexit',
       buttonLabel: "Run Interactive",
       caption: "Running an interactive shell inside a container",
     },
     {
       kind: "prose",
       body: [
-        "Because you included `--rm`, Docker removes the container as soon as the shell ends."
-      ]
+        "Because you included `--rm`, Docker removes the container as soon as the shell ends.",
+      ],
     },
     {
       kind: "prose",
       heading: "Use -d to run in the background",
       body: [
         "Interactive mode is great for exploration, but services like web servers usually need to keep running while your terminal stays free.",
-        "Start Nginx in detached mode like this:"
-      ]
+        "Start Nginx in detached mode like this:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1162,33 +1165,33 @@ const runningContainers: LessonContent = {
       kind: "prose",
       body: [
         "The `-d` flag starts the container in the background and immediately returns control of your terminal.",
-        "To confirm it is running:"
-      ]
+        "To confirm it is running:",
+      ],
     },
     {
       kind: "terminal-animation",
       command: "docker container ls",
-      output: "CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES\nd1e2f3a4b5c6   nginx:alpine   \"/docker-entrypoint.…\"   2 seconds ago   Up 1 second    80/tcp    web-preview",
+      output:
+        'CONTAINER ID   IMAGE          COMMAND                  CREATED         STATUS         PORTS     NAMES\nd1e2f3a4b5c6   nginx:alpine   "/docker-entrypoint.…"   2 seconds ago   Up 1 second    80/tcp    web-preview',
       buttonLabel: "Check Status",
       caption: "Confirming the background container is running",
     },
     {
       kind: "prose",
-      body: [
-        "You should see `web-preview` with a status like `Up`."
-      ]
+      body: ["You should see `web-preview` with a status like `Up`."],
     },
     {
       kind: "prose",
       heading: "The Detached Trap",
       body: [
-        "If a background container fails silently on boot, `docker container ls` won't tell you why because the container has already exited. To see what happened, you must check the container's logs."
-      ]
+        "If a background container fails silently on boot, `docker container ls` won't tell you why because the container has already exited. To see what happened, you must check the container's logs.",
+      ],
     },
     {
       kind: "terminal-animation",
       command: "docker container logs web-preview",
-      output: "2024/02/10 10:00:00 [notice] 1#1: using the \"epoll\" event method\n2024/02/10 10:00:00 [notice] 1#1: nginx/1.25.3\n2024/02/10 10:00:00 [notice] 1#1: OS: Linux 5.15.0-82-generic\n2024/02/10 10:00:00 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n2024/02/10 10:00:00 [notice] 1#1: start worker processes",
+      output:
+        '2024/02/10 10:00:00 [notice] 1#1: using the "epoll" event method\n2024/02/10 10:00:00 [notice] 1#1: nginx/1.25.3\n2024/02/10 10:00:00 [notice] 1#1: OS: Linux 5.15.0-82-generic\n2024/02/10 10:00:00 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576\n2024/02/10 10:00:00 [notice] 1#1: start worker processes',
       buttonLabel: "View Logs",
       caption: "Checking logs for a detached container",
     },
@@ -1197,8 +1200,8 @@ const runningContainers: LessonContent = {
       heading: "Use -p to reach the container from your machine",
       body: [
         "Even though Nginx is running, your browser still cannot reach it yet because the web server is listening on port 80 inside the container, not directly on your computer.",
-        "First remove the container you just started:"
-      ]
+        "First remove the container you just started:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1209,9 +1212,7 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "Now start it again with a published port:"
-      ]
+      body: ["Now start it again with a published port:"],
     },
     {
       kind: "terminal-animation",
@@ -1229,8 +1230,8 @@ const runningContainers: LessonContent = {
         "Open this address in your browser:",
         "`http://localhost:8080`",
         "You should see the default Nginx welcome page.",
-        "If port 8080 is already being used by something else, choose another host port:"
-      ]
+        "If port 8080 is already being used by something else, choose another host port:",
+      ],
     },
     {
       kind: "terminal-animation",
@@ -1241,10 +1242,7 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "Then open:",
-        "`http://localhost:8081`"
-      ]
+      body: ["Then open:", "`http://localhost:8081`"],
     },
     {
       kind: "prose",
@@ -1253,12 +1251,13 @@ const runningContainers: LessonContent = {
         "In real working environments, you will use several key flags to configure containers for production:",
         "• **Environment Variables (`-e`)**: Inject runtime configurations like database URLs or API keys without hardcoding them in the image.",
         "• **Restart Policies (`--restart`)**: Ensure a container self-heals if it crashes or if the server reboots (e.g., `--restart always`).",
-        "• **Resource Limits (`-m` and `--cpus`)**: In a shared working environment, an unconstrained container can experience a memory leak and crash the entire host machine. You can explicitly allocate maximum memory and CPU."
-      ]
+        "• **Resource Limits (`-m` and `--cpus`)**: In a shared working environment, an unconstrained container can experience a memory leak and crash the entire host machine. You can explicitly allocate maximum memory and CPU.",
+      ],
     },
     {
       kind: "terminal-animation",
-      command: "docker container run -d --name production-nginx -e ENV=prod --restart always -m 512m --cpus 0.5 nginx",
+      command:
+        "docker container run -d --name production-nginx -e ENV=prod --restart always -m 512m --cpus 0.5 nginx",
       output: "7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b",
       buttonLabel: "Run Limited",
       caption: "Starting a container with resource limits and runtime configuration",
@@ -1269,22 +1268,22 @@ const runningContainers: LessonContent = {
       body: [
         "In enterprise environments, the Docker daemon often isn't running on your local machine.",
         "• **The `-H` (or `--host`) Flag**: Developers use this to target remote staging or production daemons over secure channels (e.g., `docker -H ssh://user@remote-ip run...`).",
-        "• **Docker Contexts**: Typing `-H` repeatedly is tedious, so in modern environments, teams use `docker context` to save and toggle between remote server endpoints cleanly."
-      ]
+        "• **Docker Contexts**: Typing `-H` repeatedly is tedious, so in modern environments, teams use `docker context` to save and toggle between remote server endpoints cleanly.",
+      ],
     },
     {
       kind: "terminal-animation",
-      command: "# 1. Start Nginx on the remote server (detached mode)\ndocker -H=10.123.2.1:2375 container run -d --name remote-nginx nginx",
-      output: "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n81b43e7a1eae: Pull complete\nDigest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce\nStatus: Downloaded newer image for nginx:latest\nc83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc\n\n$ # 2. Check local machine (It will be empty!)\n$ docker container ls\nCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n\n$ # 3. Query the remote server using the -H flag to verify\n$ docker -H=10.123.2.1:2375 container ls\nCONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES\nc83d5a21e49b   nginx     \"/docker-entrypoint.…\"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx",
+      command:
+        "# 1. Start Nginx on the remote server (detached mode)\ndocker -H=10.123.2.1:2375 container run -d --name remote-nginx nginx",
+      output:
+        "Unable to find image 'nginx:latest' locally\nlatest: Pulling from library/nginx\n81b43e7a1eae: Pull complete\nDigest: sha256:ec4ed8b5299e5e90694af7750eb6dffd2627317d30544d056b0371f8082f7bce\nStatus: Downloaded newer image for nginx:latest\nc83d5a21e49b802619bf62d9843c08dbf8435bcbc7f980126742a9b313576fbc\n\n$ # 2. Check local machine (It will be empty!)\n$ docker container ls\nCONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES\n\n$ # 3. Query the remote server using the -H flag to verify\n$ docker -H=10.123.2.1:2375 container ls\nCONTAINER ID   IMAGE     COMMAND                  CREATED          STATUS          PORTS     NAMES\nc83d5a21e49b   nginx     \"/docker-entrypoint.…\"   10 seconds ago   Up 9 seconds    80/tcp    remote-nginx",
       buttonLabel: "Run Remote",
       caption: "Interacting with a remote Docker daemon",
     },
     {
       kind: "prose",
       heading: "Clean up and practice",
-      body: [
-        "When you are finished, remove the test container:"
-      ]
+      body: ["When you are finished, remove the test container:"],
     },
     {
       kind: "terminal-animation",
@@ -1295,9 +1294,7 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "If you also ran the alternate port example, remove that container too:"
-      ]
+      body: ["If you also ran the alternate port example, remove that container too:"],
     },
     {
       kind: "terminal-animation",
@@ -1308,22 +1305,21 @@ const runningContainers: LessonContent = {
     },
     {
       kind: "prose",
-      body: [
-        "Try these commands and explain what each one does:"
-      ]
+      body: ["Try these commands and explain what each one does:"],
     },
     {
       kind: "terminal-animation",
       command: "# Try these commands to test your understanding:\n",
-      output: "$ docker container run --rm alpine echo \"hello from alpine\"\nhello from alpine\n\n$ docker container run --rm ubuntu:24.04 cat /etc/os-release\nPRETTY_NAME=\"Ubuntu 24.04.1 LTS\"\n\n$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# exit\nexit\n\n$ docker container run -d -p 8080:80 --name practice-web nginx:alpine\nb5c6d7e8f9a0b1c2d3e4f5a6b7\n\n$ docker container rm -f practice-web\npractice-web",
+      output:
+        '$ docker container run --rm alpine echo "hello from alpine"\nhello from alpine\n\n$ docker container run --rm ubuntu:24.04 cat /etc/os-release\nPRETTY_NAME="Ubuntu 24.04.1 LTS"\n\n$ docker container run -it --rm ubuntu bash\nroot@b8f4c2d91a7e:/# exit\nexit\n\n$ docker container run -d -p 8080:80 --name practice-web nginx:alpine\nb5c6d7e8f9a0b1c2d3e4f5a6b7\n\n$ docker container rm -f practice-web\npractice-web',
       buttonLabel: "Run Practice",
       caption: "Interactive practice session",
     },
     {
       kind: "prose",
       body: [
-        "If you understand those five examples, you understand the most practical uses of `docker container run` in beginner Docker work."
-      ]
+        "If you understand those five examples, you understand the most practical uses of `docker container run` in beginner Docker work.",
+      ],
     },
     {
       kind: "takeaways",
@@ -1336,67 +1332,74 @@ const runningContainers: LessonContent = {
         "`-it` gives you an interactive terminal session.",
         "`-d` runs a container in the background.",
         "`-p <host-port>:<container-port>` publishes a container port to your machine.",
-        "`--name` gives the container a memorable name for later commands."
-      ]
+        "`--name` gives the container a memorable name for later commands.",
+      ],
     },
     {
       kind: "prose",
       heading: "What's Next?",
       body: [
         "Now that you can run containers, the next step is learning how to manage them throughout their lifecycle.",
-        "In the next lesson, you'll learn how to start, stop, and restart containers, view their logs, and clean up your system."
-      ]
+        "In the next lesson, you'll learn how to start, stop, and restart containers, view their logs, and clean up your system.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "running-containers-q1",
-          question: "What does `docker container run <image>` do if the image is not already on your machine?",
+          question:
+            "What does `docker container run <image>` do if the image is not already on your machine?",
           options: [
             "It returns an error and stops.",
             "It automatically pulls the image from a registry, then creates and starts the container.",
             "It builds the image from a local Dockerfile.",
-            "It starts a container with an empty image."
+            "It starts a container with an empty image.",
           ],
           correctIndex: 1,
-          explanation: "Docker checks locally first. If it's missing, it automatically pulls it before running."
+          explanation:
+            "Docker checks locally first. If it's missing, it automatically pulls it before running.",
         },
         {
           id: "running-containers-q2",
-          question: "Why did the container exit immediately when running `docker container run ubuntu`?",
+          question:
+            "Why did the container exit immediately when running `docker container run ubuntu`?",
           options: [
             "The Ubuntu image is corrupted.",
             "Containers only stay alive while their main process is running, and the default shell had no interactive terminal attached.",
             "You must specify `-d` to run an Ubuntu container.",
-            "The container crashed due to an out-of-memory error."
+            "The container crashed due to an out-of-memory error.",
           ],
           correctIndex: 1,
-          explanation: "The Ubuntu image starts a bash shell. Without an interactive terminal attached (`-it`), the shell immediately exits, so the container stops."
+          explanation:
+            "The Ubuntu image starts a bash shell. Without an interactive terminal attached (`-it`), the shell immediately exits, so the container stops.",
         },
         {
           id: "running-containers-q3",
-          question: "Write the command to run an `ubuntu` container, print `/etc/os-release`, and automatically remove the container after it exits.",
+          question:
+            "Write the command to run an `ubuntu` container, print `/etc/os-release`, and automatically remove the container after it exits.",
           commandAnswer: "docker container run --rm ubuntu cat /etc/os-release",
-          explanation: "The `--rm` flag tells Docker to clean up the container once it stops."
+          explanation: "The `--rm` flag tells Docker to clean up the container once it stops.",
         },
         {
           id: "running-containers-q4",
-          question: "Which flags do you use to start an interactive terminal session inside a container?",
-          options: [
-            "-i and -t (or -it)",
-            "-d and -p",
-            "-r and -m (or --rm)",
-            "-e and -v"
-          ],
+          question:
+            "Which flags do you use to start an interactive terminal session inside a container?",
+          options: ["-i and -t (or -it)", "-d and -p", "-r and -m (or --rm)", "-e and -v"],
           correctIndex: 0,
-          explanation: "`-i` keeps standard input open, and `-t` allocates a pseudo-TTY (terminal). Together (`-it`), they let you interact with the container."
+          explanation:
+            "`-i` keeps standard input open, and `-t` allocates a pseudo-TTY (terminal). Together (`-it`), they let you interact with the container.",
         },
         {
           id: "running-containers-q5",
-          question: "Write the command to run `nginx:alpine` in the background (detached mode) with the name `web-preview`.",
-          commandAnswer: ["docker container run -d --name web-preview nginx:alpine", "docker container run --name web-preview -d nginx:alpine"],
-          explanation: "The `-d` flag runs the container in detached mode, and `--name` assigns a custom name."
+          question:
+            "Write the command to run `nginx:alpine` in the background (detached mode) with the name `web-preview`.",
+          commandAnswer: [
+            "docker container run -d --name web-preview nginx:alpine",
+            "docker container run --name web-preview -d nginx:alpine",
+          ],
+          explanation:
+            "The `-d` flag runs the container in detached mode, and `--name` assigns a custom name.",
         },
         {
           id: "running-containers-q6",
@@ -1405,26 +1408,32 @@ const runningContainers: LessonContent = {
             "Container port : Host port",
             "Host port : Container port",
             "TCP port : UDP port",
-            "Internal port : External port"
+            "Internal port : External port",
           ],
           correctIndex: 1,
-          explanation: "The format is `<host-port>:<container-port>`, which means traffic to the host port is forwarded to the container port."
+          explanation:
+            "The format is `<host-port>:<container-port>`, which means traffic to the host port is forwarded to the container port.",
         },
         {
           id: "running-containers-q7",
           question: "Write the command to force remove a running container named `practice-web`.",
-          commandAnswer: ["docker container rm -f practice-web", "docker container rm -f practice-web"],
-          explanation: "The `-f` (force) flag allows you to remove a running container without stopping it first."
-        }
-      ]
-    }
+          commandAnswer: [
+            "docker container rm -f practice-web",
+            "docker container rm -f practice-web",
+          ],
+          explanation:
+            "The `-f` (force) flag allows you to remove a running container without stopping it first.",
+        },
+      ],
+    },
   ],
 };
 
 const containerLifecycle: LessonContent = {
   slug: "mastering-container-lifecycle",
   title: "Mastering the Container Lifecycle",
-  subtitle: "docker create vs run, container states (ps -a), stop & restart, exit codes, --rm cleanup, and --restart policies.",
+  subtitle:
+    "docker create vs run, container states (ps -a), stop & restart, exit codes, --rm cleanup, and --restart policies.",
   sections: [
     {
       kind: "image",
@@ -1435,14 +1444,12 @@ const containerLifecycle: LessonContent = {
     {
       kind: "prose",
       heading: "The states you need to know",
-      body: [
-        "A container usually moves through this simple lifecycle:"
-      ]
+      body: ["A container usually moves through this simple lifecycle:"],
     },
     {
       kind: "code",
       language: "text",
-      code: "created -> running -> exited\n              |\n            paused"
+      code: "created -> running -> exited\n              |\n            paused",
     },
     {
       kind: "prose",
@@ -1451,262 +1458,216 @@ const containerLifecycle: LessonContent = {
         "• **Created**: Docker prepared the container, but the process has not started.",
         "• **Up**: the container's main process is running.",
         "• **Exited**: the main process finished or stopped.",
-        "Plain `docker ps` shows only running containers:"
-      ]
+        "Plain `docker ps` shows only running containers:",
+      ],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker ps"
+      code: "docker ps",
     },
     {
       kind: "prose",
-      body: [
-        "To see everything:"
-      ]
+      body: ["To see everything:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker ps -a"
+      code: "docker ps -a",
     },
     {
       kind: "prose",
       heading: "Create and start are separate ideas",
-      body: [
-        "Most of the time you use:"
-      ]
+      body: ["Most of the time you use:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run -d --name lifecycle-nginx nginx:alpine"
+      code: "docker run -d --name lifecycle-nginx nginx:alpine",
     },
     {
       kind: "prose",
-      body: [
-        "But `docker run` is really two steps in one:"
-      ]
+      body: ["But `docker run` is really two steps in one:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker create --name lifecycle-created nginx:alpine\ndocker start lifecycle-created"
+      code: "docker create --name lifecycle-created nginx:alpine\ndocker start lifecycle-created",
     },
     {
       kind: "prose",
-      body: [
-        "Try the separate version:"
-      ]
+      body: ["Try the separate version:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker create --name lifecycle-demo alpine sleep 300\ndocker ps -a"
+      code: "docker create --name lifecycle-demo alpine sleep 300\ndocker ps -a",
     },
     {
       kind: "prose",
-      body: [
-        "You should see `lifecycle-demo` in the `Created` state.",
-        "Start it:"
-      ]
+      body: ["You should see `lifecycle-demo` in the `Created` state.", "Start it:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker start lifecycle-demo\ndocker ps"
+      code: "docker start lifecycle-demo\ndocker ps",
     },
     {
       kind: "prose",
-      body: [
-        "Now it should be `Up`."
-      ]
+      body: ["Now it should be `Up`."],
     },
     {
       kind: "prose",
       heading: "Stop, start, and restart",
-      body: [
-        "Stop the running container:"
-      ]
+      body: ["Stop the running container:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker stop lifecycle-demo"
+      code: "docker stop lifecycle-demo",
     },
     {
       kind: "prose",
-      body: [
-        "The container is stopped, not deleted.",
-        "Start it again:"
-      ]
+      body: ["The container is stopped, not deleted.", "Start it again:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker start lifecycle-demo"
+      code: "docker start lifecycle-demo",
     },
     {
       kind: "prose",
-      body: [
-        "Restart it:"
-      ]
+      body: ["Restart it:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker restart lifecycle-demo"
+      code: "docker restart lifecycle-demo",
     },
     {
       kind: "prose",
-      body: [
-        "These commands change state. They do not remove the container."
-      ]
+      body: ["These commands change state. They do not remove the container."],
     },
     {
       kind: "prose",
       heading: "Understand exit codes",
-      body: [
-        "Run a successful command:"
-      ]
+      body: ["Run a successful command:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run --name success-demo alpine sh -c \"exit 0\""
+      code: 'docker run --name success-demo alpine sh -c "exit 0"',
     },
     {
       kind: "prose",
-      body: [
-        "Run a failing command:"
-      ]
+      body: ["Run a failing command:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run --name fail-demo alpine sh -c \"exit 7\""
+      code: 'docker run --name fail-demo alpine sh -c "exit 7"',
     },
     {
       kind: "prose",
-      body: [
-        "Now check:"
-      ]
+      body: ["Now check:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker ps -a"
+      code: "docker ps -a",
     },
     {
       kind: "prose",
       body: [
         "You should see `Exited (0)` for the first container and `Exited (7)` for the second. Exit codes are one of the first things to check when something fails.",
-        "Clean them up:"
-      ]
+        "Clean them up:",
+      ],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker rm success-demo fail-demo"
+      code: "docker rm success-demo fail-demo",
     },
     {
       kind: "prose",
       heading: "Pause and unpause",
-      body: [
-        "Pause freezes a running container's processes without deleting the container:"
-      ]
+      body: ["Pause freezes a running container's processes without deleting the container:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker pause lifecycle-demo\ndocker ps"
+      code: "docker pause lifecycle-demo\ndocker ps",
     },
     {
       kind: "prose",
-      body: [
-        "Unpause resumes it:"
-      ]
+      body: ["Unpause resumes it:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker unpause lifecycle-demo"
+      code: "docker unpause lifecycle-demo",
     },
     {
       kind: "prose",
       body: [
-        "You will not use this every day as a beginner, but it helps you see that Docker can manage a container's state without rebuilding it."
-      ]
+        "You will not use this every day as a beginner, but it helps you see that Docker can manage a container's state without rebuilding it.",
+      ],
     },
     {
       kind: "prose",
       heading: "Remove a container",
-      body: [
-        "To remove a stopped container:"
-      ]
+      body: ["To remove a stopped container:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker stop lifecycle-demo\ndocker rm lifecycle-demo"
+      code: "docker stop lifecycle-demo\ndocker rm lifecycle-demo",
     },
     {
       kind: "prose",
-      body: [
-        "If you are working in a lab and intentionally want it gone immediately:"
-      ]
+      body: ["If you are working in a lab and intentionally want it gone immediately:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker rm -f lifecycle-demo"
+      code: "docker rm -f lifecycle-demo",
     },
     {
       kind: "prose",
-      body: [
-        "`-f` stops it if needed and removes it."
-      ]
+      body: ["`-f` stops it if needed and removes it."],
     },
     {
       kind: "prose",
       heading: "--rm: do not leave throwaway containers behind",
-      body: [
-        "For one-off commands, use `--rm`:"
-      ]
+      body: ["For one-off commands, use `--rm`:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run --rm alpine echo \"no container left behind\""
+      code: 'docker run --rm alpine echo "no container left behind"',
     },
     {
       kind: "prose",
-      body: [
-        "Check:"
-      ]
+      body: ["Check:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker ps -a"
+      code: "docker ps -a",
     },
     {
       kind: "prose",
-      body: [
-        "You will not see that container because Docker removed it after it exited."
-      ]
+      body: ["You will not see that container because Docker removed it after it exited."],
     },
     {
       kind: "prose",
       heading: "--restart: make services recover",
-      body: [
-        "For services you expect to keep running, use a restart policy:"
-      ]
+      body: ["For services you expect to keep running, use a restart policy:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run -d --restart unless-stopped --name restart-nginx nginx:alpine"
+      code: "docker run -d --restart unless-stopped --name restart-nginx nginx:alpine",
     },
     {
       kind: "prose",
@@ -1717,36 +1678,32 @@ const containerLifecycle: LessonContent = {
         "• `always`: restart whenever it exits, including after Docker restarts.",
         "• `unless-stopped`: restart unless you manually stopped it.",
         "For local learning, `unless-stopped` is usually the least surprising policy for a long-running service.",
-        "Clean up:"
-      ]
+        "Clean up:",
+      ],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker rm -f restart-nginx"
+      code: "docker rm -f restart-nginx",
     },
     {
       kind: "prose",
       heading: "Quick practice",
-      body: [
-        "Run this lifecycle drill:"
-      ]
+      body: ["Run this lifecycle drill:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker create --name sleepy alpine sleep 300\ndocker ps -a\ndocker start sleepy\ndocker ps\ndocker restart sleepy\ndocker stop sleepy\ndocker rm sleepy"
+      code: "docker create --name sleepy alpine sleep 300\ndocker ps -a\ndocker start sleepy\ndocker ps\ndocker restart sleepy\ndocker stop sleepy\ndocker rm sleepy",
     },
     {
       kind: "prose",
-      body: [
-        "Then run a no-cleanup-needed command:"
-      ]
+      body: ["Then run a no-cleanup-needed command:"],
     },
     {
       kind: "code",
       language: "bash",
-      code: "docker run --rm alpine echo \"clean\""
+      code: 'docker run --rm alpine echo "clean"',
     },
     {
       kind: "takeaways",
@@ -1760,29 +1717,27 @@ const containerLifecycle: LessonContent = {
         "`docker rm` removes a stopped container.",
         "`docker rm -f` force-removes a running container.",
         "`--rm` is ideal for one-off containers.",
-        "`--restart` controls whether Docker brings a service back after it exits."
-      ]
+        "`--restart` controls whether Docker brings a service back after it exits.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "lifecycle-q1",
-          question: "Which state indicates that a container has been prepared but its main process has not yet been started?",
-          options: [
-            "Up",
-            "Created",
-            "Exited",
-            "Paused"
-          ],
+          question:
+            "Which state indicates that a container has been prepared but its main process has not yet been started?",
+          options: ["Up", "Created", "Exited", "Paused"],
           correctIndex: 1,
-          explanation: "The `Created` state means the container filesystem and config are ready, but the main process hasn't been launched."
+          explanation:
+            "The `Created` state means the container filesystem and config are ready, but the main process hasn't been launched.",
         },
         {
           id: "lifecycle-q2",
-          question: "Write the command that combines `docker create` and `docker start` into a single step.",
+          question:
+            "Write the command that combines `docker create` and `docker start` into a single step.",
           commandAnswer: ["docker run", "docker run <image>"],
-          explanation: "`docker run` both creates and starts a container from an image."
+          explanation: "`docker run` both creates and starts a container from an image.",
         },
         {
           id: "lifecycle-q3",
@@ -1791,16 +1746,19 @@ const containerLifecycle: LessonContent = {
             "Deletes the container temporarily",
             "Stops the container and removes its files",
             "Freezes the container's processes without stopping or deleting it",
-            "Automatically restarts the container"
+            "Automatically restarts the container",
           ],
           correctIndex: 2,
-          explanation: "Pausing freezes a container in its current state. You can later resume it with `docker unpause`."
+          explanation:
+            "Pausing freezes a container in its current state. You can later resume it with `docker unpause`.",
         },
         {
           id: "lifecycle-q4",
-          question: "Write the command to see all containers, including both running and stopped ones.",
+          question:
+            "Write the command to see all containers, including both running and stopped ones.",
           commandAnswer: "docker ps -a",
-          explanation: "The `-a` (or `--all`) flag tells `docker ps` to show containers in any state, including `Exited` and `Created`."
+          explanation:
+            "The `-a` (or `--all`) flag tells `docker ps` to show containers in any state, including `Exited` and `Created`.",
         },
         {
           id: "lifecycle-q5",
@@ -1809,25 +1767,23 @@ const containerLifecycle: LessonContent = {
             "The container goes into a `Paused (7)` state.",
             "The container is automatically deleted.",
             "The container stops, and `docker ps -a` will show `Exited (7)`.",
-            "The container automatically restarts regardless of policies."
+            "The container automatically restarts regardless of policies.",
           ],
           correctIndex: 2,
-          explanation: "When the main process finishes (successfully or with an error), the container transitions to the `Exited` state, keeping the exit code for debugging."
+          explanation:
+            "When the main process finishes (successfully or with an error), the container transitions to the `Exited` state, keeping the exit code for debugging.",
         },
         {
           id: "lifecycle-q6",
-          question: "Which restart policy will restart a service only if it fails (exits with a non-zero exit code)?",
-          options: [
-            "always",
-            "on-failure",
-            "unless-stopped",
-            "no"
-          ],
+          question:
+            "Which restart policy will restart a service only if it fails (exits with a non-zero exit code)?",
+          options: ["always", "on-failure", "unless-stopped", "no"],
           correctIndex: 1,
-          explanation: "The `on-failure` policy automatically restarts the container if it exits with an error."
-        }
-      ]
-    }
+          explanation:
+            "The `on-failure` policy automatically restarts the container if it exits with an error.",
+        },
+      ],
+    },
   ],
 };
 

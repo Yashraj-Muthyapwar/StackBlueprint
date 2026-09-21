@@ -28,7 +28,28 @@ import { AbstractionCustomAnimation } from "./oop/AbstractionCustomAnimation";
 import { CompositionCustomAnimation } from "./oop/CompositionCustomAnimation";
 import { DunderMethodsCustomAnimation } from "./oop/DunderMethodsCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant =
+  | AnyVariant
+  | "reading-files"
+  | "writing-files"
+  | "file-modes"
+  | "file-methods"
+  | "working-with-paths"
+  | "os-module"
+  | "working-with-csv"
+  | "working-with-json"
+  | "pickle-module"
+  | "shutil-module"
+  | "classes-and-objects"
+  | "instance-and-class-attributes"
+  | "types-of-methods"
+  | "encapsulation"
+  | "inheritance"
+  | "inheritance-types"
+  | "polymorphism"
+  | "abstraction"
+  | "composition"
+  | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -137,7 +158,10 @@ function AnimationStage({ variant }: { variant: AnyVariant }) {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => { setPlaying(false); setStep(0); }}
+            onClick={() => {
+              setPlaying(false);
+              setStep(0);
+            }}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
             aria-label="Restart"
           >

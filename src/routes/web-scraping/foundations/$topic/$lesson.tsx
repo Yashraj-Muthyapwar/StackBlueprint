@@ -29,6 +29,15 @@ function LessonPage() {
   const idx = t?.lessons.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons[idx] : undefined;
 
+  useEffect(() => {
+    if (!l) return;
+    const handleQuizPassed = () => {
+      markComplete(l.slug);
+    };
+    window.addEventListener("quiz-passed", handleQuizPassed);
+    return () => window.removeEventListener("quiz-passed", handleQuizPassed);
+  }, [l, markComplete]);
+
   if (!t || !l) {
     return (
       <div className="px-6 py-16 text-center text-muted-foreground">
@@ -42,16 +51,8 @@ function LessonPage() {
 
   const prev = idx > 0 ? t.lessons[idx - 1] : undefined;
   const next = idx < t.lessons.length - 1 ? t.lessons[idx + 1] : undefined;
-  
-  const hasQuiz = l.sections.some((s) => s.kind === "quiz");
 
-  useEffect(() => {
-    const handleQuizPassed = () => {
-      markComplete(l.slug);
-    };
-    window.addEventListener("quiz-passed", handleQuizPassed);
-    return () => window.removeEventListener("quiz-passed", handleQuizPassed);
-  }, [l.slug, markComplete]);
+  const hasQuiz = l.sections.some((s) => s.kind === "quiz");
 
   return (
     <LessonLayout
@@ -62,9 +63,11 @@ function LessonPage() {
       lesson={l}
       hasQuiz={hasQuiz}
       isCompleted={isCompleted(l.slug)}
-      onToggleComplete={() => isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug)}
+      onToggleComplete={() => (isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug))}
       sections={l.sections}
-      renderSection={(s, onQuizActiveChange) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />}
+      renderSection={(s, onQuizActiveChange) => (
+        <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} />
+      )}
     />
   );
 }

@@ -16,7 +16,13 @@ export function SecondaryStrip({ data }: { data: SecondaryArray }) {
   const highlightSet = new Set(data.highlight?.indices ?? []);
   const tone = data.highlight?.kind;
   const ringColor =
-    tone === "match" ? "var(--mint)" : tone === "swap" ? "var(--rose)" : tone === "compare" ? "var(--violet)" : "transparent";
+    tone === "match"
+      ? "var(--mint)"
+      : tone === "swap"
+        ? "var(--rose)"
+        : tone === "compare"
+          ? "var(--violet)"
+          : "transparent";
 
   const pointerByIdx = new Map<number, string[]>();
   for (const p of data.pointers ?? []) {
@@ -64,7 +70,9 @@ export function SecondaryStrip({ data }: { data: SecondaryArray }) {
               >
                 {v}
               </motion.div>
-              <div className="mt-1 text-center font-mono text-[9px] text-muted-foreground/60">{i}</div>
+              <div className="mt-1 text-center font-mono text-[9px] text-muted-foreground/60">
+                {i}
+              </div>
             </div>
           );
         })}

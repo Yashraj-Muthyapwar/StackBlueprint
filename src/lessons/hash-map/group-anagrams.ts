@@ -14,7 +14,10 @@ function fmtGroups(g: Map<string, string[]>) {
 }
 
 function parseWords(s: string): string[] {
-  return s.split(/[\s,]+/).map((w) => w.trim()).filter(Boolean);
+  return s
+    .split(/[\s,]+/)
+    .map((w) => w.trim())
+    .filter(Boolean);
 }
 
 function build({ words }: Inputs): Step[] {
@@ -62,7 +65,8 @@ export const groupAnagrams: LessonBuilder<Inputs> = {
   slug: "group-anagrams",
   title: "Hash Map — Group Anagrams",
   subtitle: "Map every word to a canonical key; words that share a key share a bucket.",
-  problem: "Given a list of words, group them so that each group contains exactly the anagrams of each other.",
+  problem:
+    "Given a list of words, group them so that each group contains exactly the anagrams of each other.",
   spotIt: [
     "Equivalence classes induced by a normalization function (sort, count vector, signature).",
     "Output is a partition of the input rather than a single value.",

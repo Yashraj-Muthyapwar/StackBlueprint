@@ -24,14 +24,12 @@ import { motion, AnimatePresence } from "motion/react";
 const ipToInt = (ip: string): number =>
   ip.split(".").reduce((acc, oct) => (acc << 8) + (Number(oct) & 255), 0) >>> 0;
 
-const intToIp = (n: number): string =>
-  [24, 16, 8, 0].map((shift) => (n >>> shift) & 255).join(".");
+const intToIp = (n: number): string => [24, 16, 8, 0].map((shift) => (n >>> shift) & 255).join(".");
 
 const maskFromPrefix = (prefix: number): number =>
   prefix === 0 ? 0 : (0xffffffff << (32 - prefix)) >>> 0;
 
-const networkId = (ip: number, prefix: number): number =>
-  (ip & maskFromPrefix(prefix)) >>> 0;
+const networkId = (ip: number, prefix: number): number => (ip & maskFromPrefix(prefix)) >>> 0;
 
 const broadcastId = (ip: number, prefix: number): number =>
   (networkId(ip, prefix) | (~maskFromPrefix(prefix) >>> 0)) >>> 0;
@@ -42,8 +40,7 @@ const inCidr = (ip: number, cidr: string): boolean => {
   return networkId(ip, prefix) === networkId(ipToInt(base), prefix);
 };
 
-const toBits = (n: number): string =>
-  n.toString(2).padStart(32, "0");
+const toBits = (n: number): string => n.toString(2).padStart(32, "0");
 
 const fmt = (n: number): string => n.toLocaleString("en-US");
 
@@ -59,9 +56,7 @@ const Panel: React.FC<{
       <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
         {label}
       </span>
-      <h4 className="mt-0.5 text-base font-semibold text-slate-900 dark:text-slate-100">
-        {title}
-      </h4>
+      <h4 className="mt-0.5 text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h4>
     </div>
     <div className="p-5">{children}</div>
     {footnote && (
@@ -99,7 +94,8 @@ export const CidrExplorer: React.FC = () => {
   const [prefix, setPrefix] = useState(20);
   const [provider, setProvider] = useState<Provider>("aws");
 
-  const valid = /^(\d{1,3}\.){3}\d{1,3}$/.test(ip) &&
+  const valid =
+    /^(\d{1,3}\.){3}\d{1,3}$/.test(ip) &&
     ip.split(".").every((o) => Number(o) >= 0 && Number(o) <= 255);
 
   const stats = useMemo(() => {
@@ -139,17 +135,13 @@ export const CidrExplorer: React.FC = () => {
       {/* Controls */}
       <div className="mb-5 flex flex-wrap items-end gap-4">
         <label className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-            Address
-          </span>
+          <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Address</span>
           <input
             value={ip}
             onChange={(e) => setIp(e.target.value.trim())}
             spellCheck={false}
             className={`w-40 rounded-md border px-3 py-1.5 font-mono text-sm outline-none focus:ring-2 focus:ring-blue-500/40 dark:bg-slate-800 dark:text-slate-100 ${
-              valid
-                ? "border-slate-300 dark:border-slate-600"
-                : "border-red-400 text-red-600"
+              valid ? "border-slate-300 dark:border-slate-600" : "border-red-400 text-red-600"
             }`}
           />
         </label>
@@ -157,9 +149,7 @@ export const CidrExplorer: React.FC = () => {
         <label className="flex min-w-[220px] flex-1 flex-col gap-1">
           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
             Prefix length{" "}
-            <span className="font-mono text-blue-600 dark:text-blue-400">
-              /{prefix}
-            </span>
+            <span className="font-mono text-blue-600 dark:text-blue-400">/{prefix}</span>
           </span>
           <input
             type="range"
@@ -210,12 +200,8 @@ export const CidrExplorer: React.FC = () => {
           {/* Bit strip */}
           <div className="rounded-lg bg-slate-900 p-4 dark:bg-slate-950">
             <div className="mb-2 flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider">
-              <span className="text-blue-400">
-                ← Network portion ({prefix} bits)
-              </span>
-              <span className="text-orange-400">
-                Host portion ({32 - prefix} bits) →
-              </span>
+              <span className="text-blue-400">← Network portion ({prefix} bits)</span>
+              <span className="text-orange-400">Host portion ({32 - prefix} bits) →</span>
             </div>
 
             <div className="flex flex-wrap gap-x-3 gap-y-2 font-mono text-sm">
@@ -254,13 +240,11 @@ export const CidrExplorer: React.FC = () => {
 
             <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-t border-white/10 pt-3 font-mono text-xs text-slate-400">
               <span>
-                mask{" "}
-                <span className="text-slate-200">{stats.mask}</span>
+                mask <span className="text-slate-200">{stats.mask}</span>
               </span>
               <span>
-                networks step by{" "}
-                <span className="text-slate-200">{stats.blockSize}</span> in
-                octet {stats.blockOctet}
+                networks step by <span className="text-slate-200">{stats.blockSize}</span> in octet{" "}
+                {stats.blockOctet}
               </span>
             </div>
           </div>
@@ -285,10 +269,10 @@ export const CidrExplorer: React.FC = () => {
                   cell.tone === "blue"
                     ? "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40"
                     : cell.tone === "orange"
-                    ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/40"
-                    : cell.tone === "green"
-                    ? "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/40"
-                    : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60"
+                      ? "border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950/40"
+                      : cell.tone === "green"
+                        ? "border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950/40"
+                        : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60"
                 }`}
               >
                 <div className="text-[10px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
@@ -303,11 +287,12 @@ export const CidrExplorer: React.FC = () => {
 
           {!stats.aligned && (
             <p className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-              <strong>{ip}/{prefix}</strong> is not a valid network boundary. A
-              network ID must be divisible by its block size, so this range
-              actually starts at{" "}
-              <span className="font-mono">{stats.network}</span>. Most routers
-              and cloud APIs will reject the address you typed.
+              <strong>
+                {ip}/{prefix}
+              </strong>{" "}
+              is not a valid network boundary. A network ID must be divisible by its block size, so
+              this range actually starts at <span className="font-mono">{stats.network}</span>. Most
+              routers and cloud APIs will reject the address you typed.
             </p>
           )}
         </>
@@ -338,13 +323,11 @@ export const SubnetMathSteps: React.FC = () => {
     },
     {
       title: "Write the address in binary",
-      detail:
-        "32 bits, four groups of eight. Nothing clever here, just a different base.",
+      detail: "32 bits, four groups of eight. Nothing clever here, just a different base.",
     },
     {
       title: "Write the mask underneath",
-      detail:
-        "A /20 means twenty 1s, then twelve 0s. In decimal that is 255.255.240.0.",
+      detail: "A /20 means twenty 1s, then twelve 0s. In decimal that is 255.255.240.0.",
     },
     {
       title: "AND the two together, bit by bit",
@@ -392,10 +375,10 @@ export const SubnetMathSteps: React.FC = () => {
                             ? "text-blue-600 dark:text-blue-400"
                             : "text-orange-500"
                           : tone === "net"
-                          ? net
-                            ? "font-semibold text-blue-700 dark:text-blue-300"
-                            : "text-slate-400"
-                          : "text-slate-700 dark:text-slate-200"
+                            ? net
+                              ? "font-semibold text-blue-700 dark:text-blue-300"
+                              : "text-slate-400"
+                            : "text-slate-700 dark:text-slate-200"
                       }
                     >
                       {b}
@@ -420,13 +403,7 @@ export const SubnetMathSteps: React.FC = () => {
       footnote="Bitwise AND against the mask. Every routing decision on the internet starts here."
     >
       <div className="space-y-3 rounded-lg bg-slate-50 p-4 dark:bg-slate-800/50">
-        <Row
-          label="Address"
-          bits={toBits(ipInt)}
-          decimal={MATH_IP}
-          tone="ip"
-          dim={step < 1}
-        />
+        <Row label="Address" bits={toBits(ipInt)} decimal={MATH_IP} tone="ip" dim={step < 1} />
         <Row
           label={`Mask /${MATH_PREFIX}`}
           bits={toBits(maskInt)}
@@ -474,9 +451,7 @@ export const SubnetMathSteps: React.FC = () => {
         <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           {steps[step].title}
         </p>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-          {steps[step].detail}
-        </p>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{steps[step].detail}</p>
       </div>
     </Panel>
   );
@@ -488,11 +463,26 @@ export const SubnetMathSteps: React.FC = () => {
    ══════════════════════════════════════════════════════════════════════ */
 
 const RESERVED_NOTES: Record<number, { title: string; body: string }> = {
-  0: { title: "Network address", body: "The name of the subnet itself. Never assignable, on-prem or in the cloud." },
-  1: { title: "VPC router", body: "The default gateway for everything in this subnet. Your instance's route to anywhere else starts here." },
-  2: { title: "DNS resolver", body: "AWS maps the VPC's .2 address to the Route 53 Resolver. This is what /etc/resolv.conf points at." },
-  3: { title: "Held for future use", body: "AWS reserves it and has never said what for. You still cannot have it." },
-  255: { title: "Broadcast address", body: "Reserved for compatibility. AWS does not support broadcast at all, but the address is still off limits." },
+  0: {
+    title: "Network address",
+    body: "The name of the subnet itself. Never assignable, on-prem or in the cloud.",
+  },
+  1: {
+    title: "VPC router",
+    body: "The default gateway for everything in this subnet. Your instance's route to anywhere else starts here.",
+  },
+  2: {
+    title: "DNS resolver",
+    body: "AWS maps the VPC's .2 address to the Route 53 Resolver. This is what /etc/resolv.conf points at.",
+  },
+  3: {
+    title: "Held for future use",
+    body: "AWS reserves it and has never said what for. You still cannot have it.",
+  },
+  255: {
+    title: "Broadcast address",
+    body: "Reserved for compatibility. AWS does not support broadcast at all, but the address is still off limits.",
+  },
 };
 
 export const ReservedIpsDiagram: React.FC = () => {
@@ -540,9 +530,7 @@ export const ReservedIpsDiagram: React.FC = () => {
             <p className="font-mono text-sm font-semibold text-red-600 dark:text-red-400">
               10.0.1.{hover} · {note.title}
             </p>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {note.body}
-            </p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{note.body}</p>
           </>
         ) : (
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -568,10 +556,22 @@ const TIERS: { key: string; label: string; cidr: string; tone: string; children:
     cidr: "10.0.0.0/18",
     tone: "bg-sky-500",
     children: [
-      { name: "public-1a", cidr: "10.0.0.0/24", size: 256, tone: "bg-sky-500", note: "ALB, NAT GW, bastion" },
+      {
+        name: "public-1a",
+        cidr: "10.0.0.0/24",
+        size: 256,
+        tone: "bg-sky-500",
+        note: "ALB, NAT GW, bastion",
+      },
       { name: "public-1b", cidr: "10.0.1.0/24", size: 256, tone: "bg-sky-500" },
       { name: "public-1c", cidr: "10.0.2.0/24", size: 256, tone: "bg-sky-500" },
-      { name: "spare", cidr: "10.0.3.0 → 10.0.63.255", size: 15616, tone: "bg-slate-300 dark:bg-slate-700", note: "held for a 4th AZ" },
+      {
+        name: "spare",
+        cidr: "10.0.3.0 → 10.0.63.255",
+        size: 15616,
+        tone: "bg-slate-300 dark:bg-slate-700",
+        note: "held for a 4th AZ",
+      },
     ],
   },
   {
@@ -580,7 +580,13 @@ const TIERS: { key: string; label: string; cidr: string; tone: string; children:
     cidr: "10.0.64.0/18",
     tone: "bg-indigo-500",
     children: [
-      { name: "app-1a", cidr: "10.0.64.0/20", size: 4096, tone: "bg-indigo-500", note: "EKS pods burn real VPC IPs" },
+      {
+        name: "app-1a",
+        cidr: "10.0.64.0/20",
+        size: 4096,
+        tone: "bg-indigo-500",
+        note: "EKS pods burn real VPC IPs",
+      },
       { name: "app-1b", cidr: "10.0.80.0/20", size: 4096, tone: "bg-indigo-500" },
       { name: "app-1c", cidr: "10.0.96.0/20", size: 4096, tone: "bg-indigo-500" },
       { name: "spare", cidr: "10.0.112.0/20", size: 4096, tone: "bg-slate-300 dark:bg-slate-700" },
@@ -592,10 +598,21 @@ const TIERS: { key: string; label: string; cidr: string; tone: string; children:
     cidr: "10.0.128.0/18",
     tone: "bg-emerald-500",
     children: [
-      { name: "data-1a", cidr: "10.0.128.0/22", size: 1024, tone: "bg-emerald-500", note: "RDS, ElastiCache, MSK ENIs" },
+      {
+        name: "data-1a",
+        cidr: "10.0.128.0/22",
+        size: 1024,
+        tone: "bg-emerald-500",
+        note: "RDS, ElastiCache, MSK ENIs",
+      },
       { name: "data-1b", cidr: "10.0.132.0/22", size: 1024, tone: "bg-emerald-500" },
       { name: "data-1c", cidr: "10.0.136.0/22", size: 1024, tone: "bg-emerald-500" },
-      { name: "spare", cidr: "10.0.140.0 → 10.0.191.255", size: 13312, tone: "bg-slate-300 dark:bg-slate-700" },
+      {
+        name: "spare",
+        cidr: "10.0.140.0 → 10.0.191.255",
+        size: 13312,
+        tone: "bg-slate-300 dark:bg-slate-700",
+      },
     ],
   },
   {
@@ -604,7 +621,13 @@ const TIERS: { key: string; label: string; cidr: string; tone: string; children:
     cidr: "10.0.192.0/18",
     tone: "bg-amber-500",
     children: [
-      { name: "unallocated", cidr: "10.0.192.0/18", size: 16384, tone: "bg-amber-400", note: "4th AZ, pod CIDRs, a future tier" },
+      {
+        name: "unallocated",
+        cidr: "10.0.192.0/18",
+        size: 16384,
+        tone: "bg-amber-400",
+        note: "4th AZ, pod CIDRs, a future tier",
+      },
     ],
   },
 ];
@@ -700,7 +723,12 @@ export const VpcCarveDiagram: React.FC = () => {
                   transition={{ duration: 0.8, ease: "easeOut" }}
                   className={`group relative flex items-center justify-center border-r border-white/60 text-[10px] font-medium text-white last:border-r-0 dark:border-slate-900/40 ${c.tone}`}
                 >
-                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="truncate px-1">
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="truncate px-1"
+                  >
                     {c.name}
                   </motion.span>
                 </motion.div>
@@ -746,9 +774,7 @@ export const VpcCarveDiagram: React.FC = () => {
         >
           Next
         </button>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
-          Step {step + 1} of 6
-        </span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">Step {step + 1} of 6</span>
       </div>
 
       <p className="mt-3 rounded-lg border-l-4 border-blue-500 bg-blue-50 px-4 py-3 text-sm text-slate-700 dark:bg-blue-950/30 dark:text-slate-200">
@@ -775,25 +801,29 @@ const DESTINATIONS = [
     label: "RDS in this VPC",
     ip: "10.0.128.44",
     hops: ["EC2 · 10.0.64.19", "VPC router", "RDS · 10.0.128.44"],
-    verdict: "Stays inside the VPC. The local route is the most specific match and can never be overridden.",
+    verdict:
+      "Stays inside the VPC. The local route is the most specific match and can never be overridden.",
   },
   {
     label: "Peered VPC",
     ip: "10.1.4.20",
     hops: ["EC2 · 10.0.64.19", "VPC router", "Peering · pcx", "VPC 10.1.0.0/16"],
-    verdict: "10.1.4.20 is not inside 10.0.0.0/16 at all. The /16 peering route beats the /0 default, so traffic crosses the peering link instead of the internet.",
+    verdict:
+      "10.1.4.20 is not inside 10.0.0.0/16 at all. The /16 peering route beats the /0 default, so traffic crosses the peering link instead of the internet.",
   },
   {
     label: "Public internet",
     ip: "8.8.8.8",
     hops: ["EC2 · 10.0.64.19", "VPC router", "NAT GW · public", "Internet GW", "8.8.8.8"],
-    verdict: "Nothing specific matches, so the 0.0.0.0/0 catch-all wins. The NAT gateway rewrites the source to its own public IP, which is why the return traffic finds its way back.",
+    verdict:
+      "Nothing specific matches, so the 0.0.0.0/0 catch-all wins. The NAT gateway rewrites the source to its own public IP, which is why the return traffic finds its way back.",
   },
   {
     label: "On-prem host",
     ip: "172.20.9.5",
     hops: ["EC2 · 10.0.64.19", "VPC router", "Virtual GW", "On-prem 172.20.0.0/16"],
-    verdict: "Matches the VPN route. If your on-prem network also used 10.0.0.0/16 this route could not exist, which is the whole argument for planning CIDRs org-wide.",
+    verdict:
+      "Matches the VPN route. If your on-prem network also used 10.0.0.0/16 this route could not exist, which is the whole argument for planning CIDRs org-wide.",
   },
 ];
 
@@ -841,8 +871,7 @@ export const VpcPacketFlow: React.FC = () => {
                 : "border-slate-300 text-slate-600 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300"
             }`}
           >
-            {d.label}{" "}
-            <span className="font-mono opacity-70">{d.ip}</span>
+            {d.label} <span className="font-mono opacity-70">{d.ip}</span>
           </button>
         ))}
       </div>
@@ -868,8 +897,8 @@ export const VpcPacketFlow: React.FC = () => {
                     isWinner
                       ? "bg-emerald-50 dark:bg-emerald-950/40"
                       : matches
-                      ? "bg-amber-50 dark:bg-amber-950/30"
-                      : "opacity-50"
+                        ? "bg-amber-50 dark:bg-amber-950/30"
+                        : "opacity-50"
                   }`}
                 >
                   <td className="px-3 py-2 font-mono text-xs">{r.dest}</td>
@@ -903,8 +932,13 @@ export const VpcPacketFlow: React.FC = () => {
                 animate={{
                   scale: hop === i ? 1.05 : 1,
                   borderColor: hop > i ? "#34d399" : hop === i ? "#3b82f6" : "#334155",
-                  backgroundColor: hop > i ? "rgba(52, 211, 153, 0.15)" : hop === i ? "rgba(59, 130, 246, 0.15)" : "rgba(30, 41, 59, 0.6)",
-                  color: hop > i ? "#6ee7b7" : hop === i ? "#93c5fd" : "#94a3b8"
+                  backgroundColor:
+                    hop > i
+                      ? "rgba(52, 211, 153, 0.15)"
+                      : hop === i
+                        ? "rgba(59, 130, 246, 0.15)"
+                        : "rgba(30, 41, 59, 0.6)",
+                  color: hop > i ? "#6ee7b7" : hop === i ? "#93c5fd" : "#94a3b8",
                 }}
                 transition={{ duration: 0.3 }}
                 className="flex-1 rounded-md border px-2 py-2 text-center text-[11px] font-medium shadow-sm"
@@ -915,7 +949,7 @@ export const VpcPacketFlow: React.FC = () => {
                 <div className="relative h-[2px] w-8 shrink-0 bg-slate-700 overflow-hidden rounded-full">
                   <motion.div
                     initial={{ x: "-100%" }}
-                    animate={{ x: hop > i ? "100%" : (hop === i ? "0%" : "-100%") }}
+                    animate={{ x: hop > i ? "100%" : hop === i ? "0%" : "-100%" }}
                     transition={{
                       duration: hop === i ? 0.9 : 0.2,
                       ease: "linear",

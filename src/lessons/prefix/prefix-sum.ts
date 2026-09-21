@@ -80,7 +80,8 @@ export const prefixSum: LessonBuilder<Inputs> = {
   slug: "prefix-sum",
   title: "Prefix Sum",
   subtitle: "Precompute running totals; any range sum becomes a single subtraction.",
-  problem: "Given an array, preprocess it so that the sum of any range [left, right] can be answered in O(1) per query.",
+  problem:
+    "Given an array, preprocess it so that the sum of any range [left, right] can be answered in O(1) per query.",
   spotIt: [
     "Many range-sum queries on a static array.",
     "Problems like 'subarray sum equals K' or 'number of subarrays with sum divisible by K' (prefix + hash map).",
@@ -94,10 +95,22 @@ export const prefixSum: LessonBuilder<Inputs> = {
   variant: "prefix-sum",
   view: "array",
   code,
-  defaultInputs: { arr: [3, 1, 4, 1, 5, 9, 2, 6], queries: [[1, 4], [0, 7], [3, 5]] },
+  defaultInputs: {
+    arr: [3, 1, 4, 1, 5, 9, 2, 6],
+    queries: [
+      [1, 4],
+      [0, 7],
+      [3, 5],
+    ],
+  },
   inputs: [
     { key: "arr", label: "Array", kind: "intArray" },
-    { key: "queries", label: "Queries (left,right pairs)", kind: "intPairs", help: "inclusive · `0,3; 1,4`" },
+    {
+      key: "queries",
+      label: "Queries (left,right pairs)",
+      kind: "intPairs",
+      help: "inclusive · `0,3; 1,4`",
+    },
   ],
   validate: ({ arr, queries }) => {
     const w: string[] = [];

@@ -65,7 +65,8 @@ export const prefixXor: LessonBuilder<Inputs> = {
   slug: "prefix-xor",
   title: "Prefix XOR",
   subtitle: "XOR is its own inverse — range XOR becomes pre[r+1] ^ pre[l].",
-  problem: "Given an array, answer range XOR queries [left, right] in O(1) using a prefix XOR array.",
+  problem:
+    "Given an array, answer range XOR queries [left, right] in O(1) using a prefix XOR array.",
   spotIt: [
     "Range XOR queries, or 'count subarrays with XOR equal to K'.",
     "Problems involving toggling bits, parity, or 'find the odd one out' over ranges.",
@@ -79,7 +80,13 @@ export const prefixXor: LessonBuilder<Inputs> = {
   variant: "prefix-xor",
   view: "array",
   code,
-  defaultInputs: { arr: [4, 2, 1, 3, 5, 7], queries: [[1, 3], [0, 5]] },
+  defaultInputs: {
+    arr: [4, 2, 1, 3, 5, 7],
+    queries: [
+      [1, 3],
+      [0, 5],
+    ],
+  },
   inputs: [
     { key: "arr", label: "Array (non-negative ints)", kind: "intArray" },
     { key: "queries", label: "Queries (left,right pairs)", kind: "intPairs" },
@@ -87,7 +94,9 @@ export const prefixXor: LessonBuilder<Inputs> = {
   validate: ({ arr, queries }) => {
     const w: string[] = [];
     if (arr.some((v) => v < 0)) w.push("XOR is defined for non-negative ints in this demo.");
-    for (const [left, right] of queries) if (left < 0 || right >= arr.length || left > right) w.push(`Query [${left},${right}] out of bounds.`);
+    for (const [left, right] of queries)
+      if (left < 0 || right >= arr.length || left > right)
+        w.push(`Query [${left},${right}] out of bounds.`);
     return w;
   },
   build,

@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-export function ZoomableImage({ src, alt, className }: { src: string; alt?: string; className?: string }) {
+export function ZoomableImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt?: string;
+  className?: string;
+}) {
   const [isZoomed, setIsZoomed] = useState(false);
 
   useEffect(() => {
@@ -28,9 +36,12 @@ export function ZoomableImage({ src, alt, className }: { src: string; alt?: stri
           className="fixed inset-0 z-[999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md cursor-zoom-out"
           onClick={() => setIsZoomed(false)}
         >
-          <button 
+          <button
             className="absolute right-6 top-6 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/80 transition-colors"
-            onClick={(e) => { e.stopPropagation(); setIsZoomed(false); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsZoomed(false);
+            }}
             aria-label="Close fullscreen image"
           >
             <X className="size-6" />
@@ -39,7 +50,10 @@ export function ZoomableImage({ src, alt, className }: { src: string; alt?: stri
             src={src}
             alt={alt}
             className="max-h-[90vh] max-w-[95vw] rounded-lg object-contain shadow-2xl"
-            onClick={(e) => { e.stopPropagation(); setIsZoomed(false); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsZoomed(false);
+            }}
           />
         </div>
       )}

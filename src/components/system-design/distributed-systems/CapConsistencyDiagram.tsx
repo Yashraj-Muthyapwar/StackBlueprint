@@ -1,8 +1,26 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Server, MonitorSmartphone, CheckCircle2, ArrowRight } from "lucide-react";
 
-function Packet({ label, color, fromX, toX, fromY = "50%", toY = "50%", delay = 0, onComplete }: { label: React.ReactNode, color: "mint" | "blue" | "violet", fromX: string, toX: string, fromY?: string, toY?: string, delay?: number, onComplete?: () => void }) {
+function Packet({
+  label,
+  color,
+  fromX,
+  toX,
+  fromY = "50%",
+  toY = "50%",
+  delay = 0,
+  onComplete,
+}: {
+  label: React.ReactNode;
+  color: "mint" | "blue" | "violet";
+  fromX: string;
+  toX: string;
+  fromY?: string;
+  toY?: string;
+  delay?: number;
+  onComplete?: () => void;
+}) {
   const colorMap = {
     mint: "border-mint/30 bg-mint/10 text-mint shadow-[0_0_8px_rgba(16,185,129,0.5)]",
     blue: "border-blue-500/30 bg-blue-500/10 text-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]",
@@ -13,13 +31,13 @@ function Packet({ label, color, fromX, toX, fromY = "50%", toY = "50%", delay = 
     <motion.div
       initial={{ left: fromX, top: fromY, opacity: 0, x: "-50%", y: "-50%" }}
       animate={{ left: toX, top: toY, opacity: [0, 1, 1, 0] }}
-      transition={{ 
+      transition={{
         delay,
-        duration: 1.5, 
-        ease: "linear", 
+        duration: 1.5,
+        ease: "linear",
         left: { delay, duration: 1.5, ease: "linear" },
         top: { delay, duration: 1.5, ease: "linear" },
-        opacity: { delay, duration: 1.5, ease: "linear", times: [0, 0.1, 0.9, 1] } 
+        opacity: { delay, duration: 1.5, ease: "linear", times: [0, 0.1, 0.9, 1] },
       }}
       onAnimationComplete={onComplete}
       className={`absolute flex items-center justify-center h-7 px-2.5 rounded-full border backdrop-blur text-[10px] font-bold ${colorMap[color]} whitespace-nowrap z-30`}
@@ -80,7 +98,9 @@ export function CapConsistencyDiagram() {
     <div className="flex flex-col rounded-xl border border-hairline bg-card/50 overflow-hidden shadow-sm my-6">
       <div className="flex items-center justify-between border-b border-hairline bg-muted/20 px-4 py-3">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Consistency Demo</span>
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            Consistency Demo
+          </span>
         </div>
         <button
           onClick={startAnimation}
@@ -105,7 +125,7 @@ export function CapConsistencyDiagram() {
             <MonitorSmartphone className="size-6 text-foreground" />
             <div className="absolute -right-24 bg-background border border-hairline rounded p-1 shadow-sm flex items-center justify-center min-w-[60px]">
               <span className="text-[10px] font-mono font-bold text-foreground">
-                {clientBalance !== null ? `$${clientBalance}` : '???'}
+                {clientBalance !== null ? `$${clientBalance}` : "???"}
               </span>
             </div>
           </div>
@@ -115,12 +135,14 @@ export function CapConsistencyDiagram() {
         {/* Node A */}
         <div className="absolute left-12 top-1/2 flex -translate-y-1/2 flex-col items-center gap-2 z-20">
           <span className="font-mono text-[10px] font-bold text-muted-foreground">Node A</span>
-          <div className={`flex flex-col w-28 items-center justify-center rounded-xl border-2 ${step >= 2 ? 'border-mint/50 bg-mint/10' : 'border-muted-foreground/20 bg-background'} shadow-lg overflow-hidden transition-colors`}>
+          <div
+            className={`flex flex-col w-28 items-center justify-center rounded-xl border-2 ${step >= 2 ? "border-mint/50 bg-mint/10" : "border-muted-foreground/20 bg-background"} shadow-lg overflow-hidden transition-colors`}
+          >
             <div className="w-full bg-muted/30 py-1.5 flex justify-center border-b border-hairline">
               <Server className="size-5 text-foreground" />
             </div>
             <div className="py-2 w-full flex flex-col items-center">
-               <span className="text-xs font-mono font-medium">${balanceA}</span>
+              <span className="text-xs font-mono font-medium">${balanceA}</span>
             </div>
           </div>
         </div>
@@ -128,12 +150,14 @@ export function CapConsistencyDiagram() {
         {/* Node B */}
         <div className="absolute right-12 top-1/2 flex -translate-y-1/2 flex-col items-center gap-2 z-20">
           <span className="font-mono text-[10px] font-bold text-muted-foreground">Node B</span>
-          <div className={`flex flex-col w-28 items-center justify-center rounded-xl border-2 ${step >= 3 ? 'border-mint/50 bg-mint/10' : 'border-muted-foreground/20 bg-background'} shadow-lg overflow-hidden transition-colors`}>
+          <div
+            className={`flex flex-col w-28 items-center justify-center rounded-xl border-2 ${step >= 3 ? "border-mint/50 bg-mint/10" : "border-muted-foreground/20 bg-background"} shadow-lg overflow-hidden transition-colors`}
+          >
             <div className="w-full bg-muted/30 py-1.5 flex justify-center border-b border-hairline">
               <Server className="size-5 text-foreground" />
             </div>
             <div className="py-2 w-full flex flex-col items-center">
-               <span className="text-xs font-mono font-medium">${balanceB}</span>
+              <span className="text-xs font-mono font-medium">${balanceB}</span>
             </div>
           </div>
         </div>
@@ -141,20 +165,92 @@ export function CapConsistencyDiagram() {
         {/* Animation Track */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           <AnimatePresence>
-            {step === 1 && <Packet key="s1" label={<>Withdraw $200 <ArrowRight className="ml-1 size-3" /></>} color="blue" fromX="50%" fromY="40px" toX="120px" toY="50%" />}
-            {step === 2 && <Packet key="s2" label={<>Sync $800 <ArrowRight className="ml-1 size-3" /></>} color="violet" fromX="120px" fromY="50%" toX="calc(100% - 120px)" toY="50%" />}
-            {step === 3 && <Packet key="s3" label={<>ACK <CheckCircle2 className="ml-1 size-3" /></>} color="mint" fromX="calc(100% - 120px)" fromY="50%" toX="120px" toY="50%" />}
-            {step === 4 && <Packet key="s4" label={<>Read Balance <ArrowRight className="ml-1 size-3" /></>} color="blue" fromX="50%" fromY="40px" toX="calc(100% - 120px)" toY="50%" />}
-            {step === 5 && <Packet key="s5" label={<>$800 <CheckCircle2 className="ml-1 size-3" /></>} color="mint" fromX="calc(100% - 120px)" fromY="50%" toX="50%" toY="40px" />}
+            {step === 1 && (
+              <Packet
+                key="s1"
+                label={
+                  <>
+                    Withdraw $200 <ArrowRight className="ml-1 size-3" />
+                  </>
+                }
+                color="blue"
+                fromX="50%"
+                fromY="40px"
+                toX="120px"
+                toY="50%"
+              />
+            )}
+            {step === 2 && (
+              <Packet
+                key="s2"
+                label={
+                  <>
+                    Sync $800 <ArrowRight className="ml-1 size-3" />
+                  </>
+                }
+                color="violet"
+                fromX="120px"
+                fromY="50%"
+                toX="calc(100% - 120px)"
+                toY="50%"
+              />
+            )}
+            {step === 3 && (
+              <Packet
+                key="s3"
+                label={
+                  <>
+                    ACK <CheckCircle2 className="ml-1 size-3" />
+                  </>
+                }
+                color="mint"
+                fromX="calc(100% - 120px)"
+                fromY="50%"
+                toX="120px"
+                toY="50%"
+              />
+            )}
+            {step === 4 && (
+              <Packet
+                key="s4"
+                label={
+                  <>
+                    Read Balance <ArrowRight className="ml-1 size-3" />
+                  </>
+                }
+                color="blue"
+                fromX="50%"
+                fromY="40px"
+                toX="calc(100% - 120px)"
+                toY="50%"
+              />
+            )}
+            {step === 5 && (
+              <Packet
+                key="s5"
+                label={
+                  <>
+                    $800 <CheckCircle2 className="ml-1 size-3" />
+                  </>
+                }
+                color="mint"
+                fromX="calc(100% - 120px)"
+                fromY="50%"
+                toX="50%"
+                toY="40px"
+              />
+            )}
           </AnimatePresence>
         </div>
       </div>
 
       <div className="border-t border-hairline bg-muted/20 p-4">
         <p className="text-xs leading-relaxed text-muted-foreground">
-          <strong className="text-foreground">Consistency</strong> guarantees that every read gets the <em>most recent successful write</em>. 
-          When the client withdraws $200 from Node A, Node A immediately reflects $800 while Node B briefly shows $1000. 
-          The system ensures the new balance is synchronized to Node B before allowing a successful read from it, guaranteeing the client will never read stale data.
+          <strong className="text-foreground">Consistency</strong> guarantees that every read gets
+          the <em>most recent successful write</em>. When the client withdraws $200 from Node A,
+          Node A immediately reflects $800 while Node B briefly shows $1000. The system ensures the
+          new balance is synchronized to Node B before allowing a successful read from it,
+          guaranteeing the client will never read stale data.
         </p>
       </div>
     </div>

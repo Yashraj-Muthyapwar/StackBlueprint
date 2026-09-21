@@ -25,7 +25,11 @@ function build({ matrix }: Inputs): Step[] {
     steps.push({ line: 1, matrix: m, narration: "Matrix must be square." });
     return steps;
   }
-  steps.push({ line: 1, matrix: clone(m), narration: `Rotate ${n}×${n} matrix 90° clockwise via transpose + row-reverse.` });
+  steps.push({
+    line: 1,
+    matrix: clone(m),
+    narration: `Rotate ${n}×${n} matrix 90° clockwise via transpose + row-reverse.`,
+  });
 
   for (let row = 0; row < n; row++) {
     for (let col = row + 1; col < n; col++) {
@@ -86,7 +90,8 @@ export const rotate90: LessonBuilder<Inputs> = {
   validate: ({ matrix }) => {
     const w: string[] = [];
     if (!matrix.length) w.push("Matrix is empty.");
-    else if (matrix.some((r) => r.length !== matrix.length)) w.push("In-place rotation requires a square matrix.");
+    else if (matrix.some((r) => r.length !== matrix.length))
+      w.push("In-place rotation requires a square matrix.");
     return w;
   },
   build,

@@ -1,9 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  Table,
-  Filter,
-  Combine,
-} from "lucide-react";
+import { Table, Filter, Combine } from "lucide-react";
 import pandasLogo from "@/images/logos/pandas-logo.svg";
 import { TrackIndexLayout } from "@/components/learning-paths/TrackIndexLayout";
 
@@ -63,7 +59,7 @@ export const PANDAS_SECTIONS = [
           { slug: "merging", title: "Merging and Joining", icon: Combine },
           { slug: "pivot-tables", title: "Pivot Tables", icon: Combine },
         ],
-      }
+      },
     ],
   },
 ];

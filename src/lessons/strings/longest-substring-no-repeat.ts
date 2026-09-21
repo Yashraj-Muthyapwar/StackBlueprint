@@ -27,8 +27,9 @@ function build({ s }: Inputs): Step[] {
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (left: number, right: number) =>
-    [{ from: left, to: right, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) => [
+    { from: left, to: right, tone: "mid" as const, label: "window" },
+  ];
   const secondaryFrom = (m: Map<string, number>) => {
     const keys = [...m.keys()];
     return {
@@ -109,7 +110,10 @@ function build({ s }: Inputs): Step[] {
       bestRange[1] >= 0
         ? {
             kind: "match",
-            indices: Array.from({ length: bestRange[1] - bestRange[0] + 1 }, (_, i) => bestRange[0] + i),
+            indices: Array.from(
+              { length: bestRange[1] - bestRange[0] + 1 },
+              (_, i) => bestRange[0] + i,
+            ),
           }
         : undefined,
     status: `return ${best}`,
@@ -121,8 +125,10 @@ function build({ s }: Inputs): Step[] {
 export const longestSubstringNoRepeat: LessonBuilder<Inputs> = {
   slug: "longest-substring-no-repeat",
   title: "Sliding Window — Longest Substring Without Repeat",
-  subtitle: "Expand right; on a duplicate inside the window, jump left past the previous occurrence.",
-  problem: "Given a string, return the length of the longest substring of string that contains no repeated characters.",
+  subtitle:
+    "Expand right; on a duplicate inside the window, jump left past the previous occurrence.",
+  problem:
+    "Given a string, return the length of the longest substring of string that contains no repeated characters.",
   spotIt: [
     "Asks for the longest / shortest substring with a constraint on distinct characters.",
     "Brute force is O(n²) and the interviewer wants O(n).",

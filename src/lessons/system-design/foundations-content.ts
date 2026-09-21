@@ -26,15 +26,14 @@ export type FoundationTopicMeta = {
 const whatIsSystemDesign: LessonContent = {
   slug: "what-is-system-design",
   title: "What is System Design?",
-  subtitle:
-    "Choose the simplest architecture that can meet the product's real constraints.",
+  subtitle: "Choose the simplest architecture that can meet the product's real constraints.",
   sections: [
     {
       kind: "prose",
       heading: "What You Are Designing",
       body: [
         "System design is deciding how software components, data, and requests work together so a system meets its requirements at the expected scale.",
-        "The goal is not the most elaborate diagram. It is the **simplest architecture that satisfies the constraints**. A small internal tool and a global consumer product can offer the same feature while needing very different designs."
+        "The goal is not the most elaborate diagram. It is the **simplest architecture that satisfies the constraints**. A small internal tool and a global consumer product can offer the same feature while needing very different designs.",
       ],
     },
     {
@@ -48,7 +47,7 @@ const whatIsSystemDesign: LessonContent = {
       heading: "Why Correct Code Is Not Enough",
       body: [
         "A system can have correct code and still fail because its database, network, storage, or a dependency cannot handle the workload. System design makes those limits explicit before they become incidents.",
-        "Start from a dependable baseline: `Client → Application → Database`. Keep it while it meets the need. More capability usually means more components and more coordination."
+        "Start from a dependable baseline: `Client → Application → Database`. Keep it while it meets the need. More capability usually means more components and more coordination.",
       ],
     },
     { kind: "system-design-evolution" },
@@ -56,7 +55,7 @@ const whatIsSystemDesign: LessonContent = {
       kind: "callout",
       tone: "warn",
       title: "A common failure mode",
-      body: "Choosing technologies first and then trying to fit the problem around them. Start with the workload and constraints, then justify every component."
+      body: "Choosing technologies first and then trying to fit the problem around them. Start with the workload and constraints, then justify every component.",
     },
     {
       kind: "prose",
@@ -64,7 +63,7 @@ const whatIsSystemDesign: LessonContent = {
       body: [
         "Architecture starts with the problem, not the technology. Clarify requirements in this order:",
         "`Features → Scale → Data → Latency → Reliability → Consistency → Cost`.",
-        "The same feature can require completely different architectures under different constraints. A timeline for 10,000 users is not the same design problem as one serving hundreds of millions of users with a strict latency target."
+        "The same feature can require completely different architectures under different constraints. A timeline for 10,000 users is not the same design problem as one serving hundreds of millions of users with a strict latency target.",
       ],
     },
     {
@@ -78,7 +77,7 @@ const whatIsSystemDesign: LessonContent = {
       heading: "Scale and System Growth",
       body: [
         "Scale describes how much load the system must handle. Estimate read and write requests, stored data, bandwidth, peak traffic, and uneven access such as hot data.",
-        "Small workloads often fit on one machine. As data volume or query rate grows, work may need to be distributed. Until then, stay single-node or scale vertically when the workload comfortably fits."
+        "Small workloads often fit on one machine. As data volume or query rate grows, work may need to be distributed. Until then, stay single-node or scale vertically when the workload comfortably fits.",
       ],
     },
     {
@@ -86,18 +85,34 @@ const whatIsSystemDesign: LessonContent = {
       caption: "What to measure before distributing work",
       headers: ["Signal", "Question it answers", "Risk if ignored"],
       rows: [
-        ["Request rate", "Can one service or database sustain the reads and writes?", "Sizing only for average traffic."],
-        ["Data volume", "Will storage, indexes, backups, and recovery still fit?", "A single node becomes a capacity limit."],
-        ["Bandwidth", "Can the network carry requests, responses, and replication?", "Large payloads create hidden latency."],
-        ["Peak and hot keys", "Where is load concentrated during spikes?", "One shard or cache key becomes the bottleneck."]
-      ]
+        [
+          "Request rate",
+          "Can one service or database sustain the reads and writes?",
+          "Sizing only for average traffic.",
+        ],
+        [
+          "Data volume",
+          "Will storage, indexes, backups, and recovery still fit?",
+          "A single node becomes a capacity limit.",
+        ],
+        [
+          "Bandwidth",
+          "Can the network carry requests, responses, and replication?",
+          "Large payloads create hidden latency.",
+        ],
+        [
+          "Peak and hot keys",
+          "Where is load concentrated during spikes?",
+          "One shard or cache key becomes the bottleneck.",
+        ],
+      ],
     },
     {
       kind: "prose",
       heading: "Building Blocks and Data Flow",
       body: [
         "Common components each solve a specific problem. The important part is not the boxes themselves, but **how requests and data move between them**.",
-        "Add a component only when a requirement or bottleneck justifies it. Otherwise, keep that responsibility in the application or database."
+        "Add a component only when a requirement or bottleneck justifies it. Otherwise, keep that responsibility in the application or database.",
       ],
     },
     {
@@ -112,21 +127,22 @@ const whatIsSystemDesign: LessonContent = {
         ["Cache", "Faster repeated reads"],
         ["Queue or log", "Decouple asynchronous work"],
         ["Worker", "Process background tasks"],
-        ["Observability", "Logs, metrics, and traces"]
-      ]
+        ["Observability", "Logs, metrics, and traces"],
+      ],
     },
     {
       kind: "image",
       src: keyComponentsImg,
       alt: "Diagram showing the core components of a scalable system and their relationships",
-      caption: "Key components of a system: requests pass through application services to data stores and supporting infrastructure.",
+      caption:
+        "Key components of a system: requests pass through application services to data stores and supporting infrastructure.",
     },
     {
       kind: "prose",
       heading: "Operational and Analytical Workloads",
       body: [
         "Data systems are shaped by access patterns. A system optimized for low-latency user requests is different from one optimized to scan billions of records for reporting.",
-        "Use one datastore while both workloads remain small enough to coexist safely. Separate them when analytics threatens the latency-sensitive path, accepting the added work of synchronizing data."
+        "Use one datastore while both workloads remain small enough to coexist safely. Separate them when analytics threatens the latency-sensitive path, accepting the added work of synchronizing data.",
       ],
     },
     {
@@ -137,7 +153,7 @@ const whatIsSystemDesign: LessonContent = {
         ["Writes", "Frequent insert, update, delete", "Bulk loads or event streams"],
         ["Queries", "Many small predefined queries", "Fewer complex queries"],
         ["Data", "Current state", "Historical data"],
-        ["Typical use", "User-facing application", "Analysis and reporting"]
+        ["Typical use", "User-facing application", "Analysis and reporting"],
       ],
     },
     {
@@ -145,7 +161,7 @@ const whatIsSystemDesign: LessonContent = {
       heading: "Bottlenecks and Failure Modes",
       body: [
         "After the normal request path works, test what happens under pressure or failure. Ask: What if the database is unavailable? Traffic is 10×? The cache is empty? A queue backlogs? A dependency slows down? Is stale data acceptable?",
-        "The weakest dependency often determines the reliability of the whole request path. Extra resilience brings redundancy, recovery logic, and operational work. Accepting some failures can be a reasonable baseline when their business impact does not justify that cost."
+        "The weakest dependency often determines the reliability of the whole request path. Extra resilience brings redundancy, recovery logic, and operational work. Accepting some failures can be a reasonable baseline when their business impact does not justify that cost.",
       ],
     },
     {
@@ -159,7 +175,7 @@ const whatIsSystemDesign: LessonContent = {
       heading: "Every Capability Has a Cost",
       body: [
         "Every useful architectural choice solves one problem while creating another. Prefer the simpler option unless a requirement justifies the added complexity.",
-        "The design explanation is incomplete if it says why a component helps but not what it costs."
+        "The design explanation is incomplete if it says why a component helps but not what it costs.",
       ],
     },
     {
@@ -169,7 +185,7 @@ const whatIsSystemDesign: LessonContent = {
         ["Cache", "Lower read latency", "Invalidation and stale data"],
         ["Replication", "Availability and read scale", "Consistency lag"],
         ["Sharding", "More storage and write capacity", "Harder queries and operations"],
-        ["Async processing", "Absorbs bursts", "Delayed results"]
+        ["Async processing", "Absorbs bursts", "Delayed results"],
       ],
     },
     {
@@ -177,7 +193,7 @@ const whatIsSystemDesign: LessonContent = {
       heading: "A Repeatable Design Process",
       body: [
         "`Clarify → Estimate → Start Simple → Find Bottlenecks → Add What Is Needed → Explain Trade-offs`",
-        "For any open-ended design problem, begin with `Client → API/Application → Database`, then evolve one constraint at a time. Starting simple keeps the reasoning clear, even when the system later needs to grow."
+        "For any open-ended design problem, begin with `Client → API/Application → Database`, then evolve one constraint at a time. Starting simple keeps the reasoning clear, even when the system later needs to grow.",
       ],
     },
     {
@@ -185,35 +201,39 @@ const whatIsSystemDesign: LessonContent = {
       items: [
         "System design connects requirements, scale, components, and data flow into the simplest architecture that meets the constraints.",
         "Begin with a small baseline and add load balancers, caches, queues, replicas, or partitions only when a measurable need justifies them.",
-        "Name the gain and the cost of every major choice, then test the design against peak traffic and dependency failures."
-      ]
+        "Name the gain and the cost of every major choice, then test the design against peak traffic and dependency failures.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "sysdesign-simple-first",
-          question: "A new product has modest traffic and no strict availability target. Which is the best starting architecture?",
+          question:
+            "A new product has modest traffic and no strict availability target. Which is the best starting architecture?",
           options: [
             "Client → application → database, with assumptions documented",
             "Multi-region services with sharded databases and event sourcing",
             "A separate cache, queue, worker, and search cluster for every feature",
-            "Choose a technology stack first, then define the requirements"
+            "Choose a technology stack first, then define the requirements",
           ],
           correctIndex: 0,
-          explanation: "The baseline is appropriate while it satisfies the actual constraints. Complexity should be earned by a requirement or observed bottleneck."
+          explanation:
+            "The baseline is appropriate while it satisfies the actual constraints. Complexity should be earned by a requirement or observed bottleneck.",
         },
         {
           id: "sysdesign-oltp-olap",
-          question: "Why might a reporting workload be separated from a user-facing transactional database?",
+          question:
+            "Why might a reporting workload be separated from a user-facing transactional database?",
           options: [
             "Reporting queries can scan large histories and harm latency-sensitive user requests",
             "Analytical systems cannot store historical data",
             "User-facing applications never need aggregates",
-            "A separate system guarantees that data is always strongly consistent"
+            "A separate system guarantees that data is always strongly consistent",
           ],
           correctIndex: 0,
-          explanation: "OLTP and OLAP optimize for different access patterns. Separating them can protect the operational path, but introduces synchronization work."
+          explanation:
+            "OLTP and OLAP optimize for different access patterns. Separating them can protect the operational path, but introduces synchronization work.",
         },
         {
           id: "sysdesign-tradeoff-cost",
@@ -222,29 +242,29 @@ const whatIsSystemDesign: LessonContent = {
             "Cache invalidation and the possibility of stale data",
             "The database no longer stores durable data",
             "The application can no longer process requests",
-            "Caches only work for analytical workloads"
+            "Caches only work for analytical workloads",
           ],
           correctIndex: 0,
-          explanation: "A cache can make repeated reads faster, but it creates a new consistency problem: deciding when cached data is invalid or acceptable to serve stale."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "A cache can make repeated reads faster, but it creates a new consistency problem: deciding when cached data is invalid or acceptable to serve stale.",
+        },
+      ],
+    },
+  ],
 };
 
 const deliveryFramework: LessonContent = {
   slug: "delivery-framework",
   title: "Delivery Framework",
-  subtitle:
-    "A structured, step-by-step approach to ace your system design interviews.",
+  subtitle: "A structured, step-by-step approach to ace your system design interviews.",
   sections: [
     {
       kind: "prose",
       heading: "The Interview Framework",
       body: [
         "System design interviews are open-ended by design. Leveraging a consistent framework ensures you hit all the critical evaluating criteria while staying on schedule.",
-        "A typical 45-minute session is best divided into these sequential phases:"
-      ]
+        "A typical 45-minute session is best divided into these sequential phases:",
+      ],
     },
     {
       kind: "image",
@@ -259,16 +279,16 @@ const deliveryFramework: LessonContent = {
         "Begin by pinpointing the exact problem you're solving. Don't jump to conclusions—ask clarifying questions.",
         "**Functional Requirements:** Outline the 2-3 most critical actions the system must support (e.g., 'Users can upload media', 'Users can view a feed').",
         "**Non-functional Requirements:** Establish constraints regarding scale, performance, availability, and consistency expectations.",
-        "**Capacity Estimation:** Perform these calculations only if they'll influence your design (e.g., determining storage needs or peak QPS to justify architectural choices)."
-      ]
+        "**Capacity Estimation:** Perform these calculations only if they'll influence your design (e.g., determining storage needs or peak QPS to justify architectural choices).",
+      ],
     },
     {
       kind: "prose",
       heading: "2. Core Entities (~2 minutes)",
       body: [
         "Identify the primary data models in your system. For a ride-sharing app, this might be `Rider`, `Driver`, and `Trip`.",
-        "Establishing these nouns early helps structure your database schema and solidifies your understanding of how data relates."
-      ]
+        "Establishing these nouns early helps structure your database schema and solidifies your understanding of how data relates.",
+      ],
     },
     {
       kind: "prose",
@@ -276,8 +296,8 @@ const deliveryFramework: LessonContent = {
       body: [
         "Specify how clients will interact with your system. Outline the core endpoints that fulfill your functional requirements, along with their parameters.",
         "Write out clear signatures, such as `POST /v1/trip/request(rider_id, location)`.",
-        "This ensures everyone agrees on the system's boundary and usage before you sketch any architecture."
-      ]
+        "This ensures everyone agrees on the system's boundary and usage before you sketch any architecture.",
+      ],
     },
     {
       kind: "prose",
@@ -290,8 +310,8 @@ const deliveryFramework: LessonContent = {
         "- Extract links and parse the text from the HTML.",
         "- Save the structured data for querying.",
         "- Queue new links for future processing.",
-        "You'll use this flow to inform your components in the next step."
-      ]
+        "You'll use this flow to inform your components in the next step.",
+      ],
     },
     {
       kind: "prose",
@@ -299,8 +319,8 @@ const deliveryFramework: LessonContent = {
       body: [
         "Translate your APIs and Data Flow into a block diagram. Keep it straightforward initially.",
         "Sketch out the path from the client through the load balancer, into the application servers, and down to the database.",
-        "Focus on creating an end-to-end working model before introducing complex scaling techniques."
-      ]
+        "Focus on creating an end-to-end working model before introducing complex scaling techniques.",
+      ],
     },
     {
       kind: "prose",
@@ -308,8 +328,8 @@ const deliveryFramework: LessonContent = {
       body: [
         "Now, elevate your design by identifying and resolving bottlenecks. This is where you demonstrate seniority.",
         "Address how to scale the database (sharding/replication), how to cut down latency (CDNs/caches), and how to ensure resilience (handling node failures).",
-        "Take the lead in critiquing your own architecture and discussing the trade-offs of your proposed solutions."
-      ]
+        "Take the lead in critiquing your own architecture and discussing the trade-offs of your proposed solutions.",
+      ],
     },
     {
       kind: "takeaways",
@@ -317,23 +337,25 @@ const deliveryFramework: LessonContent = {
         "Follow a structured framework during interviews to prevent rambling and ensure you cover all critical bases.",
         "Always start by clarifying ambiguous requirements and defining concrete constraints.",
         "Establish a simple, working High-Level Design before attempting to optimize or scale individual components.",
-        "Dedicate time at the end to dive deep into bottlenecks, trade-offs, and failure scenarios."
-      ]
+        "Dedicate time at the end to dive deep into bottlenecks, trade-offs, and failure scenarios.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "sysdesign-framework-api",
-          question: "Why is it recommended to define the API or System Interface before drawing the High Level Design?",
+          question:
+            "Why is it recommended to define the API or System Interface before drawing the High Level Design?",
           options: [
             "Because APIs strictly dictate which database technology you must use.",
             "To establish a clear contract on the inputs and outputs, ensuring alignment before designing components.",
             "Because interviewers usually grade the exact syntax of your API.",
-            "You shouldn't; the High Level Design should always be the very first step."
+            "You shouldn't; the High Level Design should always be the very first step.",
           ],
           correctIndex: 1,
-          explanation: "Defining the API establishes a clear contract. It proves you understand the functional requirements and guides what components you'll need to build in your High Level Design."
+          explanation:
+            "Defining the API establishes a clear contract. It proves you understand the functional requirements and guides what components you'll need to build in your High Level Design.",
         },
         {
           id: "sysdesign-framework-data-flow",
@@ -342,20 +364,22 @@ const deliveryFramework: LessonContent = {
             "For simple CRUD web applications with no background processing.",
             "When designing backend data-processing systems or asynchronous pipelines.",
             "When you need to calculate the exact storage capacity required.",
-            "Only when the interviewer explicitly asks for a flowchart."
+            "Only when the interviewer explicitly asks for a flowchart.",
           ],
           correctIndex: 1,
-          explanation: "Data Flow is highly beneficial for systems with a sequence of actions or background processing (like web crawlers or video transcoders) to trace the data lifecycle before drawing the architecture."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Data Flow is highly beneficial for systems with a sequence of actions or background processing (like web crawlers or video transcoders) to trace the data lifecycle before drawing the architecture.",
+        },
+      ],
+    },
+  ],
 };
 
 const functionalVsNonFunctional: LessonContent = {
   slug: "functional-vs-non-functional-requirements",
   title: "Functional vs Non-Functional Requirements",
-  subtitle: "Understanding the difference between what a system should do and how well it should do it.",
+  subtitle:
+    "Understanding the difference between what a system should do and how well it should do it.",
   sections: [
     {
       kind: "prose",
@@ -367,8 +391,8 @@ const functionalVsNonFunctional: LessonContent = {
         "",
         "**Key questions to ask for FRs:**",
         "- What specific features do we need to design for this system?",
-        "- What are the possible edge cases we need to consider in our design?"
-      ]
+        "- What are the possible edge cases we need to consider in our design?",
+      ],
     },
     {
       kind: "prose",
@@ -383,14 +407,14 @@ const functionalVsNonFunctional: LessonContent = {
         "**Key questions for NFRs:**",
         "- How fast should the system respond to user actions?",
         "- Should the system be highly available?",
-        "- How secure should the system be against unauthorized access?"
-      ]
+        "- How secure should the system be against unauthorized access?",
+      ],
     },
     {
       kind: "image",
       src: funcVsNonFuncImg,
       alt: "Diagram illustrating Functional vs Non-Functional Requirements",
-      caption: "Distinguishing between Functional and Non-Functional requirements"
+      caption: "Distinguishing between Functional and Non-Functional requirements",
     },
     {
       kind: "table",
@@ -400,26 +424,46 @@ const functionalVsNonFunctional: LessonContent = {
         [
           "Online Banking",
           "• User login via username/password\n• Check account balance\n• Notifications for transactions",
-          "• System responds in < 2 seconds\n• All transactions encrypted & meet security rules\n• Handle 100 million users; minimal downtime"
+          "• System responds in < 2 seconds\n• All transactions encrypted & meet security rules\n• Handle 100 million users; minimal downtime",
         ],
         [
           "Food Delivery App",
           "• Browse menu, place orders\n• Make payments, track orders in real time",
-          "• Load menu in under 1 second\n• Support up to 50,000 concurrent orders at peak\n• Easy to use for first-time users (intuitive UI)"
-        ]
-      ]
+          "• Load menu in under 1 second\n• Support up to 50,000 concurrent orders at peak\n• Easy to use for first-time users (intuitive UI)",
+        ],
+      ],
     },
     {
       kind: "table",
       caption: "Differences / Contrast",
       headers: ["Aspect", "Functional Requirements", "Non-Functional Requirements"],
       rows: [
-        ["Definition", "What the system should do (features, behaviors)", "How the system should perform; system qualities and constraints"],
-        ["Visibility", "Directly observable in the software / product features", "Not directly seen as features; experienced (e.g. speed, robustness)"],
-        ["Measurement", "Easier to test with functional tests—are features working?", "Harder to test; requires benchmarks, SLAs, performance/scalability/security tests"],
-        ["Scope / Impact", "Drives core functionality and user flows; maps to business needs.", "Influences architecture, system design, implementation constraints."],
-        ["Documentation", "Captured via use cases, user stories, functional specs.", "Captured in technical specifications, SLAs, performance/security/quality attribute definitions."]
-      ]
+        [
+          "Definition",
+          "What the system should do (features, behaviors)",
+          "How the system should perform; system qualities and constraints",
+        ],
+        [
+          "Visibility",
+          "Directly observable in the software / product features",
+          "Not directly seen as features; experienced (e.g. speed, robustness)",
+        ],
+        [
+          "Measurement",
+          "Easier to test with functional tests—are features working?",
+          "Harder to test; requires benchmarks, SLAs, performance/scalability/security tests",
+        ],
+        [
+          "Scope / Impact",
+          "Drives core functionality and user flows; maps to business needs.",
+          "Influences architecture, system design, implementation constraints.",
+        ],
+        [
+          "Documentation",
+          "Captured via use cases, user stories, functional specs.",
+          "Captured in technical specifications, SLAs, performance/security/quality attribute definitions.",
+        ],
+      ],
     },
     {
       kind: "prose",
@@ -427,8 +471,8 @@ const functionalVsNonFunctional: LessonContent = {
       body: [
         "A system with all functional requirements but poor non-functional qualities (e.g. slow, insecure, unreliable) can be unusable in real life.",
         "Non-functional requirements often get overlooked early, but failing to address them leads to high cost refactors, performance issues, and user dissatisfaction.",
-        "Good non-functional requirements help in scaling, maintenance, and future enhancements."
-      ]
+        "Good non-functional requirements help in scaling, maintenance, and future enhancements.",
+      ],
     },
     {
       kind: "prose",
@@ -438,8 +482,8 @@ const functionalVsNonFunctional: LessonContent = {
         "- **Changing Requirements:** As projects evolve, requirements often shift due to changing business goals, market trends, or user expectations, making it harder to maintain stability in design.",
         "- **Difficulty in Prioritization:** Determining which requirements matter most can be tricky. Functional needs frequently take priority, while critical non-functional aspects like security or scalability may be overlooked.",
         "- **Measuring Non-Functional Requirements:** Functional requirements are easier to test, whereas non-functional attributes such as usability, scalability, or reliability are harder to define in measurable terms and validate effectively.",
-        "- **Overlapping or Conflicting Requirements:** Requirements can sometimes conflict or influence each other. For example, strengthening security may reduce system performance, requiring careful trade-offs."
-      ]
+        "- **Overlapping or Conflicting Requirements:** Requirements can sometimes conflict or influence each other. For example, strengthening security may reduce system performance, requiring careful trade-offs.",
+      ],
     },
     {
       kind: "table",
@@ -448,13 +492,13 @@ const functionalVsNonFunctional: LessonContent = {
       rows: [
         [
           "Functional Requirements",
-          "**Interviews:** Talk to stakeholders or users to understand their needs.\n**Surveys:** Distribute questionnaires to gather input from a larger audience.\n**Workshops:** Host sessions to brainstorm features and gather feedback."
+          "**Interviews:** Talk to stakeholders or users to understand their needs.\n**Surveys:** Distribute questionnaires to gather input from a larger audience.\n**Workshops:** Host sessions to brainstorm features and gather feedback.",
         ],
         [
           "Non-functional Requirements",
-          "**Performance Benchmarks:** Consult with IT teams to set expectations for performance and load.\n**Security Standards:** Consult with security experts to define best practices for data protection.\n**Usability Testing:** Test the system to find areas where users might struggle and refine the interface."
-        ]
-      ]
+          "**Performance Benchmarks:** Consult with IT teams to set expectations for performance and load.\n**Security Standards:** Consult with security experts to define best practices for data protection.\n**Usability Testing:** Test the system to find areas where users might struggle and refine the interface.",
+        ],
+      ],
     },
     {
       kind: "prose",
@@ -471,8 +515,8 @@ const functionalVsNonFunctional: LessonContent = {
         "- The cache allows clients to retrieve values by key.",
         "- The cache supports time-to-live (TTL) evictions.",
         "",
-        "**Crucial tip:** Stay focused. While a real-world system might have hundreds of minor features, your goal is to extract and prioritize the top 3 to 5 core flows. A massive list of requirements will bog down your design phase; evaluating your ability to focus on the most impactful features is a key signal interviewers look for."
-      ]
+        "**Crucial tip:** Stay focused. While a real-world system might have hundreds of minor features, your goal is to extract and prioritize the top 3 to 5 core flows. A massive list of requirements will bog down your design phase; evaluating your ability to focus on the most impactful features is a key signal interviewers look for.",
+      ],
     },
     {
       kind: "prose",
@@ -484,8 +528,8 @@ const functionalVsNonFunctional: LessonContent = {
         "- The architecture must smoothly scale to handle upwards of 100 million Daily Active Users (DAU).",
         "- The feed generation should be highly responsive, with latencies kept under 200 milliseconds.",
         "",
-        "A major pitfall is leaving NFRs too vague. Saying 'the system should be fast' offers no real architectural guidance. Instead, quantifying the goal—such as 'search queries must return results in under 500ms'—provides a concrete target that will directly influence your technology choices."
-      ]
+        "A major pitfall is leaving NFRs too vague. Saying 'the system should be fast' offers no real architectural guidance. Instead, quantifying the goal—such as 'search queries must return results in under 500ms'—provides a concrete target that will directly influence your technology choices.",
+      ],
     },
     {
       kind: "prose",
@@ -499,16 +543,16 @@ const functionalVsNonFunctional: LessonContent = {
         "**Durability Guarantees:** How catastrophic is data loss? A financial ledger requires 100% durability, whereas a temporary analytics cache might tolerate partial data loss during a crash.",
         "**Security & Privacy:** Does the system handle PII (Personally Identifiable Information), require strict access controls, or mandate at-rest encryption?",
         "**Fault Tolerance Strategy:** What is the acceptable blast radius of a failure? How quickly must the system recover from node crashes or data center outages?",
-        "**Regulatory Compliance:** Are there specific legal frameworks (HIPAA, GDPR, SOC2) that dictate data residency or auditing capabilities?"
-      ]
+        "**Regulatory Compliance:** Are there specific legal frameworks (HIPAA, GDPR, SOC2) that dictate data residency or auditing capabilities?",
+      ],
     },
     {
       kind: "takeaways",
       items: [
         "Functional Requirements define what the system MUST do (e.g., 'users can post a tweet').",
         "Non-Functional Requirements (NFRs) define how the system MUST behave (e.g., latency, availability, durability).",
-        "NFRs dictate your architectural choices—a system optimizing for high availability looks entirely different from one optimizing for strict consistency."
-      ]
+        "NFRs dictate your architectural choices—a system optimizing for high availability looks entirely different from one optimizing for strict consistency.",
+      ],
     },
     {
       kind: "quiz",
@@ -520,10 +564,11 @@ const functionalVsNonFunctional: LessonContent = {
             "The system must handle 50,000 concurrent users at peak.",
             "The application should respond to user inputs in under 2 seconds.",
             "Users must be able to securely log in using their username and password.",
-            "All data must be encrypted at rest."
+            "All data must be encrypted at rest.",
           ],
           correctIndex: 2,
-          explanation: "Functional requirements describe WHAT the system must do (e.g. logging in). The other options describe HOW the system behaves (concurrency, latency, encryption), which are Non-Functional Requirements."
+          explanation:
+            "Functional requirements describe WHAT the system must do (e.g. logging in). The other options describe HOW the system behaves (concurrency, latency, encryption), which are Non-Functional Requirements.",
         },
         {
           id: "fn-vs-nfn-2",
@@ -532,14 +577,15 @@ const functionalVsNonFunctional: LessonContent = {
             "To give the QA team a larger checklist.",
             "Vague requirements like 'fast' provide no architectural guidance.",
             "It makes the system design interview look more professional.",
-            "Functional requirements are impossible to measure."
+            "Functional requirements are impossible to measure.",
           ],
           correctIndex: 1,
-          explanation: "Saying 'the system should be fast' doesn't help you choose the right technology. Quantifying it (e.g., 'search must return in <500ms') sets a concrete target for your architecture."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Saying 'the system should be fast' doesn't help you choose the right technology. Quantifying it (e.g., 'search must return in <500ms') sets a concrete target for your architecture.",
+        },
+      ],
+    },
+  ],
 };
 
 const backOfTheEnvelope: LessonContent = {
@@ -553,25 +599,41 @@ const backOfTheEnvelope: LessonContent = {
       body: [
         "A back-of-the-envelope calculation is a rough, quick approximation of system scale, capacity, and resource requirements.",
         "It acts as 'impulse math'—calculations you could scribble on a napkin during an interview to prove your architecture can handle the load.",
-        "These calculations are **not intended to be precise**. The goal is order-of-magnitude correctness to ensure your design decisions are rooted in reality."
-      ]
+        "These calculations are **not intended to be precise**. The goal is order-of-magnitude correctness to ensure your design decisions are rooted in reality.",
+      ],
     },
     {
       kind: "image",
       src: backOfTheEnvelopeImg,
       alt: "Diagram illustrating back-of-the-envelope estimations",
-      caption: "Using math to validate system design constraints"
+      caption: "Using math to validate system design constraints",
     },
     {
       kind: "table",
       caption: "Core Estimation Techniques",
       headers: ["Technique", "Meaning & Purpose", "Example"],
       rows: [
-        ["Rule of Thumb", "Using heuristics based on prior experience when detailed info is missing.", "Estimating that a user will generate 1MB of text data per day as a baseline for storage planning."],
-        ["Approximation", "Simplifying math by rounding to easy numbers without losing much accuracy.", "Using 1,000 users instead of 1,024 when calculating block size limits."],
-        ["Breakdown & Aggregation", "Splitting a large problem into smaller pieces, estimating each, then summing them up.", "Estimating multimedia content and metadata separately, then adding them for total storage."],
-        ["Sanity Check", "Cross-checking whether the final estimate makes real-world sense to avoid grossly unrealistic results.", "Comparing your estimated messaging storage with WhatsApp's known public metrics."]
-      ]
+        [
+          "Rule of Thumb",
+          "Using heuristics based on prior experience when detailed info is missing.",
+          "Estimating that a user will generate 1MB of text data per day as a baseline for storage planning.",
+        ],
+        [
+          "Approximation",
+          "Simplifying math by rounding to easy numbers without losing much accuracy.",
+          "Using 1,000 users instead of 1,024 when calculating block size limits.",
+        ],
+        [
+          "Breakdown & Aggregation",
+          "Splitting a large problem into smaller pieces, estimating each, then summing them up.",
+          "Estimating multimedia content and metadata separately, then adding them for total storage.",
+        ],
+        [
+          "Sanity Check",
+          "Cross-checking whether the final estimate makes real-world sense to avoid grossly unrealistic results.",
+          "Comparing your estimated messaging storage with WhatsApp's known public metrics.",
+        ],
+      ],
     },
     {
       kind: "prose",
@@ -580,66 +642,66 @@ const backOfTheEnvelope: LessonContent = {
         "During an interview, you'll be expected to calculate several different metrics depending on the system's focus. Here is a breakdown of the most common estimation types.",
         "",
         "**1. Load Estimation**",
-        "Predicting the expected number of requests per second (RPS), data volume, or user traffic."
-      ]
+        "Predicting the expected number of requests per second (RPS), data volume, or user traffic.",
+      ],
     },
     {
       kind: "code",
       language: "text",
       caption: "Load Estimation Example",
-      code: "System has 100M Daily Active Users (DAU).\nEach user makes 10 requests per day.\n\nTotal Requests = 100M * 10 = 1 Billion requests/day\n\nRequests Per Second (RPS) = 1 Billion / 86,400 seconds\nRPS ≈ 11,574 requests/second"
+      code: "System has 100M Daily Active Users (DAU).\nEach user makes 10 requests per day.\n\nTotal Requests = 100M * 10 = 1 Billion requests/day\n\nRequests Per Second (RPS) = 1 Billion / 86,400 seconds\nRPS ≈ 11,574 requests/second",
     },
     {
       kind: "prose",
       body: [
         "**2. Storage Estimation**",
-        "Estimating the amount of persistent storage required to hold the data generated by users over time (typically calculated per day or per year)."
-      ]
+        "Estimating the amount of persistent storage required to hold the data generated by users over time (typically calculated per day or per year).",
+      ],
     },
     {
       kind: "code",
       language: "text",
       caption: "Storage Estimation Example",
-      code: "Photo app with 500M users.\nAverage 2 photos uploaded per user per day.\nAverage photo size is 2MB.\n\nDaily Storage = 500M users * 2 photos * 2MB\nDaily Storage = 2,000,000,000 MB = 2,000 TB/day = 2 PB/day"
+      code: "Photo app with 500M users.\nAverage 2 photos uploaded per user per day.\nAverage photo size is 2MB.\n\nDaily Storage = 500M users * 2 photos * 2MB\nDaily Storage = 2,000,000,000 MB = 2,000 TB/day = 2 PB/day",
     },
     {
       kind: "prose",
       body: [
         "**3. Bandwidth Estimation**",
-        "Determining the network bandwidth needed to support data transfer without bottlenecking."
-      ]
+        "Determining the network bandwidth needed to support data transfer without bottlenecking.",
+      ],
     },
     {
       kind: "code",
       language: "text",
       caption: "Bandwidth Estimation Example",
-      code: "Video streaming service with 10M concurrent users.\nEach user streams 1080p video at 4 Mbps.\n\nRequired Bandwidth = 10M users * 4 Mbps\nRequired Bandwidth = 40,000,000 Mbps = 40 Tbps"
+      code: "Video streaming service with 10M concurrent users.\nEach user streams 1080p video at 4 Mbps.\n\nRequired Bandwidth = 10M users * 4 Mbps\nRequired Bandwidth = 40,000,000 Mbps = 40 Tbps",
     },
     {
       kind: "prose",
       body: [
         "**4. Latency Estimation**",
-        "Predicting the response time of a system. Sequential operations add latency together, while parallel operations take the max latency."
-      ]
+        "Predicting the response time of a system. Sequential operations add latency together, while parallel operations take the max latency.",
+      ],
     },
     {
       kind: "code",
       language: "text",
       caption: "Latency Estimation Example",
-      code: "An API fetches from 3 sources: 50ms, 100ms, and 200ms.\n\nIf sequential:\nTotal Latency = 50ms + 100ms + 200ms = 350ms\n\nIf parallel:\nTotal Latency = max(50ms, 100ms, 200ms) = 200ms"
+      code: "An API fetches from 3 sources: 50ms, 100ms, and 200ms.\n\nIf sequential:\nTotal Latency = 50ms + 100ms + 200ms = 350ms\n\nIf parallel:\nTotal Latency = max(50ms, 100ms, 200ms) = 200ms",
     },
     {
       kind: "prose",
       body: [
         "**5. Resource & Memory Estimation**",
-        "Estimating the hardware required to serve the traffic, such as CPU cores for computation or RAM for caching."
-      ]
+        "Estimating the hardware required to serve the traffic, such as CPU cores for computation or RAM for caching.",
+      ],
     },
     {
       kind: "code",
       language: "text",
       caption: "Resource & Memory Example",
-      code: "CPU: 10,000 RPS. Each request needs 10ms of CPU time.\nTotal CPU time/sec = 10,000 * 10ms = 100,000ms\nCores Needed = 100,000ms / 1,000ms per core = 100 cores\n\nRAM: Cache 1% of a 10TB dataset.\nCache Size = 10TB * 0.01 = 0.1TB = 100GB of RAM"
+      code: "CPU: 10,000 RPS. Each request needs 10ms of CPU time.\nTotal CPU time/sec = 10,000 * 10ms = 100,000ms\nCores Needed = 100,000ms / 1,000ms per core = 100 cores\n\nRAM: Cache 1% of a 10TB dataset.\nCache Size = 10TB * 0.01 = 0.1TB = 100GB of RAM",
     },
     {
       kind: "table",
@@ -650,8 +712,8 @@ const backOfTheEnvelope: LessonContent = {
         ["Mega", "MB", "10^6", "2^20", "Images, audio clips, web page assets"],
         ["Giga", "GB", "10^9", "2^30", "RAM limits, HD video clips"],
         ["Tera", "TB", "10^12", "2^40", "Hard drive sizes, daily DB writes"],
-        ["Peta", "PB", "10^15", "2^50", "Big data lakes, total enterprise storage"]
-      ]
+        ["Peta", "PB", "10^15", "2^50", "Big data lakes, total enterprise storage"],
+      ],
     },
     {
       kind: "takeaways",
@@ -659,8 +721,8 @@ const backOfTheEnvelope: LessonContent = {
         "Back-of-the-envelope calculations are rough estimates used to validate if a design can handle expected loads.",
         "Focus on calculating Traffic (QPS), Storage Requirements, and Bandwidth.",
         "Round your numbers aggressively to simplify math (e.g., 1 day ≈ 100,000 seconds).",
-        "Use these estimates to justify your architecture (e.g., 'We need 3 database shards because a single instance can't hold 5TB of active data')."
-      ]
+        "Use these estimates to justify your architecture (e.g., 'We need 3 database shards because a single instance can't hold 5TB of active data').",
+      ],
     },
     {
       kind: "quiz",
@@ -672,26 +734,24 @@ const backOfTheEnvelope: LessonContent = {
             "To calculate the exact number of servers needed down to the exact decimal.",
             "To prove to the interviewer that you are good at mental math.",
             "To achieve order-of-magnitude correctness to ensure your design is realistic.",
-            "To estimate the final cost of the project in dollars."
+            "To estimate the final cost of the project in dollars.",
           ],
           correctIndex: 2,
-          explanation: "These estimations are not meant to be perfectly precise. They are meant to validate that your proposed architecture can handle the rough order-of-magnitude scale required."
+          explanation:
+            "These estimations are not meant to be perfectly precise. They are meant to validate that your proposed architecture can handle the rough order-of-magnitude scale required.",
         },
         {
           id: "bote-2",
-          question: "If a system has 10 million DAU and each user makes 10 requests per day, what is the approximate Requests Per Second (RPS)? (Assume 1 day ≈ 86,400 seconds)",
-          options: [
-            "~115 RPS",
-            "~1,157 RPS",
-            "~11,574 RPS",
-            "~100,000 RPS"
-          ],
+          question:
+            "If a system has 10 million DAU and each user makes 10 requests per day, what is the approximate Requests Per Second (RPS)? (Assume 1 day ≈ 86,400 seconds)",
+          options: ["~115 RPS", "~1,157 RPS", "~11,574 RPS", "~100,000 RPS"],
           correctIndex: 1,
-          explanation: "Total daily requests = 10 million * 10 = 100,000,000. RPS = 100,000,000 / 86,400 ≈ 1,157 requests per second."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Total daily requests = 10 million * 10 = 100,000,000. RPS = 100,000,000 / 86,400 ≈ 1,157 requests per second.",
+        },
+      ],
+    },
+  ],
 };
 
 const ipLesson: LessonContent = {
@@ -703,20 +763,20 @@ const ipLesson: LessonContent = {
       kind: "prose",
       heading: "What It Is?",
       body: [
-        "An Internet Protocol (IP) address is a unique numerical label assigned to every device on a network, providing both identity and location information to route data accurately across the internet."
-      ]
+        "An Internet Protocol (IP) address is a unique numerical label assigned to every device on a network, providing both identity and location information to route data accurately across the internet.",
+      ],
     },
     {
       kind: "image",
       src: internetProtocolImg,
       alt: "Internet Protocol Diagram",
-      caption: "An overview of how IP connects devices on a network."
+      caption: "An overview of how IP connects devices on a network.",
     },
     {
       kind: "callout",
       tone: "info",
       title: "Essential for Communication",
-      body: "IP addresses are essential for communication on the internet (computers, routers, websites, IoT devices)."
+      body: "IP addresses are essential for communication on the internet (computers, routers, websites, IoT devices).",
     },
     {
       kind: "prose",
@@ -732,20 +792,38 @@ const ipLesson: LessonContent = {
         "• 128-bit alphanumeric, hexadecimal format.",
         "• Capacity: ~3.4 × 10^38 addresses (virtually unlimited).",
         "• Example: `2001:0db8:85a3:0000:0000:8a2e:0370:7334`.",
-        "• Introduced in 1998, still being adopted."
-      ]
+        "• Introduced in 1998, still being adopted.",
+      ],
     },
     {
       kind: "table",
       caption: "IPv4 Address Classes",
       headers: ["Class", "Leading Bits", "Range", "Default Subnet Mask", "Use Case"],
       rows: [
-        ["A", "0", "0.0.0.0 - 127.255.255.255", "255.0.0.0", "Large organizations (16M hosts/network)"],
-        ["B", "10", "128.0.0.0 - 191.255.255.255", "255.255.0.0", "Medium-sized organizations (65K hosts/network)"],
-        ["C", "110", "192.0.0.0 - 223.255.255.255", "255.255.255.0", "Small organizations (254 hosts/network)"],
+        [
+          "A",
+          "0",
+          "0.0.0.0 - 127.255.255.255",
+          "255.0.0.0",
+          "Large organizations (16M hosts/network)",
+        ],
+        [
+          "B",
+          "10",
+          "128.0.0.0 - 191.255.255.255",
+          "255.255.0.0",
+          "Medium-sized organizations (65K hosts/network)",
+        ],
+        [
+          "C",
+          "110",
+          "192.0.0.0 - 223.255.255.255",
+          "255.255.255.0",
+          "Small organizations (254 hosts/network)",
+        ],
         ["D", "1110", "224.0.0.0 - 239.255.255.255", "N/A", "Multicast groups"],
-        ["E", "1111", "240.0.0.0 - 255.255.255.255", "N/A", "Experimental / Reserved"]
-      ]
+        ["E", "1111", "240.0.0.0 - 255.255.255.255", "N/A", "Experimental / Reserved"],
+      ],
     },
     {
       kind: "prose",
@@ -755,8 +833,8 @@ const ipLesson: LessonContent = {
         "Today, networks use **CIDR (Classless Inter-Domain Routing)**. CIDR allows for more flexible allocation of IP addresses by specifying the exact number of bits used for the network portion.",
         "• Format: `IP Address / Subnet Mask Bits`",
         "• Example: `192.168.1.0/24` means the first 24 bits define the network, leaving 8 bits (256 addresses) for the host.",
-        "**Real-World Example (AWS VPC)**: When you create a virtual network in the cloud, you must define its size using CIDR. You might create a large VPC at `10.0.0.0/16` (65,536 addresses). You then chop that large network into smaller subnets, like a public subnet at `10.0.1.0/24` (256 addresses) for your web servers, and a private subnet at `10.0.2.0/24` for your databases. CIDR is the standard language for defining these network boundaries."
-      ]
+        "**Real-World Example (AWS VPC)**: When you create a virtual network in the cloud, you must define its size using CIDR. You might create a large VPC at `10.0.0.0/16` (65,536 addresses). You then chop that large network into smaller subnets, like a public subnet at `10.0.1.0/24` (256 addresses) for your web servers, and a private subnet at `10.0.2.0/24` for your databases. CIDR is the standard language for defining these network boundaries.",
+      ],
     },
     {
       kind: "prose",
@@ -773,8 +851,8 @@ const ipLesson: LessonContent = {
         "• Format: `x:x:x:x:x:x:x:x`",
         "• Example: `2001:0db8:85a3:0000:0000:8a2e:0370:7334`",
         "• **Shorthand notation**: Leading zeros within a group can be omitted (`0db8` -> `db8`). Consecutive groups of zeros can be replaced by a double colon `::` (only once per address).",
-        "• Shortened Example: `2001:db8:85a3::8a2e:370:7334`"
-      ]
+        "• Shortened Example: `2001:db8:85a3::8a2e:370:7334`",
+      ],
     },
     {
       kind: "table",
@@ -784,24 +862,24 @@ const ipLesson: LessonContent = {
         [
           "**Public IP**",
           "• Assigned by ISP to your network/router.\n• Shared across all devices in that network.",
-          "IP address provided to your router by the ISP."
+          "IP address provided to your router by the ISP.",
         ],
         [
           "**Private IP**",
           "• Assigned internally by router to each device (computers, phones, smart TVs).",
-          "`192.168.1.2`, `10.0.0.5`\nIP addresses generated by your home router for your devices."
+          "`192.168.1.2`, `10.0.0.5`\nIP addresses generated by your home router for your devices.",
         ],
         [
           "**Static IP**",
           "• Manually configured, **does not change**.\n• More reliable but expensive.",
-          "• Server hosting\n• Remote access\n• Geo-location services"
+          "• Server hosting\n• Remote access\n• Geo-location services",
         ],
         [
           "**Dynamic IP**",
           "• Assigned by DHCP server, **changes over time**.\n• Cheaper, more common for personal/consumer use.\n• Allows IP reuse within networks.",
-          "More commonly used for consumer equipment and personal use."
-        ]
-      ]
+          "More commonly used for consumer equipment and personal use.",
+        ],
+      ],
     },
     {
       kind: "prose",
@@ -814,15 +892,15 @@ const ipLesson: LessonContent = {
         "**🏢 The Corporate Mailroom Analogy**",
         "Imagine a massive office building. To the outside world, the entire building has just **one public address**: *123 Business Rd*. This is your **Public IP**.",
         "Inside the building, there are hundreds of employees, each with an internal desk number (Desk 10, Desk 25). These are **Private IPs**.",
-        "When Employee Alice (Desk 10) sends a letter to a client, she drops it off at the Mailroom (the **Router**). The Mailroom puts the letter in a new envelope, writing the sender as *123 Business Rd* (so the client knows how to reply), but it writes down in a secret ledger: *\"I just sent a letter for Alice at Desk 10\"* (**NAT Table**).",
-        "When the client replies to *123 Business Rd*, the Mailroom receives it, checks its ledger, sees the reply is meant for the letter Alice sent, and forwards it internally to Desk 10."
-      ]
+        'When Employee Alice (Desk 10) sends a letter to a client, she drops it off at the Mailroom (the **Router**). The Mailroom puts the letter in a new envelope, writing the sender as *123 Business Rd* (so the client knows how to reply), but it writes down in a secret ledger: *"I just sent a letter for Alice at Desk 10"* (**NAT Table**).',
+        "When the client replies to *123 Business Rd*, the Mailroom receives it, checks its ledger, sees the reply is meant for the letter Alice sent, and forwards it internally to Desk 10.",
+      ],
     },
     {
       kind: "image",
       src: natImg,
       alt: "Network Address Translation (NAT) Diagram",
-      caption: "NAT allows multiple private IP devices to share a single public IP address."
+      caption: "NAT allows multiple private IP devices to share a single public IP address.",
     },
     {
       kind: "prose",
@@ -832,8 +910,8 @@ const ipLesson: LessonContent = {
         "2. The request is sent to your Home Wi-Fi Router.",
         "3. The router intercepts the packet, strips away your private IP, and replaces it with the router's Public IP assigned by your ISP (e.g., `203.0.113.5`). It records this swap in its NAT Table.",
         "4. Google sees a request from `203.0.113.5` and sends the website data back.",
-        "5. Your router receives the data, checks its NAT Table, and knows it needs to route those packets specifically back to `192.168.1.15` (your phone)."
-      ]
+        "5. Your router receives the data, checks its NAT Table, and knows it needs to route those packets specifically back to `192.168.1.15` (your phone).",
+      ],
     },
     {
       kind: "ipv4-diagram",
@@ -841,7 +919,7 @@ const ipLesson: LessonContent = {
     {
       kind: "animation",
       variant: "ip-client-server",
-      caption: "Real-world Example: Sending an HTTP Request"
+      caption: "Real-world Example: Sending an HTTP Request",
     },
     {
       kind: "takeaways",
@@ -849,8 +927,8 @@ const ipLesson: LessonContent = {
         "IP (Internet Protocol) is the fundamental set of rules routing data across the internet.",
         "IPv4 uses 32-bit addresses (exhausted), while IPv6 uses 128-bit addresses to provide a virtually infinite supply.",
         "Public IPs route across the global internet; Private IPs are restricted to local networks.",
-        "NAT (Network Address Translation) maps multiple private IPs to a single public IP to conserve the IPv4 address space."
-      ]
+        "NAT (Network Address Translation) maps multiple private IPs to a single public IP to conserve the IPv4 address space.",
+      ],
     },
     {
       kind: "quiz",
@@ -862,10 +940,11 @@ const ipLesson: LessonContent = {
             "It uses a 32-bit numeric format.",
             "It is being phased out in favor of IPv4.",
             "It has a capacity of approximately 4.3 billion addresses.",
-            "It uses a 128-bit alphanumeric format."
+            "It uses a 128-bit alphanumeric format.",
           ],
           correctIndex: 3,
-          explanation: "IPv6 was introduced to solve the address exhaustion problem of IPv4. It uses a 128-bit alphanumeric format, providing a virtually unlimited number of addresses."
+          explanation:
+            "IPv6 was introduced to solve the address exhaustion problem of IPv4. It uses a 128-bit alphanumeric format, providing a virtually unlimited number of addresses.",
         },
         {
           id: "ip-2",
@@ -874,14 +953,15 @@ const ipLesson: LessonContent = {
             "A Public IP is used within a local network, while a Private IP is assigned by an ISP.",
             "A Public IP is shared across devices in a network and assigned by an ISP, while a Private IP is assigned internally by a router.",
             "Public IPs are only used for servers, while Private IPs are used for consumer devices.",
-            "Public IPs change constantly, while Private IPs remain static."
+            "Public IPs change constantly, while Private IPs remain static.",
           ],
           correctIndex: 1,
-          explanation: "An ISP assigns a Public IP to a router, which is shared across the internet. The router then assigns Private IPs internally to each device (like laptops or phones) so they can communicate locally."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "An ISP assigns a Public IP to a router, which is shared across the internet. The router then assigns Private IPs internally to each device (like laptops or phones) so they can communicate locally.",
+        },
+      ],
+    },
+  ],
 };
 
 const portsLesson: LessonContent = {
@@ -897,14 +977,15 @@ const portsLesson: LessonContent = {
         "They work with **IP addresses** to identify **both the device and the specific service/application** on that device.",
         "This allows multiple services to run on the same machine while still being reachable (e.g., a web server and a database running on the same server).",
         "",
-        "👉 Think of **IP = street address**, and **Port = apartment number**."
-      ]
+        "👉 Think of **IP = street address**, and **Port = apartment number**.",
+      ],
     },
     {
       kind: "image",
       src: portsImg,
       alt: "Diagram illustrating how IP addresses and ports route traffic",
-      caption: "An IP address routes to the device, while a port routes to the specific application."
+      caption:
+        "An IP address routes to the device, while a port routes to the specific application.",
     },
     {
       kind: "prose",
@@ -921,41 +1002,56 @@ const portsLesson: LessonContent = {
         "• **IP Address** → finds the right machine.",
         "• **Port Number** → directs to the correct application/service.",
         "",
-        "This combo `IP:Port` forms a **socket**, which uniquely identifies a connection. The operating system uses the port number to route incoming packets to the correct application."
-      ]
+        "This combo `IP:Port` forms a **socket**, which uniquely identifies a connection. The operating system uses the port number to route incoming packets to the correct application.",
+      ],
     },
     {
-      kind: "ports-diagram"
+      kind: "ports-diagram",
     },
     {
       kind: "prose",
       heading: "Port Number Ranges",
-      body: []
+      body: [],
     },
     {
       kind: "table",
       headers: ["Range", "Type", "Purpose", "Examples"],
       rows: [
-        ["**0–1023**", "Well-known ports", "Reserved for standard services", "HTTP (80), HTTPS (443), FTP (20/21), SSH (22), SMTP (25), DNS (53)"],
-        ["**1024–49151**", "Registered ports", "Assigned to user-defined services", "MySQL (3306), Postgres (5432), Redis (6379), MongoDB (27017)"],
-        ["**49152–65535**", "Dynamic / Private ports", "Used for ephemeral client connections", "Browser → Server traffic"]
-      ]
+        [
+          "**0–1023**",
+          "Well-known ports",
+          "Reserved for standard services",
+          "HTTP (80), HTTPS (443), FTP (20/21), SSH (22), SMTP (25), DNS (53)",
+        ],
+        [
+          "**1024–49151**",
+          "Registered ports",
+          "Assigned to user-defined services",
+          "MySQL (3306), Postgres (5432), Redis (6379), MongoDB (27017)",
+        ],
+        [
+          "**49152–65535**",
+          "Dynamic / Private ports",
+          "Used for ephemeral client connections",
+          "Browser → Server traffic",
+        ],
+      ],
     },
     {
       kind: "prose",
       heading: "Types of Ports (Based on Protocol)",
       body: [
         "• **TCP Ports** → reliable, connection-oriented communication (**Web (HTTP/HTTPS)**, **Email (SMTP/IMAP)**, **File Transfer (FTP)**).",
-        "• **UDP Ports** → fast, connectionless communication (**Streaming (video/audio)**, **DNS**, **Online Gaming**)."
-      ]
+        "• **UDP Ports** → fast, connectionless communication (**Streaming (video/audio)**, **DNS**, **Online Gaming**).",
+      ],
     },
     {
       kind: "takeaways",
       items: [
         "**Multiplexing:** Ports allow many services to run on one single device simultaneously.",
         "**Standardization:** Known services always use fixed port numbers (e.g. 80/443 for web).",
-        "**Security:** Open ports can be attack entry points. Always close unused ports and use firewalls."
-      ]
+        "**Security:** Open ports can be attack entry points. Always close unused ports and use firewalls.",
+      ],
     },
     {
       kind: "takeaways",
@@ -963,8 +1059,8 @@ const portsLesson: LessonContent = {
         "While an IP address directs traffic to a specific machine, a Port directs traffic to a specific application on that machine.",
         "Ports are 16-bit numbers ranging from 0 to 65535.",
         "Well-known ports (0-1023) are reserved for standard protocols (e.g., 80 for HTTP, 443 for HTTPS, 22 for SSH).",
-        "A network Socket is the combination of an IP address and a Port (e.g., 192.168.1.5:80)."
-      ]
+        "A network Socket is the combination of an IP address and a Port (e.g., 192.168.1.5:80).",
+      ],
     },
     {
       kind: "quiz",
@@ -972,14 +1068,10 @@ const portsLesson: LessonContent = {
         {
           id: "ports-https",
           question: "Which port is traditionally reserved for the HTTPS (secure web) protocol?",
-          options: [
-            "80",
-            "443",
-            "22",
-            "5432"
-          ],
+          options: ["80", "443", "22", "5432"],
           correctIndex: 1,
-          explanation: "Port 443 is the standard for secure web traffic (HTTPS), while Port 80 is used for unencrypted HTTP traffic."
+          explanation:
+            "Port 443 is the standard for secure web traffic (HTTPS), while Port 80 is used for unencrypted HTTP traffic.",
         },
         {
           id: "ports-ephemeral",
@@ -988,28 +1080,30 @@ const portsLesson: LessonContent = {
             "To permanently assign a port to a device.",
             "To encrypt the packet payload during a TCP handshake.",
             "To uniquely identify the outgoing connection on the client side, allowing multiple connections from the same IP.",
-            "To act as a firewall rule blocking unauthorized access."
+            "To act as a firewall rule blocking unauthorized access.",
           ],
           correctIndex: 2,
-          explanation: "The operating system automatically assigns a random, high-numbered ephemeral port (like 52345) to each outgoing request so it can track which application should receive the incoming response."
+          explanation:
+            "The operating system automatically assigns a random, high-numbered ephemeral port (like 52345) to each outgoing request so it can track which application should receive the incoming response.",
         },
         {
           id: "ports-firewall",
-          question: "What does a firewall typically do when it actively blocks a TCP connection request?",
+          question:
+            "What does a firewall typically do when it actively blocks a TCP connection request?",
           options: [
             "It returns a SYN-ACK packet.",
             "It establishes the connection but encrypts all the data.",
             "It drops the packet silently or returns a TCP RST (Reset) packet.",
-            "It redirects the request to Port 443."
+            "It redirects the request to Port 443.",
           ],
           correctIndex: 2,
-          explanation: "When a firewall actively refuses a connection, it sends back a TCP RST (Reset) packet, which immediately terminates the handshake attempt."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "When a firewall actively refuses a connection, it sends back a TCP RST (Reset) packet, which immediately terminates the handshake attempt.",
+        },
+      ],
+    },
+  ],
 };
-
 
 const subnetsCidrLesson: LessonContent = {
   slug: "subnets-and-cidr",
@@ -1153,8 +1247,7 @@ const subnetsCidrLesson: LessonContent = {
     },
     {
       kind: "table",
-      caption:
-        "Worked VLSM example: carving 192.168.10.0/24 (the classic on-prem drill)",
+      caption: "Worked VLSM example: carving 192.168.10.0/24 (the classic on-prem drill)",
       headers: ["Segment", "Hosts Needed", "Round up to 2^n", "Prefix", "Assigned Range", "Wasted"],
       rows: [
         ["HQ LAN", "50", "64", "/26", "192.168.10.0 – .63", "12"],
@@ -1245,12 +1338,7 @@ const subnetsCidrLesson: LessonContent = {
           "**Regional.** One subnet spans all zones in the region.",
           "Regional (spans zones).",
         ],
-        [
-          "Reserved IPs per subnet",
-          "5",
-          "4",
-          "5",
-        ],
+        ["Reserved IPs per subnet", "5", "4", "5"],
         [
           "Can you resize?",
           "No. Add a secondary CIDR and new subnets instead.",
@@ -1293,7 +1381,7 @@ const subnetsCidrLesson: LessonContent = {
       kind: "image",
       src: vpcCidrSubnetImg,
       alt: "VPC and Subnets Visualization",
-      caption: "Slicing a /16 VPC into multiple /24 Subnets"
+      caption: "Slicing a /16 VPC into multiple /24 Subnets",
     },
     {
       kind: "table",
@@ -1357,17 +1445,46 @@ const subnetsCidrLesson: LessonContent = {
       ],
     },
     { kind: "vpc-architecture-diagram" },
-    { kind: "animation", variant: "vpc-packet-flow", caption: "Longest prefix match in a live VPC route table" },
+    {
+      kind: "animation",
+      variant: "vpc-packet-flow",
+      caption: "Longest prefix match in a live VPC route table",
+    },
     {
       kind: "table",
       caption: "A private subnet route table, annotated",
       headers: ["Destination", "Target", "What it does", "Who created it"],
       rows: [
-        ["10.0.0.0/16", "local", "Reaches every other subnet in this VPC. Cannot be deleted or overridden.", "AWS, automatically"],
-        ["0.0.0.0/0", "nat-0a1b2c3d", "Catch-all outbound. Sends internet-bound traffic to the NAT Gateway in the public subnet of the same AZ.", "You"],
-        ["10.1.0.0/16", "pcx-9f8e7d6c", "Traffic for the peered analytics VPC goes over the peering connection, not the internet.", "You"],
-        ["172.20.0.0/16", "vgw-4d3c2b1a", "Traffic for the on-prem data centre goes over the VPN / Direct Connect virtual gateway.", "You"],
-        ["pl-63a5400a (S3 prefix list)", "vpce-1122334455", "S3 traffic uses a Gateway Endpoint, staying on the AWS backbone and skipping NAT data charges entirely.", "You"],
+        [
+          "10.0.0.0/16",
+          "local",
+          "Reaches every other subnet in this VPC. Cannot be deleted or overridden.",
+          "AWS, automatically",
+        ],
+        [
+          "0.0.0.0/0",
+          "nat-0a1b2c3d",
+          "Catch-all outbound. Sends internet-bound traffic to the NAT Gateway in the public subnet of the same AZ.",
+          "You",
+        ],
+        [
+          "10.1.0.0/16",
+          "pcx-9f8e7d6c",
+          "Traffic for the peered analytics VPC goes over the peering connection, not the internet.",
+          "You",
+        ],
+        [
+          "172.20.0.0/16",
+          "vgw-4d3c2b1a",
+          "Traffic for the on-prem data centre goes over the VPN / Direct Connect virtual gateway.",
+          "You",
+        ],
+        [
+          "pl-63a5400a (S3 prefix list)",
+          "vpce-1122334455",
+          "S3 traffic uses a Gateway Endpoint, staying on the AWS backbone and skipping NAT data charges entirely.",
+          "You",
+        ],
       ],
     },
     {
@@ -1385,9 +1502,9 @@ const subnetsCidrLesson: LessonContent = {
       heading: "Expressing the Plan as Code",
       body: [
         "Hand-typing CIDR blocks into Terraform is how off-by-one overlaps get shipped. Terraform's `cidrsubnet(prefix, newbits, netnum)` function does the bit arithmetic for you: it adds `newbits` to the prefix length and returns block number `netnum`.",
-        "`cidrsubnet(\"10.0.0.0/16\", 4, 0)` → `10.0.0.0/20`  (16 + 4 = /20, first block)",
-        "`cidrsubnet(\"10.0.0.0/16\", 4, 1)` → `10.0.16.0/20` (second block)",
-        "`cidrsubnet(\"10.0.0.0/16\", 8, 0)` → `10.0.0.0/24`  (16 + 8 = /24, first block)",
+        '`cidrsubnet("10.0.0.0/16", 4, 0)` → `10.0.0.0/20`  (16 + 4 = /20, first block)',
+        '`cidrsubnet("10.0.0.0/16", 4, 1)` → `10.0.16.0/20` (second block)',
+        '`cidrsubnet("10.0.0.0/16", 8, 0)` → `10.0.0.0/24`  (16 + 8 = /24, first block)',
       ],
     },
     {
@@ -1658,8 +1775,7 @@ Decision: /20 per AZ for the app tier.`,
         },
         {
           id: "cidr-vlsm-order",
-          question:
-            "Why does VLSM require you to allocate the largest subnet first?",
+          question: "Why does VLSM require you to allocate the largest subnet first?",
           options: [
             "Because routers process larger subnets faster.",
             "Because small subnets allocated first fragment the space and leave no contiguous room for a large block.",
@@ -1702,8 +1818,6 @@ Decision: /20 per AZ for the app tier.`,
   ],
 };
 
-
-
 const osiModelLesson: LessonContent = {
   slug: "osi-model",
   title: "OSI Model",
@@ -1715,29 +1829,29 @@ const osiModelLesson: LessonContent = {
       body: [
         "The **OSI (Open Systems Interconnection) Model** is a **7-layer framework** for understanding how data moves across networks.",
         "Each layer has a **specific role** and communicates only with adjacent layers.",
-        "**Purpose:** standardize communication, ensure interoperability, and break down networking into manageable parts."
-      ]
+        "**Purpose:** standardize communication, ensure interoperability, and break down networking into manageable parts.",
+      ],
     },
     {
       kind: "callout",
       tone: "info",
       title: "Why Learn It?",
-      body: "While this model is not directly implemented in the TCP/IP networks that are most common today, it helps make troubleshooting easier, encourages hardware interoperability, develops a security-first mindset, and separates a complex function into simpler components."
+      body: "While this model is not directly implemented in the TCP/IP networks that are most common today, it helps make troubleshooting easier, encourages hardware interoperability, develops a security-first mindset, and separates a complex function into simpler components.",
     },
     {
       kind: "callout",
       tone: "warn",
       title: "Mnemonic to Remember",
-      body: "### ==purple:A==ll ==blue:P==eople ==teal:S==eems ==green:T==o ==yellow:N==eed ==orange:D==ata ==red:P==rocessing \n(==purple:A==pplication, ==blue:P==resentation, ==teal:S==ession, ==green:T==ransport, ==yellow:N==etwork, ==orange:D==ata Link, ==red:P==hysical)"
+      body: "### ==purple:A==ll ==blue:P==eople ==teal:S==eems ==green:T==o ==yellow:N==eed ==orange:D==ata ==red:P==rocessing \n(==purple:A==pplication, ==blue:P==resentation, ==teal:S==ession, ==green:T==ransport, ==yellow:N==etwork, ==orange:D==ata Link, ==red:P==hysical)",
     },
     {
       kind: "image",
       src: osiModelImg,
       alt: "OSI Model Diagram",
-      caption: "The 7 Layers of the OSI Model"
+      caption: "The 7 Layers of the OSI Model",
     },
     {
-      kind: "osi-model-diagram"
+      kind: "osi-model-diagram",
     },
     {
       kind: "prose",
@@ -1787,8 +1901,8 @@ const osiModelLesson: LessonContent = {
         "**7. Application Layer**",
         "• Closest to the **end-user**; provides network services.",
         "• **Examples:** HTTP, HTTPS, FTP, SMTP, DNS.",
-        "• **Unit:** Data."
-      ]
+        "• **Unit:** Data.",
+      ],
     },
     {
       kind: "takeaways",
@@ -1796,29 +1910,30 @@ const osiModelLesson: LessonContent = {
         "The OSI Model is a 7-layer conceptual framework that standardizes how different network components communicate.",
         "Data flows DOWN the stack (Encapsulation) when sending, and UP the stack (Decapsulation) when receiving.",
         "Each layer only communicates with the layer immediately above or below it.",
-        "While modern networks use the TCP/IP model, the OSI model is essential for troubleshooting and understanding separation of concerns."
-      ]
+        "While modern networks use the TCP/IP model, the OSI model is essential for troubleshooting and understanding separation of concerns.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "osi-model-layer-3",
-          question: "Which layer of the OSI model is primarily responsible for logical addressing (IP) and routing data across different networks?",
+          question:
+            "Which layer of the OSI model is primarily responsible for logical addressing (IP) and routing data across different networks?",
           options: [
             "Layer 2 (Data Link)",
             "Layer 3 (Network)",
             "Layer 4 (Transport)",
-            "Layer 7 (Application)"
+            "Layer 7 (Application)",
           ],
           correctIndex: 1,
-          explanation: "Layer 3 (the Network layer) handles IP addressing and routing packets across multiple networks to reach their final destination."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Layer 3 (the Network layer) handles IP addressing and routing packets across multiple networks to reach their final destination.",
+        },
+      ],
+    },
+  ],
 };
-
 
 export const tcpUdpLesson: LessonContent = {
   slug: "tcp-udp",
@@ -1830,11 +1945,11 @@ export const tcpUdpLesson: LessonContent = {
       heading: "The TCP/IP Model (Real World vs Theory)",
       body: [
         "While the 7-layer OSI Model is a fantastic theoretical framework for understanding networks, the internet as we know it actually runs on the **TCP/IP Model**.",
-        "The TCP/IP model simplifies the 7 OSI layers into just **4 layers**. It groups the layers that handle software applications into one layer, and groups the hardware-level data link and physical layers into another."
-      ]
+        "The TCP/IP model simplifies the 7 OSI layers into just **4 layers**. It groups the layers that handle software applications into one layer, and groups the hardware-level data link and physical layers into another.",
+      ],
     },
     {
-      kind: "osi-tcp-mapping-diagram"
+      kind: "osi-tcp-mapping-diagram",
     },
     {
       kind: "prose",
@@ -1842,29 +1957,29 @@ export const tcpUdpLesson: LessonContent = {
       body: [
         "Once your data has an IP address and knows which port it needs to reach, it needs a delivery service to transport it across the network.",
         "The Transport Layer gives you two main options for this delivery: TCP (Transmission Control Protocol) and UDP (User Datagram Protocol).",
-        "TCP is focused on reliability and order. UDP is focused entirely on speed."
-      ]
+        "TCP is focused on reliability and order. UDP is focused entirely on speed.",
+      ],
     },
     {
       kind: "callout",
       tone: "info",
       title: "TCP (Transmission Control Protocol)",
-      body: "TCP is connection-oriented. It requires a formal connection before any data transfer begins. It ensures ordered delivery of data with built-in error checking and retransmission of lost packets. Because of this high reliability, it has higher overhead which uses more bandwidth and is slightly slower. It is best suited for transferring files, web pages, images, and emails."
+      body: "TCP is connection-oriented. It requires a formal connection before any data transfer begins. It ensures ordered delivery of data with built-in error checking and retransmission of lost packets. Because of this high reliability, it has higher overhead which uses more bandwidth and is slightly slower. It is best suited for transferring files, web pages, images, and emails.",
     },
     {
       kind: "callout",
       tone: "violet",
       title: "UDP (User Datagram Protocol)",
-      body: "UDP is connectionless. It sends data without any prior handshake. It is entirely unreliable because there is no guarantee of delivery, no retransmission, and no strict ordering. However, it is incredibly fast and lightweight with minimal overhead. It is best suited for real-time communications where speed matters more than perfect reliability."
+      body: "UDP is connectionless. It sends data without any prior handshake. It is entirely unreliable because there is no guarantee of delivery, no retransmission, and no strict ordering. However, it is incredibly fast and lightweight with minimal overhead. It is best suited for real-time communications where speed matters more than perfect reliability.",
     },
     {
-      kind: "tcp-udp-diagram"
+      kind: "tcp-udp-diagram",
     },
     {
       kind: "image",
       src: tcpVsUdpImg,
       alt: "TCP vs UDP visual comparison",
-      caption: "A high-level view of how TCP's handshake compares to UDP's direct broadcast."
+      caption: "A high-level view of how TCP's handshake compares to UDP's direct broadcast.",
     },
     {
       kind: "table",
@@ -1876,8 +1991,12 @@ export const tcpUdpLesson: LessonContent = {
         ["Error Handling", "Retransmits lost packets", "No retransmission"],
         ["Speed", "Slower (higher overhead)", "Faster (lightweight, low overhead)"],
         ["Broadcasting", "Not supported", "Supported (broadcast and multicast)"],
-        ["Use Cases", "Web, email, file transfer, remote login", "Streaming, DNS, VoIP, online gaming"]
-      ]
+        [
+          "Use Cases",
+          "Web, email, file transfer, remote login",
+          "Streaming, DNS, VoIP, online gaming",
+        ],
+      ],
     },
     {
       kind: "takeaways",
@@ -1885,8 +2004,8 @@ export const tcpUdpLesson: LessonContent = {
         "TCP guarantees your data arrives exactly as sent, but the constant checking makes it slower.",
         "UDP blasts data as fast as possible without checking if it arrived, making it perfect for live streams.",
         "Use TCP when losing data breaks the application (like a file download or a web page).",
-        "Use UDP when speed is critical and a few missing pieces won't ruin the experience (like a video call)."
-      ]
+        "Use UDP when speed is critical and a few missing pieces won't ruin the experience (like a video call).",
+      ],
     },
     {
       kind: "quiz",
@@ -1898,10 +2017,11 @@ export const tcpUdpLesson: LessonContent = {
             "Downloading a large PDF document",
             "Streaming a live sports match",
             "Loading a banking website",
-            "Sending an important email"
+            "Sending an important email",
           ],
           correctIndex: 1,
-          explanation: "Live sports streaming prioritizes speed and real-time delivery. If a few frames are lost, it is better to skip them and keep the stream live rather than pausing to re-transmit the missing data."
+          explanation:
+            "Live sports streaming prioritizes speed and real-time delivery. If a few frames are lost, it is better to skip them and keep the stream live rather than pausing to re-transmit the missing data.",
         },
         {
           id: "tcp-guarantee",
@@ -1910,10 +2030,11 @@ export const tcpUdpLesson: LessonContent = {
             "By sending the data twice just in case.",
             "By requiring the receiver to send back an Acknowledgment (ACK) for every packet.",
             "By blasting data as fast as possible to overwhelm the network.",
-            "By using a direct physical cable between the client and server."
+            "By using a direct physical cable between the client and server.",
           ],
           correctIndex: 1,
-          explanation: "TCP uses Acknowledgments (ACKs). The receiver must reply with an ACK to confirm receipt. If the sender doesn't get an ACK, it retransmits the missing packet."
+          explanation:
+            "TCP uses Acknowledgments (ACKs). The receiver must reply with an ACK to confirm receipt. If the sender doesn't get an ACK, it retransmits the missing packet.",
         },
         {
           id: "tcp-udp-overhead",
@@ -1922,10 +2043,11 @@ export const tcpUdpLesson: LessonContent = {
             "UDP has lower overhead because it doesn't establish a connection or check for dropped packets.",
             "UDP uses a premium internet lane.",
             "UDP compresses the data more efficiently.",
-            "TCP is an outdated protocol from the 1980s."
+            "TCP is an outdated protocol from the 1980s.",
           ],
           correctIndex: 0,
-          explanation: "UDP simply fires the data at the destination without handshakes, strict ordering, or error recovery, resulting in minimal overhead and much faster transmission."
+          explanation:
+            "UDP simply fires the data at the destination without handshakes, strict ordering, or error recovery, resulting in minimal overhead and much faster transmission.",
         },
         {
           id: "tcp-handshake",
@@ -1934,22 +2056,22 @@ export const tcpUdpLesson: LessonContent = {
             "A security protocol to encrypt data.",
             "The process of closing a connection (FIN, FIN-ACK, ACK).",
             "The initial connection setup process (SYN, SYN-ACK, ACK) before data is sent.",
-            "A method to group 3 packets together for faster delivery."
+            "A method to group 3 packets together for faster delivery.",
           ],
           correctIndex: 2,
-          explanation: "Before any data is transferred, TCP establishes a reliable connection using a 3-way handshake: SYN (synchronize), SYN-ACK (synchronize-acknowledge), and ACK (acknowledge)."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "Before any data is transferred, TCP establishes a reliable connection using a 3-way handshake: SYN (synchronize), SYN-ACK (synchronize-acknowledge), and ACK (acknowledge).",
+        },
+      ],
+    },
+  ],
 };
-
-
 
 export const httpHttpsLesson: LessonContent = {
   slug: "http-https",
   title: "HTTP & HTTPS",
-  subtitle: "The protocol that powers the web. Learn how requests and responses work, and why HTTPS is the production standard.",
+  subtitle:
+    "The protocol that powers the web. Learn how requests and responses work, and why HTTPS is the production standard.",
   sections: [
     {
       kind: "prose",
@@ -1961,11 +2083,11 @@ export const httpHttpsLesson: LessonContent = {
         "• Status codes such as 200, 404, 429, and 503",
         "• Headers such as Content-Type, Authorization, and Cache-Control",
         "• Message bodies such as HTML, JSON, or images",
-        "HTTP is not tied to one network transport forever. HTTP/1.1 and HTTP/2 commonly run over TCP. HTTP/3 runs over QUIC, which runs over UDP. The core meaning still stays the same: request method, path, headers, status, and body."
-      ]
+        "HTTP is not tied to one network transport forever. HTTP/1.1 and HTTP/2 commonly run over TCP. HTTP/3 runs over QUIC, which runs over UDP. The core meaning still stays the same: request method, path, headers, status, and body.",
+      ],
     },
     {
-      kind: "http-req-res-viewer"
+      kind: "http-req-res-viewer",
     },
     {
       kind: "prose",
@@ -1974,8 +2096,8 @@ export const httpHttpsLesson: LessonContent = {
         "At a high level, an HTTP request follows a simple path. The client resolves the hostname through DNS, opens a transport connection, performs a TLS handshake for HTTPS, and sends an HTTP request. The server routes the request to application code and sends an HTTP response.",
         "This simple flow often hides many production components like CDNs, API gateways, load balancers, and application servers. These components can read or change HTTP headers only after the traffic has been decrypted.",
         "HTTP is stateless at the protocol level. Each request carries enough information for the server to understand it, and the protocol itself does not assume the server remembers a hidden session from the previous request.",
-        "That does not mean web systems are stateless. Real systems keep state in cookies, session stores, tokens, caches, and databases. The important design question is simple: where does the state live, and what happens if a request is retried?"
-      ]
+        "That does not mean web systems are stateless. Real systems keep state in cookies, session stores, tokens, caches, and databases. The important design question is simple: where does the state live, and what happens if a request is retried?",
+      ],
     },
     {
       kind: "table",
@@ -1988,15 +2110,15 @@ export const httpHttpsLesson: LessonContent = {
         ["PUT", "Replace or create a resource at a known URL", "No", "Yes"],
         ["PATCH", "Partially update a resource", "No", "Not guaranteed"],
         ["DELETE", "Delete a resource", "No", "Yes"],
-      ]
+      ],
     },
     {
       kind: "prose",
       heading: "Idempotency",
       body: [
         "Safe means the client is asking to read, not change, server state. Idempotent means repeating the same request should have the same intended effect as sending it once.",
-        "Idempotency is not trivia. It decides whether clients can safely retry after timeouts, connection resets, and load balancer failures. POST requests for payments should usually require an idempotency key to prevent double charging."
-      ]
+        "Idempotency is not trivia. It decides whether clients can safely retry after timeouts, connection resets, and load balancer failures. POST requests for payments should usually require an idempotency key to prevent double charging.",
+      ],
     },
     {
       kind: "table",
@@ -2006,17 +2128,25 @@ export const httpHttpsLesson: LessonContent = {
         ["1xx", "Informational", "100 Continue, 103 Early Hints"],
         ["2xx", "Success", "200 OK, 201 Created, 204 No Content"],
         ["3xx", "Redirect or alternate location", "301 Moved Permanently, 304 Not Modified"],
-        ["4xx", "Client-side problem", "400 Bad Request, 401 Unauthorized, 404 Not Found, 429 Too Many Requests"],
-        ["5xx", "Server-side or internal dependency problem", "500 Internal Server Error, 502 Bad Gateway, 504 Gateway Timeout"],
-      ]
+        [
+          "4xx",
+          "Client-side problem",
+          "400 Bad Request, 401 Unauthorized, 404 Not Found, 429 Too Many Requests",
+        ],
+        [
+          "5xx",
+          "Server-side or internal dependency problem",
+          "500 Internal Server Error, 502 Bad Gateway, 504 Gateway Timeout",
+        ],
+      ],
     },
     {
       kind: "prose",
       heading: "Caching and Conditional Requests",
       body: [
         "HTTP has mature caching rules. Used well, caching makes systems faster, reduces load on origin servers, lowers cloud cost, and can keep users working during partial failures.",
-        "Important headers include Cache-Control (who may cache and for how long) and ETag (a version identifier for a cached response). A client can ask whether an ETag is still current using If-None-Match. If it is, the server replies with a 304 Not Modified, saving bandwidth."
-      ]
+        "Important headers include Cache-Control (who may cache and for how long) and ETag (a version identifier for a cached response). A client can ask whether an ETag is still current using If-None-Match. If it is, the server replies with a 304 Not Modified, saving bandwidth.",
+      ],
     },
     { kind: "http-cache-diagram" },
     {
@@ -2027,16 +2157,16 @@ export const httpHttpsLesson: LessonContent = {
         "1. Confidentiality: People or systems in the middle cannot read the protected HTTP data.",
         "2. Integrity: People or systems in the middle cannot change protected traffic without being detected.",
         "3. Server authentication: The client can check that the server is allowed to use the hostname.",
-        "HTTPS is the baseline expectation today. Production APIs should assume HTTPS from the very first design review."
-      ]
+        "HTTPS is the baseline expectation today. Production APIs should assume HTTPS from the very first design review.",
+      ],
     },
     {
       kind: "image",
       src: httpVsHttpsImg,
-      alt: "Comparison of HTTP vs HTTPS"
+      alt: "Comparison of HTTP vs HTTPS",
     },
     {
-      kind: "tls-handshake-diagram"
+      kind: "tls-handshake-diagram",
     },
     {
       kind: "prose",
@@ -2045,11 +2175,11 @@ export const httpHttpsLesson: LessonContent = {
         "HTTP has evolved without changing its core request and response model.",
         "**HTTP/1.1** made reusable connections the default. It is simple and widely supported, but its weakness is concurrency. A single connection handles responses in order, so one slow response can hold up later responses on that connection.",
         "**HTTP/2** keeps the same HTTP meaning but uses binary frames instead of text messages. It allows multiple streams over one TCP connection. This reduces head of line blocking at the HTTP layer, but not at the TCP layer. If one TCP segment is lost, all streams on that TCP connection may wait until the missing bytes are recovered.",
-        "**HTTP/3** runs over QUIC instead of TCP. QUIC runs over UDP. This finally reduces TCP level head of line blocking between streams and allows faster connection setups."
-      ]
+        "**HTTP/3** runs over QUIC instead of TCP. QUIC runs over UDP. This finally reduces TCP level head of line blocking between streams and allows faster connection setups.",
+      ],
     },
     {
-      kind: "http-versions-diagram"
+      kind: "http-versions-diagram",
     },
     {
       kind: "prose",
@@ -2057,8 +2187,8 @@ export const httpHttpsLesson: LessonContent = {
       body: [
         "HTTP is easy to start with and easy to misuse. Every HTTP client should set timeouts for each stage of a request: DNS lookup, connection setup, the TLS handshake, writing the request, and waiting for response headers.",
         "The defaults in many libraries are unsafe for production. A missing timeout can turn one slow dependency into exhausted threads, stuck connection pools, or a larger outage.",
-        "Retries should respect HTTP method behavior and application idempotency. Retrying a GET is usually safe. Retrying a POST can create duplicates unless the API supports idempotency keys."
-      ]
+        "Retries should respect HTTP method behavior and application idempotency. Retrying a GET is usually safe. Retrying a POST can create duplicates unless the API supports idempotency keys.",
+      ],
     },
     {
       kind: "takeaways",
@@ -2067,8 +2197,8 @@ export const httpHttpsLesson: LessonContent = {
         "HTTPS is HTTP protected by TLS, which adds encryption, tamper detection, and server identity checks.",
         "Idempotency matters. Safe methods like GET only read data, while idempotent methods like PUT mean repeating the request is safe.",
         "HTTP/2 solves HTTP head of line blocking but suffers from TCP head of line blocking. HTTP/3 solves this by moving to UDP.",
-        "Set strict timeouts and retries on all HTTP clients to prevent cascading failures in distributed systems."
-      ]
+        "Set strict timeouts and retries on all HTTP clients to prevent cascading failures in distributed systems.",
+      ],
     },
     {
       kind: "quiz",
@@ -2078,26 +2208,35 @@ export const httpHttpsLesson: LessonContent = {
           question: "Which of the following HTTP methods is NOT idempotent by default?",
           options: ["GET", "PUT", "DELETE", "POST"],
           correctIndex: 3,
-          explanation: "POST is not idempotent by default. Repeating a POST request can create multiple resources or trigger multiple actions unless the API implements an idempotency key."
+          explanation:
+            "POST is not idempotent by default. Repeating a POST request can create multiple resources or trigger multiple actions unless the API implements an idempotency key.",
         },
         {
           id: "http-status-codes",
-          question: "A client sends too many requests in a short time. Which status code should the server return?",
-          options: ["400 Bad Request", "401 Unauthorized", "429 Too Many Requests", "503 Service Unavailable"],
+          question:
+            "A client sends too many requests in a short time. Which status code should the server return?",
+          options: [
+            "400 Bad Request",
+            "401 Unauthorized",
+            "429 Too Many Requests",
+            "503 Service Unavailable",
+          ],
           correctIndex: 2,
-          explanation: "429 Too Many Requests is the standard status code for rate limiting."
+          explanation: "429 Too Many Requests is the standard status code for rate limiting.",
         },
         {
           id: "http-head-of-line",
-          question: "How does HTTP/3 solve the TCP head of line blocking problem that affects HTTP/2?",
+          question:
+            "How does HTTP/3 solve the TCP head of line blocking problem that affects HTTP/2?",
           options: [
             "It uses binary frames instead of text.",
             "It opens multiple parallel TCP connections.",
             "It runs over QUIC and UDP, making streams completely independent.",
-            "It forces the server to push responses asynchronously."
+            "It forces the server to push responses asynchronously.",
           ],
           correctIndex: 2,
-          explanation: "HTTP/3 runs over QUIC (which uses UDP). Since UDP has no strict ordering or blocking, a lost packet in one stream does not pause other active streams."
+          explanation:
+            "HTTP/3 runs over QUIC (which uses UDP). Since UDP has no strict ordering or blocking, a lost packet in one stream does not pause other active streams.",
         },
         {
           id: "https-benefits",
@@ -2106,21 +2245,24 @@ export const httpHttpsLesson: LessonContent = {
             "Confidentiality (encryption)",
             "Server Authentication",
             "Integrity (tamper detection)",
-            "Automatic User Authentication"
+            "Automatic User Authentication",
           ],
           correctIndex: 3,
-          explanation: "HTTPS verifies the server's identity via certificates, but it does not automatically authenticate the end user. You still need OAuth, JWTs, or session cookies for that."
+          explanation:
+            "HTTPS verifies the server's identity via certificates, but it does not automatically authenticate the end user. You still need OAuth, JWTs, or session cookies for that.",
         },
         {
           id: "http-caching",
-          question: "Which header does a client use to ask the server if a cached resource is still valid based on its ETag?",
+          question:
+            "Which header does a client use to ask the server if a cached resource is still valid based on its ETag?",
           options: ["Cache-Control", "If-None-Match", "Last-Modified", "Content-Type"],
           correctIndex: 1,
-          explanation: "The client sends the 'If-None-Match' header containing the cached ETag. If the resource hasn't changed, the server returns a 304 Not Modified."
-        }
-      ]
-    }
-  ]
+          explanation:
+            "The client sends the 'If-None-Match' header containing the cached ETag. If the resource hasn't changed, the server returns a 304 Not Modified.",
+        },
+      ],
+    },
+  ],
 };
 
 export const dnsLesson: LessonContent = {
@@ -2136,29 +2278,28 @@ export const dnsLesson: LessonContent = {
         "Computers do not talk to names. They talk to addresses. Before your browser can send a single byte to `example.com`, it needs a number like `93.184.216.34` — because that is what a router knows how to forward a packet toward.",
         "So one of two things has to be true. Either every person memorises the IP address of every service they use, or something translates names into addresses on demand. **DNS is that something.**",
         "It is usually described as the phonebook of the internet, and that captures the lookup part. But a phonebook is one book, printed once, in one place. DNS is a **hierarchical, decentralised, globally distributed database** that answers trillions of queries a day, has no single owner, and has never been fully offline. That is the part worth understanding.",
-        "One thing to be clear about from the start: **DNS does not fetch anything.** It resolves a name to an address and stops. Everything you actually wanted — the HTML, the API response, the video — happens afterwards, over a separate connection to the address DNS handed back."
-      ]
+        "One thing to be clear about from the start: **DNS does not fetch anything.** It resolves a name to an address and stops. Everything you actually wanted — the HTML, the API response, the video — happens afterwards, over a separate connection to the address DNS handed back.",
+      ],
     },
     {
       kind: "analogy",
       title: "Asking for directions, not being driven there",
-      text:
-        "You want to visit a company you only know by name. You ask a **concierge** (the resolver). The concierge does not know either, so they ask the **city registry** (root), which says \"that's a commercial firm, ask the commercial registry.\" The **commercial registry** (TLD) says \"that company keeps its own records office — here's where it is.\" The **records office** (authoritative nameserver) finally gives the street address. The concierge writes it in a notepad (cache) and hands it to you. Then — and only then — **you** make the journey yourself. The concierge never went anywhere on your behalf."
+      text: 'You want to visit a company you only know by name. You ask a **concierge** (the resolver). The concierge does not know either, so they ask the **city registry** (root), which says "that\'s a commercial firm, ask the commercial registry." The **commercial registry** (TLD) says "that company keeps its own records office — here\'s where it is." The **records office** (authoritative nameserver) finally gives the street address. The concierge writes it in a notepad (cache) and hands it to you. Then — and only then — **you** make the journey yourself. The concierge never went anywhere on your behalf.',
     },
     {
       kind: "prose",
       heading: "The four kinds of server involved",
       body: [
-        "Almost every DNS explanation gets confusing because people say \"the DNS server\" as if there is one. There are four distinct roles, and each one has a genuinely different job.",
+        'Almost every DNS explanation gets confusing because people say "the DNS server" as if there is one. There are four distinct roles, and each one has a genuinely different job.',
         "**1. Recursive resolver.** The only one your device ever talks to. It accepts one question and takes on the responsibility of returning a finished answer. It is run by your ISP, or by a public provider like `1.1.1.1` (Cloudflare) or `8.8.8.8` (Google), and it is where nearly all of the caching happens.",
-        "**2. Root server.** The top of the tree, denoted by a single dot. It does not know any website addresses. It knows which servers run each top-level domain. There are **13 root server identities** (`a` through `m`, overseen by ICANN), but hundreds of physical machines share those addresses using **anycast routing**, so \"the root server\" you reach is whichever one is closest to you on the network.",
+        '**2. Root server.** The top of the tree, denoted by a single dot. It does not know any website addresses. It knows which servers run each top-level domain. There are **13 root server identities** (`a` through `m`, overseen by ICANN), but hundreds of physical machines share those addresses using **anycast routing**, so "the root server" you reach is whichever one is closest to you on the network.',
         "**3. TLD server.** Holds every domain registered under one top-level domain — `.com`, `.org`, `.net`, `.uk`, `.jp`. The `.com` zone is operated by Verisign under IANA/ICANN delegation. It stores one delegation per domain: which nameservers are authoritative for it. It does not store your website's IP address either.",
         "**4. Authoritative nameserver.** The source of truth for a specific domain. It holds the zone file with every record you configured, and it is the only server entitled to say a name does not exist (**NXDOMAIN**).",
-        "Notice the pattern: **the first two servers you ask never answer your question.** They tell you who to ask next. That refusal to centralise is the single design decision that lets DNS scale to the whole internet."
-      ]
+        "Notice the pattern: **the first two servers you ask never answer your question.** They tell you who to ask next. That refusal to centralise is the single design decision that lets DNS scale to the whole internet.",
+      ],
     },
     {
-      kind: "dns-resolution-walkthrough"
+      kind: "dns-resolution-walkthrough",
     },
     {
       kind: "prose",
@@ -2173,8 +2314,8 @@ export const dnsLesson: LessonContent = {
         "7. The resolver queries the **authoritative nameserver**.",
         "8. The authoritative server returns the **A record** — the IP address — with the AA (authoritative answer) bit set and a TTL.",
         "9. The resolver caches everything it learned and returns the address to the client.",
-        "10. The browser opens a TCP connection to that IP, performs the TLS handshake, and sends the HTTP request. **This is where DNS ends and the actual page load begins.**"
-      ]
+        "10. The browser opens a TCP connection to that IP, performs the TLS handshake, and sends the HTTP request. **This is where DNS ends and the actual page load begins.**",
+      ],
     },
     {
       kind: "image",
@@ -2186,19 +2327,18 @@ export const dnsLesson: LessonContent = {
       kind: "callout",
       tone: "info",
       title: "DNS runs on UDP port 53 — and that choice has consequences",
-      body:
-        "A query and its answer usually fit in a single UDP datagram, so there is no handshake and no connection state: one packet out, one packet back. That is why lookups are fast. It is also why DNS is a favourite tool for amplification attacks (a small spoofed query producing a large reply aimed at a victim), and why responses larger than the limit fall back to TCP. Modern deployments increasingly wrap the whole thing in TLS or HTTPS — **DoT** on port 853, **DoH** on port 443 — so that your ISP cannot read or rewrite your lookups."
+      body: "A query and its answer usually fit in a single UDP datagram, so there is no handshake and no connection state: one packet out, one packet back. That is why lookups are fast. It is also why DNS is a favourite tool for amplification attacks (a small spoofed query producing a large reply aimed at a victim), and why responses larger than the limit fall back to TCP. Modern deployments increasingly wrap the whole thing in TLS or HTTPS — **DoT** on port 853, **DoH** on port 443 — so that your ISP cannot read or rewrite your lookups.",
     },
     {
       kind: "prose",
       heading: "The namespace is a tree",
       body: [
         "Every domain name is a path from a leaf up to the root, written right to left. `blog.example.com.` is really four labels: `blog`, then `example`, then `com`, then the empty root label — that trailing dot you almost never type but which is always implied.",
-        "Each level is delegated to a different party, and that delegation is the reason no single organisation has to be trusted with everything. ICANN oversees the root. Verisign runs `.com`. Nominet runs `.uk`. You run `example.com` once you register it. Below that, **subdomains cost you nothing and need no registrar** — they are just extra lines in a file you already control."
-      ]
+        "Each level is delegated to a different party, and that delegation is the reason no single organisation has to be trusted with everything. ICANN oversees the root. Verisign runs `.com`. Nominet runs `.uk`. You run `example.com` once you register it. Below that, **subdomains cost you nothing and need no registrar** — they are just extra lines in a file you already control.",
+      ],
     },
     {
-      kind: "dns-hierarchy-diagram"
+      kind: "dns-hierarchy-diagram",
     },
     {
       kind: "prose",
@@ -2206,32 +2346,32 @@ export const dnsLesson: LessonContent = {
       body: [
         "A subdomain is a prefix on a domain you already own: `subdomain.primarydomain.TLD`. `blog.example.com`, `support.example.com`, `api.example.com`.",
         "The useful part is not the naming. It is that **each subdomain can point at completely different infrastructure** while sharing one registered domain: `blog` at a static host, `api` at a load balancer in your VPC, `support` at a third-party SaaS vendor, `status` at a status-page provider. One domain, four vendors, zero coordination between them.",
-        "A **DNS zone** is the portion of the namespace that one entity administers. By default your whole domain is one zone, but you can delegate a subtree — say, hand `internal.example.com` to a different team with its own nameservers — and it becomes its own zone. That is how large organisations give teams autonomy over their own names without handing over the keys to the whole domain."
-      ]
+        "A **DNS zone** is the portion of the namespace that one entity administers. By default your whole domain is one zone, but you can delegate a subtree — say, hand `internal.example.com` to a different team with its own nameservers — and it becomes its own zone. That is how large organisations give teams autonomy over their own names without handing over the keys to the whole domain.",
+      ],
     },
     {
       kind: "prose",
       heading: "Three query types",
       body: [
         "The words *recursive* and *iterative* describe **what the asker expects back**, not different protocols. A single lookup normally contains both.",
-        "**Recursive** — \"go and find the real answer.\" The server must return the finished result or an error. Your device only ever does this.",
-        "**Iterative** — \"tell me the best you have.\" Usually a referral to a server closer to the answer. The asker keeps the work. Root and TLD servers deliberately answer only iteratively; if they did recursive work for everyone, a handful of machines would have to serve the entire internet.",
-        "**Non-recursive** — the server already knows, from cache or because it is authoritative for that zone. No other server is contacted. This is by far the most common case in production."
-      ]
+        '**Recursive** — "go and find the real answer." The server must return the finished result or an error. Your device only ever does this.',
+        '**Iterative** — "tell me the best you have." Usually a referral to a server closer to the answer. The asker keeps the work. Root and TLD servers deliberately answer only iteratively; if they did recursive work for everyone, a handful of machines would have to serve the entire internet.',
+        "**Non-recursive** — the server already knows, from cache or because it is authoritative for that zone. No other server is contacted. This is by far the most common case in production.",
+      ],
     },
     {
-      kind: "dns-query-types-diagram"
+      kind: "dns-query-types-diagram",
     },
     {
       kind: "prose",
       heading: "Records: what a domain is actually made of",
       body: [
         "A **DNS record** is one instruction stored on an authoritative nameserver. Together they form the **zone file** — a plain-text description of everything a domain does. Every managed DNS console you have ever used (Route 53, Cloudflare, Azure DNS) is a form that edits these lines.",
-        "Every record carries a **TTL**: how long anyone else is allowed to cache it. Pick the type by what you are pointing at — an address, another name, a mail server, a service, or a piece of text."
-      ]
+        "Every record carries a **TTL**: how long anyone else is allowed to cache it. Pick the type by what you are pointing at — an address, another name, a mail server, a service, or a piece of text.",
+      ],
     },
     {
-      kind: "dns-record-explorer"
+      kind: "dns-record-explorer",
     },
     {
       kind: "table",
@@ -2239,23 +2379,54 @@ export const dnsLesson: LessonContent = {
       headers: ["Record", "Purpose", "Typical use"],
       rows: [
         ["**A**", "Maps a name to an IPv4 address", "`example.com → 93.184.216.34`"],
-        ["**AAAA**", "Maps a name to an IPv6 address", "Dual-stack hosts; queried in parallel with A"],
-        ["**CNAME**", "Points one name at another name", "`blog → hosting.netlify.app` — cannot sit on the bare domain"],
-        ["**MX**", "Names the mail servers for the domain", "Lowest preference number wins; must point at a hostname"],
+        [
+          "**AAAA**",
+          "Maps a name to an IPv6 address",
+          "Dual-stack hosts; queried in parallel with A",
+        ],
+        [
+          "**CNAME**",
+          "Points one name at another name",
+          "`blog → hosting.netlify.app` — cannot sit on the bare domain",
+        ],
+        [
+          "**MX**",
+          "Names the mail servers for the domain",
+          "Lowest preference number wins; must point at a hostname",
+        ],
         ["**TXT**", "Arbitrary text on a name", "SPF, DKIM, DMARC, domain-ownership proofs"],
-        ["**NS**", "Declares the authoritative servers for a zone", "The record that performs delegation"],
-        ["**SOA**", "Zone admin data, serial, and timers", "One per zone; last field is the negative-caching TTL"],
-        ["**SRV**", "Locates a service, including its port", "SIP, XMPP, LDAP, Kubernetes service discovery"],
-        ["**PTR**", "Maps an IP back to a name (reverse DNS)", "Lives in `in-addr.arpa`; checked by mail servers"],
-        ["**CERT**", "Publishes a certificate in DNS", "Rare; TLSA and CAA are the relatives you will meet"]
-      ]
+        [
+          "**NS**",
+          "Declares the authoritative servers for a zone",
+          "The record that performs delegation",
+        ],
+        [
+          "**SOA**",
+          "Zone admin data, serial, and timers",
+          "One per zone; last field is the negative-caching TTL",
+        ],
+        [
+          "**SRV**",
+          "Locates a service, including its port",
+          "SIP, XMPP, LDAP, Kubernetes service discovery",
+        ],
+        [
+          "**PTR**",
+          "Maps an IP back to a name (reverse DNS)",
+          "Lives in `in-addr.arpa`; checked by mail servers",
+        ],
+        [
+          "**CERT**",
+          "Publishes a certificate in DNS",
+          "Rare; TLSA and CAA are the relatives you will meet",
+        ],
+      ],
     },
     {
       kind: "callout",
       tone: "warn",
       title: "The CNAME trap that catches nearly everyone once",
-      body:
-        "A CNAME cannot coexist with any other record on the same name. Your bare domain (`example.com`) must already have SOA and NS records — so it **cannot** have a CNAME. This is why pointing a naked domain at a CDN or SaaS host fails, and why providers invented non-standard `ALIAS` / `ANAME` records that behave like a CNAME at the apex but resolve server-side and return an A record."
+      body: "A CNAME cannot coexist with any other record on the same name. Your bare domain (`example.com`) must already have SOA and NS records — so it **cannot** have a CNAME. This is why pointing a naked domain at a CDN or SaaS host fails, and why providers invented non-standard `ALIAS` / `ANAME` records that behave like a CNAME at the apex but resolve server-side and return an A record.",
     },
     {
       kind: "prose",
@@ -2263,8 +2434,8 @@ export const dnsLesson: LessonContent = {
       body: [
         "A reverse lookup goes the other way: IP address to name. It uses **PTR** records published in a special zone — `93.184.216.34` becomes a query for `34.216.184.93.in-addr.arpa` (the octets reversed, because names are read most-specific-first).",
         "It is not needed to browse the web. It matters in exactly two places. **Mail servers** check that a sending IP has a PTR record and that the name it returns resolves back to the same IP; a mismatch is a strong spam signal. And **logs and traceroutes** use it to turn raw addresses into readable hostnames.",
-        "One practical note: only the owner of the IP block can set a PTR record. That is your hosting or cloud provider, not your DNS provider — so this is one record you usually cannot fix yourself."
-      ]
+        "One practical note: only the owner of the IP block can set a PTR record. That is your hosting or cloud provider, not your DNS provider — so this is one record you usually cannot fix yourself.",
+      ],
     },
     {
       kind: "prose",
@@ -2272,11 +2443,11 @@ export const dnsLesson: LessonContent = {
       body: [
         "A full recursive walk costs three round trips to servers scattered around the world. If every page load did that, the web would feel broken and the root servers would have melted decades ago.",
         "They have not, because **a DNS answer is cached at four independent layers** before it reaches your application: the browser, the operating system stub resolver, the local router, and the recursive resolver. A query only travels as far as the first layer that still holds a valid copy.",
-        "Each layer honours the **TTL** that came with the record — the number of seconds it is allowed to keep the answer. When the TTL expires, the entry is purged and the next request re-queries."
-      ]
+        "Each layer honours the **TTL** that came with the record — the number of seconds it is allowed to keep the answer. When the TTL expires, the entry is purged and the next request re-queries.",
+      ],
     },
     {
-      kind: "dns-cache-journey"
+      kind: "dns-cache-journey",
     },
     {
       kind: "prose",
@@ -2286,15 +2457,14 @@ export const dnsLesson: LessonContent = {
         "**A short TTL** (30–60s) means changes take effect almost immediately, which is what you want during a migration or a failover. It also means far more traffic to your authoritative nameservers, and it makes you more fragile: if your nameservers become unreachable, cached copies expire quickly and users start failing.",
         "**A long TTL** (hours to a day) means fewer queries, lower cost, and real resilience — clients keep working from cache even while your nameservers are down. The price is that a mistake, or a needed failover, can take a full TTL to reach everybody.",
         "The standard playbook before a planned migration: **drop the TTL to 60 seconds about a day in advance**, wait for the old long-TTL entries to age out, cut over, confirm, then raise the TTL back up.",
-        "This is also the honest explanation of \"DNS propagation.\" Nothing propagates. There is no push, no broadcast, no sync. You are simply waiting for other people's caches to expire on their own schedule."
-      ]
+        'This is also the honest explanation of "DNS propagation." Nothing propagates. There is no push, no broadcast, no sync. You are simply waiting for other people\'s caches to expire on their own schedule.',
+      ],
     },
     {
       kind: "callout",
       tone: "success",
       title: "Flushing your own caches",
-      body:
-        "When a change looks like it has not taken effect, clear the layers you control before blaming anyone. Chrome keeps its own cache at `chrome://net-internals/#dns` → *Clear host cache*. On Windows: `ipconfig /flushdns`. On macOS: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`. On Linux with systemd: `resolvectl flush-caches`. Then verify against the authority directly with `dig @ns1.yourprovider.net example.com` — that bypasses every cache in between and tells you what is actually configured."
+      body: "When a change looks like it has not taken effect, clear the layers you control before blaming anyone. Chrome keeps its own cache at `chrome://net-internals/#dns` → *Clear host cache*. On Windows: `ipconfig /flushdns`. On macOS: `sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`. On Linux with systemd: `resolvectl flush-caches`. Then verify against the authority directly with `dig @ns1.yourprovider.net example.com` — that bypasses every cache in between and tells you what is actually configured.",
     },
     {
       kind: "prose",
@@ -2305,20 +2475,23 @@ export const dnsLesson: LessonContent = {
         "**Amplification attacks.** A small spoofed query can produce a large reply aimed at a victim. Response rate limiting and refusing to run open resolvers are the defences.",
         "**Round-robin DNS is not load balancing.** Multiple A records on one name spread traffic, but DNS has no health checking: a dead server keeps being handed out until the record is removed and every cached copy expires. Real load balancing happens behind a single address.",
         "**Protect the account, not just the zone.** Whoever controls your registrar account controls where every user of your domain is sent. Enforce MFA, use registrar lock, and restrict who can edit records.",
-        "**Do not forget the lookup in your timeouts.** DNS resolution is a distinct stage of an HTTP request with its own failure mode. A client with no DNS timeout can hang indefinitely on a resolver that has stopped answering."
-      ]
+        "**Do not forget the lookup in your timeouts.** DNS resolution is a distinct stage of an HTTP request with its own failure mode. A client with no DNS timeout can hang indefinitely on a resolver that has stopped answering.",
+      ],
     },
     {
       kind: "table",
       caption: "Managed DNS providers you will meet",
       headers: ["Provider", "Why teams pick it"],
       rows: [
-        ["**Route 53** (AWS)", "Deep AWS integration, health checks, latency and geolocation routing policies"],
+        [
+          "**Route 53** (AWS)",
+          "Deep AWS integration, health checks, latency and geolocation routing policies",
+        ],
         ["**Cloudflare DNS**", "Very fast anycast network, DDoS protection, free DNSSEC"],
         ["**Google Cloud DNS**", "Simple, scalable, priced per query and zone"],
         ["**Azure DNS**", "Native integration with Azure identity and resources"],
-        ["**NS1**", "Programmable traffic steering and data-driven routing"]
-      ]
+        ["**NS1**", "Programmable traffic steering and data-driven routing"],
+      ],
     },
     {
       kind: "takeaways",
@@ -2326,41 +2499,43 @@ export const dnsLesson: LessonContent = {
         "DNS translates names to IP addresses and then gets out of the way — it never fetches your content.",
         "Four roles, not one server: the **resolver** does the walking, the **root** and **TLD** servers only hand out referrals, and the **authoritative nameserver** is the single source of truth for a domain.",
         "The namespace is a tree read right to left, and each level is delegated to a different party. That delegation is why DNS scales without a central database.",
-        "**Recursive** means \"find me the answer,\" **iterative** means \"tell me who to ask next,\" and **non-recursive** means \"I already know.\" One lookup normally uses all three.",
+        '**Recursive** means "find me the answer," **iterative** means "tell me who to ask next," and **non-recursive** means "I already know." One lookup normally uses all three.',
         "Records live in a zone file on the authoritative server. A points at IPv4, AAAA at IPv6, CNAME at another name, MX at mail servers, NS at nameservers, PTR back at a name.",
         "Caching at four layers — browser, OS, router, resolver — is what keeps DNS fast, and **TTL is your only lever over caches you do not own**.",
-        "\"Propagation\" is not a push; it is waiting for other people's TTLs to expire. Lower the TTL a day before a planned migration.",
-        "Treat DNS as production infrastructure: redundant providers, DNSSEC, MFA on the registrar account, and an explicit resolution timeout in every client."
-      ]
+        '"Propagation" is not a push; it is waiting for other people\'s TTLs to expire. Lower the TTL a day before a planned migration.',
+        "Treat DNS as production infrastructure: redundant providers, DNSSEC, MFA on the registrar account, and an explicit resolution timeout in every client.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
           id: "dns-root-role",
-          question: "A recursive resolver queries a root server for `blog.example.com`. What does the root server return?",
+          question:
+            "A recursive resolver queries a root server for `blog.example.com`. What does the root server return?",
           options: [
             "The IP address of blog.example.com",
             "The addresses of the authoritative nameservers for example.com",
             "A referral to the nameservers for the .com TLD",
-            "NXDOMAIN, because root servers only handle bare domains"
+            "NXDOMAIN, because root servers only handle bare domains",
           ],
           correctIndex: 2,
           explanation:
-            "Root servers store no website addresses. They know which servers run each top-level domain, so they answer with a referral to the .com TLD nameservers. The resolver then has to ask again, one level deeper."
+            "Root servers store no website addresses. They know which servers run each top-level domain, so they answer with a referral to the .com TLD nameservers. The resolver then has to ask again, one level deeper.",
         },
         {
           id: "dns-who-walks",
-          question: "In a normal lookup from a laptop, which machine actually contacts the root, TLD, and authoritative servers?",
+          question:
+            "In a normal lookup from a laptop, which machine actually contacts the root, TLD, and authoritative servers?",
           options: [
             "The laptop's operating system, one server at a time",
             "The recursive resolver, on the client's behalf",
             "The authoritative nameserver, which forwards upward",
-            "The browser, using parallel HTTPS requests"
+            "The browser, using parallel HTTPS requests",
           ],
           correctIndex: 1,
           explanation:
-            "The client is a stub resolver: it sends exactly one recursive query and waits. The recursive resolver does all the iterative walking and returns a single finished answer."
+            "The client is a stub resolver: it sends exactly one recursive query and waits. The recursive resolver does all the iterative walking and returns a single finished answer.",
         },
         {
           id: "dns-cname-apex",
@@ -2369,75 +2544,79 @@ export const dnsLesson: LessonContent = {
             "CNAMEs are only valid for subdomains by registrar policy",
             "A CNAME cannot coexist with other records, and the apex already needs SOA and NS records",
             "Bare domains must always resolve to an IPv4 address",
-            "CNAMEs would break the TTL inherited from the TLD server"
+            "CNAMEs would break the TTL inherited from the TLD server",
           ],
           correctIndex: 1,
           explanation:
-            "A CNAME must be the only record on its name. The zone apex is required to carry SOA and NS records, so a CNAME there is illegal. Providers work around this with non-standard ALIAS/ANAME records that resolve server-side."
+            "A CNAME must be the only record on its name. The zone apex is required to carry SOA and NS records, so a CNAME there is illegal. Providers work around this with non-standard ALIAS/ANAME records that resolve server-side.",
         },
         {
           id: "dns-ttl-tradeoff",
-          question: "You are migrating a service to a new IP tomorrow. What should you do to the record's TTL?",
+          question:
+            "You are migrating a service to a new IP tomorrow. What should you do to the record's TTL?",
           options: [
             "Raise it to 24 hours so caches stay stable during the cutover",
             "Lower it to about 60 seconds a day before the migration",
             "Leave it alone; TTL only affects the authoritative server",
-            "Set it to 0 during the migration to disable caching entirely"
+            "Set it to 0 during the migration to disable caching entirely",
           ],
           correctIndex: 1,
           explanation:
-            "Lower it well ahead of time so the old long-TTL entries age out of everyone's caches before you cut over. Then the change itself is visible within about a minute, and you can raise the TTL again once you have confirmed the migration."
+            "Lower it well ahead of time so the old long-TTL entries age out of everyone's caches before you cut over. Then the change itself is visible within about a minute, and you can raise the TTL again once you have confirmed the migration.",
         },
         {
           id: "dns-propagation",
-          question: "Which statement about \"DNS propagation\" is accurate?",
+          question: 'Which statement about "DNS propagation" is accurate?',
           options: [
             "Authoritative servers push updates to all resolvers worldwide",
             "Root servers broadcast the change down through the TLD servers",
             "Nothing is pushed; you are waiting for existing cached entries to hit their TTL and expire",
-            "Registrars replicate changes to resolvers on a fixed 48-hour schedule"
+            "Registrars replicate changes to resolvers on a fixed 48-hour schedule",
           ],
           correctIndex: 2,
           explanation:
-            "There is no push mechanism in DNS. Your authoritative servers are updated instantly; everyone else keeps serving their cached copy until its TTL runs out and they re-query."
+            "There is no push mechanism in DNS. Your authoritative servers are updated instantly; everyone else keeps serving their cached copy until its TTL runs out and they re-query.",
         },
         {
           id: "dns-ptr",
-          question: "A mail server rejects your outgoing mail as likely spam, citing reverse DNS. Which record is missing or wrong?",
+          question:
+            "A mail server rejects your outgoing mail as likely spam, citing reverse DNS. Which record is missing or wrong?",
           options: ["MX", "TXT (SPF)", "PTR", "NS"],
           correctIndex: 2,
           explanation:
-            "Reverse DNS uses PTR records in the in-addr.arpa zone to map an IP back to a name. Receiving mail servers check that the sending IP has a PTR record that resolves back to the same IP. Note that only the owner of the IP block — your hosting provider — can set it."
+            "Reverse DNS uses PTR records in the in-addr.arpa zone to map an IP back to a name. Receiving mail servers check that the sending IP has a PTR record that resolves back to the same IP. Note that only the owner of the IP block — your hosting provider — can set it.",
         },
         {
           id: "dns-nxdomain",
-          question: "Which server is entitled to authoritatively state that a name does not exist (NXDOMAIN)?",
+          question:
+            "Which server is entitled to authoritatively state that a name does not exist (NXDOMAIN)?",
           options: [
             "Any recursive resolver that fails to find it",
             "The root server for that TLD's branch",
             "The authoritative nameserver for the zone",
-            "The registrar that sold the domain"
+            "The registrar that sold the domain",
           ],
           correctIndex: 2,
           explanation:
-            "Only the authoritative nameserver holds the complete zone, so only it can say with authority that a name is absent. How long resolvers remember that negative answer is controlled by the last field of the SOA record."
+            "Only the authoritative nameserver holds the complete zone, so only it can say with authority that a name is absent. How long resolvers remember that negative answer is controlled by the last field of the SOA record.",
         },
         {
           id: "dns-udp",
-          question: "DNS queries normally travel over UDP port 53. What is the main consequence of that choice?",
+          question:
+            "DNS queries normally travel over UDP port 53. What is the main consequence of that choice?",
           options: [
             "Lookups are fast with no handshake, but responses can be spoofed and abused for amplification",
             "Every lookup is encrypted end to end by default",
             "Answers are guaranteed to arrive in order, like TCP",
-            "Only one query can be in flight per client at a time"
+            "Only one query can be in flight per client at a time",
           ],
           correctIndex: 0,
           explanation:
-            "One packet out, one packet back, no connection setup — that is why DNS is fast. It also means an attacker can forge replies or use small spoofed queries to generate large ones aimed at a victim. DNSSEC addresses forgery; DoT and DoH add encryption."
-        }
-      ]
-    }
-  ]
+            "One packet out, one packet back, no connection setup — that is why DNS is fast. It also means an attacker can forge replies or use small spoofed queries to generate large ones aimed at a victim. DNSSEC addresses forgery; DoT and DoH add encryption.",
+        },
+      ],
+    },
+  ],
 };
 
 export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
@@ -2456,6 +2635,14 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson, dnsLesson],
-  }
+    lessons: [
+      ipLesson,
+      portsLesson,
+      subnetsCidrLesson,
+      osiModelLesson,
+      tcpUdpLesson,
+      httpHttpsLesson,
+      dnsLesson,
+    ],
+  },
 };

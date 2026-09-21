@@ -330,11 +330,18 @@ export function MiniTable({
   accent?: TableAccent;
 }) {
   const gridTemplateColumns = columnTemplate ?? `repeat(${cols.length}, minmax(0,1fr))`;
-  const accentClass = accent === "mint" ? "bg-mint/10 text-mint" : accent === "violet" ? "bg-violet/10 text-violet" : "bg-surface-2/60";
+  const accentClass =
+    accent === "mint"
+      ? "bg-mint/10 text-mint"
+      : accent === "violet"
+        ? "bg-violet/10 text-violet"
+        : "bg-surface-2/60";
   return (
     <div className="overflow-hidden rounded-lg border border-hairline bg-slate-50 dark:bg-transparent shadow-sm">
       {title ? (
-        <div className={`flex items-center justify-between border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${accentClass} ${accent ? "" : "text-muted-foreground"}`}>
+        <div
+          className={`flex items-center justify-between border-b border-hairline px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] ${accentClass} ${accent ? "" : "text-muted-foreground"}`}
+        >
           <span>{title}</span>
           <span>{states ? states.filter((s) => s !== "dropped").length : rows.length} rows</span>
         </div>
@@ -560,7 +567,13 @@ function DualPanel({
   return (
     <div className="space-y-3">
       <div className="grid gap-3 md:grid-cols-2">
-        <MiniTable title={left.name} cols={left.cols} rows={left.rows} states={step.leftStates} accent={left.accent} />
+        <MiniTable
+          title={left.name}
+          cols={left.cols}
+          rows={left.rows}
+          states={step.leftStates}
+          accent={left.accent}
+        />
         <MiniTable
           title={right.name}
           cols={right.cols}

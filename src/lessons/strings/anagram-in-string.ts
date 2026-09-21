@@ -25,7 +25,12 @@ function build({ s1, s2 }: Inputs): Step[] {
   const k = s1.length;
 
   if (k === 0 || k > n) {
-    steps.push({ line: 2, narration: "pattern longer than text (or empty) — return False.", array: arr, pointers: [] });
+    steps.push({
+      line: 2,
+      narration: "pattern longer than text (or empty) — return False.",
+      array: arr,
+      pointers: [],
+    });
     return steps;
   }
 
@@ -53,7 +58,9 @@ function build({ s1, s2 }: Inputs): Step[] {
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
   ];
-  const win = (left: number, right: number) => [{ from: left, to: right, tone: "mid" as const, label: "window" }];
+  const win = (left: number, right: number) => [
+    { from: left, to: right, tone: "mid" as const, label: "window" },
+  ];
 
   for (let i = 0; i < n; i++) {
     const cIn = chars[i];
@@ -113,7 +120,8 @@ export const anagramInString: LessonBuilder<Inputs> = {
   slug: "anagram-in-string",
   title: "Sliding Window — Permutation In String",
   subtitle: "Slide a fixed window of size |pattern| across text and compare character counts.",
-  problem: "Given two strings pattern and text, return True iff some permutation of pattern appears as a substring of text.",
+  problem:
+    "Given two strings pattern and text, return True iff some permutation of pattern appears as a substring of text.",
   spotIt: [
     "Asks 'does any permutation / anagram of P appear in T?'",
     "Constraint is an equal-multiset condition over a fixed-length window.",

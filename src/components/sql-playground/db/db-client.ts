@@ -445,7 +445,7 @@ async function bootPostgres(
       const firstRow = lines[1].split(",").map((v) => v.trim().replace(/^["']|["']$/g, ""));
 
       const cols = headers.map((h, i) => {
-        let val = firstRow[i] || "";
+        const val = firstRow[i] || "";
         let type = "text";
         if (/^-?\d+$/.test(val)) type = "integer";
         else if (/^-?\d*\.\d+$/.test(val)) type = "double precision";

@@ -70,7 +70,10 @@ function AnimationStage({ variant }: { variant: AnimationVariant }) {
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => { setPlaying(false); setStep(0); }}
+            onClick={() => {
+              setPlaying(false);
+              setStep(0);
+            }}
             className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
             aria-label="Restart"
           >

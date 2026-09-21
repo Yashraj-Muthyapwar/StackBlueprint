@@ -94,8 +94,10 @@ function build({ p }: Inputs): Step[] {
 export const kmp: LessonBuilder<Inputs> = {
   slug: "kmp",
   title: "Pattern Matching — KMP Failure Function",
-  subtitle: "Precompute the longest proper prefix == suffix at every position so search never re-checks matched chars.",
-  problem: "Build the KMP failure array lps for a pattern, where lps[i] is the length of the longest proper prefix of pattern[0..i] that is also a suffix.",
+  subtitle:
+    "Precompute the longest proper prefix == suffix at every position so search never re-checks matched chars.",
+  problem:
+    "Build the KMP failure array lps for a pattern, where lps[i] is the length of the longest proper prefix of pattern[0..i] that is also a suffix.",
   spotIt: [
     "Exact substring search where pattern reuse matters (many queries, one pattern).",
     "You need worst-case O(n+m) substring matching — no expected-time hashing.",

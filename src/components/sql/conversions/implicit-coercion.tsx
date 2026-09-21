@@ -20,12 +20,7 @@ export const implicitCoercionStages: Stage[] = [
     name: "The integer column supplies the context",
     blurb: "A quoted literal can resolve for a clear comparison",
     canvasMinHeight: 430,
-    sql: [
-      "SELECT id, name, price",
-      "FROM   products",
-      "WHERE  id = '3'",
-      "ORDER  BY id",
-    ],
+    sql: ["SELECT id, name, price", "FROM   products", "WHERE  id = '3'", "ORDER  BY id"],
     table: {
       name: "products",
       cols: ["id", "name", "price"],

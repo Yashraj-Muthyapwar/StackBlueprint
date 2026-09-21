@@ -1,11 +1,7 @@
 import type { Row, Stage } from "@/components/lesson/MultiStage";
 import { r, st } from "../animation-shared";
 
-const NAME_ROWS: Row[] = [
-  r(1, "Zane Novak"),
-  r(2, "Boris Alvarez"),
-  r(3, "Priya Doyle"),
-];
+const NAME_ROWS: Row[] = [r(1, "Zane Novak"), r(2, "Boris Alvarez"), r(3, "Priya Doyle")];
 
 const LEFT_RESULT_ROWS: Row[] = [
   r(1, "Zane Novak", "Zan", 10),

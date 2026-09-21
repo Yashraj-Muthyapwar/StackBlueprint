@@ -35,11 +35,20 @@ export function deleteProgress(challengeId: string): void {
   }
 }
 
-export function getChallengeDraft(challengeId: string, engine: Engine, dataset: DatasetId): string | null {
+export function getChallengeDraft(
+  challengeId: string,
+  engine: Engine,
+  dataset: DatasetId,
+): string | null {
   return localStorage.getItem(`${DRAFT_PREFIX}${challengeId}.${engine}.${dataset}`);
 }
 
-export function saveChallengeDraft(challengeId: string, engine: Engine, dataset: DatasetId, sql: string): void {
+export function saveChallengeDraft(
+  challengeId: string,
+  engine: Engine,
+  dataset: DatasetId,
+  sql: string,
+): void {
   localStorage.setItem(`${DRAFT_PREFIX}${challengeId}.${engine}.${dataset}`, sql);
 }
 

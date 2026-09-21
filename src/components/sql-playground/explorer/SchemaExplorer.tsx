@@ -13,7 +13,15 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export function SchemaExplorer({ schema, groups, datasetName, loading, onUseQuery, challengeMode = false, children }: Props) {
+export function SchemaExplorer({
+  schema,
+  groups,
+  datasetName,
+  loading,
+  onUseQuery,
+  challengeMode = false,
+  children,
+}: Props) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState("");
 

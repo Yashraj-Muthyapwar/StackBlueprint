@@ -19,7 +19,17 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, Server, Lock, ShieldCheck, Database, Check, AlertTriangle, XCircle, CheckCircle2 } from "lucide-react";
+import {
+  Globe,
+  Server,
+  Lock,
+  ShieldCheck,
+  Database,
+  Check,
+  AlertTriangle,
+  XCircle,
+  CheckCircle2,
+} from "lucide-react";
 
 /* ══════════════════════════════════════════════════════════════════════
    Shared shell
@@ -36,9 +46,7 @@ const Panel: React.FC<{
       <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue-600 dark:text-blue-400">
         {label}
       </span>
-      <h4 className="mt-0.5 text-base font-semibold text-slate-900 dark:text-slate-100">
-        {title}
-      </h4>
+      <h4 className="mt-0.5 text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h4>
     </div>
     <div className="p-5">{children}</div>
     {footnote && (
@@ -121,19 +129,34 @@ const SCENARIOS: Scenario[] = [
     verdict:
       "A plain read. Safe and idempotent, so any proxy, CDN, or client retry logic can repeat it without asking permission. The ETag in the response is what makes the next request cheap.",
     request: [
-      s("GET /api/articles/42 HTTP/1.1", "Method, path, version. The whole intent of the request lives on this line."),
-      h("Host: api.stackblueprint.com", "Required in HTTP/1.1. One IP can serve thousands of hostnames."),
+      s(
+        "GET /api/articles/42 HTTP/1.1",
+        "Method, path, version. The whole intent of the request lives on this line.",
+      ),
+      h(
+        "Host: api.stackblueprint.com",
+        "Required in HTTP/1.1. One IP can serve thousands of hostnames.",
+      ),
       h("Accept: application/json", "Content negotiation. The client states what it can parse."),
       h("Accept-Encoding: gzip, br", "Which compression the client understands."),
-      h("Authorization: Bearer eyJhbGciOi...", "HTTP does not authenticate users. This token does."),
+      h(
+        "Authorization: Bearer eyJhbGciOi...",
+        "HTTP does not authenticate users. This token does.",
+      ),
       blank,
     ],
     response: [
       s("HTTP/1.1 200 OK", "Status line. 2xx means the server did what was asked."),
       h("Content-Type: application/json", "How to interpret the bytes below."),
       h("Content-Length: 187", "Where the body ends, so the connection can be reused."),
-      h('ETag: "a3f19c"', "A version fingerprint. Send it back next time to skip the body entirely."),
-      h("Cache-Control: max-age=300", "Any cache may serve this for 5 minutes without asking again."),
+      h(
+        'ETag: "a3f19c"',
+        "A version fingerprint. Send it back next time to skip the body entirely.",
+      ),
+      h(
+        "Cache-Control: max-age=300",
+        "Any cache may serve this for 5 minutes without asking again.",
+      ),
       blank,
       b('{ "id": 42, "title": "Designing a VPC",'),
       b('  "author": "yash", "readMinutes": 9 }'),
@@ -147,10 +170,16 @@ const SCENARIOS: Scenario[] = [
     verdict:
       "POST is neither safe nor idempotent by default. The Idempotency-Key header is what makes a retry after a timeout harmless. Without it, a dropped response means the customer may be charged twice.",
     request: [
-      s("POST /api/payments HTTP/1.1", "POST creates or triggers. Repeating it is not automatically safe."),
+      s(
+        "POST /api/payments HTTP/1.1",
+        "POST creates or triggers. Repeating it is not automatically safe.",
+      ),
       h("Host: api.stackblueprint.com", "Target host."),
       h("Content-Type: application/json", "Describes the request body, not the response."),
-      h("Idempotency-Key: 7c1e-4b90-a2", "The client generates this once and reuses it on every retry."),
+      h(
+        "Idempotency-Key: 7c1e-4b90-a2",
+        "The client generates this once and reuses it on every retry.",
+      ),
       h("Content-Length: 54", "Body size in bytes."),
       blank,
       b('{ "amountCents": 4900, "currency": "USD",'),
@@ -174,7 +203,10 @@ const SCENARIOS: Scenario[] = [
     request: [
       s("GET /api/articles/42 HTTP/1.1", "Same request as before."),
       h("Host: api.stackblueprint.com", "Target host."),
-      h('If-None-Match: "a3f19c"', "The ETag the client already holds. The whole trick is this one header."),
+      h(
+        'If-None-Match: "a3f19c"',
+        "The ETag the client already holds. The whole trick is this one header.",
+      ),
       blank,
     ],
     response: [
@@ -269,16 +301,16 @@ export const HttpReqResViewer: React.FC = () => {
     t === 0
       ? "idle"
       : t < marks.reqEnd
-      ? "writing"
-      : t < marks.flyEnd
-      ? "sending"
-      : t < marks.thinkEnd
-      ? "processing"
-      : t < marks.backEnd
-      ? "returning"
-      : t < marks.resEnd
-      ? "reading"
-      : "done";
+        ? "writing"
+        : t < marks.flyEnd
+          ? "sending"
+          : t < marks.thinkEnd
+            ? "processing"
+            : t < marks.backEnd
+              ? "returning"
+              : t < marks.resEnd
+                ? "reading"
+                : "done";
 
   // Packet position across the wire, 0 = client, 1 = server.
   let pos = 0;
@@ -295,24 +327,23 @@ export const HttpReqResViewer: React.FC = () => {
     sc.status === "ok"
       ? "text-emerald-400"
       : sc.status === "cache"
-      ? "text-sky-400"
-      : sc.status === "warn"
-      ? "text-amber-400"
-      : "text-red-400";
+        ? "text-sky-400"
+        : sc.status === "warn"
+          ? "text-amber-400"
+          : "text-red-400";
 
   const renderLines = (lines: Line[], shown: number, isRes: boolean) => (
     <div className="min-h-[210px] rounded-lg bg-slate-950 p-4 font-mono text-[12px] leading-6">
       {lines.slice(0, shown).map((ln, i) => {
-        if (ln.tone === "blank")
-          return <div key={i} className="h-3" aria-hidden />;
+        if (ln.tone === "blank") return <div key={i} className="h-3" aria-hidden />;
         const color =
           ln.tone === "start"
             ? isRes
               ? statusColor
               : "text-blue-400"
             : ln.tone === "body"
-            ? "text-slate-400"
-            : "text-slate-300";
+              ? "text-slate-400"
+              : "text-slate-300";
         return (
           <div
             key={i}
@@ -365,14 +396,15 @@ export const HttpReqResViewer: React.FC = () => {
 
       {/* The wire */}
       <div className="relative mb-6 flex items-center gap-4 rounded-2xl border border-slate-200/60 bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] dark:border-slate-800/80 dark:bg-[#0B1120] overflow-hidden">
-        
         {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[url('https://play.tailwindcss.com/img/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10 dark:opacity-5" />
 
         <div className="relative z-10 w-28 shrink-0 flex flex-col items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-slate-700 dark:bg-slate-900/80">
           <Globe className="h-6 w-6 text-blue-500" />
           <div className="text-center">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Client</div>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+              Client
+            </div>
             <div className="text-[9px] font-medium text-slate-500">browser</div>
           </div>
         </div>
@@ -399,10 +431,16 @@ export const HttpReqResViewer: React.FC = () => {
               : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/80"
           }`}
         >
-          <Server className={`h-6 w-6 transition-colors duration-500 ${phase === "processing" ? "text-amber-500" : "text-emerald-500"}`} />
+          <Server
+            className={`h-6 w-6 transition-colors duration-500 ${phase === "processing" ? "text-amber-500" : "text-emerald-500"}`}
+          />
           <div className="text-center">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">Server</div>
-            <div className={`text-[9px] font-medium transition-colors duration-500 ${phase === "processing" ? "text-amber-600 dark:text-amber-400" : "text-slate-500"}`}>
+            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+              Server
+            </div>
+            <div
+              className={`text-[9px] font-medium transition-colors duration-500 ${phase === "processing" ? "text-amber-600 dark:text-amber-400" : "text-slate-500"}`}
+            >
               {phase === "processing" ? `${sc.serverMs} ms` : "api"}
             </div>
           </div>
@@ -413,17 +451,25 @@ export const HttpReqResViewer: React.FC = () => {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col">
           <div className="mb-2 flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded bg-blue-100 text-[10px] text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">▶</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Request</span>
+            <span className="flex h-5 w-5 items-center justify-center rounded bg-blue-100 text-[10px] text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">
+              ▶
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+              Request
+            </span>
           </div>
           <div className="flex-1 rounded-xl border border-slate-200 bg-slate-50/50 p-1 shadow-sm dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-sm overflow-hidden">
-             {renderLines(sc.request, reqShown, false)}
+            {renderLines(sc.request, reqShown, false)}
           </div>
         </div>
         <div className="flex flex-col">
           <div className="mb-2 flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-100 text-[10px] text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">◀</span>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Response</span>
+            <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-100 text-[10px] text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
+              ◀
+            </span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              Response
+            </span>
           </div>
           <div className="flex-1 rounded-xl border border-slate-200 bg-slate-50/50 p-1 shadow-sm dark:border-slate-800 dark:bg-slate-900/50 backdrop-blur-sm overflow-hidden">
             {renderLines(sc.response, resShown, true)}
@@ -433,18 +479,36 @@ export const HttpReqResViewer: React.FC = () => {
 
       <div className="mt-4 flex items-center gap-3 rounded-lg border-l-4 border-blue-500 bg-blue-50 px-5 py-4 shadow-sm dark:bg-blue-950/30">
         <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-           {hint ?? (phase === "done" ? sc.verdict : "Hover a line to see what it does.")}
+          {hint ?? (phase === "done" ? sc.verdict : "Hover a line to see what it does.")}
         </p>
       </div>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
-        <Btn primary onClick={() => { setT(0); setRunning(true); }}>
+        <Btn
+          primary
+          onClick={() => {
+            setT(0);
+            setRunning(true);
+          }}
+        >
           {running ? "Sending…" : "Send request"}
         </Btn>
-        <Btn onClick={() => { setRunning(false); setT(marks.resEnd); }}>
+        <Btn
+          onClick={() => {
+            setRunning(false);
+            setT(marks.resEnd);
+          }}
+        >
           Skip to result
         </Btn>
-        <Btn onClick={() => { setRunning(false); setT(0); }}>Reset</Btn>
+        <Btn
+          onClick={() => {
+            setRunning(false);
+            setT(0);
+          }}
+        >
+          Reset
+        </Btn>
       </div>
     </Panel>
   );
@@ -465,28 +529,137 @@ type HsStep = {
 };
 
 const TLS13: HsStep[] = [
-  { dir: "c2s", layer: "tcp", rtt: 1, title: "SYN", detail: "TCP asks to open a connection. Nothing about security has happened yet." },
-  { dir: "s2c", layer: "tcp", rtt: 1, title: "SYN-ACK", detail: "The server agrees and picks its own sequence number." },
-  { dir: "c2s", layer: "tcp", rtt: 1, title: "ACK", detail: "TCP is established. One full round trip is already spent." },
-  { dir: "c2s", layer: "tls", rtt: 2, title: "ClientHello + key share", detail: "Supported TLS versions, cipher suites, SNI (the hostname, in plaintext), and a guess at the key exchange parameters. That guess is what saves a round trip in TLS 1.3." },
-  { dir: "s2c", layer: "tls", rtt: 2, title: "ServerHello + key share", detail: "The server picks a cipher suite and returns its own key share. Both sides can now derive the same secret." },
-  { dir: "s2c", layer: "tls", rtt: 2, encrypted: true, title: "Certificate + CertificateVerify", detail: "The certificate chain proves the server is allowed to use this hostname. CertificateVerify proves it holds the matching private key. In TLS 1.3 this is already encrypted." },
-  { dir: "s2c", layer: "tls", rtt: 2, encrypted: true, title: "Finished", detail: "A MAC over the whole handshake, so a tampered handshake fails here." },
-  { dir: "c2s", layer: "tls", rtt: 2, encrypted: true, title: "Finished", detail: "The client confirms it derived the same keys." },
-  { dir: "c2s", layer: "app", rtt: 2, encrypted: true, title: "GET /api/articles/42", detail: "Only now does any HTTP travel, and every byte of it is encrypted: method, path, headers, cookies, body." },
+  {
+    dir: "c2s",
+    layer: "tcp",
+    rtt: 1,
+    title: "SYN",
+    detail: "TCP asks to open a connection. Nothing about security has happened yet.",
+  },
+  {
+    dir: "s2c",
+    layer: "tcp",
+    rtt: 1,
+    title: "SYN-ACK",
+    detail: "The server agrees and picks its own sequence number.",
+  },
+  {
+    dir: "c2s",
+    layer: "tcp",
+    rtt: 1,
+    title: "ACK",
+    detail: "TCP is established. One full round trip is already spent.",
+  },
+  {
+    dir: "c2s",
+    layer: "tls",
+    rtt: 2,
+    title: "ClientHello + key share",
+    detail:
+      "Supported TLS versions, cipher suites, SNI (the hostname, in plaintext), and a guess at the key exchange parameters. That guess is what saves a round trip in TLS 1.3.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 2,
+    title: "ServerHello + key share",
+    detail:
+      "The server picks a cipher suite and returns its own key share. Both sides can now derive the same secret.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 2,
+    encrypted: true,
+    title: "Certificate + CertificateVerify",
+    detail:
+      "The certificate chain proves the server is allowed to use this hostname. CertificateVerify proves it holds the matching private key. In TLS 1.3 this is already encrypted.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 2,
+    encrypted: true,
+    title: "Finished",
+    detail: "A MAC over the whole handshake, so a tampered handshake fails here.",
+  },
+  {
+    dir: "c2s",
+    layer: "tls",
+    rtt: 2,
+    encrypted: true,
+    title: "Finished",
+    detail: "The client confirms it derived the same keys.",
+  },
+  {
+    dir: "c2s",
+    layer: "app",
+    rtt: 2,
+    encrypted: true,
+    title: "GET /api/articles/42",
+    detail:
+      "Only now does any HTTP travel, and every byte of it is encrypted: method, path, headers, cookies, body.",
+  },
 ];
 
 const TLS12: HsStep[] = [
   { dir: "c2s", layer: "tcp", rtt: 1, title: "SYN", detail: "TCP connection request." },
   { dir: "s2c", layer: "tcp", rtt: 1, title: "SYN-ACK", detail: "Server agrees." },
   { dir: "c2s", layer: "tcp", rtt: 1, title: "ACK", detail: "TCP established." },
-  { dir: "c2s", layer: "tls", rtt: 2, title: "ClientHello", detail: "Versions, cipher suites, random. No key share yet, which is why 1.2 needs an extra trip." },
-  { dir: "s2c", layer: "tls", rtt: 2, title: "ServerHello + Certificate", detail: "Chosen cipher, certificate chain, server random. All in plaintext in TLS 1.2." },
-  { dir: "s2c", layer: "tls", rtt: 2, title: "ServerHelloDone", detail: "The server has said everything it plans to say for now." },
-  { dir: "c2s", layer: "tls", rtt: 3, title: "ClientKeyExchange", detail: "The client sends the material needed to derive the shared secret. This is the extra round trip 1.3 removed." },
-  { dir: "c2s", layer: "tls", rtt: 3, encrypted: true, title: "ChangeCipherSpec + Finished", detail: "Everything after this point is encrypted." },
-  { dir: "s2c", layer: "tls", rtt: 3, encrypted: true, title: "ChangeCipherSpec + Finished", detail: "The server switches too and confirms." },
-  { dir: "c2s", layer: "app", rtt: 3, encrypted: true, title: "GET /api/articles/42", detail: "The first HTTP byte, three round trips in." },
+  {
+    dir: "c2s",
+    layer: "tls",
+    rtt: 2,
+    title: "ClientHello",
+    detail:
+      "Versions, cipher suites, random. No key share yet, which is why 1.2 needs an extra trip.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 2,
+    title: "ServerHello + Certificate",
+    detail: "Chosen cipher, certificate chain, server random. All in plaintext in TLS 1.2.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 2,
+    title: "ServerHelloDone",
+    detail: "The server has said everything it plans to say for now.",
+  },
+  {
+    dir: "c2s",
+    layer: "tls",
+    rtt: 3,
+    title: "ClientKeyExchange",
+    detail:
+      "The client sends the material needed to derive the shared secret. This is the extra round trip 1.3 removed.",
+  },
+  {
+    dir: "c2s",
+    layer: "tls",
+    rtt: 3,
+    encrypted: true,
+    title: "ChangeCipherSpec + Finished",
+    detail: "Everything after this point is encrypted.",
+  },
+  {
+    dir: "s2c",
+    layer: "tls",
+    rtt: 3,
+    encrypted: true,
+    title: "ChangeCipherSpec + Finished",
+    detail: "The server switches too and confirms.",
+  },
+  {
+    dir: "c2s",
+    layer: "app",
+    rtt: 3,
+    encrypted: true,
+    title: "GET /api/articles/42",
+    detail: "The first HTTP byte, three round trips in.",
+  },
 ];
 
 export const TlsHandshakeDiagram: React.FC = () => {
@@ -550,13 +723,12 @@ export const TlsHandshakeDiagram: React.FC = () => {
               : "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-800/50"
           }`}
         >
-          {secured ? <Lock size={12}/> : <Lock size={12} className="opacity-50"/>}
+          {secured ? <Lock size={12} /> : <Lock size={12} className="opacity-50" />}
           {secured ? "encrypted" : "plaintext"}
         </span>
       </div>
 
       <div className="relative w-full rounded-2xl border border-slate-200/60 bg-white shadow-[0_2px_20px_-8px_rgba(0,0,0,0.1)] dark:border-slate-800/80 dark:bg-[#0B1120] overflow-hidden font-sans pb-12">
-        
         {/* Subtle grid background for modern feel */}
         <div className="absolute inset-0 bg-[url('https://play.tailwindcss.com/img/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20 dark:opacity-10" />
 
@@ -566,7 +738,9 @@ export const TlsHandshakeDiagram: React.FC = () => {
             <Globe size={26} strokeWidth={1.5} />
             <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-[3px] ring-white dark:ring-[#0B1120]" />
           </div>
-          <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Client</span>
+          <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+            Client
+          </span>
         </div>
 
         <div className="absolute top-8 left-[80%] -translate-x-1/2 flex flex-col items-center">
@@ -574,7 +748,9 @@ export const TlsHandshakeDiagram: React.FC = () => {
             <Server size={26} strokeWidth={1.5} />
             <div className="absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full bg-emerald-500 ring-[3px] ring-white dark:ring-[#0B1120]" />
           </div>
-          <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">Server</span>
+          <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+            Server
+          </span>
         </div>
 
         {/* Vertical Lifelines */}
@@ -584,72 +760,91 @@ export const TlsHandshakeDiagram: React.FC = () => {
         {/* Dynamic Sequence Steps */}
         <div className="pt-[150px] space-y-7">
           <AnimatePresence>
-          {steps.map((st, n) => {
-            const shown = n <= i;
-            if (!shown) return <div key={n} className="h-7" />; // placeholder
-            
-            const isC2S = st.dir === "c2s";
-            
-            let color = "bg-slate-400 shadow-slate-400/50";
-            let textColor = "text-slate-700 dark:text-slate-300";
-            
-            if (st.layer === "tls") {
-              if (st.encrypted) {
-                color = "bg-emerald-500 shadow-emerald-500/50";
-                textColor = "text-emerald-700 dark:text-emerald-400";
-              } else {
-                color = "bg-violet-500 shadow-violet-500/50";
-                textColor = "text-violet-700 dark:text-violet-400";
+            {steps.map((st, n) => {
+              const shown = n <= i;
+              if (!shown) return <div key={n} className="h-7" />; // placeholder
+
+              const isC2S = st.dir === "c2s";
+
+              let color = "bg-slate-400 shadow-slate-400/50";
+              let textColor = "text-slate-700 dark:text-slate-300";
+
+              if (st.layer === "tls") {
+                if (st.encrypted) {
+                  color = "bg-emerald-500 shadow-emerald-500/50";
+                  textColor = "text-emerald-700 dark:text-emerald-400";
+                } else {
+                  color = "bg-violet-500 shadow-violet-500/50";
+                  textColor = "text-violet-700 dark:text-violet-400";
+                }
               }
-            }
-            if (st.layer === "app") {
-              color = "bg-rose-500 shadow-rose-500/50";
-              textColor = "text-rose-700 dark:text-rose-400";
-            }
-            
-            return (
-              <div key={n} className="relative h-7 w-full z-10">
-                <div className="absolute left-[20%] right-[20%] h-full flex items-center">
-                  
-                  {/* Subtle track background */}
-                  <div className="absolute inset-0 top-1/2 -translate-y-1/2 h-[1px] bg-slate-100 dark:bg-slate-800/60" />
-                  
-                  {/* The moving packet pill */}
-                  <motion.div 
-                    initial={{ left: isC2S ? "0%" : "100%", width: "0%" }} 
-                    animate={{ left: isC2S ? "0%" : "0%", width: "100%" }} 
-                    transition={{ duration: 0.6, ease: "easeInOut" }}
-                    className={`absolute top-1/2 -translate-y-1/2 h-[3px] rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)] ${color}`}
-                  />
-                  
-                  {/* Floating badge for the label */}
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.8, y: 0 }} 
-                    animate={{ opacity: 1, scale: 1, y: 0 }} 
-                    transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
-                    className="absolute top-1/2 -translate-y-1/2 w-full flex justify-center pointer-events-none"
-                  >
-                    <div className={`flex items-center gap-1.5 px-3 py-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-full shadow-sm border border-slate-200/60 dark:border-slate-700/60 text-[10px] font-bold tracking-wide ${textColor}`}>
-                      {st.encrypted && <ShieldCheck size={14} strokeWidth={2.5} />}
-                      {st.title}
-                    </div>
-                  </motion.div>
+              if (st.layer === "app") {
+                color = "bg-rose-500 shadow-rose-500/50";
+                textColor = "text-rose-700 dark:text-rose-400";
+              }
+
+              return (
+                <div key={n} className="relative h-7 w-full z-10">
+                  <div className="absolute left-[20%] right-[20%] h-full flex items-center">
+                    {/* Subtle track background */}
+                    <div className="absolute inset-0 top-1/2 -translate-y-1/2 h-[1px] bg-slate-100 dark:bg-slate-800/60" />
+
+                    {/* The moving packet pill */}
+                    <motion.div
+                      initial={{ left: isC2S ? "0%" : "100%", width: "0%" }}
+                      animate={{ left: isC2S ? "0%" : "0%", width: "100%" }}
+                      transition={{ duration: 0.6, ease: "easeInOut" }}
+                      className={`absolute top-1/2 -translate-y-1/2 h-[3px] rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)] ${color}`}
+                    />
+
+                    {/* Floating badge for the label */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, y: 0 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
+                      className="absolute top-1/2 -translate-y-1/2 w-full flex justify-center pointer-events-none"
+                    >
+                      <div
+                        className={`flex items-center gap-1.5 px-3 py-1 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-full shadow-sm border border-slate-200/60 dark:border-slate-700/60 text-[10px] font-bold tracking-wide ${textColor}`}
+                      >
+                        {st.encrypted && <ShieldCheck size={14} strokeWidth={2.5} />}
+                        {st.title}
+                      </div>
+                    </motion.div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </AnimatePresence>
         </div>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Btn primary onClick={() => { setI(-1); setPlaying(true); }}>
+        <Btn
+          primary
+          onClick={() => {
+            setI(-1);
+            setPlaying(true);
+          }}
+        >
           {playing ? "Playing…" : "Play handshake"}
         </Btn>
-        <Btn onClick={() => { setPlaying(false); setI((p) => Math.max(-1, p - 1)); }} disabled={i < 0}>
+        <Btn
+          onClick={() => {
+            setPlaying(false);
+            setI((p) => Math.max(-1, p - 1));
+          }}
+          disabled={i < 0}
+        >
           Back
         </Btn>
-        <Btn onClick={() => { setPlaying(false); setI((p) => Math.min(steps.length - 1, p + 1)); }} disabled={i >= steps.length - 1}>
+        <Btn
+          onClick={() => {
+            setPlaying(false);
+            setI((p) => Math.min(steps.length - 1, p + 1));
+          }}
+          disabled={i >= steps.length - 1}
+        >
           Next
         </Btn>
         <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
@@ -659,9 +854,14 @@ export const TlsHandshakeDiagram: React.FC = () => {
 
       <div className="mt-4 min-h-[72px] rounded-lg border-l-4 border-violet-500 bg-violet-50 px-5 py-4 shadow-sm dark:bg-violet-950/30">
         {active ? (
-          <motion.div key={active.title} initial={{opacity: 0, x: -10}} animate={{opacity:1, x:0}}>
+          <motion.div
+            key={active.title}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+          >
             <p className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              {active.layer.toUpperCase()}: {active.title} {active.encrypted && <ShieldCheck size={14} className="text-emerald-600"/>}
+              {active.layer.toUpperCase()}: {active.title}{" "}
+              {active.encrypted && <ShieldCheck size={14} className="text-emerald-600" />}
             </p>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               {active.detail}
@@ -669,14 +869,14 @@ export const TlsHandshakeDiagram: React.FC = () => {
           </motion.div>
         ) : (
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-            Press play. Notice how much happens before a single byte of HTTP
-            moves, and why connection reuse matters so much.
+            Press play. Notice how much happens before a single byte of HTTP moves, and why
+            connection reuse matters so much.
           </p>
         )}
       </div>
     </Panel>
   );
-}
+};
 
 /* ══════════════════════════════════════════════════════════════════════
    3. HTTP VERSIONS
@@ -743,9 +943,24 @@ function buildStreams(version: "1.1" | "2" | "3", loss: boolean): Stream[] {
 }
 
 const VERSION_META = {
-  "1.1": { label: "HTTP/1.1", transport: "TCP", color: "bg-slate-400", note: "One response at a time per connection. Concurrency means opening more sockets." },
-  "2": { label: "HTTP/2", transport: "TCP", color: "bg-blue-500", note: "All streams multiplexed on one TCP connection. Solves HTTP head of line blocking." },
-  "3": { label: "HTTP/3", transport: "QUIC over UDP", color: "bg-violet-500", note: "Independent streams. A lost packet stalls only the stream it belonged to." },
+  "1.1": {
+    label: "HTTP/1.1",
+    transport: "TCP",
+    color: "bg-slate-400",
+    note: "One response at a time per connection. Concurrency means opening more sockets.",
+  },
+  "2": {
+    label: "HTTP/2",
+    transport: "TCP",
+    color: "bg-blue-500",
+    note: "All streams multiplexed on one TCP connection. Solves HTTP head of line blocking.",
+  },
+  "3": {
+    label: "HTTP/3",
+    transport: "QUIC over UDP",
+    color: "bg-violet-500",
+    note: "Independent streams. A lost packet stalls only the stream it belonged to.",
+  },
 } as const;
 
 const TICK_MS = 170;
@@ -761,15 +976,12 @@ export const HttpVersionsDiagram: React.FC = () => {
         v,
         streams: buildStreams(v, loss),
       })),
-    [loss]
+    [loss],
   );
 
   const total = useMemo(
-    () =>
-      Math.max(
-        ...lanes.flatMap((l) => l.streams.flatMap((s) => s.segs.map((g) => g.end)))
-      ),
-    [lanes]
+    () => Math.max(...lanes.flatMap((l) => l.streams.flatMap((s) => s.segs.map((g) => g.end)))),
+    [lanes],
   );
 
   useEffect(() => {
@@ -795,9 +1007,7 @@ export const HttpVersionsDiagram: React.FC = () => {
   // HTTP/2 and HTTP/3 both end at the same tick, but H2 stalls all six streams
   // while H3 stalls exactly one. The summary has to say that out loud.
   const summarise = (streams: Stream[]) => {
-    const finishes = streams
-      .map((s) => s.segs[s.segs.length - 1].end)
-      .sort((a, b) => a - b);
+    const finishes = streams.map((s) => s.segs[s.segs.length - 1].end).sort((a, b) => a - b);
     const first = finishes[0];
     const last = finishes[finishes.length - 1];
     const nFirst = finishes.filter((f) => f === first).length;
@@ -817,7 +1027,13 @@ export const HttpVersionsDiagram: React.FC = () => {
       footnote="Turn on packet loss and watch the difference. HTTP/2 fixed blocking at the HTTP layer but still rides one TCP connection, so a single lost segment stalls every stream. QUIC gives each stream its own delivery guarantee."
     >
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Btn primary onClick={() => { setClock(0); setPlaying(true); }}>
+        <Btn
+          primary
+          onClick={() => {
+            setClock(0);
+            setPlaying(true);
+          }}
+        >
           {playing ? "Loading…" : "Run the load"}
         </Btn>
         <label className="flex cursor-pointer items-center gap-2 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-600 dark:border-slate-600 dark:text-slate-300">
@@ -840,10 +1056,7 @@ export const HttpVersionsDiagram: React.FC = () => {
           const summary = summarise(streams);
           const done = clock >= summary.last;
           return (
-            <div
-              key={v}
-              className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
-            >
+            <div key={v} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700">
               <div className="mb-2 flex flex-wrap items-baseline justify-between gap-2">
                 <div className="flex items-baseline gap-2">
                   <span className="text-sm font-semibold text-slate-900 dark:text-slate-100">
@@ -855,9 +1068,7 @@ export const HttpVersionsDiagram: React.FC = () => {
                 </div>
                 <span
                   className={`font-mono text-xs transition-colors duration-300 ${
-                    done
-                      ? "font-semibold text-emerald-600 dark:text-emerald-400"
-                      : "text-slate-400"
+                    done ? "font-semibold text-emerald-600 dark:text-emerald-400" : "text-slate-400"
                   }`}
                 >
                   {summary.text}
@@ -904,9 +1115,7 @@ export const HttpVersionsDiagram: React.FC = () => {
                 </div>
               </div>
 
-              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                {meta.note}
-              </p>
+              <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">{meta.note}</p>
             </div>
           );
         })}
@@ -947,7 +1156,7 @@ const CACHE_CASES: CacheCase[] = [
     id: "cold",
     label: "Cold miss",
     reqLine: "GET /api/articles/42",
-    resLine: "200 OK  +  full body  +  ETag \"a3f19c\"",
+    resLine: '200 OK  +  full body  +  ETag "a3f19c"',
     hitsNetwork: true,
     hitsOrigin: true,
     bytes: 18400,
@@ -959,7 +1168,7 @@ const CACHE_CASES: CacheCase[] = [
   {
     id: "revalidate",
     label: "Stale, revalidate",
-    reqLine: "GET /api/articles/42  +  If-None-Match: \"a3f19c\"",
+    reqLine: 'GET /api/articles/42  +  If-None-Match: "a3f19c"',
     resLine: "304 Not Modified  +  no body",
     hitsNetwork: true,
     hitsOrigin: true,
@@ -1000,17 +1209,7 @@ export const HttpCacheDiagram: React.FC = () => {
 
   const p = Math.min(t / DUR, 1);
   // Hop reveal: client -> cache -> (network) -> origin -> back
-  const stage = c.hitsNetwork
-    ? p < 0.2
-      ? 0
-      : p < 0.45
-      ? 1
-      : p < 0.7
-      ? 2
-      : 3
-    : p < 0.35
-    ? 0
-    : 3;
+  const stage = c.hitsNetwork ? (p < 0.2 ? 0 : p < 0.45 ? 1 : p < 0.7 ? 2 : 3) : p < 0.35 ? 0 : 3;
 
   const nodes = c.hitsNetwork
     ? ["Client", "Cache / CDN", "Origin server"]
@@ -1040,40 +1239,47 @@ export const HttpCacheDiagram: React.FC = () => {
 
       {/* Path */}
       <div className="relative rounded-2xl border border-slate-200/60 bg-white px-6 py-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05)] dark:border-slate-800/80 dark:bg-[#0B1120] overflow-hidden">
-        
         {/* Subtle grid background */}
         <div className="absolute inset-0 bg-[url('https://play.tailwindcss.com/img/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10 dark:opacity-5" />
-        
+
         <div className="relative z-10 flex items-center justify-between gap-4">
           {nodes.map((n, i) => {
             const isClient = i === 0;
             const isCache = i === 1;
             const isOrigin = i === 2;
             const active = stage >= i;
-            
+
             return (
               <React.Fragment key={n}>
                 <div
                   className={`relative flex flex-col items-center justify-center flex-1 rounded-xl border p-4 transition-all duration-500 shadow-sm ${
                     active
-                      ? isOrigin ? "border-amber-400 bg-amber-50 dark:border-amber-500/50 dark:bg-amber-950/40" 
-                        : isCache ? "border-emerald-400 bg-emerald-50 dark:border-emerald-500/50 dark:bg-emerald-950/40"
-                        : "border-blue-400 bg-blue-50 dark:border-blue-500/50 dark:bg-blue-950/40"
+                      ? isOrigin
+                        ? "border-amber-400 bg-amber-50 dark:border-amber-500/50 dark:bg-amber-950/40"
+                        : isCache
+                          ? "border-emerald-400 bg-emerald-50 dark:border-emerald-500/50 dark:bg-emerald-950/40"
+                          : "border-blue-400 bg-blue-50 dark:border-blue-500/50 dark:bg-blue-950/40"
                       : "border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60"
                   }`}
                 >
-                  <div className={`mb-2 p-2 rounded-full ${
-                    active 
-                      ? isOrigin ? "bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400"
-                        : isCache ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400"
-                        : "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400"
-                      : "bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600"
-                  } transition-colors duration-500`}>
+                  <div
+                    className={`mb-2 p-2 rounded-full ${
+                      active
+                        ? isOrigin
+                          ? "bg-amber-100 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400"
+                          : isCache
+                            ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400"
+                            : "bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400"
+                        : "bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600"
+                    } transition-colors duration-500`}
+                  >
                     {isClient && <Globe size={20} />}
                     {isCache && <Database size={20} />}
                     {isOrigin && <Server size={20} />}
                   </div>
-                  <div className={`text-[11px] font-bold uppercase tracking-wider ${active ? "text-slate-800 dark:text-slate-100" : "text-slate-400 dark:text-slate-500"}`}>
+                  <div
+                    className={`text-[11px] font-bold uppercase tracking-wider ${active ? "text-slate-800 dark:text-slate-100" : "text-slate-400 dark:text-slate-500"}`}
+                  >
                     {n}
                   </div>
                   {isCache && !c.hitsOrigin && stage >= 1 && (
@@ -1087,9 +1293,13 @@ export const HttpCacheDiagram: React.FC = () => {
                     <div className="absolute inset-0 border-b-2 border-dashed border-slate-300 dark:border-slate-700" />
                     <span
                       className={`absolute top-1/2 -translate-y-1/2 h-2.5 w-4 rounded-full transition-all duration-500 motion-reduce:transition-none shadow-[0_0_8px_rgba(0,0,0,0.3)] ${
-                        i === 0 ? "bg-blue-500 shadow-blue-500/50" : "bg-emerald-500 shadow-emerald-500/50"
+                        i === 0
+                          ? "bg-blue-500 shadow-blue-500/50"
+                          : "bg-emerald-500 shadow-emerald-500/50"
                       } ${
-                        stage > i ? "left-[calc(100%-16px)] opacity-100 scale-100" : "left-0 opacity-0 scale-75"
+                        stage > i
+                          ? "left-[calc(100%-16px)] opacity-100 scale-100"
+                          : "left-0 opacity-0 scale-75"
                       }`}
                     />
                   </div>
@@ -1100,11 +1310,15 @@ export const HttpCacheDiagram: React.FC = () => {
         </div>
 
         <div className="relative z-10 mt-8 rounded-xl bg-slate-950 p-4 font-mono text-[11px] leading-relaxed text-slate-300 shadow-inner">
-          <div className={`flex gap-3 transition-opacity duration-300 ${p > 0.1 ? "opacity-100" : "opacity-0"}`}>
+          <div
+            className={`flex gap-3 transition-opacity duration-300 ${p > 0.1 ? "opacity-100" : "opacity-0"}`}
+          >
             <span className="text-blue-400 font-bold shrink-0">→</span>
             <span className="text-slate-300">{c.reqLine}</span>
           </div>
-          <div className={`flex gap-3 transition-opacity duration-300 mt-2 ${p > 0.75 ? "opacity-100" : "opacity-0"}`}>
+          <div
+            className={`flex gap-3 transition-opacity duration-300 mt-2 ${p > 0.75 ? "opacity-100" : "opacity-0"}`}
+          >
             <span className="text-emerald-400 font-bold shrink-0">←</span>
             <span className="text-slate-300">{c.resLine}</span>
           </div>
@@ -1119,7 +1333,9 @@ export const HttpCacheDiagram: React.FC = () => {
         ].map((bar) => (
           <div key={bar.k}>
             <div className="mb-2 flex items-baseline justify-between text-xs">
-              <span className="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">{bar.k}</span>
+              <span className="font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-[10px]">
+                {bar.k}
+              </span>
               <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
                 {bar.v.toLocaleString("en-US")} {bar.unit}
               </span>
@@ -1128,9 +1344,11 @@ export const HttpCacheDiagram: React.FC = () => {
               <div
                 style={{ width: `${(bar.v / bar.max) * 100 * (p > 0.75 ? 1 : 0)}%` }}
                 className={`h-full rounded-full transition-all duration-1000 ease-out motion-reduce:transition-none shadow-sm bg-gradient-to-r ${
-                  c.tone === "bg-red-500" ? "from-red-600 to-red-400" :
-                  c.tone === "bg-amber-500" ? "from-amber-600 to-amber-400" :
-                  "from-emerald-600 to-emerald-400"
+                  c.tone === "bg-red-500"
+                    ? "from-red-600 to-red-400"
+                    : c.tone === "bg-amber-500"
+                      ? "from-amber-600 to-amber-400"
+                      : "from-emerald-600 to-emerald-400"
                 }`}
               />
             </div>

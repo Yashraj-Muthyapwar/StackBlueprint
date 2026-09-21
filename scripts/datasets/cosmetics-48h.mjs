@@ -46,7 +46,10 @@ export async function buildCosmetics48h({ sourceFile } = {}) {
   const bytes = await readFile(sourceFile);
   const parsed = parseCsv(bytes.toString("utf8"));
   const header = parsed[0] ?? [];
-  if (header.length !== EXPECTED_COLUMNS.length || header.some((value, i) => value !== EXPECTED_COLUMNS[i])) {
+  if (
+    header.length !== EXPECTED_COLUMNS.length ||
+    header.some((value, i) => value !== EXPECTED_COLUMNS[i])
+  ) {
     throw new Error(`cosmetics_48h: ${SOURCE_NAME} has unexpected columns`);
   }
 
@@ -56,7 +59,9 @@ export async function buildCosmetics48h({ sourceFile } = {}) {
   const earliest = timestamps.reduce((min, value) => (value < min ? value : min));
   const latest = timestamps.reduce((max, value) => (value > max ? value : max));
   if (earliest !== START || latest !== END) {
-    throw new Error(`cosmetics_48h: expected ${START} through ${END}; found ${earliest} through ${latest}`);
+    throw new Error(
+      `cosmetics_48h: expected ${START} through ${END}; found ${earliest} through ${latest}`,
+    );
   }
 
   const stats = await writeRawCsv("cosmetics_48h", SOURCE_NAME, bytes, rows.length);

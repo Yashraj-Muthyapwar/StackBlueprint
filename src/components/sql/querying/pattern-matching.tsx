@@ -28,7 +28,11 @@ export const patternMatchingStages: Stage[] = [
           highlightCols: [1],
           side: sidePanel(
             "Prefix search",
-            ["Known start: Volt", "An ordered name index can seek near Volt", "Then it reads the matching range"],
+            [
+              "Known start: Volt",
+              "An ordered name index can seek near Volt",
+              "Then it reads the matching range",
+            ],
             "mint",
           ),
         },
@@ -50,7 +54,11 @@ export const patternMatchingStages: Stage[] = [
           noteTone: "amber",
           side: sidePanel(
             "Contains search",
-            ["Unknown start: %Road%", "An ordinary B-tree cannot seek to Road", "The engine may need to inspect many names"],
+            [
+              "Unknown start: %Road%",
+              "An ordinary B-tree cannot seek to Road",
+              "The engine may need to inspect many names",
+            ],
             "amber",
           ),
         },
@@ -104,7 +112,11 @@ export const patternMatchingStages: Stage[] = [
       ),
       st(
         [2, 3],
-        pass((row) => String(row.cells[1]).toLowerCase().includes("road") && !String(row.cells[1]).includes("Helmet")),
+        pass(
+          (row) =>
+            String(row.cells[1]).toLowerCase().includes("road") &&
+            !String(row.cells[1]).includes("Helmet"),
+        ),
         "NOT LIKE removes the helmet. The two Meridian Road bikes are the final result.",
         { highlightCols: [1, 2], noteTone: "mint" },
       ),

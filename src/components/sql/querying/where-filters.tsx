@@ -98,13 +98,21 @@ export const boolStages: Stage[] = [
       ),
       st(
         [3],
-        pass((r) => (r.cells[2] === "Road Bikes" && Number(r.cells[4]) >= 90) || (r.cells[2] !== "Road Bikes" && Number(r.cells[3]) >= 4000)),
+        pass(
+          (r) =>
+            (r.cells[2] === "Road Bikes" && Number(r.cells[4]) >= 90) ||
+            (r.cells[2] !== "Road Bikes" && Number(r.cells[3]) >= 4000),
+        ),
         "Second group: non-Road Bikes priced at least 4000. Switchback Enduro passes, so the final result has three products.",
         { highlightCols: [2, 3, 4] },
       ),
       st(
         [2, 3],
-        pass((r) => (r.cells[2] === "Road Bikes" && Number(r.cells[4]) >= 90) || (r.cells[2] !== "Road Bikes" && Number(r.cells[3]) >= 4000)),
+        pass(
+          (r) =>
+            (r.cells[2] === "Road Bikes" && Number(r.cells[4]) >= 90) ||
+            (r.cells[2] !== "Road Bikes" && Number(r.cells[3]) >= 4000),
+        ),
         "SQL gives NOT priority, then AND, then OR. The parentheses show the business rule clearly, which makes mixed conditions safer to review and change.",
         { noteTone: "violet" },
       ),
@@ -136,7 +144,11 @@ export const rangeStages: Stage[] = [
   {
     name: "IN list",
     blurb: "Keep rows that match one listed value",
-    sql: ["SELECT name, category, in_stock", "FROM   products", "WHERE  category IN ('Road Bikes', 'Mountain Bikes')"],
+    sql: [
+      "SELECT name, category, in_stock",
+      "FROM   products",
+      "WHERE  category IN ('Road Bikes', 'Mountain Bikes')",
+    ],
     table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
       st([0, 1], "pending", "Six Cycle Depot products enter the category filter."),
@@ -171,7 +183,11 @@ export const rangeStages: Stage[] = [
   {
     name: "NOT IN",
     blurb: "Exclude rows that match the list",
-    sql: ["SELECT name, category", "FROM   products", "WHERE  category NOT IN ('Road Bikes', 'Mountain Bikes')"],
+    sql: [
+      "SELECT name, category",
+      "FROM   products",
+      "WHERE  category NOT IN ('Road Bikes', 'Mountain Bikes')",
+    ],
     table: { name: "products", cols: RANGE_COLS, rows: RANGE_PRODUCTS },
     steps: [
       st(
@@ -196,10 +212,7 @@ export const rangeStages: Stage[] = [
     steps: [
       st(
         [2],
-        pass(
-          (r) =>
-            ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])),
-        ),
+        pass((r) => ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2]))),
         "All six displayed products are in the allowed bike-category set.",
         { highlightCols: [2] },
       ),
@@ -208,7 +221,8 @@ export const rangeStages: Stage[] = [
         pass(
           (r) =>
             ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])) &&
-            r.cells[2] !== "City Bikes"),
+            r.cells[2] !== "City Bikes",
+        ),
         "NOT IN removes the City Bikes from that set, leaving the four Road and Mountain Bikes.",
         { highlightCols: [2], noteTone: "amber" },
       ),
@@ -219,7 +233,8 @@ export const rangeStages: Stage[] = [
             ["Road Bikes", "Mountain Bikes", "City Bikes"].includes(String(r.cells[2])) &&
             r.cells[2] !== "City Bikes" &&
             Number(r.cells[3]) >= 2000 &&
-            Number(r.cells[3]) <= 4000),
+            Number(r.cells[3]) <= 4000,
+        ),
         "BETWEEN narrows the remaining products to Trailhead 29 Carbon, Boulder Full Suspension, and Meridian Road Carbon.",
         { highlightCols: [2, 3] },
       ),
@@ -240,7 +255,11 @@ export const rangeStages: Stage[] = [
       "FROM   product_tags",
       "WHERE  tags @> ARRAY['road'];",
     ],
-    table: { name: "product_tags · PostgreSQL demo", cols: ARRAY_TAG_COLS, rows: ARRAY_TAG_PRODUCTS },
+    table: {
+      name: "product_tags · PostgreSQL demo",
+      cols: ARRAY_TAG_COLS,
+      rows: ARRAY_TAG_PRODUCTS,
+    },
     steps: [
       st(
         [0, 1, 2, 3, 4],

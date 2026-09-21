@@ -1,12 +1,21 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 
-function BitBox({ bit, isActive, isNetwork }: { bit: string; isActive: boolean; isNetwork: boolean }) {
+function BitBox({
+  bit,
+  isActive,
+  isNetwork,
+}: {
+  bit: string;
+  isActive: boolean;
+  isNetwork: boolean;
+}) {
   const activeClass = isNetwork
     ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/50 dark:text-emerald-300 dark:border-emerald-700/50"
     : "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/50 dark:text-blue-300 dark:border-blue-700/50";
 
-  const inactiveClass = "bg-slate-50 text-slate-400 border-hairline dark:bg-slate-800/30 dark:text-slate-500";
+  const inactiveClass =
+    "bg-slate-50 text-slate-400 border-hairline dark:bg-slate-800/30 dark:text-slate-500";
 
   return (
     <motion.div
@@ -19,16 +28,11 @@ function BitBox({ bit, isActive, isNetwork }: { bit: string; isActive: boolean; 
 }
 
 function ipToInt(ip: string) {
-  return ip.split('.').reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
+  return ip.split(".").reduce((acc, octet) => (acc << 8) + parseInt(octet, 10), 0) >>> 0;
 }
 
 function intToIp(int: number) {
-  return [
-    (int >>> 24) & 255,
-    (int >>> 16) & 255,
-    (int >>> 8) & 255,
-    int & 255
-  ].join('.');
+  return [(int >>> 24) & 255, (int >>> 16) & 255, (int >>> 8) & 255, int & 255].join(".");
 }
 
 function getMask(cidr: number) {
@@ -46,7 +50,7 @@ export function CidrCalculatorDiagram() {
   const maskInt = getMask(cidr);
 
   const networkInt = (ipInt & maskInt) >>> 0;
-  const broadcastInt = (networkInt | (~maskInt)) >>> 0;
+  const broadcastInt = (networkInt | ~maskInt) >>> 0;
 
   const networkAddress = intToIp(networkInt);
   const broadcastAddress = intToIp(broadcastInt);
@@ -76,9 +80,11 @@ export function CidrCalculatorDiagram() {
 
       <div className="p-4 sm:p-6">
         <div className="flex flex-col gap-8">
-
           <div className="flex flex-col gap-4 text-sm text-foreground/80">
-            <p>Select a common CIDR block, or use the slider to explore how the Network and Host bits shift.</p>
+            <p>
+              Select a common CIDR block, or use the slider to explore how the Network and Host bits
+              shift.
+            </p>
 
             <div className="flex flex-wrap gap-2">
               {[
@@ -86,14 +92,15 @@ export function CidrCalculatorDiagram() {
                 { value: 24, label: "Standard Subnet" },
                 { value: 27, label: "Small Subnet" },
                 { value: 32, label: "Single Host" },
-              ].map(preset => (
+              ].map((preset) => (
                 <button
                   key={preset.value}
                   onClick={() => setCidr(preset.value)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors border ${cidr === preset.value
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors border ${
+                    cidr === preset.value
                       ? "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-900/60 dark:text-emerald-300 dark:border-emerald-700/60"
                       : "bg-surface-2/40 text-muted-foreground border-hairline hover:bg-surface-2 hover:text-foreground"
-                    }`}
+                  }`}
                 >
                   <span className="font-mono font-bold">/{preset.value}</span>
                   <span className="opacity-80">({preset.label})</span>
@@ -102,7 +109,9 @@ export function CidrCalculatorDiagram() {
             </div>
 
             <div className="flex items-center gap-4 rounded-lg border border-hairline bg-surface-2/30 p-4 mt-2">
-              <span className="w-12 font-mono text-lg font-medium text-emerald-600 dark:text-emerald-400">/{cidr}</span>
+              <span className="w-12 font-mono text-lg font-medium text-emerald-600 dark:text-emerald-400">
+                /{cidr}
+              </span>
               <input
                 type="range"
                 min="8"
@@ -116,9 +125,11 @@ export function CidrCalculatorDiagram() {
 
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap justify-between gap-y-4 pb-2">
-              {[0, 1, 2, 3].map(octet => (
+              {[0, 1, 2, 3].map((octet) => (
                 <div key={octet} className="flex flex-col items-center gap-2">
-                  <span className="font-mono text-[10px] sm:text-xs text-muted-foreground">Octet {octet + 1}</span>
+                  <span className="font-mono text-[10px] sm:text-xs text-muted-foreground">
+                    Octet {octet + 1}
+                  </span>
                   <div className="flex gap-1">
                     {bits.slice(octet * 8, octet * 8 + 8).map((bit, i) => {
                       const bitIndex = octet * 8 + i;
@@ -155,23 +166,37 @@ export function CidrCalculatorDiagram() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-2/30 p-3">
               <span className="font-mono text-xs text-muted-foreground">Network Address</span>
-              <span className="font-mono text-sm font-semibold text-foreground">{networkAddress}</span>
-              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">The very first IP address. Used by routing tables to identify the entire network. Cannot be assigned to a server.</span>
+              <span className="font-mono text-sm font-semibold text-foreground">
+                {networkAddress}
+              </span>
+              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">
+                The very first IP address. Used by routing tables to identify the entire network.
+                Cannot be assigned to a server.
+              </span>
             </div>
             <div className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-2/30 p-3">
               <span className="font-mono text-xs text-muted-foreground">Usable Host Range</span>
               <span className="font-mono text-sm font-semibold text-foreground">{usableRange}</span>
-              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">IPs available for assignment to devices (servers, databases, load balancers, etc).</span>
+              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">
+                IPs available for assignment to devices (servers, databases, load balancers, etc).
+              </span>
             </div>
             <div className="flex flex-col gap-1 rounded-lg border border-hairline bg-surface-2/30 p-3">
               <span className="font-mono text-xs text-muted-foreground">Broadcast Address</span>
-              <span className="font-mono text-sm font-semibold text-foreground">{broadcastAddress}</span>
-              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">The very last IP address. Used to send a packet to every single host in the subnet simultaneously. Cannot be assigned.</span>
+              <span className="font-mono text-sm font-semibold text-foreground">
+                {broadcastAddress}
+              </span>
+              <span className="mt-1 text-[10px] leading-tight text-muted-foreground">
+                The very last IP address. Used to send a packet to every single host in the subnet
+                simultaneously. Cannot be assigned.
+              </span>
             </div>
           </div>
 
           <div className="rounded-xl border border-blue-200 bg-blue-50/30 p-4 dark:border-blue-800/30 dark:bg-blue-900/10">
-            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300">CIDR Math & Formulas</h4>
+            <h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300">
+              CIDR Math & Formulas
+            </h4>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="flex flex-col gap-2 rounded-lg bg-white/80 p-3 shadow-sm border border-hairline dark:bg-slate-900/80">
@@ -179,8 +204,13 @@ export function CidrCalculatorDiagram() {
                   Usable Hosts = 2<sup>h</sup> - 2
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Where <code className="text-blue-600 dark:text-blue-400 font-bold">h = {hostBits}</code> (host bits).<br />
-                  We subtract 2 because the <strong>Network ID</strong> and <strong>Broadcast ID</strong> are reserved by the protocol and cannot be assigned to hosts.
+                  Where{" "}
+                  <code className="text-blue-600 dark:text-blue-400 font-bold">h = {hostBits}</code>{" "}
+                  (host bits).
+                  <br />
+                  We subtract 2 because the <strong>Network ID</strong> and{" "}
+                  <strong>Broadcast ID</strong> are reserved by the protocol and cannot be assigned
+                  to hosts.
                 </p>
                 <div className="mt-2 rounded bg-blue-100/50 px-2 py-1 font-mono text-xs font-bold text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 inline-block w-fit">
                   2<sup>{hostBits}</sup> - 2 = {usableHosts.toLocaleString()} hosts
@@ -192,8 +222,15 @@ export function CidrCalculatorDiagram() {
                   Number of Subnets = 2<sup>n</sup>
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Where <code className="text-emerald-600 dark:text-emerald-400 font-bold">n = {borrowedBits}</code> (borrowed bits).<br />
-                  Assuming we start with a standard <code className="font-bold">/{baseNetwork}</code> VPC, we are borrowing {borrowedBits} bits from the host portion to slice it into smaller subnets.
+                  Where{" "}
+                  <code className="text-emerald-600 dark:text-emerald-400 font-bold">
+                    n = {borrowedBits}
+                  </code>{" "}
+                  (borrowed bits).
+                  <br />
+                  Assuming we start with a standard{" "}
+                  <code className="font-bold">/{baseNetwork}</code> VPC, we are borrowing{" "}
+                  {borrowedBits} bits from the host portion to slice it into smaller subnets.
                 </p>
                 <div className="mt-2 rounded bg-emerald-100/50 px-2 py-1 font-mono text-xs font-bold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 inline-block w-fit">
                   2<sup>{borrowedBits}</sup> = {totalSubnets.toLocaleString()} subnets
@@ -201,7 +238,6 @@ export function CidrCalculatorDiagram() {
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </figure>

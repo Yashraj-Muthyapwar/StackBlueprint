@@ -9,9 +9,8 @@ export function Footer() {
         <div className="pointer-events-none absolute left-1/2 top-0 h-[1px] w-1/2 -translate-x-1/2 animate-pulse bg-gradient-to-r from-transparent via-mint/50 to-transparent" />
         <div className="pointer-events-none absolute left-1/2 top-0 h-[120px] w-3/4 -translate-x-1/2 rounded-full bg-mint/5 blur-[60px]" />
       </div>
-      
+
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row sm:gap-0">
-        
         {/* Left side: Brand lockup */}
         <div className="group flex cursor-pointer items-center gap-2">
           <div className="grid size-8 shrink-0 place-items-center transition-transform duration-500 group-hover:scale-110">
@@ -29,11 +28,17 @@ export function Footer() {
 
         {/* Right side: Links */}
         <div className="flex items-center gap-2 sm:gap-4">
-          <a href="/privacy" className="group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-mint/10 hover:text-mint">
+          <a
+            href="/privacy"
+            className="group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-mint/10 hover:text-mint"
+          >
             <Shield className="size-3.5 opacity-50 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100" />
             Privacy Policy
           </a>
-          <a href="/terms" className="group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-mint/10 hover:text-mint">
+          <a
+            href="/terms"
+            className="group relative flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-all duration-300 hover:bg-mint/10 hover:text-mint"
+          >
             <FileText className="size-3.5 opacity-50 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100" />
             Terms of Service
           </a>

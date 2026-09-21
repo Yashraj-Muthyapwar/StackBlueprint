@@ -29,16 +29,20 @@ function Landing() {
   const categorizedRoadmap = [
     {
       title: "Software Engineering",
-      tracks: roadmap.filter(cat => ["patterns-dsa", "python", "system-design", "web-scraping"].includes(cat.slug))
+      tracks: roadmap.filter((cat) =>
+        ["patterns-dsa", "python", "system-design", "web-scraping"].includes(cat.slug),
+      ),
     },
     {
       title: "Data & Analytics",
-      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses", "data-engineering", "pandas"].includes(cat.slug))
+      tracks: roadmap.filter((cat) =>
+        ["sql-mastery", "data-warehouses", "data-engineering", "pandas"].includes(cat.slug),
+      ),
     },
     {
       title: "DevOps & Tools",
-      tracks: roadmap.filter(cat => ["docker", "terraform", "git-github"].includes(cat.slug))
-    }
+      tracks: roadmap.filter((cat) => ["docker", "terraform", "git-github"].includes(cat.slug)),
+    },
   ];
 
   return (
@@ -51,7 +55,7 @@ function Landing() {
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center border-b border-hairline px-8 py-32 text-center lg:px-16 lg:py-48">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-mint/15 via-background/0 to-background/0" />
-        
+
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center">
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-mint/20 bg-mint/5 px-4 py-1.5 shadow-[0_0_15px_-3px_rgba(94,234,212,0.2)] backdrop-blur-md">
             <span className="relative flex size-2">
@@ -69,7 +73,11 @@ function Landing() {
             </span>
           </h1>
           <p className="mt-8 max-w-2xl text-balance text-lg text-muted-foreground/90 lg:text-xl">
-            StackBlueprint is a visual, interactive playbook for the things engineers actually get asked about: <strong className="font-semibold">DSA patterns</strong>, <strong className="font-semibold">SQL</strong>, <strong className="font-semibold">system design</strong>, and the <strong className="font-semibold">data architecture</strong> they all run on.
+            StackBlueprint is a visual, interactive playbook for the things engineers actually get
+            asked about: <strong className="font-semibold">DSA patterns</strong>,{" "}
+            <strong className="font-semibold">SQL</strong>,{" "}
+            <strong className="font-semibold">system design</strong>, and the{" "}
+            <strong className="font-semibold">data architecture</strong> they all run on.
           </p>
           <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row">
             <Link
@@ -124,19 +132,25 @@ function Landing() {
                         {hasContent && (
                           <div className="absolute -right-20 -top-20 -z-10 size-40 rounded-full bg-mint/10 opacity-0 blur-[50px] transition-opacity duration-500 group-hover:opacity-100" />
                         )}
-                        
+
                         <div className="mb-6 flex items-start justify-between">
                           <div
                             className={`flex min-w-[48px] items-center justify-center rounded-xl transition-all duration-500 ${
                               typeof cat.icon === "string"
-                                ? (cat.slug === "data-engineering" ? "h-16" : "h-12")
+                                ? cat.slug === "data-engineering"
+                                  ? "h-16"
+                                  : "h-12"
                                 : hasContent
                                   ? "h-12 bg-mint/10 text-mint ring-1 ring-mint/30 group-hover:bg-mint/20 group-hover:scale-110 group-hover:ring-mint/50"
                                   : "h-12 bg-surface-2 text-muted-foreground/70 ring-1 ring-hairline group-hover:bg-surface-3"
                             }`}
                           >
                             {typeof cat.icon === "string" ? (
-                              <img src={cat.icon} alt={`${cat.title} logo`} className={`${cat.slug === "data-engineering" ? "h-16 -ml-2" : "h-8"} w-auto object-contain drop-shadow-sm transition-transform duration-500 group-hover:scale-110`} />
+                              <img
+                                src={cat.icon}
+                                alt={`${cat.title} logo`}
+                                className={`${cat.slug === "data-engineering" ? "h-16 -ml-2" : "h-8"} w-auto object-contain drop-shadow-sm transition-transform duration-500 group-hover:scale-110`}
+                              />
                             ) : (
                               <cat.icon className="size-6" />
                             )}
@@ -152,8 +166,12 @@ function Landing() {
                             </span>
                           )}
                         </div>
-                        <h3 className="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-mint">{cat.title}</h3>
-                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{cat.blurb}</p>
+                        <h3 className="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-mint">
+                          {cat.title}
+                        </h3>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          {cat.blurb}
+                        </p>
 
                         <div className="mt-6 flex flex-wrap gap-2">
                           {cat.patterns.slice(0, 4).map((p) => (
@@ -199,17 +217,67 @@ function Landing() {
                       </div>
                     );
 
-                    if (cat.overviewPath === "/patterns") return <Link key={cat.slug} to="/patterns" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/sql") return <Link key={cat.slug} to="/sql" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/data-warehouses") return <Link key={cat.slug} to="/data-warehouses" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/docker") return <Link key={cat.slug} to="/docker" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/web-scraping") return <Link key={cat.slug} to="/web-scraping" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/system-design") return <Link key={cat.slug} to="/system-design" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/terraform") return <Link key={cat.slug} to="/terraform" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/git-github") return <Link key={cat.slug} to="/git-github" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/python") return <Link key={cat.slug} to="/python" className="block h-full">{card}</Link>;
-                    if (cat.overviewPath === "/data-engineering") return <Link key={cat.slug} to="/data-engineering" className="block h-full">{card}</Link>;
-                    
+                    if (cat.overviewPath === "/patterns")
+                      return (
+                        <Link key={cat.slug} to="/patterns" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/sql")
+                      return (
+                        <Link key={cat.slug} to="/sql" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/data-warehouses")
+                      return (
+                        <Link key={cat.slug} to="/data-warehouses" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/docker")
+                      return (
+                        <Link key={cat.slug} to="/docker" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/web-scraping")
+                      return (
+                        <Link key={cat.slug} to="/web-scraping" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/system-design")
+                      return (
+                        <Link key={cat.slug} to="/system-design" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/terraform")
+                      return (
+                        <Link key={cat.slug} to="/terraform" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/git-github")
+                      return (
+                        <Link key={cat.slug} to="/git-github" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/python")
+                      return (
+                        <Link key={cat.slug} to="/python" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+                    if (cat.overviewPath === "/data-engineering")
+                      return (
+                        <Link key={cat.slug} to="/data-engineering" className="block h-full">
+                          {card}
+                        </Link>
+                      );
+
                     return (
                       <Link
                         key={cat.slug}
@@ -233,8 +301,12 @@ function Landing() {
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-mint/5 via-background/0 to-background/0" />
         <div className="mx-auto max-w-5xl">
           <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground lg:text-4xl">Built for visual learners</h2>
-            <p className="mt-4 text-lg text-muted-foreground">Interactive elements that make complex concepts click.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-foreground lg:text-4xl">
+              Built for visual learners
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Interactive elements that make complex concepts click.
+            </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
@@ -254,7 +326,10 @@ function Landing() {
                 d: "Step, autoplay, scrub, and feed in your own inputs to see the algorithm react.",
               },
             ].map((s) => (
-              <div key={s.k} className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/20 p-8 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-mint/30 hover:bg-surface/40 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)]">
+              <div
+                key={s.k}
+                className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/20 p-8 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-mint/30 hover:bg-surface/40 hover:shadow-[0_8px_30px_-5px_rgba(94,234,212,0.15)]"
+              >
                 <div className="absolute -right-10 -top-10 -z-10 size-32 rounded-full bg-mint/5 blur-[40px] transition-all duration-500 group-hover:bg-mint/20" />
                 <div className="mb-6 flex size-12 items-center justify-center rounded-xl bg-mint/10 text-mint ring-1 ring-mint/20 transition-transform duration-500 group-hover:scale-110">
                   <span className="font-mono text-base font-bold">{s.k}</span>

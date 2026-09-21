@@ -56,10 +56,7 @@ export const projStages: Stage[] = [
 
   {
     name: "Column order shapes the result",
-    sql: [
-      "SELECT country, name",
-      "FROM customers",
-    ],
+    sql: ["SELECT country, name", "FROM customers"],
     table: { name: "customers", cols: customerCols, rows: customersP },
     steps: [
       st(

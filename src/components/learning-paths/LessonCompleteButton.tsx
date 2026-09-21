@@ -14,7 +14,7 @@ export function LessonCompleteButton({
   isDisabled,
 }: LessonCompleteButtonProps) {
   const disabled = (hasQuiz && !isCompleted) || isDisabled;
-  
+
   return (
     <button
       onClick={onToggle}
@@ -28,11 +28,7 @@ export function LessonCompleteButton({
       }`}
     >
       <CheckCircle2 className={`size-4 ${isCompleted ? "" : "opacity-50"}`} />
-      {isCompleted
-        ? "Completed"
-        : hasQuiz
-          ? "Pass Quiz to Complete"
-          : "Mark as Complete"}
+      {isCompleted ? "Completed" : hasQuiz ? "Pass Quiz to Complete" : "Mark as Complete"}
     </button>
   );
 }

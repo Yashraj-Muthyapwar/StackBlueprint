@@ -23,8 +23,7 @@ export const Route = createFileRoute("/git-github/")({
       { title: "Git & GitHub — StackBlueprint" },
       {
         name: "description",
-        content:
-          "Version control, branching strategies, and collaboration workflows.",
+        content: "Version control, branching strategies, and collaboration workflows.",
       },
       { property: "og:title", content: "Git & GitHub — StackBlueprint" },
       {
@@ -58,14 +57,20 @@ type Section = {
 const sections: Section[] = [
   {
     group: "Version Control Foundations",
-    groupBlurb: "The mental model for Git — understanding the working tree, staging area, and commits.",
+    groupBlurb:
+      "The mental model for Git — understanding the working tree, staging area, and commits.",
     topics: [
       {
         slug: "git-fundamentals",
         title: "Git Fundamentals",
         blurb: "Commits, history, and the working tree.",
         icon: GitCommit,
-        modules: ["The .git Directory", "Staging & Committing", "git log & status", "Ignoring Files"],
+        modules: [
+          "The .git Directory",
+          "Staging & Committing",
+          "git log & status",
+          "Ignoring Files",
+        ],
         unlocked: false,
         routeBase: "foundations",
       },
@@ -98,7 +103,12 @@ const sections: Section[] = [
         title: "Rewriting History",
         blurb: "Cleaning up commits before sharing them.",
         icon: Edit3,
-        modules: ["git commit --amend", "Interactive Rebase", "Squashing Commits", "Rebase vs Merge"],
+        modules: [
+          "git commit --amend",
+          "Interactive Rebase",
+          "Squashing Commits",
+          "Rebase vs Merge",
+        ],
         unlocked: false,
         routeBase: "advanced",
       },
@@ -119,8 +129,8 @@ const sections: Section[] = [
         modules: ["git blame", "git bisect", "Searching History"],
         unlocked: false,
         routeBase: "advanced",
-      }
-    ]
+      },
+    ],
   },
   {
     group: "GitHub Ecosystem",
@@ -152,8 +162,8 @@ const sections: Section[] = [
         modules: ["GitHub Flow", "GitFlow", "Trunk-based Development", "Forks & Open Source"],
         unlocked: false,
         routeBase: "github",
-      }
-    ]
+      },
+    ],
   },
   {
     group: "Capstone",
@@ -164,12 +174,17 @@ const sections: Section[] = [
         title: "Team Collaboration Capstone",
         blurb: "Simulate a real-world team project: branching, reviewing, and releasing.",
         icon: GitMerge,
-        modules: ["Setting up the Monorepo", "Feature Branches & PRs", "Resolving Merge Conflicts", "Automated Release with Actions"],
+        modules: [
+          "Setting up the Monorepo",
+          "Feature Branches & PRs",
+          "Resolving Merge Conflicts",
+          "Automated Release with Actions",
+        ],
         unlocked: false,
         routeBase: "capstone",
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 function GitGithubIndex() {
@@ -180,13 +195,18 @@ function GitGithubIndex() {
       <div className="border-b border-hairline bg-card/30 px-6 py-12 lg:px-12 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
           <div className="mx-auto mb-6 flex justify-center">
-            <img src={gitLogo} alt="Git Logo" className="size-16 object-contain drop-shadow-sm lg:size-20" />
+            <img
+              src={gitLogo}
+              alt="Git Logo"
+              className="size-16 object-contain drop-shadow-sm lg:size-20"
+            />
           </div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground lg:text-5xl">
             Git & GitHub
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground lg:text-xl">
-            Version Control. Learn how to track changes, collaborate efficiently, and automate deployments.
+            Version Control. Learn how to track changes, collaborate efficiently, and automate
+            deployments.
           </p>
         </div>
       </div>
@@ -200,9 +220,7 @@ function GitGithubIndex() {
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
                   </div>
-                  <h2 className="text-xl font-bold tracking-tight text-foreground">
-                    {sec.group}
-                  </h2>
+                  <h2 className="text-xl font-bold tracking-tight text-foreground">{sec.group}</h2>
                 </div>
                 <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                   {sec.groupBlurb}
@@ -213,7 +231,7 @@ function GitGithubIndex() {
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
-                  
+
                   const completedCount = t.completedCount || 0;
                   const totalCount = t.modules.length;
 
@@ -253,12 +271,12 @@ function GitGithubIndex() {
                             </span>
                           ))}
                         </div>
-                        
+
                         {!isLocked && (
                           <div className="mt-6 flex items-center gap-2">
                             <div className="h-1.5 w-32 overflow-hidden rounded-full bg-border">
-                              <div 
-                                className="h-full bg-mint transition-all duration-500 ease-out" 
+                              <div
+                                className="h-full bg-mint transition-all duration-500 ease-out"
                                 style={{ width: `${(completedCount / totalCount) * 100}%` }}
                               />
                             </div>
