@@ -38,10 +38,10 @@ export function SectionRenderer({
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
+            <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
           {section.body.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed text-muted-foreground lg:text-lg">
+            <p key={index} className="lesson-prose text-muted-foreground">
               {inline(paragraph)}
             </p>
           ))}
@@ -56,7 +56,7 @@ export function SectionRenderer({
             </figcaption>
           ) : null}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="lesson-supporting w-full">
               <thead className="bg-surface-2 text-left text-muted-foreground">
                 <tr>
                   {section.headers.map((header) => (
@@ -102,7 +102,7 @@ export function SectionRenderer({
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
-            <p className="mt-1 text-sm leading-relaxed text-foreground/85">
+            <p className="lesson-supporting mt-1 text-foreground/85">
               {inline(section.body)}
             </p>
           </div>
@@ -116,7 +116,7 @@ export function SectionRenderer({
             <Brain className="size-5 text-amber" />
             Analogy: {section.title}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
+          <p className="lesson-supporting mt-3 text-foreground/90">
             {inline(section.text)}
           </p>
         </section>
@@ -124,7 +124,7 @@ export function SectionRenderer({
     case "diagram":
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 shadow-sm dark:bg-surface">
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono text-foreground/85">
             {section.ascii}
           </pre>
           {section.caption ? (
@@ -140,7 +140,7 @@ export function SectionRenderer({
           <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             {section.caption ?? section.language}
           </figcaption>
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed text-foreground/90">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono text-foreground/90">
             <code>{section.code}</code>
           </pre>
         </figure>
@@ -175,7 +175,7 @@ export function SectionRenderer({
           </p>
           <ul className="mt-3 space-y-2">
             {section.items.map((item) => (
-              <li key={item} className="flex gap-2.5 text-sm leading-relaxed text-foreground/90">
+              <li key={item} className="lesson-supporting flex gap-2.5 text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{inline(item)}</span>
               </li>

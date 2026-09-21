@@ -1,4 +1,4 @@
- import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Server, MonitorSmartphone, CheckCircle2, ArrowRight } from "lucide-react";
 

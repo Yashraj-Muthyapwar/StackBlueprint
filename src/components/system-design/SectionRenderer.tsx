@@ -209,12 +209,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
+            <h2 className="lesson-section-title font-semibold tracking-tight">
               {section.heading}
             </h2>
           ) : null}
           {section.body.map((p, i) => (
-            <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+            <p key={i} className="lesson-prose text-muted-foreground">
               {parseInlineMarkdown(p)}
             </p>
           ))}
@@ -250,7 +250,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               </div>
             )}
           </div>
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono shadow-inner">
             <code className="block min-w-max">
               {lines.map((line, i) => (
                 <div key={i} className="flex">
@@ -275,7 +275,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
             </figcaption>
           ) : null}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="lesson-supporting w-full">
               <thead className="bg-surface-2 text-left text-muted-foreground">
                 <tr>
                   {section.headers.map((h, i) => (
@@ -345,7 +345,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                 {parseInlineMarkdown(section.body.replace("### ", ""))}
               </div>
             ) : (
-              <p className="mt-1 text-sm leading-relaxed text-foreground/85">
+              <p className="lesson-supporting mt-1 text-foreground/85">
                 {parseInlineMarkdown(section.body)}
               </p>
             )}
@@ -357,7 +357,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "diagram":
       return (
         <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono text-foreground/85">
             {section.ascii}
           </pre>
           {section.caption ? (
@@ -429,7 +429,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
             <Brain className="size-5 text-amber" />
             Analogy: {section.title}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
+          <p className="lesson-supporting mt-3 text-foreground/90">
             {parseInlineMarkdown(section.text)}
           </p>
         </section>
@@ -499,7 +499,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
             {section.items.map((it, i) => (
               <li
                 key={i}
-                className="flex gap-2.5 text-sm leading-relaxed text-foreground/90"
+                className="lesson-supporting flex gap-2.5 text-foreground/90"
               >
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
