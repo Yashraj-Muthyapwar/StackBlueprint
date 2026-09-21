@@ -16,7 +16,7 @@ export function NarrationCard({ stepIndex, text }: { stepIndex: number; text: st
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -4 }}
           transition={{ duration: 0.18 }}
-          className="text-balance text-[15px] leading-relaxed text-foreground"
+          className="lesson-supporting text-balance text-foreground"
         >
           {text}
         </motion.p>
