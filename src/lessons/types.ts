@@ -169,6 +169,8 @@ export type Section =
   | { kind: "image"; src: string; alt: string; caption?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
+  | { kind: "system-design-evolution" }
+  | { kind: "system-design-clarification-practice" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
