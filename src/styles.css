@@ -53,6 +53,28 @@
 :root {
   --radius: 0.625rem;
 
+  /*
+   * Lesson typography controls
+   *
+   * These values intentionally govern explanatory lesson content only. Keep
+   * labels inside diagrams, visualizations, and compact controls independent
+   * so changing reading size never distorts an animation's layout.
+   */
+  --lesson-title-size: 1.875rem;
+  --lesson-title-leading: 2.25rem;
+  --lesson-section-title-size: 1.25rem;
+  --lesson-section-title-leading: 1.75rem;
+  --lesson-subsection-title-size: 1.125rem;
+  --lesson-subsection-title-leading: 1.625rem;
+  --lesson-subtitle-size: 1rem;
+  --lesson-subtitle-leading: 1.5rem;
+  --lesson-prose-size: 1rem;
+  --lesson-prose-leading: 1.625rem;
+  --lesson-supporting-size: 0.9375rem;
+  --lesson-supporting-leading: 1.375rem;
+  --lesson-code-size: 0.875rem;
+  --lesson-code-leading: 1.375rem;
+
   /* LIGHT PALETTE */
   --background: oklch(0.98 0.005 250);
   --foreground: oklch(0.15 0.01 250);
@@ -159,6 +181,65 @@
   }
 }
 
+/* Shared instructional typography. Adjust the variables above to tune every lesson. */
+@layer components {
+  .lesson-title {
+    font-size: var(--lesson-title-size);
+    line-height: var(--lesson-title-leading);
+  }
+
+  .lesson-section-title {
+    font-size: var(--lesson-section-title-size);
+    line-height: var(--lesson-section-title-leading);
+  }
+
+  .lesson-subsection-title {
+    font-size: var(--lesson-subsection-title-size);
+    line-height: var(--lesson-subsection-title-leading);
+  }
+
+  .lesson-subtitle {
+    font-size: var(--lesson-subtitle-size);
+    line-height: var(--lesson-subtitle-leading);
+  }
+
+  .lesson-prose {
+    font-size: var(--lesson-prose-size);
+    line-height: var(--lesson-prose-leading);
+  }
+
+  .lesson-supporting {
+    font-size: var(--lesson-supporting-size);
+    line-height: var(--lesson-supporting-leading);
+  }
+
+  .lesson-code {
+    font-size: var(--lesson-code-size);
+    line-height: var(--lesson-code-leading);
+  }
+
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --lesson-title-size: 2.25rem;
+    --lesson-title-leading: 2.5rem;
+    --lesson-section-title-size: 1.5rem;
+    --lesson-section-title-leading: 2rem;
+    --lesson-subsection-title-size: 1.25rem;
+    --lesson-subsection-title-leading: 1.75rem;
+    --lesson-subtitle-size: 1.125rem;
+    --lesson-subtitle-leading: 1.75rem;
+    --lesson-prose-size: 1.125rem;
+    --lesson-prose-leading: 1.75rem;
+    --lesson-supporting-size: 1rem;
+    --lesson-supporting-leading: 1.5rem;
+    --lesson-code-size: 0.9375rem;
+    --lesson-code-leading: 1.5rem;
+  }
+}
+
+
 @utility font-mono {
   font-family: var(--font-mono);
   font-variant-ligatures: none;
@@ -210,4 +291,3 @@
   66% { transform: translate(-20px, 20px) scale(0.9); }
   100% { transform: translate(0, 0) scale(1); }
 }
-
