@@ -71,9 +71,9 @@ export function SectionRenderer({
     case "prose":
       return (
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
+          <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           {section.body.map((paragraph, index) => (
-            <p key={index} className="leading-relaxed text-muted-foreground lg:text-lg">
+            <p key={index} className="lesson-prose text-muted-foreground">
               {inline(paragraph)}
             </p>
           ))}
@@ -87,7 +87,7 @@ export function SectionRenderer({
           <figcaption className="border-b border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
             {section.caption}
           </figcaption>
-          <Table>
+          <Table className="min-w-[44rem]">
             <TableHeader className="bg-surface-2">
               <TableRow>
                 {section.headers.map((header) => (
@@ -143,7 +143,7 @@ export function SectionRenderer({
           </h2>
           <ul className="mt-3 space-y-2">
             {section.items.map((item) => (
-              <li key={item} className="flex gap-2.5 text-sm leading-relaxed">
+              <li key={item} className="lesson-supporting flex gap-2.5">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{inline(item)}</span>
               </li>

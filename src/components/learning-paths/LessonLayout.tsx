@@ -106,11 +106,11 @@ export function LessonLayout({
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
           Chapter · {topic.title} · Lesson {idx + 1} of {topic.lessons?.length ?? 0}
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight lg:text-4xl">
+        <h1 className="lesson-title mt-2 font-semibold tracking-tight">
           {lesson.title}
         </h1>
         {lesson.subtitle && (
-          <p className="mt-3 text-balance text-muted-foreground lg:text-lg">
+          <p className="lesson-subtitle mt-3 text-balance text-muted-foreground">
             {lesson.subtitle.split(/`([^`]+)`/g).map((part, i) =>
               i % 2 === 1 ? (
                 <code
@@ -125,7 +125,6 @@ export function LessonLayout({
             )}
           </p>
         )}
-
         <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
           {isEffectivelyPlaceholder ? (
             <div className="rounded-3xl border border-dashed border-mint/30 bg-mint/5 px-6 py-20 text-center shadow-sm">

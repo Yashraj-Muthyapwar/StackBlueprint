@@ -62,7 +62,7 @@ export function ChapterIndexLayout({ trackTitle, trackPath, topic }: ChapterInde
             <Link
               key={les.slug}
               to={les.path as any}
-              params={les.path ? undefined : { topic: topic.slug, lesson: les.slug } as any}
+              params={les.path ? undefined : ({ topic: topic.slug, lesson: les.slug } as any)}
               className="group relative overflow-hidden rounded-2xl border border-hairline/60 bg-surface/40 p-5 transition-colors hover:border-mint/40 hover:bg-surface/70"
             >
               <div className="flex items-center justify-between">
@@ -76,9 +76,7 @@ export function ChapterIndexLayout({ trackTitle, trackPath, topic }: ChapterInde
               </div>
               <h2 className="mt-4 text-base font-medium">{les.title}</h2>
               {les.subtitle && (
-                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                  {les.subtitle}
-                </p>
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{les.subtitle}</p>
               )}
               <div className="mt-5 inline-flex items-center gap-1.5 text-sm text-mint">
                 Open lesson
