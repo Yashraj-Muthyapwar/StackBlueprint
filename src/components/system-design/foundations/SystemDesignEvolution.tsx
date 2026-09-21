@@ -63,9 +63,9 @@ function ArchitectureNode({
   return (
     <motion.div
       initial={false}
-      animate={{ opacity: visible ? 1 : 0.2, scale: visible ? 1 : 0.96 }}
+      animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.96 }}
       transition={{ duration: 0.35 }}
-      className={`absolute z-20 flex w-[128px] -translate-x-1/2 -translate-y-1/2 flex-col items-center ${className}`}
+      className={`pointer-events-none absolute z-20 flex w-[128px] -translate-x-1/2 -translate-y-1/2 flex-col items-center ${className}`}
     >
       <motion.div
         animate={pulse && visible ? { boxShadow: ["0 0 0 rgba(64, 224, 180, 0)", "0 0 24px rgba(64, 224, 180, .38)", "0 0 0 rgba(64, 224, 180, 0)"] } : { boxShadow: "0 0 0 rgba(64, 224, 180, 0)" }}
@@ -158,12 +158,12 @@ export function SystemDesignEvolution() {
       </div>
 
       <div className="w-full overflow-x-auto">
-        <div className="relative h-[430px] min-w-[760px] overflow-hidden bg-[radial-gradient(circle_at_50%_35%,rgba(64,224,180,.10),transparent_42%)]">
+        <div className="relative h-[430px] min-h-[430px] max-h-[430px] min-w-[760px] overflow-hidden bg-[radial-gradient(circle_at_50%_35%,rgba(64,224,180,.10),transparent_42%)]">
           <svg className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <path d="M 16 50 H 36" className="fill-none stroke-border" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
             <motion.path initial={false} animate={{ opacity: showCache ? 0.14 : 1 }} d="M 44 50 H 82" className="fill-none stroke-border" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
             <motion.path initial={false} animate={{ opacity: showCache ? 1 : 0.12 }} d="M 40 46 V 24 H 66 M 74 24 H 82 V 46" className="fill-none stroke-amber" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
-            <motion.path initial={false} animate={{ opacity: showAsync ? 1 : 0.12 }} d="M 40 54 V 82 H 82" className="fill-none stroke-rose-500" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
+            <motion.path initial={false} animate={{ opacity: showAsync ? 1 : 0 }} d="M 40 54 V 82 H 82" className="fill-none stroke-rose-500" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
             {stage === 0 ? <>
               <FlowPacket color="#40e0b4" points={[[12, 50], [40, 50], [86, 50]]} />
               <FlowPacket color="#8b5cf6" delay={2.5} points={[[86, 50], [40, 50], [12, 50]]} />
