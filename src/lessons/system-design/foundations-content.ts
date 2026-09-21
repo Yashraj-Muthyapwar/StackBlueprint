@@ -180,6 +180,7 @@ const whatIsSystemDesign: LessonContent = {
         "For any open-ended design problem, begin with `Client → API/Application → Database`, then evolve one constraint at a time. Starting simple keeps the reasoning clear, even when the system later needs to grow."
       ],
     },
+    { kind: "system-design-clarification-practice" },
     {
       kind: "takeaways",
       items: [
