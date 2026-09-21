@@ -27,167 +27,204 @@ const whatIsSystemDesign: LessonContent = {
   slug: "what-is-system-design",
   title: "What is System Design?",
   subtitle:
-    "The process of designing the architecture, components, and interfaces of a system to meet specific requirements.",
+    "Choose the simplest architecture that can meet the product's real constraints.",
   sections: [
     {
       kind: "prose",
-      heading: "Understanding System Design",
+      heading: "What You Are Designing",
       body: [
-        "System design is the process of defining the architecture, modules, interfaces, and data for a system to satisfy specified requirements. It involves translating user requirements into a detailed blueprint that guides the implementation phase.",
-        "The primary goal is to create a well-organized and efficient structure that meets the intended purpose while considering crucial factors like scalability, maintainability, and performance. It is the stage where the Software Requirements Specification (SRS) report is transformed into a component architecture that can be executed.",
-        "System Design is one of the most critical steps in software development, affecting all significant stages from implementation to deployment."
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "Why is System Design so important?",
-      body: [
-        "**Scalability**: Systems must handle growth in users, traffic, and data without degrading. Poor design leads directly to bottlenecks.",
-        "**Reliability & Fault Tolerance**: Designing so that hardware or network failures don't bring down the whole system. This includes redundancy, failover, and disaster recovery.",
-        "**Performance Optimization**: Proper caching, efficient database queries, load balancing, and CDN usage drastically improve response times and throughput.",
-        "**Cost Efficiency**: A better design means fewer wasted resources, lower operational costs, and less maintenance overhead.",
-        "**Being Prepared for the Unexpected**: Sudden traffic spikes, changing requirements, and failure modes are all anticipated and handled gracefully through solid design.",
-        "**Collaboration & Communication**: Good system design allows teams to coordinate better by establishing a common language for the architecture and clear responsibilities.",
-        "**Future-Proofing**: It helps in adapting systems to new needs without requiring complete rewrites."
+        "System design is deciding how software components, data, and requests work together so a system meets its requirements at the expected scale.",
+        "The goal is not the most elaborate diagram. It is the **simplest architecture that satisfies the constraints**. A small internal tool and a global consumer product can offer the same feature while needing very different designs."
       ],
     },
     {
       kind: "callout",
-      tone: "warn",
-      title: "What Happens When System Design Is Poor?",
-      body: "Famous examples include Twitter's early 'Fail Whale' days (caused by a monolithic architecture, database bottlenecks, and lack of caching) and the Healthcare.gov launch crash (due to insufficient testing, database overload, no caching, and brittle third-party integrations)."
+      tone: "violet",
+      title: "When system design matters",
+      body: "Use it when the design depends on traffic or data growth, latency, throughput, reliability, consistency, availability, or operational cost.",
     },
     {
       kind: "prose",
-      heading: "The 10 Big Questions of System Design",
+      heading: "Why Correct Code Is Not Enough",
       body: [
-        "1. **Scalability:** How will the system handle a large number of users or requests simultaneously?",
-        "2. **Latency and Performance:** How can we reduce response time and ensure low-latency performance under load?",
-        "3. **Communication:** How do different components of the system interact with each other?",
-        "4. **Data Management:** How should we store, retrieve, and manage data efficiently?",
-        "5. **Fault Tolerance and Reliability:** What happens if a part of the system crashes or becomes unreachable?",
-        "6. **Security:** How do we protect the system against threats such as unauthorized access or DDoS attacks?",
-        "7. **Maintainability and Extensibility:** How easy is it to maintain, monitor, debug, and evolve the system over time?",
-        "8. **Cost Efficiency:** How can we balance performance with infrastructure cost?",
-        "9. **Observability and Monitoring:** How do we monitor system health and diagnose issues in production?",
-        "10. **Compliance and Privacy:** Are we complying with relevant laws and regulations (e.g., GDPR, HIPAA)?"
+        "A system can have correct code and still fail because its database, network, storage, or a dependency cannot handle the workload. System design makes those limits explicit before they become incidents.",
+        "Start from a dependable baseline: `Client → Application → Database`. Keep it while it meets the need. More capability usually means more components and more coordination."
+      ],
+    },
+    { kind: "system-design-evolution" },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A common failure mode",
+      body: "Choosing technologies first and then trying to fit the problem around them. Start with the workload and constraints, then justify every component."
+    },
+    {
+      kind: "prose",
+      heading: "Requirements and Constraints",
+      body: [
+        "Architecture starts with the problem, not the technology. Clarify requirements in this order: `Features → Scale → Data → Latency → Reliability → Consistency → Cost`.",
+        "The same feature can require completely different architectures under different constraints. A timeline for 10,000 users is not the same design problem as one serving hundreds of millions of users with a strict latency target."
       ],
     },
     {
+      kind: "callout",
+      tone: "info",
+      title: "Baseline when details are missing",
+      body: "State your assumptions and keep the first design simple. Clarifying early reduces incorrect architectural decisions later.",
+    },
+    {
       kind: "prose",
-      heading: "Key Components of a System",
+      heading: "Scale and System Growth",
       body: [
-        "**Client (User Interface)**: The frontend where users interact (web app, mobile app, desktop app). It sends requests and displays responses.",
-        "**Server (Application Layer)**: Processes client requests and implements business logic. Can be monolithic or microservices-based.",
-        "**Database**: Stores persistent data. Can be Relational (SQL) for structured data and strong consistency, or Non-Relational (NoSQL) for flexible, scalable storage.",
-        "**APIs (Communication Layer)**: Defines how different parts interact (REST, GraphQL, gRPC, WebSockets).",
-        "**Load Balancer**: Distributes traffic across multiple servers to prevent overload and increase availability.",
-        "**Cache**: Stores frequently used data in memory (like Redis or Memcached) for fast access.",
-        "**Message Queue**: Handles asynchronous communication between services (Kafka, RabbitMQ).",
-        "**Storage Systems**: Object storage for files and media (S3), and block storage for raw data.",
-        "**Monitoring & Logging**: Tools for health checks, error tracking, and performance metrics (Prometheus, Grafana, ELK).",
-        "**Security Layer**: Authentication, authorization, encryption, firewalls, and rate limiting.",
+        "Scale describes how much load the system must handle. Estimate read and write requests, stored data, bandwidth, peak traffic, and uneven access such as hot data.",
+        "Small workloads often fit on one machine. As data volume or query rate grows, work may need to be distributed. Until then, stay single-node or scale vertically when the workload comfortably fits."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "What to measure before distributing work",
+      headers: ["Signal", "Question it answers", "Risk if ignored"],
+      rows: [
+        ["Request rate", "Can one service or database sustain the reads and writes?", "Sizing only for average traffic."],
+        ["Data volume", "Will storage, indexes, backups, and recovery still fit?", "A single node becomes a capacity limit."],
+        ["Bandwidth", "Can the network carry requests, responses, and replication?", "Large payloads create hidden latency."],
+        ["Peak and hot keys", "Where is load concentrated during spikes?", "One shard or cache key becomes the bottleneck."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Building Blocks and Data Flow",
+      body: [
+        "Common components each solve a specific problem. The important part is not the boxes themselves, but **how requests and data move between them**.",
+        "Add a component only when a requirement or bottleneck justifies it. Otherwise, keep that responsibility in the application or database."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Common building blocks",
+      headers: ["Component", "Responsibility"],
+      rows: [
+        ["API", "Entry point for client requests"],
+        ["Load balancer", "Distribute traffic"],
+        ["App server", "Business logic"],
+        ["Database", "Durable data"],
+        ["Cache", "Faster repeated reads"],
+        ["Queue or log", "Decouple asynchronous work"],
+        ["Worker", "Process background tasks"],
+        ["Observability", "Logs, metrics, and traces"]
       ]
     },
     {
       kind: "image",
       src: keyComponentsImg,
-      alt: "Diagram illustrating the key components of a system architecture",
-      caption: "The core components that make up a large-scale system",
+      alt: "Diagram showing the core components of a scalable system and their relationships",
+      caption: "Key components of a system: requests pass through application services to data stores and supporting infrastructure.",
     },
     {
       kind: "prose",
-      heading: "Objectives of System Design",
+      heading: "Operational and Analytical Workloads",
       body: [
-        "**Practicality**: Making a system that suits the needs of target users in real-time scenarios.",
-        "**Correctness**: Satisfying all functional and non-functional requirements.",
-        "**Completeness**: Being complete in all terms, from components to functionality specified in the SRS.",
-        "**Efficiency**: Being resource-effective, optimizing both cost and time to deliver the required output within the allotted response time.",
-        "**Flexibility**: Being able to adapt to changing user needs and environments.",
-        "**Optimization**: Optimizing time (latency) and space (memory) across all components.",
-        "**Reliability & Fault Tolerance**: Ensuring failure-free operation for a specified period and the ability to continue operating even when components fail."
-      ]
+        "Data systems are shaped by access patterns. A system optimized for low-latency user requests is different from one optimized to scan billions of records for reporting.",
+        "Use one datastore while both workloads remain small enough to coexist safely. Separate them when analytics threatens the latency-sensitive path, accepting the added work of synchronizing data."
+      ],
     },
     {
       kind: "table",
-      caption: "System Design Strategies",
-      headers: ["Strategy", "What it is / How it Works", "Pros", "Cons"],
+      headers: ["", "Operational / OLTP", "Analytical / OLAP"],
       rows: [
-        ["Structured Design", "Break system into hierarchy of functional modules; top-down decomposition.", "Clear structure; easier debugging; module reuse.", "Rigid; hard to adapt; complex interdependencies at scale."],
-        ["Functional-Oriented Design", "Decompose system by functions/processes rather than objects.", "Strong functionality focus; independent testing.", "Can cause redundancy; integration is tricky; tight coupling risk."],
-        ["Object-Oriented Design (OOD)", "Use objects (encapsulation, inheritance, polymorphism); bundle state + behavior.", "Modularity, reuse, extensibility; maintainable.", "Over-engineering risk; misuse of inheritance adds complexity."],
-        ["Bottom-Up Approach", "Start with low-level components; build/test them first; integrate into bigger system.", "Reuse of components; well-tested low-level parts; hides details early.", "Hard to see big picture; risk of building parts that don't fit."],
-        ["Top-Down Approach", "Start with high-level view; break down into subsystems progressively until detailed.", "Good for requirements understanding; aligns with goals.", "May miss low-level optimizations; less flexible if requirements shift."],
-        ["Incremental Approach", "Build system in small, usable increments; each version adds features.", "Early delivery; user feedback loop; reduces risk.", "Integration challenges; requires strong planning."]
-      ]
+        ["Reads", "Small point queries", "Scan and aggregate many records"],
+        ["Writes", "Frequent insert, update, delete", "Bulk loads or event streams"],
+        ["Queries", "Many small predefined queries", "Fewer complex queries"],
+        ["Data", "Current state", "Historical data"],
+        ["Typical use", "User-facing application", "Analysis and reporting"]
+      ],
     },
     {
       kind: "prose",
-      heading: "High-Level Design (HLD) vs Low-Level Design (LLD)",
+      heading: "Bottlenecks and Failure Modes",
       body: [
-        "System architecture can be depicted at a macro level (HLD) or a micro level (LLD).",
-        "**High-Level Design (HLD)** takes into consideration the main components that will be developed for the product. The designer focuses on a high-level overview, including principal components, databases, services, and the relationships between each module, along with a brief description of the system. HLD is created first and acts as the blueprint for management and program teams.",
-        "**Low-Level Design (LLD)** considers the in-depth and detailed design of each component mentioned in the HLD. It exposes the logical relationship between different elements and includes much more technical information. This includes IP addresses, class and sequence diagrams, algorithms, pseudocode, hardware interfaces, and implementation constraints. LLD is created after HLD and is used by the coding team to implement the logic."
-      ]
+        "After the normal request path works, test what happens under pressure or failure. Ask: What if the database is unavailable? Traffic is 10×? The cache is empty? A queue backlogs? A dependency slows down? Is stale data acceptable?",
+        "The weakest dependency often determines the reliability of the whole request path. Extra resilience brings redundancy, recovery logic, and operational work. Accepting some failures can be a reasonable baseline when their business impact does not justify that cost."
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Watch for cascades",
+      body: "A single dependency can become a single point of failure, or cause a cascading failure when waiting requests consume all available resources.",
+    },
+    {
+      kind: "prose",
+      heading: "Every Capability Has a Cost",
+      body: [
+        "Every useful architectural choice solves one problem while creating another. Prefer the simpler option unless a requirement justifies the added complexity.",
+        "The design explanation is incomplete if it says why a component helps but not what it costs."
+      ],
     },
     {
       kind: "table",
-      headers: ["Parameter", "High-Level Design (HLD)", "Low-Level Design (LLD)"],
+      headers: ["Choice", "Gain", "Cost"],
       rows: [
-        ["Input", "Software Requirement Specification (SRS)", "Reviewed High-Level Design (HLD)"],
-        ["Definition", "Describes the main components for the resulting product.", "Describes the design of each element mentioned in the HLD."],
-        ["Content", "System architecture details, database design, services, module relationships.", "Classes, interfaces, algorithms, and actual logic of components."],
-        ["Chronology", "Created first.", "Created after HLD is completed."],
-        ["Technicality", "Less technical.", "More technical."],
-        ["Audience", "Management and program team.", "Implementers and the coding team."]
-      ]
+        ["Cache", "Lower read latency", "Invalidation and stale data"],
+        ["Replication", "Availability and read scale", "Consistency lag"],
+        ["Sharding", "More storage and write capacity", "Harder queries and operations"],
+        ["Async processing", "Absorbs bursts", "Delayed results"]
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "A Repeatable Design Process",
+      body: [
+        "`Clarify → Estimate → Start Simple → Find Bottlenecks → Add What Is Needed → Explain Trade-offs`",
+        "For any open-ended design problem, begin with `Client → API/Application → Database`, then evolve one constraint at a time. Starting simple keeps the reasoning clear, even when the system later needs to grow."
+      ],
     },
     {
       kind: "takeaways",
       items: [
-        "System Design is the process of translating product requirements into a scalable, actionable technical blueprint.",
-        "High-Level Design (HLD) focuses on the macro architecture and components, acting as a guide for management.",
-        "Low-Level Design (LLD) focuses on the micro implementation details, acting as a guide for engineers to write code."
+        "System design connects requirements, scale, components, and data flow into the simplest architecture that meets the constraints.",
+        "Begin with a small baseline and add load balancers, caches, queues, replicas, or partitions only when a measurable need justifies them.",
+        "Name the gain and the cost of every major choice, then test the design against peak traffic and dependency failures."
       ]
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "sysdesign-hld-vs-lld",
-          question: "Which of the following would you expect to find in a Low-Level Design (LLD) document but NOT in a High-Level Design (HLD) document?",
+          id: "sysdesign-simple-first",
+          question: "A new product has modest traffic and no strict availability target. Which is the best starting architecture?",
           options: [
-            "The choice of database (e.g., PostgreSQL vs MongoDB)",
-            "The relationship between the web server and the database",
-            "Class diagrams and pseudocode for a specific matching algorithm",
-            "A brief description of the system's core services"
+            "Client → application → database, with assumptions documented",
+            "Multi-region services with sharded databases and event sourcing",
+            "A separate cache, queue, worker, and search cluster for every feature",
+            "Choose a technology stack first, then define the requirements"
           ],
-          correctIndex: 2,
-          explanation: "LLD focuses on the micro-level implementation details like class diagrams, algorithms, and pseudocode. HLD focuses on the macro-level architecture, major components, and database choices."
+          correctIndex: 0,
+          explanation: "The baseline is appropriate while it satisfies the actual constraints. Complexity should be earned by a requirement or observed bottleneck."
         },
         {
-          id: "sysdesign-nfr",
-          question: "Designing a system so that hardware or network failures don't bring down the whole application is primarily addressing which objective?",
+          id: "sysdesign-oltp-olap",
+          question: "Why might a reporting workload be separated from a user-facing transactional database?",
           options: [
-            "Cost Efficiency",
-            "Fault Tolerance and Reliability",
-            "Performance Optimization",
-            "Maintainability"
+            "Reporting queries can scan large histories and harm latency-sensitive user requests",
+            "Analytical systems cannot store historical data",
+            "User-facing applications never need aggregates",
+            "A separate system guarantees that data is always strongly consistent"
           ],
-          correctIndex: 1,
-          explanation: "Fault tolerance is the ability of the system to continue operating even when one or more of its components fail, directly improving reliability."
+          correctIndex: 0,
+          explanation: "OLTP and OLAP optimize for different access patterns. Separating them can protect the operational path, but introduces synchronization work."
         },
         {
-          id: "sysdesign-tradeoff",
-          question: "What is the primary drawback of using the Bottom-Up approach to system design?",
+          id: "sysdesign-tradeoff-cost",
+          question: "What cost should be included when proposing a cache to reduce read latency?",
           options: [
-            "You cannot reuse any low-level components.",
-            "It is impossible to test the components until the end.",
-            "You may lose sight of the big picture and build parts that don't fit together.",
-            "It forces you to write monolithic applications."
+            "Cache invalidation and the possibility of stale data",
+            "The database no longer stores durable data",
+            "The application can no longer process requests",
+            "Caches only work for analytical workloads"
           ],
-          correctIndex: 2,
-          explanation: "Because you start by building small, low-level pieces without a finalized high-level blueprint, you risk building components that ultimately don't integrate well together into the larger system."
+          correctIndex: 0,
+          explanation: "A cache can make repeated reads faster, but it creates a new consistency problem: deciding when cached data is invalid or acceptable to serve stale."
         }
       ]
     }
