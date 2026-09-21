@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Lint and build
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
