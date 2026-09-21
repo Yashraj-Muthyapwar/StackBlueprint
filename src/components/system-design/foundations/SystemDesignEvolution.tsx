@@ -60,15 +60,12 @@ function ArchitectureNode({
   pulse?: boolean;
   className: string;
 }) {
+  if (!visible) return null;
+
   return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: visible ? 1 : 0, scale: visible ? 1 : 0.96 }}
-      transition={{ duration: 0.35 }}
-      className={`pointer-events-none absolute z-20 flex w-[128px] -translate-x-1/2 -translate-y-1/2 flex-col items-center ${className}`}
-    >
+    <div className={`pointer-events-none absolute z-20 flex w-[128px] -translate-x-1/2 -translate-y-1/2 flex-col items-center ${className}`}>
       <motion.div
-        animate={pulse && visible ? { boxShadow: ["0 0 0 rgba(64, 224, 180, 0)", "0 0 24px rgba(64, 224, 180, .38)", "0 0 0 rgba(64, 224, 180, 0)"] } : { boxShadow: "0 0 0 rgba(64, 224, 180, 0)" }}
+        animate={pulse ? { boxShadow: ["0 0 0 rgba(64, 224, 180, 0)", "0 0 24px rgba(64, 224, 180, .38)", "0 0 0 rgba(64, 224, 180, 0)"] } : { boxShadow: "0 0 0 rgba(64, 224, 180, 0)" }}
         transition={{ duration: 1.6, repeat: Infinity }}
         className={`grid size-14 place-items-center rounded-2xl border-2 bg-background shadow-sm ${nodeTone[tone]}`}
       >
@@ -78,7 +75,7 @@ function ArchitectureNode({
         {label}
       </span>
       <span className="mt-1 text-center font-mono text-[9px] text-muted-foreground">{detail}</span>
-    </motion.div>
+    </div>
   );
 }
 
@@ -122,7 +119,10 @@ export function SystemDesignEvolution() {
 
   useEffect(() => {
     if (!playing) return;
-    const timer = window.setTimeout(() => setStage((current) => ((current + 1) % STAGES.length) as Stage), 5200);
+    const timer = window.setTimeout(
+      () => setStage((current) => ((current + 1) % STAGES.length) as Stage),
+      5200,
+    );
     return () => window.clearTimeout(timer);
   }, [playing, stage]);
 
@@ -141,8 +141,8 @@ export function SystemDesignEvolution() {
           <p className="mt-0.5 text-sm font-medium text-foreground">Evolve the baseline only when a measurable constraint requires it.</p>
         </div>
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => { setStage(0); setPlaying(false); }} aria-label="Restart animation" className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"><RefreshCw className="size-4" /></button>
-          <button type="button" onClick={() => setPlaying((current) => !current)} aria-label={playing ? "Pause animation" : "Play animation"} className="rounded-md bg-foreground p-2 text-background transition-colors hover:bg-foreground/85">{playing ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
+          <button type="button" onClick={() => { setStage(0); setPlaying(false); }} aria-label="Reset to the baseline stage" className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"><RefreshCw className="size-4" /></button>
+          <button type="button" onClick={() => setPlaying((current) => !current)} aria-label={playing ? "Pause automatic progression" : "Resume automatic progression"} className="rounded-md bg-foreground p-2 text-background transition-colors hover:bg-foreground/85">{playing ? <Pause className="size-4" /> : <Play className="size-4" />}</button>
         </div>
       </figcaption>
 
@@ -157,7 +157,7 @@ export function SystemDesignEvolution() {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
+      <div className="w-full shrink-0 overflow-x-auto">
         <div className="relative h-[430px] min-h-[430px] max-h-[430px] min-w-[760px] overflow-hidden bg-[radial-gradient(circle_at_50%_35%,rgba(64,224,180,.10),transparent_42%)]">
           <svg className="pointer-events-none absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
             <path d="M 16 50 H 36" className="fill-none stroke-border" strokeWidth="0.5" strokeDasharray="1.5 1.5" />
@@ -195,9 +195,9 @@ export function SystemDesignEvolution() {
         </div>
       </div>
 
-      <div className="grid gap-px border-t border-hairline bg-hairline md:grid-cols-[1fr_1.2fr]">
-        <div className="bg-card p-4"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-amber">Constraint</p><p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{STAGES[stage].title}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{STAGES[stage].constraint}</p></div>
-        <div className="bg-card p-4"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-mint">Design response</p><p className="mt-1 text-sm leading-relaxed text-foreground">{STAGES[stage].decision}</p></div>
+      <div className="grid min-h-[128px] gap-px border-t border-hairline bg-hairline md:h-[128px] md:min-h-[128px] md:max-h-[128px] md:grid-cols-[1fr_1.2fr]">
+        <div className="h-full overflow-hidden bg-card px-3 py-2.5"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-amber">Constraint</p><p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{STAGES[stage].title}</p><p className="mt-1 text-sm leading-relaxed text-muted-foreground">{STAGES[stage].constraint}</p></div>
+        <div className="h-full overflow-hidden bg-card px-3 py-2.5"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-mint">Design response</p><p className="mt-1 text-sm leading-relaxed text-foreground">{STAGES[stage].decision}</p></div>
       </div>
     </figure>
   );
