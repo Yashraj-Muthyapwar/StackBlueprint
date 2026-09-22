@@ -1,6 +1,7 @@
 import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
-import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-framework.png";
+import deliveryFrameworkEvolutionImg from "@/images/system-design/Foundations/delivery-framework-evolution.png";
+import deliveryFrameworkFlowImg from "@/images/system-design/Foundations/delivery-framework-flow.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
@@ -236,117 +237,186 @@ const whatIsSystemDesign: LessonContent = {
 const deliveryFramework: LessonContent = {
   slug: "delivery-framework",
   title: "Delivery Framework",
-  subtitle:
-    "A structured, step-by-step approach to ace your system design interviews.",
+  subtitle: "Move from an ambiguous prompt to a justified architecture, one decision at a time.",
   sections: [
     {
       kind: "prose",
       heading: "The Interview Framework",
       body: [
-        "System design interviews are open-ended by design. Leveraging a consistent framework ensures you hit all the critical evaluating criteria while staying on schedule.",
-        "A typical 45-minute session is best divided into these sequential phases:"
-      ]
+        "A system design interview is easier to navigate when each phase produces the input for the next. Start with the problem, quantify the pressure, then add complexity only when it earns its place."
+      ],
     },
     {
       kind: "image",
-      src: deliveryFrameworkImg,
-      alt: "A timeline showing the sequential delivery framework for system design interviews",
-      caption: "The 45-minute interview delivery framework",
+      src: deliveryFrameworkFlowImg,
+      alt: "Seven-step system design interview delivery flow: requirements, estimation, API, high-level design, data design, deep dive, and wrap-up",
+      caption: "A delivery flow keeps the conversation ordered: each phase produces evidence for the next architectural decision.",
+    },
+    { kind: "system-design-delivery-framework" },
+    {
+      kind: "prose",
+      heading: "1. Requirements",
+      body: [
+        "Define what the system must do and the quality bar it must satisfy. Functional requirements cover core features, users, primary use cases, and what is out of scope. Non-functional requirements cover scale, latency, availability, reliability, consistency, retention, and maintainability.",
+        "Always start here. The same feature can need a completely different design when traffic, correctness, latency, or availability changes. If information is missing, state a reasonable assumption and continue."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Clarify the problem before choosing technology",
+      headers: ["Requirement type", "Questions to settle", "Why it matters"],
+      rows: [
+        ["Functional", "Who uses it? What are the 2-3 critical actions? What is out of scope?", "Defines the request flows you must support."],
+        ["Non-functional", "How fast, how large, how available, and how correct must it be?", "Defines the architecture's quality bar."],
+      ],
+    },
+    { kind: "callout", tone: "warn", title: "Failure mode", body: "Solving the wrong problem because scope was never established. Clarify enough to guide the design, but do not spend the whole interview gathering requirements." },
+    {
+      kind: "prose",
+      heading: "2. Estimation",
+      body: [
+        "Estimation turns vague scale into design pressure. Estimate only what could change the architecture: read and write QPS, peak QPS, storage growth, bandwidth, and workload skew.",
+        "Use rough order-of-magnitude math. Average load is not enough: a few thousand writes per second can spike much higher, and a small set of users or keys can receive a disproportionate share of traffic. Connect every estimate to a decision."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Connect estimates to design choices",
+      headers: ["Pressure", "Possible direction"],
+      rows: [
+        ["High read QPS", "Cache, precompute, or read replicas"],
+        ["High write QPS", "Partition, batch, or process asynchronously"],
+        ["Large storage", "Distributed or object storage"],
+        ["Traffic spikes", "Queue and buffer work"],
+        ["Hot users or keys", "Special handling for skewed load"],
+      ],
     },
     {
       kind: "prose",
-      heading: "1. Requirements (~5 minutes)",
+      heading: "3. API Design",
       body: [
-        "Begin by pinpointing the exact problem you're solving. Don't jump to conclusions—ask clarifying questions.",
-        "**Functional Requirements:** Outline the 2-3 most critical actions the system must support (e.g., 'Users can upload media', 'Users can view a feed').",
-        "**Non-functional Requirements:** Establish constraints regarding scale, performance, availability, and consistency expectations.",
-        "**Capacity Estimation:** Perform these calculations only if they'll influence your design (e.g., determining storage needs or peak QPS to justify architectural choices)."
-      ]
+        "Turn the main features into concrete client operations. Keep each API minimal: method, endpoint, key input, and key output. APIs expose which data must enter, leave, be read, or be written.",
+        "Define only operations that map directly to core requirements. Detailed payload documentation rarely changes the architecture and can distract from the system design discussion."
+      ],
+    },
+    { kind: "code", language: "text", caption: "Core operations for a social product", code: "POST /posts\nGET /feed?cursor=...\nPOST /users/{id}/follow" },
+    {
+      kind: "prose",
+      heading: "4. High-Level Design",
+      body: [
+        "Start with the smallest architecture that satisfies the happy path: `Client → Application → Database`. Then evolve only when a measured pressure appears.",
+        "Availability may justify a load balancer and multiple servers. High read traffic can justify a cache. Slow asynchronous work can justify a queue and workers. Large media can justify object storage and a CDN. Large datasets can justify partitioning. Every component should answer two questions: what problem does it solve, and what happens if we remove it?"
+      ],
+    },
+    {
+      kind: "image",
+      src: deliveryFrameworkEvolutionImg,
+      alt: "System design evolution diagram showing a client, application, and database baseline branching to load balancing, cache, queue workers, object storage CDN, and partitioning when pressure appears",
+      caption: "Start with the baseline, then introduce a capability only when a measurable pressure requires it.",
     },
     {
       kind: "prose",
-      heading: "2. Core Entities (~2 minutes)",
+      heading: "5. Data Design: Access Patterns First",
       body: [
-        "Identify the primary data models in your system. For a ride-sharing app, this might be `Rider`, `Driver`, and `Trip`.",
-        "Establishing these nouns early helps structure your database schema and solidifies your understanding of how data relates."
-      ]
+        "Design data around access patterns, not a preferred database. Identify what is written and read, how frequently, by which key, and in what order. Then label each store as a source of truth, cache, derived view, search index, or object store.",
+        "A clean schema can still be wrong if common queries are expensive. For a home feed, finding followed accounts, fetching each account's posts, merging, sorting, and returning the latest items may require hundreds of underlying lookups for one read."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Representations serve different jobs",
+      headers: ["Representation", "Purpose", "Cost"],
+      rows: [
+        ["Source of truth", "Durable authoritative state", "Often not optimal for every read"],
+        ["Cache", "Fast repeated reads", "Invalidation and stale data"],
+        ["Derived or materialized view", "Prepared result for an important query", "Extra writes and storage"],
+        ["Search index", "Flexible retrieval", "Synchronization lag and operations"],
+      ],
     },
     {
       kind: "prose",
-      heading: "3. API or System Interface (~5 minutes)",
+      heading: "Materialization and Fan-Out",
       body: [
-        "Specify how clients will interact with your system. Outline the core endpoints that fulfill your functional requirements, along with their parameters.",
-        "Write out clear signatures, such as `POST /v1/trip/request(rider_id, location)`.",
-        "This ensures everyone agrees on the system's boundary and usage before you sketch any architecture."
-      ]
+        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a materialized view.",
+        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This fan-out can make the write path more expensive than the read path it optimizes. Workload skew matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
+      ],
+    },
+    { kind: "diagram", caption: "Push, pull, and a hybrid for skewed users", ascii: "New post → update follower timelines → fast feed read\n\nHigh-follower account → store once → merge during feed read\n\nPush: faster reads, higher write amplification\nPull: lower writes, higher read cost" },
+    {
+      kind: "prose",
+      heading: "6. Deep Dive",
+      body: [
+        "Choose the hardest decision tied to the main bottleneck and reason through it as:",
+        " `Problem → Approaches → Mechanics → Trade-offs → Decision`.",
+        " Good deep dives include caching, feed generation, partitioning, consistency, queue processing, or failure recovery.",
+        "The high-level design shows structure. The deep dive demonstrates judgment. Compare two or three realistic approaches, describe the mechanics that make the chosen approach work, and explain what it costs."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Every component adds a new responsibility",
+      headers: ["Component", "New problem introduced"],
+      rows: [
+        ["Cache", "Invalidation and stale data"],
+        ["Queue", "Backlog, retries, and duplicate work"],
+        ["Sharding", "Hot partitions and rebalancing"],
+      ],
     },
     {
       kind: "prose",
-      heading: "4. Data Flow (~5 minutes)",
+      heading: "7. Wrap-Up",
       body: [
-        "Especially useful for backend pipelines and async systems, this step outlines the chronological sequence of events. Detail step-by-step how data moves through the system to produce an output.",
-        "For instance, a web crawler or search engine indexer might look like:",
-        "- Retrieve a list of seed URLs to process.",
-        "- Download the raw HTML content.",
-        "- Extract links and parse the text from the HTML.",
-        "- Save the structured data for querying.",
-        "- Queue new links for future processing.",
-        "You'll use this flow to inform your components in the next step."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "5. High-Level Design (~10-15 minutes)",
-      body: [
-        "Translate your APIs and Data Flow into a block diagram. Keep it straightforward initially.",
-        "Sketch out the path from the client through the load balancer, into the application servers, and down to the database.",
-        "Focus on creating an end-to-end working model before introducing complex scaling techniques."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "6. Deep Dives (~10 minutes)",
-      body: [
-        "Now, elevate your design by identifying and resolving bottlenecks. This is where you demonstrate seniority.",
-        "Address how to scale the database (sharding/replication), how to cut down latency (CDNs/caches), and how to ensure resilience (handling node failures).",
-        "Take the lead in critiquing your own architecture and discussing the trade-offs of your proposed solutions."
-      ]
+        "Close with what you built, where it breaks, and what changes next. Recap the architecture, name the main bottlenecks and failure modes, then connect the next improvement to the original requirements.",
+        "A concise wrap-up proves you understand the limits of the current design. Do not introduce unrelated systems in the final minutes."
+      ],
     },
     {
       kind: "takeaways",
       items: [
-        "Follow a structured framework during interviews to prevent rambling and ensure you cover all critical bases.",
-        "Always start by clarifying ambiguous requirements and defining concrete constraints.",
-        "Establish a simple, working High-Level Design before attempting to optimize or scale individual components.",
-        "Dedicate time at the end to dive deep into bottlenecks, trade-offs, and failure scenarios."
-      ]
+        "Use Requirements → Estimation → API → High-Level Design → Data Design → Deep Dive → Wrap-Up to keep the architecture tied to the problem.",
+        "Estimates are valuable only when they create a design decision about caching, storage, partitioning, queues, replication, or skew handling.",
+        "Design data around access patterns. Materialize or fan out only when the read savings justify write amplification and storage cost.",
+        "End by naming the design's limits, trade-offs, and next bottleneck."
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "sysdesign-framework-api",
-          question: "Why is it recommended to define the API or System Interface before drawing the High Level Design?",
+          id: "sysdesign-framework-estimation",
+          question: "Which estimate is most useful during a system design interview?",
           options: [
-            "Because APIs strictly dictate which database technology you must use.",
-            "To establish a clear contract on the inputs and outputs, ensuring alignment before designing components.",
-            "Because interviewers usually grade the exact syntax of your API.",
-            "You shouldn't; the High Level Design should always be the very first step."
+            "An estimate that changes a design decision, such as whether burst traffic requires buffering",
+            "Every number that can be calculated from the prompt",
+            "Only the average QPS, because peaks are rare",
+            "Exact hardware sizing for every server"
           ],
-          correctIndex: 1,
-          explanation: "Defining the API establishes a clear contract. It proves you understand the functional requirements and guides what components you'll need to build in your High Level Design."
+          correctIndex: 0,
+          explanation: "Estimate to expose design pressure. Numbers that do not affect a decision consume time without improving the architecture."
         },
         {
-          id: "sysdesign-framework-data-flow",
-          question: "When is the 'Data Flow' step particularly useful during an interview?",
+          id: "sysdesign-framework-materialization",
+          question: "When is a materialized feed timeline most appropriate?",
           options: [
-            "For simple CRUD web applications with no background processing.",
-            "When designing backend data-processing systems or asynchronous pipelines.",
-            "When you need to calculate the exact storage capacity required.",
-            "Only when the interviewer explicitly asks for a flowchart."
+            "When frequent reads repeatedly perform expensive assembly work",
+            "When no users read the resulting feed",
+            "When writes must have no extra work",
+            "When the system has no source of truth"
           ],
-          correctIndex: 1,
-          explanation: "Data Flow is highly beneficial for systems with a sequence of actions or background processing (like web crawlers or video transcoders) to trace the data lifecycle before drawing the architecture."
+          correctIndex: 0,
+          explanation: "Materialization trades write work and storage for cheaper repeated reads. It should be justified by a valuable read path."
+        },
+        {
+          id: "sysdesign-framework-skew",
+          question: "Why might a high-follower account use pull-on-read instead of fan-out-on-write?",
+          options: [
+            "Fan-out could create an excessive number of follower timeline writes",
+            "High-follower accounts never publish posts",
+            "Pull-on-read removes the need to store posts",
+            "It guarantees every feed is strongly consistent"
+          ],
+          correctIndex: 0,
+          explanation: "A small number of hot accounts can dominate write amplification. A hybrid strategy handles normal and extreme users differently."
         }
       ]
     }
