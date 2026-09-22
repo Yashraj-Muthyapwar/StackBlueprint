@@ -171,6 +171,7 @@ export type Section =
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "system-design-evolution" }
   | { kind: "system-design-clarification-practice" }
+  | { kind: "system-design-delivery-framework" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
