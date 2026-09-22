@@ -33,6 +33,7 @@ import HttpVisuals from "@/components/system-design/networking-protocols/HttpVis
 import DnsVisuals from "@/components/system-design/networking-protocols/DnsVisuals";
 import { SystemDesignEvolution } from "@/components/system-design/foundations/SystemDesignEvolution";
 import { ClarificationPractice } from "@/components/system-design/foundations/ClarificationPractice";
+import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/DeliveryFrameworkFlow";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -400,6 +401,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "system-design-clarification-practice":
       return <ClarificationPractice />;
+
+    case "system-design-delivery-framework":
+      return <DeliveryFrameworkFlow />;
 
     case "terminal-animation":
       return <TerminalAnimation section={section} />;
