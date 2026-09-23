@@ -159,6 +159,7 @@ export type Section =
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
+  | { kind: "array-slice-explorer" }
   | { kind: "array-operations-lab" }
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
@@ -172,6 +173,8 @@ export type Section =
   | { kind: "system-design-evolution" }
   | { kind: "system-design-clarification-practice" }
   | { kind: "system-design-delivery-framework" }
+  | { kind: "system-design-feed-strategy" }
+  | { kind: "system-design-whatsapp-requirements" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
