@@ -677,12 +677,148 @@ print("Locations of 23:\\n", np.argwhere(matrix == 23))`,
   },
 ];
 
+const arraySlicingAndCopiesSections: Section[] = [
+  {
+    kind: "prose",
+    heading: "Why slicing matters",
+    body: [
+      "A slice selects a consecutive or stepped part of a sequence with `values[start:stop:step]`. The start is included, the stop is excluded, and omitted positions use sensible defaults.",
+      "Slicing is useful for taking the first `k` values, skipping by a step, or reversing a sequence. It also has an important memory difference between Python lists and NumPy arrays.",
+    ],
+  },
+  { kind: "array-slice-explorer" },
+  {
+    kind: "prose",
+    heading: "Read slice notation",
+    body: [
+      "In `values[1:4]`, index 1 is included and index 4 is excluded, so the result contains positions 1, 2, and 3. `values[:k]` means the first `k` values, while `values[::2]` takes every second value.",
+      "A step of `-1` walks backward. `values[::-1]` is a concise reversal, but whether it creates a copy depends on the collection type.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Useful Python list slices",
+    code: `values = [4, 8, 15, 16, 23, 42]
+
+print("middle:", values[1:4])
+print("first three:", values[:3])
+print("every second:", values[::2])
+print("reversed:", values[::-1])`,
+  },
+  {
+    kind: "prose",
+    heading: "A list slice copies, a NumPy basic slice views",
+    body: [
+      "A Python list slice creates a new list, so selecting `k` values takes `O(k)` time and `O(k)` extra space. Changing that result does not change the original list.",
+      "A NumPy basic slice using normal `start:stop:step` syntax is usually a view into the same data buffer. Setting up the view is `O(1)` time and uses `O(1)` additional data storage. A change through the view also changes the original array.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Copying a list slice and viewing a NumPy slice",
+    packages: ["numpy"],
+    code: `import numpy as np
+
+python_list = [4, 8, 15, 16]
+list_slice = python_list[1:3]
+list_slice[0] = 99
+print("list source:", python_list)
+print("list slice: ", list_slice)
+
+vector = np.array([4, 8, 15, 16])
+vector_view = vector[1:3]  # Basic slicing creates a view
+vector_view[0] = 99
+print("NumPy source:", vector)
+print("NumPy view:  ", vector_view)`,
+  },
+  {
+    kind: "callout",
+    tone: "info",
+    title: "Basic slicing is the key phrase",
+    body: "The view rule applies to NumPy basic slices, such as `vector[1:4]` or `vector[::2]`. Fancy or Boolean indexing, such as `vector[[0, 2]]`, creates a copy instead.",
+  },
+  {
+    kind: "table",
+    caption: "Slice costs and storage behavior",
+    headers: ["Expression", "Result", "Time to create", "Extra data storage"],
+    rows: [
+      ["Python `list[start:stop]`", "New list copy", "`O(k)`", "`O(k)`"],
+      ["NumPy `array[start:stop]`", "Basic-slice view", "`O(1)`", "`O(1)`"],
+      ["Python `values[::-1]`", "New reversed list", "`O(n)`", "`O(n)`"],
+      ["NumPy `array[::-1]`", "Basic-slice view with reverse stride", "`O(1)`", "`O(1)`"],
+      ["NumPy `array[[0, 2]]`", "New copy from fancy indexing", "`O(k)`", "`O(k)`"],
+    ],
+  },
+  {
+    kind: "takeaways",
+    items: [
+      "Use `values[start:stop:step]` to take a range, select every nth value, or reverse a sequence.",
+      "Python list slicing copies selected values, which costs `O(k)` time and `O(k)` extra space.",
+      "NumPy basic slicing creates a view, so constructing it is `O(1)` and mutations through the view affect the source array.",
+      "NumPy fancy and Boolean indexing are different: they create copies rather than views.",
+    ],
+  },
+  {
+    kind: "quiz",
+    questions: [
+      {
+        id: "array-slicing-1",
+        question: "What values does `values[1:4]` select from `[4, 8, 15, 16, 23]`?",
+        options: ["[4, 8, 15, 16]", "[8, 15, 16]", "[8, 15, 16, 23]", "[15, 16, 23]"],
+        correctIndex: 1,
+        explanation: "The start index is included and the stop index is excluded.",
+      },
+      {
+        id: "array-slicing-2",
+        question: "What does `values[::-1]` do for a Python list?",
+        options: [
+          "Reverses the same list in place",
+          "Returns a new reversed list",
+          "Returns every second value",
+          "Sorts the list descending",
+        ],
+        correctIndex: 1,
+        explanation: "It is slice syntax, so it constructs a new list in reverse order.",
+      },
+      {
+        id: "array-slicing-3",
+        question:
+          "After `view = vector[1:3]`, what happens when `view[0] = 99` for a NumPy basic slice?",
+        options: [
+          "Only the view changes",
+          "The matching element in vector also changes",
+          "NumPy raises a TypeError",
+          "The view becomes a Python list",
+        ],
+        correctIndex: 1,
+        explanation: "A NumPy basic slice is a view into the same underlying data buffer.",
+      },
+      {
+        id: "array-slicing-4",
+        question: "Which NumPy selection creates a copy rather than a basic-slice view?",
+        options: ["`vector[1:4]`", "`vector[::2]`", "`vector[::-1]`", "`vector[[0, 2]]`"],
+        correctIndex: 3,
+        explanation: "A list of indices uses fancy indexing, which returns a copy.",
+      },
+      {
+        id: "array-slicing-5",
+        question: "Create `first_three` from the first three values of `values`, then print it.",
+        interactiveCode: true,
+        initialCode: "values = [4, 8, 15, 16, 23]\n\n# Write your code here\n",
+        testCode: "print(first_three)",
+        expectedOutput: "[4, 8, 15]",
+        explanation: "Use the omitted start form: `first_three = values[:3]`.",
+      },
+    ],
+  },
+];
+
 const oneDimensionalOperationsSections: Section[] = [
   {
     kind: "prose",
     heading: "Why this matters",
     body: [
-      "One-dimensional array work is built from a small set of operations: create, insert, traverse, access, search, and delete. Knowing which operations shift values and which jump directly to an index makes complexity analysis much easier.",
+      "One-dimensional array work is built from a small set of operations: create, append, insert, traverse, access, search, and delete. Knowing which operations shift values, which grow at the end, and which jump directly to an index makes complexity analysis much easier.",
     ],
   },
   { kind: "array-operations-lab" },
@@ -714,6 +850,24 @@ print("Type: ", type(numeric))`,
   },
   {
     kind: "prose",
+    heading: "Appending and dynamic resizing",
+    body: [
+      "A fixed-size array reserves its size before storing values. A Python `list` is a dynamic array: it keeps spare capacity so `append(value)` can add at the end in amortized `O(1)` time. Most appends use capacity already available, while an occasional resize allocates a larger block and copies existing references.",
+      "That is different from `insert(index, value)` in the beginning or middle, which shifts later values and costs `O(n)`. NumPy's `np.append` returns a new array, so it is `O(n)` rather than a dynamic in-place append.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Append to a Python dynamic array",
+    code: `values = [4, 8, 15]
+
+values.append(16)
+values.append(23)
+
+print(values)`,
+  },
+  {
+    kind: "prose",
     heading: "Insertion and deletion",
     body: [
       "Inserting or deleting in the middle usually costs `O(n)` time because later values must shift. The `array` module changes the existing object with `insert` or `del`; NumPy returns a new array with `np.insert` or `np.delete`, so it also needs `O(n)` extra space for that result.",
@@ -729,6 +883,9 @@ import numpy as np
 typed = array("i", [4, 8, 15, 16])
 typed.insert(2, 99)
 del typed[1]
+numeric = np.array([4, 8, 15, 16])
+numeric = np.insert(numeric, 2, 99)
+numeric = np.delete(numeric, 1)
 print("--- Standard Library Array ---")
 print("Result: ", typed)
 print("Type:   ", type(typed))
@@ -736,6 +893,29 @@ print("Type:   ", type(typed))
 print("\\n--- NumPy Array ---")
 print("Result: ", numeric)
 print("Type:   ", type(numeric))`,
+  },
+  {
+    kind: "prose",
+    heading: "In-place and out-of-place transformations",
+    body: [
+      "An in-place operation changes the existing collection. `values.reverse()` changes a Python list and uses `O(1)` auxiliary space. `values.sort()` also changes the list itself, although Python's sorting implementation can use temporary memory internally.",
+      "An out-of-place operation returns a separate result. `sorted(values)` returns a new sorted list and `values[::-1]` returns a reversed copy, so both need new list storage. When a prompt requires `O(1)` extra space, be explicit about whether the operation mutates the input and what temporary memory its algorithm needs.",
+    ],
+  },
+  {
+    kind: "interactive-code",
+    caption: "Mutate a list or create a new result",
+    code: `values = [16, 4, 23, 8]
+same_list = values
+
+values.reverse()                 # Mutates values in place
+print("reverse changed same list:", values is same_list, values)
+
+sorted_copy = sorted(values)     # Creates a new list
+reversed_copy = values[::-1]     # Slice creates a new list
+print("original after copies:", values)
+print("sorted copy:", sorted_copy)
+print("reversed copy:", reversed_copy)`,
   },
   {
     kind: "prose",
@@ -784,6 +964,12 @@ print("Search index of 16:", matching_indices[0])`,
     rows: [
       ["Create from n values", "`O(n)`", "`O(n)`", "Values must be stored."],
       [
+        "Append to Python list",
+        "Amortized `O(1)`",
+        "Amortized `O(1)`",
+        "Most appends use available capacity; occasional resizing copies `O(n)` references.",
+      ],
+      [
         "Insert at an index",
         "`O(n)`",
         "`O(1)` array module; `O(n)` NumPy",
@@ -798,15 +984,24 @@ print("Search index of 16:", matching_indices[0])`,
         "`O(1)` array module; `O(n)` NumPy",
         "Later values shift; NumPy returns a new array.",
       ],
+      ["`list.reverse()`", "`O(n)`", "`O(1)`", "Reverses the existing list in place."],
+      [
+        "`sorted(values)` or `values[::-1]`",
+        "`O(n log n)` / `O(n)`",
+        "`O(n)`",
+        "Returns a separate sorted or reversed list.",
+      ],
     ],
   },
   {
     kind: "takeaways",
     items: [
       "Use `array.array` for typed, mutable sequences and NumPy for numerical arrays and vectorized work.",
+      "Python `list.append()` grows a dynamic array in amortized `O(1)` time, unlike an insertion in the middle.",
       "Access is `O(1)`, while traversal and an unknown-value search are `O(n)`.",
       "Middle insertion and deletion are `O(n)` because positions after the change must move.",
       "NumPy `insert` and `delete` produce new arrays, so their extra-space cost is `O(n)`.",
+      "In-place means the existing collection changes. It does not automatically guarantee `O(1)` auxiliary space for every algorithm.",
     ],
   },
   {
@@ -888,6 +1083,36 @@ export const oneDimensionalArrayOperations: LessonBuilder<Record<string, never>>
       line: 1,
       array: [4, 8, 15, 16, 23],
       narration: "Use the operations lab to explore one-dimensional arrays.",
+    },
+  ],
+};
+
+export const arraySlicingAndCopies: LessonBuilder<Record<string, never>> = {
+  slug: "array-slicing-and-copies",
+  title: "Array Slicing and Copies",
+  subtitle: "Select subarrays with slice notation and understand list copies versus NumPy views.",
+  problem:
+    "Extract part of a sequence without accidentally changing its time, space, or mutation behavior.",
+  spotIt: [
+    "You need the first k values, a contiguous subarray, every nth value, or a reversed sequence.",
+    "The prompt cares whether a derived sequence shares data with its source.",
+  ],
+  avoidWhen: [
+    "You only need a single known element, where direct indexing is clearer.",
+    "You need to filter NumPy values with an arbitrary condition, which uses Boolean indexing and returns a copy.",
+  ],
+  variant: "array-slicing-and-copies",
+  view: "array",
+  code: "# Explore slicing, copies, and views in the concept lesson.",
+  sections: arraySlicingAndCopiesSections,
+  defaultInputs: {},
+  inputs: [],
+  build: () => [
+    {
+      line: 1,
+      array: [4, 8, 15, 16, 23, 42],
+      narration:
+        "Use the concept lesson to compare Python list slices with NumPy basic-slice views.",
     },
   ],
 };
