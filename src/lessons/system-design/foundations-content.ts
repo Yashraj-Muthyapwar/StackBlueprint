@@ -337,11 +337,11 @@ const deliveryFramework: LessonContent = {
       kind: "prose",
       heading: "Materialization and Fan-Out",
       body: [
-        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a materialized view.",
-        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This fan-out can make the write path more expensive than the read path it optimizes. Workload skew matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
+        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a ==mint:materialized view==.",
+        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This ==amber:fan-out== can make the write path more expensive than the read path it optimizes. ==violet:Workload skew== matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
       ],
     },
-    { kind: "diagram", caption: "Push, pull, and a hybrid for skewed users", ascii: "New post → update follower timelines → fast feed read\n\nHigh-follower account → store once → merge during feed read\n\nPush: faster reads, higher write amplification\nPull: lower writes, higher read cost" },
+    { kind: "system-design-feed-strategy" },
     {
       kind: "prose",
       heading: "6. Deep Dive",
@@ -370,6 +370,7 @@ const deliveryFramework: LessonContent = {
         "A concise wrap-up proves you understand the limits of the current design. Do not introduce unrelated systems in the final minutes."
       ],
     },
+    { kind: "system-design-whatsapp-requirements" },
     {
       kind: "takeaways",
       items: [
