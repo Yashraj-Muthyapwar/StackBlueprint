@@ -98,6 +98,7 @@ import { diagonal } from "./matrix/diagonal";
 
 import {
   arrayVsLists,
+  arraySlicingAndCopies,
   oneDimensionalArrayOperations,
   twoDimensionalArrayOperations,
   whatIsAnArrayAndTypes,
@@ -143,6 +144,7 @@ export const patterns: PatternEntry[] = [
     lessons: [
       { builder: whatIsAnArrayAndTypes, icon: Boxes },
       { builder: arrayVsLists, icon: Columns3 },
+      { builder: arraySlicingAndCopies, icon: Braces },
       { builder: oneDimensionalArrayOperations, icon: Wrench },
       { builder: twoDimensionalArrayOperations, icon: Table },
     ],
