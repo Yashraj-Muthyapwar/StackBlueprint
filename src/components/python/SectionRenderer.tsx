@@ -6,6 +6,7 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
 import { ArrayDimensionsExplorer } from "@/components/dsa/array-basics/ArrayDimensionsExplorer";
+import { SliceViewExplorer } from "@/components/dsa/array-basics/SliceViewExplorer";
 import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
 import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
 import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
@@ -306,6 +307,9 @@ export function SectionRenderer({
 
     case "array-dimensions-explorer":
       return <ArrayDimensionsExplorer />;
+
+    case "array-slice-explorer":
+      return <SliceViewExplorer />;
 
     case "array-operations-lab":
       return <ArrayOperationsLab />;
