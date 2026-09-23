@@ -159,6 +159,7 @@ export type Section =
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
+  | { kind: "array-slice-explorer" }
   | { kind: "array-operations-lab" }
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
