@@ -175,6 +175,7 @@ export type Section =
   | { kind: "system-design-delivery-framework" }
   | { kind: "system-design-feed-strategy" }
   | { kind: "system-design-whatsapp-requirements" }
+  | { kind: "system-design-estimation-walkthrough" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
