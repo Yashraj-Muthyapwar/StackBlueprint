@@ -2,6 +2,7 @@ import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
 import deliveryFrameworkEvolutionImg from "@/images/system-design/Foundations/delivery-framework-evolution.png";
 import deliveryFrameworkFlowImg from "@/images/system-design/Foundations/delivery-framework-flow.png";
+import estimationCheatSheetMapImg from "@/images/system-design/Foundations/estimation-cheat-sheet-map.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
@@ -760,6 +761,184 @@ const backOfTheEnvelope: LessonContent = {
           ],
           correctIndex: 1,
           explanation: "Total daily requests = 10 million * 10 = 100,000,000. RPS = 100,000,000 / 86,400 ≈ 1,157 requests per second."
+        }
+      ]
+    }
+  ]
+};
+
+const estimationCheatSheet: LessonContent = {
+  slug: "estimation-cheat-sheet",
+  title: "Estimation Cheat Sheet",
+  subtitle: "Turn product scale into the design pressure that should change an architecture.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Estimation Framework",
+      body: [
+        "Turn product scale into **design pressure**: `Users → Actions/User → QPS → Data/Request → Resources`.",
+        "The goal is order-of-magnitude sizing, not an exact capacity plan. Use estimation when scale may affect caching, partitioning, storage, bandwidth, server count, or queues and asynchronous processing.",
+        "Numbers matter only when they change the architecture. Start with QPS, storage, and bandwidth. Add concurrency, cache sizing, or server sizing only when they are relevant to the system being designed."
+      ]
+    },
+    {
+      kind: "image",
+      src: estimationCheatSheetMapImg,
+      alt: "Estimation cheat sheet infographic showing users, actions, QPS, data size, architecture, peak load, read and write load, and storage",
+      caption: "Start with users and actions, quantify QPS and data, then use peak, read/write, and storage pressure to choose the architecture."
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Baseline and trade-off",
+      body: "State your assumptions, round aggressively, and stop once the estimates guide a design decision. More estimation improves capacity reasoning, but it consumes interview time. Doing math without connecting it to a decision is the failure mode."
+    },
+    {
+      kind: "prose",
+      heading: "QPS",
+      body: [
+        "QPS measures request load for request-driven systems. It tells you whether one server, database, or cache can handle the workload.",
+        "`Average QPS = DAU × Actions/User/Day ÷ 86,400`. For quick mental math, use `DAU × Actions/User/Day ÷ 100,000`. Plan for `Peak QPS = Average QPS × Peak Multiplier` because peaks, not averages, break systems.",
+        "If there is no better input, use **3× average** as a rough consumer-app peak assumption. Higher peak assumptions provide more safety, but they increase provisioned capacity."
+      ]
+    },
+    { kind: "code", language: "text", caption: "QPS formulas", code: "Average QPS = DAU × Actions/User/Day ÷ 86,400\nQuick QPS   ≈ DAU × Actions/User/Day ÷ 100,000\nPeak QPS    = Average QPS × Peak Multiplier" },
+    {
+      kind: "prose",
+      heading: "Read vs Write Load",
+      body: [
+        "Always separate reads from writes: `Total QPS → Read QPS + Write QPS`. Reads and writes usually scale differently, so total QPS alone can hide the actual bottleneck.",
+        "High reads suggest **cache, replicas, or precomputation**. High writes suggest **partitioning, batching, logs, or asynchronous ingestion**. If the ratio is unknown, estimate it from user actions.",
+        "Optimizing reads often introduces derived state or replication. Optimizing writes often increases partitioning complexity."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Storage and Media",
+      body: [
+        "Estimate retained data, not only daily writes: `Storage = Records × Size per Record × Retention × Overhead`. Raw data is only part of the final footprint. Indexes, replicas, backups, and fragmentation commonly make provisioned storage **3–5× raw data**.",
+        "Media usually dominates storage. Keep metadata in the database and store large media separately. Object storage scales better for binary content, but it introduces a separate storage and delivery path. Avoid storing large media directly in the primary transactional database."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Typical media order of magnitude",
+      headers: ["Data", "Rough size", "Design consequence"],
+      rows: [
+        ["Text record", "KB", "Usually fits comfortably in a primary datastore."],
+        ["Photo", "100 KB to MB", "Object storage and a CDN often matter before database capacity."],
+        ["Short video", "MB to tens of MB", "Bandwidth and delivery paths become first-class concerns."],
+        ["Long video", "Hundreds of MB to GB", "Use object storage, CDN delivery, and lifecycle tiers."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Bandwidth and Internal Traffic Amplification",
+      body: [
+        "`Bandwidth = QPS × Data Size per Request`. Calculate ingress and egress separately because response traffic often dominates. Use this for media-heavy systems, large API responses, downloads, streaming, and cross-region traffic.",
+        "One client request may trigger cache lookups, database reads, service calls, media lookups, and logging. In a service-oriented or fan-out-heavy design, `10K external QPS × 100 backend operations ≈ 1M internal ops/sec`. Estimate the largest amplification path instead of every internal call."
+      ]
+    },
+    { kind: "callout", tone: "warn", title: "Network-bound does not mean high QPS", body: "A system can have manageable request volume but still be network-bound when each request transfers a large payload. CDNs and compression reduce origin traffic, but add caching behavior and infrastructure." },
+    {
+      kind: "prose",
+      heading: "Server Capacity, Cache Sizing, and Concurrent Users",
+      body: [
+        "Estimate horizontal capacity with `Servers = Peak QPS ÷ (Throughput per Server × Target Utilization)`. Use usable, not maximum, capacity. A target around **60–70% utilization** leaves room for bursts, failures, and queue buildup. Do not assume perfectly linear scaling.",
+        "Cache the **hot working set**, not necessarily the entire dataset: `Cache Size = Hot Items × Item Size × Overhead`. A useful heuristic is `20% of data → ~80% of requests`. More cache reduces database pressure, but increases memory cost and invalidation complexity.",
+        "For chat, gaming, streaming, live events, and long-lived connections, estimate simultaneous users: `Concurrent Users = DAU × (Sessions/Day × Session Duration) ÷ Peak Window`. Registered users are not active load."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Latency and Tail Behavior",
+      body: [
+        "Use percentiles, not averages: **P50** means 50% of requests are faster, **P95** means 95% are faster, and **P99** means 99% are faster. `P95 < 200 ms` says more than `average = 200 ms` because averages hide slow tail requests.",
+        "Use P95 as the baseline when no stricter tail requirement is specified. Improving tail latency often requires more capacity and resilience, but it protects the portion of users averages conceal."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Numbers to remember",
+      headers: ["Reference", "Approximation"],
+      rows: [
+        ["One day", "`~10⁵ sec`"],
+        ["One month", "`~2.5M sec`"],
+        ["One year", "`~3 × 10⁷ sec`"],
+        ["Data units", "KB = 10³, MB = 10⁶, GB = 10⁹, TB = 10¹², PB = 10¹⁵ bytes"],
+        ["Peak traffic", "~3–5× average"],
+        ["Storage provisioned", "~3–5× raw data"],
+        ["Server utilization", "~60–70%"],
+        ["Hot cache set", "~20% data → 80% requests"]
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Architecture mapping",
+      headers: ["Estimate shows", "Design direction"],
+      rows: [
+        ["High read QPS", "Cache, replicas, or precompute"],
+        ["High write QPS", "Partition, batch, or queue"],
+        ["Huge storage", "Distributed or object storage"],
+        ["Media-heavy traffic", "CDN"],
+        ["Burst traffic", "Queue or buffering"],
+        ["Hot working set", "Cache"],
+        ["Large concurrent users", "Horizontal connection handling"],
+        ["High tail latency", "Add headroom or remove slow dependencies"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Common Mistakes and the Estimation Flow",
+      body: [
+        "Avoid sizing for average instead of peak, using registered users instead of active or concurrent users, using total QPS without a read/write split, ignoring storage overhead or internal amplification, assuming linear scaling, confusing throughput with latency, and calculating numbers that do not change the design.",
+        "Follow this path: `Users → Actions per User → Average QPS → Peak QPS → Read vs Write → Data Size → Storage / Bandwidth / Compute → Architecture Decision`. State assumptions, round aggressively, sanity-check the result, and stop once the numbers are sufficient to guide the design."
+      ]
+    },
+    { kind: "system-design-estimation-walkthrough" },
+    {
+      kind: "takeaways",
+      items: [
+        "Estimation turns product scale into design pressure. Its job is architectural direction, not exact capacity planning.",
+        "Use average QPS, peak QPS, read/write split, storage, and bandwidth as the first pass. Add deeper estimates only when relevant.",
+        "Provision for peaks, retained data, and overhead. Average traffic and raw storage are not safe capacity targets.",
+        "Cache the hot working set, keep media out of the primary transactional database, and model concurrency for long-lived connections.",
+        "The estimate is complete when it tells you what pressure the architecture must handle."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "estimation-cheat-qps",
+          question: "A product receives 864 million requests per day. What is its average QPS?",
+          options: ["100 QPS", "1,000 QPS", "10,000 QPS", "100,000 QPS"],
+          correctIndex: 2,
+          explanation: "864,000,000 ÷ 86,400 = 10,000 requests per second."
+        },
+        {
+          id: "estimation-cheat-peak",
+          question: "Which estimate should use a 3–5× multiplier for a consumer product when no better peak data exists?",
+          options: [
+            "Raw storage",
+            "Peak QPS",
+            "Cache item size",
+            "P95 latency"
+          ],
+          correctIndex: 1,
+          explanation: "Peak QPS represents concentrated activity during busy periods. State the multiplier as an assumption instead of silently using it."
+        },
+        {
+          id: "estimation-cheat-ratio",
+          question: "A system stores 2 TB of raw retained data. Which first-pass provisioned-storage estimate is most appropriate?",
+          options: [
+            "2 TB, because raw data is the full footprint",
+            "About 2.6 TB, adding cache overhead only",
+            "About 6–10 TB, allowing for indexes, replicas, backups, and fragmentation",
+            "20 TB, because all storage must be copied ten times"
+          ],
+          correctIndex: 2,
+          explanation: "Provisioned storage is commonly 3–5× raw storage after indexes, replicas, backups, and fragmentation."
         }
       ]
     }
@@ -2520,7 +2699,7 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope, estimationCheatSheet],
   },
   "networking-protocols": {
     slug: "networking-protocols",
