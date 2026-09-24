@@ -37,6 +37,7 @@ import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/De
 import { FeedStrategy } from "@/components/system-design/foundations/FeedStrategy";
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
+import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -416,6 +417,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "system-design-estimation-walkthrough":
       return <EstimationWalkthrough />;
+
+    case "system-design-scalability-loop":
+      return <ScalabilityLoop />;
 
     case "terminal-animation":
       return <TerminalAnimation section={section} />;
