@@ -176,6 +176,7 @@ export type Section =
   | { kind: "system-design-feed-strategy" }
   | { kind: "system-design-whatsapp-requirements" }
   | { kind: "system-design-estimation-walkthrough" }
+  | { kind: "system-design-scalability-loop" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
