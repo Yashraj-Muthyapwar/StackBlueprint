@@ -115,10 +115,10 @@ function LessonPage() {
             {p.category} · {p.title} · {String(idx + 1).padStart(2, "0")} /{" "}
             {String(p.lessons.length).padStart(2, "0")}
           </p>
-          <h1 className="mt-1.5 text-2xl font-semibold tracking-tight lg:text-3xl">
+          <h1 className="lesson-title mt-1.5 font-semibold tracking-tight">
             {entry.builder.title}
           </h1>
-          <p className="mt-2 max-w-3xl text-pretty text-[15px] text-muted-foreground">
+          <p className="lesson-subtitle mt-2 max-w-3xl text-pretty text-muted-foreground">
             {entry.builder.subtitle}
           </p>
         </div>
@@ -143,7 +143,7 @@ function LessonPage() {
                     how to spot it in an interview
                   </span>
                 </div>
-                <ul className="space-y-1.5 text-[14px] leading-relaxed text-foreground/90">
+                <ul className="lesson-supporting space-y-1.5 text-foreground/90">
                   {entry.builder.spotIt.map((s, i) => (
                     <li key={i} className="flex gap-2">
                       <span className="mt-2 size-1 shrink-0 rounded-full bg-mint/70" />
@@ -161,7 +161,7 @@ function LessonPage() {
                     when to avoid this pattern
                   </span>
                 </div>
-                <ul className="space-y-1.5 text-[14px] leading-relaxed text-foreground/90">
+                <ul className="lesson-supporting space-y-1.5 text-foreground/90">
                   {entry.builder.avoidWhen.map((s, i) => (
                     <li key={i} className="flex gap-2">
                       <span className="mt-2 size-1 shrink-0 rounded-full bg-rose/70" />
@@ -210,7 +210,7 @@ function LessonPage() {
                         {prob.difficulty}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{prob.hint}</p>
+                    <p className="lesson-supporting text-muted-foreground">{prob.hint}</p>
                   </div>
                 </div>
               ))}
@@ -221,7 +221,7 @@ function LessonPage() {
         {entry.builder.takeaways?.length ? (
           <section className="mt-8 rounded-2xl border border-mint/30 bg-mint/[0.04] p-6">
             <h2 className="text-lg font-semibold text-foreground">Key Takeaways</h2>
-            <ul className="mt-4 space-y-2 text-sm leading-relaxed text-foreground/90">
+            <ul className="lesson-supporting mt-4 space-y-2 text-foreground/90">
               {entry.builder.takeaways.map((takeaway) => (
                 <li key={takeaway} className="flex gap-2">
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-mint" />

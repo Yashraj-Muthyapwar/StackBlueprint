@@ -87,6 +87,7 @@ const sections: Section[] = [
           "Answering Framework",
           "Clarifying Requirements",
           "Back-of-the-Envelope Estimation",
+          "Estimation Cheat Sheet",
         ],
         unlocked: true,
         routeBase: "foundations",
@@ -98,12 +99,8 @@ const sections: Section[] = [
         icon: Gauge,
         modules: [
           "Scalability",
-          "Availability & Reliability",
-          "Latency vs Throughput vs Bandwidth",
-          "Fault Tolerance",
-          "Percentiles (p50 / p99)",
         ],
-        unlocked: false,
+        unlocked: true,
         routeBase: "foundations",
       },
       {

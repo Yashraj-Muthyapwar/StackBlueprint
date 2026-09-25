@@ -1,6 +1,10 @@
 import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
-import deliveryFrameworkImg from "@/images/system-design/Foundations/delivery-framework.png";
+import deliveryFrameworkEvolutionImg from "@/images/system-design/Foundations/delivery-framework-evolution.png";
+import deliveryFrameworkFlowImg from "@/images/system-design/Foundations/delivery-framework-flow.png";
+import estimationCheatSheetMapImg from "@/images/system-design/Foundations/estimation-cheat-sheet-map.png";
+import scalabilityLoopImg from "@/images/system-design/Foundations/scalability-loop.png";
+import scalabilityArchitectureImg from "@/images/system-design/Foundations/scalability-architecture.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
@@ -180,6 +184,7 @@ const whatIsSystemDesign: LessonContent = {
         "For any open-ended design problem, begin with `Client → API/Application → Database`, then evolve one constraint at a time. Starting simple keeps the reasoning clear, even when the system later needs to grow."
       ],
     },
+    { kind: "system-design-clarification-practice" },
     {
       kind: "takeaways",
       items: [
@@ -235,117 +240,187 @@ const whatIsSystemDesign: LessonContent = {
 const deliveryFramework: LessonContent = {
   slug: "delivery-framework",
   title: "Delivery Framework",
-  subtitle:
-    "A structured, step-by-step approach to ace your system design interviews.",
+  subtitle: "Move from an ambiguous prompt to a justified architecture, one decision at a time.",
   sections: [
     {
       kind: "prose",
       heading: "The Interview Framework",
       body: [
-        "System design interviews are open-ended by design. Leveraging a consistent framework ensures you hit all the critical evaluating criteria while staying on schedule.",
-        "A typical 45-minute session is best divided into these sequential phases:"
-      ]
+        "A system design interview is easier to navigate when each phase produces the input for the next. Start with the problem, quantify the pressure, then add complexity only when it earns its place."
+      ],
     },
     {
       kind: "image",
-      src: deliveryFrameworkImg,
-      alt: "A timeline showing the sequential delivery framework for system design interviews",
-      caption: "The 45-minute interview delivery framework",
+      src: deliveryFrameworkFlowImg,
+      alt: "Seven-step system design interview delivery flow: requirements, estimation, API, high-level design, data design, deep dive, and wrap-up",
+      caption: "A delivery flow keeps the conversation ordered: each phase produces evidence for the next architectural decision.",
+    },
+    { kind: "system-design-delivery-framework" },
+    {
+      kind: "prose",
+      heading: "1. Requirements",
+      body: [
+        "Define what the system must do and the quality bar it must satisfy. Functional requirements cover core features, users, primary use cases, and what is out of scope. Non-functional requirements cover scale, latency, availability, reliability, consistency, retention, and maintainability.",
+        "Always start here. The same feature can need a completely different design when traffic, correctness, latency, or availability changes. If information is missing, state a reasonable assumption and continue."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Clarify the problem before choosing technology",
+      headers: ["Requirement type", "Questions to settle", "Why it matters"],
+      rows: [
+        ["Functional", "Who uses it? What are the 2-3 critical actions? What is out of scope?", "Defines the request flows you must support."],
+        ["Non-functional", "How fast, how large, how available, and how correct must it be?", "Defines the architecture's quality bar."],
+      ],
+    },
+    { kind: "callout", tone: "warn", title: "Failure mode", body: "Solving the wrong problem because scope was never established. Clarify enough to guide the design, but do not spend the whole interview gathering requirements." },
+    {
+      kind: "prose",
+      heading: "2. Estimation",
+      body: [
+        "Estimation turns vague scale into design pressure. Estimate only what could change the architecture: read and write QPS, peak QPS, storage growth, bandwidth, and workload skew.",
+        "Use rough order-of-magnitude math. Average load is not enough: a few thousand writes per second can spike much higher, and a small set of users or keys can receive a disproportionate share of traffic. Connect every estimate to a decision."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Connect estimates to design choices",
+      headers: ["Pressure", "Possible direction"],
+      rows: [
+        ["High read QPS", "Cache, precompute, or read replicas"],
+        ["High write QPS", "Partition, batch, or process asynchronously"],
+        ["Large storage", "Distributed or object storage"],
+        ["Traffic spikes", "Queue and buffer work"],
+        ["Hot users or keys", "Special handling for skewed load"],
+      ],
     },
     {
       kind: "prose",
-      heading: "1. Requirements (~5 minutes)",
+      heading: "3. API Design",
       body: [
-        "Begin by pinpointing the exact problem you're solving. Don't jump to conclusions—ask clarifying questions.",
-        "**Functional Requirements:** Outline the 2-3 most critical actions the system must support (e.g., 'Users can upload media', 'Users can view a feed').",
-        "**Non-functional Requirements:** Establish constraints regarding scale, performance, availability, and consistency expectations.",
-        "**Capacity Estimation:** Perform these calculations only if they'll influence your design (e.g., determining storage needs or peak QPS to justify architectural choices)."
-      ]
+        "Turn the main features into concrete client operations. Keep each API minimal: method, endpoint, key input, and key output. APIs expose which data must enter, leave, be read, or be written.",
+        "Define only operations that map directly to core requirements. Detailed payload documentation rarely changes the architecture and can distract from the system design discussion."
+      ],
+    },
+    { kind: "code", language: "text", caption: "Core operations for a social product", code: "POST /posts\nGET /feed?cursor=...\nPOST /users/{id}/follow" },
+    {
+      kind: "prose",
+      heading: "4. High-Level Design",
+      body: [
+        "Start with the smallest architecture that satisfies the happy path: `Client → Application → Database`. Then evolve only when a measured pressure appears.",
+        "Availability may justify a load balancer and multiple servers. High read traffic can justify a cache. Slow asynchronous work can justify a queue and workers. Large media can justify object storage and a CDN. Large datasets can justify partitioning. Every component should answer two questions: what problem does it solve, and what happens if we remove it?"
+      ],
+    },
+    {
+      kind: "image",
+      src: deliveryFrameworkEvolutionImg,
+      alt: "System design evolution diagram showing a client, application, and database baseline branching to load balancing, cache, queue workers, object storage CDN, and partitioning when pressure appears",
+      caption: "Start with the baseline, then introduce a capability only when a measurable pressure requires it.",
     },
     {
       kind: "prose",
-      heading: "2. Core Entities (~2 minutes)",
+      heading: "5. Data Design: Access Patterns First",
       body: [
-        "Identify the primary data models in your system. For a ride-sharing app, this might be `Rider`, `Driver`, and `Trip`.",
-        "Establishing these nouns early helps structure your database schema and solidifies your understanding of how data relates."
-      ]
+        "Design data around access patterns, not a preferred database. Identify what is written and read, how frequently, by which key, and in what order. Then label each store as a source of truth, cache, derived view, search index, or object store.",
+        "A clean schema can still be wrong if common queries are expensive. For a home feed, finding followed accounts, fetching each account's posts, merging, sorting, and returning the latest items may require hundreds of underlying lookups for one read."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Representations serve different jobs",
+      headers: ["Representation", "Purpose", "Cost"],
+      rows: [
+        ["Source of truth", "Durable authoritative state", "Often not optimal for every read"],
+        ["Cache", "Fast repeated reads", "Invalidation and stale data"],
+        ["Derived or materialized view", "Prepared result for an important query", "Extra writes and storage"],
+        ["Search index", "Flexible retrieval", "Synchronization lag and operations"],
+      ],
     },
     {
       kind: "prose",
-      heading: "3. API or System Interface (~5 minutes)",
+      heading: "Materialization and Fan-Out",
       body: [
-        "Specify how clients will interact with your system. Outline the core endpoints that fulfill your functional requirements, along with their parameters.",
-        "Write out clear signatures, such as `POST /v1/trip/request(rider_id, location)`.",
-        "This ensures everyone agrees on the system's boundary and usage before you sketch any architecture."
-      ]
+        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a ==mint:materialized view==.",
+        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This ==amber:fan-out== can make the write path more expensive than the read path it optimizes. ==violet:Workload skew== matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
+      ],
+    },
+    { kind: "system-design-feed-strategy" },
+    {
+      kind: "prose",
+      heading: "6. Deep Dive",
+      body: [
+        "Choose the hardest decision tied to the main bottleneck and reason through it as:",
+        " `Problem → Approaches → Mechanics → Trade-offs → Decision`.",
+        " Good deep dives include caching, feed generation, partitioning, consistency, queue processing, or failure recovery.",
+        "The high-level design shows structure. The deep dive demonstrates judgment. Compare two or three realistic approaches, describe the mechanics that make the chosen approach work, and explain what it costs."
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Every component adds a new responsibility",
+      headers: ["Component", "New problem introduced"],
+      rows: [
+        ["Cache", "Invalidation and stale data"],
+        ["Queue", "Backlog, retries, and duplicate work"],
+        ["Sharding", "Hot partitions and rebalancing"],
+      ],
     },
     {
       kind: "prose",
-      heading: "4. Data Flow (~5 minutes)",
+      heading: "7. Wrap-Up",
       body: [
-        "Especially useful for backend pipelines and async systems, this step outlines the chronological sequence of events. Detail step-by-step how data moves through the system to produce an output.",
-        "For instance, a web crawler or search engine indexer might look like:",
-        "- Retrieve a list of seed URLs to process.",
-        "- Download the raw HTML content.",
-        "- Extract links and parse the text from the HTML.",
-        "- Save the structured data for querying.",
-        "- Queue new links for future processing.",
-        "You'll use this flow to inform your components in the next step."
-      ]
+        "Close with what you built, where it breaks, and what changes next. Recap the architecture, name the main bottlenecks and failure modes, then connect the next improvement to the original requirements.",
+        "A concise wrap-up proves you understand the limits of the current design. Do not introduce unrelated systems in the final minutes."
+      ],
     },
-    {
-      kind: "prose",
-      heading: "5. High-Level Design (~10-15 minutes)",
-      body: [
-        "Translate your APIs and Data Flow into a block diagram. Keep it straightforward initially.",
-        "Sketch out the path from the client through the load balancer, into the application servers, and down to the database.",
-        "Focus on creating an end-to-end working model before introducing complex scaling techniques."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "6. Deep Dives (~10 minutes)",
-      body: [
-        "Now, elevate your design by identifying and resolving bottlenecks. This is where you demonstrate seniority.",
-        "Address how to scale the database (sharding/replication), how to cut down latency (CDNs/caches), and how to ensure resilience (handling node failures).",
-        "Take the lead in critiquing your own architecture and discussing the trade-offs of your proposed solutions."
-      ]
-    },
+    { kind: "system-design-whatsapp-requirements" },
     {
       kind: "takeaways",
       items: [
-        "Follow a structured framework during interviews to prevent rambling and ensure you cover all critical bases.",
-        "Always start by clarifying ambiguous requirements and defining concrete constraints.",
-        "Establish a simple, working High-Level Design before attempting to optimize or scale individual components.",
-        "Dedicate time at the end to dive deep into bottlenecks, trade-offs, and failure scenarios."
-      ]
+        "Use Requirements → Estimation → API → High-Level Design → Data Design → Deep Dive → Wrap-Up to keep the architecture tied to the problem.",
+        "Estimates are valuable only when they create a design decision about caching, storage, partitioning, queues, replication, or skew handling.",
+        "Design data around access patterns. Materialize or fan out only when the read savings justify write amplification and storage cost.",
+        "End by naming the design's limits, trade-offs, and next bottleneck."
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "sysdesign-framework-api",
-          question: "Why is it recommended to define the API or System Interface before drawing the High Level Design?",
+          id: "sysdesign-framework-estimation",
+          question: "Which estimate is most useful during a system design interview?",
           options: [
-            "Because APIs strictly dictate which database technology you must use.",
-            "To establish a clear contract on the inputs and outputs, ensuring alignment before designing components.",
-            "Because interviewers usually grade the exact syntax of your API.",
-            "You shouldn't; the High Level Design should always be the very first step."
+            "An estimate that changes a design decision, such as whether burst traffic requires buffering",
+            "Every number that can be calculated from the prompt",
+            "Only the average QPS, because peaks are rare",
+            "Exact hardware sizing for every server"
           ],
-          correctIndex: 1,
-          explanation: "Defining the API establishes a clear contract. It proves you understand the functional requirements and guides what components you'll need to build in your High Level Design."
+          correctIndex: 0,
+          explanation: "Estimate to expose design pressure. Numbers that do not affect a decision consume time without improving the architecture."
         },
         {
-          id: "sysdesign-framework-data-flow",
-          question: "When is the 'Data Flow' step particularly useful during an interview?",
+          id: "sysdesign-framework-materialization",
+          question: "When is a materialized feed timeline most appropriate?",
           options: [
-            "For simple CRUD web applications with no background processing.",
-            "When designing backend data-processing systems or asynchronous pipelines.",
-            "When you need to calculate the exact storage capacity required.",
-            "Only when the interviewer explicitly asks for a flowchart."
+            "When frequent reads repeatedly perform expensive assembly work",
+            "When no users read the resulting feed",
+            "When writes must have no extra work",
+            "When the system has no source of truth"
           ],
-          correctIndex: 1,
-          explanation: "Data Flow is highly beneficial for systems with a sequence of actions or background processing (like web crawlers or video transcoders) to trace the data lifecycle before drawing the architecture."
+          correctIndex: 0,
+          explanation: "Materialization trades write work and storage for cheaper repeated reads. It should be justified by a valuable read path."
+        },
+        {
+          id: "sysdesign-framework-skew",
+          question: "Why might a high-follower account use pull-on-read instead of fan-out-on-write?",
+          options: [
+            "Fan-out could create an excessive number of follower timeline writes",
+            "High-follower accounts never publish posts",
+            "Pull-on-read removes the need to store posts",
+            "It guarantees every feed is strongly consistent"
+          ],
+          correctIndex: 0,
+          explanation: "A small number of hot accounts can dominate write amplification. A hybrid strategy handles normal and extreme users differently."
         }
       ]
     }
@@ -691,6 +766,289 @@ const backOfTheEnvelope: LessonContent = {
         }
       ]
     }
+  ]
+};
+
+const estimationCheatSheet: LessonContent = {
+  slug: "estimation-cheat-sheet",
+  title: "Estimation Cheat Sheet",
+  subtitle: "Turn product scale into the design pressure that should change an architecture.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Estimation Framework",
+      body: [
+        "Turn product scale into **design pressure**: `Users → Actions/User → QPS → Data/Request → Resources`.",
+        "The goal is order-of-magnitude sizing, not an exact capacity plan. Use estimation when scale may affect caching, partitioning, storage, bandwidth, server count, or queues and asynchronous processing.",
+        "Numbers matter only when they change the architecture. Start with QPS, storage, and bandwidth. Add concurrency, cache sizing, or server sizing only when they are relevant to the system being designed."
+      ]
+    },
+    {
+      kind: "image",
+      src: estimationCheatSheetMapImg,
+      alt: "Estimation cheat sheet infographic showing users, actions, QPS, data size, architecture, peak load, read and write load, and storage",
+      caption: "Start with users and actions, quantify QPS and data, then use peak, read/write, and storage pressure to choose the architecture."
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Baseline and trade-off",
+      body: "State your assumptions, round aggressively, and stop once the estimates guide a design decision. More estimation improves capacity reasoning, but it consumes interview time. Doing math without connecting it to a decision is the failure mode."
+    },
+    {
+      kind: "prose",
+      heading: "QPS",
+      body: [
+        "QPS measures request load for request-driven systems. It tells you whether one server, database, or cache can handle the workload.",
+        "`Average QPS = DAU × Actions/User/Day ÷ 86,400`. For quick mental math, use `DAU × Actions/User/Day ÷ 100,000`. Plan for `Peak QPS = Average QPS × Peak Multiplier` because peaks, not averages, break systems.",
+        "If there is no better input, use **3× average** as a rough consumer-app peak assumption. Higher peak assumptions provide more safety, but they increase provisioned capacity."
+      ]
+    },
+    { kind: "code", language: "text", caption: "QPS formulas", code: "Average QPS = DAU × Actions/User/Day ÷ 86,400\nQuick QPS   ≈ DAU × Actions/User/Day ÷ 100,000\nPeak QPS    = Average QPS × Peak Multiplier" },
+    {
+      kind: "prose",
+      heading: "Read vs Write Load",
+      body: [
+        "Always separate reads from writes: `Total QPS → Read QPS + Write QPS`. Reads and writes usually scale differently, so total QPS alone can hide the actual bottleneck.",
+        "High reads suggest **cache, replicas, or precomputation**. High writes suggest **partitioning, batching, logs, or asynchronous ingestion**. If the ratio is unknown, estimate it from user actions.",
+        "Optimizing reads often introduces derived state or replication. Optimizing writes often increases partitioning complexity."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Storage and Media",
+      body: [
+        "Estimate retained data, not only daily writes: `Storage = Records × Size per Record × Retention × Overhead`. Raw data is only part of the final footprint. Indexes, replicas, backups, and fragmentation commonly make provisioned storage **3–5× raw data**.",
+        "Media usually dominates storage. Keep metadata in the database and store large media separately. Object storage scales better for binary content, but it introduces a separate storage and delivery path. Avoid storing large media directly in the primary transactional database."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Typical media order of magnitude",
+      headers: ["Data", "Rough size", "Design consequence"],
+      rows: [
+        ["Text record", "KB", "Usually fits comfortably in a primary datastore."],
+        ["Photo", "100 KB to MB", "Object storage and a CDN often matter before database capacity."],
+        ["Short video", "MB to tens of MB", "Bandwidth and delivery paths become first-class concerns."],
+        ["Long video", "Hundreds of MB to GB", "Use object storage, CDN delivery, and lifecycle tiers."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Bandwidth and Internal Traffic Amplification",
+      body: [
+        "`Bandwidth = QPS × Data Size per Request`. Calculate ingress and egress separately because response traffic often dominates. Use this for media-heavy systems, large API responses, downloads, streaming, and cross-region traffic.",
+        "One client request may trigger cache lookups, database reads, service calls, media lookups, and logging. In a service-oriented or fan-out-heavy design, `10K external QPS × 100 backend operations ≈ 1M internal ops/sec`. Estimate the largest amplification path instead of every internal call."
+      ]
+    },
+    { kind: "callout", tone: "warn", title: "Network-bound does not mean high QPS", body: "A system can have manageable request volume but still be network-bound when each request transfers a large payload. CDNs and compression reduce origin traffic, but add caching behavior and infrastructure." },
+    {
+      kind: "prose",
+      heading: "Server Capacity, Cache Sizing, and Concurrent Users",
+      body: [
+        "Estimate horizontal capacity with `Servers = Peak QPS ÷ (Throughput per Server × Target Utilization)`. Use usable, not maximum, capacity. A target around **60–70% utilization** leaves room for bursts, failures, and queue buildup. Do not assume perfectly linear scaling.",
+        "Cache the **hot working set**, not necessarily the entire dataset: `Cache Size = Hot Items × Item Size × Overhead`. A useful heuristic is `20% of data → ~80% of requests`. More cache reduces database pressure, but increases memory cost and invalidation complexity.",
+        "For chat, gaming, streaming, live events, and long-lived connections, estimate simultaneous users: `Concurrent Users = DAU × (Sessions/Day × Session Duration) ÷ Peak Window`. Registered users are not active load."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Latency and Tail Behavior",
+      body: [
+        "Use percentiles, not averages: **P50** means 50% of requests are faster, **P95** means 95% are faster, and **P99** means 99% are faster. `P95 < 200 ms` says more than `average = 200 ms` because averages hide slow tail requests.",
+        "Use P95 as the baseline when no stricter tail requirement is specified. Improving tail latency often requires more capacity and resilience, but it protects the portion of users averages conceal."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Numbers to remember",
+      headers: ["Reference", "Approximation"],
+      rows: [
+        ["One day", "`~10⁵ sec`"],
+        ["One month", "`~2.5M sec`"],
+        ["One year", "`~3 × 10⁷ sec`"],
+        ["Data units", "KB = 10³, MB = 10⁶, GB = 10⁹, TB = 10¹², PB = 10¹⁵ bytes"],
+        ["Peak traffic", "~3–5× average"],
+        ["Storage provisioned", "~3–5× raw data"],
+        ["Server utilization", "~60–70%"],
+        ["Hot cache set", "~20% data → 80% requests"]
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Architecture mapping",
+      headers: ["Estimate shows", "Design direction"],
+      rows: [
+        ["High read QPS", "Cache, replicas, or precompute"],
+        ["High write QPS", "Partition, batch, or queue"],
+        ["Huge storage", "Distributed or object storage"],
+        ["Media-heavy traffic", "CDN"],
+        ["Burst traffic", "Queue or buffering"],
+        ["Hot working set", "Cache"],
+        ["Large concurrent users", "Horizontal connection handling"],
+        ["High tail latency", "Add headroom or remove slow dependencies"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Common Mistakes and the Estimation Flow",
+      body: [
+        "Avoid sizing for average instead of peak, using registered users instead of active or concurrent users, using total QPS without a read/write split, ignoring storage overhead or internal amplification, assuming linear scaling, confusing throughput with latency, and calculating numbers that do not change the design.",
+        "Follow this path: `Users → Actions per User → Average QPS → Peak QPS → Read vs Write → Data Size → Storage / Bandwidth / Compute → Architecture Decision`. State assumptions, round aggressively, sanity-check the result, and stop once the numbers are sufficient to guide the design."
+      ]
+    },
+    { kind: "system-design-estimation-walkthrough" },
+    {
+      kind: "takeaways",
+      items: [
+        "Estimation turns product scale into design pressure. Its job is architectural direction, not exact capacity planning.",
+        "Use average QPS, peak QPS, read/write split, storage, and bandwidth as the first pass. Add deeper estimates only when relevant.",
+        "Provision for peaks, retained data, and overhead. Average traffic and raw storage are not safe capacity targets.",
+        "Cache the hot working set, keep media out of the primary transactional database, and model concurrency for long-lived connections.",
+        "The estimate is complete when it tells you what pressure the architecture must handle."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "estimation-cheat-qps",
+          question: "A product receives 864 million requests per day. What is its average QPS?",
+          options: ["100 QPS", "1,000 QPS", "10,000 QPS", "100,000 QPS"],
+          correctIndex: 2,
+          explanation: "864,000,000 ÷ 86,400 = 10,000 requests per second."
+        },
+        {
+          id: "estimation-cheat-peak",
+          question: "Which estimate should use a 3–5× multiplier for a consumer product when no better peak data exists?",
+          options: [
+            "Raw storage",
+            "Peak QPS",
+            "Cache item size",
+            "P95 latency"
+          ],
+          correctIndex: 1,
+          explanation: "Peak QPS represents concentrated activity during busy periods. State the multiplier as an assumption instead of silently using it."
+        },
+        {
+          id: "estimation-cheat-ratio",
+          question: "A system stores 2 TB of raw retained data. Which first-pass provisioned-storage estimate is most appropriate?",
+          options: [
+            "2 TB, because raw data is the full footprint",
+            "About 2.6 TB, adding cache overhead only",
+            "About 6–10 TB, allowing for indexes, replicas, backups, and fragmentation",
+            "20 TB, because all storage must be copied ten times"
+          ],
+          correctIndex: 2,
+          explanation: "Provisioned storage is commonly 3–5× raw storage after indexes, replicas, backups, and fragmentation."
+        }
+      ]
+    }
+  ]
+};
+
+const scalabilityLesson: LessonContent = {
+  slug: "scalability",
+  title: "Scalability",
+  subtitle: "Handle growing load by finding and relieving the limit that is actually under pressure.",
+  sections: [
+    { kind: "prose", heading: "What Scalability Means", body: [
+      "A system is **scalable** when it can handle increased load by adding resources while keeping performance within its requirements.",
+      "Load is not one number. It can mean more read traffic, write traffic, storage, bandwidth, concurrent users, background jobs, or a few hot keys. Scaling is not adding every component at once. It is finding the current bottleneck and increasing the capacity of that part of the system.",
+      "A system is not scalable simply because it has multiple servers. It is scalable when it can continue to meet its latency, reliability, and throughput targets as load grows."
+    ] },
+    { kind: "prose", heading: "How Systems Grow", body: [
+      "Scaling pressure can come from more than request volume. A growing user base raises request and connection counts. New features can add dependencies, background jobs, or expensive queries. More content raises storage, indexing, backup, and recovery costs.",
+      "A wider geographic reach adds latency, localization, and sometimes data-residency constraints. More modules and integrations also increase operational complexity. Name the type of growth first, because it determines what should scale."
+    ] },
+    { kind: "table", caption: "Growth trigger and the pressure it creates", headers: ["Growth", "Typical pressure", "Likely first question"], rows: [
+      ["User base", "More requests and concurrent connections", "Which tier reaches capacity first at peak?"],
+      ["Features", "New workflows and dependencies", "Which path adds latency or failure risk?"],
+      ["Data volume", "Storage, indexes, backups, recovery", "Does one data store still fit and recover in time?"],
+      ["System complexity", "More service-to-service calls", "Where does coordination or fan-out amplify work?"],
+      ["Geographic reach", "Latency, compliance, availability", "Do users need content or data closer to them?"]
+    ] },
+    { kind: "image", src: scalabilityLoopImg, alt: "Scalability infographic showing the loop from measuring load to finding a bottleneck, scaling a component, and verifying the result", caption: "The scaling loop: measure the load, find the limiting resource, make a targeted change, then verify the new limit." },
+    { kind: "table", caption: "Measure the load before choosing a scaling technique", headers: ["Load type", "Useful signal", "Question to answer"], rows: [
+      ["Read traffic", "Read QPS, cache hit rate", "Can the database serve repeated reads fast enough?"],
+      ["Write traffic", "Write QPS, write latency", "Can the primary accept and persist the write rate?"],
+      ["Storage", "Data growth, index size", "Will data, backups, and recovery still fit?"],
+      ["Bandwidth", "Bytes/sec in and out", "Are payloads or media exhausting the network path?"],
+      ["Concurrency", "Open connections, queue depth", "Can the system serve users who are active at the same time?"],
+      ["Skew", "Top keys, busiest partitions", "Is a small set of users or keys dominating load?"]
+    ] },
+    { kind: "callout", tone: "info", title: "The bottleneck loop", body: "Measure the load → find the bottleneck → scale the limiting component → verify the result. After every change, a different dependency may become the next limit." },
+    { kind: "prose", heading: "Scale Up or Scale Out", body: [
+      "**Vertical scaling** means making one machine larger: more CPU, memory, disk, or network capacity. It is simple and has fewer moving parts, but it has a hardware ceiling and can leave one large failure domain.",
+      "**Horizontal scaling** means adding more machines. It can increase capacity and availability, but it introduces load balancing, coordination, data distribution, and operational complexity.",
+      "Start with vertical scaling or one well-sized node while it comfortably meets the requirement. Scale out when one machine is no longer enough, or when availability requires multiple instances."
+    ] },
+    { kind: "table", caption: "Vertical and horizontal scaling", headers: ["Approach", "Best when", "Strength", "Trade-off"], rows: [
+      ["Scale up", "The workload still fits one larger machine", "Simple operations and no distributed coordination", "A hard ceiling and a larger single failure domain"],
+      ["Scale out", "Capacity or availability exceeds one machine", "More aggregate capacity and fault tolerance", "Load balancing, coordination, and uneven distribution"],
+      ["Hybrid", "Different tiers have different limits", "Scale each tier in the way it needs", "More system-specific decisions"]
+    ] },
+    { kind: "prose", heading: "Choose the Smallest Strategy That Meets the Need", body: [
+      "For an early product, vertical scaling, a cache, and basic load balancing are often enough. Instrument CPU, memory, request latency, database read and write capacity, and queue depth so the next limit is visible before it becomes an outage.",
+      "Use horizontal scaling, partitioning, or independently scalable services only when the measured workload requires them. Auto-scaling can reduce idle cost and absorb bursts, but use conservative thresholds and cooldowns so instances do not repeatedly scale out and in during a noisy traffic pattern."
+    ] },
+    { kind: "system-design-scalability-loop" },
+    { kind: "prose", heading: "Stateless Application Servers", body: [
+      "Application servers are easiest to scale horizontally when they are **stateless**. Any server should be able to handle any request without depending on memory stored by a previous server.",
+      "Move sessions to a shared store, persist files in object storage, and keep request-specific state out of local process memory. With stateless servers, a load balancer can add or remove instances without changing the client experience.",
+      "A local session or uploaded file may be convenient at first, but it becomes a routing or data-loss problem as soon as requests can land on multiple instances."
+    ] },
+    { kind: "image", src: scalabilityArchitectureImg, alt: "System design diagram showing client requests through a CDN, load balancer, application servers, cache, and database, with a queue and worker branch", caption: "A scale-out request path: keep the application tier stateless, cache repeated reads, and move slow work to a queue and worker." },
+    { kind: "prose", heading: "Linear Scaling Is a Goal, Not a Guarantee", body: [
+      "If one server handles 100 requests per second, two servers rarely handle exactly 200. Shared databases, locks, network calls, cache misses, uneven traffic, and coordination all reduce the gain from extra servers.",
+      "Use load tests and production metrics to compare added capacity with actual throughput and tail latency. If adding instances does not improve the metric, the bottleneck is probably downstream."
+    ] },
+    { kind: "prose", heading: "Scale Reads Before the Primary Database Becomes the Limit", body: [
+      "A **cache** serves repeated data from memory and reduces database work. It is useful when reads are frequent and stale data is acceptable for a bounded period. The cost is invalidation, cache misses, and the risk of stale results.",
+      "**Read replicas** copy data from the primary and spread read traffic. They improve read capacity and can isolate analytical or reporting work, but replication lag means a read may not immediately see a completed write.",
+      "Use both only when measurements show read pressure. A cache and replicas cannot solve a write-bound primary database."
+    ] },
+    { kind: "table", caption: "Read scaling choices", headers: ["Technique", "Use when", "Trade-off", "Failure mode"], rows: [
+      ["Cache", "The same data is read repeatedly", "Invalidation and stale data", "A cold cache overloads the database"],
+      ["Read replicas", "Reads dominate writes", "Replication lag and additional operations", "Read-after-write returns stale data"],
+      ["Precompute", "The same expensive result is read often", "More write work and derived state", "Materializing rarely used results"]
+    ] },
+    { kind: "prose", heading: "Scale Writes and Data Deliberately", body: [
+      "When one primary cannot sustain write volume or storage, **sharding** partitions data across multiple nodes. Choose a key that matches access patterns and distributes load evenly. Sharding adds capacity, but cross-shard queries, rebalancing, and hot partitions become operational concerns.",
+      "Queues separate a fast request path from slower background work. A queue can absorb bursts and let workers scale independently, but it introduces backlog, retries, duplicates, ordering decisions, and delayed results.",
+      "Use object storage for large binary data. It keeps the transactional database focused on metadata and gives media a storage path that can grow independently."
+    ] },
+    { kind: "prose", heading: "Scale Delivery and Services Only When Their Load Differs", body: [
+      "A **CDN** caches static or cacheable content close to users. It reduces origin bandwidth and latency for global audiences, but content freshness and invalidation still need a clear policy.",
+      "Independent services can be scaled separately when their workloads, release cadence, or reliability needs genuinely differ. Splitting a system into microservices too early adds network calls, observability work, data ownership decisions, and more failure modes. Keep a modular monolith while it remains easier to operate.",
+      "For global latency, availability, or legal requirements, deploy in more than one region. Multi-region systems improve reach and resilience but introduce replication, routing, and consistency trade-offs."
+    ] },
+    { kind: "table", caption: "Match the pressure to the smallest useful change", headers: ["Pressure", "First direction", "What to verify next"], rows: [
+      ["Application CPU", "Add stateless app instances behind a load balancer", "Per-instance utilization and downstream latency"],
+      ["Repeated database reads", "Cache or add read replicas", "Hit rate, primary CPU, and replication lag"],
+      ["Slow asynchronous work", "Queue the work and scale workers", "Queue depth, retries, and end-to-end delay"],
+      ["Write or storage limit", "Partition data or move media to object storage", "Partition balance, hot keys, and recovery time"],
+      ["Large public media delivery", "Use a CDN", "Origin egress, cache hit rate, and freshness"]
+    ] },
+    { kind: "prose", heading: "Verify the Change and Name the Next Limit", body: [
+      "A scaling change is complete only after it is verified against the requirement. Compare throughput, P95 or P99 latency, error rate, utilization, queue depth, cache hit rate, and cost before and after the change.",
+      "Scaling is a sequence: `load grows → a limit appears → add capacity or reduce work → a new limit appears`. A strong design explains where the system breaks next and what change would address it."
+    ] },
+    { kind: "takeaways", items: [
+      "Scalability means preserving requirements as load grows, not simply adding servers.",
+      "Measure first. Different load shapes create different bottlenecks and need different responses.",
+      "Scale up for simplicity while it fits. Scale out when capacity or availability requires it.",
+      "Keep application servers stateless so the load balancer can distribute requests freely.",
+      "Caches, replicas, shards, queues, CDNs, and object storage are targeted tools. Each improves one pressure and adds its own trade-offs.",
+      "Use autoscaling with stable thresholds and cooldowns. Use multi-region deployment only when geographic latency, availability, or compliance requires it.",
+      "After every scaling change, verify the metric and identify the next bottleneck."
+    ] },
+    { kind: "quiz", questions: [
+      { id: "scalability-db-bottleneck", question: "Application servers are mostly idle, but database CPU is saturated by repeated profile reads. What is the best first scaling direction?", options: ["Add more application servers", "Add a cache or read replicas", "Shard every table immediately", "Increase the request timeout"], correctIndex: 1, explanation: "The database read path is the measured bottleneck. A cache can remove repeated work; replicas can distribute remaining reads. More app servers would only send more work to the saturated database." },
+      { id: "scalability-stateless", question: "Why do stateless application servers scale more easily horizontally?", options: ["They never use a database", "A load balancer can send any request to any instance", "They require sticky sessions", "They store every upload on local disk"], correctIndex: 1, explanation: "Stateless instances keep sessions and durable data in shared stores, so no client depends on a particular server." },
+      { id: "scalability-replica-tradeoff", question: "What trade-off does a read replica commonly introduce?", options: ["Replication lag can return stale data", "It eliminates the need for backups", "It increases primary write capacity without limits", "It guarantees linear scaling"], correctIndex: 0, explanation: "Replicas copy data asynchronously in many systems. That improves read capacity but can make a just-completed write temporarily invisible on a replica." },
+      { id: "scalability-queue", question: "Which signal best shows whether a queue-based scaling change is keeping up?", options: ["The number of colors in the architecture diagram", "Queue depth and end-to-end processing delay", "The size of the load balancer icon", "Only average application CPU"], correctIndex: 1, explanation: "A queue is healthy when workers drain work at least as fast as it arrives and the delay stays within the product requirement." }
+    ] }
   ]
 };
 
@@ -2448,7 +2806,15 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope, estimationCheatSheet],
+  },
+  "core-metrics": {
+    slug: "core-metrics",
+    title: "Core Concepts & Metrics",
+    category: "Fundamentals",
+    iconKey: "layers",
+    blurb: "Measure load, find the bottleneck, and scale only the component that limits capacity.",
+    lessons: [scalabilityLesson],
   },
   "networking-protocols": {
     slug: "networking-protocols",

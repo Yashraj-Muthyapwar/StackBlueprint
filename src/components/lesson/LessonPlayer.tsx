@@ -104,7 +104,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
                 problem
               </span>
             </div>
-            <div className="px-4 py-3 text-[14px] leading-relaxed text-foreground/90">
+            <div className="lesson-supporting px-4 py-3 text-foreground/90">
               <p className="whitespace-pre-wrap">{problemText}</p>
             </div>
           </div>

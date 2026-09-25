@@ -6,6 +6,7 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Quiz } from "@/components/lesson/Quiz";
 import { InteractivePythonBlock } from "@/components/lesson/InteractivePythonBlock";
 import { ArrayDimensionsExplorer } from "@/components/dsa/array-basics/ArrayDimensionsExplorer";
+import { SliceViewExplorer } from "@/components/dsa/array-basics/SliceViewExplorer";
 import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
 import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
 import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
@@ -220,7 +221,7 @@ export function SectionRenderer({
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
+            <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => {
             if (p.startsWith("### ")) {
@@ -233,7 +234,7 @@ export function SectionRenderer({
                 <h3
                   key={i}
                   id={targetId}
-                  className="mt-4 mb-2 text-lg font-semibold tracking-tight text-foreground scroll-mt-24"
+                  className="lesson-subsection-title mt-4 mb-2 font-semibold tracking-tight text-foreground scroll-mt-24"
                 >
                   {parseInlineMarkdown(text)}
                 </h3>
@@ -249,14 +250,14 @@ export function SectionRenderer({
                 <h2
                   key={i}
                   id={targetId}
-                  className="mt-6 mb-3 text-xl font-semibold tracking-tight text-foreground scroll-mt-24"
+                  className="lesson-section-title mt-6 mb-3 font-semibold tracking-tight text-foreground scroll-mt-24"
                 >
                   {parseInlineMarkdown(text)}
                 </h2>
               );
             }
             return (
-              <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
+              <p key={i} className="lesson-prose text-muted-foreground">
                 {parseInlineMarkdown(p)}
               </p>
             );
@@ -278,7 +279,7 @@ export function SectionRenderer({
               </span>
             ) : null}
           </div>
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[13px] leading-relaxed shadow-inner">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono shadow-inner">
             <code>
               {lines.map((line, i) => (
                 <div key={i} className="flex">
@@ -307,6 +308,9 @@ export function SectionRenderer({
     case "array-dimensions-explorer":
       return <ArrayDimensionsExplorer />;
 
+    case "array-slice-explorer":
+      return <SliceViewExplorer />;
+
     case "array-operations-lab":
       return <ArrayOperationsLab />;
 
@@ -325,7 +329,7 @@ export function SectionRenderer({
             </figcaption>
           ) : null}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="lesson-supporting w-full">
               <thead className="bg-surface-2 text-left text-muted-foreground">
                 <tr>
                   {section.headers?.map((h, i) => (
@@ -390,7 +394,7 @@ export function SectionRenderer({
             {section.title && (
               <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
             )}
-            <div className="mt-1 space-y-2 text-sm leading-relaxed text-foreground/85">
+            <div className="lesson-supporting mt-1 space-y-2 text-foreground/85">
               {(section.body || "")
                 .split("\n")
                 .filter(Boolean)
@@ -411,7 +415,7 @@ export function SectionRenderer({
     case "diagram":
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
-          <pre className="overflow-x-auto px-4 py-4 font-mono text-[12.5px] leading-snug text-foreground/85">
+          <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono text-foreground/85">
             {section.ascii}
           </pre>
           {section.caption ? (
@@ -461,7 +465,7 @@ export function SectionRenderer({
             <Brain className="size-5 text-amber" />
             Analogy: {section.title}
           </p>
-          <p className="mt-3 text-[15px] leading-relaxed text-foreground/90">
+          <p className="lesson-supporting mt-3 text-foreground/90">
             {parseInlineMarkdown(section.text || "")}
           </p>
         </section>
@@ -514,7 +518,7 @@ export function SectionRenderer({
           </p>
           <ul className="mt-3 space-y-2">
             {section.items?.map((it, i) => (
-              <li key={i} className="flex gap-2.5 text-sm leading-relaxed text-foreground/90">
+              <li key={i} className="lesson-supporting flex gap-2.5 text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
