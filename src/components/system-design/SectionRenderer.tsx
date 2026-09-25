@@ -34,6 +34,10 @@ import DnsVisuals from "@/components/system-design/networking-protocols/DnsVisua
 import { SystemDesignEvolution } from "@/components/system-design/foundations/SystemDesignEvolution";
 import { ClarificationPractice } from "@/components/system-design/foundations/ClarificationPractice";
 import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/DeliveryFrameworkFlow";
+import { FeedStrategy } from "@/components/system-design/foundations/FeedStrategy";
+import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
+import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
+import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
@@ -404,6 +408,18 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "system-design-delivery-framework":
       return <DeliveryFrameworkFlow />;
+
+    case "system-design-feed-strategy":
+      return <FeedStrategy />;
+
+    case "system-design-whatsapp-requirements":
+      return <WhatsAppRequirements />;
+
+    case "system-design-estimation-walkthrough":
+      return <EstimationWalkthrough />;
+
+    case "system-design-scalability-loop":
+      return <ScalabilityLoop />;
 
     case "terminal-animation":
       return <TerminalAnimation section={section} />;

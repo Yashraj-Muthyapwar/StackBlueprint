@@ -2,6 +2,9 @@ import { type LessonContent, type Section } from "@/lessons/types";
 import keyComponentsImg from "@/images/system-design/Foundations/key-components.png";
 import deliveryFrameworkEvolutionImg from "@/images/system-design/Foundations/delivery-framework-evolution.png";
 import deliveryFrameworkFlowImg from "@/images/system-design/Foundations/delivery-framework-flow.png";
+import estimationCheatSheetMapImg from "@/images/system-design/Foundations/estimation-cheat-sheet-map.png";
+import scalabilityLoopImg from "@/images/system-design/Foundations/scalability-loop.png";
+import scalabilityArchitectureImg from "@/images/system-design/Foundations/scalability-architecture.png";
 import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
@@ -337,11 +340,11 @@ const deliveryFramework: LessonContent = {
       kind: "prose",
       heading: "Materialization and Fan-Out",
       body: [
-        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a materialized view.",
-        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This fan-out can make the write path more expensive than the read path it optimizes. Workload skew matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
+        "When reads are frequent and repeated computation is expensive, move work from the read path to the write path. Instead of assembling every feed at read time, a new post can update prepared follower timelines. The prepared timeline is derived data, also called a ==mint:materialized view==.",
+        "One logical event can create many physical operations. One post for 200 followers can mean 200 timeline updates. This ==amber:fan-out== can make the write path more expensive than the read path it optimizes. ==violet:Workload skew== matters: normal accounts may push into follower feeds, while high-follower accounts are stored once and merged during reads."
       ],
     },
-    { kind: "diagram", caption: "Push, pull, and a hybrid for skewed users", ascii: "New post → update follower timelines → fast feed read\n\nHigh-follower account → store once → merge during feed read\n\nPush: faster reads, higher write amplification\nPull: lower writes, higher read cost" },
+    { kind: "system-design-feed-strategy" },
     {
       kind: "prose",
       heading: "6. Deep Dive",
@@ -370,6 +373,7 @@ const deliveryFramework: LessonContent = {
         "A concise wrap-up proves you understand the limits of the current design. Do not introduce unrelated systems in the final minutes."
       ],
     },
+    { kind: "system-design-whatsapp-requirements" },
     {
       kind: "takeaways",
       items: [
@@ -762,6 +766,289 @@ const backOfTheEnvelope: LessonContent = {
         }
       ]
     }
+  ]
+};
+
+const estimationCheatSheet: LessonContent = {
+  slug: "estimation-cheat-sheet",
+  title: "Estimation Cheat Sheet",
+  subtitle: "Turn product scale into the design pressure that should change an architecture.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Estimation Framework",
+      body: [
+        "Turn product scale into **design pressure**: `Users → Actions/User → QPS → Data/Request → Resources`.",
+        "The goal is order-of-magnitude sizing, not an exact capacity plan. Use estimation when scale may affect caching, partitioning, storage, bandwidth, server count, or queues and asynchronous processing.",
+        "Numbers matter only when they change the architecture. Start with QPS, storage, and bandwidth. Add concurrency, cache sizing, or server sizing only when they are relevant to the system being designed."
+      ]
+    },
+    {
+      kind: "image",
+      src: estimationCheatSheetMapImg,
+      alt: "Estimation cheat sheet infographic showing users, actions, QPS, data size, architecture, peak load, read and write load, and storage",
+      caption: "Start with users and actions, quantify QPS and data, then use peak, read/write, and storage pressure to choose the architecture."
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Baseline and trade-off",
+      body: "State your assumptions, round aggressively, and stop once the estimates guide a design decision. More estimation improves capacity reasoning, but it consumes interview time. Doing math without connecting it to a decision is the failure mode."
+    },
+    {
+      kind: "prose",
+      heading: "QPS",
+      body: [
+        "QPS measures request load for request-driven systems. It tells you whether one server, database, or cache can handle the workload.",
+        "`Average QPS = DAU × Actions/User/Day ÷ 86,400`. For quick mental math, use `DAU × Actions/User/Day ÷ 100,000`. Plan for `Peak QPS = Average QPS × Peak Multiplier` because peaks, not averages, break systems.",
+        "If there is no better input, use **3× average** as a rough consumer-app peak assumption. Higher peak assumptions provide more safety, but they increase provisioned capacity."
+      ]
+    },
+    { kind: "code", language: "text", caption: "QPS formulas", code: "Average QPS = DAU × Actions/User/Day ÷ 86,400\nQuick QPS   ≈ DAU × Actions/User/Day ÷ 100,000\nPeak QPS    = Average QPS × Peak Multiplier" },
+    {
+      kind: "prose",
+      heading: "Read vs Write Load",
+      body: [
+        "Always separate reads from writes: `Total QPS → Read QPS + Write QPS`. Reads and writes usually scale differently, so total QPS alone can hide the actual bottleneck.",
+        "High reads suggest **cache, replicas, or precomputation**. High writes suggest **partitioning, batching, logs, or asynchronous ingestion**. If the ratio is unknown, estimate it from user actions.",
+        "Optimizing reads often introduces derived state or replication. Optimizing writes often increases partitioning complexity."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Storage and Media",
+      body: [
+        "Estimate retained data, not only daily writes: `Storage = Records × Size per Record × Retention × Overhead`. Raw data is only part of the final footprint. Indexes, replicas, backups, and fragmentation commonly make provisioned storage **3–5× raw data**.",
+        "Media usually dominates storage. Keep metadata in the database and store large media separately. Object storage scales better for binary content, but it introduces a separate storage and delivery path. Avoid storing large media directly in the primary transactional database."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Typical media order of magnitude",
+      headers: ["Data", "Rough size", "Design consequence"],
+      rows: [
+        ["Text record", "KB", "Usually fits comfortably in a primary datastore."],
+        ["Photo", "100 KB to MB", "Object storage and a CDN often matter before database capacity."],
+        ["Short video", "MB to tens of MB", "Bandwidth and delivery paths become first-class concerns."],
+        ["Long video", "Hundreds of MB to GB", "Use object storage, CDN delivery, and lifecycle tiers."]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Bandwidth and Internal Traffic Amplification",
+      body: [
+        "`Bandwidth = QPS × Data Size per Request`. Calculate ingress and egress separately because response traffic often dominates. Use this for media-heavy systems, large API responses, downloads, streaming, and cross-region traffic.",
+        "One client request may trigger cache lookups, database reads, service calls, media lookups, and logging. In a service-oriented or fan-out-heavy design, `10K external QPS × 100 backend operations ≈ 1M internal ops/sec`. Estimate the largest amplification path instead of every internal call."
+      ]
+    },
+    { kind: "callout", tone: "warn", title: "Network-bound does not mean high QPS", body: "A system can have manageable request volume but still be network-bound when each request transfers a large payload. CDNs and compression reduce origin traffic, but add caching behavior and infrastructure." },
+    {
+      kind: "prose",
+      heading: "Server Capacity, Cache Sizing, and Concurrent Users",
+      body: [
+        "Estimate horizontal capacity with `Servers = Peak QPS ÷ (Throughput per Server × Target Utilization)`. Use usable, not maximum, capacity. A target around **60–70% utilization** leaves room for bursts, failures, and queue buildup. Do not assume perfectly linear scaling.",
+        "Cache the **hot working set**, not necessarily the entire dataset: `Cache Size = Hot Items × Item Size × Overhead`. A useful heuristic is `20% of data → ~80% of requests`. More cache reduces database pressure, but increases memory cost and invalidation complexity.",
+        "For chat, gaming, streaming, live events, and long-lived connections, estimate simultaneous users: `Concurrent Users = DAU × (Sessions/Day × Session Duration) ÷ Peak Window`. Registered users are not active load."
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Latency and Tail Behavior",
+      body: [
+        "Use percentiles, not averages: **P50** means 50% of requests are faster, **P95** means 95% are faster, and **P99** means 99% are faster. `P95 < 200 ms` says more than `average = 200 ms` because averages hide slow tail requests.",
+        "Use P95 as the baseline when no stricter tail requirement is specified. Improving tail latency often requires more capacity and resilience, but it protects the portion of users averages conceal."
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Numbers to remember",
+      headers: ["Reference", "Approximation"],
+      rows: [
+        ["One day", "`~10⁵ sec`"],
+        ["One month", "`~2.5M sec`"],
+        ["One year", "`~3 × 10⁷ sec`"],
+        ["Data units", "KB = 10³, MB = 10⁶, GB = 10⁹, TB = 10¹², PB = 10¹⁵ bytes"],
+        ["Peak traffic", "~3–5× average"],
+        ["Storage provisioned", "~3–5× raw data"],
+        ["Server utilization", "~60–70%"],
+        ["Hot cache set", "~20% data → 80% requests"]
+      ]
+    },
+    {
+      kind: "table",
+      caption: "Architecture mapping",
+      headers: ["Estimate shows", "Design direction"],
+      rows: [
+        ["High read QPS", "Cache, replicas, or precompute"],
+        ["High write QPS", "Partition, batch, or queue"],
+        ["Huge storage", "Distributed or object storage"],
+        ["Media-heavy traffic", "CDN"],
+        ["Burst traffic", "Queue or buffering"],
+        ["Hot working set", "Cache"],
+        ["Large concurrent users", "Horizontal connection handling"],
+        ["High tail latency", "Add headroom or remove slow dependencies"]
+      ]
+    },
+    {
+      kind: "prose",
+      heading: "Common Mistakes and the Estimation Flow",
+      body: [
+        "Avoid sizing for average instead of peak, using registered users instead of active or concurrent users, using total QPS without a read/write split, ignoring storage overhead or internal amplification, assuming linear scaling, confusing throughput with latency, and calculating numbers that do not change the design.",
+        "Follow this path: `Users → Actions per User → Average QPS → Peak QPS → Read vs Write → Data Size → Storage / Bandwidth / Compute → Architecture Decision`. State assumptions, round aggressively, sanity-check the result, and stop once the numbers are sufficient to guide the design."
+      ]
+    },
+    { kind: "system-design-estimation-walkthrough" },
+    {
+      kind: "takeaways",
+      items: [
+        "Estimation turns product scale into design pressure. Its job is architectural direction, not exact capacity planning.",
+        "Use average QPS, peak QPS, read/write split, storage, and bandwidth as the first pass. Add deeper estimates only when relevant.",
+        "Provision for peaks, retained data, and overhead. Average traffic and raw storage are not safe capacity targets.",
+        "Cache the hot working set, keep media out of the primary transactional database, and model concurrency for long-lived connections.",
+        "The estimate is complete when it tells you what pressure the architecture must handle."
+      ]
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "estimation-cheat-qps",
+          question: "A product receives 864 million requests per day. What is its average QPS?",
+          options: ["100 QPS", "1,000 QPS", "10,000 QPS", "100,000 QPS"],
+          correctIndex: 2,
+          explanation: "864,000,000 ÷ 86,400 = 10,000 requests per second."
+        },
+        {
+          id: "estimation-cheat-peak",
+          question: "Which estimate should use a 3–5× multiplier for a consumer product when no better peak data exists?",
+          options: [
+            "Raw storage",
+            "Peak QPS",
+            "Cache item size",
+            "P95 latency"
+          ],
+          correctIndex: 1,
+          explanation: "Peak QPS represents concentrated activity during busy periods. State the multiplier as an assumption instead of silently using it."
+        },
+        {
+          id: "estimation-cheat-ratio",
+          question: "A system stores 2 TB of raw retained data. Which first-pass provisioned-storage estimate is most appropriate?",
+          options: [
+            "2 TB, because raw data is the full footprint",
+            "About 2.6 TB, adding cache overhead only",
+            "About 6–10 TB, allowing for indexes, replicas, backups, and fragmentation",
+            "20 TB, because all storage must be copied ten times"
+          ],
+          correctIndex: 2,
+          explanation: "Provisioned storage is commonly 3–5× raw storage after indexes, replicas, backups, and fragmentation."
+        }
+      ]
+    }
+  ]
+};
+
+const scalabilityLesson: LessonContent = {
+  slug: "scalability",
+  title: "Scalability",
+  subtitle: "Handle growing load by finding and relieving the limit that is actually under pressure.",
+  sections: [
+    { kind: "prose", heading: "What Scalability Means", body: [
+      "A system is **scalable** when it can handle increased load by adding resources while keeping performance within its requirements.",
+      "Load is not one number. It can mean more read traffic, write traffic, storage, bandwidth, concurrent users, background jobs, or a few hot keys. Scaling is not adding every component at once. It is finding the current bottleneck and increasing the capacity of that part of the system.",
+      "A system is not scalable simply because it has multiple servers. It is scalable when it can continue to meet its latency, reliability, and throughput targets as load grows."
+    ] },
+    { kind: "prose", heading: "How Systems Grow", body: [
+      "Scaling pressure can come from more than request volume. A growing user base raises request and connection counts. New features can add dependencies, background jobs, or expensive queries. More content raises storage, indexing, backup, and recovery costs.",
+      "A wider geographic reach adds latency, localization, and sometimes data-residency constraints. More modules and integrations also increase operational complexity. Name the type of growth first, because it determines what should scale."
+    ] },
+    { kind: "table", caption: "Growth trigger and the pressure it creates", headers: ["Growth", "Typical pressure", "Likely first question"], rows: [
+      ["User base", "More requests and concurrent connections", "Which tier reaches capacity first at peak?"],
+      ["Features", "New workflows and dependencies", "Which path adds latency or failure risk?"],
+      ["Data volume", "Storage, indexes, backups, recovery", "Does one data store still fit and recover in time?"],
+      ["System complexity", "More service-to-service calls", "Where does coordination or fan-out amplify work?"],
+      ["Geographic reach", "Latency, compliance, availability", "Do users need content or data closer to them?"]
+    ] },
+    { kind: "image", src: scalabilityLoopImg, alt: "Scalability infographic showing the loop from measuring load to finding a bottleneck, scaling a component, and verifying the result", caption: "The scaling loop: measure the load, find the limiting resource, make a targeted change, then verify the new limit." },
+    { kind: "table", caption: "Measure the load before choosing a scaling technique", headers: ["Load type", "Useful signal", "Question to answer"], rows: [
+      ["Read traffic", "Read QPS, cache hit rate", "Can the database serve repeated reads fast enough?"],
+      ["Write traffic", "Write QPS, write latency", "Can the primary accept and persist the write rate?"],
+      ["Storage", "Data growth, index size", "Will data, backups, and recovery still fit?"],
+      ["Bandwidth", "Bytes/sec in and out", "Are payloads or media exhausting the network path?"],
+      ["Concurrency", "Open connections, queue depth", "Can the system serve users who are active at the same time?"],
+      ["Skew", "Top keys, busiest partitions", "Is a small set of users or keys dominating load?"]
+    ] },
+    { kind: "callout", tone: "info", title: "The bottleneck loop", body: "Measure the load → find the bottleneck → scale the limiting component → verify the result. After every change, a different dependency may become the next limit." },
+    { kind: "prose", heading: "Scale Up or Scale Out", body: [
+      "**Vertical scaling** means making one machine larger: more CPU, memory, disk, or network capacity. It is simple and has fewer moving parts, but it has a hardware ceiling and can leave one large failure domain.",
+      "**Horizontal scaling** means adding more machines. It can increase capacity and availability, but it introduces load balancing, coordination, data distribution, and operational complexity.",
+      "Start with vertical scaling or one well-sized node while it comfortably meets the requirement. Scale out when one machine is no longer enough, or when availability requires multiple instances."
+    ] },
+    { kind: "table", caption: "Vertical and horizontal scaling", headers: ["Approach", "Best when", "Strength", "Trade-off"], rows: [
+      ["Scale up", "The workload still fits one larger machine", "Simple operations and no distributed coordination", "A hard ceiling and a larger single failure domain"],
+      ["Scale out", "Capacity or availability exceeds one machine", "More aggregate capacity and fault tolerance", "Load balancing, coordination, and uneven distribution"],
+      ["Hybrid", "Different tiers have different limits", "Scale each tier in the way it needs", "More system-specific decisions"]
+    ] },
+    { kind: "prose", heading: "Choose the Smallest Strategy That Meets the Need", body: [
+      "For an early product, vertical scaling, a cache, and basic load balancing are often enough. Instrument CPU, memory, request latency, database read and write capacity, and queue depth so the next limit is visible before it becomes an outage.",
+      "Use horizontal scaling, partitioning, or independently scalable services only when the measured workload requires them. Auto-scaling can reduce idle cost and absorb bursts, but use conservative thresholds and cooldowns so instances do not repeatedly scale out and in during a noisy traffic pattern."
+    ] },
+    { kind: "system-design-scalability-loop" },
+    { kind: "prose", heading: "Stateless Application Servers", body: [
+      "Application servers are easiest to scale horizontally when they are **stateless**. Any server should be able to handle any request without depending on memory stored by a previous server.",
+      "Move sessions to a shared store, persist files in object storage, and keep request-specific state out of local process memory. With stateless servers, a load balancer can add or remove instances without changing the client experience.",
+      "A local session or uploaded file may be convenient at first, but it becomes a routing or data-loss problem as soon as requests can land on multiple instances."
+    ] },
+    { kind: "image", src: scalabilityArchitectureImg, alt: "System design diagram showing client requests through a CDN, load balancer, application servers, cache, and database, with a queue and worker branch", caption: "A scale-out request path: keep the application tier stateless, cache repeated reads, and move slow work to a queue and worker." },
+    { kind: "prose", heading: "Linear Scaling Is a Goal, Not a Guarantee", body: [
+      "If one server handles 100 requests per second, two servers rarely handle exactly 200. Shared databases, locks, network calls, cache misses, uneven traffic, and coordination all reduce the gain from extra servers.",
+      "Use load tests and production metrics to compare added capacity with actual throughput and tail latency. If adding instances does not improve the metric, the bottleneck is probably downstream."
+    ] },
+    { kind: "prose", heading: "Scale Reads Before the Primary Database Becomes the Limit", body: [
+      "A **cache** serves repeated data from memory and reduces database work. It is useful when reads are frequent and stale data is acceptable for a bounded period. The cost is invalidation, cache misses, and the risk of stale results.",
+      "**Read replicas** copy data from the primary and spread read traffic. They improve read capacity and can isolate analytical or reporting work, but replication lag means a read may not immediately see a completed write.",
+      "Use both only when measurements show read pressure. A cache and replicas cannot solve a write-bound primary database."
+    ] },
+    { kind: "table", caption: "Read scaling choices", headers: ["Technique", "Use when", "Trade-off", "Failure mode"], rows: [
+      ["Cache", "The same data is read repeatedly", "Invalidation and stale data", "A cold cache overloads the database"],
+      ["Read replicas", "Reads dominate writes", "Replication lag and additional operations", "Read-after-write returns stale data"],
+      ["Precompute", "The same expensive result is read often", "More write work and derived state", "Materializing rarely used results"]
+    ] },
+    { kind: "prose", heading: "Scale Writes and Data Deliberately", body: [
+      "When one primary cannot sustain write volume or storage, **sharding** partitions data across multiple nodes. Choose a key that matches access patterns and distributes load evenly. Sharding adds capacity, but cross-shard queries, rebalancing, and hot partitions become operational concerns.",
+      "Queues separate a fast request path from slower background work. A queue can absorb bursts and let workers scale independently, but it introduces backlog, retries, duplicates, ordering decisions, and delayed results.",
+      "Use object storage for large binary data. It keeps the transactional database focused on metadata and gives media a storage path that can grow independently."
+    ] },
+    { kind: "prose", heading: "Scale Delivery and Services Only When Their Load Differs", body: [
+      "A **CDN** caches static or cacheable content close to users. It reduces origin bandwidth and latency for global audiences, but content freshness and invalidation still need a clear policy.",
+      "Independent services can be scaled separately when their workloads, release cadence, or reliability needs genuinely differ. Splitting a system into microservices too early adds network calls, observability work, data ownership decisions, and more failure modes. Keep a modular monolith while it remains easier to operate.",
+      "For global latency, availability, or legal requirements, deploy in more than one region. Multi-region systems improve reach and resilience but introduce replication, routing, and consistency trade-offs."
+    ] },
+    { kind: "table", caption: "Match the pressure to the smallest useful change", headers: ["Pressure", "First direction", "What to verify next"], rows: [
+      ["Application CPU", "Add stateless app instances behind a load balancer", "Per-instance utilization and downstream latency"],
+      ["Repeated database reads", "Cache or add read replicas", "Hit rate, primary CPU, and replication lag"],
+      ["Slow asynchronous work", "Queue the work and scale workers", "Queue depth, retries, and end-to-end delay"],
+      ["Write or storage limit", "Partition data or move media to object storage", "Partition balance, hot keys, and recovery time"],
+      ["Large public media delivery", "Use a CDN", "Origin egress, cache hit rate, and freshness"]
+    ] },
+    { kind: "prose", heading: "Verify the Change and Name the Next Limit", body: [
+      "A scaling change is complete only after it is verified against the requirement. Compare throughput, P95 or P99 latency, error rate, utilization, queue depth, cache hit rate, and cost before and after the change.",
+      "Scaling is a sequence: `load grows → a limit appears → add capacity or reduce work → a new limit appears`. A strong design explains where the system breaks next and what change would address it."
+    ] },
+    { kind: "takeaways", items: [
+      "Scalability means preserving requirements as load grows, not simply adding servers.",
+      "Measure first. Different load shapes create different bottlenecks and need different responses.",
+      "Scale up for simplicity while it fits. Scale out when capacity or availability requires it.",
+      "Keep application servers stateless so the load balancer can distribute requests freely.",
+      "Caches, replicas, shards, queues, CDNs, and object storage are targeted tools. Each improves one pressure and adds its own trade-offs.",
+      "Use autoscaling with stable thresholds and cooldowns. Use multi-region deployment only when geographic latency, availability, or compliance requires it.",
+      "After every scaling change, verify the metric and identify the next bottleneck."
+    ] },
+    { kind: "quiz", questions: [
+      { id: "scalability-db-bottleneck", question: "Application servers are mostly idle, but database CPU is saturated by repeated profile reads. What is the best first scaling direction?", options: ["Add more application servers", "Add a cache or read replicas", "Shard every table immediately", "Increase the request timeout"], correctIndex: 1, explanation: "The database read path is the measured bottleneck. A cache can remove repeated work; replicas can distribute remaining reads. More app servers would only send more work to the saturated database." },
+      { id: "scalability-stateless", question: "Why do stateless application servers scale more easily horizontally?", options: ["They never use a database", "A load balancer can send any request to any instance", "They require sticky sessions", "They store every upload on local disk"], correctIndex: 1, explanation: "Stateless instances keep sessions and durable data in shared stores, so no client depends on a particular server." },
+      { id: "scalability-replica-tradeoff", question: "What trade-off does a read replica commonly introduce?", options: ["Replication lag can return stale data", "It eliminates the need for backups", "It increases primary write capacity without limits", "It guarantees linear scaling"], correctIndex: 0, explanation: "Replicas copy data asynchronously in many systems. That improves read capacity but can make a just-completed write temporarily invisible on a replica." },
+      { id: "scalability-queue", question: "Which signal best shows whether a queue-based scaling change is keeping up?", options: ["The number of colors in the architecture diagram", "Queue depth and end-to-end processing delay", "The size of the load balancer icon", "Only average application CPU"], correctIndex: 1, explanation: "A queue is healthy when workers drain work at least as fast as it arrives and the delay stays within the product requirement." }
+    ] }
   ]
 };
 
@@ -2519,7 +2806,15 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope],
+    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope, estimationCheatSheet],
+  },
+  "core-metrics": {
+    slug: "core-metrics",
+    title: "Core Concepts & Metrics",
+    category: "Fundamentals",
+    iconKey: "layers",
+    blurb: "Measure load, find the bottleneck, and scale only the component that limits capacity.",
+    lessons: [scalabilityLesson],
   },
   "networking-protocols": {
     slug: "networking-protocols",

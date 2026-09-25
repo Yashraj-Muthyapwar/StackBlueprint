@@ -1113,11 +1113,19 @@ export const roadmap: RoadmapCategory[] = [
               keywords: [l.subtitle].filter(Boolean) as string[],
             })),
           },
-          lockedPattern(
-            "Core Concepts & Metrics",
-            "core-metrics",
-            "Measuring performance: Availability, Scalability, and SLAs.",
-          ),
+          {
+            title: FOUNDATIONS_TOPICS["core-metrics"].title,
+            slug: FOUNDATIONS_TOPICS["core-metrics"].slug,
+            blurb: FOUNDATIONS_TOPICS["core-metrics"].blurb,
+            path: "/system-design/foundations/core-metrics",
+            lessons: FOUNDATIONS_TOPICS["core-metrics"].lessons.map((l) => ({
+              title: l.title,
+              slug: l.slug,
+              path: `/system-design/foundations/core-metrics/${l.slug}`,
+              icon: (l as any).icon || Activity,
+              keywords: [l.subtitle].filter(Boolean) as string[],
+            })),
+          },
           {
             title: FOUNDATIONS_TOPICS["networking-protocols"].title,
             slug: FOUNDATIONS_TOPICS["networking-protocols"].slug,
