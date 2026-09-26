@@ -1,4 +1,5 @@
 import { type LessonContent } from "@/lessons/types";
+import { BASIC_SYNTAX_LESSON } from "./basic-syntax-content";
 
 export const BASICS_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   basics: {
@@ -167,6 +168,7 @@ export const BASICS_TOPICS: Record<string, { title: string; slug: string; lesson
           },
         ],
       },
+      BASIC_SYNTAX_LESSON,
     ],
   },
 };
