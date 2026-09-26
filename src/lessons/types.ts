@@ -167,7 +167,7 @@ export type Section =
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
-  | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string; className?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "system-design-evolution" }

@@ -37,13 +37,14 @@ export const PYTHON_SECTIONS = [
       {
         slug: "basics",
         title: "Python Basics",
-        blurb: "Variables, data types, and control flow.",
-        locked: true,
+        blurb: "Introduction, syntax, variables, data types, and I/O.",
+        locked: false,
+        path: "/python/basics",
         lessons: [
-          { slug: "variables", title: "Variables", icon: Code2 },
-          { slug: "data-types", title: "Data Types", icon: Code2 },
-          { slug: "if-else", title: "If/Else", icon: Code2 },
-          { slug: "loops", title: "Loops", icon: Code2 },
+          { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
+          { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
+          { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
+          { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
         ],
       },
       {
