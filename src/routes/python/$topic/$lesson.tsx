@@ -5,6 +5,7 @@ import { PYTHON_SECTIONS } from "../index";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
 import { FILE_HANDLING_TOPICS } from "@/lessons/python/file-handling-content";
 import { OOP_TOPICS } from "@/lessons/python/oop-content";
+import { BASICS_TOPICS } from "@/lessons/python/basics-content";
 import { SectionRenderer } from "@/components/python/SectionRenderer";
 
 export const Route = createFileRoute("/python/$topic/$lesson")({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/python/$topic/$lesson")({
 });
 
 const ALL_PYTHON_TOPICS: Record<string, any> = {
+  ...BASICS_TOPICS,
   ...FILE_HANDLING_TOPICS,
   ...OOP_TOPICS,
 };
