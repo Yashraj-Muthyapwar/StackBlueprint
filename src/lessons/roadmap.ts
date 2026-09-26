@@ -52,6 +52,7 @@ import {
   Box,
   Code2,
   Columns3,
+  Zap,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -2500,7 +2501,19 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "1. Foundations",
         patterns: [
-          lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
+          {
+            title: "Python Basics",
+            slug: "basics",
+            blurb: "Introduction, syntax, variables, data types, and I/O.",
+            locked: false,
+            path: "/python/basics",
+            lessons: [
+              { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
+              { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
+              { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
+              { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
+            ],
+          },
           lockedPattern(
             "Data Structures",
             "data-structures",
