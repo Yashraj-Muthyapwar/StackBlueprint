@@ -1,5 +1,5 @@
 import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
-import { FileText, Database, Lock, Unlock, AlertCircle } from "lucide-react";
+import { FileText, Database, Lock, Unlock, AlertCircle, Terminal, Monitor } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const r = (key: string | number, ...cells: (string | number | null)[]): Row => ({ key, cells });
@@ -372,11 +372,63 @@ const workingWithPaths: Stage[] = [
   }
 ];
 
+const pythonInstructions: Stage[] = [
+  {
+    name: "1. Write an instruction",
+    blurb: "Code is a precise request",
+    sql: [
+      'message = "Hello!"',
+      "print(message)",
+    ],
+    table: {
+      name: "Python's workspace",
+      cols: ["name", "value"],
+      rows: [r(1, "message", "\"Hello!\"")],
+    },
+    steps: [
+      st([0], "kept", "The first line stores text in a name called message. This is an instruction written in Python's syntax.", { noteTone: "violet", side: sidePanel("Your code", ["• Uses precise syntax", "• Describes a task", "• Can be run again"], "violet", Terminal) }),
+    ],
+  },
+  {
+    name: "2. Python runs it",
+    blurb: "Follow the next instruction",
+    sql: [
+      'message = "Hello!"',
+      "print(message)",
+    ],
+    table: {
+      name: "Python's workspace",
+      cols: ["name", "value"],
+      rows: [r(1, "message", "\"Hello!\""), r(2, "print(message)", "Ready to display")],
+    },
+    steps: [
+      st([1], (row) => row.key === 2 ? "added" : "kept", "Python reads print(message), looks up the value stored in message, and prepares that value for output.", { noteTone: "mint" }),
+    ],
+  },
+  {
+    name: "3. See a result",
+    blurb: "The computer shows the output",
+    sql: [
+      'message = "Hello!"',
+      "print(message)",
+    ],
+    table: {
+      name: "Output",
+      cols: ["screen", "result"],
+      rows: [r(1, "Terminal", "Hello!")],
+    },
+    steps: [
+      st([1], "kept", "The result appears in the output. This loop—write code, run it, check the result—is the foundation of programming.", { noteTone: "mint", side: sidePanel("Computer output", ["Hello!", "", "One instruction completed"], "mint", Monitor) }),
+    ],
+  },
+];
+
 export const STAGES_REGISTRY = {
   "file-io": fileIo,
   "context-manager": contextManager,
   "file-basics": fileBasics,
   "working-with-paths": workingWithPaths,
+  "python-instructions": pythonInstructions,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;
