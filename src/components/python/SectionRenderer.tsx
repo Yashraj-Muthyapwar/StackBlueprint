@@ -433,7 +433,7 @@ export function SectionRenderer({
             <ZoomableImage
               src={section.src}
               alt={section.alt}
-              className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+              className={`h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl ${section.className ?? ""}`}
             />
           </div>
           {section.caption ? (
