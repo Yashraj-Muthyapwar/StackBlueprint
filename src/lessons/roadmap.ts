@@ -2512,6 +2512,7 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
               { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
               { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
+              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: FileText, path: "/python/basics/python-basics-final-quiz" },
             ],
           },
           lockedPattern(
