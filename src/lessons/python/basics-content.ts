@@ -1,5 +1,6 @@
 import { type LessonContent } from "@/lessons/types";
 import { BASIC_SYNTAX_LESSON } from "./basic-syntax-content";
+import { VARIABLES_DATA_TYPES_LESSON } from "./variables-data-types-content";
 
 export const BASICS_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   basics: {
@@ -169,6 +170,7 @@ export const BASICS_TOPICS: Record<string, { title: string; slug: string; lesson
         ],
       },
       BASIC_SYNTAX_LESSON,
+      VARIABLES_DATA_TYPES_LESSON,
     ],
   },
 };
