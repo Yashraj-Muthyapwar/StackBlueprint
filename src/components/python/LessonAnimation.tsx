@@ -31,8 +31,9 @@ import { WhatIsPythonCustomAnimation } from "./basics/WhatIsPythonCustomAnimatio
 import { BasicSyntaxCustomAnimation } from "./basics/BasicSyntaxCustomAnimation";
 import { VariablesDataTypesCustomAnimation } from "./basics/VariablesDataTypesCustomAnimation";
 import { IOTypeConversionsCustomAnimation } from "./basics/IOTypeConversionsCustomAnimation";
+import { OperatorsCustomAnimation } from "./control_flow/OperatorsCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -54,6 +55,8 @@ export function LessonAnimation({
           <div className="w-full min-w-0 flex justify-center">
             {variant === "variables-data-types" ? (
               <VariablesDataTypesCustomAnimation />
+            ) : variant === "python-operators" ? (
+              <OperatorsCustomAnimation />
             ) : variant === "io-and-conversions" ? (
               <IOTypeConversionsCustomAnimation />
             ) : variant === "basic-syntax" ? (
