@@ -129,3 +129,11 @@ Use this mode when a lesson already exists. Preserve its stable slug, route, pro
     "body": "- **Mistake 1**: Explanation...\n- **Mistake 2**: Explanation..."
   }
   ```
+
+## 8. Final Quiz Lessons
+- A final quiz is a module assessment, not a regular five-question lesson quiz. Follow the requested question count and mark its quiz section with `isFinalQuiz: true`.
+- Cover only concepts explicitly taught in the preceding lessons. Before writing questions, map every multiple-choice item and coding challenge to a prior lesson. Do not introduce future topics.
+- Start directly with question 1. Do not add generic takeaways, empty introductory prose, or placeholder text before a final quiz. Purposeful module instructions are allowed only when they add information the learner needs.
+- Final-quiz coding challenges must keep the standard editor's **Run Code** control and output visible. Require a real learner edit before the final submission control can be enabled.
+- When a coding challenge requires a specific variable, operation, or conversion, do not grade the final output alone. Use `requiredCodePatterns` for the required source constructs and `testCode` assertions for the required runtime state, then verify that an output-only shortcut fails.
+- During browser verification, confirm that the final-quiz route has no generic takeaway fallback or blurred pre-quiz content, each coding challenge runs and displays output, and submission becomes available only after every response is complete.

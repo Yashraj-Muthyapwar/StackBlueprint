@@ -19,12 +19,18 @@ When acting on requests to create lessons, chapters, or tracks in this project, 
   * Do NOT use em dashes in the lesson text.
 * **Images**: Whenever an image is included in a lesson, you must use the project's main image component (e.g., the zoomable image component) to enable the standard on-click expansion effect. **You MUST also always include a descriptive `caption` string alongside every `image` block.**
 * **Multiple Images**: When a single lesson section needs to display multiple related images, you MUST use the `image-carousel` section type to combine them into a single slider component for a uniform UX. Do NOT stack multiple separate `image` kinds consecutively.
-* **Key Takeaways**: Every lesson must end with a clearly defined "Key Takeaways" section.
+* **Key Takeaways**: Every teaching lesson must end with a clearly defined "Key Takeaways" section. A final-quiz-only lesson is an exception and must not receive generic takeaways or fallback content.
 * **Quizzes & Completion**: 
   * A Quiz section should be added if appropriate for the lesson content, though it can be skipped if not applicable.
   * If a quiz is present, it MUST ALWAYS be placed at the very end of the lesson content (i.e., AFTER the Key Takeaways section).
   * You MUST ALWAYS add a button to mark the lesson as completed at the end of the lesson, regardless of whether a quiz is present.
 * **Placeholders**: If a lesson is just a placeholder (i.e., its content is coming soon), its `sections` array MUST be completely empty (`sections: []`). Do NOT add prose sections that say "Placeholder...". This ensures the global `LessonLayout` correctly intercepts the state and renders the stylized "Lesson Content Coming Soon" UI.
+
+### Final Quiz Contract
+* **Scope**: A final quiz must assess only material explicitly taught in earlier lessons of the same module. Map each question and coding task to that taught content before authoring.
+* **Layout**: Start with the first question. Do not insert generic takeaways, empty prose, placeholder sections, or a blur-only preface before the assessment.
+* **Coding challenges**: If a final quiz includes runnable code, the standard Run Code control and output panel must remain available. The final submission control must require a meaningful learner response for every question.
+* **Verification**: Open the final-quiz route and confirm there is no generic takeaway fallback, no blurred content, every coding task runs, and final submission enables only after all answers are complete.
 
 ## 3. Track Creation
 * **Design Uniformity**: When creating a new learning track, you must strictly follow the design and layout patterns of existing tracks (e.g., the Data Engineering track, typically at `/data-engineering`).

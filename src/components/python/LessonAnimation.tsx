@@ -29,8 +29,10 @@ import { CompositionCustomAnimation } from "./oop/CompositionCustomAnimation";
 import { DunderMethodsCustomAnimation } from "./oop/DunderMethodsCustomAnimation";
 import { WhatIsPythonCustomAnimation } from "./basics/WhatIsPythonCustomAnimation";
 import { BasicSyntaxCustomAnimation } from "./basics/BasicSyntaxCustomAnimation";
+import { VariablesDataTypesCustomAnimation } from "./basics/VariablesDataTypesCustomAnimation";
+import { IOTypeConversionsCustomAnimation } from "./basics/IOTypeConversionsCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -50,7 +52,11 @@ export function LessonAnimation({
       <div className="relative z-10 overflow-x-auto">
         <ClientOnly fallback={<div className="h-[360px] animate-pulse bg-surface-2/40" />}>
           <div className="w-full min-w-0 flex justify-center">
-            {variant === "basic-syntax" ? (
+            {variant === "variables-data-types" ? (
+              <VariablesDataTypesCustomAnimation />
+            ) : variant === "io-and-conversions" ? (
+              <IOTypeConversionsCustomAnimation />
+            ) : variant === "basic-syntax" ? (
               <BasicSyntaxCustomAnimation />
             ) : variant === "python-instructions" ? (
               <WhatIsPythonCustomAnimation />
