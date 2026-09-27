@@ -33,8 +33,11 @@ import { VariablesDataTypesCustomAnimation } from "./basics/VariablesDataTypesCu
 import { IOTypeConversionsCustomAnimation } from "./basics/IOTypeConversionsCustomAnimation";
 import { OperatorsCustomAnimation } from "./control_flow/OperatorsCustomAnimation";
 import { ConditionalBranchingCustomAnimation } from "./control_flow/ConditionalBranchingCustomAnimation";
+import { MatchCaseCustomAnimation } from "./control_flow/MatchCaseCustomAnimation";
+import { LoopsCustomAnimation } from "./control_flow/LoopsCustomAnimation";
+import { LoopControlCustomAnimation } from "./control_flow/LoopControlCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -60,6 +63,12 @@ export function LessonAnimation({
               <OperatorsCustomAnimation />
             ) : variant === "conditional-branching" ? (
               <ConditionalBranchingCustomAnimation />
+            ) : variant === "match-case" ? (
+              <MatchCaseCustomAnimation />
+            ) : variant === "loops" ? (
+              <LoopsCustomAnimation />
+            ) : variant === "loop-control" ? (
+              <LoopControlCustomAnimation />
             ) : variant === "io-and-conversions" ? (
               <IOTypeConversionsCustomAnimation />
             ) : variant === "basic-syntax" ? (
