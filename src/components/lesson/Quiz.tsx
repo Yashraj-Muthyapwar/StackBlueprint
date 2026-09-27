@@ -24,7 +24,24 @@ export type QuizQuestion = {
   initialCode?: string;
   testCode?: string;
   expectedOutput?: string;
+  requiredCodePatterns?: string[];
+  validationMessage?: string;
 };
+
+function validateRequiredCodePatterns(question: QuizQuestion, code: string): string | null {
+  if (!question.requiredCodePatterns?.length) return null;
+
+  // Comments do not count as a solution. This catches output-only shortcuts while
+  // allowing normal whitespace differences in a learner's code.
+  const executableCode = code.replace(/#.*/g, "");
+  const matchesAllPatterns = question.requiredCodePatterns.every((pattern) =>
+    new RegExp(pattern, "m").test(executableCode),
+  );
+
+  return matchesAllPatterns
+    ? null
+    : question.validationMessage || "Your code needs to use the required variables and operations.";
+}
 
 function parsePythonError(errorText: string): { coreIssue: string; hint: string } | null {
   if (!errorText) return null;
@@ -204,6 +221,11 @@ function NormalQuiz({
 
     if (currentQuestion.interactiveCode) {
       try {
+        const validationError = validateRequiredCodePatterns(currentQuestion, commandInput);
+        if (validationError) {
+          actualOutput = validationError;
+          throw new Error(validationError);
+        }
         const { getPyodide } = await import("@/lib/pyodide-loader");
         const pyodide = await getPyodide();
         if (currentQuestion.packages?.length) await pyodide.loadPackage(currentQuestion.packages);
@@ -633,7 +655,8 @@ function FinalQuiz({
   });
 
   useEffect(() => {
-    onActiveChange?.(true);
+    onActiveChange?.(false);
+    return () => onActiveChange?.(false);
   }, [onActiveChange]);
 
   const handleSelectOption = (questionIndex: number, optionIndex: number) => {
@@ -662,6 +685,11 @@ function FinalQuiz({
       const q = shuffledQuestions[idx];
       if (q.interactiveCode) {
         try {
+          const validationError = validateRequiredCodePatterns(q, commandAnswers[idx] || "");
+          if (validationError) {
+            newOutputs[idx] = validationError;
+            continue;
+          }
           const { getPyodide } = await import("@/lib/pyodide-loader");
           const pyodide = await getPyodide();
           if (q.packages?.length) await pyodide.loadPackage(q.packages);
@@ -703,11 +731,12 @@ function FinalQuiz({
     }
   };
 
-  const allAnswered = shuffledQuestions.every((q, i) =>
-    q.commandAnswer || q.interactiveCode
-      ? commandAnswers[i] !== undefined || (q.interactiveCode && q.initialCode)
-      : selectedAnswers[i] !== undefined,
-  );
+  const allAnswered = shuffledQuestions.every((q, i) => {
+    if (q.interactiveCode || q.commandAnswer) {
+      return Boolean(commandAnswers[i]?.trim());
+    }
+    return selectedAnswers[i] !== undefined;
+  });
 
   return (
     <div className="mt-8 w-full max-w-3xl mx-auto">
@@ -740,8 +769,6 @@ function FinalQuiz({
                   <InteractivePythonBlock
                     initialCode={q.initialCode || ""}
                     onChange={(code) => handleCommandChange(qIndex, code)}
-                    hideRunButton={true}
-                    hideOutput={true}
                     className="my-0 border-hairline/60"
                   />
                 ) : q.commandAnswer ? (
