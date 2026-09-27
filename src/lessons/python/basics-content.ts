@@ -266,6 +266,117 @@ export const IO_TYPE_CONVERSIONS_LESSON: LessonContent = {
   ],
 };
 
+export const PYTHON_BASICS_FINAL_QUIZ_LESSON: LessonContent = {
+  slug: "python-basics-final-quiz",
+  title: "Python Basics Final Quiz",
+  subtitle: "Review the first four lessons with ten questions and coding challenges.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "python-basics-final-1",
+          question: "What is Python primarily used for?",
+          options: [
+            "Writing instructions that a computer can run",
+            "Replacing a computer operating system",
+            "Storing only spreadsheet data",
+            "Designing computer hardware",
+          ],
+          correctIndex: 0,
+          explanation: "Python is a programming language used to write instructions for many kinds of programs.",
+        },
+        {
+          id: "python-basics-final-2",
+          question: "Which character starts a single-line comment in Python?",
+          options: ["#", "//", "<!--", "*"],
+          correctIndex: 0,
+          explanation: "Python ignores text after # on the same line.",
+        },
+        {
+          id: "python-basics-final-3",
+          question: "Create a variable named `message` with the text `Python is ready`, then print it.",
+          interactiveCode: true,
+          initialCode: "# Write your code below\n",
+          testCode: "assert message == 'Python is ready'",
+          expectedOutput: "Python is ready",
+          requiredCodePatterns: [
+            "\\bmessage\\s*=\\s*(['\\\"])Python is ready\\1",
+            "\\bprint\\s*\\(\\s*message\\s*\\)",
+          ],
+          validationMessage: "Create `message` with the required text, then print `message`.",
+          explanation: "Assign the text to `message`, then use `print(message)`.",
+        },
+        {
+          id: "python-basics-final-4",
+          question: "What does this code print? `status = \"draft\"; status = \"published\"; print(status)`",
+          options: ["draft", "published", "draft published", "It raises an error"],
+          correctIndex: 1,
+          explanation: "The second assignment replaces the value referred to by status.",
+        },
+        {
+          id: "python-basics-final-5",
+          question: "What data type is the value `\"25\"`?",
+          options: ["str", "int", "float", "bool"],
+          correctIndex: 0,
+          explanation: "Quotation marks make 25 text, so its type is str.",
+        },
+        {
+          id: "python-basics-final-6",
+          question: "Create `price = 20` and `quantity = 3`, then print their product.",
+          interactiveCode: true,
+          initialCode: "# Write your code below\n",
+          testCode: "assert price == 20\nassert quantity == 3",
+          expectedOutput: "60",
+          requiredCodePatterns: [
+            "\\bprice\\s*=\\s*20\\b",
+            "\\bquantity\\s*=\\s*3\\b",
+            "\\bprint\\s*\\(\\s*price\\s*\\*\\s*quantity\\s*\\)",
+          ],
+          validationMessage: "Create both variables, then print `price * quantity`.",
+          explanation: "Assign the two variables, then use `print(price * quantity)`.",
+        },
+        {
+          id: "python-basics-final-7",
+          question: "What type does `input()` return, even if someone types digits?",
+          options: ["str", "int", "float", "The type of the typed value"],
+          correctIndex: 0,
+          explanation: "input() returns text. Convert the result before doing numeric calculations.",
+        },
+        {
+          id: "python-basics-final-8",
+          question: "Which expression converts the text `\"3.5\"` into a decimal number?",
+          options: ["int(\"3.5\")", "float(\"3.5\")", "str(3.5)", "bool(\"3.5\")"],
+          correctIndex: 1,
+          explanation: "float() converts valid decimal text into a floating-point number.",
+        },
+        {
+          id: "python-basics-final-9",
+          question: "After `import math`, which expression accesses the value of pi?",
+          options: ["pi", "math.pi", "math.import(pi)", "import.math.pi"],
+          correctIndex: 1,
+          explanation: "Use the module name followed by a dot to access names imported with `import math`.",
+        },
+        {
+          id: "python-basics-final-10",
+          question: "Convert `raw_score` to an integer and print the score plus 8.",
+          interactiveCode: true,
+          initialCode: 'raw_score = "42"\n\n# Write your code below\n',
+          testCode: "assert raw_score == '42'\nassert isinstance(score, int)\nassert score == 42",
+          expectedOutput: "50",
+          requiredCodePatterns: [
+            "\\bscore\\s*=\\s*int\\s*\\(\\s*raw_score\\s*\\)",
+            "\\bprint\\s*\\(\\s*score\\s*\\+\\s*8\\s*\\)",
+          ],
+          validationMessage: "Convert `raw_score` with `int()` into `score`, then print `score + 8`.",
+          explanation: "Use `score = int(raw_score)`, then print `score + 8`.",
+        },
+      ],
+    },
+  ],
+};
+
 
 export const BASICS_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   basics: {
@@ -437,6 +548,7 @@ export const BASICS_TOPICS: Record<string, { title: string; slug: string; lesson
       BASIC_SYNTAX_LESSON,
       VARIABLES_DATA_TYPES_LESSON,
       IO_TYPE_CONVERSIONS_LESSON,
+      PYTHON_BASICS_FINAL_QUIZ_LESSON,
     ],
   },
 };
