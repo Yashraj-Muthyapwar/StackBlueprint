@@ -1,5 +1,6 @@
 import { type LessonContent } from "@/lessons/types";
 import constantsModuleExample from "@/images/python/basics/constants-module-example.png";
+import inputTypeConversionFlow from "@/images/python/basics/input-type-conversion-flow.png";
 
 
 export const BASIC_SYNTAX_LESSON: LessonContent = {
@@ -32,13 +33,15 @@ export const BASIC_SYNTAX_LESSON: LessonContent = {
     { kind: "interactive-code", code: 'score = 75\n\nif score >= 50:\n    print("Passed")\n\nprint("Check complete")' },
     { kind: "callout", tone: "warn", title: "Common mistakes", body: "- **Missing indentation**: Code after `if`, `for`, `while`, `def`, and `class` must be indented.\n- **Using a keyword as a name**: `class = 1` is not valid Python.\n- **Mixing tabs and spaces**: Use four spaces consistently.\n- **Explaining obvious code**: Comments should add context, not repeat the line." },
     { kind: "takeaways", items: ["Comments are notes for people and begin with `#`.", "Keywords are reserved words in Python.", "Identifiers are the names you create.", "Statements are instructions. Expressions produce values.", "Indentation groups code into blocks."] },
-    { kind: "quiz", questions: [
-      { id: "basic-syntax-1", question: "What does Python do with a line that begins with `#`?", options: ["Ignores it as a comment", "Prints it", "Runs it twice", "Turns it into a variable"], correctIndex: 0, explanation: "A line beginning with `#` is a comment. Python ignores it during execution." },
-      { id: "basic-syntax-2", question: "Which name is a valid Python identifier?", options: ["2_orders", "order-total", "class", "order_total"], correctIndex: 3, explanation: "`order_total` uses letters and an underscore, and it does not begin with a digit or use a keyword." },
-      { id: "basic-syntax-3", question: "What is `price * quantity` in `total = price * quantity`?", options: ["A comment", "An expression", "A class", "A keyword"], correctIndex: 1, explanation: "It produces a value, so it is an expression. The full assignment line is a statement." },
-      { id: "basic-syntax-4", question: "Why is indentation required after an `if` statement?", options: ["It marks the code that belongs to the if block", "It changes text color", "It adds a comment", "It creates a variable"], correctIndex: 0, explanation: "Indentation tells Python which statements are part of a block." },
-      { id: "basic-syntax-5", question: "Write an `if` statement that prints `Ready` when `score` is at least 50.", interactiveCode: true, initialCode: "score = 75\n\n# Write your if statement below\n", testCode: "", expectedOutput: "Ready", explanation: "Use `if score >= 50:` followed by an indented `print(\"Ready\")`." },
-    ] },
+    {
+      kind: "quiz", questions: [
+        { id: "basic-syntax-1", question: "What does Python do with a line that begins with `#`?", options: ["Ignores it as a comment", "Prints it", "Runs it twice", "Turns it into a variable"], correctIndex: 0, explanation: "A line beginning with `#` is a comment. Python ignores it during execution." },
+        { id: "basic-syntax-2", question: "Which name is a valid Python identifier?", options: ["2_orders", "order-total", "class", "order_total"], correctIndex: 3, explanation: "`order_total` uses letters and an underscore, and it does not begin with a digit or use a keyword." },
+        { id: "basic-syntax-3", question: "What is `price * quantity` in `total = price * quantity`?", options: ["A comment", "An expression", "A class", "A keyword"], correctIndex: 1, explanation: "It produces a value, so it is an expression. The full assignment line is a statement." },
+        { id: "basic-syntax-4", question: "Why is indentation required after an `if` statement?", options: ["It marks the code that belongs to the if block", "It changes text color", "It adds a comment", "It creates a variable"], correctIndex: 0, explanation: "Indentation tells Python which statements are part of a block." },
+        { id: "basic-syntax-5", question: "Write an `if` statement that prints `Ready` when `score` is at least 50.", interactiveCode: true, initialCode: "score = 75\n\n# Write your if statement below\n", testCode: "", expectedOutput: "Ready", explanation: "Use `if score >= 50:` followed by an indented `print(\"Ready\")`." },
+      ]
+    },
   ],
 };
 
@@ -88,6 +91,177 @@ export const VARIABLES_DATA_TYPES_LESSON: LessonContent = {
         { id: "variables-types-4", question: "Which value has the `float` type?", options: ["`25`", "`\"25\"`", "`25.0`", "`True`"], correctIndex: 2, explanation: "A numeric literal with a decimal point is a float." },
         { id: "variables-types-5", question: "Write code that assigns `\"Chicago\"` to `city` and prints `city`.", interactiveCode: true, initialCode: "# Write your code here\n", testCode: "", expectedOutput: "Chicago", explanation: "Assign the string with `city = \"Chicago\"`, then use `print(city)`." },
       ]
+    },
+  ],
+};
+
+export const IO_TYPE_CONVERSIONS_LESSON: LessonContent = {
+  slug: "io-and-conversions",
+  title: "I/O & Type Conversions",
+  subtitle: "Display results, understand user input, import modules, and convert values safely.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Why this matters",
+      body: [
+        "Programs are useful when they can show results and work with information that comes from outside the program. Python uses `print()` for output and `input()` for keyboard input.",
+        "Values often arrive as text. Type conversion lets you turn text into a number when a calculation needs one.",
+      ],
+    },
+    {
+      kind: "animation",
+      variant: "io-and-conversions",
+      caption: "Output, input, conversion, and imports",
+    },
+    {
+      kind: "prose",
+      heading: "Output with print()",
+      body: [
+        "`print()` displays values in the output area. It can receive several values at once. By default, Python puts a space between them and moves to a new line after printing.",
+        "Use `sep` to choose the separator between values and `end` to choose what prints after the last value.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The print() signature",
+      body: [
+        "The syntax is `print(*objects, sep=' ', end='\\n', file=None, flush=False)`. You will usually only need `objects`, `sep`, and `end` at first.",
+        "`file=None` means standard output, which is normally the screen. `flush=False` means Python does not force the output to appear immediately after every call.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "What each print() parameter controls",
+      headers: ["Parameter", "Purpose", "Default"],
+      rows: [
+        ["*objects", "The value or values to print", "Required values"],
+        ["sep", "Text placed between multiple values", "A space"],
+        ["end", "Text printed after the last value", "A new line"],
+        ["file", "Where output is written", "Standard output, usually the screen"],
+        ["flush", "Whether to force output to appear immediately", "False"],
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'item = "Notebook"\nprice = 5\n\nprint("Item:", item)\nprint("Price:", price)\nprint("red", "green", "blue", sep=" | ")\nprint("Loading", end="...")\nprint("done")',
+    },
+    {
+      kind: "prose",
+      heading: "Input arrives as text",
+      body: [
+        "`input()` displays an optional prompt and waits for someone to type a response. Its result is always a string, even when the response looks like a number.",
+        "The lesson's browser runner executes code without a keyboard prompt, so the interactive example below uses a string that represents a user's response.",
+      ],
+    },
+    {
+      kind: "image",
+      src: inputTypeConversionFlow,
+      alt: "A Python input value moves from the text string 19 through int conversion into the integer 19",
+      caption: "input() returns text. Convert it before using it as a number.",
+    },
+    {
+      kind: "interactive-code",
+      code: '# This string represents a response from input()\nraw_age = "19"\nage = int(raw_age)\n\nprint(age + 1)\nprint(type(raw_age).__name__)\nprint(type(age).__name__)',
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Using input() in a normal Python program",
+      body: 'In a local Python program, you could write `age = int(input("Age: "))`. The `input()` call returns text, and `int()` converts that text to a whole number.',
+    },
+    {
+      kind: "prose",
+      heading: "Explicit type conversion",
+      body: [
+        "Explicit conversion means you choose the new type. Common conversion functions include `int()`, `float()`, `str()`, and `bool()`.",
+        "Conversion only works when the source value has a suitable format. For example, `int(\"19\")` works, but `int(\"nineteen\")` raises an error.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'quantity_text = "456"\nquantity = int(quantity_text)\nprice = float("19.95")\nlabel = str(quantity)\n\nprint(quantity + 1)\nprint(price * 2)\nprint(label + " items")',
+    },
+    {
+      kind: "prose",
+      heading: "Implicit conversion",
+      body: [
+        "Python sometimes converts a value automatically when it can do so without losing the important numeric information. Adding an `int` and a `float` produces a `float`.",
+        "Do not rely on automatic conversion for text. Python will not add a string and an integer until you convert one of them yourself.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'whole_number = 123\ndecimal_number = 1.23\ntotal = whole_number + decimal_number\n\nprint(total)\nprint(type(total).__name__)',
+    },
+    {
+      kind: "prose",
+      heading: "Importing modules",
+      body: [
+        "A module is a Python file that contains code you can reuse. The standard library includes modules for many common tasks.",
+        "Use `import math` when you want the whole `math` module. Use `from math import ceil` when you only need a particular name.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'import math\nfrom math import ceil\n\nprint(math.pi)\nprint(math.sqrt(81))\nprint(ceil(4.2))',
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Common mistakes",
+      body: '- **Expecting input to be a number**: `input()` returns a string. Convert it with `int()` or `float()` before calculating.\n- **Converting invalid text**: `int("3.5")` and `int("hello")` raise errors. Use `float("3.5")` for decimal text.\n- **Forgetting the module name**: After `import math`, write `math.pi`, not just `pi`.\n- **Changing a value before you need it**: Keep raw text when it is useful, then store the converted value in a clear second name.',
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Use `print()` to display results.",
+        "`input()` returns a string.",
+        "Use `int()` and `float()` to convert numeric text before calculation.",
+        "Python can automatically combine an integer and a float into a float.",
+        "Use `import` to access code from a module.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "io-conversions-1",
+          question: "What type does `input()` return?",
+          options: ["str", "int", "float", "It depends on what is typed"],
+          correctIndex: 0,
+          explanation: "input() always returns a string. Convert it if the program needs another type.",
+        },
+        {
+          id: "io-conversions-2",
+          question: "Which expression converts the text `\"42\"` into an integer?",
+          options: ["str(\"42\")", "int(\"42\")", "float(42)", "input(42)"],
+          correctIndex: 1,
+          explanation: "int() converts valid whole-number text into an integer.",
+        },
+        {
+          id: "io-conversions-3",
+          question: "What is printed by `print(\"A\", \"B\", sep=\"-\")`?",
+          options: ["A B", "A-B", "AB", "A\\nB"],
+          correctIndex: 1,
+          explanation: "sep replaces the default space between the values passed to print().",
+        },
+        {
+          id: "io-conversions-4",
+          question: "After `import math`, how do you access pi?",
+          options: ["pi", "math.import(pi)", "math.pi", "import.pi"],
+          correctIndex: 2,
+          explanation: "The module name qualifies names imported with `import math`.",
+        },
+        {
+          id: "io-conversions-5",
+          question: "Write code that converts the string `\"8\"` to an integer and prints its value plus 2.",
+          interactiveCode: true,
+          initialCode: 'text_number = "8"\n\n# Write your code below\n',
+          testCode: "",
+          expectedOutput: "10",
+          explanation: "Assign `int(text_number)` to a name, then print that name plus 2.",
+        },
+      ],
     },
   ],
 };
@@ -262,7 +436,7 @@ export const BASICS_TOPICS: Record<string, { title: string; slug: string; lesson
       },
       BASIC_SYNTAX_LESSON,
       VARIABLES_DATA_TYPES_LESSON,
+      IO_TYPE_CONVERSIONS_LESSON,
     ],
   },
 };
-
