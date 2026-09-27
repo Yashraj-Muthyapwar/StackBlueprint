@@ -2515,6 +2515,22 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: FileText, path: "/python/basics/python-basics-final-quiz" },
             ],
           },
+          {
+            title: "Control Flow",
+            slug: "control-flow",
+            blurb: "Control the execution path with conditions and loops.",
+            locked: false,
+            path: "/python/control-flow",
+            lessons: [
+              { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
+              { slug: "if-else", title: "If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
+              { slug: "if-else-ladder", title: "If/Else Ladder", icon: GitBranch, path: "/python/control-flow/if-else-ladder" },
+              { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
+              { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
+              { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
+              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: GitBranch, path: "/python/control-flow/control-flow-final-quiz" },
+            ],
+          },
           lockedPattern(
             "Data Structures",
             "data-structures",
