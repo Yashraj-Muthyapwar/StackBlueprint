@@ -1,0 +1,402 @@
+import { type LessonContent } from "@/lessons/types";
+import operatorPrecedenceMnemonic from "@/images/python/control-flow/operator-precedence-mnemonic.png";
+
+export const OPERATORS_LESSON: LessonContent = {
+  slug: "operators",
+  title: "Python Operators",
+  subtitle: "Use symbols and keywords to calculate, compare, combine, and test values.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Why this matters",
+      body: [
+        "An operator tells Python what to do with one or more values. In `10 + 5`, `+` is the operator and `10` and `5` are operands.",
+        "Operators help a program calculate totals, compare values, combine conditions, and decide what should happen next.",
+      ],
+    },
+    { kind: "animation", variant: "python-operators", caption: "Operators transform values into new results" },
+    {
+      kind: "table",
+      caption: "Operator families",
+      headers: ["Family", "Examples", "What it does"],
+      rows: [
+        ["Arithmetic", "`+`, `-`, `*`, `/`, `//`, `%`, `**`", "Calculates with values"],
+        ["Assignment", "`=`, `+=`, `-=`", "Stores or updates a value"],
+        ["Comparison", "`==`, `!=`, `>`, `>=`", "Produces `True` or `False`"],
+        ["Logical", "`and`, `or`, `not`", "Combines or reverses conditions"],
+        ["Membership", "`in`, `not in`", "Checks whether a value is present"],
+        ["Identity", "`is`, `is not`", "Checks whether two names refer to one object"],
+        ["Bitwise", "`&`, `|`, `^`, `~`, `<<`, `>>`", "Works with integer bits"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Arithmetic operators",
+      body: [
+        "Arithmetic operators calculate with numbers. `/` always performs true division and returns a `float`. `//` rounds down to the next whole number, `%` gives the remainder, and `**` raises a value to a power.",
+        "`+` can also join strings, while `*` can repeat a string.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'a = 10\nb = 3\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)\nprint("Go! " * 3)',
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Floor division is not truncation",
+      body: "`10 // 3` is `3`, but `-10 // 3` is `-4`. Floor division moves to the lower whole number on the number line.",
+    },
+    {
+      kind: "prose",
+      heading: "Assignment operators",
+      body: [
+        "`=` assigns the value on the right to the name on the left. It does not ask whether two values are equal.",
+        "Compound assignment combines an operation with reassignment. `score += 5` is a shorter form of `score = score + 5`.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'score = 10\nscore += 5\nscore *= 2\nscore -= 4\n\nprint(score)',
+    },
+    {
+      kind: "table",
+      caption: "Common compound assignments",
+      headers: ["Operator", "Meaning"],
+      rows: [
+        ["`x += 5`", "`x = x + 5`"],
+        ["`x -= 5`", "`x = x - 5`"],
+        ["`x *= 5`", "`x = x * 5`"],
+        ["`x /= 5`", "`x = x / 5`"],
+        ["`x //= 5`", "`x = x // 5`"],
+        ["`x %= 5`", "`x = x % 5`"],
+        ["`x **= 5`", "`x = x ** 5`"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Comparison operators",
+      body: [
+        "Comparisons ask a question and return a Boolean value: `True` or `False`. These results become the conditions used by `if` statements in the next lesson.",
+        "Use `==` to compare values. `=` assigns a value, while `==` checks whether two values are equal.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'age = 18\nminimum_age = 18\n\nprint(age == minimum_age)\nprint(age != minimum_age)\nprint(age > 16)\nprint(age < 21)\nprint(age >= 18)\nprint(age <= 17)',
+    },
+    {
+      kind: "prose",
+      heading: "Logical operators",
+      body: [
+        "`and` is true only when both conditions are true. `or` is true when at least one condition is true. `not` reverses a Boolean value.",
+        "Parentheses make a combined condition easier to read and make its evaluation order clear.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'has_ticket = True\nhas_id = False\n\nprint(has_ticket and has_id)\nprint(has_ticket or has_id)\nprint(not has_id)\nprint(has_ticket and (has_id or True))',
+    },
+    {
+      kind: "prose",
+      heading: "Membership and identity",
+      body: [
+        "`in` and `not in` check whether a value is present. They are case-sensitive when used with text.",
+        "`==` asks whether values are equal. `is` asks whether two names refer to the exact same object. Use `is` most often for `None`, not for ordinary value comparisons.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'message = "Python basics"\nfirst = [1, 2]\nsecond = [1, 2]\nthird = first\nvalue = None\n\nprint("Python" in message)\nprint("python" in message)\nprint("Java" not in message)\nprint(first == second)\nprint(first is second)\nprint(first is third)\nprint(value is None)',
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Use `==` for ordinary values",
+      body: "Two separate lists can contain the same values, so `first == second` can be `True` while `first is second` is `False`. Use `==` for normal value comparison and reserve `is` for identity checks such as `value is None`.",
+    },
+    {
+      kind: "prose",
+      heading: "Bitwise operators",
+      body: [
+        "Bitwise operators work on the binary digits of integers. `&` is AND, `|` is OR, `^` is XOR, `~` is NOT, and `<<` and `>>` shift bits left or right.",
+        "They matter in areas such as flags, permissions, networking, and algorithms. For now, recognize the category and focus on the operators you will use most often in control flow.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'left = 5   # 0101\nright = 3  # 0011\n\nprint(left & right)\nprint(left | right)\nprint(left ^ right)\nprint(left << 1)\nprint(10 >> 1)',
+    },
+    {
+      kind: "prose",
+      heading: "Precedence and parentheses",
+      body: [
+        "When an expression contains several operators, Python follows precedence rules. Multiplication, division, floor division, and modulus happen before addition and subtraction.",
+        "Use parentheses whenever they make the intended calculation clearer. Parentheses are evaluated first. Operators on the same row usually evaluate from left to right, except `**`, which evaluates from right to left.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Operator precedence, highest to lowest",
+      headers: ["Priority", "Operators", "Meaning"],
+      rows: [
+        ["1", "`()`", "Grouping with parentheses"],
+        ["2", "`**`", "Power"],
+        ["3", "`+x`, `-x`, `~x`", "Unary plus, unary minus, and bitwise NOT"],
+        ["4", "`*`, `/`, `//`, `%`", "Multiply, divide, floor divide, and modulus"],
+        ["5", "`+`, `-`", "Add and subtract"],
+        ["6", "`<<`, `>>`", "Bitwise shifts"],
+        ["7", "`&`", "Bitwise AND"],
+        ["8", "`^`", "Bitwise XOR"],
+        ["9", "`|`", "Bitwise OR"],
+        ["10", "`==`, `!=`, `<`, `<=`, `>`, `>=`, `in`, `not in`, `is`, `is not`", "Comparisons, membership, and identity"],
+        ["11", "`not`", "Logical NOT"],
+        ["12", "`and`", "Logical AND"],
+        ["13", "`or`", "Logical OR"],
+      ],
+    },
+    {
+      kind: "image",
+      src: operatorPrecedenceMnemonic,
+      alt: "Operator precedence mnemonic mapping each word in Please Pay Undergrads Minimum Allowance, So Any Extra Offer Can Never Always Outperform to a Python operator group",
+      caption: "Read the mnemonic from left to right, then match each word to the precedence row above.",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Where is assignment?",
+      body: "`=` and compound assignments such as `+=` are statements, not ordinary expression operators in this precedence list. Perform the calculation on the right first, then assign its result to the name on the left.",
+    },
+    {
+      kind: "interactive-code",
+      code: 'print(2 + 3 * 4)\nprint((2 + 3) * 4)\nprint(2 ** 3 ** 2)\nprint(True or False and False)\nprint((True or False) and False)\n\nprice = 20\nshipping = 5\nquantity = 3\nprint(price + shipping * quantity)\nprint((price + shipping) * quantity)',
+    },
+    {
+      kind: "prose",
+      heading: "Put the operators together",
+      body: [
+        "A checkout calculation uses arithmetic to produce a total, assignment to keep it, and comparison to produce a Boolean result. This is the kind of expression that will drive a later condition.",
+      ],
+    },
+    {
+      kind: "interactive-code",
+      code: 'product_price = 24\nquantity = 3\ndiscount = 10\nfree_shipping_limit = 50\n\nsubtotal = product_price * quantity\nfinal_price = subtotal - discount\ngets_free_shipping = final_price >= free_shipping_limit\n\nprint(subtotal)\nprint(final_price)\nprint(gets_free_shipping)',
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Common mistakes",
+      body: "- **Using `=` instead of `==`**: `=` assigns. `==` compares.\n- **Expecting `/` to return an integer**: `/` returns a float. Use `//` only when floor division is the goal.\n- **Confusing `is` with `==`**: Compare ordinary values with `==`.\n- **Relying on unclear precedence**: Add parentheses when a calculation could be read in more than one way.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Arithmetic operators calculate values, including division, remainder, and powers.",
+        "Assignment operators store or update a named value.",
+        "Comparison and logical operators produce Boolean results for control flow.",
+        "Membership checks presence. Identity checks whether two names refer to one object.",
+        "Parentheses make evaluation order explicit.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "operators-1",
+          question: "What does `17 % 5` produce?",
+          options: ["3", "2", "3.4", "5"],
+          correctIndex: 1,
+          explanation: "17 divided by 5 leaves a remainder of 2.",
+        },
+        {
+          id: "operators-2",
+          question: "Which expression checks whether `age` is at least 18?",
+          options: ["`age = 18`", "`age == 18`", "`age >= 18`", "`age => 18`"],
+          correctIndex: 2,
+          explanation: "`>=` means greater than or equal to.",
+        },
+        {
+          id: "operators-3",
+          question: "What does `True and False` evaluate to?",
+          options: ["True", "False", "None", "0"],
+          correctIndex: 1,
+          explanation: "`and` requires both operands to be true.",
+        },
+        {
+          id: "operators-4",
+          question: "Which operator should you normally use to compare two values for equality?",
+          options: ["`=`", "`==`", "`is`", "`in`"],
+          correctIndex: 1,
+          explanation: "`==` compares values. `=` assigns, while `is` compares identity.",
+        },
+        {
+          id: "operators-5",
+          question: "Create `price = 12` and `quantity = 4`, then print their product using the two variables.",
+          interactiveCode: true,
+          initialCode: "# Write your code below\n",
+          testCode: "assert price == 12\nassert quantity == 4",
+          expectedOutput: "48",
+          requiredCodePatterns: [
+            "\\bprice\\s*=\\s*12\\b",
+            "\\bquantity\\s*=\\s*4\\b",
+            "\\bprint\\s*\\(\\s*price\\s*\\*\\s*quantity\\s*\\)",
+          ],
+          validationMessage: "Create both variables, then print `price * quantity`.",
+          explanation: "Assign the two values, then multiply and print `price * quantity`.",
+        },
+      ],
+    },
+  ],
+};
+
+export const CONDITIONAL_BRANCHING_LESSON: LessonContent = {
+  slug: "if-else",
+  title: "Conditional Branching: If/Else",
+  subtitle: "Choose which code runs by testing conditions that are true or false.",
+  sections: [
+    { kind: "prose", heading: "Why this matters", body: ["Programs do not always follow one straight path. A condition lets a program choose an action based on the current data.", "Python evaluates a condition to `True` or `False`, then runs the matching indented block. This is called conditional branching."] },
+    { kind: "animation", variant: "conditional-branching", caption: "A condition chooses one path through a program" },
+    { kind: "prose", heading: "IF Statement", body: ["The comparison and logical operators from the previous lesson produce Boolean values. A colon ends the condition line, and the indented lines below it form the body of the `if` statement.", "When the condition is false, Python skips that body and continues with the next statement after the block."] },
+    { kind: "syntax", title: "IF statement", code: "if condition:\n    statement", description: "The colon starts the branch body. Indent every statement that belongs to the `if` block." },
+    { kind: "interactive-code", caption: "IF STATEMENT · SYNTAX AND EXAMPLE", code: 'temperature = 24\n\nprint(temperature > 20)\n\nif temperature > 20:\n    print("Warm day")\n\nprint("Forecast checked")' },
+    { kind: "prose", heading: "is vs ==", body: ["Use `==` when a condition should compare values. Two separate lists can contain the same items, so they can be equal even when they are not the same object.", "Use `is` when you need to check identity. Its clearest everyday use is `value is None`, which checks for the single `None` object. Do not use `is` as a substitute for `==` when comparing ordinary strings, numbers, or lists."] },
+    { kind: "syntax", title: "Value comparison and identity check", code: "left == right\nvalue is None", description: "Use `==` for equal values. Reserve `is` for identity checks, most commonly `is None`." },
+    { kind: "interactive-code", caption: "IS VS == · COMPARISON EXAMPLE", code: 'first = ["Python", "SQL"]\nsecond = ["Python", "SQL"]\nresult = None\n\nprint(first == second)\nprint(first is second)\nprint(result is None)' },
+    { kind: "prose", heading: "IF/ELSE", body: ["Use `if/else` when exactly one of two blocks must run. The `if` block runs for `True`; the `else` block runs for `False`.", "Keep `else` aligned with its `if`. Both bodies must be indented by the same amount."] },
+    { kind: "syntax", title: "IF/ELSE statement", code: "if condition:\n    if_body\nelse:\n    else_body", description: "`else` is aligned with `if`. Exactly one of these two indented bodies runs." },
+    { kind: "interactive-code", caption: "IF/ELSE · SYNTAX AND EXAMPLE", code: 'age = 16\n\nif age >= 18:\n    print("Eligible to vote")\nelse:\n    print("Not eligible to vote")' },
+    { kind: "prose", heading: "ELIF and IF ELSE Ladder", body: ["Start with `if`, add zero or more `elif` clauses, and finish with an optional `else`. This ordered structure is commonly called an if/else ladder.", "`elif` means else if. Python tests conditions from top to bottom and runs only the first matching branch. It skips every remaining `elif` or `else` branch after a match."] },
+    { kind: "syntax", title: "IF/ELIF/ELSE ladder", code: "if first_condition:\n    first_body\nelif next_condition:\n    next_body\nelse:\n    fallback_body", description: "Python checks from top to bottom and runs the first matching body. An `else` fallback is optional." },
+    { kind: "interactive-code", caption: "IF/ELIF/ELSE LADDER · SYNTAX AND EXAMPLE", code: 'score = 75\n\nif score >= 90:\n    grade = "A"\nelif score >= 75:\n    grade = "B"\nelif score >= 40:\n    grade = "C"\nelse:\n    grade = "Needs improvement"\n\nprint(grade)' },
+    { kind: "callout", tone: "info", title: "Order conditions from most specific to most general", body: "In an `if/elif` sequence, the first true condition wins. Put a narrower condition first. For example, test `score >= 90` before `score >= 75`, or a score of 95 would never reach the A branch." },
+    { kind: "prose", heading: "Nested conditions", body: ["A nested condition appears inside another conditional block. Python checks the inner condition only after the outer condition allows it.", "Nesting is useful when the second question depends on the answer to the first. Keep nesting shallow when possible so the code remains easy to read."] },
+    { kind: "interactive-code", caption: "NESTED CONDITION · EXAMPLE", code: 'age = 20\nhas_id = True\n\nif age >= 18:\n    if has_id:\n        print("Entry allowed")\n    else:\n        print("ID required")\nelse:\n    print("Entry not allowed")' },
+    { kind: "prose", heading: "Ternary Operator", body: ["The ternary operator is a compact way to choose between two values.", "Use it for a short value choice. Prefer a regular `if/else` block when each branch needs several lines of work."] },
+    { kind: "syntax", title: "Ternary operator", code: "result = value_if_true if condition else value_if_false", description: "Read this as: use the first value when the condition is true, otherwise use the second value." },
+    { kind: "interactive-code", caption: "TERNARY OPERATOR · SYNTAX AND EXAMPLE", code: 'age = 20\nstatus = "Adult" if age >= 18 else "Minor"\n\nprint(status)' },
+    { kind: "prose", heading: "Use pass for an intentionally empty block", body: ["Python requires every `if` body to contain a statement. Use `pass` as a temporary placeholder when you have decided the condition but have not written that branch yet.", "`pass` does nothing. Replace it with real work when the branch is ready."] },
+    { kind: "interactive-code", caption: "PASS · PLACEHOLDER EXAMPLE", code: 'is_preview = True\n\nif is_preview:\n    pass\n\nprint("Program continues")' },
+    { kind: "callout", tone: "warn", title: "Common mistakes", body: "- **Using `=` in a condition**: Use `==` to compare values.\n- **Forgetting the colon**: Each `if`, `elif`, and `else` header ends with `:`.\n- **Missing indentation**: The branch body must be indented consistently.\n- **Putting a broad condition first**: In an `elif` sequence, the first true branch wins.\n- **Writing `else if`**: Python uses the single keyword `elif`." },
+    { kind: "takeaways", items: ["An `if` block runs only when its condition is true.", "An `if/else` statement runs exactly one of two branches.", "An `if/elif/else` ladder runs the first matching branch.", "Use `==` to compare values and `is` for identity checks such as `is None`.", "A ternary operator is useful for a simple two-value choice."] },
+    {
+      kind: "quiz", questions: [
+        { id: "conditional-branching-1", question: "What happens when the condition in an `if` statement is `False` and there is no `else` block?", options: ["The indented if block is skipped", "Python runs the if block anyway", "Python stops with an error", "Python changes the condition to True"], correctIndex: 0, explanation: "Python skips the indented if block, then continues with the next statement after it." },
+        { id: "conditional-branching-2", question: "Which condition is the clearest way to check whether `result` has no value yet?", options: ["`result == None`", "`result is None`", "`result = None`", "`None is result ==`"], correctIndex: 1, explanation: "`None` is a singleton object, so `result is None` is the standard identity check." },
+        { id: "conditional-branching-3", question: "Why should `score >= 90` appear before `score >= 75` in a grade check?", options: ["Python requires numbers in descending order", "The first true branch runs, so the more specific condition must be checked first", "It makes the code execute faster", "The conditions would otherwise both be false"], correctIndex: 1, explanation: "A score of 95 meets both conditions. Testing 90 first lets it receive the intended result." },
+        { id: "conditional-branching-4", question: "Which line is a valid conditional expression?", options: ["`status = if age >= 18 then Adult else Minor`", "`status = Adult if age >= 18 else Minor`", "`if status = Adult if age >= 18`", "`status if age >= 18 = Adult else Minor`"], correctIndex: 1, explanation: "A conditional expression puts the true value first, then `if condition else` and the false value." },
+        { id: "conditional-branching-5", question: "Create `age = 19`. Print `Adult` when age is at least 18; otherwise print `Minor`.", interactiveCode: true, initialCode: "# Write your code below\n", testCode: "assert age == 19", expectedOutput: "Adult", requiredCodePatterns: ["\\bage\\s*=\\s*19\\b", "\\bif\\s+age\\s*>=\\s*18\\s*:", "\\belse\\s*:", "\\bprint\\s*\\(\\s*(['\\\"])Adult\\1\\s*\\)", "\\bprint\\s*\\(\\s*(['\\\"])Minor\\1\\s*\\)"], validationMessage: "Create `age = 19`, then use an `if/else` statement that prints `Adult` or `Minor`.", explanation: "Use an `if age >= 18:` branch for `Adult` and an `else:` branch for `Minor`." },
+      ]
+    },
+  ],
+};
+
+export const MATCH_CASE_LESSON: LessonContent = {
+  slug: "match-case",
+  title: "Match-Case (Switch)",
+  subtitle: "Choose an action by matching one value against a set of fixed patterns.",
+  sections: [
+    { kind: "prose", heading: "Why this matters", body: ["A long `if/elif/else` ladder can become hard to scan when one value is compared against several fixed options. `match/case` groups those choices into a clear list.", "Python checks cases from top to bottom and runs the first pattern that matches. It was introduced in Python 3.10."] },
+    { kind: "animation", variant: "match-case", caption: "Match one value against ordered cases" },
+    { kind: "prose", heading: "Match-Case", body: ["A `match` statement takes one subject value. Each `case` describes a pattern to test against it.", "Use it when the possible choices are distinct values such as commands, menu selections, days, or status labels."] },
+    { kind: "syntax", title: "Match-case statement", code: "match subject:\n    case pattern_one:\n        statement\n    case pattern_two:\n        statement\n    case _:\n        fallback_statement", description: "Indent every case below `match`. Python runs only the first matching case." },
+    { kind: "interactive-code", caption: "MATCH-CASE · SYNTAX AND EXAMPLE", code: 'command = "pause"\n\nmatch command:\n    case "start":\n        print("Starting program")\n    case "pause":\n        print("Pausing program")\n    case "stop":\n        print("Stopping program")\n    case _:\n        print("Unknown command")' },
+    { kind: "prose", heading: "The default case", body: ["`case _:` is the fallback pattern. The underscore matches anything, so it must appear last.", "It plays the same role as `else` in an `if/elif/else` ladder: it handles values that did not match an earlier case."] },
+    { kind: "interactive-code", caption: "DEFAULT CASE · EXAMPLE", code: 'day = 3\n\nmatch day:\n    case 1:\n        print("Monday")\n    case 2:\n        print("Tuesday")\n    case 3:\n        print("Wednesday")\n    case _:\n        print("Invalid day")' },
+    { kind: "prose", heading: "Match-Case vs IF/ELIF", body: ["Choose `match/case` for fixed alternatives of one subject value. Choose `if/elif` when each branch needs a different comparison, such as `score >= 90` or `temperature > 20`.", "Both structures check from top to bottom and select the first applicable branch."] },
+    { kind: "callout", tone: "warn", title: "Common mistakes", body: "- **Using Python before 3.10**: `match/case` requires Python 3.10 or newer.\n- **Putting `case _` first**: It matches every value and would hide later cases.\n- **Forgetting indentation**: Each `case` body must be indented.\n- **Using it for ranges**: Use `if/elif` for comparisons such as `age >= 18`." },
+    { kind: "takeaways", items: ["`match` compares one subject against ordered case patterns.", "Only the first matching case runs.", "`case _` is the final fallback case.", "Use `match/case` for fixed options and `if/elif` for condition-based comparisons."] },
+    { kind: "quiz", questions: [
+      { id: "match-case-1", question: "What does `case _:` do in a match statement?", options: ["Matches any value not handled earlier", "Matches only strings", "Ends the match statement", "Repeats every case"], correctIndex: 0, explanation: "The wildcard `_` is the fallback pattern, so it should be last." },
+      { id: "match-case-2", question: "When is `match/case` usually clearer than `if/elif`?", options: ["Testing several fixed command names", "Checking whether a score is at least 90", "Testing a numeric range", "Repeating a loop"], correctIndex: 0, explanation: "Match-case is well suited to fixed alternatives for one subject value." },
+      { id: "match-case-3", question: "How many case bodies run for one match statement?", options: ["All matching cases", "Only the first matching case", "Exactly two cases", "No cases when `_` exists"], correctIndex: 1, explanation: "Python stops after the first matching case." },
+      { id: "match-case-4", question: "Why must `case _:` come last?", options: ["It matches every value", "It only accepts integers", "It requires a semicolon", "It has lower precedence"], correctIndex: 0, explanation: "A wildcard placed first would prevent every later case from being reached." },
+      { id: "match-case-5", question: "Create `choice = " + '"yes"' + "`. Use `match/case` to print `Confirmed` for `\"yes\"`, `Cancelled` for `\"no\"`, and `Unknown` otherwise.", interactiveCode: true, initialCode: "# Write your code below\n", testCode: "assert choice == 'yes'", expectedOutput: "Confirmed", requiredCodePatterns: ["\\bchoice\\s*=\\s*(['\\\"])yes\\1", "\\bmatch\\s+choice\\s*:", "\\bcase\\s+(['\\\"])yes\\1\\s*:", "\\bcase\\s+_\\s*:"], validationMessage: "Create `choice`, then use `match choice:` with a `yes` case and a final `case _:` fallback.", explanation: "Match `choice` and print the message from the first matching case." },
+    ] },
+  ],
+};
+
+export const LOOPS_LESSON: LessonContent = {
+  slug: "loops",
+  title: "Loops",
+  subtitle: "Repeat work across a sequence or while a condition remains true.",
+  sections: [
+    { kind: "prose", heading: "Why loops matter", body: ["A loop repeats a block of code. Use a `for` loop to visit items in an iterable and a `while` loop when repetition depends on a condition.", "The loop body is the indented block. An accidental condition that never becomes false creates an infinite loop."] },
+    { kind: "animation", variant: "loops", caption: "A for loop moves through a sequence one item at a time" },
+    { kind: "prose", heading: "FOR Loop", body: ["A `for` loop visits one item at a time in an iterable such as a list, tuple, set, dictionary, string, or range.", "The loop variable receives the current item on each iteration."] },
+    { kind: "syntax", title: "FOR loop", code: "for item in iterable:\n    statement", description: "The body runs once for every item produced by the iterable." },
+    { kind: "interactive-code", caption: "FOR LOOP · LIST AND STRING", code: 'fruits = ["apple", "banana", "cherry"]\n\nfor fruit in fruits:\n    print(fruit)\n\nfor letter in "Go":\n    print(letter)' },
+    { kind: "prose", heading: "range()", body: ["`range()` generates a sequence of integers for a loop. `range(stop)` starts at 0, while `range(start, stop, step)` gives full control.", "The stop value is excluded. `range(2, 8, 3)` produces 2, 5." ] },
+    { kind: "syntax", title: "range() forms", code: "range(stop)\nrange(start, stop)\nrange(start, stop, step)", description: "Use `list(range(...))` when you want to display the generated values at once." },
+    { kind: "interactive-code", caption: "RANGE · EXAMPLE", code: 'print(list(range(5)))\nprint(list(range(2, 8)))\nprint(list(range(2, 10, 3)))\n\nfor number in range(1, 4):\n    print(number)' },
+    { kind: "prose", heading: "Dictionary loops", body: ["Looping over a dictionary gives its keys. Use `.values()` for values and `.items()` to receive each key and value together."] },
+    { kind: "interactive-code", caption: "DICTIONARY LOOP · EXAMPLE", code: 'user = {"name": "Golem", "age": 50}\n\nfor key, value in user.items():\n    print(key, value)' },
+    { kind: "prose", heading: "enumerate()", body: ["`enumerate()` adds an index while you loop through a sequence. It is clearer and safer than manually changing a separate counter.", "By default, the first index is 0. Pass `start=1` when you want numbering that begins at 1."] },
+    { kind: "syntax", title: "enumerate()", code: "for index, item in enumerate(iterable, start=0):\n    statement", description: "Each iteration provides a pair: the position and the current item." },
+    { kind: "interactive-code", caption: "ENUMERATE · EXAMPLE", code: 'tasks = ["plan", "build", "test"]\n\nfor position, task in enumerate(tasks, start=1):\n    print(position, task)' },
+    { kind: "prose", heading: "zip()", body: ["`zip()` pairs items from two or more iterables so you can process related values together. It stops when the shortest iterable runs out of items."] },
+    { kind: "syntax", title: "zip()", code: "for first, second in zip(iterable_one, iterable_two):\n    statement", description: "Use matching loop variables for the values produced from each iterable." },
+    { kind: "interactive-code", caption: "ZIP · EXAMPLE", code: 'names = ["Ava", "Noah", "Mia"]\nscores = [88, 94, 91]\n\nfor name, score in zip(names, scores):\n    print(name, score)' },
+    { kind: "prose", heading: "else with Loops", body: ["A loop can have an `else` block. It runs after a `for` or `while` loop finishes normally.", "The `else` block does not run when a `break` statement ends the loop. `break` is covered in the next Loop Control lesson."] },
+    { kind: "syntax", title: "Loop else", code: "for item in iterable:\n    statement\nelse:\n    statement", description: "Align `else` with the loop header, not with the loop body." },
+    { kind: "interactive-code", caption: "LOOP ELSE · EXAMPLE", code: 'for number in range(1, 4):\n    print(number)\nelse:\n    print("Finished normally")' },
+    { kind: "prose", heading: "Iterator Protocol Basics", body: ["An iterable is an object you can loop over. Calling `iter()` on it gives an iterator, which produces one value at a time through `next()`.", "A `for` loop performs those steps for you. The iterator protocol is the mechanism beneath ordinary looping."] },
+    { kind: "syntax", title: "iter() and next()", code: "iterator = iter(iterable)\nitem = next(iterator)", description: "`next()` returns the next value from the iterator. A loop keeps calling it until the iterator is exhausted." },
+    { kind: "interactive-code", caption: "ITERATOR PROTOCOL · EXAMPLE", code: 'colors = ["red", "green"]\niterator = iter(colors)\n\nprint(next(iterator))\nprint(next(iterator))' },
+    { kind: "prose", heading: "StopIteration", body: ["When an iterator has no more values, `next()` raises `StopIteration`. A `for` loop catches this signal internally and ends cleanly.", "Call `next()` manually only when you control how exhaustion is handled."] },
+    { kind: "interactive-code", caption: "STOPITERATION · HANDLED EXAMPLE", code: 'iterator = iter(["only item"])\n\nprint(next(iterator))\n\ntry:\n    print(next(iterator))\nexcept StopIteration:\n    print("Iterator exhausted")' },
+    { kind: "prose", heading: "WHILE Loop", body: ["A `while` loop repeats while its condition is true. Update the value used by the condition inside the body so the loop can finish."] },
+    { kind: "syntax", title: "WHILE loop", code: "while condition:\n    statement\n    update", description: "Check that the update will eventually make the condition false." },
+    { kind: "interactive-code", caption: "WHILE LOOP · EXAMPLE", code: 'count = 1\n\nwhile count <= 3:\n    print(count)\n    count += 1' },
+    { kind: "prose", heading: "Nested loops", body: ["A nested loop runs its inner loop completely for every iteration of the outer loop. Use it for small grids or combinations, but keep the work manageable as repetitions multiply."] },
+    { kind: "interactive-code", caption: "NESTED LOOP · EXAMPLE", code: 'for row in range(2):\n    for column in range(3):\n        print(row, column)' },
+    { kind: "callout", tone: "warn", title: "Common mistakes", body: "- **Forgetting the `while` update**: The condition can stay true forever.\n- **Expecting `range(5)` to include 5**: It produces 0 through 4.\n- **Looping over an integer**: An integer is not iterable. Use `range(number)` when you need a count.\n- **Calling `next()` after exhaustion**: It raises `StopIteration`.\n- **Breaking indentation**: Every loop body must be consistently indented." },
+    { kind: "takeaways", items: ["Use `for` to iterate through an iterable.", "Use `enumerate()` for positions and `zip()` for paired iterables.", "A loop `else` block runs after normal completion.", "`iter()` creates an iterator and `next()` advances it until `StopIteration`.", "Use `while` only with a condition that can become false.", "Nested loops repeat the inner loop for each outer iteration."] },
+    { kind: "quiz", questions: [
+      { id: "loops-1", question: "What values does `range(3)` produce?", options: ["0, 1, 2", "1, 2, 3", "0, 1, 2, 3", "3 only"], correctIndex: 0, explanation: "The stop value is excluded." },
+      { id: "loops-2", question: "Which dictionary method gives keys and values together?", options: ["`.items()`", "`.keys()`", "`.values()`", "`.pairs()`"], correctIndex: 0, explanation: "`.items()` yields key-value pairs." },
+      { id: "loops-3", question: "What must a well-formed while loop do?", options: ["Eventually make its condition false", "Always use range", "Always print", "Use a list"], correctIndex: 0, explanation: "Without an eventual false condition, a while loop can run forever." },
+      { id: "loops-4", question: "What does `enumerate(items, start=1)` provide during a loop?", options: ["An index starting at 1 and each item", "Only the item", "Only the final index", "A reversed list"], correctIndex: 0, explanation: "`enumerate()` produces an index and the current item on each iteration." },
+      { id: "loops-5", question: "Use a `for` loop with `range(1, 4)` to print 1, 2, and 3.", interactiveCode: true, initialCode: "# Write your code below\n", testCode: "pass", expectedOutput: "1\n2\n3", requiredCodePatterns: ["\\bfor\\s+\\w+\\s+in\\s+range\\s*\\(\\s*1\\s*,\\s*4\\s*\\)\\s*:"], validationMessage: "Use `for` with `range(1, 4)` and print the loop variable.", explanation: "`range(1, 4)` produces 1, 2, and 3." },
+    ] },
+  ],
+};
+
+export const LOOP_CONTROL_LESSON: LessonContent = {
+  slug: "loop-control",
+  title: "Loop Control",
+  subtitle: "Change a loop's path with break, continue, and pass.",
+  sections: [
+    { kind: "prose", heading: "Why loop control matters", body: ["Most loops visit every item, but sometimes a program needs to stop early, skip one item, or reserve an empty block for later. Python provides `break`, `continue`, and `pass` for these three jobs.", "Use them deliberately. A clear loop condition is usually easier to understand than several control statements scattered through one loop."] },
+    { kind: "animation", variant: "loop-control", caption: "See how break ends a loop, continue skips one item, and pass leaves the loop unchanged" },
+    { kind: "prose", heading: "break", body: ["`break` immediately ends the nearest enclosing `for` or `while` loop. Code after the loop continues to run.", "When a loop has an `else` block, `break` skips that `else` block because the loop did not finish normally."] },
+    { kind: "syntax", title: "break in a loop", code: "for item in iterable:\n    if stop_condition:\n        break", description: "`break` exits only the innermost loop." },
+    { kind: "interactive-code", caption: "BREAK · STOP AT A MATCH", code: 'numbers = [4, 7, 12, 18]\n\nfor number in numbers:\n    if number == 12:\n        print("Found", number)\n        break\n    print("Checking", number)' },
+    { kind: "interactive-code", caption: "BREAK · INNER LOOP ONLY", code: 'for row in range(2):\n    for column in range(3):\n        if column == 1:\n            break\n        print("row", row, "column", column)' },
+    { kind: "prose", heading: "continue", body: ["`continue` skips the rest of the current iteration and starts the next one. The loop itself keeps running.", "Use it to ignore values that should not be processed by the remaining lines in the loop body."] },
+    { kind: "syntax", title: "continue in a loop", code: "for item in iterable:\n    if skip_condition:\n        continue\n    statement", description: "The statements below `continue` are skipped for that iteration only." },
+    { kind: "interactive-code", caption: "CONTINUE · SKIP AN ITEM", code: 'scores = [82, None, 91, None, 76]\n\nfor score in scores:\n    if score is None:\n        continue\n    print(score)' },
+    { kind: "callout", tone: "warn", title: "continue in a while loop", body: "Make sure the value used by the condition is updated before `continue` can run. Otherwise the condition may never change and the loop can become infinite." },
+    { kind: "prose", heading: "pass", body: ["`pass` is a no-operation statement. It lets you write a syntactically valid, intentionally empty loop body while you plan or scaffold code.", "Unlike `break`, it does not end the loop. Unlike `continue`, it does not skip the remaining body. It simply does nothing."] },
+    { kind: "syntax", title: "pass in a loop", code: "for item in iterable:\n    pass", description: "Use `pass` only when an empty body is genuinely intentional. Replace it once the loop has real work." },
+    { kind: "interactive-code", caption: "PASS · EMPTY LOOP BODY", code: 'for _ in range(3):\n    pass\n\nprint("Loop finished")' },
+    { kind: "prose", heading: "Loop else and break", body: ["A loop `else` block runs only when the loop completes without `break`. This makes it useful when searching: use `break` when a match is found and `else` when no match exists."] },
+    { kind: "interactive-code", caption: "LOOP ELSE · SEARCH EXAMPLE", code: 'names = ["Ava", "Noah", "Mia"]\ntarget = "Kai"\n\nfor name in names:\n    if name == target:\n        print("Found", target)\n        break\nelse:\n    print("Not found")' },
+    { kind: "callout", tone: "warn", title: "Common mistakes", body: "- **Using `break` when you only mean to skip one item**: Use `continue` for that.\n- **Putting work below `continue`**: That work is unreachable for the skipped iteration.\n- **Expecting `pass` to skip an iteration**: It does nothing, so the loop continues normally.\n- **Assuming loop `else` always runs**: It is skipped when `break` exits the loop." },
+    { kind: "takeaways", items: ["`break` ends the nearest loop immediately.", "`continue` skips the rest of one iteration.", "`pass` is an intentional no-operation placeholder.", "A loop `else` block runs only after normal completion, not after `break`.", "Choose the smallest control statement that expresses the intended behavior."] },
+    { kind: "quiz", questions: [
+      { id: "loop-control-1", question: "What does `break` do inside a loop?", options: ["Ends the nearest loop", "Skips one iteration", "Does nothing", "Restarts the loop"], correctIndex: 0, explanation: "`break` immediately exits the nearest enclosing loop." },
+      { id: "loop-control-2", question: "Which statement skips the rest of the current iteration but keeps the loop running?", options: ["`continue`", "`break`", "`pass`", "`return`"], correctIndex: 0, explanation: "`continue` starts the next iteration immediately." },
+      { id: "loop-control-3", question: "What does `pass` do?", options: ["Nothing", "Ends the loop", "Skips to the next item", "Prints the current item"], correctIndex: 0, explanation: "`pass` is a no-operation statement." },
+      { id: "loop-control-4", question: "When does a loop's `else` block run?", options: ["When the loop completes without `break`", "Every time an item is skipped", "Only after `break`", "Before the loop starts"], correctIndex: 0, explanation: "A `break` prevents the loop `else` block from running." },
+      { id: "loop-control-5", question: "Loop through `numbers = [1, 0, 3]`, skip zero with `continue`, and print the other values.", interactiveCode: true, initialCode: "numbers = [1, 0, 3]\n\n# Write your loop below\n", testCode: "pass", expectedOutput: "1\n3", requiredCodePatterns: ["\\bfor\\s+\\w+\\s+in\\s+numbers\\s*:", "\\bif\\s+\\w+\\s*==\\s*0\\s*:", "\\bcontinue\\b", "\\bprint\\s*\\("], validationMessage: "Use a `for` loop, test for zero, use `continue`, and print the remaining values.", explanation: "When the value is zero, `continue` skips the print and moves to the next iteration." },
+    ] },
+  ],
+};
+
+export const CONTROL_FLOW_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
+  "control-flow": {
+    title: "Control Flow",
+    slug: "control-flow",
+    lessons: [OPERATORS_LESSON, CONDITIONAL_BRANCHING_LESSON, MATCH_CASE_LESSON, LOOPS_LESSON, LOOP_CONTROL_LESSON],
+  },
+};

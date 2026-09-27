@@ -24,6 +24,7 @@ export type QuizQuestion = {
   initialCode?: string;
   testCode?: string;
   expectedOutput?: string;
+  packages?: string[];
   requiredCodePatterns?: string[];
   validationMessage?: string;
 };

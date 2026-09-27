@@ -295,6 +295,32 @@ export function SectionRenderer({
       );
     }
 
+    case "syntax": {
+      const lines = section.code.split("\n");
+      return (
+        <figure className="my-6 overflow-hidden rounded-xl border border-violet/25 bg-violet/[0.035] shadow-sm">
+          <figcaption className="flex items-center justify-between border-b border-violet/20 bg-violet/[0.07] px-4 py-3">
+            <div>
+              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet">Syntax</div>
+              <div className="mt-1 text-sm font-semibold text-foreground">{section.title}</div>
+            </div>
+            <span className="rounded-full border border-violet/25 bg-violet/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-violet">Pattern</span>
+          </figcaption>
+          <pre className="overflow-x-auto bg-slate-950 px-4 py-4 font-mono text-sm leading-7 shadow-inner sm:text-[15px]">
+            <code>
+              {lines.map((line, i) => (
+                <div key={i} className="flex">
+                  <span className="mr-4 inline-block w-5 select-none text-right text-slate-600">{i + 1}</span>
+                  <span className="text-slate-100">{highlightPython(line)}</span>
+                </div>
+              ))}
+            </code>
+          </pre>
+          <div className="border-t border-violet/15 bg-surface/70 px-4 py-3 text-sm leading-relaxed text-muted-foreground">{parseInlineMarkdown(section.description)}</div>
+        </figure>
+      );
+    }
+
     case "interactive-code":
       return (
         <InteractivePythonBlock
