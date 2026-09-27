@@ -56,8 +56,7 @@ export const PYTHON_SECTIONS = [
         path: "/python/control-flow",
         lessons: [
           { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
-          { slug: "if-else", title: "If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
-          { slug: "if-else-ladder", title: "If/Else Ladder", icon: GitBranch, path: "/python/control-flow/if-else-ladder" },
+          { slug: "if-else", title: "Conditional Branching: If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
           { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
           { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
           { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
