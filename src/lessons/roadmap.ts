@@ -2512,7 +2512,7 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
               { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
               { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
-              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: FileText, path: "/python/basics/python-basics-final-quiz" },
+              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: HelpCircle, path: "/python/basics/python-basics-final-quiz" },
             ],
           },
           {
@@ -2527,7 +2527,7 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
               { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
               { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
-              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: GitBranch, path: "/python/control-flow/control-flow-final-quiz" },
+              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
             ],
           },
           lockedPattern(
