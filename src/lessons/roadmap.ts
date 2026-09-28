@@ -2530,11 +2530,19 @@ export const roadmap: RoadmapCategory[] = [
               { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
             ],
           },
-          lockedPattern(
-            "Data Structures",
-            "data-structures",
-            "Lists, dictionaries, sets, and tuples.",
-          ),
+          {
+            title: "Data Structures",
+            slug: "data-structures",
+            blurb: "Lists, dictionaries, sets, and tuples.",
+            locked: false,
+            path: "/python/data-structures",
+            lessons: [
+              { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
+              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
+              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
+              { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
+            ],
+          },
         ],
       },
       {
