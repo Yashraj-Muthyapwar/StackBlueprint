@@ -36,8 +36,9 @@ import { ConditionalBranchingCustomAnimation } from "./control_flow/ConditionalB
 import { MatchCaseCustomAnimation } from "./control_flow/MatchCaseCustomAnimation";
 import { LoopsCustomAnimation } from "./control_flow/LoopsCustomAnimation";
 import { LoopControlCustomAnimation } from "./control_flow/LoopControlCustomAnimation";
+import { ListsCustomAnimation } from "./data_structures/ListsCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -69,6 +70,8 @@ export function LessonAnimation({
               <LoopsCustomAnimation />
             ) : variant === "loop-control" ? (
               <LoopControlCustomAnimation />
+            ) : variant === "list-operations" ? (
+              <ListsCustomAnimation />
             ) : variant === "io-and-conversions" ? (
               <IOTypeConversionsCustomAnimation />
             ) : variant === "basic-syntax" ? (
