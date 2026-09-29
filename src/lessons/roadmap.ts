@@ -2538,9 +2538,11 @@ export const roadmap: RoadmapCategory[] = [
             path: "/python/data-structures",
             lessons: [
               { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
-              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
-              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
               { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
+              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
+              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
+              { slug: "collections-module", title: "Collections Module", icon: Database, path: "/python/data-structures/collections-module" },
+              { slug: "data-structures-final-quiz", title: "Data Structures Final Quiz", icon: HelpCircle, path: "/python/data-structures/data-structures-final-quiz" },
             ],
           },
         ],
