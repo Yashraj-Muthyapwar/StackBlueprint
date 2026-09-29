@@ -152,11 +152,16 @@ export type QuizQuestion = {
   testCode?: string;
   expectedOutput?: string;
   packages?: string[];
+  /** Source constructs that a coding answer must include, beyond matching output. */
+  requiredCodePatterns?: string[];
+  /** Learner-facing guidance displayed when required source constructs are missing. */
+  validationMessage?: string;
 };
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
+  | { kind: "syntax"; title: string; code: string; description: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
   | { kind: "array-slice-explorer" }
@@ -167,7 +172,7 @@ export type Section =
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
-  | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string; className?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "system-design-evolution" }

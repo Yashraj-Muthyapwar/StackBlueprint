@@ -27,8 +27,22 @@ import { PolymorphismCustomAnimation } from "./oop/PolymorphismCustomAnimation";
 import { AbstractionCustomAnimation } from "./oop/AbstractionCustomAnimation";
 import { CompositionCustomAnimation } from "./oop/CompositionCustomAnimation";
 import { DunderMethodsCustomAnimation } from "./oop/DunderMethodsCustomAnimation";
+import { WhatIsPythonCustomAnimation } from "./basics/WhatIsPythonCustomAnimation";
+import { BasicSyntaxCustomAnimation } from "./basics/BasicSyntaxCustomAnimation";
+import { VariablesDataTypesCustomAnimation } from "./basics/VariablesDataTypesCustomAnimation";
+import { IOTypeConversionsCustomAnimation } from "./basics/IOTypeConversionsCustomAnimation";
+import { OperatorsCustomAnimation } from "./control_flow/OperatorsCustomAnimation";
+import { ConditionalBranchingCustomAnimation } from "./control_flow/ConditionalBranchingCustomAnimation";
+import { MatchCaseCustomAnimation } from "./control_flow/MatchCaseCustomAnimation";
+import { LoopsCustomAnimation } from "./control_flow/LoopsCustomAnimation";
+import { LoopControlCustomAnimation } from "./control_flow/LoopControlCustomAnimation";
+import { ListsCustomAnimation } from "./data_structures/ListsCustomAnimation";
+import { TuplesCustomAnimation } from "./data_structures/TuplesCustomAnimation";
+import { SetsCustomAnimation } from "./data_structures/SetsCustomAnimation";
+import { DictionariesCustomAnimation } from "./data_structures/DictionariesCustomAnimation";
+import { CollectionsModuleCustomAnimation } from "./data_structures/CollectionsModuleCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "tuple-operations" | "set-operations" | "dictionary-operations" | "collections-module" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -48,7 +62,35 @@ export function LessonAnimation({
       <div className="relative z-10 overflow-x-auto">
         <ClientOnly fallback={<div className="h-[360px] animate-pulse bg-surface-2/40" />}>
           <div className="w-full min-w-0 flex justify-center">
-            {variant === "file-basics" ? (
+            {variant === "variables-data-types" ? (
+              <VariablesDataTypesCustomAnimation />
+            ) : variant === "python-operators" ? (
+              <OperatorsCustomAnimation />
+            ) : variant === "conditional-branching" ? (
+              <ConditionalBranchingCustomAnimation />
+            ) : variant === "match-case" ? (
+              <MatchCaseCustomAnimation />
+            ) : variant === "loops" ? (
+              <LoopsCustomAnimation />
+            ) : variant === "loop-control" ? (
+              <LoopControlCustomAnimation />
+            ) : variant === "list-operations" ? (
+              <ListsCustomAnimation />
+            ) : variant === "tuple-operations" ? (
+              <TuplesCustomAnimation />
+            ) : variant === "set-operations" ? (
+              <SetsCustomAnimation />
+            ) : variant === "dictionary-operations" ? (
+              <DictionariesCustomAnimation />
+            ) : variant === "collections-module" ? (
+              <CollectionsModuleCustomAnimation />
+            ) : variant === "io-and-conversions" ? (
+              <IOTypeConversionsCustomAnimation />
+            ) : variant === "basic-syntax" ? (
+              <BasicSyntaxCustomAnimation />
+            ) : variant === "python-instructions" ? (
+              <WhatIsPythonCustomAnimation />
+            ) : variant === "file-basics" ? (
               <FileBasicsCustomAnimation />
             ) : variant === "working-with-paths" ? (
               <WorkingWithPathsCustomAnimation />
