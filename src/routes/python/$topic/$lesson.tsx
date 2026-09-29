@@ -7,6 +7,7 @@ import { FILE_HANDLING_TOPICS } from "@/lessons/python/file-handling-content";
 import { OOP_TOPICS } from "@/lessons/python/oop-content";
 import { BASICS_TOPICS } from "@/lessons/python/basics-content";
 import { CONTROL_FLOW_TOPICS } from "@/lessons/python/control-flow-content";
+import { DATA_STRUCTURES_TOPICS } from "@/lessons/python/data-structures-content";
 import { SectionRenderer } from "@/components/python/SectionRenderer";
 
 export const Route = createFileRoute("/python/$topic/$lesson")({
@@ -28,6 +29,7 @@ export const Route = createFileRoute("/python/$topic/$lesson")({
 const ALL_PYTHON_TOPICS: Record<string, any> = {
   ...BASICS_TOPICS,
   ...CONTROL_FLOW_TOPICS,
+  ...DATA_STRUCTURES_TOPICS,
   ...FILE_HANDLING_TOPICS,
   ...OOP_TOPICS,
 };
