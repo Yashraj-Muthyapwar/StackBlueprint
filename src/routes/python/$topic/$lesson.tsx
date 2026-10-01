@@ -8,6 +8,7 @@ import { OOP_TOPICS } from "@/lessons/python/oop-content";
 import { BASICS_TOPICS } from "@/lessons/python/basics-content";
 import { CONTROL_FLOW_TOPICS } from "@/lessons/python/control-flow-content";
 import { DATA_STRUCTURES_TOPICS } from "@/lessons/python/data-structures-content";
+import { FUNCTIONS_TOPICS } from "@/lessons/python/functions-content";
 import { SectionRenderer } from "@/components/python/SectionRenderer";
 
 export const Route = createFileRoute("/python/$topic/$lesson")({
@@ -30,6 +31,7 @@ const ALL_PYTHON_TOPICS: Record<string, any> = {
   ...BASICS_TOPICS,
   ...CONTROL_FLOW_TOPICS,
   ...DATA_STRUCTURES_TOPICS,
+  ...FUNCTIONS_TOPICS,
   ...FILE_HANDLING_TOPICS,
   ...OOP_TOPICS,
 };
@@ -48,7 +50,7 @@ function PythonLessonPage() {
   useEffect(() => {
     if (!l) return;
     const handleQuizPassed = () => {
-      markComplete(`${topic}-${lesson}`);
+      markComplete(lesson);
     };
     window.addEventListener("quiz-passed", handleQuizPassed);
     return () => window.removeEventListener("quiz-passed", handleQuizPassed);
@@ -65,7 +67,12 @@ function PythonLessonPage() {
     );
   }
 
-  const lessonSlug = `${topic}-${lesson}`;
+  // Python lessons originally saved progress as "topic-lesson", while the
+  // track cards and sidebar use the lesson slug. Keep recognizing the legacy
+  // key so existing learner progress remains visible, but store new progress
+  // with the shared lesson slug convention used across the application.
+  const legacyLessonSlug = `${topic}-${lesson}`;
+  const isLessonCompleted = isCompleted(lesson) || isCompleted(legacyLessonSlug);
 
   return (
     <LessonLayout
@@ -74,8 +81,15 @@ function PythonLessonPage() {
       topic={t as any}
       lesson={l}
       hasQuiz={hasQuiz}
-      isCompleted={isCompleted(lessonSlug)}
-      onToggleComplete={() => isCompleted(lessonSlug) ? markIncomplete(lessonSlug) : markComplete(lessonSlug)}
+      isCompleted={isLessonCompleted}
+      onToggleComplete={() => {
+        if (isLessonCompleted) {
+          markIncomplete(lesson);
+          markIncomplete(legacyLessonSlug);
+        } else {
+          markComplete(lesson);
+        }
+      }}
       isPlaceholder={!content}
       sections={content?.sections}
       renderSection={(s, onQuizActiveChange, i) => <SectionRenderer section={s} onQuizActiveChange={onQuizActiveChange} index={i} />}

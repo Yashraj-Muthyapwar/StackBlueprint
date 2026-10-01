@@ -53,6 +53,7 @@ import {
   Code2,
   Columns3,
   Zap,
+  FunctionSquare,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -2550,11 +2551,22 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "2. Intermediate Concepts",
         patterns: [
-          lockedPattern(
-            "Functions & Modules",
-            "functions",
-            "Defining functions, scope, and importing modules.",
-          ),
+          {
+            title: "Functions & Modules",
+            slug: "functions",
+            blurb: "Defining functions, scope, and importing modules.",
+            locked: false,
+            path: "/python/functions",
+            lessons: [
+              { slug: "function-basics", title: "Function Basics", icon: FunctionSquare, path: "/python/functions/function-basics" },
+              { slug: "arguments-parameters", title: "Arguments & Parameters", icon: FunctionSquare, path: "/python/functions/arguments-parameters" },
+              { slug: "scope-namespaces", title: "Scope & Namespaces", icon: FunctionSquare, path: "/python/functions/scope-namespaces" },
+              { slug: "advanced-functions", title: "Advanced Functions", icon: FunctionSquare, path: "/python/functions/advanced-functions" },
+              { slug: "modules-packages", title: "Modules & Packages", icon: FunctionSquare, path: "/python/functions/modules-packages" },
+              { slug: "package-management", title: "Package Management", icon: FunctionSquare, path: "/python/functions/package-management" },
+              { slug: "functions-final-quiz", title: "Functions & Modules Final Quiz", icon: HelpCircle, path: "/python/functions/functions-final-quiz" },
+            ],
+          },
           {
             slug: "oop",
             title: "Object-Oriented Programming",

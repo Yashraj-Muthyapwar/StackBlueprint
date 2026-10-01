@@ -279,16 +279,17 @@ function NestedPatternItem({
           <SidebarMenuSub className="border-hairline">
             {pat.lessons.map((les) => {
               const active = pathname === les.path;
+              const completed = isCompleted(les.slug) || isCompleted(`${pat.slug}-${les.slug}`);
               return (
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
                     <Link to={les.path} onClick={onNavigate}>
-                      {isCompleted(les.slug) ? (
+                      {completed ? (
                         <CheckCircle2 className="size-3.5 text-mint" />
                       ) : (
                         <les.icon className="size-3.5" />
                       )}
-                      <span className={isCompleted(les.slug) ? "text-mint/90 font-medium" : ""}>
+                      <span className={completed ? "text-mint/90 font-medium" : ""}>
                         {les.title}
                       </span>
                     </Link>
@@ -368,16 +369,17 @@ function PatternItem({
           <SidebarMenuSub className="border-hairline">
             {pat.lessons.map((les) => {
               const active = pathname === les.path;
+              const completed = isCompleted(les.slug) || isCompleted(`${pat.slug}-${les.slug}`);
               return (
                 <SidebarMenuSubItem key={les.slug}>
                   <SidebarMenuSubButton asChild isActive={active}>
                     <Link to={les.path} onClick={onNavigate}>
-                      {isCompleted(les.slug) ? (
+                      {completed ? (
                         <CheckCircle2 className="size-3.5 text-mint" />
                       ) : (
                         <les.icon className="size-3.5" />
                       )}
-                      <span className={isCompleted(les.slug) ? "text-mint/90 font-medium" : ""}>
+                      <span className={completed ? "text-mint/90 font-medium" : ""}>
                         {les.title}
                       </span>
                     </Link>
