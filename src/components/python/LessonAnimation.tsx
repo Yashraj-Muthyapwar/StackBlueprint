@@ -43,8 +43,12 @@ import { DictionariesCustomAnimation } from "./data_structures/DictionariesCusto
 import { CollectionsModuleCustomAnimation } from "./data_structures/CollectionsModuleCustomAnimation";
 import { FunctionBasicsCustomAnimation } from "./functions/FunctionBasicsCustomAnimation";
 import { ArgumentsParametersCustomAnimation } from "./functions/ArgumentsParametersCustomAnimation";
+import { ScopeNamespacesCustomAnimation } from "./functions/ScopeNamespacesCustomAnimation";
+import { AdvancedFunctionsCustomAnimation } from "./functions/AdvancedFunctionsCustomAnimation";
+import { ModulesPackagesCustomAnimation } from "./functions/ModulesPackagesCustomAnimation";
+import { PackageManagementCustomAnimation } from "./functions/PackageManagementCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "tuple-operations" | "set-operations" | "dictionary-operations" | "collections-module" | "function-basics" | "arguments-parameters" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "tuple-operations" | "set-operations" | "dictionary-operations" | "collections-module" | "function-basics" | "arguments-parameters" | "scope-namespaces" | "advanced-functions" | "modules-packages" | "package-management" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -90,6 +94,14 @@ export function LessonAnimation({
               <FunctionBasicsCustomAnimation />
             ) : variant === "arguments-parameters" ? (
               <ArgumentsParametersCustomAnimation />
+            ) : variant === "scope-namespaces" ? (
+              <ScopeNamespacesCustomAnimation />
+            ) : variant === "advanced-functions" ? (
+              <AdvancedFunctionsCustomAnimation />
+            ) : variant === "modules-packages" ? (
+              <ModulesPackagesCustomAnimation />
+            ) : variant === "package-management" ? (
+              <PackageManagementCustomAnimation />
             ) : variant === "io-and-conversions" ? (
               <IOTypeConversionsCustomAnimation />
             ) : variant === "basic-syntax" ? (
