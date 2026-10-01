@@ -97,7 +97,9 @@ export function TrackIndexLayout({
                     const isLocked = t.locked;
 
                     const completedCount =
-                      t.lessons?.filter((l: any) => isCompleted(l.slug)).length || 0;
+                      t.lessons?.filter((l: any) => (
+                        isCompleted(l.slug) || isCompleted(`${t.slug}-${l.slug}`)
+                      )).length || 0;
                     const totalCount = t.lessons?.length || 0;
 
                     const toPath = t.path || `${basePath}/${t.slug}`;
