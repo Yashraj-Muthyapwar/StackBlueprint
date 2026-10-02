@@ -25,7 +25,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Classes, objects, attributes, and methods",
             body: [
               "OOP organizes programs around objects. An object usually contains two things:",
               "- **Attributes**: Data that describes the object.",
@@ -36,11 +36,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Defining a class",
             body: [
-              "### 1. Create a class",
               "Use the `class` keyword to define a class.",
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Class definition",
+            code: "class ClassName:\n    # class body",
+            description: "The class body is indented. It can contain a docstring, attributes, and methods."
           },
           {
             kind: "interactive-code",
@@ -56,10 +61,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
+            heading: "Creating objects",
             body: [
-              "### 2. Create objects from the class",
               "You create (or **instantiate**) an object by calling the class. The created object is called an **instance**."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Instantiate an object",
+            code: "reference_name = ClassName()",
+            description: "The variable stores a reference to the new object. Use that reference to access the object's attributes and methods."
           },
           {
             kind: "interactive-code",
@@ -74,10 +85,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
+            heading: "Constructors with __init__()",
             body: [
-              "### 3. Add data with __init__()",
               "Most classes need some starting data. Python commonly uses the `__init__()` method to set that data when an object is created."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Initialize each new object",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.value = value\n\nitem = ClassName(value)",
+            description: "Python calls `__init__()` automatically for every new object. Assigning to `self.value` stores data on that particular object."
           },
           {
             kind: "interactive-code",
@@ -92,10 +109,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
+            heading: "Instance methods",
             body: [
-              "### 4. Add behavior with methods",
               "A **method** is a **function** defined inside a class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Define and call an instance method",
+            code: "class ClassName:\n    def method_name(self):\n        statement\n\nitem = ClassName()\nitem.method_name()",
+            description: "An instance method receives `self` first. Call it through an object reference with parentheses to run it."
           },
           {
             kind: "interactive-code",
@@ -111,7 +134,49 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Constructors vs methods",
+            body: [
+              "A constructor is a special method named `__init__()`. It runs automatically once for each object that is created, and normally prepares that object's starting data.",
+              "A normal method has a meaningful name such as `drive()` or `describe()`. It runs only when you call it, and you can call it as many times as needed."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Initialize, then perform an action",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.value = value\n\n    def action(self):\n        statement",
+            description: "`__init__()` prepares each new object automatically. A normal method performs a named action only when the object calls it."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Counter:\n    def __init__(self):\n        self.value = 0\n        print("Counter created")\n\n    def increment(self):\n        self.value += 1\n        print(self.value)\n\ncounter = Counter()  # __init__ runs automatically\ncounter.increment()   # a normal method runs when called\ncounter.increment()`
+          },
+          {
+            kind: "prose",
+            heading: "Class docstrings and class access",
+            body: [
+              "A **docstring** is the first string inside a class body. It documents the purpose of the class and can be read through `ClassName.__doc__`.",
+              "The class name itself can access class-level attributes and methods. Individual objects use their reference variable to access their own data and behavior."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Document and inspect a class",
+            code: "class ClassName:\n    \"\"\"Describe the class.\"\"\"\n    shared_value = value\n\nprint(ClassName.shared_value)\nprint(ClassName.__doc__)",
+            description: "A class docstring is its first statement. Use the class name to inspect its docstring or access a value defined on the class."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Person:\n    """Represent a person with a name."""\n\n    species = "Human"\n\n    def __init__(self, name):\n        self.name = name\n\n    def greet(self):\n        print(f"Hello, {self.name}!")\n\nstudent = Person("Ava")\n\nprint(Person.species)\nprint(Person.__doc__)\nstudent.greet()`
+          },
+          {
+            kind: "prose",
+            body: [
+              "`student` is a reference to one `Person` object. `student.greet()` runs behavior for that object, while `Person.species` accesses data stored on the class. The next lesson explores shared class attributes in depth."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Putting it together: a Product class",
             body: [
               "Imagine you are building an **online shopping system**. The store needs to keep track of many products.",
               "Every product has information such as a name and price. Products may also need actions such as displaying their details.",
@@ -196,15 +261,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "oop-basics-5",
-                question: "If we define a class `Car` and create two objects `car1 = Car()` and `car2 = Car()`, which of the following is true?",
+                question: "Which statement correctly compares `__init__()` with a normal instance method?",
                 options: [
-                  "`car1` and `car2` share the exact same identity in memory.",
-                  "`car1` and `car2` are separate, independent instances of the `Car` class.",
-                  "We cannot create more than one object from a single class.",
-                  "`car2` will automatically overwrite `car1`."
+                  "Both run automatically whenever an object is created.",
+                  "`__init__()` runs automatically when an object is created; a normal method runs when you call it.",
+                  "A normal method can run only once per object, while `__init__()` can run any number of times.",
+                  "`__init__()` is not a method and cannot use `self`."
                 ],
                 correctIndex: 1,
-                explanation: "Classes act as blueprints. You can instantiate as many objects as you want from a single class, and each object will be a completely independent instance."
+                explanation: "Python calls `__init__()` once as part of creating each object. Methods such as `drive()` run only when you explicitly call them, and can be called repeatedly."
               }
             ]
           }
