@@ -61,6 +61,17 @@ export type Step = {
   };
   // optional water levels for elevation-map
   waterLevels?: number[];
+  // the "why" behind this step, rendered in its own callout in the narration card
+  proof?: string;
+  // code pane: highlight the range line..lineEnd instead of a single line
+  lineEnd?: number;
+  // array view: indices proven irrelevant, drawn faded and struck through
+  dimmed?: number[];
+  // array view: bracket under two cells with a label (e.g. "12 vs 9")
+  link?: { from: number; to: number; label: string };
+  // elevation-map view: running maxima for the guide lines
+  leftMax?: number;
+  rightMax?: number;
 };
 
 export type View = "array" | "linked-list" | "matrix" | "elevation-map";
