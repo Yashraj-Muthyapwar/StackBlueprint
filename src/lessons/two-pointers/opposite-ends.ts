@@ -93,6 +93,15 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
     const total = a + b;
     const compare = { kind: "compare" as const, indices: [left, right] };
     const link = { from: left, to: right, label: `${total} vs ${target}` };
+    const ask = (answer: "left" | "right") => ({
+      question: `${a} + ${b} = ${total} and the target is ${target}. Which pointer should move?`,
+      options: [
+        { id: "left", label: "Move left pointer" },
+        { id: "right", label: "Move right pointer" },
+      ],
+      answer,
+      line: 4,
+    });
 
     if (total === target) {
       push({
@@ -112,6 +121,7 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
         highlight: compare,
         link,
         status: `${a} + ${b} = ${total} < ${target}`,
+        predict: ask("left"),
         narration: `${a} + ${b} = ${total}, which is less than ${target}. The sum is too small.`,
         proof: `${b} is the largest value still alive, and ${a} + ${b} already falls short. So ${a} can't reach ${target} with any partner. Index ${left} is dead.`,
       });
@@ -127,6 +137,7 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
         highlight: compare,
         link,
         status: `${a} + ${b} = ${total} > ${target}`,
+        predict: ask("right"),
         narration: `${a} + ${b} = ${total}, which is more than ${target}. The sum is too big.`,
         proof: `${a} is the smallest value still alive, and ${a} + ${b} already overshoots. So ${b} can't hit ${target} with any partner. Index ${right} is dead.`,
       });
@@ -167,6 +178,15 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
     { name: "right", index: right, color: "amber" as const, placement: "below" as const },
   ];
   const st = () => `water = ${water} | L_max = ${leftMax} | R_max = ${rightMax}`;
+  const askSide = (answer: "left" | "right") => ({
+    question: `left_max is ${leftMax} and right_max is ${rightMax}. Which side is safe to settle next?`,
+    options: [
+      { id: "left", label: "Settle the left side" },
+      { id: "right", label: "Settle the right side" },
+    ],
+    answer,
+    line: 8,
+  });
 
   const push = (s: Partial<Step> & { line: number; narration: string }) =>
     steps.push({
@@ -204,6 +224,7 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
       push({
         line: 8,
         status: st(),
+        predict: askSide("left"),
         highlight: { kind: "compare", indices: [left, right] },
         narration: `left_max (${leftMax}) < right_max (${rightMax}), so settle the left side.`,
         proof: `The right side already has a wall at least ${rightMax} tall, which is taller than left_max. So the water level at the next bar is capped by left_max, no matter what is in the middle.`,
@@ -230,6 +251,7 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
       push({
         line: 12,
         status: st(),
+        predict: askSide("right"),
         highlight: { kind: "compare", indices: [left, right] },
         narration: `right_max (${rightMax}) ≤ left_max (${leftMax}), so settle the right side.`,
         proof: `The left side already has a wall at least ${leftMax} tall, which is at least right_max. So the water level at the next bar is capped by right_max, no matter what is in the middle.`,
