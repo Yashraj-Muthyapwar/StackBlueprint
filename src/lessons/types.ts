@@ -61,6 +61,17 @@ export type Step = {
   };
   // optional water levels for elevation-map
   waterLevels?: number[];
+  // the "why" behind this step, rendered in its own callout in the narration card
+  proof?: string;
+  // code pane: highlight the range line..lineEnd instead of a single line
+  lineEnd?: number;
+  // array view: indices proven irrelevant, drawn faded and struck through
+  dimmed?: number[];
+  // array view: bracket under two cells with a label (e.g. "12 vs 9")
+  link?: { from: number; to: number; label: string };
+  // elevation-map view: running maxima for the guide lines
+  leftMax?: number;
+  rightMax?: number;
 };
 
 export type View = "array" | "linked-list" | "matrix" | "elevation-map";
@@ -152,11 +163,16 @@ export type QuizQuestion = {
   testCode?: string;
   expectedOutput?: string;
   packages?: string[];
+  /** Source constructs that a coding answer must include, beyond matching output. */
+  requiredCodePatterns?: string[];
+  /** Learner-facing guidance displayed when required source constructs are missing. */
+  validationMessage?: string;
 };
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
+  | { kind: "syntax"; title: string; code: string; description: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
   | { kind: "array-slice-explorer" }
@@ -167,12 +183,16 @@ export type Section =
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
-  | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string; className?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "system-design-evolution" }
   | { kind: "system-design-clarification-practice" }
   | { kind: "system-design-delivery-framework" }
+  | { kind: "system-design-feed-strategy" }
+  | { kind: "system-design-whatsapp-requirements" }
+  | { kind: "system-design-estimation-walkthrough" }
+  | { kind: "system-design-scalability-loop" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
