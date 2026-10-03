@@ -11,6 +11,13 @@ import { LessonControls } from "./LessonControls";
 import { SecondaryStrip } from "./SecondaryStrip";
 import type { LessonBuilder, LinkedListStep, Step } from "@/lessons/types";
 
+/** Autoplay delay: a base beat plus extra time for steps with more to read. */
+function stepDelay(step: Step | undefined, speed: number) {
+  const chars = (step?.narration?.length ?? 0) + (step?.proof?.length ?? 0);
+  const ms = Math.min(700 + chars * 10, 3500);
+  return ms / speed;
+}
+
 export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
   const [inputs, setInputs] = useState<Record<string, unknown>>(
     () => builder.defaultInputs as Record<string, unknown>,
@@ -57,11 +64,11 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     }
     timerRef.current = setTimeout(() => {
       setStepIndex((i) => Math.min(total - 1, i + 1));
-    }, 900 / speed);
+    }, stepDelay(steps[safeIdx], speed));
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [playing, safeIdx, speed, total]);
+  }, [playing, safeIdx, speed, total, steps]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -142,7 +149,11 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
           </div>
         </div>
         <div className="min-h-[380px]">
-          <CodePane code={builder.codeFor ? builder.codeFor(inputs) : builder.code} activeLine={step.line} />
+          <CodePane
+            code={builder.codeFor ? builder.codeFor(inputs) : builder.code}
+            activeLine={step.line}
+            activeEnd={step.lineEnd}
+          />
         </div>
       </div>
 
@@ -166,7 +177,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         onSpeed={setSpeed}
       />
 
-      <NarrationCard stepIndex={safeIdx} text={step.narration} />
+      <NarrationCard stepIndex={safeIdx} text={step.narration} proof={step.proof} />
     </div>
   );
 }

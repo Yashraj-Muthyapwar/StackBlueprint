@@ -7,8 +7,19 @@ import { Check, Copy } from "lucide-react";
  * Renders Python code with line numbers and a sliding highlight bar
  * that animates to the currently-executing line.
  */
-export function CodePane({ code, activeLine }: { code: string; activeLine: number }) {
+export function CodePane({
+  code,
+  activeLine,
+  activeEnd,
+}: {
+  code: string;
+  activeLine: number;
+  /** Optional last line of a highlighted range (inclusive). */
+  activeEnd?: number;
+}) {
   const lines = useMemo(() => code.split("\n"), [code]);
+  const lastActive = Math.max(activeLine, activeEnd ?? activeLine);
+  const span = lastActive - activeLine + 1;
   const [copied, setCopied] = useState(false);
   const LINE_H = 26; // px per line
 
@@ -57,18 +68,18 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
           <motion.div
             className="pointer-events-none absolute left-0 right-0 rounded-md"
             style={{
-              height: LINE_H,
               background:
                 "linear-gradient(90deg, color-mix(in oklab, var(--mint) 18%, transparent), color-mix(in oklab, var(--mint) 4%, transparent))",
               borderLeft: "2px solid var(--mint)",
             }}
-            animate={{ y: (activeLine - 1) * LINE_H }}
+            initial={false}
+            animate={{ y: (activeLine - 1) * LINE_H, height: span * LINE_H }}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
 
           {lines.map((line, i) => {
             const lineNo = i + 1;
-            const isActive = lineNo === activeLine;
+            const isActive = lineNo >= activeLine && lineNo <= lastActive;
             return (
               <div
                 key={i}
