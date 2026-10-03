@@ -49,129 +49,224 @@ const practiceLadder: PracticeProblem[] = [
   { name: "4Sum", difficulty: "hard", hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.", link: "https://leetcode.com/problems/4sum/" },
 ];
 
+/* -------------------------------------------------------------------------- */
+/* Two Sum (sorted)                                                           */
+/* -------------------------------------------------------------------------- */
+
 function buildTwoSum({ arr, target }: Inputs): Step[] {
   const steps: Step[] = [];
-  const ptrs = (left: number, right: number) => [
+  const n = arr.length;
+  let left = 0;
+  let right = n - 1;
+
+  const ptrs = () => [
     { name: "left", index: left, color: "mint" as const },
     { name: "right", index: right, color: "amber" as const },
   ];
-  const push = (s: Omit<Step, "array"> & { array?: number[] }) =>
-    steps.push({ ...s, array: s.array ?? [...arr] });
 
-  if (arr.length < 2) {
-    push({ line: 1, pointers: [], narration: "Need at least two elements." });
+  // Indices outside [left, right] have been proven unable to be part of any answer.
+  const dead = () => arr.map((_, i) => i).filter((i) => i < left || i > right);
+
+  const push = (s: Partial<Step> & { line: number; narration: string }) =>
+    steps.push({
+      array: [...arr],
+      pointers: ptrs(),
+      dimmed: dead(),
+      ...s,
+    } as Step);
+
+  if (n < 2) {
+    push({ line: 1, pointers: [], dimmed: [], narration: "Need at least two elements." });
     return steps;
   }
 
-  push({ line: 1, pointers: [], narration: `Find two indices whose values sum to ${target}.` });
-
-  let left = 0,
-    right = arr.length - 1;
-  push({ line: 2, pointers: ptrs(left, right), narration: "Place left at the start and right at the end." });
+  push({
+    line: 2,
+    narration: `Find two values that sum to ${target}.`,
+    proof: "Every index is still a candidate, so we start with the widest window: the smallest value on the left, the largest on the right.",
+  });
 
   let safety = 0;
   while (left < right && safety++ < 200) {
-    push({ line: 3, pointers: ptrs(left, right), narration: `Guard: left (${left}) < right (${right}).` });
-    const total = arr[left] + arr[right];
-    push({
-      line: 4,
-      pointers: ptrs(left, right),
-      highlight: { kind: "compare", indices: [left, right] },
-      status: `${arr[left]} + ${arr[right]} = ${total}`,
-      narration: `Sum at pointers: ${arr[left]} + ${arr[right]} = ${total}.`,
-    });
+    const a = arr[left];
+    const b = arr[right];
+    const total = a + b;
+    const compare = { kind: "compare" as const, indices: [left, right] };
+    const link = { from: left, to: right, label: `${total} vs ${target}` };
+
     if (total === target) {
       push({
         line: 5,
-        pointers: ptrs(left, right),
-        highlight: { kind: "match", indices: [left, right] },
+        lineEnd: 6,
+        highlight: { kind: "match" as const, indices: [left, right] },
+        link,
         status: `return (${left}, ${right})`,
-        narration: `${total} equals target — return (${left}, ${right}).`,
+        narration: `${a} + ${b} = ${target}. Found it: return (${left}, ${right}).`,
       });
       return steps;
     }
+
     if (total < target) {
-      push({ line: 7, pointers: ptrs(left, right), narration: `${total} < ${target} — need larger sum, left += 1.` });
+      push({
+        line: 7,
+        highlight: compare,
+        link,
+        status: `${a} + ${b} = ${total} < ${target}`,
+        narration: `${a} + ${b} = ${total}, which is less than ${target}. The sum is too small.`,
+        proof: `${b} is the largest value still alive, and ${a} + ${b} already falls short. So ${a} can't reach ${target} with any partner. Index ${left} is dead.`,
+      });
       left += 1;
-      push({ line: 8, pointers: ptrs(left, right), narration: `left → ${left}.` });
+      push({
+        line: 8,
+        status: `${Math.max(0, right - left + 1)} of ${n} candidates left`,
+        narration: `left moves to ${left}. One index eliminated, ${Math.max(0, right - left + 1)} still alive.`,
+      });
     } else {
-      push({ line: 9, pointers: ptrs(left, right), narration: `${total} > ${target} — need smaller sum, right -= 1.` });
+      push({
+        line: 9,
+        highlight: compare,
+        link,
+        status: `${a} + ${b} = ${total} > ${target}`,
+        narration: `${a} + ${b} = ${total}, which is more than ${target}. The sum is too big.`,
+        proof: `${a} is the smallest value still alive, and ${a} + ${b} already overshoots. So ${b} can't hit ${target} with any partner. Index ${right} is dead.`,
+      });
       right -= 1;
-      push({ line: 10, pointers: ptrs(left, right), narration: `right → ${right}.` });
+      push({
+        line: 10,
+        status: `${Math.max(0, right - left + 1)} of ${n} candidates left`,
+        narration: `right moves to ${right}. One index eliminated, ${Math.max(0, right - left + 1)} still alive.`,
+      });
     }
   }
-  push({ line: 11, pointers: ptrs(left, right), narration: "Pointers crossed — no pair found, return None." });
+
+  push({
+    line: 11,
+    narration: "Pointers crossed, so no pair exists. Return None.",
+    proof: "Every pointer move ruled out one index for good. With none left to try, no valid pair can exist.",
+  });
   return steps;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Trapping Rain Water                                                        */
+/* -------------------------------------------------------------------------- */
 
 function buildTrappingRainWater({ arr }: Inputs): Step[] {
   const steps: Step[] = [];
   const n = arr.length;
-  const waterLevels = new Array(n).fill(0);
+  const waterLevels: number[] = new Array(n).fill(0);
 
-  const push = (s: Omit<Step, "array" | "waterLevels"> & { array?: number[], waterLevels?: number[] }) =>
-    steps.push({ ...s, array: s.array ?? [...arr], waterLevels: s.waterLevels ?? [...waterLevels] });
+  let left = 0;
+  let right = n - 1;
+  let leftMax = 0;
+  let rightMax = 0;
+  let water = 0;
 
-  const ptrs = (l: number, r: number) => [
-    { name: "left", index: l, color: "mint" as const, placement: "below" as const },
-    { name: "right", index: r, color: "amber" as const, placement: "below" as const },
+  const ptrs = () => [
+    { name: "left", index: left, color: "mint" as const, placement: "below" as const },
+    { name: "right", index: right, color: "amber" as const, placement: "below" as const },
   ];
+  const st = () => `water = ${water} | L_max = ${leftMax} | R_max = ${rightMax}`;
+
+  const push = (s: Partial<Step> & { line: number; narration: string }) =>
+    steps.push({
+      array: [...arr],
+      waterLevels: [...waterLevels],
+      pointers: ptrs(),
+      leftMax,
+      rightMax,
+      ...s,
+    } as Step);
 
   if (n < 2) {
-    push({ line: 2, narration: "Array too small, return 0." });
+    push({ line: 2, pointers: [], narration: "Array too small to trap any water. Return 0." });
     return steps;
   }
 
-  let left = 0, right = n - 1;
-  let left_max = arr[left];
-  let right_max = arr[right];
-  let water = 0;
+  push({
+    line: 4,
+    narration: "Start with one pointer at each boundary.",
+    proof: "Bars between the pointers (the dashed zone) are unsettled: we don't know their water level yet. Bars outside it are final.",
+  });
 
-  const st = () => `water = ${water} | L_max = ${left_max} | R_max = ${right_max}`;
-
-  push({ line: 4, pointers: ptrs(left, right), narration: "Start left and right pointers at the boundaries." });
-  push({ line: 5, pointers: ptrs(left, right), status: st(), narration: "Initialize left_max and right_max with the boundary heights." });
+  leftMax = arr[left];
+  rightMax = arr[right];
+  push({
+    line: 5,
+    status: st(),
+    narration: "left_max and right_max start as the boundary heights.",
+    proof: "A boundary bar has nothing on one side, so it can never hold water itself.",
+  });
 
   let safety = 0;
   while (left < right && safety++ < 200) {
-    push({ line: 7, pointers: ptrs(left, right), status: st(), narration: `Guard: left (${left}) < right (${right}).` });
-    push({ line: 8, pointers: ptrs(left, right), status: st(), highlight: { kind: "compare", indices: [left, right] }, narration: `Compare max boundaries: ${left_max} < ${right_max}?` });
+    if (leftMax < rightMax) {
+      push({
+        line: 8,
+        status: st(),
+        highlight: { kind: "compare", indices: [left, right] },
+        narration: `left_max (${leftMax}) < right_max (${rightMax}), so settle the left side.`,
+        proof: `The right side already has a wall at least ${rightMax} tall, which is taller than left_max. So the water level at the next bar is capped by left_max, no matter what is in the middle.`,
+      });
 
-    if (left_max < right_max) {
-      push({ line: 8, pointers: ptrs(left, right), status: st(), narration: `left_max (${left_max}) < right_max (${right_max}). We know the right side can safely trap water.` });
       left += 1;
-      push({ line: 9, pointers: ptrs(left, right), status: st(), narration: `Advance left to ${left}.` });
-
-      const prev_left_max = left_max;
-      left_max = Math.max(left_max, arr[left]);
-      push({ line: 10, pointers: ptrs(left, right), status: st(), narration: `Update left_max = max(${prev_left_max}, ${arr[left]}) → ${left_max}.` });
-
-      const trapped = left_max - arr[left];
+      const prevMax = leftMax;
+      leftMax = Math.max(leftMax, arr[left]);
+      const trapped = leftMax - arr[left];
       waterLevels[left] = trapped;
       water += trapped;
 
-      push({ line: 11, pointers: ptrs(left, right), status: st(), narration: `Water added at left: ${left_max} - ${arr[left]} = ${trapped}.` });
+      push({
+        line: 9,
+        lineEnd: 11,
+        status: st(),
+        highlight: { kind: "compare", indices: [left] },
+        narration:
+          leftMax > prevMax
+            ? `left → ${left}. Height ${arr[left]} is a new tallest bar, so left_max becomes ${leftMax} and this bar traps 0.`
+            : `left → ${left}. left_max stays ${leftMax}, so this bar traps ${leftMax} - ${arr[left]} = ${trapped}.`,
+      });
     } else {
-      push({ line: 12, pointers: ptrs(left, right), status: st(), narration: `right_max (${right_max}) <= left_max (${left_max}). We know the left side can safely trap water.` });
+      push({
+        line: 12,
+        status: st(),
+        highlight: { kind: "compare", indices: [left, right] },
+        narration: `right_max (${rightMax}) ≤ left_max (${leftMax}), so settle the right side.`,
+        proof: `The left side already has a wall at least ${leftMax} tall, which is at least right_max. So the water level at the next bar is capped by right_max, no matter what is in the middle.`,
+      });
+
       right -= 1;
-      push({ line: 13, pointers: ptrs(left, right), status: st(), narration: `Advance right to ${right}.` });
-
-      const prev_right_max = right_max;
-      right_max = Math.max(right_max, arr[right]);
-      push({ line: 14, pointers: ptrs(left, right), status: st(), narration: `Update right_max = max(${prev_right_max}, ${arr[right]}) → ${right_max}.` });
-
-      const trapped = right_max - arr[right];
+      const prevMax = rightMax;
+      rightMax = Math.max(rightMax, arr[right]);
+      const trapped = rightMax - arr[right];
       waterLevels[right] = trapped;
       water += trapped;
 
-      push({ line: 15, pointers: ptrs(left, right), status: st(), narration: `Water added at right: ${right_max} - ${arr[right]} = ${trapped}.` });
+      push({
+        line: 13,
+        lineEnd: 15,
+        status: st(),
+        highlight: { kind: "compare", indices: [right] },
+        narration:
+          rightMax > prevMax
+            ? `right → ${right}. Height ${arr[right]} is a new tallest bar, so right_max becomes ${rightMax} and this bar traps 0.`
+            : `right → ${right}. right_max stays ${rightMax}, so this bar traps ${rightMax} - ${arr[right]} = ${trapped}.`,
+      });
     }
   }
 
-  push({ line: 16, pointers: ptrs(left, right), status: st(), narration: `Pointers met. Total water trapped: ${water}.` });
+  push({
+    line: 16,
+    status: st(),
+    narration: `Pointers met. Every bar is settled. Total water trapped: ${water}.`,
+  });
 
   return steps;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Lesson definition                                                          */
+/* -------------------------------------------------------------------------- */
 
 export const oppositeEnds: LessonBuilder<Inputs> = {
   slug: "opposite-ends",
@@ -193,7 +288,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
   ],
   practiceLadder,
   variant: "opposite-ends",
-  view: (inputs) => inputs.mode === "trapping-rain-water" ? "elevation-map" : "array",
+  view: (inputs) => (inputs.mode === "trapping-rain-water" ? "elevation-map" : "array"),
   code: codeTwoSum,
   codeFor: (inputs) => (inputs.mode === "trapping-rain-water" ? codeTrappingRainWater : codeTwoSum),
   defaultInputs: { mode: "two-sum", arr: [1, 3, 4, 5, 7, 10, 11], target: 9 },
