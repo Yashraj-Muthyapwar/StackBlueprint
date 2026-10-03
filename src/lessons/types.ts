@@ -36,6 +36,16 @@ export type SecondaryArray = {
   pointers?: Pointer[];
 };
 
+/** A "what happens next?" question attached to a step, used by predict mode. */
+export type Prediction = {
+  question: string;
+  options: { id: string; label: string }[];
+  /** id of the correct option */
+  answer: string;
+  /** Code line to highlight while the question is open, so the active line doesn't leak the answer. */
+  line?: number;
+};
+
 export type Step = {
   line: number;
   narration: string;
@@ -63,6 +73,8 @@ export type Step = {
   waterLevels?: number[];
   // the "why" behind this step, rendered in its own callout in the narration card
   proof?: string;
+  // predict mode: pause here and ask the learner to choose the next move
+  predict?: Prediction;
   // code pane: highlight the range line..lineEnd instead of a single line
   lineEnd?: number;
   // array view: indices proven irrelevant, drawn faded and struck through
