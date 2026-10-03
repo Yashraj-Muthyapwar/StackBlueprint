@@ -6,6 +6,7 @@ import { ElevationMapCanvas } from "./ElevationMapCanvas";
 import { LinkedListCanvas } from "./LinkedListCanvas";
 import { MatrixCanvas } from "./MatrixCanvas";
 import { NarrationCard } from "./NarrationCard";
+import { PredictCard } from "./PredictCard";
 import { TransportBar } from "./TransportBar";
 import { LessonControls } from "./LessonControls";
 import { SecondaryStrip } from "./SecondaryStrip";
@@ -25,6 +26,9 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
   const [stepIndex, setStepIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const [predictMode, setPredictMode] = useState(false);
+  // step index -> id of the option the learner chose
+  const [answers, setAnswers] = useState<Record<number, string>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const steps = useMemo(() => {
@@ -47,17 +51,72 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
   const safeIdx = Math.min(stepIndex, total - 1);
   const step = steps[safeIdx];
 
+  // Predict mode: an unanswered prediction on the current step locks forward motion.
+  const hasPredict = useMemo(() => steps.some((s) => s.predict), [steps]);
+  const prediction = predictMode ? step.predict : undefined;
+  const chosen = answers[safeIdx];
+  const locked = !!prediction && chosen === undefined;
+  const lockedRef = useRef(false);
+  lockedRef.current = locked;
+
+  const score = useMemo(() => {
+    let correct = 0;
+    let answered = 0;
+    let totalQs = 0;
+    steps.forEach((s, i) => {
+      if (!s.predict) return;
+      totalQs += 1;
+      const a = answers[i];
+      if (a === undefined) return;
+      answered += 1;
+      if (a === s.predict.answer) correct += 1;
+    });
+    return { correct, answered, total: totalQs };
+  }, [steps, answers]);
+
+  const choose = useCallback(
+    (id: string) => {
+      setAnswers((a) => (a[safeIdx] !== undefined ? a : { ...a, [safeIdx]: id }));
+    },
+    [safeIdx],
+  );
+
   const go = useCallback(
-    (n: number) => setStepIndex((cur) => Math.max(0, Math.min(total - 1, cur + n))),
+    (n: number) => {
+      if (n > 0 && lockedRef.current) return;
+      setStepIndex((cur) => Math.max(0, Math.min(total - 1, cur + n)));
+    },
     [total],
   );
+
   const reset = useCallback(() => {
     setStepIndex(0);
     setPlaying(false);
+    setAnswers({});
   }, []);
+
+  const togglePlay = useCallback(() => {
+    if (lockedRef.current) return;
+    setPlaying((p) => !p);
+  }, []);
+
+  const togglePredict = () => {
+    if (!predictMode) {
+      // Turning on restarts the lesson so every prediction is asked fresh.
+      setAnswers({});
+      setStepIndex(0);
+      setPlaying(false);
+    }
+    setPredictMode(!predictMode);
+  };
 
   useEffect(() => {
     if (!playing) return;
+    if (locked) {
+      // Autoplay pauses at an open prediction.
+      setPlaying(false);
+      return;
+    }
     if (safeIdx >= total - 1) {
       setPlaying(false);
       return;
@@ -68,15 +127,30 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [playing, safeIdx, speed, total, steps]);
+  }, [playing, locked, safeIdx, speed, total, steps]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement | null)?.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      // While a prediction is open: number keys answer, Space does nothing.
+      if (locked && prediction) {
+        const idx = Number(e.key) - 1;
+        if (Number.isInteger(idx) && idx >= 0 && idx < prediction.options.length) {
+          e.preventDefault();
+          choose(prediction.options[idx].id);
+          return;
+        }
+        if (e.code === "Space") {
+          e.preventDefault();
+          return;
+        }
+      }
+
       if (e.code === "Space") {
         e.preventDefault();
-        setPlaying((p) => !p);
+        togglePlay();
       } else if (e.code === "ArrowRight") {
         e.preventDefault();
         go(1);
@@ -90,13 +164,19 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [go, reset]);
+  }, [go, reset, togglePlay, locked, prediction, choose]);
 
   const handleRun = useCallback((next: Record<string, unknown>, warnings: string[], autoPlay: boolean = true) => {
     setInputs(next);
     setStepIndex(0);
+    setAnswers({});
     setPlaying(autoPlay);
   }, []);
+
+  // While a prediction is open, the code pane highlights a neutral line so the
+  // active branch doesn't give the answer away.
+  const codeLine = locked && prediction?.line ? prediction.line : step.line;
+  const codeLineEnd = locked && prediction?.line ? undefined : step.lineEnd;
 
   return (
     <div className="flex flex-col gap-4 mt-6">
@@ -122,7 +202,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         builder={builder}
         onRun={handleRun}
         playing={playing}
-        onPlayToggle={() => setPlaying((p) => !p)}
+        onPlayToggle={togglePlay}
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr_1fr]">
@@ -151,8 +231,8 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         <div className="min-h-[380px]">
           <CodePane
             code={builder.codeFor ? builder.codeFor(inputs) : builder.code}
-            activeLine={step.line}
-            activeEnd={step.lineEnd}
+            activeLine={codeLine}
+            activeEnd={codeLineEnd}
           />
         </div>
       </div>
@@ -164,6 +244,18 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         total={total}
         playing={playing}
         speed={speed}
+        locked={locked}
+        predict={
+          hasPredict
+            ? {
+                enabled: predictMode,
+                onToggle: togglePredict,
+                correct: score.correct,
+                answered: score.answered,
+                total: score.total,
+              }
+            : undefined
+        }
         onPrev={() => {
           setPlaying(false);
           go(-1);
@@ -172,12 +264,13 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
           setPlaying(false);
           go(1);
         }}
-        onPlayToggle={() => setPlaying((p) => !p)}
+        onPlayToggle={togglePlay}
         onReset={reset}
         onSpeed={setSpeed}
       />
 
-      <NarrationCard stepIndex={safeIdx} text={step.narration} proof={step.proof} />
+      {prediction && <PredictCard prediction={prediction} chosen={chosen} onChoose={choose} />}
+      {!locked && <NarrationCard stepIndex={safeIdx} text={step.narration} proof={step.proof} />}
     </div>
   );
 }
