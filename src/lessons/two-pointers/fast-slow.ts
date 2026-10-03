@@ -1,8 +1,11 @@
-import type { LessonBuilder, PracticeProblem, Step } from "../types";
+import type { LessonBuilder, PracticeProblem, Prediction, Step } from "../types";
 import { stringifyIntArray } from "../util";
 
 type Mode = "remove-duplicates" | "find-duplicate";
 type Inputs = { mode: Mode; arr: number[] };
+
+/** Remove Duplicates asks at most this many predict-mode questions, so a long array doesn't become a chore. */
+const MAX_PREDICTIONS = 5;
 
 const codeRemoveDuplicates = `def remove_duplicates(arr):
     if not arr:
@@ -51,14 +54,47 @@ function ptrs(slow: number, fast: number, n: number) {
   ];
 }
 
+/**
+ * Multiple-choice index options for "where does this pointer land?" questions.
+ * The correct index is always included; distractors are the classic mistakes
+ * (walking to the next cell, or jumping twice). Order is rotated so the
+ * correct answer isn't always first.
+ */
+function indexOptions(correct: number, distractors: number[], n: number, rotate: number) {
+  const seen = new Set<number>();
+  const ordered: number[] = [];
+  const add = (v: number) => {
+    if (Number.isInteger(v) && v >= 0 && v < n && !seen.has(v)) {
+      seen.add(v);
+      ordered.push(v);
+    }
+  };
+  add(correct);
+  distractors.forEach(add);
+  for (let i = 0; i < n && ordered.length < 3; i++) add(i);
+  const picked = ordered.slice(0, 3);
+  const k = picked.length ? rotate % picked.length : 0;
+  const rotated = [...picked.slice(k), ...picked.slice(0, k)];
+  return rotated.map((i) => ({ id: String(i), label: `index ${i}` }));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Remove Duplicates from Sorted Array                                        */
+/* -------------------------------------------------------------------------- */
+
 function buildRemoveDuplicates(arr: number[]): Step[] {
   const steps: Step[] = [];
   const data = [...arr];
   const n = data.length;
 
   if (n === 0) {
-    steps.push({ line: 2, array: [], pointers: [], narration: "Check if array is empty." });
-    steps.push({ line: 3, array: [], pointers: [], narration: "Empty array - return 0." });
+    steps.push({
+      line: 2,
+      lineEnd: 3,
+      array: [],
+      pointers: [],
+      narration: "Empty array: nothing to dedupe. Return 0.",
+    });
     return steps;
   }
 
@@ -67,94 +103,80 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
   ];
 
   let slow = 0;
+  let asked = 0;
+
   steps.push({
     line: 2,
+    lineEnd: 4,
     array: [...data],
     pointers: ptrs(0, 0, n),
-    narration: "Check if array is empty."
-  });
-  
-  steps.push({
-    line: 4,
-    array: [...data],
-    pointers: ptrs(0, 0, n),
+    partitions: win(0),
     highlight: { kind: "compare", indices: [0] },
-    status: "slow = 0, fast = 0  (both start at index 0)",
-    narration: "Both pointers start at index 0. slow will mark the end of the unique prefix.",
+    status: "slow = 0",
+    narration: "The array isn't empty, so index 0 is trivially unique. slow marks the end of the unique prefix.",
+    proof: "slow always points at the last unique value we've kept. fast scouts ahead looking for the next value that differs.",
   });
-  steps.push({
-    line: 5,
-    array: [...data],
-    pointers: ptrs(slow, Math.min(1, n - 1), n),
-    partitions: win(slow),
-    status: "fast → 1",
-    narration: "for loop: fast advances to index 1 to scan ahead; slow stays at 0.",
-  });
-
 
   for (let fast = 1; fast < n; fast++) {
-    const same = data[fast] === data[slow];
-    if (fast > 1) {
-      steps.push({
-        line: 5,
-        array: [...data],
-        pointers: ptrs(slow, fast, n),
-        partitions: win(slow),
-        status: `fast = ${fast}`,
-        narration: `for loop: fast moves to index ${fast}.`
-      });
-    }
-    
-    if (same) {
-      steps.push({
-        line: 6,
-        array: [...data],
-        pointers: ptrs(slow, fast, n),
-        partitions: win(slow),
-        highlight: { kind: "compare", indices: [slow, fast] },
-        status: `arr[${fast}]=${data[fast]} == arr[${slow}]=${data[slow]} → skip`,
-        narration: `arr[fast]=${data[fast]} equals arr[slow]=${data[slow]}. Duplicate - skip.`,
-      });
-    } else {
-      steps.push({
-        line: 6,
-        array: [...data],
-        pointers: ptrs(slow, fast, n),
-        partitions: win(slow),
-        highlight: { kind: "compare", indices: [slow, fast] },
-        status: `arr[${fast}]=${data[fast]} ≠ arr[${slow}]=${data[slow]}`,
-        narration: `New value found at fast=${fast}.`,
-      });
+    const f = data[fast];
+    const s = data[slow];
+    const same = f === s;
+
+    const predict: Prediction | undefined =
+      asked++ < MAX_PREDICTIONS
+        ? {
+          question: `fast is at index ${fast} (value ${f}); slow is at index ${slow} (value ${s}). What should happen?`,
+          options: [
+            { id: "skip", label: "Skip it (duplicate)" },
+            { id: "keep", label: "Keep it (new value)" },
+          ],
+          answer: same ? "skip" : "keep",
+        }
+        : undefined;
+
+    // Decision step: the loop advances fast, then compares. Both branches share these lines.
+    steps.push({
+      line: 5,
+      lineEnd: 6,
+      array: [...data],
+      pointers: ptrs(slow, fast, n),
+      partitions: win(slow),
+      highlight: { kind: "compare", indices: [slow, fast] },
+      status: `fast = ${fast}:  arr[${fast}] = ${f}  vs  arr[${slow}] = ${s}`,
+      narration: same
+        ? `fast → ${fast}. arr[fast] = ${f} equals arr[slow] = ${s}. It's a repeat, so skip it.`
+        : `fast → ${fast}. arr[fast] = ${f} differs from arr[slow] = ${s}. A new value.`,
+      proof: same
+        ? `The array is sorted, so every repeat of ${s} sits right next to it. This one adds nothing new: slow stays put and fast keeps scanning.`
+        : f > s
+          ? `The array is sorted, so ${f} is larger than every value already kept. It has never appeared before and must join the unique prefix.`
+          : `The input isn't sorted, so ${f} is only different from the last kept value, not guaranteed new. This algorithm assumes sorted input.`,
+      predict,
+    });
+
+    if (!same) {
+      const stale = data[slow + 1];
       slow += 1;
+      data[slow] = f;
       steps.push({
         line: 7,
-        array: [...data],
-        pointers: ptrs(slow, fast, n),
-        partitions: win(slow - 1),
-        status: `slow += 1 → ${slow}`,
-        narration: `Advance slow to ${slow}.`,
-      });
-      data[slow] = data[fast];
-      steps.push({
-        line: 8,
+        lineEnd: 8,
         array: [...data],
         pointers: ptrs(slow, fast, n),
         partitions: win(slow),
         highlight: { kind: "swap", indices: [slow] },
-        status: `arr[${slow}] = ${data[slow]}`,
-        narration: `Copy ${data[fast]} to index ${slow}.`,
+        status: `slow = ${slow},  arr[${slow}] = ${f}`,
+        narration:
+          slow === fast
+            ? `slow → ${slow}, the same cell as fast. The copy changes nothing; the unique prefix just grows by one.`
+            : `slow → ${slow}. Copy ${f} over the stale ${stale} at index ${slow}, extending the unique prefix.`,
+        proof:
+          slow === fast
+            ? undefined
+            : "Cells between slow and fast are leftovers we've already scanned, so they're safe to overwrite. That's how the array is compacted in place with no extra memory.",
       });
     }
   }
-
-  steps.push({
-    line: 5,
-    array: [...data],
-    pointers: ptrs(slow, n - 1, n),
-    partitions: win(slow),
-    status: `fast loop done`,
-    narration: `fast has reached the end of the array.`,
-  });
 
   steps.push({
     line: 9,
@@ -162,10 +184,15 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     pointers: ptrs(slow, n - 1, n),
     partitions: win(slow),
     status: `return ${slow + 1}`,
-    narration: `Unique prefix length = ${slow + 1}. Values [0..${slow}] are the answer.`,
+    narration: `fast ran off the end. Unique prefix length = ${slow + 1}: values [0..${slow}] are the answer.`,
+    proof: `Everything after index ${slow} is leftover junk. Only the first ${slow + 1} cells matter.`,
   });
   return steps;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Find the Duplicate Number (Floyd's tortoise and hare)                      */
+/* -------------------------------------------------------------------------- */
 
 function buildFindDuplicate(arr: number[]): Step[] {
   const steps: Step[] = [];
@@ -188,152 +215,148 @@ function buildFindDuplicate(arr: number[]): Step[] {
   }
 
   const start = arr[0];
-  steps.push({
-    line: 2,
-    array: [...arr],
-    pointers: ptrs(0, 0, n),
-    highlight: { kind: "compare", indices: [0] },
-    status: `read nums[0] = ${start}`,
-    narration: `Both pointers begin at index 0 so we can read nums[0] = ${start}. Each value tells us the next index to jump to.`,
-  });
-  steps.push({
-    line: 2,
-    array: [...arr],
-    pointers: ptrs(start, start, n),
-    highlight: { kind: "compare", indices: [start] },
-    status: `slow = fast = nums[0] = ${start}  → index ${start}`,
-    narration: `slow and fast both jump to index ${start} (= nums[0]). Now Floyd's tortoise-and-hare begins.`,
-  });
-
   let slow = start;
   let fast = start;
 
+  steps.push({
+    line: 2,
+    array: [...arr],
+    pointers: ptrs(slow, fast, n),
+    highlight: { kind: "compare", indices: [start] },
+    status: `slow = fast = nums[0] = ${start}`,
+    narration: `Both pointers start on index ${start}, which is nums[0]: one step along the path from index 0.`,
+    proof:
+      "Each value is a pointer to the next index. n + 1 values can only name n different indices, so walking the pointers from index 0 must eventually loop. The loop's entrance is the index pointed to twice: the duplicate.",
+  });
+
+  // Phase 1: slow takes 1 step, fast takes 2, until they meet inside the cycle.
+  let round = 0;
   for (let i = 0; i < n * 3; i++) {
-    steps.push({
-      line: 3,
-      array: [...arr],
-      pointers: ptrs(slow, fast, n),
-      narration: "while True: start next iteration."
-    });
-    
+    round += 1;
     const ns = arr[slow];
-    steps.push({
-      line: 4,
-      array: [...arr],
-      pointers: ptrs(ns, fast, n),
-      highlight: { kind: "compare", indices: [ns, fast] },
-      status: `slow: ${slow} → nums[${slow}] = ${ns}`,
-      narration: `slow takes one step: nums[${slow}] = ${ns}.`,
-    });
     const f1 = arr[fast];
-    steps.push({
-      line: 5,
-      array: [...arr],
-      pointers: ptrs(ns, f1, n),
-      highlight: { kind: "compare", indices: [ns, f1] },
-      status: `fast hop 1/2: ${fast} → nums[${fast}] = ${f1}`,
-      narration: `fast starts a double hop. First: nums[${fast}] = ${f1}.`,
-    });
     const f2 = arr[f1];
-    steps.push({
-      line: 5,
-      array: [...arr],
-      pointers: ptrs(ns, f2, n),
-      highlight:
-        ns === f2
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, f2] },
-      status: `fast hop 2/2: ${f1} → nums[${f1}] = ${f2}`,
-      narration:
-        ns === f2
-          ? `Second hop: nums[${f1}] = ${f2}. slow and fast meet at index ${ns} — a point inside the cycle.`
-          : `Second hop: nums[${f1}] = ${f2}. Not equal yet — keep walking.`,
-    });
-    steps.push({
-      line: 6,
-      array: [...arr],
-      pointers: ptrs(ns, f2, n),
-      highlight:
-        ns === f2
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, f2] },
-      status:
-        ns === f2
-          ? `slow (${ns}) == fast (${f2}) → break`
-          : `slow (${ns}) != fast (${f2}) → keep going`,
-      narration:
-        ns === f2
-          ? `Check: slow == fast. Break out of phase 1.`
-          : `Check: slow != fast. Continue the loop.`,
-    });
-    slow = ns;
-    fast = f2;
-    if (slow === fast) {
+
+    if (round === 1) {
+      // Pre-move step so the learner can predict where slow lands.
       steps.push({
-        line: 7,
+        line: 4,
         array: [...arr],
         pointers: ptrs(slow, fast, n),
-        narration: `break: slow equals fast, cycle detected.`
+        highlight: { kind: "compare", indices: [slow] },
+        status: `round 1: slow is at index ${slow}`,
+        narration: `slow reads nums[${slow}] = ${ns}, so it jumps to index ${ns}.`,
+        proof: "The value in a cell is the index to jump to, not an offset. slow always lands on index nums[slow].",
+        predict: {
+          question: `Round 1: slow is at index ${slow}. Where does one step take it?`,
+          options: indexOptions(ns, [slow + 1, arr[ns], slow], n, slow),
+          answer: String(ns),
+        },
+      });
+    }
+
+    const met = ns === f2;
+    steps.push({
+      line: 4,
+      lineEnd: 5,
+      array: [...arr],
+      pointers: ptrs(ns, f2, n),
+      highlight: met ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, f2] },
+      status: `slow ${slow} → ${ns}    fast ${fast} → ${f1} → ${f2}`,
+      narration: `slow steps to ${ns}. fast hops twice: nums[${fast}] = ${f1}, then nums[${f1}] = ${f2}.`,
+    });
+
+    slow = ns;
+    fast = f2;
+
+    if (met) {
+      steps.push({
+        line: 6,
+        lineEnd: 7,
+        array: [...arr],
+        pointers: ptrs(slow, fast, n),
+        highlight: { kind: "match", indices: [slow] },
+        status: `slow (${slow}) == fast (${fast}) → break`,
+        narration: `slow == fast at index ${slow}: they met inside the cycle. Phase 1 is over.`,
+        proof:
+          "The meeting point is somewhere in the cycle, but not necessarily its entrance. The distance from index 0 to the entrance equals the distance from the meeting point around to the entrance, so restarting one pointer from the beginning lets them meet exactly there.",
+        predict: {
+          question: `slow and fast both sit on index ${slow}. What should the algorithm do next?`,
+          options: [
+            { id: "return", label: `Return index ${slow} as the duplicate` },
+            { id: "reset", label: "Reset slow to nums[0], then move both one step at a time" },
+            { id: "again", label: "Keep going: slow one step, fast two steps" },
+          ],
+          answer: "reset",
+        },
       });
       break;
     }
+
+    steps.push({
+      line: 6,
+      array: [...arr],
+      pointers: ptrs(slow, fast, n),
+      highlight: { kind: "compare", indices: [slow, fast] },
+      status: `slow (${slow}) != fast (${fast}) → keep going`,
+      narration: `slow (${slow}) != fast (${fast}). Not met yet, so keep walking.`,
+    });
   }
 
+  // Phase 2: restart slow from the beginning; both move one step per turn.
   slow = arr[0];
   steps.push({
     line: 8,
     array: [...arr],
     pointers: ptrs(slow, fast, n),
+    highlight: { kind: "compare", indices: [slow] },
     status: `reset slow = nums[0] = ${slow}`,
-    narration:
-      "Phase 2 — reset slow to nums[0]. Now advance both by one step. Where they meet is the cycle entrance = the duplicate value.",
+    narration: `slow resets to nums[0] = ${slow}. fast stays at the meeting point, index ${fast}. From here both move one step at a time.`,
   });
 
+  let round2 = 0;
   for (let i = 0; i < n * 2 && slow !== fast; i++) {
+    round2 += 1;
+    const ns = arr[slow];
+    const nf = arr[fast];
+
     steps.push({
       line: 9,
       array: [...arr],
       pointers: ptrs(slow, fast, n),
       highlight: { kind: "compare", indices: [slow, fast] },
-      status: `check: slow (${slow}) != fast (${fast}) → continue`,
-      narration: `slow=${slow}, fast=${fast}. Not equal — take one step each.`,
+      status: `slow = ${slow}, fast = ${fast}`,
+      narration: `slow (${slow}) != fast (${fast}), so both take one step.`,
+      proof:
+        round2 === 1
+          ? "Phase 2 uses equal speeds: fast no longer double-hops. Both pointers are now the same distance from the cycle entrance, so they arrive there together."
+          : undefined,
+      predict:
+        round2 === 1
+          ? {
+            question: `Both pointers now take ONE step. fast is at index ${fast}. Where does fast land?`,
+            options: indexOptions(nf, [arr[nf], fast + 1, fast], n, fast),
+            answer: String(nf),
+          }
+          : undefined,
     });
-    const ns = arr[slow];
+
+    const met = ns === nf;
     steps.push({
       line: 10,
-      array: [...arr],
-      pointers: ptrs(ns, fast, n),
-      highlight: { kind: "compare", indices: [ns, fast] },
-      status: `slow: ${slow} → nums[${slow}] = ${ns}`,
-      narration: `slow steps to nums[${slow}] = ${ns}.`,
-    });
-    const nf = arr[fast];
-    steps.push({
-      line: 11,
+      lineEnd: 11,
       array: [...arr],
       pointers: ptrs(ns, nf, n),
-      highlight:
-        ns === nf
-          ? { kind: "match", indices: [ns] }
-          : { kind: "compare", indices: [ns, nf] },
-      status: `fast: ${fast} → nums[${fast}] = ${nf}`,
-      narration:
-        ns === nf
-          ? `fast steps to nums[${fast}] = ${nf}. slow and fast meet at ${ns} — that's the cycle entry, i.e. the duplicate.`
-          : `fast steps to nums[${fast}] = ${nf}.`,
+      highlight: met ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, nf] },
+      status: `slow ${slow} → ${ns}    fast ${fast} → ${nf}`,
+      narration: met
+        ? `slow → ${ns}, fast → ${nf}. They land together: this is the cycle entrance.`
+        : `slow → ${ns}, fast → ${nf}.`,
     });
+
     slow = ns;
     fast = nf;
   }
-  
-  steps.push({
-    line: 9,
-    array: [...arr],
-    pointers: ptrs(slow, fast, n),
-    highlight: { kind: "match", indices: [slow] },
-    status: `check: slow (${slow}) == fast (${fast}) → stop`,
-    narration: `slow=${slow}, fast=${fast}. Equal! We found the duplicate.`,
-  });
 
   steps.push({
     line: 12,
@@ -341,7 +364,8 @@ function buildFindDuplicate(arr: number[]): Step[] {
     pointers: ptrs(slow, fast, n),
     highlight: { kind: "match", indices: [slow] },
     status: `return ${slow}`,
-    narration: `Duplicate value = ${slow}.`,
+    narration: `slow == fast, so the loop ends. Return ${slow}: that's the duplicate.`,
+    proof: "Two different cells hold this value, so two arrows point into this index. That's what makes it the cycle's entrance.",
   });
   return steps;
 }
