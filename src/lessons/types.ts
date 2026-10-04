@@ -10,7 +10,7 @@ export type Pointer = {
 export type Partition = {
   from: number;
   to: number;
-  tone: "low" | "mid" | "high";
+  tone: "low" | "mid" | "high" | "unknown";
   label?: string;
 };
 
@@ -57,6 +57,8 @@ export type Step = {
   highlight?: Highlight;
   // optional secondary strip (prefix/deque/output)
   secondary?: SecondaryArray;
+  // optional second strip stacked under the first (e.g. the output array under a deque)
+  secondary2?: SecondaryArray;
   // matrix view
   matrix?: number[][];
   cellHighlights?: CellHighlight[];
@@ -84,6 +86,8 @@ export type Step = {
   // elevation-map view: running maxima for the guide lines
   leftMax?: number;
   rightMax?: number;
+  // array view: small pills under cells, e.g. "+7" on the cell entering a window, "−2" on the one leaving
+  badges?: { index: number; text: string; tone: PointerColor }[];
 };
 
 export type View = "array" | "linked-list" | "matrix" | "elevation-map";
@@ -91,25 +95,25 @@ export type View = "array" | "linked-list" | "matrix" | "elevation-map";
 export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
   | {
-      key: string;
-      label: string;
-      kind: "int";
-      min?: number;
-      max?: number;
-      help?: string;
-      hidden?: (v: any) => boolean;
-    }
+    key: string;
+    label: string;
+    kind: "int";
+    min?: number;
+    max?: number;
+    help?: string;
+    hidden?: (v: any) => boolean;
+  }
   | { key: string; label: string; kind: "intMatrix"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "intPairs"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "string"; help?: string; hidden?: (v: any) => boolean }
   | {
-      key: string;
-      label: string;
-      kind: "select";
-      options: { value: string; label: string }[];
-      help?: string;
-      hidden?: (v: any) => boolean;
-    };
+    key: string;
+    label: string;
+    kind: "select";
+    options: { value: string; label: string }[];
+    help?: string;
+    hidden?: (v: any) => boolean;
+  };
 
 export type PracticeProblem = {
   name: string;
@@ -207,12 +211,12 @@ export type Section =
   | { kind: "system-design-scalability-loop" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
-      kind: "terminal-animation";
-      command: string;
-      output: string;
-      buttonLabel?: string;
-      caption?: string;
-    }
+    kind: "terminal-animation";
+    command: string;
+    output: string;
+    buttonLabel?: string;
+    caption?: string;
+  }
   | { kind: "docker-run-under-the-hood" }
   | { kind: "ipv4-diagram" }
   | { kind: "ports-diagram" }
@@ -243,17 +247,17 @@ export type Section =
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
   | {
-      kind: "cloud-provider-grid";
-      items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[];
-    }
+    kind: "cloud-provider-grid";
+    items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[];
+  }
   | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
   | {
-      kind: "list";
-      heading?: string;
-      body?: string[];
-      items: (string | { text: string; subitems: string[] })[];
-    }
+    kind: "list";
+    heading?: string;
+    body?: string[];
+    items: (string | { text: string; subitems: string[] })[];
+  }
   | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {
