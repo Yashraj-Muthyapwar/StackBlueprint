@@ -2576,7 +2576,7 @@ export const roadmap: RoadmapCategory[] = [
             lessons: [
               {
                 slug: "classes-and-objects",
-                title: "Classes and Objects",
+                title: "OOP Basics: Classes and Objects",
                 icon: Box,
                 path: "/python/oop/classes-and-objects",
               },
