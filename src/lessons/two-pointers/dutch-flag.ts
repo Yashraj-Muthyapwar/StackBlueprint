@@ -1,6 +1,9 @@
-import type { LessonBuilder, Partition, PracticeProblem, Step } from "../types";
+import type { LessonBuilder, Partition, PracticeProblem, Prediction, Step } from "../types";
 
 type Inputs = { arr: number[] };
+
+/** Predict mode asks at most this many questions, so a long array doesn't become a chore. */
+const MAX_PREDICTIONS = 6;
 
 const practiceLadder: PracticeProblem[] = [
   { name: "Move Zeroes", difficulty: "easy", hint: "Like a 2-color Dutch Flag. Maintain a zone for non-zeroes and a zone for the current scanner.", link: "https://leetcode.com/problems/move-zeroes/" },
@@ -25,11 +28,19 @@ const code = `def dutch_flag(arr):
             high -= 1
     return arr`;
 
+/**
+ * The invariant, drawn as bands:
+ *   [0 .. low-1]    all 0s
+ *   [low .. mid-1]  all 1s
+ *   [mid .. high]   unknown (not examined yet)
+ *   [high+1 .. n-1] all 2s
+ */
 function parts(low: number, mid: number, high: number, n: number): Partition[] {
   const out: Partition[] = [];
   if (low - 1 >= 0) out.push({ from: 0, to: low - 1, tone: "low", label: "= 0" });
-  if (high + 1 <= n - 1) out.push({ from: high + 1, to: n - 1, tone: "high", label: "= 2" });
   if (mid - 1 >= low) out.push({ from: low, to: mid - 1, tone: "mid", label: "= 1" });
+  if (high >= mid) out.push({ from: mid, to: high, tone: "unknown", label: "?" });
+  if (high + 1 <= n - 1) out.push({ from: high + 1, to: n - 1, tone: "high", label: "= 2" });
   return out;
 }
 
@@ -37,73 +48,146 @@ function build({ arr: input }: Inputs): Step[] {
   const arr = [...input];
   const n = arr.length;
   const steps: Step[] = [];
-  const ptr = (low: number, mid: number, high: number) => [
-    { name: "low", index: low, color: "mint" as const, placement: "above" as const },
-    { name: "mid", index: mid, color: "violet" as const, placement: "below" as const },
-    { name: "high", index: high, color: "amber" as const, placement: "above" as const },
-  ];
-  const push = (s: Omit<Step, "array" | "partitions"> & { low: number; mid: number; high: number; array?: number[] }) => {
-    const { low, mid, high, ...rest } = s;
-    steps.push({ ...rest, array: s.array ?? [...arr], partitions: parts(low, mid, high, n) });
-  };
 
   if (n === 0) {
-    steps.push({ line: 1, narration: "Empty array.", pointers: [] });
+    steps.push({ line: 1, narration: "Empty array: nothing to sort.", pointers: [] });
     return steps;
   }
 
-  push({ line: 1, pointers: [], low: 0, mid: 0, high: n - 1, narration: "Sort 0s, 1s, 2s in one pass." });
-  let low = 0,
-    mid = 0,
-    high = n - 1;
-  push({ line: 2, pointers: ptr(low, mid, high), low, mid, high, narration: "Three pointers: low (0-zone), mid (scanner), high (2-zone)." });
+  let low = 0;
+  let mid = 0;
+  let high = n - 1;
 
-  let safety = 0;
-  while (mid <= high && safety++ < 500) {
-    push({ line: 3, pointers: ptr(low, mid, high), low, mid, high, status: `mid=${mid} ≤ high=${high}`, narration: "Loop guard holds." });
+  // A pointer that has walked off either end (mid past the last cell, high before the first)
+  // is simply not drawn, so the canvas never points outside the array.
+  const ptr = () =>
+    [
+      { name: "low", index: low, color: "mint" as const, placement: "above" as const },
+      { name: "mid", index: mid, color: "violet" as const, placement: "below" as const },
+      { name: "high", index: high, color: "amber" as const, placement: "above" as const },
+    ].filter((p) => p.index >= 0 && p.index < n);
+
+  const push = (s: Partial<Step> & { line: number; narration: string }) =>
+    steps.push({
+      array: [...arr],
+      pointers: ptr(),
+      partitions: parts(low, mid, high, n),
+      ...s,
+    } as Step);
+
+  push({
+    line: 2,
+    status: `unknown zone: all ${n} cells`,
+    narration: "low and mid start on the left, high on the right. Nothing has been examined yet.",
+    proof:
+      "The invariant: everything left of low is 0, between low and mid is 1, right of high is 2, and the cells from mid to high are unknown. Every step shrinks the unknown zone by exactly one cell.",
+  });
+
+  let asked = 0;
+  let iters = 0;
+  while (mid <= high && iters < 500) {
+    iters += 1;
+    const v = arr[mid];
+    const kind: "zero" | "one" | "two" = v === 0 ? "zero" : v === 1 ? "one" : "two";
+
+    const predict: Prediction | undefined =
+      asked++ < MAX_PREDICTIONS
+        ? {
+          question: `arr[mid] = ${v} (mid is at index ${mid}). What happens next?`,
+          options: [
+            { id: "zero", label: "Swap with low, then advance low and mid" },
+            { id: "one", label: "Just advance mid" },
+            { id: "two", label: "Swap with high, then shrink high" },
+          ],
+          answer: kind,
+        }
+        : undefined;
+
+    // Decision step: the loop guard and the first `if` apply to every case, so the
+    // highlighted lines don't reveal which branch is coming.
+    let narration: string;
+    let proof: string;
+    if (kind === "zero") {
+      narration = `arr[mid] = 0. A 0 belongs in the left zone, so swap it with arr[low].`;
+      proof =
+        low === mid
+          ? "low and mid are on the same cell (the 1-zone is empty), so the swap is a no-op: the 0 is already in place and both pointers advance."
+          : "The cells from low to mid-1 are all 1s, so arr[low] is a 1. Swapping puts the 0 at the end of the 0-zone and a known 1 at mid, so mid can safely advance.";
+    } else if (kind === "one") {
+      narration = `arr[mid] = 1. A 1 already belongs in the middle zone.`;
+      proof =
+        "The middle zone is exactly the cells between low and mid, so advancing mid just extends it by one.";
+    } else {
+      narration =
+        v === 2
+          ? `arr[mid] = 2. A 2 belongs in the right zone, so swap it with arr[high].`
+          : `arr[mid] = ${v}. The else branch treats anything that isn't 0 or 1 as a 2, so swap it with arr[high].`;
+      proof =
+        mid === high
+          ? "mid and high are on the same cell, the last unknown one. The swap is a no-op and high shrinks past mid."
+          : "arr[high] hasn't been examined yet, so whatever arrives at mid is unknown. That's why mid does NOT advance here: we look at the new value next. The 2 at high is final, so high shrinks.";
+    }
+
     push({
-      line: 4,
-      pointers: ptr(low, mid, high),
-      low,
-      mid,
-      high,
+      line: 3,
+      lineEnd: 4,
       highlight: { kind: "compare", indices: [mid] },
-      status: `arr[mid]=${arr[mid]}`,
-      narration: `Inspect arr[mid] = ${arr[mid]}.`,
+      status: `mid = ${mid}:  arr[mid] = ${v}`,
+      narration,
+      proof,
+      predict,
     });
-    if (arr[mid] === 0) {
+
+    // Action step: apply the move, then show the resulting state.
+    if (kind === "zero") {
+      const l = low;
+      const m = mid;
       [arr[low], arr[mid]] = [arr[mid], arr[low]];
-      push({
-        line: 5,
-        pointers: ptr(low, mid, high),
-        low,
-        mid,
-        high,
-        array: [...arr],
-        highlight: { kind: "swap", indices: [low, mid] },
-        narration: `Swap arr[${low}] ↔ arr[${mid}]. Advance low and mid.`,
-      });
       low += 1;
       mid += 1;
-    } else if (arr[mid] === 1) {
-      push({ line: 9, pointers: ptr(low, mid, high), low, mid, high, narration: "It's a 1 — already correct, advance mid." });
+      push({
+        line: 5,
+        lineEnd: 7,
+        highlight: { kind: "swap", indices: l === m ? [m] : [l, m] },
+        status: `low = ${low},  mid = ${mid}`,
+        narration:
+          l === m
+            ? `No-op swap. low → ${low}, mid → ${mid}. The 0-zone grew by one.`
+            : `Swap arr[${l}] ↔ arr[${m}]. low → ${low}, mid → ${mid}. The 0-zone grew by one.`,
+      });
+    } else if (kind === "one") {
       mid += 1;
+      push({
+        line: 8,
+        lineEnd: 9,
+        status: `mid = ${mid}`,
+        narration: `mid → ${mid}. The 1-zone grew by one.`,
+      });
     } else {
+      const m = mid;
+      const h = high;
       [arr[mid], arr[high]] = [arr[high], arr[mid]];
+      high -= 1;
       push({
         line: 11,
-        pointers: ptr(low, mid, high),
-        low,
-        mid,
-        high,
-        array: [...arr],
-        highlight: { kind: "swap", indices: [mid, high] },
-        narration: `It's a 2 — swap with arr[${high}], shrink high. Don't advance mid.`,
+        lineEnd: 12,
+        highlight: { kind: "swap", indices: m === h ? [m] : [m, h] },
+        status: `high = ${high}`,
+        narration:
+          m === h
+            ? `No-op swap. high → ${high}. The 2-zone grew by one.`
+            : `Swap arr[${m}] ↔ arr[${h}]. high → ${high}; mid stays at ${mid} to examine the value that just arrived.`,
       });
-      high -= 1;
     }
   }
-  push({ line: 13, pointers: ptr(low, mid, high), low, mid, high, narration: "Partitioned into three zones." });
+
+  push({
+    line: 13,
+    status: `done: ${iters} steps for ${n} cells`,
+    narration: `mid crossed high, so no unknown cells are left. The array is partitioned: 0s, then 1s, then 2s.`,
+    proof:
+      "Each loop iteration settled exactly one cell (mid advanced or high shrank), so the whole pass touches each cell once: O(n) time and O(1) space.",
+  });
   return steps;
 }
 
