@@ -7,8 +7,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
     lessons: [
       {
         slug: "classes-and-objects",
-        title: "Classes and Objects",
-        subtitle: "Learn how Python classes and objects help you organize related data and behavior into reusable code.",
+        title: "OOP Basics: Classes and Objects",
+        subtitle: "Learn how object-oriented programming uses classes and objects to organize related data and behavior into reusable code.",
         sections: [
           {
             kind: "prose",
@@ -16,6 +16,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: [
               "As a program grows, managing separate variables and functions can become messy. Object-oriented programming, or OOP, helps you group related data and behavior into one structure.",
               "You will see this idea in web applications, banking systems, games, machine learning libraries, e-commerce platforms, and many other Python projects."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "What is OOP?",
+            body: [
+              "**Object-oriented programming (OOP)** is a programming approach that organizes code around **objects**. An object combines data that describes something with actions that thing can perform.",
+              "For example, a `Car` object can store data such as its brand and speed, and it can perform actions such as `drive()`. A **class** is the reusable blueprint used to create those objects.",
+              "OOP helps you model real-world ideas, reuse a consistent structure, and keep related data and behavior together as a program grows."
             ]
           },
           {
@@ -284,8 +293,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             heading: "Why this matters",
             body: [
-              "Not every piece of data should be stored the same way.",
-              "Some values belong to one specific object, while other values should be shared across every object created from a class. Python handles these using **instance attributes** and **class attributes**."
+              "A class often needs two kinds of data: details that vary from object to object, and facts shared by every object.",
+              "Python represents these with **instance attributes** and **class attributes**. Choosing the right one prevents accidental shared state and makes your class easier to understand."
             ]
           },
           {
@@ -295,20 +304,25 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Instance attributes vs class attributes",
             body: [
               "An **instance attribute** belongs to one specific object.",
               "A **class attribute** belongs to the class itself and is shared by its objects.",
-              "The company name is the same for everyone, so it can be stored once as a **class attribute**.",
-              "Each employee has a different name and salary, so those values should be **instance attributes**."
+              "For example, each student has a different `name`, while every student at the same school can share one `school_name`."
             ]
           },
           {
+            kind: "syntax",
+            title: "Create and read an instance attribute",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.attribute = value\n\nobject_name.attribute",
+            description: "`self.attribute` stores data on the object being created. Read it outside the class with `object_name.attribute`."
+          },
+          {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Instance attributes belong to each object",
             body: [
-              "### 1. Create instance attributes",
-              "Instance attributes are usually created inside `__init__()` using `self`."
+              "Instance attributes are usually created in `__init__()` with `self`. Each object receives its own copy, so changing one object does not change another.",
+              "You can also create or update an instance attribute later with `object_name.attribute = value`."
             ]
           },
           {
@@ -318,7 +332,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "Each object stores its own values. Changing one employee does not change the other."
+              "`employee1.name` and `employee2.name` are separate values, even though both objects were made from `Employee`."
             ]
           },
           {
@@ -326,10 +340,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             code: `class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\nemployee1 = Employee("Maya", 70000)\nemployee2 = Employee("Leo", 82000)\n\nemployee1.salary = 75000\nprint(employee1.salary)\nprint(employee2.salary)`
           },
           {
+            kind: "syntax",
+            title: "Create and read a class attribute",
+            code: "class ClassName:\n    shared_attribute = value\n\nClassName.shared_attribute",
+            description: "Define a class attribute directly in the class body, outside its methods. Prefer the class name when reading or changing shared data."
+          },
+          {
             kind: "prose",
+            heading: "Class attributes are shared",
             body: [
-              "### 2. Create a class attribute",
-              "A class attribute is defined inside the class but outside methods such as `__init__()`."
+              "A class attribute is defined once inside the class, outside methods such as `__init__()`. All objects can use that shared value.",
+              "Python lets you read it through either an object or the class, but `ClassName.attribute` makes the shared ownership clear."
             ]
           },
           {
@@ -339,48 +360,49 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "This makes sense because `company` belongs to `Employee`, not to one particular employee."
+              "`company` belongs to `Employee`, not to one particular employee, so every object reads the same value."
             ]
           },
           {
             kind: "prose",
+            heading: "Changing shared data and shadowing it",
             body: [
-              "### 3. Know which one to use"
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Ask one question:",
-              "**Should every object have its own value, or should the value be shared?**",
-              "Use an **instance attribute** when the ==value can differ between objects.==",
-              "Examples: `name`, `email`, `balance`, `price`, and `speed`."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Use a **class attribute** when the ==value describes the class as a whole or should have one shared default.==",
-              "Examples: `company_name`, `school_name`, `tax_rate`, and `species`."
+              "Assigning through the class updates the shared value. Assigning the same name through one object creates an instance attribute that **shadows** the class attribute for that object only.",
+              "This is why intentional shared changes should normally use `ClassName.attribute = value`."
             ]
           },
           {
             kind: "interactive-code",
-            code: `class BankAccount:\n    bank_name = "Blue Bank"\n\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self.balance = balance\n\n\nacc1 = BankAccount("Alice", 1000)\nacc2 = BankAccount("Bob", 2500)\n\nprint(f"{acc1.owner}: \${acc1.balance} ({acc1.bank_name})")\nprint(f"{acc2.owner}: \${acc2.balance} ({acc2.bank_name})")`
+            code: `class Course:\n    duration_weeks = 8\n\n    def __init__(self, student):\n        self.student = student\n\nstudent1 = Course("Maya")\nstudent2 = Course("Leo")\n\nCourse.duration_weeks = 10        # changes the shared class attribute\nstudent1.duration_weeks = 12      # creates an attribute only on student1\n\nprint(student1.duration_weeks)\nprint(student2.duration_weeks)\nprint(Course.duration_weeks)`
           },
           {
             kind: "prose",
+            heading: "A local variable is not an attribute",
             body: [
-              "`owner` and `balance` belong to individual accounts.",
-              "`bank_name` is shared by every account."
+              "A variable created inside a method without `self` is a **local variable**. It exists only while that method runs; it is not stored on the object or shared by the class.",
+              "Use `self.name` when data should remain on an object after the method ends."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Timer:\n    def describe(self):\n        unit = "minutes"  # local to this method\n        print(f"Duration is measured in {unit}")\n\ntimer = Timer()\ntimer.describe()`
+          },
+          {
+            kind: "table",
+            caption: "Choose the right kind of variable",
+            headers: ["Question", "Instance attribute", "Class attribute", "Local variable"],
+            rows: [
+              ["Where is it stored?", "One object", "The class", "One method call"],
+              ["Typical syntax", "`self.name`", "`ClassName.school_name`", "`total = 0`"],
+              ["Is it shared?", "No", "Yes", "No"],
+              ["Good examples", "`name`, `balance`", "`species`, `tax_rate`", "temporary calculation"]
             ]
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "A complete example",
             body: [
-              "Imagine you are building the product system for an online store.",
-              "Every product has its own name, price, and stock quantity. However, every product currently uses the same sales tax rate."
+              "An online store gives every product its own `name`, `price`, and `stock`. The sales-tax rate, however, is shared by the entire product catalog."
             ]
           },
           {
@@ -391,7 +413,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "Each product has different instance data (its `name`, `price`, and `stock`).",
-              "But both use the shared class attribute: `Product.tax_rate = 0.0825`",
+              "Both products use the shared class attribute `Product.tax_rate`.",
               "If the store changes its tax rate, you can update the shared value:",
               "`Product.tax_rate = 0.0925`",
               "Both products will now use the new rate the next time `price_with_tax()` runs."
@@ -400,8 +422,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "callout",
             tone: "warn",
+            title: "Avoid mutable class attributes for per-object data",
+            body: "A list, dictionary, or set stored as a class attribute is shared by every object. For example, `members = []` inside a class gives all instances the same list. If each object needs its own collection, create it in `__init__()` with `self.members = []`."
+          },
+          {
+            kind: "callout",
+            tone: "warn",
             title: "Common mistakes",
-            body: "- **Putting every value in the class**: Object-specific data such as a customer's name or account balance should normally be instance attributes.\n- **Treating class attributes as independent values**: A class attribute is shared unless an object creates its own attribute with the same name.\n- **Changing a shared value through one object**: Prefer `ClassName.attribute` when intentionally changing class-wide data because it makes the intent clearer."
+            body: "- **Putting object-specific data on the class**: a customer's name or an account balance should normally use `self`.\n- **Changing shared data through one object**: it can shadow the class attribute instead of changing it for everyone.\n- **Using an ordinary local variable for persistent object data**: a name without `self` disappears when the method call ends."
           },
           {
             kind: "takeaways",
@@ -409,8 +437,9 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Instance attributes belong to individual objects.",
               "Class attributes belong to the class and are shared across its objects.",
               "Instance attributes are commonly created with `self` inside `__init__()`.",
-              "Class attributes are defined directly inside the class.",
-              "Choose between them by asking whether the value should vary between objects."
+              "Class attributes are defined directly inside the class and are clearest when accessed through `ClassName`.",
+              "Assigning an attribute name on one object can shadow a class attribute for that object.",
+              "Use a local variable for temporary work inside a method, not for data that should stay on the object."
             ]
           },
           {
@@ -438,15 +467,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "attr-vs-class-3",
-                question: "In a class `Car` with `wheels = 4` and `self.brand = brand`, which attribute is shared across all cars?",
+                question: "After `Course.duration_weeks = 10`, then `student1.duration_weeks = 12`, what does `student2.duration_weeks` read if it has no attribute of its own?",
                 options: [
-                  "brand",
-                  "wheels",
-                  "Both of them",
-                  "Neither of them"
+                  "8",
+                  "10",
+                  "12",
+                  "It raises an error"
                 ],
                 correctIndex: 1,
-                explanation: "`wheels` is defined at the class level, making it a class attribute shared by all cars. `brand` is defined on `self`, meaning it's an instance attribute."
+                explanation: "The class assignment changes the shared value to 10. `student1.duration_weeks = 12` creates an attribute only on `student1`, so `student2` still reads the class value."
               },
               {
                 id: "attr-vs-class-4",
@@ -459,15 +488,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "attr-vs-class-5",
-                question: "If you change a class attribute directly on the class (e.g., `Car.wheels = 3`), what happens?",
+                question: "Which statement correctly describes `total = 0` inside a method, when it is not assigned to `self`?",
                 options: [
-                  "Only new objects created after the change will have 3 wheels.",
-                  "All existing objects and new objects will share the new value of 3 wheels.",
-                  "Python will throw an error because class attributes cannot be changed.",
-                  "Existing objects are deleted from memory."
+                  "It is a shared class attribute.",
+                  "It is an instance attribute available as `object.total`.",
+                  "It is a local variable available only while the method runs.",
+                  "It becomes a global variable."
                 ],
-                correctIndex: 1,
-                explanation: "Class attributes are shared by reference. Changing the value on the class itself updates it for all instances that share that attribute."
+                correctIndex: 2,
+                explanation: "A variable without `self` inside a method is local to that method call. It is not stored on the object or class."
               }
             ]
           }
@@ -476,14 +505,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "types-of-methods",
         title: "Instance, Class, and Static Methods",
-        subtitle: "The Three Types of Methods",
+        subtitle: "Choose the right method for object data, class data, utility logic, and controlled attribute access.",
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why method types matter",
             body: [
               "Methods define what objects and classes can do. But not every method needs access to the same kind of data.",
-              "Python gives you three common method types: **instance methods**, **class methods**, and **static methods**. Choosing the right one makes your classes easier to understand and maintain."
+              "Python gives you three core method types: **instance methods**, **class methods**, and **static methods**. Getter and setter methods are useful instance-method patterns for reading or safely changing an object's data."
             ]
           },
           {
@@ -493,15 +522,26 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Three types of methods",
             body: [
               "The difference between the three method types comes down to what information the method needs.",
               "An **instance method** works with object-specific data.",
               "A **class method** works with class-level data.",
-              "A **static method** belongs logically to the class, but does not need access to either an object or the class itself.",
-              "### 1. Use an instance method for object data",
+              "A **static method** belongs logically to the class, but does not need access to either an object or the class itself."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Instance Methods",
+            body: [
               "An instance method is the method type you have already been using. Its first parameter is usually `self`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Instance method",
+            code: "class ClassName:\n    def method_name(self, value):\n        return self.attribute + value",
+            description: "An instance method receives `self`, which is the object used to call it."
           },
           {
             kind: "interactive-code",
@@ -510,12 +550,23 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`display_details()` needs the current product's `name` and `price`, so it should be an instance method.",
-              "When you call `laptop.display_details()`, Python automatically passes `laptop` as `self`.",
-              "### 2. Use a class method for class-level behavior",
+              "`display_details()` needs the current product's `name` and `price`, so it is an instance method.",
+              "When you call `laptop.display_details()`, Python automatically passes `laptop` as `self`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Class Methods",
+            body: [
               "A class method works with the class rather than one specific object.",
               "Add `@classmethod` above the method and use `cls` as the first parameter."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Class method",
+            code: "class ClassName:\n    @classmethod\n    def method_name(cls, value):\n        cls.shared_attribute = value",
+            description: "Use `@classmethod` and `cls` when a method reads or changes class-level data."
           },
           {
             kind: "interactive-code",
@@ -524,12 +575,23 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`cls` refers to the class that called the method. This is similar to how `self` refers to an object.",
-              "Use class methods when the behavior needs class attributes or should affect the class as a whole.",
-              "### 3. Use a static method for related utility logic",
+              "`cls` refers to the class that called the method, much as `self` refers to an object.",
+              "Use a class method when behavior reads or changes class attributes, or should affect the class as a whole."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Static Methods",
+            body: [
               "Sometimes a function belongs conceptually to a class but does not need any object or class data.",
               "Use `@staticmethod` for this case."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Static method",
+            code: "class ClassName:\n    @staticmethod\n    def method_name(value):\n        return value > 0",
+            description: "A static method receives only the arguments you give it. It has no automatic `self` or `cls` parameter."
           },
           {
             kind: "interactive-code",
@@ -539,40 +601,82 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "`is_valid_price()` only checks the value it receives. It does not use `self` or `cls`.",
-              "That makes it a good fit for a static method.",
-              "### 4. Choose the method based on what it needs",
+              "That makes it a good fit for a static method."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Getter Methods",
+            body: [
+              "A **getter** (also called an accessor) is an instance method that returns an attribute value. Getters are useful when reading the value needs formatting, calculation, or a controlled interface."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Getter method",
+            code: "def get_attribute(self):\n    return self.attribute",
+            description: "A getter is an ordinary instance method, so its first parameter is `self`."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Profile:\n    def __init__(self, name):\n        self.name = name\n\n    def get_name(self):\n        return self.name\n\nprofile = Profile("Maya")\nprint(profile.get_name())`
+          },
+          {
+            kind: "prose",
+            heading: "Setter Methods",
+            body: [
+              "A **setter** (also called a mutator) is an instance method that changes an attribute. It is especially useful when a value must be checked before it is stored.",
+              "In ordinary Python classes, direct access such as `profile.name` is fine for simple public data. Use a setter when it adds meaningful validation or behavior."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Setter method",
+            code: "def set_attribute(self, value):\n    if value >= 0:\n        self.attribute = value",
+            description: "Put the validation before the assignment so the object never stores an invalid value."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Student:\n    def __init__(self, age=0):\n        self._age = age\n\n    def get_age(self):\n        return self._age\n\n    def set_age(self, age):\n        if age < 0:\n            print("Age cannot be negative")\n            return\n        self._age = age\n\nstudent = Student()\nstudent.set_age(21)\nprint(student.get_age())\nstudent.set_age(-2)\nprint(student.get_age())`
+          },
+          {
+            kind: "prose",
+            heading: "Choosing the Right Method Type",
+            body: [
               "A simple decision process is:"
             ]
           },
           {
             kind: "table",
-            headers: ["Method", "Needs", "First parameter"],
+            headers: ["Method", "Purpose", "First parameter"],
             rows: [
-              ["**Instance method**", "Object data", "`self`"],
-              ["**Class method**", "Class data", "`cls`"],
-              ["**Static method**", "Neither", "None"]
+              ["**Instance method**", "Use object data", "`self`"],
+              ["**Getter / setter**", "Read or validate and change object data", "`self`"],
+              ["**Class method**", "Use or change shared class data", "`cls`"],
+              ["**Static method**", "Related logic that needs neither object nor class data", "None"]
             ]
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Method Types Together",
             body: [
               "Imagine you are building the product system for an online store. The store needs to:",
               "1. calculate the final price of one product",
-              "2. update a tax rate shared by every product",
-              "3. check whether a supplied price is valid",
-              "These responsibilities fit the three method types naturally."
+              "2. read and safely change a product's price",
+              "3. update a tax rate shared by every product",
+              "4. check whether a supplied price is valid",
+              "These responsibilities fit the method types naturally."
             ]
           },
           {
             kind: "interactive-code",
-            code: `class Product:\n    tax_rate = 0.08\n\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def final_price(self):\n        return self.price * (1 + Product.tax_rate)\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nlaptop = Product("Laptop", 1000)\n\n# Instance method works with specific laptop\nprint(laptop.final_price())\n\n# Class method changes shared info\nProduct.update_tax_rate(0.10)\nprint(laptop.final_price())\n\n# Static method performs independent check\nprint(Product.is_valid_price(500))`
+            code: `class Product:\n    tax_rate = 0.08\n\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def final_price(self):\n        return round(self.price * (1 + Product.tax_rate), 2)\n\n    def get_price(self):\n        return self.price\n\n    def set_price(self, new_price):\n        if Product.is_valid_price(new_price):\n            self.price = new_price\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nlaptop = Product("Laptop", 1000)\n\nprint(laptop.get_price())\nlaptop.set_price(900)\nprint(laptop.final_price())\nProduct.update_tax_rate(0.10)\nprint(laptop.final_price())\nprint(Product.is_valid_price(-5))`
           },
           {
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "- **Using `self` inside a class method**: Class methods receive `cls`, not an individual object.\n- **Forgetting the decorator**: `@classmethod` and `@staticmethod` tell Python how the method should behave.\n- **Making every helper a static method**: Use a static method only when the logic belongs conceptually with the class.\n- **Using a class method for object-specific data**: If the method needs `self.price` or `self.name`, it should usually be an instance method."
+            body: "- **Using `self` inside a class method**: Class methods receive `cls`, not an individual object.\n- **Forgetting the decorator**: `@classmethod` and `@staticmethod` tell Python how the method should behave.\n- **Making every helper a static method**: Use a static method only when the logic belongs conceptually with the class.\n- **Adding getters and setters without a reason**: Direct access is fine for simple public data; use methods when they validate, format, calculate, or otherwise protect a value.\n- **Validating after assignment**: A setter should check a new value before storing it."
           },
           {
             kind: "takeaways",
@@ -580,6 +684,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Instance methods use `self` and work with individual objects.",
               "Class methods use `cls` and work with the class or shared class data.",
               "Static methods need neither `self` nor `cls`.",
+              "Getters and setters are instance-method patterns for reading and safely changing object data.",
               "Use `@classmethod` and `@staticmethod` to define the last two types.",
               "Choose the method type based on what data the behavior actually needs."
             ]
@@ -622,24 +727,24 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "types-methods-4",
-                question: "What is the difference between `self` and `cls`?",
+                question: "Why might you use a setter such as `set_age(age)` instead of assigning `student.age = age` directly?",
                 options: [
-                  "`self` is used for global variables, `cls` is for local variables.",
-                  "`self` refers to an individual object, while `cls` refers to the class itself.",
-                  "`self` is used in static methods, `cls` is used in instance methods.",
-                  "They are completely identical in functionality."
+                  "A setter can validate or transform the value before storing it.",
+                  "Setters automatically turn every value into a class attribute.",
+                  "A setter removes the need for `self`.",
+                  "Python requires setters for all attributes."
                 ],
-                correctIndex: 1,
-                explanation: "`self` provides access to the current instance (object), whereas `cls` provides access to the class itself."
+                correctIndex: 0,
+                explanation: "Setters are useful when assignment needs a rule, such as rejecting a negative age. For simple public data, direct access is also normal Python."
               },
               {
                 id: "types-methods-5",
-                question: "Complete the `User` class by defining an instance method `get_email`, a class method `get_company`, and a static method `is_valid_email`.",
+                question: "Complete the `User` class with a getter, a validated setter, a class method, and a static validation method.",
                 interactiveCode: true,
-                initialCode: "class User:\n    company = 'TechCorp'\n\n    def __init__(self, email):\n        self.email = email\n\n    # 1. Define get_email() returning self.email\n\n\n    # 2. Define get_company() returning cls.company\n\n\n    # 3. Define is_valid_email(email) checking if '@' is in email\n\n",
-                testCode: "u = User('test@example.com')\nprint(u.get_email())\nprint(User.get_company())\nprint(User.is_valid_email('hello'))\nprint(User.is_valid_email('a@b.com'))",
-                expectedOutput: "test@example.com\nTechCorp\nFalse\nTrue",
-                explanation: "An instance method uses `self`, a class method uses `@classmethod` and `cls`, and a static method uses `@staticmethod` and just the argument."
+                initialCode: "class User:\n    company = 'TechCorp'\n\n    def __init__(self, email):\n        self.email = email\n\n    # 1. Define get_email() returning self.email\n\n\n    # 2. Define set_email(email). Update self.email only if User.is_valid_email(email) is True.\n\n\n    # 3. Define get_company() returning cls.company\n\n\n    # 4. Define is_valid_email(email) checking if '@' is in email\n\n",
+                testCode: "u = User('test@example.com')\nu.set_email('new@example.com')\nprint(u.get_email())\nprint(User.get_company())\nprint(User.is_valid_email('hello'))\nprint(User.is_valid_email('a@b.com'))",
+                expectedOutput: "new@example.com\nTechCorp\nFalse\nTrue",
+                explanation: "Getters and setters are instance methods that use `self`. The setter uses the static validation helper before changing the instance value; the class method uses `@classmethod` and `cls`."
               }
             ]
           }
