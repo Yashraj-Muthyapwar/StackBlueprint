@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import type { ArrayStep, Pointer } from "@/lessons/types";
+import type { ArrayStep, Partition, Pointer } from "@/lessons/types";
 
 const COLOR_MAP: Record<Pointer["color"], string> = {
   mint: "var(--mint)",
@@ -10,21 +10,34 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
   rose: "var(--rose)",
 };
 
-const PARTITION_BG: Record<"low" | "mid" | "high", string> = {
+const PARTITION_BG: Record<Partition["tone"], string> = {
   low: "color-mix(in oklab, var(--mint) 14%, transparent)",
   mid: "color-mix(in oklab, var(--violet) 28%, transparent)",
   high: "color-mix(in oklab, var(--amber) 14%, transparent)",
+  unknown: "color-mix(in oklab, var(--foreground) 5%, transparent)",
 };
-const PARTITION_BORDER: Record<"low" | "mid" | "high", string> = {
+const PARTITION_BORDER: Record<Partition["tone"], string> = {
   low: "color-mix(in oklab, var(--mint) 50%, transparent)",
   mid: "color-mix(in oklab, var(--violet) 75%, transparent)",
   high: "color-mix(in oklab, var(--amber) 55%, transparent)",
+  unknown: "color-mix(in oklab, var(--foreground) 30%, transparent)",
 };
-const PARTITION_LABEL: Record<"low" | "mid" | "high", string> = {
+const PARTITION_LABEL: Record<Partition["tone"], string> = {
   low: "var(--mint)",
   mid: "var(--violet)",
   high: "var(--amber)",
+  unknown: "color-mix(in oklab, var(--foreground) 70%, transparent)",
 };
+
+/** Ring color drawn around a highlighted cell, by highlight kind. */
+const RING: Record<"compare" | "swap" | "match", string> = {
+  compare: "var(--violet)",
+  swap: "var(--rose)",
+  match: "var(--mint)",
+};
+const RING_KINDS = ["compare", "swap", "match"] as const;
+
+const BAND_SPRING = { type: "spring" as const, stiffness: 260, damping: 28 };
 
 function sizing(n: number) {
   if (n <= 7) return { CELL: 64, GAP: 10 };
@@ -51,6 +64,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
   const partitions = step.partitions ?? [];
   const highlight = step.highlight;
   const dimmed = new Set(step.dimmed ?? []);
+  const badges = step.badges ?? [];
   const n = array.length;
   const { CELL, GAP } = sizing(Math.max(1, n));
   const desiredWidth = n * CELL + (n - 1) * GAP;
@@ -79,15 +93,22 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
       <div className="absolute inset-0 flex items-center justify-center">
         {(() => {
           // Vertical layout (pre-scale):
-          //   0..14   index ruler
-          //   18..50  above-caret zone (label + downward triangle)
-          //   54..54+CELL   cells row
-          //   58+CELL..    below-caret zone (upward triangle + label) and link bracket
+          //   0..24            band label lane (label text + bracket)
+          //   26..40           index ruler
+          //   44..80           above-caret zone (label + downward triangle)
+          //   80..80+CELL      cells row
+          //   +4..+48          below-caret zone, link bracket, badges
+          const LABEL_H = 24;
+          const RULER_TOP = LABEL_H + 2;
           const RULER_H = 14;
           const ABOVE_ZONE = 36;
-          const CELLS_TOP = RULER_H + 4 + ABOVE_ZONE; // 54
+          const CELLS_TOP = RULER_TOP + RULER_H + 4 + ABOVE_ZONE; // 80
           const BELOW_ZONE = 44;
           const totalHeight = CELLS_TOP + CELL + 4 + BELOW_ZONE;
+          const bandGeom = (p: Partition) => ({
+            left: p.from * (CELL + GAP) - 4,
+            width: (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8,
+          });
           return (
             <div
               className="relative origin-center shrink-0"
@@ -97,43 +118,72 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                 transform: `scale(${scale})`,
               }}
             >
-              {/* partition bands — aligned to the cells row */}
+              {/* partition bands — aligned to the cells row, they glide when they move */}
               {partitions.map((p, i) => {
                 if (p.to < p.from) return null;
-                const left = p.from * (CELL + GAP) - 4;
-                const width = (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8;
+                const { left, width } = bandGeom(p);
                 return (
-                  <div
+                  <motion.div
                     key={`${p.tone}-${i}`}
                     className="absolute rounded-xl"
+                    initial={false}
+                    animate={{ left, width }}
+                    transition={BAND_SPRING}
                     style={{
-                      left,
-                      width,
                       top: CELLS_TOP - 4,
                       height: CELL + 8,
                       background: PARTITION_BG[p.tone],
                       border: `1px dashed ${PARTITION_BORDER[p.tone]}`,
                     }}
+                  />
+                );
+              })}
+
+              {/* band labels — drawn in their own lane above everything, as a bracket
+                  reaching down to the band, so they never hide behind cells or carets */}
+              {partitions.map((p, i) => {
+                if (p.to < p.from || !p.label) return null;
+                const { left, width } = bandGeom(p);
+                const edge = PARTITION_BORDER[p.tone];
+                return (
+                  <motion.div
+                    key={`label-${p.tone}-${i}`}
+                    className="pointer-events-none absolute"
+                    initial={false}
+                    animate={{ left, width }}
+                    transition={BAND_SPRING}
+                    style={{ top: 0, height: CELLS_TOP - 4 }}
                   >
-                    {p.label && (
+                    <div className="absolute inset-x-0 top-0 flex justify-center">
                       <span
-                        className="absolute -top-2 left-2 rounded bg-background px-1.5 font-mono text-[10px] uppercase tracking-widest"
+                        className="whitespace-nowrap rounded-md bg-surface/90 px-1.5 py-0.5 font-mono text-xs font-semibold"
                         style={{ color: PARTITION_LABEL[p.tone] }}
                       >
                         {p.label}
                       </span>
-                    )}
-                  </div>
+                    </div>
+                    <div
+                      className="absolute inset-x-0 bottom-0"
+                      style={{
+                        top: 22,
+                        borderTop: `1.5px solid ${edge}`,
+                        borderLeft: `1.5px dotted ${edge}`,
+                        borderRight: `1.5px dotted ${edge}`,
+                        borderTopLeftRadius: 6,
+                        borderTopRightRadius: 6,
+                      }}
+                    />
+                  </motion.div>
                 );
               })}
 
               {/* index ruler */}
-              <div className="absolute left-0 right-0" style={{ top: 0 }}>
+              <div className="absolute left-0 right-0" style={{ top: RULER_TOP }}>
                 <div className="flex" style={{ gap: GAP }}>
                   {array.map((_, i) => (
                     <div
                       key={i}
-                      className="text-center font-mono text-[10px] text-muted-foreground/70"
+                      className="text-center font-mono text-[11px] text-muted-foreground"
                       style={{ width: CELL, opacity: dimmed.has(i) ? 0.35 : 1 }}
                     >
                       {i}
@@ -145,17 +195,12 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
               {/* cells */}
               <div className="absolute left-0 flex" style={{ gap: GAP, top: CELLS_TOP }}>
                 {array.map((v, i) => {
-                  const isCompare = highlight?.kind === "compare" && highlight.indices.includes(i);
-                  const isSwap = highlight?.kind === "swap" && highlight.indices.includes(i);
-                  const isMatch = highlight?.kind === "match" && highlight.indices.includes(i);
+                  const kind = highlight && highlight.indices.includes(i) ? highlight.kind : null;
+                  const isMatch = kind === "match";
+                  const isSwap = kind === "swap";
                   const isDead = dimmed.has(i);
-                  const ringColor = isMatch
-                    ? "var(--mint)"
-                    : isSwap
-                      ? "var(--rose)"
-                      : isCompare
-                        ? "var(--violet)"
-                        : "transparent";
+                  // Position within the highlighted group, used to stagger the one-shot pulse left to right.
+                  const rank = highlight ? Math.max(0, highlight.indices.indexOf(i)) : 0;
                   return (
                     <motion.div
                       key={i}
@@ -165,14 +210,33 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                       style={{
                         width: CELL,
                         height: CELL,
-                        boxShadow: `inset 0 0 0 1px var(--hairline), 0 0 0 2px ${ringColor}`,
+                        boxShadow: "inset 0 0 0 1px var(--hairline)",
                       }}
                       animate={{
-                        scale: isMatch ? 1.06 : isSwap ? 1.04 : isDead ? 0.94 : 1,
+                        scale: isMatch ? 1.05 : isSwap ? 1.04 : isDead ? 0.94 : 1,
                         opacity: isDead ? 0.25 : 1,
                       }}
                       transition={{ type: "spring", stiffness: 300, damping: 22 }}
                     >
+                      {/* highlight rings: one overlay per kind, crossfaded so changes never snap */}
+                      {RING_KINDS.map((k) => (
+                        <motion.span
+                          key={k}
+                          aria-hidden
+                          className="pointer-events-none absolute -inset-[2px] rounded-[14px]"
+                          initial={false}
+                          animate={{ opacity: kind === k ? 1 : 0 }}
+                          transition={{ duration: 0.22, ease: "easeOut" }}
+                          style={{
+                            border: `2px solid ${RING[k]}`,
+                            boxShadow:
+                              k === "match"
+                                ? "0 0 14px color-mix(in oklab, var(--mint) 40%, transparent)"
+                                : undefined,
+                          }}
+                        />
+                      ))}
+
                       <motion.span
                         key={v + "-" + i}
                         initial={{ opacity: 0, y: -8 }}
@@ -181,12 +245,37 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                       >
                         {v}
                       </motion.span>
+
+                      {/* badges under the cell, e.g. "+7" entering / "−2" leaving a window */}
+                      {badges
+                        .filter((b) => b.index === i)
+                        .map((b) => (
+                          <motion.span
+                            key={`${b.tone}-${b.text}`}
+                            initial={{ opacity: 0, y: -6, scale: 0.85 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ type: "spring", stiffness: 320, damping: 24 }}
+                            className="pointer-events-none absolute -bottom-7 left-1/2 whitespace-nowrap rounded-md px-1.5 py-0.5 font-mono text-[11px] font-semibold"
+                            style={{
+                              x: "-50%",
+                              color: COLOR_MAP[b.tone],
+                              background: `color-mix(in oklab, ${COLOR_MAP[b.tone]} 14%, transparent)`,
+                              border: `1px solid color-mix(in oklab, ${COLOR_MAP[b.tone]} 45%, transparent)`,
+                            }}
+                          >
+                            {b.text}
+                          </motion.span>
+                        ))}
+
+                      {/* one-shot pulse when a cell becomes a match (no endless blinking) */}
                       {isMatch && (
-                        <motion.div
-                          className="absolute inset-0 rounded-xl"
-                          initial={{ opacity: 0.6, scale: 1 }}
-                          animate={{ opacity: 0, scale: 1.4 }}
-                          transition={{ duration: 0.9, repeat: Infinity }}
+                        <motion.span
+                          key="pulse"
+                          aria-hidden
+                          className="pointer-events-none absolute inset-0 rounded-xl"
+                          initial={{ opacity: 0, scale: 1 }}
+                          animate={{ opacity: [0.55, 0], scale: [1, 1.3] }}
+                          transition={{ duration: 0.7, ease: "easeOut", delay: rank * 0.07 }}
                           style={{ border: "2px solid var(--mint)" }}
                         />
                       )}
