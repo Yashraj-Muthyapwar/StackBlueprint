@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import type { ArrayStep, Pointer } from "@/lessons/types";
+import type { ArrayStep, Partition, Pointer } from "@/lessons/types";
 
 const COLOR_MAP: Record<Pointer["color"], string> = {
   mint: "var(--mint)",
@@ -10,20 +10,23 @@ const COLOR_MAP: Record<Pointer["color"], string> = {
   rose: "var(--rose)",
 };
 
-const PARTITION_BG: Record<"low" | "mid" | "high", string> = {
+const PARTITION_BG: Record<Partition["tone"], string> = {
   low: "color-mix(in oklab, var(--mint) 14%, transparent)",
   mid: "color-mix(in oklab, var(--violet) 28%, transparent)",
   high: "color-mix(in oklab, var(--amber) 14%, transparent)",
+  unknown: "color-mix(in oklab, var(--foreground) 5%, transparent)",
 };
-const PARTITION_BORDER: Record<"low" | "mid" | "high", string> = {
+const PARTITION_BORDER: Record<Partition["tone"], string> = {
   low: "color-mix(in oklab, var(--mint) 50%, transparent)",
   mid: "color-mix(in oklab, var(--violet) 75%, transparent)",
   high: "color-mix(in oklab, var(--amber) 55%, transparent)",
+  unknown: "color-mix(in oklab, var(--foreground) 30%, transparent)",
 };
-const PARTITION_LABEL: Record<"low" | "mid" | "high", string> = {
+const PARTITION_LABEL: Record<Partition["tone"], string> = {
   low: "var(--mint)",
   mid: "var(--violet)",
   high: "var(--amber)",
+  unknown: "color-mix(in oklab, var(--foreground) 60%, transparent)",
 };
 
 function sizing(n: number) {
