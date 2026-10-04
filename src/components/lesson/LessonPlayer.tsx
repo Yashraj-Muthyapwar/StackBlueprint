@@ -238,6 +238,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
       </div>
 
       {step.secondary && <SecondaryStrip data={step.secondary} />}
+      {step.secondary2 && <SecondaryStrip data={step.secondary2} />}
 
       <TransportBar
         step={safeIdx}
@@ -248,12 +249,12 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         predict={
           hasPredict
             ? {
-                enabled: predictMode,
-                onToggle: togglePredict,
-                correct: score.correct,
-                answered: score.answered,
-                total: score.total,
-              }
+              enabled: predictMode,
+              onToggle: togglePredict,
+              correct: score.correct,
+              answered: score.answered,
+              total: score.total,
+            }
             : undefined
         }
         onPrev={() => {
