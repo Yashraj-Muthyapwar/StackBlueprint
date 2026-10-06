@@ -23,6 +23,42 @@ export type CellTone = "compare" | "swap" | "match" | "visit";
 export type CellHighlight = { r: number; c: number; tone: CellTone };
 export type CellPointer = { name: string; r: number; c: number; color: PointerColor };
 
+export type MatrixRect = {
+  r1: number;
+  c1: number;
+  r2: number;
+  c2: number;
+  tone?: "violet" | "mint" | "amber" | "rose";
+  /** Dashed outline only, no fill. Used for "the region we are after" while other rects show the pieces. */
+  outline?: boolean;
+};
+
+/**
+ * Array view: a row of n+1 "boundary" chips under the array. Chip j sits on the gap
+ * before arr[j] (chip 0 is the left edge, chip n the right edge), so a prefix value
+ * P[j] reads as "everything to my left". Used by the prefix lessons.
+ */
+export type BoundaryTrack = {
+  label: string;
+  /** values[j] for j in 0..n. null = not computed yet, drawn as an empty slot. */
+  values: (number | string | null)[];
+  /** Chips to light up. `sign` draws a small +/− badge on the chip. Their boundary line is drawn up through the array. */
+  marks?: { index: number; tone: PointerColor; sign?: string }[];
+};
+
+/** Rows of binary digits stacked like column arithmetic (used by prefix XOR). */
+export type BitRow = {
+  label: string;
+  /** null = unknown yet, drawn as "?" cells */
+  value: number | null;
+  /** operator shown in front of the row, e.g. "^" */
+  op?: string;
+  tone?: PointerColor;
+  /** draws a rule above this row, like the line under the operands in column addition */
+  result?: boolean;
+};
+export type BitsView = { width: number; rows: BitRow[] };
+
 export type LinkedListShape = {
   nodes: number;
   cycleTo: number;
@@ -64,13 +100,18 @@ export type Step = {
   cellHighlights?: CellHighlight[];
   cellPointers?: CellPointer[];
   // matrix rect overlay (e.g. 2D prefix query rect)
-  matrixRect?: {
-    r1: number;
-    c1: number;
-    r2: number;
-    c2: number;
-    tone?: "violet" | "mint" | "amber";
-  };
+  matrixRect?: MatrixRect;
+  // further rects drawn together with matrixRect (e.g. the pieces of an inclusion–exclusion)
+  matrixRects?: MatrixRect[];
+  // matrix view: a second grid drawn beside the first (e.g. the 2D prefix matrix).
+  // null cells are "not computed yet" and drawn as an empty slot.
+  matrix2?: (number | null)[][];
+  matrix2Label?: string;
+  matrixLabel?: string;
+  // matrix2: draw row 0 and column 0 as the zero border of a prefix matrix
+  matrix2Border?: boolean;
+  cellHighlights2?: CellHighlight[];
+  cellPointers2?: CellPointer[];
   // optional water levels for elevation-map
   waterLevels?: number[];
   // the "why" behind this step, rendered in its own callout in the narration card
@@ -88,6 +129,10 @@ export type Step = {
   rightMax?: number;
   // array view: small pills under cells, e.g. "+7" on the cell entering a window, "−2" on the one leaving
   badges?: { index: number; text: string; tone: PointerColor }[];
+  // array view: prefix values drawn on the gaps between cells, under the array
+  track?: BoundaryTrack;
+  // binary breakdown strip under the visualization
+  bits?: BitsView;
 };
 
 export type View = "array" | "linked-list" | "matrix" | "elevation-map";
@@ -222,6 +267,7 @@ export type Section =
   | { kind: "ports-diagram" }
   | { kind: "osi-model-diagram" }
   | { kind: "tcp-udp-diagram" }
+  | { kind: "ssh-connection-flow" }
   | { kind: "availability-diagram" }
   | { kind: "reliability-diagram" }
   | { kind: "consistency-diagram" }

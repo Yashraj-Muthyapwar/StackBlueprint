@@ -1317,7 +1317,7 @@ export function ClassesAndObjectsCustomAnimation() {
         ref={rootRef}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative flex min-h-[600px] w-full min-w-0 flex-col overflow-hidden px-4 py-4 sm:px-6"
+        className="relative flex h-[600px] w-full min-w-0 flex-col overflow-hidden px-4 py-4 sm:px-6"
       >
         {entry.kind === "visual" ? (
           <motion.div
