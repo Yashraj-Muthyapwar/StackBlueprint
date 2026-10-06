@@ -2628,6 +2628,12 @@ export const roadmap: RoadmapCategory[] = [
                 icon: Code2,
                 path: "/python/oop/special-methods",
               },
+              {
+                slug: "oop-final-quiz",
+                title: "Object-Oriented Programming Final Quiz",
+                icon: HelpCircle,
+                path: "/python/oop/oop-final-quiz",
+              },
             ],
           },
           {
