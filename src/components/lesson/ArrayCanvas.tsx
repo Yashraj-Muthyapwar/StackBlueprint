@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
-import type { ArrayStep, Partition, Pointer } from "@/lessons/types";
+import type { ArrayStep, BoundaryTrack, Partition, Pointer } from "@/lessons/types";
 
 const COLOR_MAP: Record<Pointer["color"], string> = {
   mint: "var(--mint)",
@@ -65,9 +65,13 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
   const highlight = step.highlight;
   const dimmed = new Set(step.dimmed ?? []);
   const badges = step.badges ?? [];
+  const track = step.track;
   const n = array.length;
   const { CELL, GAP } = sizing(Math.max(1, n));
-  const desiredWidth = n * CELL + (n - 1) * GAP;
+  const rowWidth = n * CELL + (n - 1) * GAP;
+  // Boundary chips hang half a cell past each end of the row, so reserve room for them.
+  const PAD = track ? Math.ceil(CELL / 2) + 2 : 0;
+  const desiredWidth = rowWidth + 2 * PAD;
   const padding = 48; // px-6 is 24px each side
   const scale =
     containerWidth > 0 && desiredWidth > containerWidth - padding
@@ -78,12 +82,12 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
     <div ref={containerRef} className="relative h-full w-full overflow-hidden">
       {/* Status pill */}
       {step.status && (
-        <div className="absolute left-1/2 top-3 z-20 -translate-x-1/2">
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-20 flex justify-center">
           <motion.div
             key={step.status}
             initial={{ opacity: 0, y: -6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-full border border-hairline bg-surface/90 px-3 py-1 font-mono text-xs text-foreground backdrop-blur"
+            className="max-w-full rounded-full border border-hairline bg-surface/90 px-3 py-1 text-center font-mono text-xs text-foreground backdrop-blur"
           >
             {step.status}
           </motion.div>
@@ -104,7 +108,12 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
           const ABOVE_ZONE = 36;
           const CELLS_TOP = RULER_TOP + RULER_H + 4 + ABOVE_ZONE; // 80
           const BELOW_ZONE = 44;
-          const totalHeight = CELLS_TOP + CELL + 4 + BELOW_ZONE;
+          // Boundary track sits under the badge zone: chip row, index row, caption.
+          const TRACK_TOP = CELLS_TOP + CELL + 36;
+          const CHIP_H = 30;
+          const totalHeight = track
+            ? TRACK_TOP + CHIP_H + 42
+            : CELLS_TOP + CELL + 4 + BELOW_ZONE;
           const bandGeom = (p: Partition) => ({
             left: p.from * (CELL + GAP) - 4,
             width: (p.to - p.from + 1) * CELL + (p.to - p.from) * GAP + 8,
@@ -118,6 +127,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                 transform: `scale(${scale})`,
               }}
             >
+              <div className="absolute" style={{ left: PAD, top: 0, width: rowWidth, height: totalHeight }}>
               {/* partition bands — aligned to the cells row, they glide when they move */}
               {partitions.map((p, i) => {
                 if (p.to < p.from) return null;
@@ -293,7 +303,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                   <motion.svg
                     key={`${step.link.from}-${step.link.to}-${step.link.label}`}
                     className="pointer-events-none absolute left-0 top-0 overflow-visible"
-                    width={desiredWidth}
+                    width={rowWidth}
                     height={totalHeight}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -319,6 +329,20 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                 );
               })()}
 
+              {/* boundary track: prefix values live on the gaps between cells */}
+              {track && (
+                <BoundaryTrackView
+                  track={track}
+                  n={n}
+                  cell={CELL}
+                  gap={GAP}
+                  cellsTop={CELLS_TOP}
+                  trackTop={TRACK_TOP}
+                  chipH={CHIP_H}
+                  rowWidth={rowWidth}
+                />
+              )}
+
               {/* pointers — one caret per pointer, keyed by name so it glides between indices */}
               {pointers.map((p) => {
                 const dir: "above" | "below" = p.placement === "below" ? "below" : "above";
@@ -336,6 +360,7 @@ export function ArrayCanvas({ step }: { step: ArrayStep }) {
                   />
                 );
               })}
+              </div>
             </div>
           );
         })()}
@@ -392,5 +417,127 @@ function PointerCaret({
         </svg>
       )}
     </motion.div>
+  );
+}
+
+function BoundaryTrackView({
+  track,
+  n,
+  cell,
+  gap,
+  cellsTop,
+  trackTop,
+  chipH,
+  rowWidth,
+}: {
+  track: BoundaryTrack;
+  n: number;
+  cell: number;
+  gap: number;
+  cellsTop: number;
+  trackTop: number;
+  chipH: number;
+  rowWidth: number;
+}) {
+  const marks = new Map((track.marks ?? []).map((m) => [m.index, m]));
+  // Boundary j is the gap just before arr[j]; boundary n is the right edge of the last cell.
+  const cx = (j: number) => j * (cell + gap) - gap / 2;
+  const count = n + 1;
+  const fontSize = cell < 40 ? 11 : 14;
+
+  return (
+    <>
+      {/* boundary lines: faint ticks everywhere, a bold line up through the array for marked boundaries */}
+      {Array.from({ length: count }, (_, j) => {
+        const mark = marks.get(j);
+        const color = mark ? COLOR_MAP[mark.tone] : "var(--hairline)";
+        const top = mark ? cellsTop - 8 : cellsTop + cell;
+        return (
+          <motion.div
+            key={`line-${j}`}
+            aria-hidden
+            className="pointer-events-none absolute"
+            initial={false}
+            animate={{ top, height: trackTop - top, backgroundColor: color, opacity: mark ? 0.9 : 0.7 }}
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            style={{ left: cx(j) - (mark ? 1 : 0.5), width: mark ? 2 : 1 }}
+          />
+        );
+      })}
+
+      {Array.from({ length: count }, (_, j) => {
+        const v = track.values[j] ?? null;
+        const mark = marks.get(j);
+        const color = mark ? COLOR_MAP[mark.tone] : null;
+        const empty = v === null;
+        return (
+          <div
+            key={`chip-${j}`}
+            className="absolute"
+            style={{ left: cx(j) - cell / 2, top: trackTop, width: cell, height: chipH }}
+          >
+            <motion.div
+              className="relative grid h-full w-full place-items-center rounded-lg font-mono font-medium text-foreground"
+              initial={false}
+              animate={{ scale: mark ? 1.08 : 1 }}
+              transition={{ type: "spring", stiffness: 320, damping: 22 }}
+              style={{
+                fontSize,
+                background: empty
+                  ? "transparent"
+                  : color
+                    ? `color-mix(in oklab, ${color} 16%, var(--surface-2))`
+                    : "var(--surface-2)",
+                boxShadow: empty
+                  ? undefined
+                  : color
+                    ? `inset 0 0 0 1.5px ${color}`
+                    : "inset 0 0 0 1px var(--hairline)",
+                border: empty ? `1.5px dashed ${color ?? "var(--hairline)"}` : undefined,
+              }}
+            >
+              {empty ? (
+                <span style={{ color: color ?? undefined }} className={color ? "" : "text-muted-foreground/40"}>
+                  {color ? "?" : "·"}
+                </span>
+              ) : (
+                <motion.span
+                  key={String(v)}
+                  initial={{ opacity: 0, y: -6, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 340, damping: 24 }}
+                >
+                  {v}
+                </motion.span>
+              )}
+              {mark?.sign && color && (
+                <motion.span
+                  key={mark.sign}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="absolute -right-2 -top-2 grid size-4 place-items-center rounded-full font-mono text-[11px] font-bold leading-none"
+                  style={{ background: color, color: "var(--background)" }}
+                >
+                  {mark.sign}
+                </motion.span>
+              )}
+            </motion.div>
+            <div
+              className="absolute left-0 right-0 text-center font-mono text-[11px] text-muted-foreground"
+              style={{ top: chipH + 4 }}
+            >
+              {j}
+            </div>
+          </div>
+        );
+      })}
+
+      <div
+        className="pointer-events-none absolute left-0 text-center font-mono text-[11px] text-muted-foreground"
+        style={{ top: trackTop + chipH + 24, width: rowWidth }}
+      >
+        {track.label}
+      </div>
+    </>
   );
 }
