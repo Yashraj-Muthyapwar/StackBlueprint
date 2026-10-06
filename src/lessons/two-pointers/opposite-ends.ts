@@ -297,7 +297,7 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
   problem: (inputs) =>
     inputs.mode === "trapping-rain-water"
       ? "Given an array of non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining."
-      : "Given a sorted array of integers and a target T, return indices (i, j) such that arr[i] + arr[j] == T, or None if no such pair exists.",
+      : "Given a **sorted array of integers** and a **target T**, return **two different indices (i, j)** such that **arr[i] + arr[j] == T**, or **None** if no such pair exists.",
   spotIt: [
     "Input is a sorted array (or can be sorted) and you're asked about a pair / triplet / sum / closest.",
     "Question hints at O(n) after sorting, or 'do it in O(1) extra space'.",
