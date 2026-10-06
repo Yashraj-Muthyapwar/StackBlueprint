@@ -1,5 +1,183 @@
 import { type LessonContent } from "@/lessons/types";
 
+export const OOP_FINAL_QUIZ_LESSON: LessonContent = {
+  slug: "oop-final-quiz",
+  title: "Object-Oriented Programming Final Quiz",
+  subtitle: "Check your understanding of classes, attributes, methods, encapsulation, inheritance, polymorphism, abstraction, composition, and special methods with fifteen questions.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "oop-final-1",
+          question: "What is the relationship between a class and an object?",
+          options: [
+            "A class is a blueprint; an object is an instance created from it.",
+            "A class is one stored value; an object is a function.",
+            "An object is the blueprint; a class is one instance.",
+            "They are two names for the same Python feature."
+          ],
+          correctIndex: 0,
+          explanation: "A class describes the structure and behavior. Each object is a separate instance created from that class."
+        },
+        {
+          id: "oop-final-2",
+          question: "Which statement correctly describes an instance attribute and a class attribute?",
+          options: [
+            "An instance attribute belongs to one object; a class attribute is shared by the class's objects unless shadowed.",
+            "Both attributes always belong only to one object.",
+            "A class attribute can be accessed only through self.",
+            "An instance attribute must be defined outside every method."
+          ],
+          correctIndex: 0,
+          explanation: "Instance attributes are usually created with `self` and hold per-object data. Class attributes are defined in the class body and represent shared class-level data."
+        },
+        {
+          id: "oop-final-3",
+          question: "When should you use a class method rather than an instance method?",
+          options: [
+            "When the method needs to read or change class-level data through cls.",
+            "When the method needs data from one specific object through self.",
+            "Whenever a method should print a value.",
+            "Only when a class has no attributes."
+          ],
+          correctIndex: 0,
+          explanation: "A class method receives `cls` and works with data owned by the class, such as a shared tax rate or an alternative constructor."
+        },
+        {
+          id: "oop-final-4",
+          question: "What is the main purpose of a property setter in encapsulation?",
+          options: [
+            "It can validate or control a value before updating internal state.",
+            "It makes an attribute impossible to read.",
+            "It creates inheritance automatically.",
+            "It changes every instance attribute into a class attribute."
+          ],
+          correctIndex: 0,
+          explanation: "A property setter lets an object keep attribute-style access while checking values before storing them."
+        },
+        {
+          id: "oop-final-5",
+          question: "What does `super()` do in a child class?",
+          options: [
+            "It accesses the next implementation in the method resolution order, commonly a parent method.",
+            "It turns an instance method into a static method.",
+            "It makes every parent attribute private.",
+            "It skips the child class initializer."
+          ],
+          correctIndex: 0,
+          explanation: "`super()` follows the method resolution order (MRO) to call the next appropriate implementation, often to reuse parent initialization or behavior."
+        },
+        {
+          id: "oop-final-6",
+          question: "Given `class D(B, C)` where both B and C inherit from A, which order begins `D.mro()`?",
+          options: [
+            "D, B, C, A, object", "D, C, B, A, object", "A, B, C, D, object", "D, A, B, C, object"
+          ],
+          correctIndex: 0,
+          explanation: "For this diamond-shaped hierarchy, Python's MRO begins with D, then B, then C, then A, then object."
+        },
+        {
+          id: "oop-final-7",
+          question: "Which situation best demonstrates polymorphism?",
+          options: [
+            "A checkout function calls `pay(amount)` on different payment objects, each with its own implementation.",
+            "A class has only one instance.",
+            "A variable is renamed inside a function.",
+            "A class stores a private attribute."
+          ],
+          correctIndex: 0,
+          explanation: "Polymorphism lets code use a shared interface while each object supplies behavior appropriate to its own type."
+        },
+        {
+          id: "oop-final-8",
+          question: "What does `@abstractmethod` communicate in an abstract base class?",
+          options: [
+            "Concrete child classes must implement that method before they can be instantiated.",
+            "The method is automatically copied into every child class.",
+            "The method can never be called.",
+            "The class becomes a static class."
+          ],
+          correctIndex: 0,
+          explanation: "An abstract method defines required behavior in a contract. A child that leaves it unimplemented remains abstract."
+        },
+        {
+          id: "oop-final-9",
+          question: "Which relationship is best modeled with composition?",
+          options: [
+            "An Order has a ShoppingCart.", "A Developer is an Employee.", "A Dog is an Animal.", "A Student is a Person."
+          ],
+          correctIndex: 0,
+          explanation: "Composition models a has-a relationship: an Order contains or uses a ShoppingCart rather than inheriting from one."
+        },
+        {
+          id: "oop-final-10",
+          question: "Which special method defines the readable result of `print(product)`?",
+          options: ["__str__()", "__repr__()", "__len__()", "__call__()"],
+          correctIndex: 0,
+          explanation: "`print(object)` uses `__str__()` when it is defined. `__repr__()` is the developer-oriented representation."
+        },
+        {
+          id: "oop-final-11",
+          question: "Create a `Vehicle` class that stores `brand`. Then create `Car(Vehicle)` that uses `super()` to initialize `brand`, stores `doors`, and prints `Tesla: 4` for a Tesla with four doors.",
+          interactiveCode: true,
+          initialCode: "# Write your classes and print statement below\n",
+          testCode: "car = Car('Tesla', 4)\nassert car.brand == 'Tesla'\nassert car.doors == 4",
+          expectedOutput: "Tesla: 4",
+          requiredCodePatterns: ["class\\s+Vehicle\\s*:", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*brand\\s*\\)", "class\\s+Car\\s*\\(\\s*Vehicle\\s*\\)\\s*:", "super\\s*\\(\\s*\\)\\s*\\.\\s*__init__\\s*\\(\\s*brand\\s*\\)", "self\\s*\\.\\s*doors\\s*=\\s*doors", "print\\s*\\("],
+          validationMessage: "Define Vehicle and Car(Vehicle), call super().__init__(brand), save doors, and print the requested Tesla result.",
+          explanation: "Inheritance lets Car reuse Vehicle's initialization, while `super()` follows the inheritance relationship instead of duplicating the brand assignment."
+        },
+        {
+          id: "oop-final-12",
+          question: "Create a `Student` class with a class attribute `school_name = \"Stack Academy\"`, an instance `name`, and a `@classmethod` named `set_school_name`. Change the school name to `\"Code Academy\"` and print it through the class.",
+          interactiveCode: true,
+          initialCode: "# Write your class and print statement below\n",
+          testCode: "student = Student('Ava')\nStudent.set_school_name('Code Academy')\nassert student.name == 'Ava'\nassert Student.school_name == 'Code Academy'",
+          expectedOutput: "Code Academy",
+          requiredCodePatterns: ["class\\s+Student\\s*:", "school_name\\s*=\\s*['\\\"]Stack Academy['\\\"]", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*name\\s*\\)", "self\\s*\\.\\s*name\\s*=\\s*name", "@classmethod", "def\\s+set_school_name\\s*\\(\\s*cls\\s*,\\s*school_name\\s*\\)", "cls\\s*\\.\\s*school_name\\s*=\\s*school_name", "print\\s*\\(\\s*Student\\s*\\.\\s*school_name\\s*\\)"],
+          validationMessage: "Use a class attribute, an instance attribute, and a class method that updates school_name through cls.",
+          explanation: "The class method changes shared class-level data through `cls`, while each Student instance keeps its own name."
+        },
+        {
+          id: "oop-final-13",
+          question: "Create an `Account` class with a private `_balance` attribute and a `balance` property. Its setter must raise `ValueError` for a negative value. Set the balance to 25 and print it.",
+          interactiveCode: true,
+          initialCode: "# Write your Account class and print statement below\n",
+          testCode: "account = Account(10)\naccount.balance = 25\nassert account.balance == 25\ntry:\n    account.balance = -1\nexcept ValueError:\n    pass\nelse:\n    raise AssertionError('Negative balances must raise ValueError')",
+          expectedOutput: "25",
+          requiredCodePatterns: ["class\\s+Account\\s*:", "self\\s*\\.\\s*_balance\\s*=\\s*balance", "@property", "def\\s+balance\\s*\\(\\s*self\\s*\\)", "@balance\\s*\\.\\s*setter", "raise\\s+ValueError", "print\\s*\\("],
+          validationMessage: "Store _balance, expose it with @property, validate the setter, then print a balance of 25.",
+          explanation: "A property keeps a simple attribute-like interface while allowing the class to reject invalid changes."
+        },
+        {
+          id: "oop-final-14",
+          question: "Create an abstract `Notifier` class with an abstract `send(message)` method. Add `EmailNotifier` that prints `Email: Hello` when passed `\"Hello\"`, then call it.",
+          interactiveCode: true,
+          initialCode: "from abc import ABC, abstractmethod\n\n# Write your classes and call below\n",
+          testCode: "from contextlib import redirect_stdout\nfrom io import StringIO\n\nassert issubclass(Notifier, ABC)\nassert 'send' in Notifier.__abstractmethods__\nassert isinstance(EmailNotifier(), Notifier)\n\ncaptured = StringIO()\nwith redirect_stdout(captured):\n    EmailNotifier().send('Checked')\nassert captured.getvalue().strip() == 'Email: Checked'",
+          expectedOutput: "Email: Hello",
+          requiredCodePatterns: ["class\\s+Notifier\\s*\\(\\s*ABC\\s*\\)\\s*:", "@abstractmethod", "def\\s+send\\s*\\(\\s*self\\s*,\\s*message\\s*\\)", "class\\s+EmailNotifier\\s*\\(\\s*Notifier\\s*\\)\\s*:", "print\\s*\\("],
+          validationMessage: "Define the ABC contract and a concrete EmailNotifier implementation, then send Hello.",
+          explanation: "Abstract base classes describe the operation that related concrete classes must provide."
+        },
+        {
+          id: "oop-final-15",
+          question: "Create a `Playlist` class that stores a list of songs and implements `__len__()`. Print the length of a playlist containing `\"Intro\"`, `\"Focus\"`, and `\"Outro\"`.",
+          interactiveCode: true,
+          initialCode: "# Write your Playlist class and print statement below\n",
+          testCode: "playlist = Playlist(['Intro', 'Focus', 'Outro'])\nassert len(playlist) == 3",
+          expectedOutput: "3",
+          requiredCodePatterns: ["class\\s+Playlist\\s*:", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*songs\\s*\\)", "self\\s*\\.\\s*songs\\s*=\\s*songs", "def\\s+__len__\\s*\\(\\s*self\\s*\\)", "return\\s+len\\s*\\(\\s*self\\s*\\.\\s*songs\\s*\\)", "print\\s*\\(\\s*len\\s*\\("],
+          validationMessage: "Store the songs list, return its length from __len__, and print len(playlist).",
+          explanation: "`__len__()` lets a custom object work naturally with Python's `len()` function."
+        }
+      ]
+    }
+  ]
+};
+
 export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   oop: {
     title: "Object-Oriented Programming",
@@ -2734,7 +2912,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             ]
           }
         ]
-      }
+      },
+      OOP_FINAL_QUIZ_LESSON
 
     ]
   }
