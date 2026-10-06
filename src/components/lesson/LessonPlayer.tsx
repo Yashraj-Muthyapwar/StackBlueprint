@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { ArrayCanvas } from "./ArrayCanvas";
+import { BitsStrip } from "./BitsStrip";
 import { CodePane } from "./CodePane";
 import { ElevationMapCanvas } from "./ElevationMapCanvas";
 import { LinkedListCanvas } from "./LinkedListCanvas";
@@ -46,6 +47,15 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
     () => (builder.shape ? builder.shape(inputs) : undefined),
     [builder, inputs],
   );
+
+  // Lessons that show two strips get a shorter visualization panel and compact strips.
+  const hasPair = useMemo(
+    () =>
+      steps.some((s) => s.secondary && s.secondary2) &&
+      !steps.some((s) => s.secondary?.pointers?.length || s.secondary2?.pointers?.length),
+    [steps],
+  );
+  const panelMin = hasPair ? "min-h-[320px]" : "min-h-[380px]";
 
   const total = steps.length;
   const safeIdx = Math.min(stepIndex, total - 1);
@@ -206,7 +216,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
       />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.15fr_1fr]">
-        <div className="relative grid-bg min-h-[380px] overflow-hidden rounded-2xl border border-hairline bg-surface">
+        <div className={`relative grid-bg ${panelMin} overflow-hidden rounded-2xl border border-hairline bg-surface`}>
           <div className="absolute left-4 top-3 z-10 flex items-center gap-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               visualization
@@ -228,7 +238,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
             })()}
           </div>
         </div>
-        <div className="min-h-[380px]">
+        <div className={panelMin}>
           <CodePane
             code={builder.codeFor ? builder.codeFor(inputs) : builder.code}
             activeLine={codeLine}
@@ -237,8 +247,14 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
         </div>
       </div>
 
-      {step.secondary && <SecondaryStrip data={step.secondary} />}
-      {step.secondary2 && <SecondaryStrip data={step.secondary2} />}
+      {step.bits && <BitsStrip data={step.bits} />}
+      {/* Two strips share one compact row so the controls and narration stay close to the animation. */}
+      {(step.secondary || step.secondary2) && (
+        <div className={hasPair ? "grid grid-cols-1 gap-3 md:grid-cols-2" : ""}>
+          {step.secondary && <SecondaryStrip data={step.secondary} compact={hasPair} />}
+          {step.secondary2 && <SecondaryStrip data={step.secondary2} compact={hasPair} />}
+        </div>
+      )}
 
       <TransportBar
         step={safeIdx}
