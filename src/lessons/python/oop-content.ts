@@ -12,7 +12,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why OOP Matters",
             body: [
               "As a program grows, managing separate variables and functions can become messy. Object-oriented programming, or OOP, helps you group related data and behavior into one structure.",
               "You will see this idea in web applications, banking systems, games, machine learning libraries, e-commerce platforms, and many other Python projects."
@@ -973,7 +973,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Inheritance Matters",
             body: [
               "Many objects share common behavior but still need their own specialized features.",
               "Inheritance lets you place shared logic in one class and reuse it in related classes. This reduces repeated code and gives your program a clearer structure."
@@ -986,125 +986,174 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Inheritance Fundamentals",
             body: [
               "Inheritance allows one class to build on another class.",
               "The existing class is commonly called the **parent class** or **base class**. The new class is called the **child class** or **subclass**.",
-              "**Example:** `Developer` automatically inherits all attributes and methods from `Employee`, so you do not need to rewrite them."
+              "For example, **Developer** automatically inherits all attributes and methods from **Employee**, so you do not need to rewrite them."
             ]
           },
           {
             kind: "prose",
-            heading: "Types of inheritance",
+            heading: "Inheritance Patterns",
             body: [
               "Python supports several inheritance patterns depending on how classes relate to one another:"
             ]
           },
           {
-            kind: "animation",
-            variant: "inheritance-types",
-            caption: "Types of Inheritance"
-          },
-          {
             kind: "prose",
+            heading: "Single Inheritance",
             body: [
-              "### 1. Single inheritance",
               "Single inheritance occurs when one child class inherits from one parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Single inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass Child(Parent):\n    pass",
+            description: "Place the parent class name in parentheses after the child class name."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()"
           },
           {
             kind: "prose",
             body: [
-              "Now `Developer` can use both its inherited method and its own method.",
-              "This is the simplest and most common type of inheritance.",
-              "### 2. Multiple inheritance",
+              "Now **Developer** can use both its inherited method and its own method.",
+              "This is the simplest and most common type of inheritance."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Multiple Inheritance",
+            body: [
               "Multiple inheritance occurs when one child class inherits from more than one parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Multiple inheritance pattern",
+            code: "class Child(ParentOne, ParentTwo):\n    pass",
+            description: "List parent classes from left to right. That order matters when Python resolves overlapping methods."
+          },
+          {
             kind: "interactive-code",
-            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\n\nclass Presenter(Writer, Speaker):\n    pass\n\n\n# Now `Presenter` inherits methods from both parent classes:\n\npresenter = Presenter()\n\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro()) "
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()"
           },
           {
             kind: "prose",
             body: [
-              "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name.",
-              "Python uses the **method resolution order**, or MRO, to decide which method to use first. You can inspect the MRO with `print(Presenter.mro())`.",
-              "### 3. Multilevel inheritance",
+              "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Multilevel Inheritance",
+            body: [
               "Multilevel inheritance occurs when a class inherits from a class that already inherits from another class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Multilevel inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass Child(Parent):\n    pass\n\nclass Grandchild(Child):\n    pass",
+            description: "Each level inherits the behavior available on the level above it."
+          },
+          {
             kind: "interactive-code",
-            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()\n\n# Inspect the Method Resolution Order (MRO)\nprint(ElectricCar.mro())"
+            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()"
           },
           {
             kind: "prose",
             body: [
-              "`ElectricCar` can use methods from both `Car` and `Vehicle`. Each level adds more specialized behavior.",
-              "### 4. Hierarchical inheritance",
+              "**ElectricCar** can use methods from both **Car** and **Vehicle**. Each level adds more specialized behavior."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Hierarchical Inheritance",
+            body: [
               "Hierarchical inheritance occurs when multiple child classes inherit from the same parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Hierarchical inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass ChildOne(Parent):\n    pass\n\nclass ChildTwo(Parent):\n    pass",
+            description: "The child classes share one parent but can add different specialized behavior."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())\nprint(Designer.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()"
           },
           {
             kind: "prose",
             body: [
-              "Both child classes inherit `introduce()`. This is useful when several classes share a common foundation but need different specialized behavior.",
-              "### 5. Hybrid inheritance",
+              "Both child classes inherit **introduce()**. This is useful when several classes share a common foundation but need different specialized behavior."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Hybrid Inheritance",
+            body: [
               "Hybrid inheritance is a combination of two or more types of inheritance. For example, combining hierarchical and multiple inheritance:"
             ]
           },
           {
+            kind: "syntax",
+            title: "Hybrid inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass LeftChild(Parent):\n    pass\n\nclass RightChild(Parent):\n    pass\n\nclass Combined(LeftChild, RightChild):\n    pass",
+            description: "Hybrid inheritance combines patterns, so its class relationships should remain easy to understand."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()\n\n# Inspect the Method Resolution Order (MRO)\nprint(TeamLead.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()"
           },
           {
             kind: "prose",
             body: [
-              "`TeamLead` inherits from both `Developer` and `Designer`. Through those classes, it also receives behavior from `Employee`.",
+              "**TeamLead** inherits from both **Developer** and **Designer**. Through those classes, it also receives behavior from **Employee**.",
               "Hybrid inheritance can model complex relationships, but it should be used carefully. Complex inheritance trees can make code harder to understand and maintain."
             ]
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Method Resolution Order (MRO)",
             body: [
-              "### 1. Create a parent class",
-              "Start with a class that contains behavior shared by several related objects."
+              "**Method Resolution Order**, or **MRO**, is the order Python follows when it searches for a method in an inheritance hierarchy.",
+              "Python checks the child class first, then follows a consistent order through its parents, and finally reaches the base **object** class. MRO is especially important when parent classes provide methods with the same name."
             ]
           },
           {
+            kind: "syntax",
+            title: "Inspecting MRO",
+            code: "ClassName.mro()\n# or\nClassName.__mro__",
+            description: "Use either form to inspect the method-search order for a class."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nemployee = Employee(\"Maya\")\nemployee.introduce()"
+            code: "class A:\n    def show(self):\n        print(\"A\")\n\nclass B(A):\n    def show(self):\n        print(\"B\")\n\nclass C(A):\n    def show(self):\n        print(\"C\")\n\nclass D(B, C):\n    pass\n\nitem = D()\nitem.show()\nprint([cls.__name__ for cls in D.mro()])"
           },
           {
             kind: "prose",
             body: [
-              "This class will act as the parent.",
-              "### 2. Create a child class",
-              "To inherit from another class, place the parent class name inside parentheses."
+              "This is the **diamond problem**: both **B** and **C** inherit from **A**, while **D** inherits from **B** and **C**. The MRO is **D → B → C → A → object**, so **B.show()** runs first.",
+              "Python calculates this order with C3 linearization. The same order is followed by **super()** in multiple-inheritance code."
             ]
-          },
-          {
-            kind: "interactive-code",
-            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nclass Developer(Employee):\n    pass\n\ndeveloper = Developer(\"Leo\")\nprint(developer.name)\ndeveloper.introduce()"
           },
           {
             kind: "prose",
+            heading: "Parent and Child Classes",
             body: [
-              "`Developer` now inherits from `Employee`.",
-              "Python looks in `Developer` first. If it does not find the requested method there, it can look in its parent class.",
-              "### 3. Add behavior specific to the child",
-              "A child class can add its own attributes and methods."
+              "Start with a parent class that contains behavior shared by several related objects. Then place the parent name in parentheses when defining a child class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Parent and child class pattern",
+            code: "class Parent:\n    def shared_method(self):\n        pass\n\nclass Child(Parent):\n    pass",
+            description: "The child can use the parent's shared method without copying it."
           },
           {
             kind: "interactive-code",
@@ -1113,10 +1162,44 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The child class extends the parent without copying its existing code.",
-              "### 4. Extend initialization with `super()`",
-              "Sometimes the child needs extra data. Suppose every employee has a name, but developers also have a programming language."
+              "The child class extends the parent without copying its existing code. Python looks in **Developer** first and then looks in **Employee** when needed."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Constructor in Inheritance",
+            body: [
+              "When a child object is created, Python uses the child's **__init__()** method. If the child does not define one, it inherits and uses the parent's initializer."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Inherited constructor pattern",
+            code: "class Parent:\n    def __init__(self, value):\n        self.value = value\n\nclass Child(Parent):\n    pass",
+            description: "Without its own **__init__()**, the child uses the parent's initializer."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Person:\n    def __init__(self, name):\n        self.name = name\n\nclass Student(Person):\n    pass\n\nstudent = Student(\"Aman\")\nprint(student.name)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Student** has no initializer of its own, so Python runs **Person.__init__()**. If the child defines its own initializer, the parent initializer does not run automatically."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "super()",
+            body: [
+              "Use **super()** inside a child method to call the next implementation in the MRO. In single inheritance, this is normally the parent method."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Calling a parent constructor with super()",
+            code: "class Child(Parent):\n    def __init__(self, parent_value, child_value):\n        super().__init__(parent_value)\n        self.child_value = child_value",
+            description: "Call **super().__init__()** before setting data that belongs only to the child."
           },
           {
             kind: "interactive-code",
@@ -1125,25 +1208,35 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`super()` gives you access to methods from the parent class.",
-              "Here, `super().__init__(name)` runs the parent's `__init__()` method and sets `self.name = name`. Then the child adds its own attribute: `self.language = language`.",
-              "### 5. Override inherited behavior",
-              "A child class can replace an inherited method with its own version. This is called **method overriding**."
+              "**super().__init__(name)** runs the parent initializer and sets the shared **name**. The child then adds its own **language** attribute."
             ]
           },
           {
+            kind: "prose",
+            heading: "Method Overriding",
+            body: [
+              "Method overriding happens when a child class defines a method with the same name as an inherited method. Calling that method on a child object uses the child's version."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Method overriding pattern",
+            code: "class Parent:\n    def method(self):\n        pass\n\nclass Child(Parent):\n    def method(self):\n        pass",
+            description: "Define the same method name in the child to provide specialized behavior."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nemployee = Employee()\ndeveloper = Developer()\n\nemployee.work()\ndeveloper.work()"
+            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nemployee = Employee()\ndeveloper = Developer()\nemployee.work()\ndeveloper.work()"
           },
           {
             kind: "prose",
             body: [
-              "Both classes have a `work()` method, but each provides behavior appropriate to that class."
+              "Both classes have a **work()** method, but each provides behavior appropriate to that class. A child can still use **super().work()** when it needs the parent behavior too."
             ]
           },
           {
             kind: "prose",
-            heading: "Choosing the right type of inheritance",
+            heading: "Choosing an Inheritance Pattern",
             body: [
               "Use **single inheritance** when one class is a straightforward specialization of another.",
               "Use **multiple inheritance** when a class genuinely combines independent behaviors and the relationship remains easy to understand.",
@@ -1157,7 +1250,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "- **Repeating parent code in every child**: Put truly shared attributes and behavior in the parent class instead.\n- **Forgetting `super().__init__()`**: If the child defines its own initializer and still needs parent initialization, call the parent initializer with `super()`.\n- **Using inheritance only to avoid typing code**: Inheritance works best when there is a meaningful relationship between the classes.\n- **Assuming the child changes the parent**: Adding or overriding behavior in a child class does not modify the parent class.\n- **Using multiple inheritance without understanding MRO**: If parent classes contain overlapping methods, learn how Python chooses which method to call.\n- **Creating deep inheritance trees**: Too many levels can make code difficult to follow. Prefer simple, meaningful hierarchies.\n- **Using inheritance for a has-a relationship**: Use composition when one object contains or uses another object instead of being a specialized version of it."
+            body: "- **Repeating parent code in every child**: Put truly shared attributes and behavior in the parent class instead.\n- **Forgetting super().__init__()**: If the child defines its own initializer and still needs parent initialization, call the parent initializer with **super()**.\n- **Using inheritance only to avoid typing code**: Inheritance works best when there is a meaningful relationship between the classes.\n- **Assuming the child changes the parent**: Adding or overriding behavior in a child class does not modify the parent class.\n- **Using multiple inheritance without understanding MRO**: If parent classes contain overlapping methods, learn how Python chooses which method to call.\n- **Creating deep inheritance trees**: Too many levels can make code difficult to follow. Prefer simple, meaningful hierarchies.\n- **Using inheritance for a has-a relationship**: Use composition when one object contains or uses another object instead of being a specialized version of it."
           },
           {
             kind: "takeaways",
@@ -1168,8 +1261,9 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Multilevel inheritance creates a chain of parent and child classes.",
               "Hierarchical inheritance gives several child classes the same parent.",
               "Hybrid inheritance combines multiple inheritance patterns.",
+              "MRO determines the order Python searches for methods in an inheritance hierarchy.",
               "A child class can add its own behavior without copying the parent's code.",
-              "`super()` lets a child use functionality from its parent.",
+              "**super()** lets a child use functionality from its parent or the next class in the MRO.",
               "Method overriding lets a child replace inherited behavior.",
               "Use inheritance when the classes have a meaningful relationship."
             ]
@@ -1203,33 +1297,33 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "inheritance-3",
-                question: "Why might a child class use `super().__init__()`?",
+                question: "In the class declaration D(B, C), which class does Python search immediately after D when resolving a method?",
                 options: [
-                  "To skip calling the parent's initializer.",
-                  "To call the parent's initializer so that the parent can set up the base attributes, before the child sets up its own.",
-                  "To automatically create a new object of the parent class.",
-                  "To delete the parent object."
+                  "A, because it is the shared parent.",
+                  "B, because it is the first parent listed in D(B, C).",
+                  "C, because it is the last parent listed.",
+                  "object, because it is Python's base class."
                 ],
                 correctIndex: 1,
-                explanation: "`super()` delegates method calls back to the parent class. Using it in `__init__` ensures the parent's setup logic runs."
+                explanation: "For this diamond hierarchy, the MRO is D → B → C → A → object. Python searches B immediately after D."
               },
               {
                 id: "inheritance-4",
-                question: "Create a `Vehicle` class with a `move()` method that prints \"Vehicle is moving.\". Then create a `Bike` class that inherits from `Vehicle` and adds a `ring_bell()` method that prints \"Ring ring!\".",
+                question: "Create a **Vehicle** class with a **move()** method that prints \"Vehicle is moving.\". Then create a **Bike** class that inherits from **Vehicle** and adds a **ring_bell()** method that prints \"Ring ring!\".",
                 interactiveCode: true,
                 initialCode: "# 1. Create the Vehicle class\n\n\n\n# 2. Create the Bike class (inherit from Vehicle)\n\n\n",
                 testCode: "bike = Bike()\nbike.move()\nbike.ring_bell()",
                 expectedOutput: "Vehicle is moving.\nRing ring!",
-                explanation: "`Bike` can use the `move()` method it inherits from `Vehicle`, and it also has its own `ring_bell()` method."
+                explanation: "**Bike** can use the **move()** method it inherits from **Vehicle**, and it also has its own **ring_bell()** method."
               },
               {
                 id: "inheritance-5",
-                question: "Create a `Flyer` class with a `fly()` method that prints \"Flying.\". Create a `Swimmer` class with a `swim()` method that prints \"Swimming.\". Then create a `Duck` class that inherits from both.",
+                question: "Create a **Flyer** class with a **fly()** method that prints \"Flying.\". Create a **Swimmer** class with a **swim()** method that prints \"Swimming.\". Then create a **Duck** class that inherits from both.",
                 interactiveCode: true,
                 initialCode: "# 1. Create Flyer and Swimmer classes\n\n\n\n\n# 2. Create Duck class (multiple inheritance)\n\n\n",
                 testCode: "duck = Duck()\nduck.fly()\nduck.swim()",
                 expectedOutput: "Flying.\nSwimming.",
-                explanation: "This is an example of Multiple Inheritance where `Duck(Flyer, Swimmer)` gets capabilities from both."
+                explanation: "This is an example of multiple inheritance where **Duck(Flyer, Swimmer)** gets capabilities from both."
               }
             ]
           }
@@ -1243,7 +1337,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Polymorphism Matters",
             body: [
               "Programs often perform the same kind of action on different types of data.",
               "Python allows the same operator, function, or method name to behave differently depending on what receives it. This idea is called **polymorphism**, and it helps you write flexible code without creating separate logic for every object type."
@@ -1251,7 +1345,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Polymorphism Fundamentals",
             body: [
               "Polymorphism means \"many forms.\"",
               "In Python, one operation can take different forms depending on the values or objects involved.",
@@ -1269,11 +1363,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Operator Polymorphism",
             body: [
-              "### 1. See polymorphism in the addition operator",
               "Python operators can behave differently for different data types. Consider addition:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "One operator, different operands",
+            code: "number_result = left_number + right_number\ntext_result = left_text + right_text",
+            description: "Python selects behavior based on the operands supplied to the plus operator."
           },
           {
             kind: "interactive-code",
@@ -1282,14 +1381,44 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The same `+` operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved. This is **operator polymorphism**.",
-              "### 2. Understand operator overloading",
-              "Python also lets your own classes define how operators should behave. This is called **operator overloading**.",
-              "You can define special methods with double underscores (like `__add__()` for the `+` operator) to control how objects behave.",
-              "These are commonly called **dunder methods**. Because this is such an important aspect of polymorphism, you can dive deeper into `__add__()`, `__str__()`, `__len__()`, and more in the dedicated [Special Methods](/python/oop/special-methods) lesson!",
-              "### 3. See function polymorphism",
-              "A function can also work with different types of objects. The built-in `len()` function is a simple example."
+              "The same plus operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Operator Overloading",
+            body: [
+              "Your own classes can define how an operator should behave. This is **operator overloading** and is implemented with special methods."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Overload the plus operator",
+            code: "class ClassName:\n    def __add__(self, other):\n        return ClassName(...)\n\nresult = first + second",
+            description: "Python calls **__add__()** when the plus operator is used with your objects."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __add__(self, other):\n        return Money(self.amount + other.amount)\n\ntotal = Money(100) + Money(50)\nprint(total.amount)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The **Money** class gives the plus operator a meaning for two Money objects. Special methods are often called **dunder methods**; the dedicated [Special Methods](/python/oop/special-methods) lesson explores them further."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Function Polymorphism",
+            body: [
+              "A function can work with different types of objects. The built-in **len()** function is a simple example."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Function applied to many types",
+            code: "result = len(value)",
+            description: "The same function can produce a useful result for strings, lists, dictionaries, and other sized objects."
           },
           {
             kind: "interactive-code",
@@ -1298,10 +1427,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The same `len()` function works with several different data types. What it counts depends on the object: characters, list items, or dictionary keys. This is an example of **function polymorphism**.",
-              "### 4. Use class polymorphism",
-              "Different classes can define methods with the same name."
+              "The same **len()** function works with several data types. What it counts depends on the object: characters, list items, or dictionary keys."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Shared Interfaces Without Inheritance",
+            body: [
+              "Different, unrelated classes can expose the same method name. The calling code only needs the shared behavior; it does not need a common parent class."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Shared interface pattern",
+            code: "def process(item):\n    item.method_name()",
+            description: "Any object with the required method can be passed to **process()**."
           },
           {
             kind: "interactive-code",
@@ -1310,10 +1450,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The exact same line `notification.send()` produces different behavior depending on the object. This is **class polymorphism**.",
-              "### 5. Use polymorphism with inheritance",
-              "Polymorphism commonly works together with inheritance. A parent class can define a method, and child classes can override that method."
+              "The same **send()** call produces different behavior depending on the object. These notification classes do not share a parent, which distinguishes this example from inheritance-based polymorphism."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Polymorphism Through Method Overriding",
+            body: [
+              "Inheritance-based polymorphism starts with a shared parent class. Child classes override the same inherited method to provide specialized behavior."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Override a shared method",
+            code: "class Parent:\n    def action(self):\n        pass\n\nclass Child(Parent):\n    def action(self):\n        pass",
+            description: "Each child can implement the inherited method differently while keeping the same interface."
           },
           {
             kind: "interactive-code",
@@ -1322,10 +1473,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "Every object supports the same operation (`work()`) but each subclass provides its own implementation. This combines Inheritance (sharing a common parent) and Polymorphism (each child responds differently to the same method).",
-              "### 6. Understand duck typing",
-              "Python does not always require objects to share a parent class. If an object provides the behavior your code needs, Python can often use it. This idea is known as **duck typing**."
+              "Every object supports the same **work()** operation, but each subclass provides its own implementation. This combines inheritance, which supplies a common parent, with polymorphism, which changes the behavior by subclass."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Duck Typing",
+            body: [
+              "Python does not always require objects to share a parent class. If an object provides the behavior your code needs, Python can often use it. This idea is **duck typing**."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Duck typing pattern",
+            code: "def save_log(logger, message):\n    logger.write(message)",
+            description: "The function requires a **write()** behavior, not a specific class."
           },
           {
             kind: "interactive-code",
@@ -1334,10 +1496,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "These classes do not need a shared parent. `save_log()` cares about what the object can do (`write`), not what class it belongs to.",
-              "### A simple example",
-              "Imagine building the checkout system for an online store. Customers can pay with a credit card, PayPal, or a gift card. Each payment method performs the same general action (`pay(amount)`) but the actual process is different."
+              "These classes do not need a shared parent. **save_log()** cares about what the object can do, not what class it belongs to."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Polymorphism in Practice",
+            body: [
+              "In an online store, customers can pay with a credit card, PayPal, or a gift card. Each payment method performs the same general action, but the process is different."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Delegate to a payment method",
+            code: "def checkout(payment_method, amount):\n    payment_method.pay(amount)",
+            description: "Checkout delegates the payment action to whichever payment object it receives."
           },
           {
             kind: "interactive-code",
@@ -1346,7 +1519,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The `checkout()` function does not contain long `if/elif` chains checking the payment type. Instead, each payment object knows how to perform its own `pay()` operation. This makes adding another payment method incredibly easy:"
+              "The **checkout()** function does not contain long conditional chains checking the payment type. Each payment object knows how to perform its own **pay()** operation, which makes adding another payment method straightforward."
             ]
           },
           {
@@ -1356,35 +1529,47 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: "- **Thinking polymorphism only means method overriding**: Python also shows polymorphism through operators, functions, and duck typing.\n- **Confusing operator overloading with normal addition**: Operator overloading means defining how an operator such as `+` behaves for your own class.\n- **Thinking polymorphism requires inheritance**: Python can use polymorphic behavior between unrelated classes if they provide the expected methods.\n- **Using long type-checking chains unnecessarily**: If several objects provide the same method, let the objects handle their own behavior instead of checking their type first."
           },
           {
+            kind: "takeaways",
+            items: [
+              "Polymorphism allows one operation to take different forms.",
+              "Operators such as plus behave differently depending on their operands.",
+              "Operator overloading lets your own classes define operator behavior using special methods such as **__add__()**.",
+              "Functions such as **len()** can work with several types of objects.",
+              "Different classes can provide the same method name with different implementations.",
+              "Inheritance and method overriding are common ways to implement polymorphism.",
+              "Python's duck typing allows code to focus on an object's behavior rather than only its exact class."
+            ]
+          },
+          {
             kind: "quiz",
             questions: [
               {
                 id: "poly-1",
-                question: "Why can `+` work with both integers and strings?",
+                question: "Why can the plus operator work with both integers and strings?",
                 options: [
                   "Because integers and strings inherit from the same parent.",
                   "Because Python automatically converts everything to strings.",
-                  "Because of operator polymorphism, where `+` behaves differently based on the data type.",
+                  "Because of operator polymorphism, where the plus operator behaves differently based on the data type.",
                   "Because strings contain numbers in Python."
                 ],
                 correctIndex: 2,
-                explanation: "The `+` operator has polymorphic behavior, mapping to numeric addition for ints and string concatenation for strings."
+                explanation: "The plus operator has polymorphic behavior, mapping to numeric addition for integers and string concatenation for strings."
               },
               {
                 id: "poly-2",
-                question: "What special method lets a class define how the `+` operator behaves?",
+                question: "What special method lets a class define how the plus operator behaves?",
                 options: [
-                  "`__plus__()`",
-                  "`__add__()`",
-                  "`__sum__()`",
-                  "`__combine__()`"
+                  "__plus__()",
+                  "__add__()",
+                  "__sum__()",
+                  "__combine__()"
                 ],
                 correctIndex: 1,
-                explanation: "Python calls the `__add__()` method when the `+` operator is used on an object."
+                explanation: "Python calls **__add__()** when the plus operator is used on an object."
               },
               {
                 id: "poly-3",
-                question: "Why is `len()` an example of function polymorphism?",
+                question: "Why is **len()** an example of function polymorphism?",
                 options: [
                   "It can only be used on strings.",
                   "It can return different data types.",
@@ -1392,7 +1577,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
                   "It works with several different data types, counting their respective elements."
                 ],
                 correctIndex: 3,
-                explanation: "`len()` can count characters in a string, items in a list, or keys in a dictionary."
+                explanation: "**len()** can count characters in a string, items in a list, or keys in a dictionary."
               },
               {
                 id: "poly-4",
@@ -1406,34 +1591,13 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "poly-tiny-task",
-                question: "Create two classes, `PDFReport` and `CSVReport`. Both should provide an `export()` method. Then create a function `export_report(report)` that calls `export()` on any report passed to it.",
+                question: "Create two classes, **PDFReport** and **CSVReport**. Both should provide an **export()** method. Then create a function **export_report(report)** that calls **export()** on any report passed to it.",
                 interactiveCode: true,
                 initialCode: "# Write your classes and function here:\n\n",
                 testCode: "export_report(PDFReport())\nexport_report(CSVReport())",
                 expectedOutput: "Exporting PDF report.\nExporting CSV report.",
-                explanation: "Both classes implement `export()`, allowing `export_report` to treat them polymorphically."
-              },
-              {
-                id: "poly-bonus-task",
-                question: "Create a `Money` class that takes an `amount` in `__init__`. Define `__add__()` so two `Money` objects can be added, returning a new `Money` object with the total amount. Print the final amount.",
-                interactiveCode: true,
-                initialCode: "# Create your Money class here:\n\n",
-                testCode: "m1 = Money(100)\nm2 = Money(50)\ntotal = m1 + m2\nprint(total.amount)",
-                expectedOutput: "150",
-                explanation: "By defining `__add__(self, other)`, you taught Python how to combine two Money objects using the `+` operator."
+                explanation: "Both classes implement **export()**, allowing **export_report** to treat them polymorphically."
               }
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Polymorphism allows one operation to take different forms.",
-              "Operators such as `+` behave differently depending on their operands.",
-              "Operator overloading lets your own classes define operator behavior using special methods such as `__add__()`.",
-              "Functions such as `len()` can work with several types of objects.",
-              "Different classes can provide the same method name with different implementations.",
-              "Inheritance and method overriding are common ways to implement polymorphism.",
-              "Python's duck typing allows code to focus on an object's behavior rather than only its exact class."
             ]
           }
         ]
@@ -1445,7 +1609,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Abstraction Matters",
             body: [
               "In larger programs, you often care about what an object can do more than how it performs the task internally.",
               "Abstraction helps you define a clear contract for related classes. Each class can implement the details differently while the rest of your program uses the same simple interface."
@@ -1458,7 +1622,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Abstraction Fundamentals",
             body: [
               "Abstraction means exposing the essential behavior of an object while hiding unnecessary implementation details.",
               "You already use abstraction every day in Python.",
@@ -1470,11 +1634,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Start with a shared interface",
+            heading: "Shared Interfaces",
             body: [
               "Suppose you are building a payment system.",
               "Every payment type should support the same operation: `pay(amount)`. You could start with a normal parent class and then create child classes:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "A shared interface",
+            code: "class ParentClass:\n    def operation(self, value):\n        pass\n\n\nclass ChildClass(ParentClass):\n    def operation(self, value):\n        # implementation\n        pass",
+            description: "A parent class can describe the operation that related child classes should provide, even before the contract is enforced."
           },
           {
             kind: "interactive-code",
@@ -1500,11 +1670,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Create an abstract class with ABC",
+            heading: "Abstract Base Classes",
             body: [
               "Python provides the `abc` module for abstraction.",
               "ABC stands for Abstract Base Class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Abstract base class",
+            code: "from abc import ABC\n\n\nclass ClassName(ABC):\n    pass",
+            description: "Import `ABC` from the `abc` module, then inherit from it to create an abstract base class."
           },
           {
             kind: "interactive-code",
@@ -1519,10 +1695,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Define an abstract method",
+            heading: "Abstract Methods",
             body: [
               "Use the `@abstractmethod` decorator to define behavior that child classes must provide."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Required abstract method",
+            code: "from abc import ABC, abstractmethod\n\n\nclass ParentClass(ABC):\n    @abstractmethod\n    def operation(self, value):\n        pass",
+            description: "Mark a method with `@abstractmethod` when every concrete child must implement that behavior."
           },
           {
             kind: "interactive-code",
@@ -1558,10 +1740,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Require every child class to follow the contract",
+            heading: "Implementing an Abstract Contract",
             body: [
               "Now create another payment type. Both child classes satisfy the same contract."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Concrete child implementation",
+            code: "class ChildClass(ParentClass):\n    def operation(self, value):\n        # required implementation\n        pass",
+            description: "A concrete child class supplies every abstract method before Python lets you create its objects."
           },
           {
             kind: "interactive-code",
@@ -1586,11 +1774,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Combine abstraction with polymorphism",
+            heading: "Abstraction with Polymorphism",
             body: [
               "Abstraction and polymorphism work naturally together.",
               "Once every payment class follows the same contract, you can write one checkout function:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Using a shared contract",
+            code: "def use_object(item, value):\n    item.operation(value)",
+            description: "Code that receives an abstract contract can call the required operation without depending on a particular child class."
           },
           {
             kind: "interactive-code",
@@ -1608,11 +1802,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Add concrete methods to an abstract class",
+            heading: "Concrete Methods in Abstract Classes",
             body: [
               "Abstract classes do not need to contain only abstract methods.",
               "They can also provide shared behavior."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Shared concrete method",
+            code: "class ParentClass(ABC):\n    def shared_helper(self, value):\n        return value\n\n    @abstractmethod\n    def operation(self, value):\n        pass",
+            description: "An abstract class can combine normal reusable methods with methods that child classes must implement."
           },
           {
             kind: "interactive-code",
@@ -1626,13 +1826,19 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Abstraction Together",
             body: [
               "Imagine you are building a report-export system for a business dashboard.",
               "Users can export reports as PDF, CSV, or Excel files.",
               "Every exporter should provide the same operation: `export(data)`",
               "But each format handles the export differently."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Abstract exporter pattern",
+            code: "class Exporter(ABC):\n    @abstractmethod\n    def export(self, data):\n        pass\n\n\ndef use_exporter(exporter, data):\n    exporter.export(data)",
+            description: "Define one required operation, implement it in each exporter, then use the shared interface in the rest of the program."
           },
           {
             kind: "interactive-code",
@@ -1744,7 +1950,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Composition Matters",
             body: [
               "Real applications are made of objects that work together.",
               "An order has products. A computer has a processor. A car has an engine. Composition lets you model these relationships by placing one object inside another object.",
@@ -1758,7 +1964,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Composition Fundamentals",
             body: [
               "Composition means building one object using objects from other classes.",
               "It usually represents a **has-a** relationship.",
@@ -1766,6 +1972,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Car has an Engine. Computer has a Processor. Order has a ShoppingCart.",
               "Consider:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "A has-a relationship",
+            code: "class Component:\n    def operation(self):\n        pass\n\n\nclass Container:\n    def __init__(self):\n        self.component = Component()",
+            description: "Composition stores a component object as an attribute of the larger object."
           },
           {
             kind: "interactive-code",
@@ -1781,10 +1993,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Create the component class",
+            heading: "Component Classes",
             body: [
               "Start with a class that handles one responsibility."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Component class",
+            code: "class Component:\n    def operation(self):\n        # specialized work\n        pass",
+            description: "Give a component one focused responsibility that another class can use."
           },
           {
             kind: "interactive-code",
@@ -1799,10 +2017,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Place one object inside another",
+            heading: "Creating a Component Inside an Object",
             body: [
               "Now create the `Car` class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Create and store a component",
+            code: "class Container:\n    def __init__(self, value):\n        self.value = value\n        self.component = Component()",
+            description: "Create the component in the outer object’s initializer when that object owns the component."
           },
           {
             kind: "interactive-code",
@@ -1818,11 +2042,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Delegate work to the component",
+            heading: "Delegation",
             body: [
               "You may not want users of `Car` to interact with the engine directly.",
               "The `Car` class can expose its own method:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Delegate to a component",
+            code: "class Container:\n    def operation(self):\n        self.component.operation()",
+            description: "A delegation method presents a simple outer interface and forwards specialized work to its component."
           },
           {
             kind: "interactive-code",
@@ -1838,11 +2068,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Pass a component into another object",
+            heading: "Passing Components to an Object",
             body: [
               "A class does not always need to create its component itself.",
               "You can create the component first and pass it in:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Inject a component",
+            code: "class Container:\n    def __init__(self, component):\n        self.component = component",
+            description: "Accept a component as an argument when the caller should choose which compatible object the container uses."
           },
           {
             kind: "interactive-code",
@@ -1867,7 +2103,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Compare composition and inheritance",
+            heading: "Composition vs Inheritance",
             body: [
               "Inheritance and composition both connect classes, but they describe different relationships.",
               "Inheritance usually represents **is-a**.",
@@ -1875,6 +2111,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Composition usually represents **has-a**.",
               "Example: `Car` has an `Engine`. `Order` has a `ShoppingCart`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "is-a and has-a patterns",
+            code: "class Child(Parent):\n    pass  # is-a\n\n\nclass Container:\n    def __init__(self):\n        self.component = Component()  # has-a",
+            description: "Inherit when the child is a specialized form of the parent; compose when an object owns or uses a separate component."
           },
           {
             kind: "interactive-code",
@@ -1890,12 +2132,18 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Understand composition vs aggregation",
+            heading: "Composition vs Aggregation",
             body: [
               "You may also encounter the term **aggregation**.",
               "Both composition and aggregation describe objects containing or using other objects. The difference is mainly about ownership and lifetime.",
               "Consider **composition**:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Ownership and aggregation",
+            code: "class Owner:\n    def __init__(self):\n        self.part = Part()  # composition\n\n\nclass Group:\n    def __init__(self, member):\n        self.member = member  # aggregation",
+            description: "Composition creates and strongly owns a component; aggregation receives an object that can exist independently."
           },
           {
             kind: "interactive-code",
@@ -1925,12 +2173,18 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Composition Together",
             body: [
               "Imagine you are building the order system for an online store.",
               "An order contains a shopping cart. The shopping cart is responsible for storing products and calculating the total.",
               "Instead of putting all cart logic inside `Order`, create a separate class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Composed order pattern",
+            code: "class Order:\n    def __init__(self, order_id):\n        self.order_id = order_id\n        self.cart = ShoppingCart()\n\n    def checkout(self):\n        return self.cart.calculate_total()",
+            description: "Keep the outer workflow in one class and delegate a focused responsibility to its component."
           },
           {
             kind: "interactive-code",
@@ -2044,7 +2298,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Special Methods Matter",
             body: [
               "Built-in Python objects feel natural to use:",
               "\`len(items)\`   \`price1 + price2\`   \`user1 == user2\`   \`print(product)\`",
@@ -2059,7 +2313,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Special Methods Fundamentals",
             body: [
               "A dunder method is a method with a name such as:",
               "\`__init__()\`   \`__str__()\`   \`__repr__()\`   \`__len__()\`   \`__add__()\`   \`__eq__()\`",
@@ -2075,10 +2329,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Initialize objects with __init__()",
+            heading: "Object Initialization with __init__()",
             body: [
               "You have already used the most familiar special method:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Object initialization",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.value = value",
+            description: "Python calls `__init__` after creating an object with ClassName(...), allowing the class to set its initial state."
           },
           {
             kind: "interactive-code",
@@ -2093,10 +2353,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Make objects readable with __str__()",
+            heading: "User-Friendly Strings with __str__()",
             body: [
               "Without a custom string representation, printing an object is not very useful. Define \`__str__()\`:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Readable string representation",
+            code: "class ClassName:\n    def __str__(self):\n        return \"readable text\"",
+            description: "`__str__` must return a string. Python uses it for `str(object)` and `print(object)`."
           },
           {
             kind: "interactive-code",
@@ -2110,10 +2376,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Add a developer representation with __repr__()",
+            heading: "Developer Representations with __repr__()",
             body: [
               "\`__repr__()\` also returns a string representation, but it is usually aimed at developers."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Developer representation",
+            code: "class ClassName:\n    def __repr__(self):\n        return \"ClassName(value=...)\"",
+            description: "`__repr__` must return a string that helps developers inspect an object while debugging."
           },
           {
             kind: "interactive-code",
@@ -2130,10 +2402,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Support len() with __len__()",
+            heading: "Custom Length with __len__()",
             body: [
               "Suppose a shopping cart stores several products. Python's \`len()\` operation uses \`__len__()\`, which must return a non-negative integer."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom length",
+            code: "class Collection:\n    def __len__(self):\n        return non_negative_integer",
+            description: "`__len__` must return a non-negative integer when Python evaluates `len(object)`."
           },
           {
             kind: "interactive-code",
@@ -2141,11 +2419,53 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Overload operators with __add__()",
+            heading: "Truthiness with __bool__()",
+            body: [
+              "`__bool__` controls how an object behaves in a Boolean context, such as an `if` statement or `bool(object)`.",
+              "It must return `True` or `False`. If a class has no `__bool__`, Python can use `__len__`: a length of zero is falsey."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom truth value",
+            code: "class ClassName:\n    def __bool__(self):\n        return condition",
+            description: "`__bool__` returns `True` or `False` and defines whether an object is truthy in conditional code."
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self, items):\n        self.items = items\n\n    def __bool__(self):\n        return len(self.items) > 0\n\ncart = ShoppingCart([\"Book\"])\n\nif cart:\n    print(\"Cart has items.\")"
+          },
+          {
+            kind: "prose",
+            heading: "Indexing and Slicing with __getitem__()",
+            body: [
+              "`__getitem__` lets an object support square-bracket access such as `object[index]`.",
+              "When it passes the received index on to a list, it can support both ordinary indexes and slices."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom indexing",
+            code: "class Collection:\n    def __getitem__(self, index):\n        return self.items[index]",
+            description: "Python passes the value inside brackets to `__getitem__`; that value can be an integer or a slice."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Team:\n    def __init__(self, members):\n        self.members = members\n\n    def __getitem__(self, index):\n        return self.members[index]\n\nteam = Team([\"Aman\", \"Riya\", \"Kabir\"])\nprint(team[0])\nprint(team[1:])"
+          },
+          {
+            kind: "prose",
+            heading: "Addition with __add__()",
             body: [
               "Suppose you want two shopping carts to be combined using \`+\`.",
               "Your class defines what \`+\` means for its objects by implementing \`__add__()\`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom addition",
+            code: "class ClassName:\n    def __add__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return result",
+            description: "`__add__` defines `left + right`. Return `NotImplemented` when the other operand type is unsupported."
           },
           {
             kind: "interactive-code",
@@ -2165,22 +2485,70 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Compare objects with __eq__()",
+            heading: "Subtraction and Related Operators",
+            body: [
+              "Other arithmetic operators follow the same pattern. For example, `__sub__` defines subtraction with `-`.",
+              "As with addition, return `NotImplemented` when the other value is not a supported type."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom subtraction",
+            code: "class ClassName:\n    def __sub__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return result",
+            description: "`__sub__` defines `left - right`; the same operator-overloading approach also applies to multiplication and division."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __sub__(self, other):\n        if not isinstance(other, Money):\n            return NotImplemented\n        return Money(self.amount - other.amount)\n\n    def __str__(self):\n        return f\"Amount: {self.amount}\"\n\nprint(Money(100) - Money(40))"
+          },
+          {
+            kind: "prose",
+            heading: "Equality with __eq__()",
             body: [
               "By default, two separate custom objects are not automatically considered equal simply because their attributes contain the same values.",
               "You can define what equality means with \`__eq__()\`."
             ]
           },
           {
+            kind: "syntax",
+            title: "Custom equality",
+            code: "class ClassName:\n    def __eq__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return self.value == other.value",
+            description: "`__eq__` defines `left == right`. It should return a Boolean result or `NotImplemented` for unsupported types."
+          },
+          {
             kind: "interactive-code",
-            code: "class Product:\n    def __init__(self, sku, name):\n        self.sku = sku\n        self.name = name\n\n    def __eq__(self, other):\n        return self.sku == other.sku\n\nproduct1 = Product(\"SKU100\", \"Laptop\")\nproduct2 = Product(\"SKU100\", \"Laptop Pro\")\n\n# Same SKU -> Same product\nprint(product1 == product2)  # Output: True"
+            code: "class Product:\n    def __init__(self, sku, name):\n        self.sku = sku\n        self.name = name\n\n    def __eq__(self, other):\n        if not isinstance(other, Product):\n            return NotImplemented\n        return self.sku == other.sku\n\nproduct1 = Product(\"SKU100\", \"Laptop\")\nproduct2 = Product(\"SKU100\", \"Laptop Pro\")\n\n# Same SKU -> Same product\nprint(product1 == product2)  # Output: True"
           },
           {
             kind: "prose",
-            heading: "7. Make objects callable with __call__()",
+            heading: "Ordering Comparisons",
+            body: [
+              "Comparison methods can also define ordering. For example, `__lt__` controls the less-than operator, `<`.",
+              "The related methods are `__ne__`, `__le__`, `__gt__`, and `__ge__`. They should produce Boolean results or `NotImplemented` for unsupported types."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Less-than comparison",
+            code: "class ClassName:\n    def __lt__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return self.value < other.value",
+            description: "`__lt__` defines `left < right`; use comparison methods only when the ordering has a clear meaning."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Student:\n    def __init__(self, name, marks):\n        self.name = name\n        self.marks = marks\n\n    def __lt__(self, other):\n        if not isinstance(other, Student):\n            return NotImplemented\n        return self.marks < other.marks\n\naman = Student(\"Aman\", 85)\nriya = Student(\"Riya\", 92)\nprint(aman < riya)"
+          },
+          {
+            kind: "prose",
+            heading: "Callable Objects with __call__()",
             body: [
               "A class can even make its objects behave like functions using \`__call__()\`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Callable object",
+            code: "class ClassName:\n    def __call__(self, value):\n        return result",
+            description: "`__call__` defines what happens when an object is followed by parentheses, such as object(value)."
           },
           {
             kind: "interactive-code",
@@ -2195,11 +2563,77 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Context Managers with __enter__() and __exit__()",
+            body: [
+              "Context managers work with the `with` statement. Python calls `__enter__` when the block starts and calls `__exit__` when it ends, even if an error occurs inside the block.",
+              "This pattern is useful for setup and cleanup, such as opening and closing a file."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Context manager protocol",
+            code: "class ClassName:\n    def __enter__(self):\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        pass",
+            description: "`__enter__` prepares the resource for the `with` block. `__exit__` receives exception details and performs cleanup."
+          },
+          {
+            kind: "interactive-code",
+            code: "class SimpleContext:\n    def __enter__(self):\n        print(\"Entering\")\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        print(\"Exiting\")\n\nwith SimpleContext():\n    print(\"Inside with block\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "If `__exit__` returns `True`, it suppresses an exception from the `with` block. Returning `False` or `None` lets that exception continue normally."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Custom Iteration with __iter__() and __next__()",
+            body: [
+              "An iterable object can participate in a `for` loop by providing the iterator protocol.",
+              "`__iter__` returns an iterator, and `__next__` produces one value at a time until it raises `StopIteration`."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Iterator protocol",
+            code: "class Iterator:\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if no_values_left:\n            raise StopIteration\n        return next_value",
+            description: "A `for` loop repeatedly calls `__next__` on the iterator until `StopIteration` signals that there are no values left."
+          },
+          {
+            kind: "interactive-code",
+            code: "class CountUpTo:\n    def __init__(self, limit):\n        self.current = 1\n        self.limit = limit\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current > self.limit:\n            raise StopIteration\n        value = self.current\n        self.current += 1\n        return value\n\nfor number in CountUpTo(3):\n    print(number)"
+          },
+          {
+            kind: "prose",
+            heading: "Membership with __contains__()",
+            body: [
+              "`__contains__` defines the membership test performed by the `in` operator.",
+              "It should return `True` or `False` to state whether the requested item belongs to the object."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Membership test",
+            code: "class Collection:\n    def __contains__(self, item):\n        return item in self.items",
+            description: "`__contains__` defines the result of an expression such as item in collection."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Team:\n    def __init__(self, members):\n        self.members = members\n\n    def __contains__(self, member):\n        return member in self.members\n\nteam = Team([\"Aman\", \"Riya\", \"Kabir\"])\nprint(\"Aman\" in team)\nprint(\"Neha\" in team)"
+          },
+          {
+            kind: "prose",
+            heading: "Putting Special Methods Together",
             body: [
               "Imagine you are building the shopping-cart system for an online store.",
               "You want your custom objects to work naturally with Python."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Natural Python objects",
+            code: "class ClassName:\n    def __str__(self):\n        return \"readable text\"\n\n    def __len__(self):\n        return 0",
+            description: "Implement only the special methods that give your class a clear and natural behavior with Python syntax."
           },
           {
             kind: "interactive-code",
@@ -2217,6 +2651,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             ]
           },
           {
+            kind: "callout",
+            tone: "warn",
+            title: "Special method rules",
+            body: "- **Return the required type**: `__str__` and `__repr__` must return strings; `__len__` must return a non-negative integer; and `__bool__` must return `True` or `False`.\n- **Return `NotImplemented` for unsupported operands**: This lets Python try the other operand's reflected method or raise the appropriate error.\n- **Keep operators intuitive**: Define `+`, `-`, comparisons, and other operators only when they have a clear meaning for your class.\n- **Use normal Python syntax**: Prefer `len(cart)` over calling `cart.__len__()` directly."
+          },
+          {
             kind: "takeaways",
             items: [
               "Special methods connect your classes to Python's built-in syntax and operations.",
@@ -2226,6 +2666,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "\`__len__()\` lets objects work with \`len()\`, and \`__eq__()\` defines equality between objects.",
               "\`__add__()\` and related methods support operator overloading.",
               "\`__call__()\` lets an object behave like a callable (like a function).",
+              "\`__getitem__()\`, \`__contains__()\`, and the iterator protocol let custom objects work with indexing, membership checks, and loops.",
+              "\`__enter__()\` and \`__exit__()\` support safe setup and cleanup in a \`with\` block.",
               "Implement special methods when they give your class natural Python behavior."
             ]
           },
@@ -2267,6 +2709,27 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
                 ],
                 correctIndex: 0,
                 explanation: "The `+` operator maps directly to the `__add__()` dunder method."
+              },
+              {
+                id: "q4",
+                question: "Which special method is called when Python evaluates `item in collection`?",
+                options: [
+                  "__contains__()",
+                  "__getitem__()",
+                  "__iter__()",
+                  "__bool__()"
+                ],
+                correctIndex: 0,
+                explanation: "The `in` operator uses `__contains__()` when that method is defined."
+              },
+              {
+                id: "q5",
+                interactiveCode: true,
+                question: "Create a `Playlist` class that stores a list of songs. Implement `__len__()` so that `len(playlist)` returns the number of songs.",
+                initialCode: "class Playlist:\n    def __init__(self, songs):\n        self.songs = songs\n\n    # Add __len__ here\n",
+                testCode: "playlist = Playlist(['Intro', 'Focus', 'Outro'])\nprint(len(playlist))",
+                expectedOutput: "3",
+                explanation: "`__len__()` must return a non-negative integer; Python calls it when evaluating `len(playlist)`."
               }
             ]
           }
