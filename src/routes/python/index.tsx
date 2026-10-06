@@ -117,6 +117,7 @@ export const PYTHON_SECTIONS = [
           { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
           { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
           { slug: "special-methods", title: "Special Methods", icon: Code2, path: "/python/oop/special-methods" },
+          { slug: "oop-final-quiz", title: "Object-Oriented Programming Final Quiz", icon: HelpCircle, path: "/python/oop/oop-final-quiz" },
         ],
       },
       {
