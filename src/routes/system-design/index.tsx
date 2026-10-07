@@ -114,6 +114,7 @@ const sections: Section[] = [
           "Subnets & CIDR",
           "OSI Model",
           "TCP & UDP",
+          "How SSH Works",
           "HTTP & HTTPS",
           "DNS",
         ],
