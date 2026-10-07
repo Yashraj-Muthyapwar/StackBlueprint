@@ -279,6 +279,8 @@ export type Section =
   | { kind: "system-design-whatsapp-requirements" }
   | { kind: "system-design-estimation-walkthrough" }
   | { kind: "system-design-scalability-loop" }
+  | { kind: "requirements-explorer" }
+  | { kind: "scaled-framework" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
       kind: "terminal-animation";
