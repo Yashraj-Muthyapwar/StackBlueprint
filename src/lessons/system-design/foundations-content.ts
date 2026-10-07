@@ -427,194 +427,536 @@ const deliveryFramework: LessonContent = {
   ]
 };
 
-const functionalVsNonFunctional: LessonContent = {
-  slug: "functional-vs-non-functional-requirements",
-  title: "Functional vs Non-Functional Requirements",
-  subtitle: "Understanding the difference between what a system should do and how well it should do it.",
+// Keep your existing import for LessonContent at the top of this file.
+export const scaledLesson: LessonContent = {
+  slug: "scaled-framework",
+  title: "The SCALED Framework",
+  subtitle:
+    "Six qualities to check when you design a system, and a clear way to talk about the trade-offs between them.",
   sections: [
     {
       kind: "prose",
-      heading: "What are Functional Requirements (FRs)?",
+      heading: "Why Use a Checklist",
       body: [
-        "Functional requirements describe **what** the system must do: specific features, operations, and behaviors.",
-        "They define the interactions between the system and its users, or between different internal components.",
-        "Common examples include: authentication, search functionality, data processing, payment gateways, and report generation.",
-        "",
-        "**Key questions to ask for FRs:**",
-        "- What specific features do we need to design for this system?",
-        "- What are the possible edge cases we need to consider in our design?"
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "What are Non-Functional Requirements (NFRs)?",
-      body: [
-        "Non-functional requirements describe **how** the system should behave. These are the qualities, constraints, and metrics rather than specific features.",
-        "Key quality attributes include:",
-        "- **Performance** (response time, throughput)",
-        "- **Security** (encryption, authorization)",
-        "- **Usability, Reliability, Scalability, Maintainability, Portability**",
-        "",
-        "**Key questions for NFRs:**",
-        "- How fast should the system respond to user actions?",
-        "- Should the system be highly available?",
-        "- How secure should the system be against unauthorized access?"
-      ]
-    },
-    {
-      kind: "image",
-      src: funcVsNonFuncImg,
-      alt: "Diagram illustrating Functional vs Non-Functional Requirements",
-      caption: "Distinguishing between Functional and Non-Functional requirements"
+        "A design problem has no single correct answer. Two engineers can build very different systems for the same product. A checklist helps you compare their choices.",
+        "**SCALED** is a checklist of six system qualities. Each letter stands for one quality: **S**calability, **C**onsistency, **A**vailability, **L**atency, **E**fficiency, and **D**urability.",
+        "For each quality, ask what the product needs. The answers show where to spend your effort.",
+      ],
     },
     {
       kind: "table",
-      caption: "Examples (Functional vs Non-Functional)",
-      headers: ["System", "Functional Requirements", "Non-Functional Requirements"],
+      caption: "The six qualities",
+      headers: ["Letter", "Quality", "Question", "What to measure"],
+      rows: [
+        ["**S**", "Scalability", "Does it keep working when the load grows?", "Requests per second, users, data size"],
+        ["**C**", "Consistency", "Do all readers see the latest data?", "Strong or eventual"],
+        ["**A**", "Availability", "Does it answer when users ask?", "Uptime percentage"],
+        ["**L**", "Latency", "How long does a user wait?", "p50, p95, and p99 latency"],
+        ["**E**", "Efficiency", "How much does the work cost?", "Utilization, cost per request"],
+        ["**D**", "Durability", "Does saved data stay saved?", "RPO, RTO"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "S: Scalability",
+      body: [
+        "A scalable system handles more work when you add resources. The work can be requests, users, or stored data.",
+        "A ticket site shows the idea. Before a big sale, it adds web servers. One machine cannot serve the whole crowd, so the site scales out.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "Traffic grows ten times in one week. Which part of your system fails first?",
+    },
+    {
+      kind: "prose",
+      heading: "C: Consistency",
+      body: [
+        "Consistency answers one question. After a write, does every reader see the new value? The question matters when the data is on more than one node.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "A user posts a comment. A friend sees it two seconds later. Is this acceptable? Give a reason.",
+    },
+    {
+      kind: "prose",
+      heading: "A: Availability",
+      body: [
+        "Availability is the share of time that the system can answer requests. People write it as a number of nines. For example, 99.9% is three nines.",
+        "To find the yearly downtime, multiply the unavailable share by 365 days. At 99%, the unavailable share is 1%. The downtime is 3.65 days.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Each extra nine cuts the downtime by a factor of 10. It also adds cost. You need more spare parts and faster recovery.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "One server stops at 3 a.m. How does a user notice? How long until the system serves users again?",
+    },
+    {
+      kind: "prose",
+      heading: "L: Latency",
+      body: [
+        "Latency measures the delay between a request and its response. A user feels it as waiting.",
+        "Do not rely on the average. A few slow requests hide inside a good average. Use percentiles. The p50 is the median request. The p99 is the time that 99 of every 100 requests beat. The p99 shows what your slowest users feel.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Speed also earns money. Amazon reported that each extra 100 ms cost about 1% of its sales.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "A page loads in 800 ms. Name three places in the request path where the time can go.",
+    },
+    {
+      kind: "prose",
+      heading: "E: Efficiency",
+      body: [
+        "An efficient system does the needed work with fewer resources. The resources are CPU, memory, storage, network, and money.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Efficiency metrics",
+      headers: ["Metric", "Meaning"],
+      rows: [
+        ["**Throughput**", "The requests that the system finishes each second."],
+        ["**Utilization**", "The share of the capacity that is in use."],
+        ["**Cost per request**", "The infrastructure cost divided by the requests served."],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Example: a service costs $2,000 each month and serves 100 million requests. The cost is $0.02 for each 1,000 requests.",
+        "Low utilization wastes money. Very high utilization leaves no room for a traffic spike. Most teams look for a middle point.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "Your cloud bill must fall by half. What do you remove first? Which other quality gets worse?",
+    },
+    {
+      kind: "prose",
+      heading: "D: Durability",
+      body: [
+        "A durable system keeps data after it confirms the save. Data is at risk from disk faults, server crashes, human mistakes, and region outages.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Two numbers set the goal. The **RPO (Recovery Point Objective)** is the most data that you accept to lose, measured in time. The **RTO (Recovery Time Objective)** is the longest time that you accept to restore service.",
+        "A backup every 6 hours gives an RPO of up to 6 hours.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Check yourself",
+      body: "A server loses power in the middle of a write. Which data is still safe, and why?",
+    },
+    {
+      kind: "prose",
+      heading: "Try Each Quality",
+      body: [
+        "Use the animation to test each quality. Move a slider or click a button. Then read the numbers that change.",
+        "The **Trade-offs** tab compares real products. In **Your turn**, you choose which qualities a product protects.",
+      ],
+    },
+    { kind: "scaled-framework" },
+    {
+      kind: "prose",
+      heading: "Why You Cannot Have All Six",
+      body: [
+        "Most gains have a cost. The cost is often another quality.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Choices and their costs",
+      headers: ["Choice", "What you gain", "What you pay"],
       rows: [
         [
-          "Online Banking",
-          "• User login via username/password\n• Check account balance\n• Notifications for transactions",
-          "• System responds in < 2 seconds\n• All transactions encrypted & meet security rules\n• Handle 100 million users; minimal downtime"
+          "Keep more copies of the data",
+          "Durability and availability",
+          "Higher cost and slower writes",
         ],
         [
-          "Food Delivery App",
-          "• Browse menu, place orders\n• Make payments, track orders in real time",
-          "• Load menu in under 1 second\n• Support up to 50,000 concurrent orders at peak\n• Easy to use for first-time users (intuitive UI)"
-        ]
-      ]
-    },
-    {
-      kind: "table",
-      caption: "Differences / Contrast",
-      headers: ["Aspect", "Functional Requirements", "Non-Functional Requirements"],
-      rows: [
-        ["Definition", "What the system should do (features, behaviors)", "How the system should perform; system qualities and constraints"],
-        ["Visibility", "Directly observable in the software / product features", "Not directly seen as features; experienced (e.g. speed, robustness)"],
-        ["Measurement", "Easier to test with functional tests—are features working?", "Harder to test; requires benchmarks, SLAs, performance/scalability/security tests"],
-        ["Scope / Impact", "Drives core functionality and user flows; maps to business needs.", "Influences architecture, system design, implementation constraints."],
-        ["Documentation", "Captured via use cases, user stories, functional specs.", "Captured in technical specifications, SLAs, performance/security/quality attribute definitions."]
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "Importance of Balancing Both",
-      body: [
-        "A system with all functional requirements but poor non-functional qualities (e.g. slow, insecure, unreliable) can be unusable in real life.",
-        "Non-functional requirements often get overlooked early, but failing to address them leads to high cost refactors, performance issues, and user dissatisfaction.",
-        "Good non-functional requirements help in scaling, maintenance, and future enhancements."
-      ]
-    },
-    {
-      kind: "prose",
-      heading: "Common Challenges in Defining Requirements",
-      body: [
-        "- **Ambiguity in Requirements:** Requirements are sometimes vague or incomplete, making it difficult to clearly define what the system must do (functional) and how it should perform (non-functional).",
-        "- **Changing Requirements:** As projects evolve, requirements often shift due to changing business goals, market trends, or user expectations, making it harder to maintain stability in design.",
-        "- **Difficulty in Prioritization:** Determining which requirements matter most can be tricky. Functional needs frequently take priority, while critical non-functional aspects like security or scalability may be overlooked.",
-        "- **Measuring Non-Functional Requirements:** Functional requirements are easier to test, whereas non-functional attributes such as usability, scalability, or reliability are harder to define in measurable terms and validate effectively.",
-        "- **Overlapping or Conflicting Requirements:** Requirements can sometimes conflict or influence each other. For example, strengthening security may reduce system performance, requiring careful trade-offs."
-      ]
-    },
-    {
-      kind: "table",
-      caption: "How to Gather Requirements",
-      headers: ["Requirement Type", "Methods & Techniques"],
-      rows: [
-        [
-          "Functional Requirements",
-          "**Interviews:** Talk to stakeholders or users to understand their needs.\n**Surveys:** Distribute questionnaires to gather input from a larger audience.\n**Workshops:** Host sessions to brainstorm features and gather feedback."
+          "Make every read return the latest value",
+          "Consistency",
+          "Higher latency, and less availability in a network fault",
         ],
-        [
-          "Non-functional Requirements",
-          "**Performance Benchmarks:** Consult with IT teams to set expectations for performance and load.\n**Security Standards:** Consult with security experts to define best practices for data protection.\n**Usability Testing:** Test the system to find areas where users might struggle and refine the interface."
-        ]
-      ]
+        ["Cache results", "Lower latency", "Readers can see old data"],
+        ["Run fewer servers", "Lower cost", "Less room for a traffic spike"],
+      ],
     },
     {
       kind: "prose",
-      heading: "Identifying Core Features (FRs)",
       body: [
-        "When designing a system, functional requirements act as the foundational 'Users must be able to...' statements. During an interview or architectural discussion, these should be the first points of alignment.",
-        "This process is usually highly interactive. You should treat the interviewer like a product manager or client, asking probing questions to define the boundaries of the system. For instance, 'Does the platform need to support X?' or 'What should the behavior be when Y occurs?'",
-        "If you were architecting a social media platform like Twitter, core features might include:",
-        "- Users can publish text-based posts.",
-        "- Users can subscribe to (follow) other accounts.",
-        "- Users can view a timeline of posts from their subscriptions.",
-        "Alternatively, if designing a low-level component like a distributed cache, the features might look like:",
-        "- The cache allows clients to store key-value pairs.",
-        "- The cache allows clients to retrieve values by key.",
-        "- The cache supports time-to-live (TTL) evictions.",
-        "",
-        "**Crucial tip:** Stay focused. While a real-world system might have hundreds of minor features, your goal is to extract and prioritize the top 3 to 5 core flows. A massive list of requirements will bog down your design phase; evaluating your ability to focus on the most impactful features is a key signal interviewers look for."
-      ]
+        "A design is a set of choices. Each choice protects some qualities and relaxes others. A good designer says which ones, and gives the reason.",
+      ],
     },
     {
       kind: "prose",
-      heading: "Defining System Constraints (NFRs)",
+      heading: "How Products Choose",
       body: [
-        "Non-functional requirements dictate the operational qualities that matter most for a seamless user experience. They can often be formulated as 'The system must be...' statements.",
-        "Revisiting the Twitter example, crucial NFRs might be:",
-        "- The system must prioritize high availability over strict consistency.",
-        "- The architecture must smoothly scale to handle upwards of 100 million Daily Active Users (DAU).",
-        "- The feed generation should be highly responsive, with latencies kept under 200 milliseconds.",
-        "",
-        "A major pitfall is leaving NFRs too vague. Saying 'the system should be fast' offers no real architectural guidance. Instead, quantifying the goal—such as 'search queries must return results in under 500ms'—provides a concrete target that will directly influence your technology choices."
-      ]
+        "The right choice depends on the product. Use the Trade-offs tab in the interactive component above to see how six popular products make these choices.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "A Chat App in Detail",
+      body: ["Many chat apps relax consistency in the same way."],
+      items: [
+        "You send a message. The server accepts it and the app shows one tick.",
+        "The phone of the other person confirms later. The second tick appears then.",
+        "The two sides do not agree on the message state at every moment. In return, sending stays fast and works on a weak network.",
+      ],
     },
     {
       kind: "prose",
-      heading: "NFR Brainstorming Checklist",
+      heading: "Use SCALED in a Design Discussion",
       body: [
-        "If you are struggling to identify the right non-functional requirements for a novel domain, use this checklist to guide your thinking. Aim to pick the 3-5 constraints that will most heavily influence your architecture:",
-        "**CAP Theorem Constraints:** Does the system demand strict consistency (like banking), or is high availability (like a social feed) more critical?",
-        "**Environment Limitations:** Where is the software running? Are there bandwidth limitations, constrained memory (embedded devices), or battery concerns (mobile)?",
-        "**Scale and Traffic Patterns:** Beyond general scale, does the system experience massive, predictable traffic spikes (e.g., ticket sales, holidays)? Is the system highly read-heavy, or write-heavy?",
-        "**Latency Targets:** Which specific user actions require near-instantaneous computation or response? Prioritize the flows that impact user experience the most.",
-        "**Durability Guarantees:** How catastrophic is data loss? A financial ledger requires 100% durability, whereas a temporary analytics cache might tolerate partial data loss during a crash.",
-        "**Security & Privacy:** Does the system handle PII (Personally Identifiable Information), require strict access controls, or mandate at-rest encryption?",
-        "**Fault Tolerance Strategy:** What is the acceptable blast radius of a failure? How quickly must the system recover from node crashes or data center outages?",
-        "**Regulatory Compliance:** Are there specific legal frameworks (HIPAA, GDPR, SOC2) that dictate data residency or auditing capabilities?"
-      ]
+        "Follow three steps. First, ask for numbers. Second, rank the qualities. Third, give the reason for each choice.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Step 1: Ask for numbers",
+      headers: ["Quality", "Question to ask"],
+      rows: [
+        ["Scalability", "How many users and requests do we expect now, and in one year?"],
+        ["Consistency", "What goes wrong if a user reads old data?"],
+        ["Availability", "How long can the system be down?"],
+        ["Latency", "What response time do users accept?"],
+        ["Efficiency", "What is the monthly budget?"],
+        ["Durability", "Which data must we never lose?"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Step 2: Rank the Qualities",
+      body: [
+        "Pick the two or three qualities that matter most. Then name one quality that you relax.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Step 3: Give the Reason",
+      body: [
+        "Link each choice to a user need or a business need. A choice without a reason sounds like a guess.",
+        "*\"For an order-tracking screen, I protect latency and availability. A driver position that is five seconds old is fine. A map that does not load is not.\"*",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Practice",
+      items: [
+        "Pick three apps that you use. For each app, name the quality that it protects most.",
+        "For each app, name one quality that it relaxes. Write the reason in one sentence.",
+        "Say your answer aloud in 20 seconds. Remove each word that adds no fact.",
+        "Pick one quality. Find the number that measures it, such as p99 latency or RPO.",
+      ],
     },
     {
       kind: "takeaways",
       items: [
-        "Functional Requirements define what the system MUST do (e.g., 'users can post a tweet').",
-        "Non-Functional Requirements (NFRs) define how the system MUST behave (e.g., latency, availability, durability).",
-        "NFRs dictate your architectural choices—a system optimizing for high availability looks entirely different from one optimizing for strict consistency."
-      ]
+        "SCALED is a checklist of six qualities: scalability, consistency, availability, latency, efficiency, and durability.",
+        "Most gains have a cost in another quality. You must choose which qualities to protect and which to relax.",
+        "Use numbers. Examples are p99 latency, yearly downtime, cost per 1,000 requests, and RPO.",
+        "Strong consistency gives correct reads but slower writes. Eventual consistency gives fast writes but can show old data.",
+        "Always give a reason for a choice. Base it on a user need or a business need.",
+      ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "fn-vs-nfn-1",
-          question: "Which of the following is a clear example of a Functional Requirement?",
-          options: [
-            "The system must handle 50,000 concurrent users at peak.",
-            "The application should respond to user inputs in under 2 seconds.",
-            "Users must be able to securely log in using their username and password.",
-            "All data must be encrypted at rest."
-          ],
-          correctIndex: 2,
-          explanation: "Functional requirements describe WHAT the system must do (e.g. logging in). The other options describe HOW the system behaves (concurrency, latency, encryption), which are Non-Functional Requirements."
+          id: "scaled-scale-out",
+          question:
+            "A site must serve ten times more users next week. The team adds eight identical web servers behind a load balancer. Which method is this?",
+          options: ["Scale up", "Scale out", "Geo-redundancy", "Strong consistency"],
+          correctIndex: 1,
+          explanation:
+            "Adding machines and sharing the work is scale out (horizontal scaling). Scale up means a bigger single machine.",
         },
         {
-          id: "fn-vs-nfn-2",
-          question: "Why is it important to quantify Non-Functional Requirements?",
+          id: "scaled-eventual",
+          question:
+            "A user changes a profile photo. A friend sees the old photo for two seconds. Which model is this?",
           options: [
-            "To give the QA team a larger checklist.",
-            "Vague requirements like 'fast' provide no architectural guidance.",
-            "It makes the system design interview look more professional.",
-            "Functional requirements are impossible to measure."
+            "Eventual consistency",
+            "Strong consistency",
+            "Zero durability",
+            "Vertical scaling",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The copies of the data update at different times. A read can return an old value for a short time. This is eventual consistency.",
+        },
+        {
+          id: "scaled-downtime",
+          question:
+            "A service has 99.9% availability. About how much downtime does it have in one year?",
+          options: ["52.6 minutes", "5.26 minutes", "8.76 hours", "3.65 days"],
+          correctIndex: 2,
+          explanation:
+            "The unavailable share is 0.1%. Multiply it by 365 days to get about 8.76 hours.",
+        },
+        {
+          id: "scaled-p99",
+          question: "Why is the p99 more useful than the average for latency?",
+          options: [
+            "It is always the smallest value.",
+            "It counts only the requests that succeed.",
+            "It replaces the need for the p50.",
+            "It shows what the slowest users feel.",
+          ],
+          correctIndex: 3,
+          explanation:
+            "A few slow requests can hide in a good average. The p99 shows the time that 99 of every 100 requests beat.",
+        },
+        {
+          id: "scaled-cost-per-1k",
+          question:
+            "A service costs $3,000 each month and serves 100 million requests. What does it cost for 1,000 requests?",
+          options: ["$0.003", "$0.03", "$0.30", "$3.00"],
+          correctIndex: 1,
+          explanation:
+            "100 million requests are 100,000 groups of 1,000. $3,000 divided by 100,000 is $0.03.",
+        },
+        {
+          id: "scaled-rpo",
+          question:
+            "A database has a backup every 6 hours. The disk fails just before the next backup. What is the worst-case data loss?",
+          options: ["No data", "1 hour of data", "6 hours of data", "24 hours of data"],
+          correctIndex: 2,
+          explanation:
+            "You lose all changes since the last backup. This is the RPO. With a 6-hour backup interval, the RPO is up to 6 hours.",
+        },
+        {
+          id: "scaled-cache",
+          question: "Which choice lowers latency but can show readers old data?",
+          options: [
+            "A write-ahead log",
+            "A nightly backup",
+            "Replication across regions",
+            "A cache of results",
+          ],
+          correctIndex: 3,
+          explanation:
+            "A cache returns a stored answer fast. The stored answer can be older than the data in the database.",
+        },
+        {
+          id: "scaled-reason",
+          question:
+            "An interviewer asks why you relax consistency for a like count. Which answer is best?",
+          options: [
+            "Users accept a count that is a few seconds old, and the app must stay fast and available.",
+            "Consistency is not important in any system.",
+            "Every system must relax consistency.",
+            "Strong consistency is not possible.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A good answer links the choice to a user need. A like count can be a little old. An app that is slow or down loses users.",
+        },
+      ],
+    },
+  ],
+};
+
+// Keep your existing imports at the top of this file:
+//   import { type LessonContent } from "@/lessons/types";
+//   import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
+export const functionalVsNonFunctional: LessonContent = {
+  slug: "functional-vs-non-functional-requirements",
+  title: "Functional vs Non-Functional Requirements",
+  subtitle:
+    "Ask two questions at the start of each design. What must the system do? How well must it do that?",
+  sections: [
+    {
+      kind: "prose",
+      heading: "Two Kinds of Requirement",
+      body: [
+        "A requirement is a statement about what a system must do or must be. Every design problem has two kinds of requirement.",
+        "**Functional requirements** describe the work that the system does. **Non-functional requirements** describe how well the system does that work.",
+        "The SCALED qualities help you here. Requirements tell you which of the six qualities matter most for the product.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The two kinds of requirement",
+      headers: ["Kind", "Question it answers", "Example"],
+      rows: [
+        ["**Functional**", "What must the system do?", "A user can book a ride."],
+        ["**Non-functional**", "How well must it do that?", "The booking takes less than 2 seconds."],
+      ],
+    },
+    {
+      kind: "image",
+      src: funcVsNonFuncImg,
+      alt: "Diagram that compares functional and non-functional requirements",
+      caption: "A feature list is not enough. Each feature also needs a quality target.",
+    },
+    {
+      kind: "analogy",
+      title: "A taxi ride",
+      text: "You book a taxi to the airport. The **functional requirements** say what the taxi does: it collects you at home, drives to the airport, carries two people and three bags, and takes a card payment. The **non-functional requirements** say how well it does this: it arrives in less than 40 minutes, the fare is below $45, the car is clean, and the driver obeys the speed limit.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A feature list is not enough",
+      body: "A taxi can take you to the airport and still give a bad ride. It can arrive late, charge $90, and drive too fast. A system is the same. It can have every feature and still fail. If it is slow, stops at peak time, or is too costly to run, users leave.",
+    },
+    {
+      kind: "prose",
+      heading: "Try the Two Kinds",
+      body: [
+        "Use the animation to break a taxi ride, sort real requirements, and practice the three interview steps.",
+      ],
+    },
+    { kind: "requirements-explorer" },
+    {
+      kind: "prose",
+      heading: "Three Steps for an Interview",
+      body: [
+        "At the start of a design interview, use three steps. **Scope** the features. **Measure** the qualities. **Choose** between qualities that conflict.",
+        "You can practice all of these steps, explore different quality groups, and see examples of real-world requirements in the interactive component above."
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Practice Plan",
+      items: [
+        "**Pick three apps.** Write five features and five quality targets for each app.",
+        "**Add numbers.** Replace each word such as \"fast\" with a number.",
+        "**Map each target.** Write the SCALED letter next to it.",
+        "**Say the steps aloud.** Scope, measure, choose.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Start with requirements",
+      body: "Questions about requirements show that you plan before you build. They keep the design small. They also give the discussion a clear order.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Functional requirements say what the system does. Non-functional requirements say how well it does it.",
+        "A system with every feature can still fail. Both kinds of requirement matter.",
+        "Most non-functional requirements match a SCALED quality. Ask about security separately.",
+        "Use three steps: scope the features, measure the qualities, and choose between conflicts.",
+        "Ask for numbers, such as p95 latency, requests each second, and uptime.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "req-functional",
+          question: "A ride app must let a user book a ride. What kind of requirement is this?",
+          options: ["Functional", "Non-functional", "A security rule", "A cost limit"],
+          correctIndex: 0,
+          explanation: "Booking a ride is a feature. It says what the system does.",
+        },
+        {
+          id: "req-nfr-reset",
+          question: "Which requirement is non-functional?",
+          options: [
+            "A user can reset a password.",
+            "The reset email arrives in less than 10 seconds.",
+            "A user can change an email address.",
+            "A user can delete an account.",
           ],
           correctIndex: 1,
-          explanation: "Saying 'the system should be fast' doesn't help you choose the right technology. Quantifying it (e.g., 'search must return in <500ms') sets a concrete target for your architecture."
-        }
-      ]
-    }
-  ]
+          explanation: "A time limit says how well the system works. The other three are features.",
+        },
+        {
+          id: "req-taxi",
+          question: "Which taxi requirement is non-functional?",
+          options: [
+            "Collect the passenger at home",
+            "Take a card payment",
+            "Fare below $45",
+            "Drive to the airport",
+          ],
+          correctIndex: 2,
+          explanation: "A fare limit is a cost target. It does not describe a feature of the ride.",
+        },
+        {
+          id: "req-seat",
+          question: "A ticket site says: \"Two buyers never get the same seat.\" Which SCALED quality is this?",
+          options: ["Latency", "Consistency", "Efficiency", "Scalability"],
+          correctIndex: 1,
+          explanation: "All users must see the same seat state. This is a consistency requirement.",
+        },
+        {
+          id: "req-security",
+          question: "Which topic has no letter in SCALED?",
+          options: ["Efficiency", "Durability", "Security", "Latency"],
+          correctIndex: 2,
+          explanation: "SCALED covers six qualities. Security is not one of them. Ask about it separately.",
+        },
+        {
+          id: "req-first-step",
+          question: "What is the first step of the interview approach?",
+          options: [
+            "Choose between conflicts",
+            "Measure the qualities",
+            "Set the scope",
+            "Draw the database",
+          ],
+          correctIndex: 2,
+          explanation: "Scope comes first. Then you measure the qualities. Then you choose between conflicts.",
+        },
+        {
+          id: "req-number",
+          question: "Which requirement is the best?",
+          options: [
+            "The app is fast.",
+            "The app is very reliable.",
+            "The menu loads in less than 1 second for 95% of requests.",
+            "The app has good performance.",
+          ],
+          correctIndex: 2,
+          explanation: "A good requirement has a number. You can test it. The other three are only opinions.",
+        },
+        {
+          id: "req-failed",
+          question: "A system has every feature but is down for hours each week. What is it?",
+          options: [
+            "A successful system",
+            "A system with no requirements",
+            "A failed system",
+            "A secure system",
+          ],
+          correctIndex: 2,
+          explanation: "A missing quality target can make a system fail, even when every feature exists.",
+        },
+      ],
+    },
+  ],
 };
 
 const backOfTheEnvelope: LessonContent = {
@@ -952,103 +1294,137 @@ const scalabilityLesson: LessonContent = {
   title: "Scalability",
   subtitle: "Handle growing load by finding and relieving the limit that is actually under pressure.",
   sections: [
-    { kind: "prose", heading: "What Scalability Means", body: [
-      "A system is **scalable** when it can handle increased load by adding resources while keeping performance within its requirements.",
-      "Load is not one number. It can mean more read traffic, write traffic, storage, bandwidth, concurrent users, background jobs, or a few hot keys. Scaling is not adding every component at once. It is finding the current bottleneck and increasing the capacity of that part of the system.",
-      "A system is not scalable simply because it has multiple servers. It is scalable when it can continue to meet its latency, reliability, and throughput targets as load grows."
-    ] },
-    { kind: "prose", heading: "How Systems Grow", body: [
-      "Scaling pressure can come from more than request volume. A growing user base raises request and connection counts. New features can add dependencies, background jobs, or expensive queries. More content raises storage, indexing, backup, and recovery costs.",
-      "A wider geographic reach adds latency, localization, and sometimes data-residency constraints. More modules and integrations also increase operational complexity. Name the type of growth first, because it determines what should scale."
-    ] },
-    { kind: "table", caption: "Growth trigger and the pressure it creates", headers: ["Growth", "Typical pressure", "Likely first question"], rows: [
-      ["User base", "More requests and concurrent connections", "Which tier reaches capacity first at peak?"],
-      ["Features", "New workflows and dependencies", "Which path adds latency or failure risk?"],
-      ["Data volume", "Storage, indexes, backups, recovery", "Does one data store still fit and recover in time?"],
-      ["System complexity", "More service-to-service calls", "Where does coordination or fan-out amplify work?"],
-      ["Geographic reach", "Latency, compliance, availability", "Do users need content or data closer to them?"]
-    ] },
+    {
+      kind: "prose", heading: "What Scalability Means", body: [
+        "A system is **scalable** when it can handle increased load by adding resources while keeping performance within its requirements.",
+        "Load is not one number. It can mean more read traffic, write traffic, storage, bandwidth, concurrent users, background jobs, or a few hot keys. Scaling is not adding every component at once. It is finding the current bottleneck and increasing the capacity of that part of the system.",
+        "A system is not scalable simply because it has multiple servers. It is scalable when it can continue to meet its latency, reliability, and throughput targets as load grows."
+      ]
+    },
+    {
+      kind: "prose", heading: "How Systems Grow", body: [
+        "Scaling pressure can come from more than request volume. A growing user base raises request and connection counts. New features can add dependencies, background jobs, or expensive queries. More content raises storage, indexing, backup, and recovery costs.",
+        "A wider geographic reach adds latency, localization, and sometimes data-residency constraints. More modules and integrations also increase operational complexity. Name the type of growth first, because it determines what should scale."
+      ]
+    },
+    {
+      kind: "table", caption: "Growth trigger and the pressure it creates", headers: ["Growth", "Typical pressure", "Likely first question"], rows: [
+        ["User base", "More requests and concurrent connections", "Which tier reaches capacity first at peak?"],
+        ["Features", "New workflows and dependencies", "Which path adds latency or failure risk?"],
+        ["Data volume", "Storage, indexes, backups, recovery", "Does one data store still fit and recover in time?"],
+        ["System complexity", "More service-to-service calls", "Where does coordination or fan-out amplify work?"],
+        ["Geographic reach", "Latency, compliance, availability", "Do users need content or data closer to them?"]
+      ]
+    },
     { kind: "image", src: scalabilityLoopImg, alt: "Scalability infographic showing the loop from measuring load to finding a bottleneck, scaling a component, and verifying the result", caption: "The scaling loop: measure the load, find the limiting resource, make a targeted change, then verify the new limit." },
-    { kind: "table", caption: "Measure the load before choosing a scaling technique", headers: ["Load type", "Useful signal", "Question to answer"], rows: [
-      ["Read traffic", "Read QPS, cache hit rate", "Can the database serve repeated reads fast enough?"],
-      ["Write traffic", "Write QPS, write latency", "Can the primary accept and persist the write rate?"],
-      ["Storage", "Data growth, index size", "Will data, backups, and recovery still fit?"],
-      ["Bandwidth", "Bytes/sec in and out", "Are payloads or media exhausting the network path?"],
-      ["Concurrency", "Open connections, queue depth", "Can the system serve users who are active at the same time?"],
-      ["Skew", "Top keys, busiest partitions", "Is a small set of users or keys dominating load?"]
-    ] },
+    {
+      kind: "table", caption: "Measure the load before choosing a scaling technique", headers: ["Load type", "Useful signal", "Question to answer"], rows: [
+        ["Read traffic", "Read QPS, cache hit rate", "Can the database serve repeated reads fast enough?"],
+        ["Write traffic", "Write QPS, write latency", "Can the primary accept and persist the write rate?"],
+        ["Storage", "Data growth, index size", "Will data, backups, and recovery still fit?"],
+        ["Bandwidth", "Bytes/sec in and out", "Are payloads or media exhausting the network path?"],
+        ["Concurrency", "Open connections, queue depth", "Can the system serve users who are active at the same time?"],
+        ["Skew", "Top keys, busiest partitions", "Is a small set of users or keys dominating load?"]
+      ]
+    },
     { kind: "callout", tone: "info", title: "The bottleneck loop", body: "Measure the load → find the bottleneck → scale the limiting component → verify the result. After every change, a different dependency may become the next limit." },
-    { kind: "prose", heading: "Scale Up or Scale Out", body: [
-      "**Vertical scaling** means making one machine larger: more CPU, memory, disk, or network capacity. It is simple and has fewer moving parts, but it has a hardware ceiling and can leave one large failure domain.",
-      "**Horizontal scaling** means adding more machines. It can increase capacity and availability, but it introduces load balancing, coordination, data distribution, and operational complexity.",
-      "Start with vertical scaling or one well-sized node while it comfortably meets the requirement. Scale out when one machine is no longer enough, or when availability requires multiple instances."
-    ] },
-    { kind: "table", caption: "Vertical and horizontal scaling", headers: ["Approach", "Best when", "Strength", "Trade-off"], rows: [
-      ["Scale up", "The workload still fits one larger machine", "Simple operations and no distributed coordination", "A hard ceiling and a larger single failure domain"],
-      ["Scale out", "Capacity or availability exceeds one machine", "More aggregate capacity and fault tolerance", "Load balancing, coordination, and uneven distribution"],
-      ["Hybrid", "Different tiers have different limits", "Scale each tier in the way it needs", "More system-specific decisions"]
-    ] },
-    { kind: "prose", heading: "Choose the Smallest Strategy That Meets the Need", body: [
-      "For an early product, vertical scaling, a cache, and basic load balancing are often enough. Instrument CPU, memory, request latency, database read and write capacity, and queue depth so the next limit is visible before it becomes an outage.",
-      "Use horizontal scaling, partitioning, or independently scalable services only when the measured workload requires them. Auto-scaling can reduce idle cost and absorb bursts, but use conservative thresholds and cooldowns so instances do not repeatedly scale out and in during a noisy traffic pattern."
-    ] },
+    {
+      kind: "prose", heading: "Scale Up or Scale Out", body: [
+        "**Vertical scaling** means making one machine larger: more CPU, memory, disk, or network capacity. It is simple and has fewer moving parts, but it has a hardware ceiling and can leave one large failure domain.",
+        "**Horizontal scaling** means adding more machines. It can increase capacity and availability, but it introduces load balancing, coordination, data distribution, and operational complexity.",
+        "Start with vertical scaling or one well-sized node while it comfortably meets the requirement. Scale out when one machine is no longer enough, or when availability requires multiple instances."
+      ]
+    },
+    {
+      kind: "table", caption: "Vertical and horizontal scaling", headers: ["Approach", "Best when", "Strength", "Trade-off"], rows: [
+        ["Scale up", "The workload still fits one larger machine", "Simple operations and no distributed coordination", "A hard ceiling and a larger single failure domain"],
+        ["Scale out", "Capacity or availability exceeds one machine", "More aggregate capacity and fault tolerance", "Load balancing, coordination, and uneven distribution"],
+        ["Hybrid", "Different tiers have different limits", "Scale each tier in the way it needs", "More system-specific decisions"]
+      ]
+    },
+    {
+      kind: "prose", heading: "Choose the Smallest Strategy That Meets the Need", body: [
+        "For an early product, vertical scaling, a cache, and basic load balancing are often enough. Instrument CPU, memory, request latency, database read and write capacity, and queue depth so the next limit is visible before it becomes an outage.",
+        "Use horizontal scaling, partitioning, or independently scalable services only when the measured workload requires them. Auto-scaling can reduce idle cost and absorb bursts, but use conservative thresholds and cooldowns so instances do not repeatedly scale out and in during a noisy traffic pattern."
+      ]
+    },
     { kind: "system-design-scalability-loop" },
-    { kind: "prose", heading: "Stateless Application Servers", body: [
-      "Application servers are easiest to scale horizontally when they are **stateless**. Any server should be able to handle any request without depending on memory stored by a previous server.",
-      "Move sessions to a shared store, persist files in object storage, and keep request-specific state out of local process memory. With stateless servers, a load balancer can add or remove instances without changing the client experience.",
-      "A local session or uploaded file may be convenient at first, but it becomes a routing or data-loss problem as soon as requests can land on multiple instances."
-    ] },
+    {
+      kind: "prose", heading: "Stateless Application Servers", body: [
+        "Application servers are easiest to scale horizontally when they are **stateless**. Any server should be able to handle any request without depending on memory stored by a previous server.",
+        "Move sessions to a shared store, persist files in object storage, and keep request-specific state out of local process memory. With stateless servers, a load balancer can add or remove instances without changing the client experience.",
+        "A local session or uploaded file may be convenient at first, but it becomes a routing or data-loss problem as soon as requests can land on multiple instances."
+      ]
+    },
     { kind: "image", src: scalabilityArchitectureImg, alt: "System design diagram showing client requests through a CDN, load balancer, application servers, cache, and database, with a queue and worker branch", caption: "A scale-out request path: keep the application tier stateless, cache repeated reads, and move slow work to a queue and worker." },
-    { kind: "prose", heading: "Linear Scaling Is a Goal, Not a Guarantee", body: [
-      "If one server handles 100 requests per second, two servers rarely handle exactly 200. Shared databases, locks, network calls, cache misses, uneven traffic, and coordination all reduce the gain from extra servers.",
-      "Use load tests and production metrics to compare added capacity with actual throughput and tail latency. If adding instances does not improve the metric, the bottleneck is probably downstream."
-    ] },
-    { kind: "prose", heading: "Scale Reads Before the Primary Database Becomes the Limit", body: [
-      "A **cache** serves repeated data from memory and reduces database work. It is useful when reads are frequent and stale data is acceptable for a bounded period. The cost is invalidation, cache misses, and the risk of stale results.",
-      "**Read replicas** copy data from the primary and spread read traffic. They improve read capacity and can isolate analytical or reporting work, but replication lag means a read may not immediately see a completed write.",
-      "Use both only when measurements show read pressure. A cache and replicas cannot solve a write-bound primary database."
-    ] },
-    { kind: "table", caption: "Read scaling choices", headers: ["Technique", "Use when", "Trade-off", "Failure mode"], rows: [
-      ["Cache", "The same data is read repeatedly", "Invalidation and stale data", "A cold cache overloads the database"],
-      ["Read replicas", "Reads dominate writes", "Replication lag and additional operations", "Read-after-write returns stale data"],
-      ["Precompute", "The same expensive result is read often", "More write work and derived state", "Materializing rarely used results"]
-    ] },
-    { kind: "prose", heading: "Scale Writes and Data Deliberately", body: [
-      "When one primary cannot sustain write volume or storage, **sharding** partitions data across multiple nodes. Choose a key that matches access patterns and distributes load evenly. Sharding adds capacity, but cross-shard queries, rebalancing, and hot partitions become operational concerns.",
-      "Queues separate a fast request path from slower background work. A queue can absorb bursts and let workers scale independently, but it introduces backlog, retries, duplicates, ordering decisions, and delayed results.",
-      "Use object storage for large binary data. It keeps the transactional database focused on metadata and gives media a storage path that can grow independently."
-    ] },
-    { kind: "prose", heading: "Scale Delivery and Services Only When Their Load Differs", body: [
-      "A **CDN** caches static or cacheable content close to users. It reduces origin bandwidth and latency for global audiences, but content freshness and invalidation still need a clear policy.",
-      "Independent services can be scaled separately when their workloads, release cadence, or reliability needs genuinely differ. Splitting a system into microservices too early adds network calls, observability work, data ownership decisions, and more failure modes. Keep a modular monolith while it remains easier to operate.",
-      "For global latency, availability, or legal requirements, deploy in more than one region. Multi-region systems improve reach and resilience but introduce replication, routing, and consistency trade-offs."
-    ] },
-    { kind: "table", caption: "Match the pressure to the smallest useful change", headers: ["Pressure", "First direction", "What to verify next"], rows: [
-      ["Application CPU", "Add stateless app instances behind a load balancer", "Per-instance utilization and downstream latency"],
-      ["Repeated database reads", "Cache or add read replicas", "Hit rate, primary CPU, and replication lag"],
-      ["Slow asynchronous work", "Queue the work and scale workers", "Queue depth, retries, and end-to-end delay"],
-      ["Write or storage limit", "Partition data or move media to object storage", "Partition balance, hot keys, and recovery time"],
-      ["Large public media delivery", "Use a CDN", "Origin egress, cache hit rate, and freshness"]
-    ] },
-    { kind: "prose", heading: "Verify the Change and Name the Next Limit", body: [
-      "A scaling change is complete only after it is verified against the requirement. Compare throughput, P95 or P99 latency, error rate, utilization, queue depth, cache hit rate, and cost before and after the change.",
-      "Scaling is a sequence: `load grows → a limit appears → add capacity or reduce work → a new limit appears`. A strong design explains where the system breaks next and what change would address it."
-    ] },
-    { kind: "takeaways", items: [
-      "Scalability means preserving requirements as load grows, not simply adding servers.",
-      "Measure first. Different load shapes create different bottlenecks and need different responses.",
-      "Scale up for simplicity while it fits. Scale out when capacity or availability requires it.",
-      "Keep application servers stateless so the load balancer can distribute requests freely.",
-      "Caches, replicas, shards, queues, CDNs, and object storage are targeted tools. Each improves one pressure and adds its own trade-offs.",
-      "Use autoscaling with stable thresholds and cooldowns. Use multi-region deployment only when geographic latency, availability, or compliance requires it.",
-      "After every scaling change, verify the metric and identify the next bottleneck."
-    ] },
-    { kind: "quiz", questions: [
-      { id: "scalability-db-bottleneck", question: "Application servers are mostly idle, but database CPU is saturated by repeated profile reads. What is the best first scaling direction?", options: ["Add more application servers", "Add a cache or read replicas", "Shard every table immediately", "Increase the request timeout"], correctIndex: 1, explanation: "The database read path is the measured bottleneck. A cache can remove repeated work; replicas can distribute remaining reads. More app servers would only send more work to the saturated database." },
-      { id: "scalability-stateless", question: "Why do stateless application servers scale more easily horizontally?", options: ["They never use a database", "A load balancer can send any request to any instance", "They require sticky sessions", "They store every upload on local disk"], correctIndex: 1, explanation: "Stateless instances keep sessions and durable data in shared stores, so no client depends on a particular server." },
-      { id: "scalability-replica-tradeoff", question: "What trade-off does a read replica commonly introduce?", options: ["Replication lag can return stale data", "It eliminates the need for backups", "It increases primary write capacity without limits", "It guarantees linear scaling"], correctIndex: 0, explanation: "Replicas copy data asynchronously in many systems. That improves read capacity but can make a just-completed write temporarily invisible on a replica." },
-      { id: "scalability-queue", question: "Which signal best shows whether a queue-based scaling change is keeping up?", options: ["The number of colors in the architecture diagram", "Queue depth and end-to-end processing delay", "The size of the load balancer icon", "Only average application CPU"], correctIndex: 1, explanation: "A queue is healthy when workers drain work at least as fast as it arrives and the delay stays within the product requirement." }
-    ] }
+    {
+      kind: "prose", heading: "Linear Scaling Is a Goal, Not a Guarantee", body: [
+        "If one server handles 100 requests per second, two servers rarely handle exactly 200. Shared databases, locks, network calls, cache misses, uneven traffic, and coordination all reduce the gain from extra servers.",
+        "Use load tests and production metrics to compare added capacity with actual throughput and tail latency. If adding instances does not improve the metric, the bottleneck is probably downstream."
+      ]
+    },
+    {
+      kind: "prose", heading: "Scale Reads Before the Primary Database Becomes the Limit", body: [
+        "A **cache** serves repeated data from memory and reduces database work. It is useful when reads are frequent and stale data is acceptable for a bounded period. The cost is invalidation, cache misses, and the risk of stale results.",
+        "**Read replicas** copy data from the primary and spread read traffic. They improve read capacity and can isolate analytical or reporting work, but replication lag means a read may not immediately see a completed write.",
+        "Use both only when measurements show read pressure. A cache and replicas cannot solve a write-bound primary database."
+      ]
+    },
+    {
+      kind: "table", caption: "Read scaling choices", headers: ["Technique", "Use when", "Trade-off", "Failure mode"], rows: [
+        ["Cache", "The same data is read repeatedly", "Invalidation and stale data", "A cold cache overloads the database"],
+        ["Read replicas", "Reads dominate writes", "Replication lag and additional operations", "Read-after-write returns stale data"],
+        ["Precompute", "The same expensive result is read often", "More write work and derived state", "Materializing rarely used results"]
+      ]
+    },
+    {
+      kind: "prose", heading: "Scale Writes and Data Deliberately", body: [
+        "When one primary cannot sustain write volume or storage, **sharding** partitions data across multiple nodes. Choose a key that matches access patterns and distributes load evenly. Sharding adds capacity, but cross-shard queries, rebalancing, and hot partitions become operational concerns.",
+        "Queues separate a fast request path from slower background work. A queue can absorb bursts and let workers scale independently, but it introduces backlog, retries, duplicates, ordering decisions, and delayed results.",
+        "Use object storage for large binary data. It keeps the transactional database focused on metadata and gives media a storage path that can grow independently."
+      ]
+    },
+    {
+      kind: "prose", heading: "Scale Delivery and Services Only When Their Load Differs", body: [
+        "A **CDN** caches static or cacheable content close to users. It reduces origin bandwidth and latency for global audiences, but content freshness and invalidation still need a clear policy.",
+        "Independent services can be scaled separately when their workloads, release cadence, or reliability needs genuinely differ. Splitting a system into microservices too early adds network calls, observability work, data ownership decisions, and more failure modes. Keep a modular monolith while it remains easier to operate.",
+        "For global latency, availability, or legal requirements, deploy in more than one region. Multi-region systems improve reach and resilience but introduce replication, routing, and consistency trade-offs."
+      ]
+    },
+    {
+      kind: "table", caption: "Match the pressure to the smallest useful change", headers: ["Pressure", "First direction", "What to verify next"], rows: [
+        ["Application CPU", "Add stateless app instances behind a load balancer", "Per-instance utilization and downstream latency"],
+        ["Repeated database reads", "Cache or add read replicas", "Hit rate, primary CPU, and replication lag"],
+        ["Slow asynchronous work", "Queue the work and scale workers", "Queue depth, retries, and end-to-end delay"],
+        ["Write or storage limit", "Partition data or move media to object storage", "Partition balance, hot keys, and recovery time"],
+        ["Large public media delivery", "Use a CDN", "Origin egress, cache hit rate, and freshness"]
+      ]
+    },
+    {
+      kind: "prose", heading: "Verify the Change and Name the Next Limit", body: [
+        "A scaling change is complete only after it is verified against the requirement. Compare throughput, P95 or P99 latency, error rate, utilization, queue depth, cache hit rate, and cost before and after the change.",
+        "Scaling is a sequence: `load grows → a limit appears → add capacity or reduce work → a new limit appears`. A strong design explains where the system breaks next and what change would address it."
+      ]
+    },
+    {
+      kind: "takeaways", items: [
+        "Scalability means preserving requirements as load grows, not simply adding servers.",
+        "Measure first. Different load shapes create different bottlenecks and need different responses.",
+        "Scale up for simplicity while it fits. Scale out when capacity or availability requires it.",
+        "Keep application servers stateless so the load balancer can distribute requests freely.",
+        "Caches, replicas, shards, queues, CDNs, and object storage are targeted tools. Each improves one pressure and adds its own trade-offs.",
+        "Use autoscaling with stable thresholds and cooldowns. Use multi-region deployment only when geographic latency, availability, or compliance requires it.",
+        "After every scaling change, verify the metric and identify the next bottleneck."
+      ]
+    },
+    {
+      kind: "quiz", questions: [
+        { id: "scalability-db-bottleneck", question: "Application servers are mostly idle, but database CPU is saturated by repeated profile reads. What is the best first scaling direction?", options: ["Add more application servers", "Add a cache or read replicas", "Shard every table immediately", "Increase the request timeout"], correctIndex: 1, explanation: "The database read path is the measured bottleneck. A cache can remove repeated work; replicas can distribute remaining reads. More app servers would only send more work to the saturated database." },
+        { id: "scalability-stateless", question: "Why do stateless application servers scale more easily horizontally?", options: ["They never use a database", "A load balancer can send any request to any instance", "They require sticky sessions", "They store every upload on local disk"], correctIndex: 1, explanation: "Stateless instances keep sessions and durable data in shared stores, so no client depends on a particular server." },
+        { id: "scalability-replica-tradeoff", question: "What trade-off does a read replica commonly introduce?", options: ["Replication lag can return stale data", "It eliminates the need for backups", "It increases primary write capacity without limits", "It guarantees linear scaling"], correctIndex: 0, explanation: "Replicas copy data asynchronously in many systems. That improves read capacity but can make a just-completed write temporarily invisible on a replica." },
+        { id: "scalability-queue", question: "Which signal best shows whether a queue-based scaling change is keeping up?", options: ["The number of colors in the architecture diagram", "Queue depth and end-to-end processing delay", "The size of the load balancer icon", "Only average application CPU"], correctIndex: 1, explanation: "A queue is healthy when workers drain work at least as fast as it arrives and the delay stays within the product requirement." }
+      ]
+    }
   ]
 };
 
@@ -2304,6 +2680,404 @@ export const tcpUdpLesson: LessonContent = {
 
 
 
+// Keep your existing import for LessonContent at the top of this file.
+export const sshLesson: LessonContent = {
+  slug: "ssh",
+  title: "SSH (Secure Shell)",
+  subtitle:
+    "Connect to a remote server in a safe way. Check the server identity. Prove your identity without sending your private key.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "What SSH Is",
+      body: [
+        "SSH means **Secure Shell**. It is a network protocol. It lets one computer connect to another computer in a safe way.",
+        "Use SSH to log in to a remote server, run commands, copy files, and make secure network tunnels.",
+        "An SSH connection has two sides: the **SSH client** and the **SSH server**. Your computer is usually the client. The remote computer is the server.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Connect to an Ubuntu server",
+      code: "ssh ubuntu@192.168.1.20",
+    },
+    {
+      kind: "table",
+      caption: "Parts of the SSH command",
+      headers: ["Part", "Meaning"],
+      rows: [
+        ["ssh", "Start the SSH client."],
+        ["ubuntu", "Log in as the remote user ubuntu."],
+        ["192.168.1.20", "The IP address of the server."],
+        ["TCP port 22", "The default SSH port."],
+      ],
+    },
+    {
+      kind: "analogy",
+      title: "Your signature at the bank",
+      text: "A bank keeps a sample of your signature. Your **public key** is the sample. Anyone can look at it. Your **private key** is your pen. You sign a request. The bank compares the signature with the sample. The bank never takes your pen.",
+    },
+    {
+      kind: "prose",
+      heading: "Make a Key Pair",
+      body: [
+        "SSH can use a key pair to check your identity. A key pair has two parts: a private key and a matching public key.",
+        "The private key stays on your computer. The public key goes on the server. Many cloud providers give you a `.key` file when you make a server. You can also make your own key pair.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Make a modern key pair",
+      code: "ssh-keygen -t ed25519 -C \"you@laptop\"\n\n# This makes two files:\n# ~/.ssh/id_ed25519      private key\n# ~/.ssh/id_ed25519.pub  public key",
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Copy the public key to the server",
+      code: "ssh-copy-id -i ~/.ssh/id_ed25519.pub ubuntu@192.168.1.20",
+    },
+    {
+      kind: "prose",
+      body: [
+        "`ssh-copy-id` logs in one time with your password. Then it adds the public key to `~/.ssh/authorized_keys` on the server. After this, key login works.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "A key pair",
+      code: "ssh-key-2026-06-14.key      private key\nssh-key-2026-06-14.key.pub  public key",
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Connect with a private key",
+      code: "ssh -i ssh-key-2026-06-14.key ubuntu@ipaddress",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Use the private key file",
+      body: "The `-i` option tells SSH which private key to use. Do not use the `.pub` file with `-i`. The public key belongs on the server.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Set the file permissions",
+      body: "SSH refuses a private key that other users can read. If you see `UNPROTECTED PRIVATE KEY FILE`, run `chmod 600` on the key. On the server, set `~/.ssh` to `700` and `authorized_keys` to `600`.",
+    },
+    {
+      kind: "prose",
+      heading: "The Private Key Stays on Your Computer",
+      body: [
+        "The SSH client uses the private key on your computer. It makes a digital signature. It sends only the signature to the server.",
+        "The server checks the signature with the matching public key. The private key does not go across the network.",
+      ],
+    },
+    { kind: "ssh-connection-flow" },
+    {
+      kind: "prose",
+      heading: "Where the Public Key Goes",
+      body: [
+        "The server must have the matching public key. For the `ubuntu` user, the key is usually in `/home/ubuntu/.ssh/authorized_keys`.",
+        "The private key proves that you can use the public key. The server does not get a copy of the private key.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Key locations for public-key login",
+      headers: ["Client", "Server", "What goes across the network"],
+      rows: [
+        [
+          "Private key: `ssh-key-2026-06-14.key`",
+          "Public key: `~/.ssh/authorized_keys`",
+          "A digital signature",
+        ],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "How SSH Starts the Protection",
+      body: [
+        "First, the client opens a TCP connection. Then the client and the server choose methods for key exchange, encryption, integrity checks, and login.",
+        "SSH software chooses these methods by itself. Common examples are Curve25519 for key exchange and AES or ChaCha20 for encryption.",
+        "Both sides exchange key exchange data. Each side calculates the same shared secret. The shared secret does not go across the network. Both sides use it to make the session keys.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Check the Server",
+      body: [
+        "The server has a host key. The host key is not the same as your user key pair. The client uses the host key to check that it reached the correct server.",
+        "At the first connection, SSH asks if you trust the server. If you accept, SSH saves the host key in `~/.ssh/known_hosts`. At each later connection, SSH compares the host key with the saved key.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Find the cause of a changed host key",
+      body: "The message `WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!` has two possible causes. Someone rebuilt or replaced the server. Or an attacker pretends to be the server. Find the cause before you continue.",
+    },
+    {
+      kind: "prose",
+      heading: "Log In the User",
+      body: [
+        "SSH has two common login methods: password and public key. A password goes through the encrypted connection.",
+        "With a public key, the client makes a signature with its private key. The server checks the signature with the public key in `authorized_keys`.",
+        "In the animation, select **Password login**. The password is encrypted on the network. But the server gets the real password. Keys do not have this problem. Bots cannot guess a key.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Commands to run after login",
+      code: "pwd\nls\ncd /var/log\ncat application.log",
+    },
+    {
+      kind: "prose",
+      heading: "The Three Security Functions",
+      body: [
+        "**Confidentiality:** SSH encrypts the data. Other people on the network cannot read your commands, passwords, or files.",
+        "**Integrity:** SSH checks that the data did not change. An attacker cannot change `cat fileA` to `cat fileB` without detection.",
+        "**Authentication:** The client checks the identity of the server. The server checks if the user is allowed to log in.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Three different SSH keys",
+      headers: ["Key type", "Purpose", "Question it answers"],
+      rows: [
+        ["Server host key", "Check the server identity.", "Is this the correct server?"],
+        ["User key pair", "Check the user identity.", "Is this user allowed to log in?"],
+        ["Session keys", "Encrypt the data of one connection.", "How is this session protected?"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "The Complete SSH Flow",
+      body: [
+        "`Connect → Negotiate → Exchange keys → Check server → Encrypt → Log in → Open session`",
+        "The client connects to TCP port 22. Both sides choose the algorithms and exchange keys. The client checks the host key of the server. Both sides make the session keys and turn on encryption. The server checks the user. Then the server opens the remote session.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Make Daily Use Easy",
+      body: [
+        "Long commands take time to type. A config file gives each server a short name.",
+        "A passphrase encrypts your private key on the disk. `ssh-agent` keeps the unlocked key in memory. You type the passphrase one time for each session.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "ini",
+      caption: "~/.ssh/config",
+      code: "Host web\n  HostName 192.168.1.20\n  User ubuntu\n  IdentityFile ~/.ssh/ssh-key-2026-06-14.key",
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Connect with one word. Load the key one time.",
+      code: "ssh web\n\neval \"$(ssh-agent -s)\"\nssh-add ~/.ssh/ssh-key-2026-06-14.key",
+    },
+    {
+      kind: "prose",
+      heading: "More Than a Shell",
+      body: [
+        "The same secure connection can carry files and other network traffic.",
+        "A **tunnel** sends a port through SSH. In the example below, port 5432 on your laptop connects to a database that only the server can reach.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "bash",
+      caption: "Copy a file, open a tunnel, and jump through a bastion host",
+      code: "scp report.csv ubuntu@192.168.1.20:/home/ubuntu/\nssh -L 5432:localhost:5432 ubuntu@192.168.1.20\nssh -J ubuntu@bastion ubuntu@10.0.0.8",
+    },
+    {
+      kind: "table",
+      caption: "Useful SSH options",
+      headers: ["Option", "What it does"],
+      rows: [
+        ["`scp`", "Copy files over SSH."],
+        ["`-L`", "Send a local port to a service that the server can reach."],
+        ["`-R`", "Show a local service on a port of the server."],
+        ["`-J`", "Go through a bastion host to a private server."],
+        ["`-v`", "Show debug output. Add more v letters for more detail."],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Fix Common Errors",
+      body: [
+        "First, add `-v` to the command. The **ssh -v output** tab in the animation shows this output at each step.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Troubleshooting guide",
+      headers: ["Message", "Likely cause", "What to check"],
+      rows: [
+        [
+          "`Permission denied (publickey)`",
+          "The server does not accept your key.",
+          "Is the user correct? Is the `-i` file correct? Is the public key in `authorized_keys`?",
+        ],
+        [
+          "`UNPROTECTED PRIVATE KEY FILE`",
+          "Other users can read the key file.",
+          "Run `chmod 600` on the private key.",
+        ],
+        [
+          "`Connection timed out`",
+          "The traffic does not reach the server.",
+          "Check the IP address, the firewall, and the cloud security group for port 22.",
+        ],
+        [
+          "`Connection refused`",
+          "No service listens on the port.",
+          "Does the SSH service run? Does it use a different port?",
+        ],
+        [
+          "`Host key verification failed`",
+          "The host key is different.",
+          "Find the cause. Then remove the old entry with `ssh-keygen -R host`.",
+        ],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "Make the server more secure",
+      body: "When key login works, set `PasswordAuthentication no` in `/etc/ssh/sshd_config`. Then restart the SSH service. Keep your current session open. Test the change in a new session. A typing mistake then does not lock you out.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Protect your private key",
+      body: "Do not send a private key by email. Do not upload it to GitHub. Do not put it in a public repository. Do not copy it to a computer that you do not trust. You can share the public key. Keep the private key secret.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "SSH uses TCP port 22 by default. It makes a secure connection from an SSH client to an SSH server.",
+        "The client uses its private key on its own computer to make a signature. The server checks the signature with the public key in `authorized_keys`.",
+        "The host key identifies the server. The user key pair identifies the user. The session keys encrypt the connection.",
+        "A host key warning needs investigation. Never share a private key.",
+        "Use `-v` to find faults. Use `~/.ssh/config` for short names. Turn off password login when key login works.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "ssh-private-key-travel",
+          question: "What does the SSH client send to prove that it has a private key?",
+          options: [
+            "The private key file",
+            "A digital signature",
+            "Only the public key file",
+            "The server host key",
+          ],
+          correctIndex: 1,
+          explanation:
+            "The client makes a signature on its own computer. The server checks the signature with the matching public key. The private key stays on the client.",
+        },
+        {
+          id: "ssh-authorized-keys",
+          question: "Where does a Linux SSH server usually keep the public key of a user?",
+          options: [
+            "`~/.ssh/known_hosts`",
+            "`/etc/ssh/private_keys`",
+            "`~/.ssh/authorized_keys`",
+            "`/var/log/ssh.log`",
+          ],
+          correctIndex: 2,
+          explanation:
+            "The `authorized_keys` file lists the public keys that can log in as that user.",
+        },
+        {
+          id: "ssh-host-key-purpose",
+          question: "What is the main purpose of the host key of an SSH server?",
+          options: [
+            "Encrypt the home directory of a user",
+            "Store the password of a user",
+            "Choose the TCP port",
+            "Identify the server",
+          ],
+          correctIndex: 3,
+          explanation:
+            "The client uses the host key to check that it reached the correct server. The client saves trusted host keys in `known_hosts`.",
+        },
+        {
+          id: "ssh-key-file-command",
+          question:
+            "Which command uses the private key file `ssh-key-2026-06-14.key` for the user ubuntu?",
+          options: [
+            "`ssh -i ssh-key-2026-06-14.key.pub ubuntu@ipaddress`",
+            "`ssh -i ssh-key-2026-06-14.key ubuntu@ipaddress`",
+            "`ssh --public-key ubuntu@ipaddress`",
+            "`ssh ubuntu@ipaddress -p private-key`",
+          ],
+          correctIndex: 1,
+          explanation:
+            "The `-i` option gives the private key file. The `.pub` file belongs on the server. Do not use it as the identity file of the client.",
+        },
+        {
+          id: "ssh-password-safe",
+          question: "With password login, who can read the password on the network?",
+          options: [
+            "Only the server",
+            "Anyone on the same Wi-Fi",
+            "Only the router",
+            "Everyone, because SSH sends the password in plain text",
+          ],
+          correctIndex: 0,
+          explanation:
+            "The password goes through the encrypted connection. An eavesdropper sees only ciphertext. The server gets the real password.",
+        },
+        {
+          id: "ssh-key-permissions",
+          question: "SSH shows `UNPROTECTED PRIVATE KEY FILE`. What is the usual fix?",
+          options: [
+            "Delete `known_hosts`",
+            "Send the key to the server",
+            "Run `chmod 600` on the private key",
+            "Change to port 2222",
+          ],
+          correctIndex: 2,
+          explanation:
+            "SSH refuses a key that other users can read. Mode `600` lets only the owner read and write the file.",
+        },
+        {
+          id: "ssh-tunnel-option",
+          question: "Which option sends a local port to a service that the server can reach?",
+          options: ["`-v`", "`-i`", "`-J`", "`-L`"],
+          correctIndex: 3,
+          explanation:
+            "`-L local_port:host:remote_port` opens a local port. It sends the traffic through the SSH connection.",
+        },
+        {
+          id: "ssh-host-changed",
+          question:
+            "You see `REMOTE HOST IDENTIFICATION HAS CHANGED!` after a server rebuild. What must you do?",
+          options: [
+            "Make sure that the change is expected. Then remove the old entry and connect again.",
+            "Ignore the warning and type yes.",
+            "Send your private key to the server.",
+            "Turn off encryption.",
+          ],
+          correctIndex: 0,
+          explanation:
+            "A rebuilt server has a new host key, so the warning is expected. Make sure of this first. The same warning can also mean that an attacker pretends to be the server.",
+        },
+      ],
+    },
+  ],
+};
+
 export const httpHttpsLesson: LessonContent = {
   slug: "http-https",
   title: "HTTP & HTTPS",
@@ -2806,7 +3580,7 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     iconKey: "layers",
     blurb:
       "Introduction to system design, core terminology, and the step-by-step interview delivery framework.",
-    lessons: [whatIsSystemDesign, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope, estimationCheatSheet],
+    lessons: [whatIsSystemDesign, scaledLesson, deliveryFramework, functionalVsNonFunctional, backOfTheEnvelope, estimationCheatSheet],
   },
   "core-metrics": {
     slug: "core-metrics",
@@ -2822,6 +3596,6 @@ export const FOUNDATIONS_TOPICS: Record<string, FoundationTopicMeta> = {
     category: "Fundamentals",
     iconKey: "layers",
     blurb: "Understand how data travels across the web.",
-    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, httpHttpsLesson, dnsLesson],
+    lessons: [ipLesson, portsLesson, subnetsCidrLesson, osiModelLesson, tcpUdpLesson, sshLesson, httpHttpsLesson, dnsLesson],
   }
 };
