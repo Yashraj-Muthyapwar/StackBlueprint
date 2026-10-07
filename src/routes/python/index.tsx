@@ -108,7 +108,7 @@ export const PYTHON_SECTIONS = [
         locked: false,
         path: "/python/oop",
         lessons: [
-          { slug: "classes-and-objects", title: "Classes and Objects", icon: Box, path: "/python/oop/classes-and-objects" },
+          { slug: "classes-and-objects", title: "OOP Basics: Classes and Objects", icon: Box, path: "/python/oop/classes-and-objects" },
           { slug: "instance-and-class-attributes", title: "Instance and Class Attributes", icon: Box, path: "/python/oop/instance-and-class-attributes" },
           { slug: "types-of-methods", title: "Types of Methods", icon: Box, path: "/python/oop/types-of-methods" },
           { slug: "encapsulation", title: "Encapsulation", icon: Box, path: "/python/oop/encapsulation" },
@@ -117,6 +117,7 @@ export const PYTHON_SECTIONS = [
           { slug: "abstraction", title: "Abstraction", icon: Box, path: "/python/oop/abstraction" },
           { slug: "composition", title: "Composition", icon: Box, path: "/python/oop/composition" },
           { slug: "special-methods", title: "Special Methods", icon: Code2, path: "/python/oop/special-methods" },
+          { slug: "oop-final-quiz", title: "Object-Oriented Programming Final Quiz", icon: HelpCircle, path: "/python/oop/oop-final-quiz" },
         ],
       },
       {

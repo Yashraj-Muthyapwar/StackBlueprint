@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw, Target } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -13,6 +13,8 @@ export function TransportBar({
   onPlayToggle,
   onReset,
   onSpeed,
+  locked = false,
+  predict,
 }: {
   step: number;
   total: number;
@@ -23,7 +25,18 @@ export function TransportBar({
   onPlayToggle: () => void;
   onReset: () => void;
   onSpeed: (n: number) => void;
+  /** True while a prediction is open: play and next are disabled until it's answered. */
+  locked?: boolean;
+  /** Provide only for lessons that have predictions. */
+  predict?: {
+    enabled: boolean;
+    onToggle: () => void;
+    correct: number;
+    answered: number;
+    total: number;
+  };
 }) {
+  const lockedTitle = "Answer the prediction first";
   return (
     <div className="flex flex-wrap items-center gap-4 rounded-2xl border border-hairline bg-surface px-4 py-2.5">
       <div className="flex items-center gap-1">
@@ -36,12 +49,19 @@ export function TransportBar({
         <Button
           size="icon"
           onClick={onPlayToggle}
-          title="Play / Pause (Space)"
+          disabled={locked}
+          title={locked ? lockedTitle : "Play / Pause (Space)"}
           className="bg-mint text-primary-foreground hover:bg-mint/90"
         >
           {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
         </Button>
-        <Button size="icon" variant="ghost" onClick={onNext} title="Next (→)">
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={onNext}
+          disabled={locked}
+          title={locked ? lockedTitle : "Next (→)"}
+        >
           <ChevronRight className="size-4" />
         </Button>
       </div>
@@ -53,6 +73,36 @@ export function TransportBar({
           <span>{total}</span>
         </span>
       </div>
+
+      {predict && (
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant={predict.enabled ? "default" : "ghost"}
+            onClick={predict.onToggle}
+            title={
+              predict.enabled
+                ? "Turn off predict mode"
+                : "Predict mode: guess each move before it's revealed (restarts the lesson)"
+            }
+            className={
+              predict.enabled
+                ? "bg-amber text-primary-foreground hover:bg-amber/90"
+                : "border border-hairline"
+            }
+          >
+            <Target className="mr-1 size-3.5" /> Predict
+          </Button>
+          {predict.enabled && (
+            <span className="font-mono text-xs text-muted-foreground">
+              <span className="text-foreground">{predict.correct}</span>
+              <span className="px-1 text-muted-foreground/50">/</span>
+              {predict.answered} correct
+              <span className="pl-2 text-muted-foreground/60">({predict.total} total)</span>
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="ml-auto flex items-center gap-3">
         <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">

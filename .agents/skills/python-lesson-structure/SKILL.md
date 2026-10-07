@@ -65,7 +65,9 @@ For a concept-driven Python lesson, use a tutorial-page sequence rather than mix
 3. An `interactive-code` section immediately after it, showing a verified runnable example.
 4. A rule, edge case, or common mistake only when it adds useful context.
 
-Use precise concept headings that match the language feature, such as `IF Statement`, `IF/ELSE`, `ELIF and IF ELSE Ladder`, `Ternary Operator`, and `is vs ==`. Adapt names to the topic; do not force these headings into unrelated lessons.
+Use precise, topic-first teaching headings that match the language feature, such as `IF Statement`, `IF/ELSE`, `ELIF and IF ELSE Ladder`, `Ternary Operator`, and `is vs ==`. For a multi-concept lesson, prefer a progression such as `Why <topic> matters`, a brief overview such as `<Topic> at a glance`, the individual concept names (`Instance Methods`, `Class Methods`, `Getter Methods`), a choice or comparison section, and an applied wrap-up such as `Putting <Topic> Together`. Avoid vague or procedural labels such as `Step-by-step`, `The core idea`, or `Use a ...` when a specific concept name is clearer.
+
+Keep each heading's content self-contained. A section must start with the definition or goal of its own concept, followed by its syntax and runnable example. Put the explanation of an example immediately after that example and before the next concept heading. Never place the previous section's explanation under the next section's heading.
 
 The shared `syntax` section renders a titled, line-numbered pattern panel. Use it for templates and structural forms, for example `if condition:` followed by an indented body. Give it a concise `title`, `code`, and `description`. It complements the runnable example and is not a replacement for it.
 

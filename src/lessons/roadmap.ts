@@ -2576,7 +2576,7 @@ export const roadmap: RoadmapCategory[] = [
             lessons: [
               {
                 slug: "classes-and-objects",
-                title: "Classes and Objects",
+                title: "OOP Basics: Classes and Objects",
                 icon: Box,
                 path: "/python/oop/classes-and-objects",
               },
@@ -2627,6 +2627,12 @@ export const roadmap: RoadmapCategory[] = [
                 title: "Special Methods",
                 icon: Code2,
                 path: "/python/oop/special-methods",
+              },
+              {
+                slug: "oop-final-quiz",
+                title: "Object-Oriented Programming Final Quiz",
+                icon: HelpCircle,
+                path: "/python/oop/oop-final-quiz",
               },
             ],
           },

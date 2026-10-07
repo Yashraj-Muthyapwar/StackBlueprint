@@ -22,7 +22,6 @@ import { InstanceAndClassAttributesCustomAnimation } from "./oop/InstanceAndClas
 import { TypesOfMethodsCustomAnimation } from "./oop/TypesOfMethodsCustomAnimation";
 import { EncapsulationCustomAnimation } from "./oop/EncapsulationCustomAnimation";
 import { InheritanceCustomAnimation } from "./oop/InheritanceCustomAnimation";
-import { InheritanceTypesCustomAnimation } from "./oop/InheritanceTypesCustomAnimation";
 import { PolymorphismCustomAnimation } from "./oop/PolymorphismCustomAnimation";
 import { AbstractionCustomAnimation } from "./oop/AbstractionCustomAnimation";
 import { CompositionCustomAnimation } from "./oop/CompositionCustomAnimation";
@@ -48,7 +47,7 @@ import { AdvancedFunctionsCustomAnimation } from "./functions/AdvancedFunctionsC
 import { ModulesPackagesCustomAnimation } from "./functions/ModulesPackagesCustomAnimation";
 import { PackageManagementCustomAnimation } from "./functions/PackageManagementCustomAnimation";
 
-export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "tuple-operations" | "set-operations" | "dictionary-operations" | "collections-module" | "function-basics" | "arguments-parameters" | "scope-namespaces" | "advanced-functions" | "modules-packages" | "package-management" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "inheritance-types" | "polymorphism" | "abstraction" | "composition" | "special-methods";
+export type AnimationVariant = AnyVariant | "python-instructions" | "basic-syntax" | "variables-data-types" | "io-and-conversions" | "python-operators" | "conditional-branching" | "match-case" | "loops" | "loop-control" | "list-operations" | "tuple-operations" | "set-operations" | "dictionary-operations" | "collections-module" | "function-basics" | "arguments-parameters" | "scope-namespaces" | "advanced-functions" | "modules-packages" | "package-management" | "reading-files" | "writing-files" | "file-modes" | "file-methods" | "working-with-paths" | "os-module" | "working-with-csv" | "working-with-json" | "pickle-module" | "shutil-module" | "classes-and-objects" | "instance-and-class-attributes" | "types-of-methods" | "encapsulation" | "inheritance" | "polymorphism" | "abstraction" | "composition" | "special-methods";
 
 export function LessonAnimation({
   variant,
@@ -140,8 +139,6 @@ export function LessonAnimation({
               <EncapsulationCustomAnimation />
             ) : variant === "inheritance" ? (
               <InheritanceCustomAnimation />
-            ) : variant === "inheritance-types" ? (
-              <InheritanceTypesCustomAnimation />
             ) : variant === "polymorphism" ? (
               <PolymorphismCustomAnimation />
             ) : variant === "abstraction" ? (
