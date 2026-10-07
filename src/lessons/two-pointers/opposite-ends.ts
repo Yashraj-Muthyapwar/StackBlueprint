@@ -39,14 +39,54 @@ const DEFAULTS: Record<Mode, number[]> = {
 };
 
 const practiceLadder: PracticeProblem[] = [
-  { name: "Two Sum II - Input Array Is Sorted", difficulty: "easy", hint: "The canonical elimination proof. Before each move, say WHY that end is dead. Out loud.", link: "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" },
-  { name: "Squares of a Sorted Array", difficulty: "easy", hint: "Twist: the biggest square is at one of the two ends. Fill the result array from the back.", link: "https://leetcode.com/problems/squares-of-a-sorted-array/" },
-  { name: "Boats to Save People", difficulty: "medium", hint: "Greedy pairing: heaviest person plus lightest person. If they fit, both board. If not, the heaviest boards alone. Find the proof for why pairing heaviest with lightest is safe.", link: "https://leetcode.com/problems/boats-to-save-people/" },
-  { name: "Container With Most Water", difficulty: "medium", hint: "The proof is about the shorter wall. Write the proof in one sentence before writing any code.", link: "https://leetcode.com/problems/container-with-most-water/" },
-  { name: "3Sum", difficulty: "medium", hint: "Fix one element with an outer loop, then run this exact pattern on the rest. Big lesson: patterns compose.", link: "https://leetcode.com/problems/3sum/" },
-  { name: "3Sum Closest", difficulty: "medium", hint: "Same skeleton, but instead of returning on exact match, track the best distance seen so far.", link: "https://leetcode.com/problems/3sum-closest/" },
-  { name: "Trapping Rain Water", difficulty: "hard", hint: "The proof: the smaller of the two boundary maxes decides the water level on its own side, no matter what is in the middle. Settle that side.", link: "https://leetcode.com/problems/trapping-rain-water/" },
-  { name: "4Sum", difficulty: "hard", hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.", link: "https://leetcode.com/problems/4sum/" },
+  {
+    name: "Two Sum II - Input Array Is Sorted",
+    difficulty: "easy",
+    hint: "The canonical elimination proof. Before each move, say WHY that end is dead. Out loud.",
+    link: "https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/",
+  },
+  {
+    name: "Squares of a Sorted Array",
+    difficulty: "easy",
+    hint: "Twist: the biggest square is at one of the two ends. Fill the result array from the back.",
+    link: "https://leetcode.com/problems/squares-of-a-sorted-array/",
+  },
+  {
+    name: "Boats to Save People",
+    difficulty: "medium",
+    hint: "Greedy pairing: heaviest person plus lightest person. If they fit, both board. If not, the heaviest boards alone. Find the proof for why pairing heaviest with lightest is safe.",
+    link: "https://leetcode.com/problems/boats-to-save-people/",
+  },
+  {
+    name: "Container With Most Water",
+    difficulty: "medium",
+    hint: "The proof is about the shorter wall. Write the proof in one sentence before writing any code.",
+    link: "https://leetcode.com/problems/container-with-most-water/",
+  },
+  {
+    name: "3Sum",
+    difficulty: "medium",
+    hint: "Fix one element with an outer loop, then run this exact pattern on the rest. Big lesson: patterns compose.",
+    link: "https://leetcode.com/problems/3sum/",
+  },
+  {
+    name: "3Sum Closest",
+    difficulty: "medium",
+    hint: "Same skeleton, but instead of returning on exact match, track the best distance seen so far.",
+    link: "https://leetcode.com/problems/3sum-closest/",
+  },
+  {
+    name: "Trapping Rain Water",
+    difficulty: "hard",
+    hint: "The proof: the smaller of the two boundary maxes decides the water level on its own side, no matter what is in the middle. Settle that side.",
+    link: "https://leetcode.com/problems/trapping-rain-water/",
+  },
+  {
+    name: "4Sum",
+    difficulty: "hard",
+    hint: "Two outer loops fixing two elements, then this pattern on what remains. If you solved 3Sum by understanding rather than memorizing, this is free.",
+    link: "https://leetcode.com/problems/4sum/",
+  },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -83,11 +123,11 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
   push({
     line: 2,
     narration: `Find two values that sum to ${target}.`,
-    proof: "Every index is still a candidate, so we start with the widest window: the smallest value on the left, the largest on the right.",
+    proof:
+      "Every index is still a candidate, so we start with the widest window: the smallest value on the left, the largest on the right.",
   });
 
-  let safety = 0;
-  while (left < right && safety++ < 200) {
+  while (left < right) {
     const a = arr[left];
     const b = arr[right];
     const total = a + b;
@@ -153,7 +193,8 @@ function buildTwoSum({ arr, target }: Inputs): Step[] {
   push({
     line: 11,
     narration: "Pointers crossed, so no pair exists. Return None.",
-    proof: "Every pointer move ruled out one index for good. With none left to try, no valid pair can exist.",
+    proof:
+      "Every pointer move ruled out one index for good. With none left to try, no valid pair can exist.",
   });
   return steps;
 }
@@ -206,7 +247,8 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
   push({
     line: 4,
     narration: "Start with one pointer at each boundary.",
-    proof: "Bars between the pointers (the dashed zone) are unsettled: we don't know their water level yet. Bars outside it are final.",
+    proof:
+      "Bars between the pointers (the dashed zone) are unsettled: we don't know their water level yet. Bars outside it are final.",
   });
 
   leftMax = arr[left];
@@ -218,8 +260,7 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
     proof: "A boundary bar has nothing on one side, so it can never hold water itself.",
   });
 
-  let safety = 0;
-  while (left < right && safety++ < 200) {
+  while (left < right) {
     if (leftMax < rightMax) {
       push({
         line: 8,
@@ -290,14 +331,123 @@ function buildTrappingRainWater({ arr }: Inputs): Step[] {
 /* Lesson definition                                                          */
 /* -------------------------------------------------------------------------- */
 
+function addComplexitySteps(steps: Step[], { mode, arr }: Inputs): Step[] {
+  const final = steps[steps.length - 1];
+  const n = arr.length;
+  const isTwoSum = mode === "two-sum";
+  const checks = steps.filter((step) =>
+    isTwoSum
+      ? step.line === 5 || step.line === 7 || step.line === 9
+      : step.line === 8 || step.line === 12,
+  ).length;
+  const blocks = isTwoSum
+    ? [
+        { line: 2, label: "Initialize pointers", cost: "O(1) once" },
+        { line: 3, label: "Loop condition", cost: "O(1) per test" },
+        { line: 4, label: "Read and add two values", cost: "O(1) per pass" },
+        { line: 5, end: 10, label: "Compare; return or move", cost: "O(1) per pass" },
+        { line: 11, label: "Return if no match", cost: "O(1) once" },
+      ]
+    : [
+        { line: 2, end: 6, label: "Check input; initialize", cost: "O(1) once" },
+        { line: 7, label: "Loop condition", cost: "O(1) per test" },
+        { line: 8, end: 15, label: "Select side; update water", cost: "O(1) per pass" },
+        { line: 16, label: "Return total", cost: "O(1) once" },
+      ];
+  const base = { n, checks, blocks, metric: "time" as const };
+  const explain = (
+    title: string,
+    activeBlock: number,
+    formula: string,
+    narration: string,
+    proof: string,
+  ): Step => {
+    const block = blocks[activeBlock];
+    return {
+      ...final,
+      predict: undefined,
+      line: block?.line ?? 2,
+      lineEnd: block?.end ?? block?.line ?? (isTwoSum ? 11 : 16),
+      status: formula,
+      complexity: { ...base, title, activeBlock, formula },
+      narration,
+      proof,
+    };
+  };
+  const body = explain(
+    "1. The work inside one pass: O(1)",
+    2,
+    "Read + add + compare + move → O(1) per pass",
+    isTwoSum
+      ? "One pass reads just two values, adds them, and compares the sum with the target. It then returns a pair or moves one pointer. Even with a much larger array, one pass still does these same few operations. That is O(1) work per pass."
+      : "One pass compares the two maximum heights and processes one bar. It moves one pointer, updates one maximum, and adds water. A larger array does not add work inside that pass. That is O(1) work per pass.",
+    isTwoSum
+      ? "Reading by index, adding, comparing, and updating an index each take constant time in this analysis. The if and else paths are alternatives. We do not run a separate search inside either path."
+      : "The if and else paths are alternatives: only one side is processed per pass. A fixed number of comparisons, assignments, and arithmetic operations gives O(1) work, even though the block contains several lines.",
+  );
+  body.line = isTwoSum ? 4 : 8;
+  body.lineEnd = isTwoSum ? 10 : 15;
+  const loop = explain(
+    "2. Repeat that work: O(n) total time",
+    1,
+    "O(1) + (n − 1) × O(1) + O(1) → O(n)",
+    n < 2
+      ? `This input has ${n} values, so the loop ran 0 times. This particular run takes O(1) time. For larger inputs, the loop can repeat up to n - 1 times. Constant work repeated that many times gives O(n) worst-case time.`
+      : `This run checked ${checks} pairs for ${n} values. The pointers start ${n - 1} positions apart. Each ${isTwoSum ? "failed check" : "pass"} moves one pointer inward by 1. At most ${n - 1} passes are possible here. In general, (n - 1) passes × O(1) work per pass gives O(n) worst-case time.`,
+    "The comparison left < right takes O(1) each time it runs. The whole while loop costs O(n) because it repeats. Two pointers do not mean two full scans: their inward moves share the same n - 1 distance. Initialization and returning add only fixed work." +
+      (isTwoSum
+        ? " The input is already sorted. A first-check match takes O(1); sorting first adds a separate cost."
+        : " Empty and single-bar inputs return in O(1)."),
+  );
+  loop.lineEnd = isTwoSum ? 10 : 15;
+  const result = [...steps, body, loop];
+  const memoryBlocks = isTwoSum
+    ? [
+        { line: 2, label: "left and right", cost: "2 values" },
+        { line: 4, label: "total (reused each pass)", cost: "1 value" },
+        { line: 6, label: "Returned pair", cost: "2 indices" },
+      ]
+    : [
+        { line: 4, label: "left and right", cost: "2 values" },
+        { line: 5, label: "left_max and right_max", cost: "2 values" },
+        { line: 6, label: "water", cost: "1 value" },
+      ];
+  result.push({
+    ...final,
+    predict: undefined,
+    line: isTwoSum ? 2 : 4,
+    lineEnd: 6,
+    status: "A fixed number of stored values → O(1) extra space",
+    complexity: {
+      n,
+      checks,
+      metric: "space",
+      title: "3. Reuse the same variables: O(1) space",
+      blocks: memoryBlocks,
+      activeBlock: -1,
+      formula: "Fixed storage, independent of n → O(1)",
+    },
+    narration: isTwoSum
+      ? "The function keeps two indices and one current sum. When it calculates the next sum, it replaces total instead of saving another value. Whether the array has 10 or 10,000 values, these same three variables are enough. That is O(1) extra space."
+      : "The function keeps two indices, two maximum heights, and one water total. Each pass updates these same five variables. It does not save a separate result for every bar. Whether there are 10 or 10,000 bars, the storage stays fixed: O(1) extra space.",
+    proof:
+      "O(1) means the amount of storage does not grow with n; it does not mean one variable. Repeating a calculation uses more time, but reusing its variables does not require more storage. Count the Python function's extra memory, excluding the input and animation snapshots." +
+      (isTwoSum
+        ? " The returned pair also stays fixed at two indices."
+        : " The returned water total is one number."),
+  });
+  return result;
+}
+
 export const oppositeEnds: LessonBuilder<Inputs> = {
   slug: "opposite-ends",
   title: "Two Pointers — Opposite Ends",
-  subtitle: "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
+  subtitle:
+    "Two indices start at opposite ends of a sorted array and walk toward each other based on a comparison.",
   problem: (inputs) =>
     inputs.mode === "trapping-rain-water"
       ? "Given an array of non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining."
-      : "Given a sorted array of integers and a target T, return indices (i, j) such that arr[i] + arr[j] == T, or None if no such pair exists.",
+      : "Given a **sorted array of integers** and a **target T**, return **two different indices (i, j)** such that **arr[i] + arr[j] == T**, or **None** if no such pair exists.",
   spotIt: [
     "Input is a sorted array (or can be sorted) and you're asked about a pair / triplet / sum / closest.",
     "Question hints at O(n) after sorting, or 'do it in O(1) extra space'.",
@@ -325,13 +475,21 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
       ],
     },
     { key: "arr", label: "Array", kind: "intArray", help: "comma-separated" },
-    { key: "target", label: "Target sum", kind: "int", hidden: (v: any) => v.mode === "trapping-rain-water" },
+    {
+      key: "target",
+      label: "Target sum",
+      kind: "int",
+      hidden: (v: Record<string, unknown>) => v.mode === "trapping-rain-water",
+    },
   ],
   validate: (inputs) => {
     const { mode, arr, target } = inputs;
     const w: string[] = [];
     if (mode === "two-sum") {
-      if (!isSortedAsc(arr)) w.push("Two-Sum with opposite-ends pointers requires a sorted array. With an unsorted array the algorithm can miss valid pairs or report wrong indices.");
+      if (!isSortedAsc(arr))
+        w.push(
+          "Two-Sum with opposite-ends pointers requires a sorted array. With an unsorted array the algorithm can miss valid pairs or report wrong indices.",
+        );
       if (arr.length < 2) w.push("Array has fewer than 2 elements.");
       if (target === undefined || !Number.isInteger(target)) w.push("Target should be an integer.");
     }
@@ -345,6 +503,8 @@ export const oppositeEnds: LessonBuilder<Inputs> = {
     return null;
   },
   build: (inputs) => {
-    return inputs.mode === "trapping-rain-water" ? buildTrappingRainWater(inputs) : buildTwoSum(inputs);
+    const steps =
+      inputs.mode === "trapping-rain-water" ? buildTrappingRainWater(inputs) : buildTwoSum(inputs);
+    return addComplexitySteps(steps, inputs);
   },
 };

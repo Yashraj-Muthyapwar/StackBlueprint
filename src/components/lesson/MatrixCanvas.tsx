@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type {
   CellHighlight,
+  CellNote,
   CellPointer,
   CellTone,
   MatrixRect,
@@ -58,6 +59,7 @@ type GridProps = {
   gap: number;
   highlights?: CellHighlight[];
   pointers?: CellPointer[];
+  notes?: CellNote[];
   rects?: MatrixRect[];
   title?: string;
   /** Draw row / column indices and corner badges (dual mode). Off keeps the original single-grid look. */
@@ -77,7 +79,7 @@ function gridSize(rows: number, cols: number, cell: number, gap: number, decorat
   };
 }
 
-function Grid({ matrix, cell, gap, highlights, pointers, rects, title, decorated, border }: GridProps) {
+function Grid({ matrix, cell, gap, highlights, pointers, notes, rects, title, decorated, border }: GridProps) {
   const rows = matrix.length;
   const cols = matrix[0]?.length ?? 0;
   const { left, top, width, height } = gridSize(rows, cols, cell, gap, decorated, !!title);
@@ -92,6 +94,9 @@ function Grid({ matrix, cell, gap, highlights, pointers, rects, title, decorated
     if (!pointerMap.has(k)) pointerMap.set(k, []);
     pointerMap.get(k)!.push(p);
   }
+
+  const noteMap = new Map<string, CellNote>();
+  for (const n of notes ?? []) noteMap.set(`${n.r}-${n.c}`, n);
 
   return (
     <div className="relative shrink-0" style={{ width, height }}>
@@ -180,6 +185,17 @@ function Grid({ matrix, cell, gap, highlights, pointers, rects, title, decorated
                     {v}
                   </motion.span>
                 )}
+                {noteMap.has(k) && (
+                  <span
+                    className="pointer-events-none absolute bottom-0.5 right-1 font-mono font-semibold leading-none"
+                    style={{
+                      fontSize: cell < 36 ? 8 : 10,
+                      color: COLOR_MAP[noteMap.get(k)!.color ?? "amber"],
+                    }}
+                  >
+                    {noteMap.get(k)!.text}
+                  </span>
+                )}
                 {ps.length > 0 && !decorated && (
                   <div className="absolute -top-3.5 left-1/2 flex -translate-x-1/2 gap-0.5">
                     {ps.map((p) => (
@@ -255,9 +271,10 @@ export function MatrixCanvas({ step }: { step: Step }) {
     const g2 = gridSize(rows2, cols2, CELL, GAP, true, true);
     // The prefix grid has one more row, so the input grid sits one row lower. That puts input
     // row r at the same height as prefix row r + 1, which is exactly the cell it feeds.
-    const shift = CELL + GAP;
+    const aligned = step.matrix2Layout === "aligned";
+    const shift = aligned ? 0 : CELL + GAP;
     width = g1.width + SEPARATOR + g2.width;
-    height = Math.max(g2.height, g1.height + shift);
+    height = aligned ? Math.max(g1.height, g2.height) : Math.max(g2.height, g1.height + shift);
     content = (
       <>
         <div className="absolute left-0" style={{ top: shift }}>
@@ -267,6 +284,7 @@ export function MatrixCanvas({ step }: { step: Step }) {
             gap={GAP}
             highlights={step.cellHighlights}
             pointers={step.cellPointers}
+            notes={step.cellNotes}
             rects={rects}
             title={step.matrixLabel ?? "matrix"}
             decorated
@@ -279,6 +297,7 @@ export function MatrixCanvas({ step }: { step: Step }) {
             gap={GAP}
             highlights={step.cellHighlights2}
             pointers={step.cellPointers2}
+            notes={step.cellNotes2}
             title={step.matrix2Label ?? "prefix"}
             decorated
             border={step.matrix2Border}
@@ -288,7 +307,8 @@ export function MatrixCanvas({ step }: { step: Step }) {
     );
   } else {
     const { CELL, GAP } = sizing(rows, cols);
-    const g = gridSize(rows, cols, CELL, GAP, false, false);
+    const indexed = !!step.matrixIndices;
+    const g = gridSize(rows, cols, CELL, GAP, indexed, !!step.matrixLabel);
     width = g.width;
     height = g.height;
     content = (
@@ -298,8 +318,10 @@ export function MatrixCanvas({ step }: { step: Step }) {
         gap={GAP}
         highlights={step.cellHighlights}
         pointers={step.cellPointers}
+        notes={step.cellNotes}
         rects={rects}
-        decorated={false}
+        title={step.matrixLabel}
+        decorated={indexed}
       />
     );
   }

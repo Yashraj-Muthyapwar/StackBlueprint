@@ -1,3 +1,4 @@
+import { withComplexityReview } from "./complexity-review";
 import type { LessonBuilder, Partition, PracticeProblem, Prediction, Step } from "../types";
 
 type Inputs = { arr: number[] };
@@ -6,12 +7,42 @@ type Inputs = { arr: number[] };
 const MAX_PREDICTIONS = 6;
 
 const practiceLadder: PracticeProblem[] = [
-  { name: "Move Zeroes", difficulty: "easy", hint: "Like a 2-color Dutch Flag. Maintain a zone for non-zeroes and a zone for the current scanner.", link: "https://leetcode.com/problems/move-zeroes/" },
-  { name: "Sort Array By Parity", difficulty: "easy", hint: "Another 2-color variation. Evens on the left, odds on the right.", link: "https://leetcode.com/problems/sort-array-by-parity/" },
-  { name: "Sort Colors", difficulty: "medium", hint: "The canonical 3-color Dutch Flag. 0s, 1s, and 2s.", link: "https://leetcode.com/problems/sort-colors/" },
-  { name: "Rearrange Array Elements by Sign", difficulty: "medium", hint: "Partitioning with an added constraint: you must maintain relative order (stable partition).", link: "https://leetcode.com/problems/rearrange-array-elements-by-sign/" },
-  { name: "First Missing Positive", difficulty: "hard", hint: "Partitioning integers to their correct indices (Cyclic Sort). It's an in-place bucket sort.", link: "https://leetcode.com/problems/first-missing-positive/" },
-  { name: "Wiggle Sort II", difficulty: "hard", hint: "Can be solved in O(N) time and O(1) space using Dutch Flag partitioning around the median.", link: "https://leetcode.com/problems/wiggle-sort-ii/" },
+  {
+    name: "Move Zeroes",
+    difficulty: "easy",
+    hint: "Like a 2-color Dutch Flag. Maintain a zone for non-zeroes and a zone for the current scanner.",
+    link: "https://leetcode.com/problems/move-zeroes/",
+  },
+  {
+    name: "Sort Array By Parity",
+    difficulty: "easy",
+    hint: "Another 2-color variation. Evens on the left, odds on the right.",
+    link: "https://leetcode.com/problems/sort-array-by-parity/",
+  },
+  {
+    name: "Sort Colors",
+    difficulty: "medium",
+    hint: "The canonical 3-color Dutch Flag. 0s, 1s, and 2s.",
+    link: "https://leetcode.com/problems/sort-colors/",
+  },
+  {
+    name: "Rearrange Array Elements by Sign",
+    difficulty: "medium",
+    hint: "Partitioning with an added constraint: you must maintain relative order (stable partition).",
+    link: "https://leetcode.com/problems/rearrange-array-elements-by-sign/",
+  },
+  {
+    name: "First Missing Positive",
+    difficulty: "hard",
+    hint: "Partitioning integers to their correct indices (Cyclic Sort). It's an in-place bucket sort.",
+    link: "https://leetcode.com/problems/first-missing-positive/",
+  },
+  {
+    name: "Wiggle Sort II",
+    difficulty: "hard",
+    hint: "Can be solved in O(N) time and O(1) space using Dutch Flag partitioning around the median.",
+    link: "https://leetcode.com/problems/wiggle-sort-ii/",
+  },
 ];
 
 const code = `def dutch_flag(arr):
@@ -44,7 +75,7 @@ function parts(low: number, mid: number, high: number, n: number): Partition[] {
   return out;
 }
 
-function build({ arr: input }: Inputs): Step[] {
+function buildSteps({ arr: input }: Inputs): Step[] {
   const arr = [...input];
   const n = arr.length;
   const steps: Step[] = [];
@@ -85,7 +116,7 @@ function build({ arr: input }: Inputs): Step[] {
 
   let asked = 0;
   let iters = 0;
-  while (mid <= high && iters < 500) {
+  while (mid <= high) {
     iters += 1;
     const v = arr[mid];
     const kind: "zero" | "one" | "two" = v === 0 ? "zero" : v === 1 ? "one" : "two";
@@ -93,14 +124,14 @@ function build({ arr: input }: Inputs): Step[] {
     const predict: Prediction | undefined =
       asked++ < MAX_PREDICTIONS
         ? {
-          question: `arr[mid] = ${v} (mid is at index ${mid}). What happens next?`,
-          options: [
-            { id: "zero", label: "Swap with low, then advance low and mid" },
-            { id: "one", label: "Just advance mid" },
-            { id: "two", label: "Swap with high, then shrink high" },
-          ],
-          answer: kind,
-        }
+            question: `arr[mid] = ${v} (mid is at index ${mid}). What happens next?`,
+            options: [
+              { id: "zero", label: "Swap with low, then advance low and mid" },
+              { id: "one", label: "Just advance mid" },
+              { id: "two", label: "Swap with high, then shrink high" },
+            ],
+            answer: kind,
+          }
         : undefined;
 
     // Decision step: the loop guard and the first `if` apply to every case, so the
@@ -186,16 +217,69 @@ function build({ arr: input }: Inputs): Step[] {
     status: `done: ${iters} steps for ${n} cells`,
     narration: `mid crossed high, so no unknown cells are left. The array is partitioned: 0s, then 1s, then 2s.`,
     proof:
-      "Each loop iteration settled exactly one cell (mid advanced or high shrank), so the whole pass touches each cell once: O(n) time and O(1) space.",
+      "Each loop iteration removes exactly one cell from the unknown region: mid advances or high moves left. A position can be checked again after a swap, but the unknown region still shrinks each time. The algorithm takes O(n) time and O(1) extra space.",
   });
   return steps;
+}
+
+function build(inputs: Inputs): Step[] {
+  const steps = buildSteps(inputs);
+  const n = inputs.arr.length;
+  const passes = steps.filter((step) => step.line === 3).length;
+  return withComplexityReview(steps, {
+    n,
+    checks: passes,
+    timeBlocks: [
+      { line: 2, label: "Initialize three pointers", cost: "O(1) once" },
+      { line: 3, label: "Loop condition", cost: "O(1) per test" },
+      { line: 4, end: 12, label: "Choose a branch; swap or move", cost: "O(1) per pass" },
+      { line: 13, label: "Return original array", cost: "O(1) once" },
+    ],
+    memoryBlocks: [
+      { line: 2, label: "low, mid, and high", cost: "3 indices" },
+      { line: 5, label: "Swap two cells", cost: "O(1) temporary storage" },
+      { line: 11, label: "Swap two cells", cost: "O(1) temporary storage" },
+      { line: 13, label: "Return same array", cost: "No array copy" },
+    ],
+    body: {
+      line: 4,
+      lineEnd: 12,
+      formula: "Choose one branch + at most one swap → O(1) per pass",
+      narration:
+        "One pass reads arr[mid] and chooses one of three branches. It performs at most one swap and a fixed number of pointer updates. Only one branch runs, so one pass costs O(1), even with a larger array.",
+      proof:
+        "A swap reads and writes only two cells. It does not shift all the values between them. The if, elif, and else branches are alternatives, not separate scans.",
+    },
+    loop: {
+      line: 3,
+      lineEnd: 12,
+      formula: "n unknown cells × O(1) work per cell → O(n)",
+      narration:
+        n === 0
+          ? "There are no values, so this run performs 0 passes and takes O(1) time. In general, the unknown region starts with n cells. Each pass removes one cell, giving n passes of O(1) work and O(n) time."
+          : `The unknown region began with ${n} cells. This run took ${passes} passes. Every pass moves mid right or high left, reducing high - mid + 1 by exactly 1. So n passes of O(1) work give O(n) time.`,
+      proof:
+        "When the value is 2, mid stays still so the incoming value can be checked. But high moves left, removing one unknown cell. Checking mid again does not prevent progress. Three pointers do not mean three nested loops.",
+    },
+    space: {
+      line: 2,
+      lineEnd: 13,
+      formula: "3 indices + fixed swap storage → O(1) extra space",
+      narration:
+        "low, mid, and high each store one index. Swaps rearrange the original array using fixed temporary storage. The function returns that same array, rather than a new copy. Extra space stays O(1).",
+      proof:
+        "The input array grows with n, but the function's additional storage does not. Python's two-value swap needs only constant temporary storage. The animation's array snapshots are separate display data.",
+    },
+  });
 }
 
 export const dutchFlag: LessonBuilder<Inputs> = {
   slug: "dutch-flag",
   title: "Two Pointers — Dutch Flag",
-  subtitle: "Partition an array of 0s, 1s, and 2s into three zones using three pointers in a single pass.",
-  problem: "Given an array containing only 0s, 1s, and 2s, sort it in a single pass and in place so all 0s come first, then 1s, then 2s.",
+  subtitle:
+    "Partition an array of 0s, 1s, and 2s into three zones using three pointers in a single pass.",
+  problem:
+    "Given an array containing only 0s, 1s, and 2s, sort it in a single pass and in place so all 0s come first, then 1s, then 2s.",
   spotIt: [
     "Sort or partition an array into a small fixed number of categories (e.g. 0/1/2, neg/zero/pos).",
     "Constraints demand a single pass and in-place rearrangement.",
@@ -215,7 +299,8 @@ export const dutchFlag: LessonBuilder<Inputs> = {
   validate: ({ arr }) => {
     const w: string[] = [];
     const bad = arr.filter((v) => v !== 0 && v !== 1 && v !== 2);
-    if (bad.length) w.push(`Dutch Flag expects only 0/1/2. Found: ${[...new Set(bad)].join(", ")}.`);
+    if (bad.length)
+      w.push(`Dutch Flag expects only 0/1/2. Found: ${[...new Set(bad)].join(", ")}.`);
     if (arr.length > 16) w.push("For readability, keep length ≤ 16.");
     return w;
   },

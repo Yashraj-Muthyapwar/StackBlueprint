@@ -23,6 +23,9 @@ export type CellTone = "compare" | "swap" | "match" | "visit";
 export type CellHighlight = { r: number; c: number; tone: CellTone };
 export type CellPointer = { name: string; r: number; c: number; color: PointerColor };
 
+/** A tiny label drawn in the corner of a matrix cell, e.g. the order a traversal visited it. */
+export type CellNote = { r: number; c: number; text: string; color?: PointerColor };
+
 export type MatrixRect = {
   r1: number;
   c1: number;
@@ -83,6 +86,15 @@ export type Prediction = {
 };
 
 export type Step = {
+  complexity?: {
+    title: string;
+    metric: "time" | "space";
+    blocks: { line: number; end?: number; label: string; cost: string }[];
+    activeBlock: number;
+    formula: string;
+    n: number;
+    checks: number;
+  };
   line: number;
   narration: string;
   status?: string;
@@ -110,6 +122,14 @@ export type Step = {
   matrixLabel?: string;
   // matrix2: draw row 0 and column 0 as the zero border of a prefix matrix
   matrix2Border?: boolean;
+  // matrix2: "offset" (default) lines input row r up with matrix2 row r + 1, as for a prefix matrix.
+  // "aligned" draws two independent grids top to top, e.g. an input and its transposed result.
+  matrix2Layout?: "offset" | "aligned";
+  // single-matrix view: draw row / column indices and corner badges, like the two-grid view does
+  matrixIndices?: boolean;
+  // small corner labels on cells (e.g. visit order), for the first and second grid
+  cellNotes?: CellNote[];
+  cellNotes2?: CellNote[];
   cellHighlights2?: CellHighlight[];
   cellPointers2?: CellPointer[];
   // optional water levels for elevation-map
@@ -140,25 +160,25 @@ export type View = "array" | "linked-list" | "matrix" | "elevation-map";
 export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
   | {
-    key: string;
-    label: string;
-    kind: "int";
-    min?: number;
-    max?: number;
-    help?: string;
-    hidden?: (v: any) => boolean;
-  }
+      key: string;
+      label: string;
+      kind: "int";
+      min?: number;
+      max?: number;
+      help?: string;
+      hidden?: (v: any) => boolean;
+    }
   | { key: string; label: string; kind: "intMatrix"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "intPairs"; help?: string; hidden?: (v: any) => boolean }
   | { key: string; label: string; kind: "string"; help?: string; hidden?: (v: any) => boolean }
   | {
-    key: string;
-    label: string;
-    kind: "select";
-    options: { value: string; label: string }[];
-    help?: string;
-    hidden?: (v: any) => boolean;
-  };
+      key: string;
+      label: string;
+      kind: "select";
+      options: { value: string; label: string }[];
+      help?: string;
+      hidden?: (v: any) => boolean;
+    };
 
 export type PracticeProblem = {
   name: string;
@@ -182,6 +202,11 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   takeaways?: string[];
   /** Optional concept-lesson content rendered with the standard lesson layout. */
   sections?: Section[];
+  /** Teaching content around the interactive player, optionally selected by its inputs. */
+  walkthroughIntro?: Section[] | ((inputs: TInputs) => Section[]);
+  walkthroughReview?: Section[] | ((inputs: TInputs) => Section[]);
+  /** Questions rendered after the lesson takeaways. */
+  quiz?: QuizQuestion[];
   variant: string;
   view: View | ((inputs: TInputs) => View);
   code: string;
@@ -256,12 +281,12 @@ export type Section =
   | { kind: "system-design-scalability-loop" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }
   | {
-    kind: "terminal-animation";
-    command: string;
-    output: string;
-    buttonLabel?: string;
-    caption?: string;
-  }
+      kind: "terminal-animation";
+      command: string;
+      output: string;
+      buttonLabel?: string;
+      caption?: string;
+    }
   | { kind: "docker-run-under-the-hood" }
   | { kind: "ipv4-diagram" }
   | { kind: "ports-diagram" }
@@ -293,17 +318,17 @@ export type Section =
   | { kind: "dns-record-explorer" }
   | { kind: "dns-cache-journey" }
   | {
-    kind: "cloud-provider-grid";
-    items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[];
-  }
+      kind: "cloud-provider-grid";
+      items: { provider: "AWS" | "Google Cloud" | "Azure"; content: string }[];
+    }
   | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
   | {
-    kind: "list";
-    heading?: string;
-    body?: string[];
-    items: (string | { text: string; subitems: string[] })[];
-  }
+      kind: "list";
+      heading?: string;
+      body?: string[];
+      items: (string | { text: string; subitems: string[] })[];
+    }
   | { kind: "quiz"; questions: QuizQuestion[]; isFinalQuiz?: boolean };
 
 export type LessonContent = {

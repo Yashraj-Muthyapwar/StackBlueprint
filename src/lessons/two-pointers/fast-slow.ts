@@ -1,5 +1,6 @@
 import type { LessonBuilder, PracticeProblem, Prediction, Step } from "../types";
 import { stringifyIntArray } from "../util";
+import { withComplexityReview } from "./complexity-review";
 
 type Mode = "remove-duplicates" | "find-duplicate";
 type Inputs = { mode: Mode; arr: number[] };
@@ -36,12 +37,42 @@ const DEFAULTS: Record<Mode, number[]> = {
 };
 
 const practiceLadder: PracticeProblem[] = [
-  { name: "Linked List Cycle", difficulty: "easy", hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.", link: "https://leetcode.com/problems/linked-list-cycle/" },
-  { name: "Remove Duplicates from Sorted Array", difficulty: "easy", hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.", link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/" },
-  { name: "Linked List Cycle II", difficulty: "medium", hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.", link: "https://leetcode.com/problems/linked-list-cycle-ii/" },
-  { name: "Find the Duplicate Number", difficulty: "medium", hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.", link: "https://leetcode.com/problems/find-the-duplicate-number/" },
-  { name: "Minimum Window Substring", difficulty: "hard", hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.", link: "https://leetcode.com/problems/minimum-window-substring/" },
-  { name: "Subarrays with K Different Integers", difficulty: "hard", hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.", link: "https://leetcode.com/problems/subarrays-with-k-different-integers/" },
+  {
+    name: "Linked List Cycle",
+    difficulty: "easy",
+    hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.",
+    link: "https://leetcode.com/problems/linked-list-cycle/",
+  },
+  {
+    name: "Remove Duplicates from Sorted Array",
+    difficulty: "easy",
+    hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.",
+    link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+  },
+  {
+    name: "Linked List Cycle II",
+    difficulty: "medium",
+    hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.",
+    link: "https://leetcode.com/problems/linked-list-cycle-ii/",
+  },
+  {
+    name: "Find the Duplicate Number",
+    difficulty: "medium",
+    hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.",
+    link: "https://leetcode.com/problems/find-the-duplicate-number/",
+  },
+  {
+    name: "Minimum Window Substring",
+    difficulty: "hard",
+    hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.",
+    link: "https://leetcode.com/problems/minimum-window-substring/",
+  },
+  {
+    name: "Subarrays with K Different Integers",
+    difficulty: "hard",
+    hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.",
+    link: "https://leetcode.com/problems/subarrays-with-k-different-integers/",
+  },
 ];
 
 function ptrs(slow: number, fast: number, n: number) {
@@ -113,8 +144,10 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     partitions: win(0),
     highlight: { kind: "compare", indices: [0] },
     status: "slow = 0",
-    narration: "The array isn't empty, so index 0 is trivially unique. slow marks the end of the unique prefix.",
-    proof: "slow always points at the last unique value we've kept. fast scouts ahead looking for the next value that differs.",
+    narration:
+      "The array isn't empty, so index 0 is trivially unique. slow marks the end of the unique prefix.",
+    proof:
+      "slow always points at the last unique value we've kept. fast scouts ahead looking for the next value that differs.",
   });
 
   for (let fast = 1; fast < n; fast++) {
@@ -125,13 +158,13 @@ function buildRemoveDuplicates(arr: number[]): Step[] {
     const predict: Prediction | undefined =
       asked++ < MAX_PREDICTIONS
         ? {
-          question: `fast is at index ${fast} (value ${f}); slow is at index ${slow} (value ${s}). What should happen?`,
-          options: [
-            { id: "skip", label: "Skip it (duplicate)" },
-            { id: "keep", label: "Keep it (new value)" },
-          ],
-          answer: same ? "skip" : "keep",
-        }
+            question: `fast is at index ${fast} (value ${f}); slow is at index ${slow} (value ${s}). What should happen?`,
+            options: [
+              { id: "skip", label: "Skip it (duplicate)" },
+              { id: "keep", label: "Keep it (new value)" },
+            ],
+            answer: same ? "skip" : "keep",
+          }
         : undefined;
 
     // Decision step: the loop advances fast, then compares. Both branches share these lines.
@@ -202,7 +235,7 @@ function buildFindDuplicate(arr: number[]): Step[] {
     steps.push({ line: 1, array: [...arr], pointers: [], narration: "Need at least 2 elements." });
     return steps;
   }
-  const bad = arr.some((v) => !Number.isInteger(v) || v < 0 || v >= n);
+  const bad = arr.some((v) => !Number.isInteger(v) || v < 1 || v >= n);
   if (bad) {
     steps.push({
       line: 1,
@@ -246,7 +279,8 @@ function buildFindDuplicate(arr: number[]): Step[] {
         highlight: { kind: "compare", indices: [slow] },
         status: `round 1: slow is at index ${slow}`,
         narration: `slow reads nums[${slow}] = ${ns}, so it jumps to index ${ns}.`,
-        proof: "The value in a cell is the index to jump to, not an offset. slow always lands on index nums[slow].",
+        proof:
+          "The value in a cell is the index to jump to, not an offset. slow always lands on index nums[slow].",
         predict: {
           question: `Round 1: slow is at index ${slow}. Where does one step take it?`,
           options: indexOptions(ns, [slow + 1, arr[ns], slow], n, slow),
@@ -334,10 +368,10 @@ function buildFindDuplicate(arr: number[]): Step[] {
       predict:
         round2 === 1
           ? {
-            question: `Both pointers now take ONE step. fast is at index ${fast}. Where does fast land?`,
-            options: indexOptions(nf, [arr[nf], fast + 1, fast], n, fast),
-            answer: String(nf),
-          }
+              question: `Both pointers now take ONE step. fast is at index ${fast}. Where does fast land?`,
+              options: indexOptions(nf, [arr[nf], fast + 1, fast], n, fast),
+              answer: String(nf),
+            }
           : undefined,
     });
 
@@ -365,13 +399,112 @@ function buildFindDuplicate(arr: number[]): Step[] {
     highlight: { kind: "match", indices: [slow] },
     status: `return ${slow}`,
     narration: `slow == fast, so the loop ends. Return ${slow}: that's the duplicate.`,
-    proof: "Two different cells hold this value, so two arrows point into this index. That's what makes it the cycle's entrance.",
+    proof:
+      "Two different cells hold this value, so two arrows point into this index. That's what makes it the cycle's entrance.",
   });
   return steps;
 }
 
 function build({ mode, arr }: Inputs): Step[] {
-  return mode === "find-duplicate" ? buildFindDuplicate(arr) : buildRemoveDuplicates(arr);
+  const steps = mode === "find-duplicate" ? buildFindDuplicate(arr) : buildRemoveDuplicates(arr);
+  const n = arr.length;
+  if (mode === "remove-duplicates") {
+    const passes = steps.filter((step) => step.line === 5).length;
+    return withComplexityReview(steps, {
+      n,
+      checks: passes,
+      timeBlocks: [
+        { line: 2, end: 4, label: "Check input; initialize slow", cost: "O(1) once" },
+        { line: 5, label: "Advance fast", cost: "O(1) per pass" },
+        { line: 6, end: 8, label: "Compare; optionally copy", cost: "O(1) per pass" },
+        { line: 9, label: "Return prefix length", cost: "O(1) once" },
+      ],
+      memoryBlocks: [
+        { line: 4, label: "slow", cost: "1 index" },
+        { line: 5, label: "fast and range iterator", cost: "O(1) storage" },
+        { line: 8, label: "Overwrite input cell", cost: "No new array" },
+        { line: 9, label: "Return prefix length", cost: "1 number" },
+      ],
+      body: {
+        line: 6,
+        lineEnd: 8,
+        formula: "Compare + optional increment and copy → O(1) per pass",
+        narration:
+          "One pass compares arr[fast] with arr[slow]. If the values differ, it moves slow once and copies one value. A larger array does not add work inside this pass. Each pass costs O(1).",
+        proof:
+          "Reading by index, comparing, incrementing, and writing one value each take constant time. A duplicate skips the copy. Neither branch scans the array.",
+      },
+      loop: {
+        line: 5,
+        lineEnd: 8,
+        formula: "O(1) + (n − 1) × O(1) + O(1) → O(n)",
+        narration:
+          n === 0
+            ? "The array is empty, so this run returns before the loop. It takes O(1) time. For a nonempty array, fast checks each index from 1 to n - 1 exactly once. Those repeated constant-time checks give O(n) time."
+            : `For these ${n} values, fast made ${passes} passes. It visits indices 1 through ${n - 1} once each. Even if slow also moves, that move happens inside the same pass. At most n - 1 passes of O(1) work give O(n) time.`,
+        proof:
+          "Advancing the for loop once costs O(1); the full loop costs O(n) because it repeats. slow never starts its own scan. Initialization and returning add fixed work, so they do not change the linear total.",
+      },
+      space: {
+        line: 4,
+        lineEnd: 9,
+        formula: "Fixed indices + in-place writes → O(1) extra space",
+        narration:
+          "slow and fast each store one index. New unique values replace cells in the original array. The function does not build another array, so its extra space stays O(1).",
+        proof:
+          "Python range does not store a list of every index; it uses constant storage. The result is one prefix length. The input and animation copies are separate from the Python function's extra memory.",
+      },
+    });
+  }
+  // Invalid inputs do not complete Floyd's algorithm and have no result to analyze.
+  if (steps[steps.length - 1].line !== 12) return steps;
+  const firstPasses = steps.filter((step) => step.line === 4 && step.lineEnd === 5).length;
+  const secondPasses = steps.filter((step) => step.line === 10).length;
+  return withComplexityReview(steps, {
+    n,
+    checks: firstPasses + secondPasses,
+    timeBlocks: [
+      { line: 2, label: "Initialize pointers", cost: "O(1) once" },
+      { line: 3, label: "Phase 1 loop", cost: "O(n) total" },
+      { line: 4, end: 7, label: "Follow links; compare", cost: "O(1) per pass" },
+      { line: 8, label: "Reset slow", cost: "O(1) once" },
+      { line: 9, label: "Phase 2 loop", cost: "O(n) total" },
+      { line: 10, end: 11, label: "Follow one link each", cost: "O(1) per pass" },
+      { line: 12, label: "Return duplicate", cost: "O(1) once" },
+    ],
+    memoryBlocks: [
+      { line: 2, label: "slow and fast", cost: "2 indices" },
+      { line: 5, label: "Double lookup", cost: "O(1) temporary storage" },
+      { line: 8, label: "Reuse slow", cost: "No new collection" },
+      { line: 12, label: "Return duplicate", cost: "1 number" },
+    ],
+    body: {
+      line: 4,
+      lineEnd: 6,
+      formula: "1 slow lookup + 2 fast lookups + comparison → O(1)",
+      narration:
+        "In phase 1, slow follows one array link and fast follows two. That is three index lookups and one comparison per pass, regardless of array length. Each pass takes O(1). In phase 2, each pointer follows one link, also O(1) per pass.",
+      proof:
+        "nums[nums[fast]] is two lookups, not two loops. A pointer can jump to a distant index without scanning the cells between. The same variables are updated after each lookup.",
+    },
+    loop: {
+      line: 3,
+      lineEnd: 11,
+      formula: "O(n) phase 1 + O(n) phase 2 → O(n), not O(n²)",
+      narration: `This run used ${firstPasses} passes to meet inside the cycle and ${secondPasses} passes to reach its entrance. Each phase takes O(n) time. The loops run one after the other, so add their costs: O(n) + O(n) = O(n).`,
+      proof:
+        "Let μ be the path length to the cycle and λ be the cycle length. Phase 1 takes at most μ + λ passes: after both pointers enter the cycle, fast gains one position per pass and meets slow within λ passes. Phase 2 takes μ passes. μ + λ is at most the number of reachable indices, so the total is O(n).",
+    },
+    space: {
+      line: 2,
+      lineEnd: 11,
+      formula: "Two reused pointers; no visited set → O(1) extra space",
+      narration:
+        "Both phases reuse slow and fast. The function does not store the path or a set of visited indices. Following more links takes more time, but it does not increase the stored data. Extra space remains O(1).",
+      proof:
+        "The array is the input, not extra storage. The two pointer indices, temporary lookup values, and returned number have fixed size in this analysis. Animation snapshots are separate display data.",
+    },
+  });
 }
 
 export const fastSlow: LessonBuilder<Inputs> = {
