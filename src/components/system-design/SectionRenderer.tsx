@@ -12,6 +12,7 @@ import { PortsDiagram } from "@/components/system-design/networking-protocols/Po
 import { OsiModelDiagram } from "@/components/system-design/networking-protocols/OsiModelDiagram";
 import { OsiToTcpDiagram } from "@/components/system-design/networking-protocols/OsiToTcpDiagram";
 import { TcpUdpDiagram } from "@/components/system-design/networking-protocols/TcpUdpDiagram";
+import { SshConnectionFlow } from "@/components/system-design/networking-protocols/SshConnectionFlow";
 import { CidrCalculatorDiagram } from "@/components/system-design/networking-protocols/CidrCalculatorDiagram";
 import { VpcArchitectureDiagram } from "@/components/system-design/networking-protocols/VpcArchitectureDiagram";
 import { AvailabilityDiagram } from "@/components/system-design/distributed-systems/AvailabilityDiagram";
@@ -38,12 +39,16 @@ import { FeedStrategy } from "@/components/system-design/foundations/FeedStrateg
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
 import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
+import { RequirementsExplorer } from "@/components/system-design/foundations/RequirementsExplorer";
+import { ScaledFramework } from "@/components/system-design/foundations/ScaledFramework";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
     "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
     "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
     "RUN", "ENV", "EXPOSE", "VOLUME", "ENTRYPOINT",
+    "ssh", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh-agent", "scp", "sftp", "chmod",
+    "Host", "HostName", "User", "IdentityFile",
   ]);
   const nodes: React.ReactNode[] = [];
   let i = 0;
@@ -68,6 +73,17 @@ export function highlightShell(line: string, isTerminal?: boolean) {
         </span>,
       );
       i++;
+      continue;
+    }
+    if (ch === '"') {
+      const end = line.indexOf('"', i + 1);
+      const stop = end === -1 ? line.length : end + 1;
+      nodes.push(
+        <span key={key++} className="text-amber">
+          {line.slice(i, stop)}
+        </span>,
+      );
+      i = stop;
       continue;
     }
     if (ch === "'") {
@@ -232,7 +248,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       let langLabel = section.language || "docker";
       if (section.language === "bash") {
         const hasLinuxCmd = section.code.includes("sudo ") || section.code.includes("apt-get") || section.code.includes("nano ") || section.code.includes("systemctl ");
-        langLabel = hasLinuxCmd ? "bash" : "docker";
+        langLabel = hasLinuxCmd || !section.code.includes("docker") ? "bash" : "docker";
       }
       return (
         <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
@@ -421,6 +437,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "system-design-scalability-loop":
       return <ScalabilityLoop />;
 
+    case "requirements-explorer":
+      return <RequirementsExplorer />;
+
+    case "scaled-framework":
+      return <ScaledFramework />;
+
     case "terminal-animation":
       return <TerminalAnimation section={section} />;
 
@@ -461,6 +483,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "tcp-udp-diagram":
       return <TcpUdpDiagram />;
+
+    case "ssh-connection-flow":
+      return <SshConnectionFlow />;
 
     case "cidr-explorer":
       return <CidrExplorer />;
