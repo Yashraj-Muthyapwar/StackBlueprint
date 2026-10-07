@@ -84,8 +84,9 @@ const sections: Section[] = [
         icon: PlayCircle,
         modules: [
           "What is System Design?",
-          "Answering Framework",
-          "Clarifying Requirements",
+          "The SCALED Framework",
+          "Delivery Framework",
+          "Functional vs Non-Functional Requirements",
           "Back-of-the-Envelope Estimation",
           "Estimation Cheat Sheet",
         ],
