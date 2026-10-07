@@ -10,7 +10,7 @@ export type Pointer = {
 export type Partition = {
   from: number;
   to: number;
-  tone: "low" | "mid" | "high";
+  tone: "low" | "mid" | "high" | "unknown";
   label?: string;
 };
 
@@ -22,6 +22,45 @@ export type Highlight = {
 export type CellTone = "compare" | "swap" | "match" | "visit";
 export type CellHighlight = { r: number; c: number; tone: CellTone };
 export type CellPointer = { name: string; r: number; c: number; color: PointerColor };
+
+/** A tiny label drawn in the corner of a matrix cell, e.g. the order a traversal visited it. */
+export type CellNote = { r: number; c: number; text: string; color?: PointerColor };
+
+export type MatrixRect = {
+  r1: number;
+  c1: number;
+  r2: number;
+  c2: number;
+  tone?: "violet" | "mint" | "amber" | "rose";
+  /** Dashed outline only, no fill. Used for "the region we are after" while other rects show the pieces. */
+  outline?: boolean;
+};
+
+/**
+ * Array view: a row of n+1 "boundary" chips under the array. Chip j sits on the gap
+ * before arr[j] (chip 0 is the left edge, chip n the right edge), so a prefix value
+ * P[j] reads as "everything to my left". Used by the prefix lessons.
+ */
+export type BoundaryTrack = {
+  label: string;
+  /** values[j] for j in 0..n. null = not computed yet, drawn as an empty slot. */
+  values: (number | string | null)[];
+  /** Chips to light up. `sign` draws a small +/− badge on the chip. Their boundary line is drawn up through the array. */
+  marks?: { index: number; tone: PointerColor; sign?: string }[];
+};
+
+/** Rows of binary digits stacked like column arithmetic (used by prefix XOR). */
+export type BitRow = {
+  label: string;
+  /** null = unknown yet, drawn as "?" cells */
+  value: number | null;
+  /** operator shown in front of the row, e.g. "^" */
+  op?: string;
+  tone?: PointerColor;
+  /** draws a rule above this row, like the line under the operands in column addition */
+  result?: boolean;
+};
+export type BitsView = { width: number; rows: BitRow[] };
 
 export type LinkedListShape = {
   nodes: number;
@@ -36,7 +75,26 @@ export type SecondaryArray = {
   pointers?: Pointer[];
 };
 
+/** A "what happens next?" question attached to a step, used by predict mode. */
+export type Prediction = {
+  question: string;
+  options: { id: string; label: string }[];
+  /** id of the correct option */
+  answer: string;
+  /** Code line to highlight while the question is open, so the active line doesn't leak the answer. */
+  line?: number;
+};
+
 export type Step = {
+  complexity?: {
+    title: string;
+    metric: "time" | "space";
+    blocks: { line: number; end?: number; label: string; cost: string }[];
+    activeBlock: number;
+    formula: string;
+    n: number;
+    checks: number;
+  };
   line: number;
   narration: string;
   status?: string;
@@ -47,20 +105,54 @@ export type Step = {
   highlight?: Highlight;
   // optional secondary strip (prefix/deque/output)
   secondary?: SecondaryArray;
+  // optional second strip stacked under the first (e.g. the output array under a deque)
+  secondary2?: SecondaryArray;
   // matrix view
   matrix?: number[][];
   cellHighlights?: CellHighlight[];
   cellPointers?: CellPointer[];
   // matrix rect overlay (e.g. 2D prefix query rect)
-  matrixRect?: {
-    r1: number;
-    c1: number;
-    r2: number;
-    c2: number;
-    tone?: "violet" | "mint" | "amber";
-  };
+  matrixRect?: MatrixRect;
+  // further rects drawn together with matrixRect (e.g. the pieces of an inclusion–exclusion)
+  matrixRects?: MatrixRect[];
+  // matrix view: a second grid drawn beside the first (e.g. the 2D prefix matrix).
+  // null cells are "not computed yet" and drawn as an empty slot.
+  matrix2?: (number | null)[][];
+  matrix2Label?: string;
+  matrixLabel?: string;
+  // matrix2: draw row 0 and column 0 as the zero border of a prefix matrix
+  matrix2Border?: boolean;
+  // matrix2: "offset" (default) lines input row r up with matrix2 row r + 1, as for a prefix matrix.
+  // "aligned" draws two independent grids top to top, e.g. an input and its transposed result.
+  matrix2Layout?: "offset" | "aligned";
+  // single-matrix view: draw row / column indices and corner badges, like the two-grid view does
+  matrixIndices?: boolean;
+  // small corner labels on cells (e.g. visit order), for the first and second grid
+  cellNotes?: CellNote[];
+  cellNotes2?: CellNote[];
+  cellHighlights2?: CellHighlight[];
+  cellPointers2?: CellPointer[];
   // optional water levels for elevation-map
   waterLevels?: number[];
+  // the "why" behind this step, rendered in its own callout in the narration card
+  proof?: string;
+  // predict mode: pause here and ask the learner to choose the next move
+  predict?: Prediction;
+  // code pane: highlight the range line..lineEnd instead of a single line
+  lineEnd?: number;
+  // array view: indices proven irrelevant, drawn faded and struck through
+  dimmed?: number[];
+  // array view: bracket under two cells with a label (e.g. "12 vs 9")
+  link?: { from: number; to: number; label: string };
+  // elevation-map view: running maxima for the guide lines
+  leftMax?: number;
+  rightMax?: number;
+  // array view: small pills under cells, e.g. "+7" on the cell entering a window, "−2" on the one leaving
+  badges?: { index: number; text: string; tone: PointerColor }[];
+  // array view: prefix values drawn on the gaps between cells, under the array
+  track?: BoundaryTrack;
+  // binary breakdown strip under the visualization
+  bits?: BitsView;
 };
 
 export type View = "array" | "linked-list" | "matrix" | "elevation-map";
@@ -110,6 +202,11 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   takeaways?: string[];
   /** Optional concept-lesson content rendered with the standard lesson layout. */
   sections?: Section[];
+  /** Teaching content around the interactive player, optionally selected by its inputs. */
+  walkthroughIntro?: Section[] | ((inputs: TInputs) => Section[]);
+  walkthroughReview?: Section[] | ((inputs: TInputs) => Section[]);
+  /** Questions rendered after the lesson takeaways. */
+  quiz?: QuizQuestion[];
   variant: string;
   view: View | ((inputs: TInputs) => View);
   code: string;
@@ -152,11 +249,16 @@ export type QuizQuestion = {
   testCode?: string;
   expectedOutput?: string;
   packages?: string[];
+  /** Source constructs that a coding answer must include, beyond matching output. */
+  requiredCodePatterns?: string[];
+  /** Learner-facing guidance displayed when required source constructs are missing. */
+  validationMessage?: string;
 };
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
+  | { kind: "syntax"; title: string; code: string; description: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
   | { kind: "array-dimensions-explorer" }
   | { kind: "array-slice-explorer" }
@@ -167,7 +269,7 @@ export type Section =
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
-  | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "image"; src: string; alt: string; caption?: string; className?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | { kind: "animation"; variant: string; caption?: string }
   | { kind: "system-design-evolution" }
@@ -190,6 +292,7 @@ export type Section =
   | { kind: "ports-diagram" }
   | { kind: "osi-model-diagram" }
   | { kind: "tcp-udp-diagram" }
+  | { kind: "ssh-connection-flow" }
   | { kind: "availability-diagram" }
   | { kind: "reliability-diagram" }
   | { kind: "consistency-diagram" }

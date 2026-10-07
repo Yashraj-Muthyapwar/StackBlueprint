@@ -56,6 +56,23 @@ Use this mode when a lesson already exists. Preserve its stable slug, route, pro
   }
   ```
 
+### Tutorial lesson structure
+
+For a concept-driven Python lesson, use a tutorial-page sequence rather than mixing explanation, patterns, and examples in one prose block:
+
+1. A concise concept heading and explanation.
+2. A `syntax` section for the structural pattern when the construct has one.
+3. An `interactive-code` section immediately after it, showing a verified runnable example.
+4. A rule, edge case, or common mistake only when it adds useful context.
+
+Use precise, topic-first teaching headings that match the language feature, such as `IF Statement`, `IF/ELSE`, `ELIF and IF ELSE Ladder`, `Ternary Operator`, and `is vs ==`. For a multi-concept lesson, prefer a progression such as `Why <topic> matters`, a brief overview such as `<Topic> at a glance`, the individual concept names (`Instance Methods`, `Class Methods`, `Getter Methods`), a choice or comparison section, and an applied wrap-up such as `Putting <Topic> Together`. Avoid vague or procedural labels such as `Step-by-step`, `The core idea`, or `Use a ...` when a specific concept name is clearer.
+
+Keep each heading's content self-contained. A section must start with the definition or goal of its own concept, followed by its syntax and runnable example. Put the explanation of an example immediately after that example and before the next concept heading. Never place the previous section's explanation under the next section's heading.
+
+The shared `syntax` section renders a titled, line-numbered pattern panel. Use it for templates and structural forms, for example `if condition:` followed by an indented body. Give it a concise `title`, `code`, and `description`. It complements the runnable example and is not a replacement for it.
+
+Do not repeat a syntax template in the surrounding prose after a syntax panel exists. Use prose to explain behavior, order of evaluation, indentation, or when to choose the construct.
+
 ## 3. Animation Placement
 - The `{ "kind": "animation" }` section should generally be placed immediately **after** the introductory "Why this matters" prose block, before diving into the detailed step-by-step concepts. 
 - Add one only when it makes an execution flow, data transformation, object relationship, or state change clearer. A new lesson does not need an animation purely for consistency.
@@ -129,3 +146,11 @@ Use this mode when a lesson already exists. Preserve its stable slug, route, pro
     "body": "- **Mistake 1**: Explanation...\n- **Mistake 2**: Explanation..."
   }
   ```
+
+## 8. Final Quiz Lessons
+- A final quiz is a module assessment, not a regular five-question lesson quiz. Follow the requested question count and mark its quiz section with `isFinalQuiz: true`.
+- Cover only concepts explicitly taught in the preceding lessons. Before writing questions, map every multiple-choice item and coding challenge to a prior lesson. Do not introduce future topics.
+- Start directly with question 1. Do not add generic takeaways, empty introductory prose, or placeholder text before a final quiz. Purposeful module instructions are allowed only when they add information the learner needs.
+- Final-quiz coding challenges must keep the standard editor's **Run Code** control and output visible. Require a real learner edit before the final submission control can be enabled.
+- When a coding challenge requires a specific variable, operation, or conversion, do not grade the final output alone. Use `requiredCodePatterns` for the required source constructs and `testCode` assertions for the required runtime state, then verify that an output-only shortcut fails.
+- During browser verification, confirm that the final-quiz route has no generic takeaway fallback or blurred pre-quiz content, each coding challenge runs and displays output, and submission becomes available only after every response is complete.

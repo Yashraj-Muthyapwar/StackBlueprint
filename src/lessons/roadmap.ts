@@ -52,6 +52,8 @@ import {
   Box,
   Code2,
   Columns3,
+  Zap,
+  FunctionSquare,
 } from "lucide-react";
 
 import type { LessonBuilder } from "./types";
@@ -2500,22 +2502,71 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "1. Foundations",
         patterns: [
-          lockedPattern("Python Basics", "basics", "Variables, data types, and control flow."),
-          lockedPattern(
-            "Data Structures",
-            "data-structures",
-            "Lists, dictionaries, sets, and tuples.",
-          ),
+          {
+            title: "Python Basics",
+            slug: "basics",
+            blurb: "Introduction, syntax, variables, data types, and I/O.",
+            locked: false,
+            path: "/python/basics",
+            lessons: [
+              { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
+              { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
+              { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
+              { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
+              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: HelpCircle, path: "/python/basics/python-basics-final-quiz" },
+            ],
+          },
+          {
+            title: "Control Flow",
+            slug: "control-flow",
+            blurb: "Control the execution path with conditions and loops.",
+            locked: false,
+            path: "/python/control-flow",
+            lessons: [
+              { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
+              { slug: "if-else", title: "Conditional Branching: If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
+              { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
+              { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
+              { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
+              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
+            ],
+          },
+          {
+            title: "Data Structures",
+            slug: "data-structures",
+            blurb: "Lists, dictionaries, sets, and tuples.",
+            locked: false,
+            path: "/python/data-structures",
+            lessons: [
+              { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
+              { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
+              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
+              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
+              { slug: "collections-module", title: "Collections Module", icon: Database, path: "/python/data-structures/collections-module" },
+              { slug: "data-structures-final-quiz", title: "Data Structures Final Quiz", icon: HelpCircle, path: "/python/data-structures/data-structures-final-quiz" },
+            ],
+          },
         ],
       },
       {
         title: "2. Intermediate Concepts",
         patterns: [
-          lockedPattern(
-            "Functions & Modules",
-            "functions",
-            "Defining functions, scope, and importing modules.",
-          ),
+          {
+            title: "Functions & Modules",
+            slug: "functions",
+            blurb: "Defining functions, scope, and importing modules.",
+            locked: false,
+            path: "/python/functions",
+            lessons: [
+              { slug: "function-basics", title: "Function Basics", icon: FunctionSquare, path: "/python/functions/function-basics" },
+              { slug: "arguments-parameters", title: "Arguments & Parameters", icon: FunctionSquare, path: "/python/functions/arguments-parameters" },
+              { slug: "scope-namespaces", title: "Scope & Namespaces", icon: FunctionSquare, path: "/python/functions/scope-namespaces" },
+              { slug: "advanced-functions", title: "Advanced Functions", icon: FunctionSquare, path: "/python/functions/advanced-functions" },
+              { slug: "modules-packages", title: "Modules & Packages", icon: FunctionSquare, path: "/python/functions/modules-packages" },
+              { slug: "package-management", title: "Package Management", icon: FunctionSquare, path: "/python/functions/package-management" },
+              { slug: "functions-final-quiz", title: "Functions & Modules Final Quiz", icon: HelpCircle, path: "/python/functions/functions-final-quiz" },
+            ],
+          },
           {
             slug: "oop",
             title: "Object-Oriented Programming",
@@ -2525,7 +2576,7 @@ export const roadmap: RoadmapCategory[] = [
             lessons: [
               {
                 slug: "classes-and-objects",
-                title: "Classes and Objects",
+                title: "OOP Basics: Classes and Objects",
                 icon: Box,
                 path: "/python/oop/classes-and-objects",
               },
@@ -2576,6 +2627,12 @@ export const roadmap: RoadmapCategory[] = [
                 title: "Special Methods",
                 icon: Code2,
                 path: "/python/oop/special-methods",
+              },
+              {
+                slug: "oop-final-quiz",
+                title: "Object-Oriented Programming Final Quiz",
+                icon: HelpCircle,
+                path: "/python/oop/oop-final-quiz",
               },
             ],
           },

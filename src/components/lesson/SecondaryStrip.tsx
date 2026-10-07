@@ -8,15 +8,32 @@ const COLOR_MAP: Record<PointerColor, string> = {
   rose: "var(--rose)",
 };
 
-export function SecondaryStrip({ data }: { data: SecondaryArray }) {
+export function SecondaryStrip({
+  data,
+  compact: wantCompact = false,
+}: {
+  data: SecondaryArray;
+  compact?: boolean;
+}) {
+  // Pointer tags sit above the cells and need the room, so strips that carry pointers never compact.
+  const compact = wantCompact && !(data.pointers && data.pointers.length > 0);
   const arr = data.array;
   const n = arr.length;
-  const CELL = n <= 10 ? 40 : n <= 16 ? 32 : 26;
+  const BASE = compact ? (n <= 10 ? 30 : 26) : n <= 10 ? 40 : n <= 16 ? 32 : 26;
+  // Wider labels (e.g. "6:2", "[1..3]") get wider cells instead of spilling out of them.
+  const longest = arr.reduce<number>((m, v) => Math.max(m, String(v).length), 0);
+  const CELL = Math.max(BASE, longest * 8 + 14);
   const GAP = 4;
   const highlightSet = new Set(data.highlight?.indices ?? []);
   const tone = data.highlight?.kind;
   const ringColor =
-    tone === "match" ? "var(--mint)" : tone === "swap" ? "var(--rose)" : tone === "compare" ? "var(--violet)" : "transparent";
+    tone === "match"
+      ? "var(--mint)"
+      : tone === "swap"
+        ? "var(--rose)"
+        : tone === "compare"
+          ? "var(--violet)"
+          : "transparent";
 
   const pointerByIdx = new Map<number, string[]>();
   for (const p of data.pointers ?? []) {
@@ -27,8 +44,12 @@ export function SecondaryStrip({ data }: { data: SecondaryArray }) {
   for (const p of data.pointers ?? []) pointerColor.set(p.name, p.color);
 
   return (
-    <div className="rounded-2xl border border-hairline bg-surface px-4 py-3">
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+    <div
+      className={`rounded-2xl border border-hairline bg-surface px-4 ${compact ? "py-2" : "py-3"}`}
+    >
+      <div
+        className={`${compact ? "mb-1" : "mb-2"} font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`}
+      >
         {data.label}
       </div>
       <div className="flex flex-wrap items-end" style={{ gap: GAP }}>
@@ -58,13 +79,15 @@ export function SecondaryStrip({ data }: { data: SecondaryArray }) {
                 className="grid place-items-center rounded-md bg-surface-2 font-mono text-xs text-foreground"
                 style={{
                   width: CELL,
-                  height: CELL,
+                  height: BASE,
                   boxShadow: `inset 0 0 0 1px var(--hairline), 0 0 0 2px ${isHit ? ringColor : "transparent"}`,
                 }}
               >
                 {v}
               </motion.div>
-              <div className="mt-1 text-center font-mono text-[9px] text-muted-foreground/60">{i}</div>
+              <div className="mt-1 text-center font-mono text-[9px] text-muted-foreground/60">
+                {i}
+              </div>
             </div>
           );
         })}

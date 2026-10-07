@@ -24,7 +24,41 @@ export type QuizQuestion = {
   initialCode?: string;
   testCode?: string;
   expectedOutput?: string;
+  packages?: string[];
+  requiredCodePatterns?: string[];
+  validationMessage?: string;
 };
+
+function renderInlineCode(text: string) {
+  return text.split(/(`[^`]+`)/g).map((part, index) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return (
+        <code
+          key={index}
+          className="mx-0.5 inline whitespace-nowrap rounded-md border border-mint/20 bg-mint/10 px-1.5 py-0.5 font-mono text-[0.82em] font-medium text-mint"
+        >
+          {part.slice(1, -1)}
+        </code>
+      );
+    }
+    return part;
+  });
+}
+
+function validateRequiredCodePatterns(question: QuizQuestion, code: string): string | null {
+  if (!question.requiredCodePatterns?.length) return null;
+
+  // Comments do not count as a solution. This catches output-only shortcuts while
+  // allowing normal whitespace differences in a learner's code.
+  const executableCode = code.replace(/#.*/g, "");
+  const matchesAllPatterns = question.requiredCodePatterns.every((pattern) =>
+    new RegExp(pattern, "m").test(executableCode),
+  );
+
+  return matchesAllPatterns
+    ? null
+    : question.validationMessage || "Your code needs to use the required variables and operations.";
+}
 
 function parsePythonError(errorText: string): { coreIssue: string; hint: string } | null {
   if (!errorText) return null;
@@ -204,6 +238,11 @@ function NormalQuiz({
 
     if (currentQuestion.interactiveCode) {
       try {
+        const validationError = validateRequiredCodePatterns(currentQuestion, commandInput);
+        if (validationError) {
+          actualOutput = validationError;
+          throw new Error(validationError);
+        }
         const { getPyodide } = await import("@/lib/pyodide-loader");
         const pyodide = await getPyodide();
         if (currentQuestion.packages?.length) await pyodide.loadPackage(currentQuestion.packages);
@@ -348,7 +387,7 @@ function NormalQuiz({
             : "mb-6 text-lg font-medium",
         )}
       >
-        {currentQuestion.question}
+        {renderInlineCode(currentQuestion.question)}
       </h3>
 
       {currentQuestion.interactiveCode ? (
@@ -493,7 +532,7 @@ function NormalQuiz({
                       data.isFinalQuiz ? "text-base md:text-lg" : "",
                     )}
                   >
-                    {opt.text}
+                    {renderInlineCode(opt.text)}
                   </span>
                 </div>
                 {isAnswered && isCorrect && (
@@ -591,7 +630,7 @@ function NormalQuiz({
                   })()
                 : currentQuestion.explanation && (
                     <p className="text-sm opacity-90 leading-relaxed mt-2">
-                      {currentQuestion.explanation}
+                      {renderInlineCode(currentQuestion.explanation)}
                     </p>
                   )}
             </div>
@@ -633,7 +672,8 @@ function FinalQuiz({
   });
 
   useEffect(() => {
-    onActiveChange?.(true);
+    onActiveChange?.(false);
+    return () => onActiveChange?.(false);
   }, [onActiveChange]);
 
   const handleSelectOption = (questionIndex: number, optionIndex: number) => {
@@ -662,6 +702,11 @@ function FinalQuiz({
       const q = shuffledQuestions[idx];
       if (q.interactiveCode) {
         try {
+          const validationError = validateRequiredCodePatterns(q, commandAnswers[idx] || "");
+          if (validationError) {
+            newOutputs[idx] = validationError;
+            continue;
+          }
           const { getPyodide } = await import("@/lib/pyodide-loader");
           const pyodide = await getPyodide();
           if (q.packages?.length) await pyodide.loadPackage(q.packages);
@@ -703,11 +748,12 @@ function FinalQuiz({
     }
   };
 
-  const allAnswered = shuffledQuestions.every((q, i) =>
-    q.commandAnswer || q.interactiveCode
-      ? commandAnswers[i] !== undefined || (q.interactiveCode && q.initialCode)
-      : selectedAnswers[i] !== undefined,
-  );
+  const allAnswered = shuffledQuestions.every((q, i) => {
+    if (q.interactiveCode || q.commandAnswer) {
+      return Boolean(commandAnswers[i]?.trim());
+    }
+    return selectedAnswers[i] !== undefined;
+  });
 
   return (
     <div className="mt-8 w-full max-w-3xl mx-auto">
@@ -723,25 +769,29 @@ function FinalQuiz({
         </div>
       )}
 
-      <div className="space-y-14">
+      <div className="space-y-16">
         {shuffledQuestions.map((q, qIndex) => (
-          <div key={qIndex} className="relative">
+          <div key={qIndex} className="relative border-b border-hairline/70 pb-16 last:border-b-0">
             <div className="flex items-start gap-4 md:gap-6">
-              <span className="text-lg md:text-xl font-medium text-muted-foreground shrink-0 mt-0.5">
+              <span className="mt-1 shrink-0 font-mono text-sm font-medium text-muted-foreground md:text-base">
                 {qIndex + 1}.
               </span>
 
-              <div className="flex-1">
-                <h3 className="mb-6 text-lg md:text-xl font-medium leading-relaxed text-foreground">
-                  {q.question}
+              <div className="min-w-0 flex-1">
+                {q.interactiveCode && (
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-mint/25 bg-mint/5 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-mint">
+                    <Terminal className="size-3.5" />
+                    Coding challenge
+                  </div>
+                )}
+                <h3 className="mb-7 max-w-4xl text-xl font-medium leading-[1.55] tracking-tight text-foreground md:text-2xl">
+                  {renderInlineCode(q.question)}
                 </h3>
 
                 {q.interactiveCode ? (
                   <InteractivePythonBlock
                     initialCode={q.initialCode || ""}
                     onChange={(code) => handleCommandChange(qIndex, code)}
-                    hideRunButton={true}
-                    hideOutput={true}
                     className="my-0 border-hairline/60"
                   />
                 ) : q.commandAnswer ? (
@@ -829,7 +879,7 @@ function FinalQuiz({
                           >
                             {String.fromCharCode(65 + oIndex)}
                           </div>
-                          <span className="text-base leading-relaxed flex-1 mt-1">{opt.text}</span>
+                          <span className="mt-1 flex-1 text-base leading-relaxed">{renderInlineCode(opt.text)}</span>
 
                           {isSubmitted && isCorrect && (
                             <CheckCircle2 className="ml-auto size-6 shrink-0 text-mint" />
@@ -946,8 +996,8 @@ function FinalQuiz({
                               );
                             })()
                           : q.explanation && (
-                              <p className="text-sm leading-relaxed text-muted-foreground mt-2">
-                                {q.explanation}
+                              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                                {renderInlineCode(q.explanation)}
                               </p>
                             )}
                       </div>

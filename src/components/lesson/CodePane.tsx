@@ -2,13 +2,25 @@ import { motion } from "motion/react";
 import { useMemo, useState } from "react";
 import { Check, Copy } from "lucide-react";
 
-
 /**
  * Renders Python code with line numbers and a sliding highlight bar
  * that animates to the currently-executing line.
  */
-export function CodePane({ code, activeLine }: { code: string; activeLine: number }) {
+export function CodePane({
+  code,
+  activeLine,
+  activeEnd,
+  costAnnotations,
+}: {
+  code: string;
+  activeLine: number;
+  /** Optional last line of a highlighted range (inclusive). */
+  activeEnd?: number;
+  costAnnotations?: { line: number; end?: number; label: string; cost: string }[];
+}) {
   const lines = useMemo(() => code.split("\n"), [code]);
+  const lastActive = Math.max(activeLine, activeEnd ?? activeLine);
+  const span = lastActive - activeLine + 1;
   const [copied, setCopied] = useState(false);
   const LINE_H = 26; // px per line
 
@@ -21,7 +33,6 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
       /* ignore */
     }
   };
-
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface">
@@ -48,7 +59,6 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
             python
           </span>
         </div>
-
       </div>
 
       <div className="relative flex-1 overflow-auto">
@@ -57,22 +67,23 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
           <motion.div
             className="pointer-events-none absolute left-0 right-0 rounded-md"
             style={{
-              height: LINE_H,
               background:
                 "linear-gradient(90deg, color-mix(in oklab, var(--mint) 18%, transparent), color-mix(in oklab, var(--mint) 4%, transparent))",
               borderLeft: "2px solid var(--mint)",
             }}
-            animate={{ y: (activeLine - 1) * LINE_H }}
+            initial={false}
+            animate={{ y: (activeLine - 1) * LINE_H, height: span * LINE_H }}
             transition={{ type: "spring", stiffness: 380, damping: 30 }}
           />
 
           {lines.map((line, i) => {
             const lineNo = i + 1;
-            const isActive = lineNo === activeLine;
+            const annotation = costAnnotations?.find((block) => block.line === lineNo);
+            const isActive = lineNo >= activeLine && lineNo <= lastActive;
             return (
               <div
                 key={i}
-                className="grid grid-cols-[3rem_1fr] items-center"
+                className={`grid items-center ${costAnnotations ? "min-w-[510px] grid-cols-[3rem_1fr_auto]" : "grid-cols-[3rem_1fr]"}`}
                 style={{ height: LINE_H }}
               >
                 <span
@@ -90,6 +101,20 @@ export function CodePane({ code, activeLine }: { code: string; activeLine: numbe
                 >
                   {highlight(line)}
                 </pre>
+                {costAnnotations && (
+                  <span className="whitespace-nowrap pr-3">
+                    {annotation && (
+                      <motion.span
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        title={annotation.label}
+                        className={`rounded-md border px-2 py-0.5 text-[11px] ${isActive ? "border-mint/40 bg-mint/10 text-mint" : "border-hairline text-muted-foreground"}`}
+                      >
+                        {annotation.cost}
+                      </motion.span>
+                    )}
+                  </span>
+                )}
               </div>
             );
           })}
@@ -128,7 +153,8 @@ function highlight(line: string): React.ReactNode {
 
   // Group multi-char operators (!=, ==, <=, >=, +=, -=, *=, /=, //, **, ->) so
   // font ligatures never fuse `!=` into a ≠ glyph across adjacent single-char spans.
-  const re = /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|!=|==|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|->|[^\s\w])/g;
+  const re =
+    /(\s+|[A-Za-z_][A-Za-z0-9_]*|\d+|".*?"|'.*?'|!=|==|<=|>=|\+=|-=|\*=|\/=|\/\/|\*\*|->|[^\s\w])/g;
   let m: RegExpExecArray | null;
   let k = 0;
   while ((m = re.exec(codePart)) !== null) {
@@ -157,7 +183,10 @@ function highlight(line: string): React.ReactNode {
       out.push(<span key={k++}>{tok}</span>);
     } else {
       out.push(
-        <span key={k++} style={{ color: "color-mix(in oklab, var(--foreground) 60%, transparent)" }}>
+        <span
+          key={k++}
+          style={{ color: "color-mix(in oklab, var(--foreground) 60%, transparent)" }}
+        >
           {tok}
         </span>,
       );

@@ -34,14 +34,23 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
   const maxWater = Math.max(...array.map((h, i) => h + (waterLevels[i] || 0)));
   const maxH = Math.max(maxWater, 1);
 
-  // Parse L_max and R_max from status if they exist
-  let lMax = 0, rMax = 0;
-  if (step.status) {
+  // Prefer structured maxima; fall back to parsing the status text for older lessons.
+  let lMax = step.leftMax ?? 0;
+  let rMax = step.rightMax ?? 0;
+  if (step.leftMax === undefined && step.rightMax === undefined && step.status) {
     const lMatch = step.status.match(/L_max = (\d+)/);
     const rMatch = step.status.match(/R_max = (\d+)/);
     if (lMatch) lMax = parseInt(lMatch[1], 10);
     if (rMatch) rMax = parseInt(rMatch[1], 10);
   }
+
+  // Bars strictly between the two pointers have not been settled yet.
+  const leftPtr = pointers.find((p) => p.name === "left");
+  const rightPtr = pointers.find((p) => p.name === "right");
+  const winFrom = leftPtr ? leftPtr.index + 1 : 0;
+  const winTo = rightPtr ? rightPtr.index - 1 : -1;
+  const hasWindow = !!leftPtr && !!rightPtr && winTo >= winFrom;
+  const isUnsettled = (i: number) => hasWindow && i >= winFrom && i <= winTo;
 
   // Layout math
   const padding = 64; // horizontal padding
@@ -84,6 +93,18 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
             />
           )
         ))}
+
+        {/* Unsettled zone: bars between the pointers whose water is not decided yet */}
+        <motion.div
+          initial={false}
+          animate={{
+            left: hasWindow ? winFrom * (CELL + GAP) - 2 : 0,
+            width: hasWindow ? (winTo - winFrom + 1) * CELL + (winTo - winFrom) * GAP + 4 : 0,
+            opacity: hasWindow ? 1 : 0,
+          }}
+          transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+          className="pointer-events-none absolute bottom-0 top-0 z-0 rounded-md border border-dashed border-violet/40 bg-violet/5"
+        />
 
         {/* Left Max Guide */}
         <motion.div
@@ -130,7 +151,7 @@ export function ElevationMapCanvas({ step }: { step: ArrayStep }) {
               {/* Terrain Block */}
               <motion.div
                 initial={false}
-                animate={{ height: val * unitHeight }}
+                animate={{ height: val * unitHeight, opacity: isUnsettled(i) ? 0.6 : 1 }}
                 transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
                 className={cn(
                   "w-full rounded-t-[3px] shadow-sm transition-colors border-t border-white/10",

@@ -136,7 +136,7 @@ export function InteractivePythonBlock({
         </div>
       </div>
 
-      <div className="relative bg-slate-950 border-b border-hairline min-h-[120px]">
+      <div className="relative bg-slate-950 border-b border-hairline">
         <CodeMirror
           value={code}
           onChange={(v) => {
