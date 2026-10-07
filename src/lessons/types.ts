@@ -23,6 +23,9 @@ export type CellTone = "compare" | "swap" | "match" | "visit";
 export type CellHighlight = { r: number; c: number; tone: CellTone };
 export type CellPointer = { name: string; r: number; c: number; color: PointerColor };
 
+/** A tiny label drawn in the corner of a matrix cell, e.g. the order a traversal visited it. */
+export type CellNote = { r: number; c: number; text: string; color?: PointerColor };
+
 export type MatrixRect = {
   r1: number;
   c1: number;
@@ -119,6 +122,14 @@ export type Step = {
   matrixLabel?: string;
   // matrix2: draw row 0 and column 0 as the zero border of a prefix matrix
   matrix2Border?: boolean;
+  // matrix2: "offset" (default) lines input row r up with matrix2 row r + 1, as for a prefix matrix.
+  // "aligned" draws two independent grids top to top, e.g. an input and its transposed result.
+  matrix2Layout?: "offset" | "aligned";
+  // single-matrix view: draw row / column indices and corner badges, like the two-grid view does
+  matrixIndices?: boolean;
+  // small corner labels on cells (e.g. visit order), for the first and second grid
+  cellNotes?: CellNote[];
+  cellNotes2?: CellNote[];
   cellHighlights2?: CellHighlight[];
   cellPointers2?: CellPointer[];
   // optional water levels for elevation-map

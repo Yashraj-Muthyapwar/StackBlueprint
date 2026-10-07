@@ -1,5 +1,183 @@
 import { type LessonContent } from "@/lessons/types";
 
+export const OOP_FINAL_QUIZ_LESSON: LessonContent = {
+  slug: "oop-final-quiz",
+  title: "Object-Oriented Programming Final Quiz",
+  subtitle: "Check your understanding of classes, attributes, methods, encapsulation, inheritance, polymorphism, abstraction, composition, and special methods with fifteen questions.",
+  sections: [
+    {
+      kind: "quiz",
+      isFinalQuiz: true,
+      questions: [
+        {
+          id: "oop-final-1",
+          question: "What is the relationship between a class and an object?",
+          options: [
+            "A class is a blueprint; an object is an instance created from it.",
+            "A class is one stored value; an object is a function.",
+            "An object is the blueprint; a class is one instance.",
+            "They are two names for the same Python feature."
+          ],
+          correctIndex: 0,
+          explanation: "A class describes the structure and behavior. Each object is a separate instance created from that class."
+        },
+        {
+          id: "oop-final-2",
+          question: "Which statement correctly describes an instance attribute and a class attribute?",
+          options: [
+            "An instance attribute belongs to one object; a class attribute is shared by the class's objects unless shadowed.",
+            "Both attributes always belong only to one object.",
+            "A class attribute can be accessed only through self.",
+            "An instance attribute must be defined outside every method."
+          ],
+          correctIndex: 0,
+          explanation: "Instance attributes are usually created with `self` and hold per-object data. Class attributes are defined in the class body and represent shared class-level data."
+        },
+        {
+          id: "oop-final-3",
+          question: "When should you use a class method rather than an instance method?",
+          options: [
+            "When the method needs to read or change class-level data through cls.",
+            "When the method needs data from one specific object through self.",
+            "Whenever a method should print a value.",
+            "Only when a class has no attributes."
+          ],
+          correctIndex: 0,
+          explanation: "A class method receives `cls` and works with data owned by the class, such as a shared tax rate or an alternative constructor."
+        },
+        {
+          id: "oop-final-4",
+          question: "What is the main purpose of a property setter in encapsulation?",
+          options: [
+            "It can validate or control a value before updating internal state.",
+            "It makes an attribute impossible to read.",
+            "It creates inheritance automatically.",
+            "It changes every instance attribute into a class attribute."
+          ],
+          correctIndex: 0,
+          explanation: "A property setter lets an object keep attribute-style access while checking values before storing them."
+        },
+        {
+          id: "oop-final-5",
+          question: "What does `super()` do in a child class?",
+          options: [
+            "It accesses the next implementation in the method resolution order, commonly a parent method.",
+            "It turns an instance method into a static method.",
+            "It makes every parent attribute private.",
+            "It skips the child class initializer."
+          ],
+          correctIndex: 0,
+          explanation: "`super()` follows the method resolution order (MRO) to call the next appropriate implementation, often to reuse parent initialization or behavior."
+        },
+        {
+          id: "oop-final-6",
+          question: "Given `class D(B, C)` where both B and C inherit from A, which order begins `D.mro()`?",
+          options: [
+            "D, B, C, A, object", "D, C, B, A, object", "A, B, C, D, object", "D, A, B, C, object"
+          ],
+          correctIndex: 0,
+          explanation: "For this diamond-shaped hierarchy, Python's MRO begins with D, then B, then C, then A, then object."
+        },
+        {
+          id: "oop-final-7",
+          question: "Which situation best demonstrates polymorphism?",
+          options: [
+            "A checkout function calls `pay(amount)` on different payment objects, each with its own implementation.",
+            "A class has only one instance.",
+            "A variable is renamed inside a function.",
+            "A class stores a private attribute."
+          ],
+          correctIndex: 0,
+          explanation: "Polymorphism lets code use a shared interface while each object supplies behavior appropriate to its own type."
+        },
+        {
+          id: "oop-final-8",
+          question: "What does `@abstractmethod` communicate in an abstract base class?",
+          options: [
+            "Concrete child classes must implement that method before they can be instantiated.",
+            "The method is automatically copied into every child class.",
+            "The method can never be called.",
+            "The class becomes a static class."
+          ],
+          correctIndex: 0,
+          explanation: "An abstract method defines required behavior in a contract. A child that leaves it unimplemented remains abstract."
+        },
+        {
+          id: "oop-final-9",
+          question: "Which relationship is best modeled with composition?",
+          options: [
+            "An Order has a ShoppingCart.", "A Developer is an Employee.", "A Dog is an Animal.", "A Student is a Person."
+          ],
+          correctIndex: 0,
+          explanation: "Composition models a has-a relationship: an Order contains or uses a ShoppingCart rather than inheriting from one."
+        },
+        {
+          id: "oop-final-10",
+          question: "Which special method defines the readable result of `print(product)`?",
+          options: ["__str__()", "__repr__()", "__len__()", "__call__()"],
+          correctIndex: 0,
+          explanation: "`print(object)` uses `__str__()` when it is defined. `__repr__()` is the developer-oriented representation."
+        },
+        {
+          id: "oop-final-11",
+          question: "Create a `Vehicle` class that stores `brand`. Then create `Car(Vehicle)` that uses `super()` to initialize `brand`, stores `doors`, and prints `Tesla: 4` for a Tesla with four doors.",
+          interactiveCode: true,
+          initialCode: "# Write your classes and print statement below\n",
+          testCode: "car = Car('Tesla', 4)\nassert car.brand == 'Tesla'\nassert car.doors == 4",
+          expectedOutput: "Tesla: 4",
+          requiredCodePatterns: ["class\\s+Vehicle\\s*:", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*brand\\s*\\)", "class\\s+Car\\s*\\(\\s*Vehicle\\s*\\)\\s*:", "super\\s*\\(\\s*\\)\\s*\\.\\s*__init__\\s*\\(\\s*brand\\s*\\)", "self\\s*\\.\\s*doors\\s*=\\s*doors", "print\\s*\\("],
+          validationMessage: "Define Vehicle and Car(Vehicle), call super().__init__(brand), save doors, and print the requested Tesla result.",
+          explanation: "Inheritance lets Car reuse Vehicle's initialization, while `super()` follows the inheritance relationship instead of duplicating the brand assignment."
+        },
+        {
+          id: "oop-final-12",
+          question: "Create a `Student` class with a class attribute `school_name = \"Stack Academy\"`, an instance `name`, and a `@classmethod` named `set_school_name`. Change the school name to `\"Code Academy\"` and print it through the class.",
+          interactiveCode: true,
+          initialCode: "# Write your class and print statement below\n",
+          testCode: "student = Student('Ava')\nStudent.set_school_name('Code Academy')\nassert student.name == 'Ava'\nassert Student.school_name == 'Code Academy'",
+          expectedOutput: "Code Academy",
+          requiredCodePatterns: ["class\\s+Student\\s*:", "school_name\\s*=\\s*['\\\"]Stack Academy['\\\"]", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*name\\s*\\)", "self\\s*\\.\\s*name\\s*=\\s*name", "@classmethod", "def\\s+set_school_name\\s*\\(\\s*cls\\s*,\\s*school_name\\s*\\)", "cls\\s*\\.\\s*school_name\\s*=\\s*school_name", "print\\s*\\(\\s*Student\\s*\\.\\s*school_name\\s*\\)"],
+          validationMessage: "Use a class attribute, an instance attribute, and a class method that updates school_name through cls.",
+          explanation: "The class method changes shared class-level data through `cls`, while each Student instance keeps its own name."
+        },
+        {
+          id: "oop-final-13",
+          question: "Create an `Account` class with a private `_balance` attribute and a `balance` property. Its setter must raise `ValueError` for a negative value. Set the balance to 25 and print it.",
+          interactiveCode: true,
+          initialCode: "# Write your Account class and print statement below\n",
+          testCode: "account = Account(10)\naccount.balance = 25\nassert account.balance == 25\ntry:\n    account.balance = -1\nexcept ValueError:\n    pass\nelse:\n    raise AssertionError('Negative balances must raise ValueError')",
+          expectedOutput: "25",
+          requiredCodePatterns: ["class\\s+Account\\s*:", "self\\s*\\.\\s*_balance\\s*=\\s*balance", "@property", "def\\s+balance\\s*\\(\\s*self\\s*\\)", "@balance\\s*\\.\\s*setter", "raise\\s+ValueError", "print\\s*\\("],
+          validationMessage: "Store _balance, expose it with @property, validate the setter, then print a balance of 25.",
+          explanation: "A property keeps a simple attribute-like interface while allowing the class to reject invalid changes."
+        },
+        {
+          id: "oop-final-14",
+          question: "Create an abstract `Notifier` class with an abstract `send(message)` method. Add `EmailNotifier` that prints `Email: Hello` when passed `\"Hello\"`, then call it.",
+          interactiveCode: true,
+          initialCode: "from abc import ABC, abstractmethod\n\n# Write your classes and call below\n",
+          testCode: "from contextlib import redirect_stdout\nfrom io import StringIO\n\nassert issubclass(Notifier, ABC)\nassert 'send' in Notifier.__abstractmethods__\nassert isinstance(EmailNotifier(), Notifier)\n\ncaptured = StringIO()\nwith redirect_stdout(captured):\n    EmailNotifier().send('Checked')\nassert captured.getvalue().strip() == 'Email: Checked'",
+          expectedOutput: "Email: Hello",
+          requiredCodePatterns: ["class\\s+Notifier\\s*\\(\\s*ABC\\s*\\)\\s*:", "@abstractmethod", "def\\s+send\\s*\\(\\s*self\\s*,\\s*message\\s*\\)", "class\\s+EmailNotifier\\s*\\(\\s*Notifier\\s*\\)\\s*:", "print\\s*\\("],
+          validationMessage: "Define the ABC contract and a concrete EmailNotifier implementation, then send Hello.",
+          explanation: "Abstract base classes describe the operation that related concrete classes must provide."
+        },
+        {
+          id: "oop-final-15",
+          question: "Create a `Playlist` class that stores a list of songs and implements `__len__()`. Print the length of a playlist containing `\"Intro\"`, `\"Focus\"`, and `\"Outro\"`.",
+          interactiveCode: true,
+          initialCode: "# Write your Playlist class and print statement below\n",
+          testCode: "playlist = Playlist(['Intro', 'Focus', 'Outro'])\nassert len(playlist) == 3",
+          expectedOutput: "3",
+          requiredCodePatterns: ["class\\s+Playlist\\s*:", "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*songs\\s*\\)", "self\\s*\\.\\s*songs\\s*=\\s*songs", "def\\s+__len__\\s*\\(\\s*self\\s*\\)", "return\\s+len\\s*\\(\\s*self\\s*\\.\\s*songs\\s*\\)", "print\\s*\\(\\s*len\\s*\\("],
+          validationMessage: "Store the songs list, return its length from __len__, and print len(playlist).",
+          explanation: "`__len__()` lets a custom object work naturally with Python's `len()` function."
+        }
+      ]
+    }
+  ]
+};
+
 export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: LessonContent[] }> = {
   oop: {
     title: "Object-Oriented Programming",
@@ -7,15 +185,24 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
     lessons: [
       {
         slug: "classes-and-objects",
-        title: "Classes and Objects",
-        subtitle: "Learn how Python classes and objects help you organize related data and behavior into reusable code.",
+        title: "OOP Basics: Classes and Objects",
+        subtitle: "Learn how object-oriented programming uses classes and objects to organize related data and behavior into reusable code.",
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why OOP Matters",
             body: [
               "As a program grows, managing separate variables and functions can become messy. Object-oriented programming, or OOP, helps you group related data and behavior into one structure.",
               "You will see this idea in web applications, banking systems, games, machine learning libraries, e-commerce platforms, and many other Python projects."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "What is OOP?",
+            body: [
+              "**Object-oriented programming (OOP)** is a programming approach that organizes code around **objects**. An object combines data that describes something with actions that thing can perform.",
+              "For example, a `Car` object can store data such as its brand and speed, and it can perform actions such as `drive()`. A **class** is the reusable blueprint used to create those objects.",
+              "OOP helps you model real-world ideas, reuse a consistent structure, and keep related data and behavior together as a program grows."
             ]
           },
           {
@@ -282,10 +469,10 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Attributes Matter",
             body: [
-              "Not every piece of data should be stored the same way.",
-              "Some values belong to one specific object, while other values should be shared across every object created from a class. Python handles these using **instance attributes** and **class attributes**."
+              "A class often needs two kinds of data: details that vary from object to object, and facts shared by every object.",
+              "Python represents these with **instance attributes** and **class attributes**. Choosing the right one prevents accidental shared state and makes your class easier to understand."
             ]
           },
           {
@@ -295,21 +482,26 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Instance and Class Attributes",
             body: [
               "An **instance attribute** belongs to one specific object.",
               "A **class attribute** belongs to the class itself and is shared by its objects.",
-              "The company name is the same for everyone, so it can be stored once as a **class attribute**.",
-              "Each employee has a different name and salary, so those values should be **instance attributes**."
+              "For example, each student has a different `name`, while every student at the same school can share one `school_name`."
             ]
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Instance Attributes",
             body: [
-              "### 1. Create instance attributes",
-              "Instance attributes are usually created inside `__init__()` using `self`."
+              "Instance attributes are usually created in `__init__()` with `self`. Each object receives its own copy, so changing one object does not change another.",
+              "You can also create or update an instance attribute later with `object_name.attribute = value`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Create and read an instance attribute",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.attribute = value\n\nobject_name.attribute",
+            description: "`self.attribute` stores data on the object being created. Read it outside the class with `object_name.attribute`."
           },
           {
             kind: "interactive-code",
@@ -318,7 +510,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "Each object stores its own values. Changing one employee does not change the other."
+              "`employee1.name` and `employee2.name` are separate values, even though both objects were made from `Employee`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Updating Instance Attributes",
+            body: [
+              "Assigning through one object updates only that object's instance attribute. The other objects keep their own values."
             ]
           },
           {
@@ -327,10 +526,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
+            heading: "Class Attributes",
             body: [
-              "### 2. Create a class attribute",
-              "A class attribute is defined inside the class but outside methods such as `__init__()`."
+              "A class attribute is defined once inside the class, outside methods such as `__init__()`. All objects can use that shared value.",
+              "Python lets you read it through either an object or the class, but `ClassName.attribute` makes the shared ownership clear."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Create and read a class attribute",
+            code: "class ClassName:\n    shared_attribute = value\n\nClassName.shared_attribute",
+            description: "Define a class attribute directly in the class body, outside its methods. Prefer the class name when reading or changing shared data."
           },
           {
             kind: "interactive-code",
@@ -339,48 +545,62 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "This makes sense because `company` belongs to `Employee`, not to one particular employee."
+              "`company` belongs to `Employee`, not to one particular employee, so every object reads the same value."
             ]
           },
           {
             kind: "prose",
+            heading: "Class Attribute Shadowing",
             body: [
-              "### 3. Know which one to use"
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Ask one question:",
-              "**Should every object have its own value, or should the value be shared?**",
-              "Use an **instance attribute** when the ==value can differ between objects.==",
-              "Examples: `name`, `email`, `balance`, `price`, and `speed`."
-            ]
-          },
-          {
-            kind: "prose",
-            body: [
-              "Use a **class attribute** when the ==value describes the class as a whole or should have one shared default.==",
-              "Examples: `company_name`, `school_name`, `tax_rate`, and `species`."
+              "Assigning through the class updates the shared value. Assigning the same name through one object creates an instance attribute that **shadows** the class attribute for that object only.",
+              "This is why intentional shared changes should normally use `ClassName.attribute = value`."
             ]
           },
           {
             kind: "interactive-code",
-            code: `class BankAccount:\n    bank_name = "Blue Bank"\n\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self.balance = balance\n\n\nacc1 = BankAccount("Alice", 1000)\nacc2 = BankAccount("Bob", 2500)\n\nprint(f"{acc1.owner}: \${acc1.balance} ({acc1.bank_name})")\nprint(f"{acc2.owner}: \${acc2.balance} ({acc2.bank_name})")`
+            code: `class Course:\n    duration_weeks = 8\n\n    def __init__(self, student):\n        self.student = student\n\nstudent1 = Course("Maya")\nstudent2 = Course("Leo")\n\nCourse.duration_weeks = 10        # changes the shared class attribute\nstudent1.duration_weeks = 12      # creates an attribute only on student1\n\nprint(student1.duration_weeks)\nprint(student2.duration_weeks)\nprint(Course.duration_weeks)`
           },
           {
             kind: "prose",
             body: [
-              "`owner` and `balance` belong to individual accounts.",
-              "`bank_name` is shared by every account."
+              "The output is `12`, `10`, and `10`: only `student1` has its own `duration_weeks`; `student2` still reads the shared class value."
             ]
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Local Variables",
             body: [
-              "Imagine you are building the product system for an online store.",
-              "Every product has its own name, price, and stock quantity. However, every product currently uses the same sales tax rate."
+              "A variable created inside a method without `self` is a **local variable**. It exists only while that method runs; it is not stored on the object or shared by the class.",
+              "Use `self.name` when data should remain on an object after the method ends."
+            ]
+          },
+          {
+            kind: "interactive-code",
+            code: `class Timer:\n    def describe(self):\n        unit = "minutes"  # local to this method\n        print(f"Duration is measured in {unit}")\n\ntimer = Timer()\ntimer.describe()`
+          },
+          {
+            kind: "prose",
+            heading: "Choosing Attribute Storage",
+            body: [
+              "Use this comparison when deciding whether a value belongs to one object, the whole class, or one temporary method call."
+            ]
+          },
+          {
+            kind: "table",
+            caption: "Choose the right kind of variable",
+            headers: ["Question", "Instance attribute", "Class attribute", "Local variable"],
+            rows: [
+              ["Where is it stored?", "One object", "The class", "One method call"],
+              ["Typical syntax", "`self.name`", "`ClassName.school_name`", "`total = 0`"],
+              ["Is it shared?", "No", "Yes", "No"],
+              ["Good examples", "`name`, `balance`", "`species`, `tax_rate`", "temporary calculation"]
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Putting Attributes Together",
+            body: [
+              "An online store gives every product its own `name`, `price`, and `stock`. The sales-tax rate, however, is shared by the entire product catalog."
             ]
           },
           {
@@ -391,7 +611,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "Each product has different instance data (its `name`, `price`, and `stock`).",
-              "But both use the shared class attribute: `Product.tax_rate = 0.0825`",
+              "Both products use the shared class attribute `Product.tax_rate`.",
               "If the store changes its tax rate, you can update the shared value:",
               "`Product.tax_rate = 0.0925`",
               "Both products will now use the new rate the next time `price_with_tax()` runs."
@@ -400,8 +620,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "callout",
             tone: "warn",
+            title: "Avoid mutable class attributes for per-object data",
+            body: "A list, dictionary, or set stored as a class attribute is shared by every object. For example, `members = []` inside a class gives all instances the same list. If each object needs its own collection, create it in `__init__()` with `self.members = []`."
+          },
+          {
+            kind: "callout",
+            tone: "warn",
             title: "Common mistakes",
-            body: "- **Putting every value in the class**: Object-specific data such as a customer's name or account balance should normally be instance attributes.\n- **Treating class attributes as independent values**: A class attribute is shared unless an object creates its own attribute with the same name.\n- **Changing a shared value through one object**: Prefer `ClassName.attribute` when intentionally changing class-wide data because it makes the intent clearer."
+            body: "- **Putting object-specific data on the class**: a customer's name or an account balance should normally use `self`.\n- **Changing shared data through one object**: it can shadow the class attribute instead of changing it for everyone.\n- **Using an ordinary local variable for persistent object data**: a name without `self` disappears when the method call ends."
           },
           {
             kind: "takeaways",
@@ -409,8 +635,9 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Instance attributes belong to individual objects.",
               "Class attributes belong to the class and are shared across its objects.",
               "Instance attributes are commonly created with `self` inside `__init__()`.",
-              "Class attributes are defined directly inside the class.",
-              "Choose between them by asking whether the value should vary between objects."
+              "Class attributes are defined directly inside the class and are clearest when accessed through `ClassName`.",
+              "Assigning an attribute name on one object can shadow a class attribute for that object.",
+              "Use a local variable for temporary work inside a method, not for data that should stay on the object."
             ]
           },
           {
@@ -438,15 +665,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "attr-vs-class-3",
-                question: "In a class `Car` with `wheels = 4` and `self.brand = brand`, which attribute is shared across all cars?",
+                question: "After `Course.duration_weeks = 10`, then `student1.duration_weeks = 12`, what does `student2.duration_weeks` read if it has no attribute of its own?",
                 options: [
-                  "brand",
-                  "wheels",
-                  "Both of them",
-                  "Neither of them"
+                  "8",
+                  "10",
+                  "12",
+                  "It raises an error"
                 ],
                 correctIndex: 1,
-                explanation: "`wheels` is defined at the class level, making it a class attribute shared by all cars. `brand` is defined on `self`, meaning it's an instance attribute."
+                explanation: "The class assignment changes the shared value to 10. `student1.duration_weeks = 12` creates an attribute only on `student1`, so `student2` still reads the class value."
               },
               {
                 id: "attr-vs-class-4",
@@ -459,15 +686,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "attr-vs-class-5",
-                question: "If you change a class attribute directly on the class (e.g., `Car.wheels = 3`), what happens?",
+                question: "Which statement correctly describes `total = 0` inside a method, when it is not assigned to `self`?",
                 options: [
-                  "Only new objects created after the change will have 3 wheels.",
-                  "All existing objects and new objects will share the new value of 3 wheels.",
-                  "Python will throw an error because class attributes cannot be changed.",
-                  "Existing objects are deleted from memory."
+                  "It is a shared class attribute.",
+                  "It is an instance attribute available as `object.total`.",
+                  "It is a local variable available only while the method runs.",
+                  "It becomes a global variable."
                 ],
-                correctIndex: 1,
-                explanation: "Class attributes are shared by reference. Changing the value on the class itself updates it for all instances that share that attribute."
+                correctIndex: 2,
+                explanation: "A variable without `self` inside a method is local to that method call. It is not stored on the object or class."
               }
             ]
           }
@@ -476,14 +703,14 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "types-of-methods",
         title: "Instance, Class, and Static Methods",
-        subtitle: "The Three Types of Methods",
+        subtitle: "Choose the right method for object data, class data, utility logic, and controlled attribute access.",
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why method types matter",
             body: [
               "Methods define what objects and classes can do. But not every method needs access to the same kind of data.",
-              "Python gives you three common method types: **instance methods**, **class methods**, and **static methods**. Choosing the right one makes your classes easier to understand and maintain."
+              "Python gives you three core method types: **instance methods**, **class methods**, and **static methods**. Getter and setter methods are useful instance-method patterns for reading or safely changing an object's data."
             ]
           },
           {
@@ -493,15 +720,26 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Three types of methods",
             body: [
               "The difference between the three method types comes down to what information the method needs.",
               "An **instance method** works with object-specific data.",
               "A **class method** works with class-level data.",
-              "A **static method** belongs logically to the class, but does not need access to either an object or the class itself.",
-              "### 1. Use an instance method for object data",
+              "A **static method** belongs logically to the class, but does not need access to either an object or the class itself."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Instance Methods",
+            body: [
               "An instance method is the method type you have already been using. Its first parameter is usually `self`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Instance method",
+            code: "class ClassName:\n    def method_name(self, value):\n        return self.attribute + value",
+            description: "An instance method receives `self`, which is the object used to call it."
           },
           {
             kind: "interactive-code",
@@ -510,12 +748,23 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`display_details()` needs the current product's `name` and `price`, so it should be an instance method.",
-              "When you call `laptop.display_details()`, Python automatically passes `laptop` as `self`.",
-              "### 2. Use a class method for class-level behavior",
+              "`display_details()` needs the current product's `name` and `price`, so it is an instance method.",
+              "When you call `laptop.display_details()`, Python automatically passes `laptop` as `self`."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Class Methods",
+            body: [
               "A class method works with the class rather than one specific object.",
               "Add `@classmethod` above the method and use `cls` as the first parameter."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Class method",
+            code: "class ClassName:\n    @classmethod\n    def method_name(cls, value):\n        cls.shared_attribute = value",
+            description: "Use `@classmethod` and `cls` when a method reads or changes class-level data."
           },
           {
             kind: "interactive-code",
@@ -524,12 +773,23 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`cls` refers to the class that called the method. This is similar to how `self` refers to an object.",
-              "Use class methods when the behavior needs class attributes or should affect the class as a whole.",
-              "### 3. Use a static method for related utility logic",
+              "`cls` refers to the class that called the method, much as `self` refers to an object.",
+              "Use a class method when behavior reads or changes class attributes, or should affect the class as a whole."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Static Methods",
+            body: [
               "Sometimes a function belongs conceptually to a class but does not need any object or class data.",
               "Use `@staticmethod` for this case."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Static method",
+            code: "class ClassName:\n    @staticmethod\n    def method_name(value):\n        return value > 0",
+            description: "A static method receives only the arguments you give it. It has no automatic `self` or `cls` parameter."
           },
           {
             kind: "interactive-code",
@@ -539,40 +799,82 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "prose",
             body: [
               "`is_valid_price()` only checks the value it receives. It does not use `self` or `cls`.",
-              "That makes it a good fit for a static method.",
-              "### 4. Choose the method based on what it needs",
+              "That makes it a good fit for a static method."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Getter Methods",
+            body: [
+              "A **getter** (also called an accessor) is an instance method that returns an attribute value. Getters are useful when reading the value needs formatting, calculation, or a controlled interface."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Getter method",
+            code: "def get_attribute(self):\n    return self.attribute",
+            description: "A getter is an ordinary instance method, so its first parameter is `self`."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Profile:\n    def __init__(self, name):\n        self.name = name\n\n    def get_name(self):\n        return self.name\n\nprofile = Profile("Maya")\nprint(profile.get_name())`
+          },
+          {
+            kind: "prose",
+            heading: "Setter Methods",
+            body: [
+              "A **setter** (also called a mutator) is an instance method that changes an attribute. It is especially useful when a value must be checked before it is stored.",
+              "In ordinary Python classes, direct access such as `profile.name` is fine for simple public data. Use a setter when it adds meaningful validation or behavior."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Setter method",
+            code: "def set_attribute(self, value):\n    if value >= 0:\n        self.attribute = value",
+            description: "Put the validation before the assignment so the object never stores an invalid value."
+          },
+          {
+            kind: "interactive-code",
+            code: `class Student:\n    def __init__(self, age=0):\n        self._age = age\n\n    def get_age(self):\n        return self._age\n\n    def set_age(self, age):\n        if age < 0:\n            print("Age cannot be negative")\n            return\n        self._age = age\n\nstudent = Student()\nstudent.set_age(21)\nprint(student.get_age())\nstudent.set_age(-2)\nprint(student.get_age())`
+          },
+          {
+            kind: "prose",
+            heading: "Choosing the Right Method Type",
+            body: [
               "A simple decision process is:"
             ]
           },
           {
             kind: "table",
-            headers: ["Method", "Needs", "First parameter"],
+            headers: ["Method", "Purpose", "First parameter"],
             rows: [
-              ["**Instance method**", "Object data", "`self`"],
-              ["**Class method**", "Class data", "`cls`"],
-              ["**Static method**", "Neither", "None"]
+              ["**Instance method**", "Use object data", "`self`"],
+              ["**Getter / setter**", "Read or validate and change object data", "`self`"],
+              ["**Class method**", "Use or change shared class data", "`cls`"],
+              ["**Static method**", "Related logic that needs neither object nor class data", "None"]
             ]
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Method Types Together",
             body: [
               "Imagine you are building the product system for an online store. The store needs to:",
               "1. calculate the final price of one product",
-              "2. update a tax rate shared by every product",
-              "3. check whether a supplied price is valid",
-              "These responsibilities fit the three method types naturally."
+              "2. read and safely change a product's price",
+              "3. update a tax rate shared by every product",
+              "4. check whether a supplied price is valid",
+              "These responsibilities fit the method types naturally."
             ]
           },
           {
             kind: "interactive-code",
-            code: `class Product:\n    tax_rate = 0.08\n\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def final_price(self):\n        return self.price * (1 + Product.tax_rate)\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nlaptop = Product("Laptop", 1000)\n\n# Instance method works with specific laptop\nprint(laptop.final_price())\n\n# Class method changes shared info\nProduct.update_tax_rate(0.10)\nprint(laptop.final_price())\n\n# Static method performs independent check\nprint(Product.is_valid_price(500))`
+            code: `class Product:\n    tax_rate = 0.08\n\n    def __init__(self, name, price):\n        self.name = name\n        self.price = price\n\n    def final_price(self):\n        return round(self.price * (1 + Product.tax_rate), 2)\n\n    def get_price(self):\n        return self.price\n\n    def set_price(self, new_price):\n        if Product.is_valid_price(new_price):\n            self.price = new_price\n\n    @classmethod\n    def update_tax_rate(cls, new_rate):\n        cls.tax_rate = new_rate\n\n    @staticmethod\n    def is_valid_price(price):\n        return price >= 0\n\nlaptop = Product("Laptop", 1000)\n\nprint(laptop.get_price())\nlaptop.set_price(900)\nprint(laptop.final_price())\nProduct.update_tax_rate(0.10)\nprint(laptop.final_price())\nprint(Product.is_valid_price(-5))`
           },
           {
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "- **Using `self` inside a class method**: Class methods receive `cls`, not an individual object.\n- **Forgetting the decorator**: `@classmethod` and `@staticmethod` tell Python how the method should behave.\n- **Making every helper a static method**: Use a static method only when the logic belongs conceptually with the class.\n- **Using a class method for object-specific data**: If the method needs `self.price` or `self.name`, it should usually be an instance method."
+            body: "- **Using `self` inside a class method**: Class methods receive `cls`, not an individual object.\n- **Forgetting the decorator**: `@classmethod` and `@staticmethod` tell Python how the method should behave.\n- **Making every helper a static method**: Use a static method only when the logic belongs conceptually with the class.\n- **Adding getters and setters without a reason**: Direct access is fine for simple public data; use methods when they validate, format, calculate, or otherwise protect a value.\n- **Validating after assignment**: A setter should check a new value before storing it."
           },
           {
             kind: "takeaways",
@@ -580,6 +882,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Instance methods use `self` and work with individual objects.",
               "Class methods use `cls` and work with the class or shared class data.",
               "Static methods need neither `self` nor `cls`.",
+              "Getters and setters are instance-method patterns for reading and safely changing object data.",
               "Use `@classmethod` and `@staticmethod` to define the last two types.",
               "Choose the method type based on what data the behavior actually needs."
             ]
@@ -622,24 +925,24 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "types-methods-4",
-                question: "What is the difference between `self` and `cls`?",
+                question: "Why might you use a setter such as `set_age(age)` instead of assigning `student.age = age` directly?",
                 options: [
-                  "`self` is used for global variables, `cls` is for local variables.",
-                  "`self` refers to an individual object, while `cls` refers to the class itself.",
-                  "`self` is used in static methods, `cls` is used in instance methods.",
-                  "They are completely identical in functionality."
+                  "A setter can validate or transform the value before storing it.",
+                  "Setters automatically turn every value into a class attribute.",
+                  "A setter removes the need for `self`.",
+                  "Python requires setters for all attributes."
                 ],
-                correctIndex: 1,
-                explanation: "`self` provides access to the current instance (object), whereas `cls` provides access to the class itself."
+                correctIndex: 0,
+                explanation: "Setters are useful when assignment needs a rule, such as rejecting a negative age. For simple public data, direct access is also normal Python."
               },
               {
                 id: "types-methods-5",
-                question: "Complete the `User` class by defining an instance method `get_email`, a class method `get_company`, and a static method `is_valid_email`.",
+                question: "Complete the `User` class with a getter, a validated setter, a class method, and a static validation method.",
                 interactiveCode: true,
-                initialCode: "class User:\n    company = 'TechCorp'\n\n    def __init__(self, email):\n        self.email = email\n\n    # 1. Define get_email() returning self.email\n\n\n    # 2. Define get_company() returning cls.company\n\n\n    # 3. Define is_valid_email(email) checking if '@' is in email\n\n",
-                testCode: "u = User('test@example.com')\nprint(u.get_email())\nprint(User.get_company())\nprint(User.is_valid_email('hello'))\nprint(User.is_valid_email('a@b.com'))",
-                expectedOutput: "test@example.com\nTechCorp\nFalse\nTrue",
-                explanation: "An instance method uses `self`, a class method uses `@classmethod` and `cls`, and a static method uses `@staticmethod` and just the argument."
+                initialCode: "class User:\n    company = 'TechCorp'\n\n    def __init__(self, email):\n        self.email = email\n\n    # 1. Define get_email() returning self.email\n\n\n    # 2. Define set_email(email). Update self.email only if User.is_valid_email(email) is True.\n\n\n    # 3. Define get_company() returning cls.company\n\n\n    # 4. Define is_valid_email(email) checking if '@' is in email\n\n",
+                testCode: "u = User('test@example.com')\nu.set_email('new@example.com')\nprint(u.get_email())\nprint(User.get_company())\nprint(User.is_valid_email('hello'))\nprint(User.is_valid_email('a@b.com'))",
+                expectedOutput: "new@example.com\nTechCorp\nFalse\nTrue",
+                explanation: "Getters and setters are instance methods that use `self`. The setter uses the static validation helper before changing the instance value; the class method uses `@classmethod` and `cls`."
               }
             ]
           }
@@ -648,14 +951,15 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
       {
         slug: "encapsulation",
         title: "Encapsulation",
-        subtitle: "Protecting Object Data",
+        subtitle: "Controlling Access to Object Data",
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Encapsulation Matters",
             body: [
-              "Objects often contain data that should not be changed carelessly.",
-              "For example, a bank account balance should not become negative because another part of the program directly assigns an invalid value. Encapsulation helps you keep data and the rules for changing that data inside the class."
+              "**Encapsulation** binds data and the methods that work with it inside one class, while controlling how that data is read or changed.",
+              "For example, a bank account **balance** should not be changed carelessly. The account can keep its balance together with the rules that govern deposits and withdrawals.",
+              "Python uses conventions and class features to communicate access intent; it does not use strict public, protected, and private access modifiers like Java or C++."
             ]
           },
           {
@@ -665,91 +969,115 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Encapsulation Fundamentals",
             body: [
-              "Encapsulation means keeping related data and behavior together while controlling how the data is accessed or modified.",
-              "Instead of letting outside code change important attributes directly, the class can provide methods or properties that apply rules first.",
-              "Python does not enforce access restrictions in exactly the same way as languages such as Java or C++. Instead, it uses naming conventions and features such as properties.",
-              "### 1. Understand public attributes",
-              "A normal Python attribute is public."
+              "An encapsulated class keeps related **state** and **behavior** together. It can expose a small, clear interface instead of requiring other code to understand every internal detail.",
+              "The class may use public attributes, underscore naming conventions, and properties to guide access. These tools help prevent accidental changes and keep validation rules in one place."
             ]
           },
           {
+            kind: "prose",
+            heading: "Controlling Data with Methods",
+            body: [
+              "A class can store important data in an internal attribute and provide methods that decide which changes are valid."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Controlled state pattern",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.__value = value\n\n    def update_value(self, new_value):\n        # validate before changing self.__value\n        pass",
+            description: "Keep the value and the methods that manage it in the same class."
+          },
+          {
             kind: "interactive-code",
-            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self.balance = balance\n\naccount = BankAccount("Maya", 1000)\n\n# Outside code can read or change balance directly\naccount.balance = -500\nprint(account.balance)`
+            code: `class BankAccount:\n    def __init__(self, balance):\n        self.__balance = balance\n\n    def deposit(self, amount):\n        if amount > 0:\n            self.__balance += amount\n            return "Deposit accepted"\n        return "Deposit must be positive"\n\n    def withdraw(self, amount):\n        if 0 < amount <= self.__balance:\n            self.__balance -= amount\n            return "Withdrawal accepted"\n        return "Withdrawal declined"\n\naccount = BankAccount(1000)\nprint(account.deposit(500))\nprint(account.withdraw(200))`
           },
           {
             kind: "prose",
             body: [
-              "Python accepts the change even though a negative balance might violate the rules of your application.",
-              "This is where controlled access becomes useful.",
-              "### 2. Use a leading underscore for internal attributes",
-              "Python developers often use a single underscore to show that an attribute is intended for internal use."
+              "The account keeps **balance** inside the object and exposes behavior for deposits and withdrawals. Those methods can reject invalid amounts before the balance changes."
             ]
           },
           {
+            kind: "prose",
+            heading: "Public, Protected, and Private Members",
+            body: [
+              "Python uses naming conventions to signal the intended access level of an attribute. These conventions communicate intent to other developers; they are not security barriers."
+            ]
+          },
+          {
+            kind: "table",
+            caption: "Python access naming conventions",
+            headers: ["Convention", "Meaning", "Example"],
+            rows: [
+              ["Public: **name**", "Use normally from inside or outside the class.", "**account.owner**"],
+              ["Protected: **_name**", "Intended for internal use or subclasses.", "**self._account_type**"],
+              ["Private/name-mangled: **__name**", "Avoid accidental outside access.", "**self.__pin**"]
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Name Mangling",
+            body: [
+              "A leading double underscore triggers **name mangling**. Python stores an attribute such as **__pin** using a name that includes the class, making accidental access less likely.",
+              "This is not true privacy or security. It is a way to protect an internal implementation detail from being accessed by mistake."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Private naming pattern",
+            code: "self.__attribute = value",
+            description: "Inside a class named BankAccount, **__pin** is stored internally as **_BankAccount__pin**."
+          },
+          {
             kind: "interactive-code",
-            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        # The underscore means internal use\n        self._balance = balance\n\naccount = BankAccount("Maya", 1000)\naccount._balance = -500\nprint(account._balance)`
+            code: `class BankAccount:\n    def __init__(self):\n        self.owner = "Aman"\n        self._account_type = "Savings"\n        self.__pin = 1234\n\naccount = BankAccount()\nprint(account.owner)\nprint(account._account_type)\nprint(account._BankAccount__pin)`
           },
           {
             kind: "prose",
             body: [
-              "The underscore in `_balance` communicates: *\"This is an internal implementation detail. Avoid changing it directly.\"*",
-              "It does not make the attribute physically inaccessible (as seen in the code above). The underscore is a **convention** that asks other programmers to treat the value carefully.",
-              "### 3. Control changes with methods",
-              "Instead of changing `_balance` directly, provide methods that enforce your rules."
+              "Directly reading **account.__pin** raises an **AttributeError** because that exact attribute name does not exist outside the class. Python has mangled it to **_BankAccount__pin**.",
+              "You can still technically use the mangled name, so do not treat double underscores as a security feature. Treat it as a signal to leave the internal detail alone."
             ]
           },
           {
+            kind: "prose",
+            heading: "Properties with @property",
+            body: [
+              "The `@property` decorator lets a method behave like an attribute. A property keeps familiar attribute syntax while the class still controls the reading and writing logic.",
+              "Add a matching property setter when assignments need validation."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Property and property setter",
+            code: "@property\ndef value(self):\n    return self.__value\n\n@value.setter\ndef value(self, new_value):\n    self.__value = new_value",
+            description: "The name before **.setter** must match the property getter's method name."
+          },
+          {
             kind: "interactive-code",
-            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self._balance = balance\n\n    def deposit(self, amount):\n        if amount > 0:\n            self._balance += amount\n\n    def withdraw(self, amount):\n        if 0 < amount <= self._balance:\n            self._balance -= amount\n\naccount = BankAccount("Maya", 1000)\naccount.deposit(200)\naccount.withdraw(300)\nprint(account._balance)`
+            code: `class BankAccount:\n    def __init__(self, balance):\n        self.__balance = balance\n\n    @property\n    def balance(self):\n        return self.__balance\n\n    @balance.setter\n    def balance(self, value):\n        if value < 0:\n            raise ValueError("Balance cannot be negative")\n        self.__balance = value\n\naccount = BankAccount(1000)\naccount.balance = 1500\nprint(account.balance)`
           },
           {
             kind: "prose",
             body: [
-              "Now outside code can interact with the account safely. The class decides what counts as a valid deposit or withdrawal.",
-              "### 4. Use a property for controlled attribute access",
-              "Sometimes you want users of the class to read an attribute naturally while still controlling what happens behind the scenes. Python provides the `@property` decorator for this."
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `class BankAccount:\n    def __init__(self, owner, balance):\n        self.owner = owner\n        self._balance = balance\n\n    @property\n    def balance(self):\n        return self._balance\n\naccount = BankAccount("Maya", 1000)\n# We read it like an attribute, but it calls the method\nprint(account.balance)`
-          },
-          {
-            kind: "prose",
-            body: [
-              "It looks like normal attribute access, but Python actually calls the `balance()` method.",
-              "Because no setter has been defined, this assignment is **not** allowed: `account.balance = -500`",
-              "### 5. Add a setter when controlled assignment is needed",
-              "A property can also define rules for assigning a new value."
-            ]
-          },
-          {
-            kind: "interactive-code",
-            code: `class Product:\n    def __init__(self, name, price):\n        self.name = name\n        self._price = price\n\n    @property\n    def price(self):\n        return self._price\n\n    @price.setter\n    def price(self, value):\n        if value >= 0:\n            self._price = value\n        else:\n            print("Error: Price cannot be negative.")\n\nproduct = Product("Laptop", 900)\nproduct.price = 850\nprint(product.price)\n\nproduct.price = -100\nprint(product.price)`
-          },
-          {
-            kind: "prose",
-            body: [
-              "The setter checks the value before updating `_price`.",
-              "The important part is that the validation rule lives inside `Product`. Other parts of the application do not need to remember how to validate a product price every time they change it."
+              "The code reads and writes **account.balance** as if it were an ordinary attribute. Behind the scenes, Python calls the property getter or setter, so the account remains responsible for validation."
             ]
           },
           {
             kind: "callout",
             tone: "warn",
-            title: "Common mistakes",
-            body: "- **Thinking `_attribute` is private**: A leading underscore is a convention. Python still allows direct access.\n- **Using properties for every attribute**: Use them when you need validation, calculated values, or controlled access. Normal attributes are fine for simple data.\n- **Putting validation outside the class**: If the rule belongs to the object's data, keeping it inside the class makes the rule easier to maintain.\n- **Creating unnecessary getters and setters**: Python properties let you keep natural attribute syntax without writing Java-style methods such as `get_price()` for every value."
+            title: "Important: conventions are not security",
+            body: "- A single underscore marks an internal detail but still allows direct access.\n- A double underscore mangles a name but does not make data impossible to reach.\n- Use methods or properties when an attribute needs validation, a calculated value, or a stable public interface.\n- Keep rules that protect object state inside the class rather than duplicating them in outside code."
           },
           {
             kind: "takeaways",
             items: [
-              "Encapsulation keeps data and the rules for working with that data inside a class.",
-              "A leading underscore marks an attribute as intended for internal use.",
-              "Methods can control how object state changes.",
-              "`@property` provides controlled access while keeping normal attribute syntax.",
-              "Property setters can validate values before storing them."
+              "Encapsulation keeps object data and the behavior that manages it together.",
+              "Public, protected, and private-style names communicate how an attribute should be used.",
+              "A double underscore triggers name mangling; it is not a security boundary.",
+              "Methods such as deposits and withdrawals can protect an object's state.",
+              "Properties provide controlled access while preserving natural attribute syntax."
             ]
           },
           {
@@ -759,58 +1087,58 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
                 id: "encapsulation-1",
                 question: "What does encapsulation help you control?",
                 options: [
-                  "The memory usage of the class instances.",
                   "How the data inside a class is accessed and modified.",
-                  "The speed at which the methods execute.",
-                  "How many classes can inherit from the base class."
+                  "The number of objects a class can create.",
+                  "The order in which Python imports modules.",
+                  "The amount of memory each object uses."
                 ],
-                correctIndex: 1,
+                correctIndex: 0,
                 explanation: "Encapsulation groups data and behavior together, allowing you to define rules for how that data can be accessed or changed."
               },
               {
                 id: "encapsulation-2",
-                question: "Does `_balance` prevent outside code from accessing the attribute?",
+                question: "What does a leading underscore in an attribute name such as _balance communicate?",
                 options: [
-                  "Yes, it makes the attribute completely hidden.",
-                  "No, it is just a naming convention that indicates it should be treated as internal.",
-                  "Yes, it throws an error if accessed directly.",
-                  "No, but it makes the attribute read-only."
+                  "The attribute is only for internal use by convention.",
+                  "The attribute cannot be accessed outside the class.",
+                  "The attribute is automatically read-only.",
+                  "The attribute belongs to the class instead of an instance."
                 ],
-                correctIndex: 1,
-                explanation: "Python does not strictly enforce private attributes. The leading underscore is a convention used by programmers."
+                correctIndex: 0,
+                explanation: "A leading underscore is a convention. Python still permits direct access, but other code should treat the attribute as an internal implementation detail."
               },
               {
                 id: "encapsulation-3",
-                question: "What does the `@property` decorator allow you to do?",
+                question: "Why does direct access to account.__pin raise an AttributeError after the class defines self.__pin?",
                 options: [
-                  "Define an attribute that belongs to the class instead of the instance.",
-                  "Prevent the class from being inherited.",
-                  "Access a method like it was a regular attribute, hiding the underlying logic.",
-                  "Automatically generate setter methods."
+                  "Python removes the attribute after initialization.",
+                  "Python uses name mangling, so the internal name includes the class name.",
+                  "A double underscore makes the data encrypted.",
+                  "The attribute can be accessed only through inheritance."
                 ],
-                correctIndex: 2,
-                explanation: "`@property` turns a method into a \"getter\", so you can call `obj.value` instead of `obj.value()`."
+                correctIndex: 1,
+                explanation: "Python changes an attribute such as __pin to a name like _BankAccount__pin. This helps avoid accidental access but is not true privacy."
               },
               {
                 id: "encapsulation-4",
-                question: "Why is it generally better to put validation inside a property setter instead of checking values before assignment in outside code?",
+                question: "What does a property let a class do?",
                 options: [
-                  "Because it is required by the Python language specification.",
-                  "Because it keeps the validation logic centralized in the class, meaning outside code doesn't have to remember the rules.",
-                  "Because it makes the program run significantly faster.",
-                  "Because setters are the only way to assign values in Python."
+                  "Read or update data with normal attribute syntax while running class-controlled logic.",
+                  "Create a new class automatically.",
+                  "Make every attribute fully private.",
+                  "Replace the need for all instance methods."
                 ],
-                correctIndex: 1,
-                explanation: "Centralizing logic inside the class (encapsulation) prevents duplicate code and ensures rules are consistently applied everywhere."
+                correctIndex: 0,
+                explanation: "A property can look like an ordinary attribute to callers, while its getter or setter still controls how the value is read or changed."
               },
               {
                 id: "encapsulation-5",
-                question: "Add validation so the following `Person` class does not allow a negative age. Create a property `age` and a setter that assigns the value if it's `>= 0`, or prints 'Invalid age' if negative.",
+                question: "Complete the property and setter so a BankAccount accepts a non-negative balance and rejects a negative balance.",
                 interactiveCode: true,
-                initialCode: "class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self._age = age\n\n    # 1. Add the @property decorator and age getter method\n\n\n    # 2. Add the @age.setter decorator and age setter method\n\n",
-                testCode: "p = Person('Alice', 25)\nprint(p.age)\np.age = 30\nprint(p.age)\np.age = -5\nprint(p.age)",
-                expectedOutput: "25\n30\nInvalid age\n30",
-                explanation: "The `@property` defines the getter, and `@age.setter` defines the setter where you perform the validation check before modifying `self._age`."
+                initialCode: "class BankAccount:\n    def __init__(self, balance):\n        self.__balance = balance\n\n    # 1. Add a property named balance that returns self.__balance\n\n\n    # 2. Add a balance setter. Update self.__balance only when value is >= 0.\n    # Otherwise print: Balance cannot be negative\n\n",
+                testCode: "account = BankAccount(1000)\nprint(account.balance)\naccount.balance = 1500\nprint(account.balance)\naccount.balance = -5\nprint(account.balance)",
+                expectedOutput: "1000\n1500\nBalance cannot be negative\n1500",
+                explanation: "A property getter lets the balance be read with normal attribute syntax. Its matching setter validates the new value before changing the private, name-mangled attribute."
               }
             ]
           }
@@ -823,7 +1151,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Inheritance Matters",
             body: [
               "Many objects share common behavior but still need their own specialized features.",
               "Inheritance lets you place shared logic in one class and reuse it in related classes. This reduces repeated code and gives your program a clearer structure."
@@ -836,125 +1164,174 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Inheritance Fundamentals",
             body: [
               "Inheritance allows one class to build on another class.",
               "The existing class is commonly called the **parent class** or **base class**. The new class is called the **child class** or **subclass**.",
-              "**Example:** `Developer` automatically inherits all attributes and methods from `Employee`, so you do not need to rewrite them."
+              "For example, **Developer** automatically inherits all attributes and methods from **Employee**, so you do not need to rewrite them."
             ]
           },
           {
             kind: "prose",
-            heading: "Types of inheritance",
+            heading: "Inheritance Patterns",
             body: [
               "Python supports several inheritance patterns depending on how classes relate to one another:"
             ]
           },
           {
-            kind: "animation",
-            variant: "inheritance-types",
-            caption: "Types of Inheritance"
-          },
-          {
             kind: "prose",
+            heading: "Single Inheritance",
             body: [
-              "### 1. Single inheritance",
               "Single inheritance occurs when one child class inherits from one parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Single inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass Child(Parent):\n    pass",
+            description: "Place the parent class name in parentheses after the child class name."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"I am writing code.\")\n\ndeveloper = Developer()\ndeveloper.introduce()\ndeveloper.write_code()"
           },
           {
             kind: "prose",
             body: [
-              "Now `Developer` can use both its inherited method and its own method.",
-              "This is the simplest and most common type of inheritance.",
-              "### 2. Multiple inheritance",
+              "Now **Developer** can use both its inherited method and its own method.",
+              "This is the simplest and most common type of inheritance."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Multiple Inheritance",
+            body: [
               "Multiple inheritance occurs when one child class inherits from more than one parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Multiple inheritance pattern",
+            code: "class Child(ParentOne, ParentTwo):\n    pass",
+            description: "List parent classes from left to right. That order matters when Python resolves overlapping methods."
+          },
+          {
             kind: "interactive-code",
-            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\n\nclass Presenter(Writer, Speaker):\n    pass\n\n\n# Now `Presenter` inherits methods from both parent classes:\n\npresenter = Presenter()\n\npresenter.write()\npresenter.speak()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Presenter.mro()) "
+            code: "class Writer:\n    def write(self):\n        print(\"Writing content.\")\n\nclass Speaker:\n    def speak(self):\n        print(\"Speaking to an audience.\")\n\nclass Presenter(Writer, Speaker):\n    pass\n\npresenter = Presenter()\npresenter.write()\npresenter.speak()"
           },
           {
             kind: "prose",
             body: [
-              "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name.",
-              "Python uses the **method resolution order**, or MRO, to decide which method to use first. You can inspect the MRO with `print(Presenter.mro())`.",
-              "### 3. Multilevel inheritance",
+              "Multiple inheritance can be useful when a class genuinely combines behaviors from different sources. However, it can become confusing if parent classes define methods with the same name."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Multilevel Inheritance",
+            body: [
               "Multilevel inheritance occurs when a class inherits from a class that already inherits from another class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Multilevel inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass Child(Parent):\n    pass\n\nclass Grandchild(Child):\n    pass",
+            description: "Each level inherits the behavior available on the level above it."
+          },
+          {
             kind: "interactive-code",
-            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()\n\n# Inspect the Method Resolution Order (MRO)\nprint(ElectricCar.mro())"
+            code: "class Vehicle:\n    def move(self):\n        print(\"Vehicle is moving.\")\n\nclass Car(Vehicle):\n    def drive(self):\n        print(\"Car is driving.\")\n\nclass ElectricCar(Car):\n    def charge(self):\n        print(\"Electric car is charging.\")\n\nelectric_car = ElectricCar()\nelectric_car.move()\nelectric_car.drive()\nelectric_car.charge()"
           },
           {
             kind: "prose",
             body: [
-              "`ElectricCar` can use methods from both `Car` and `Vehicle`. Each level adds more specialized behavior.",
-              "### 4. Hierarchical inheritance",
+              "**ElectricCar** can use methods from both **Car** and **Vehicle**. Each level adds more specialized behavior."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Hierarchical Inheritance",
+            body: [
               "Hierarchical inheritance occurs when multiple child classes inherit from the same parent class."
             ]
           },
           {
+            kind: "syntax",
+            title: "Hierarchical inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass ChildOne(Parent):\n    pass\n\nclass ChildTwo(Parent):\n    pass",
+            description: "The child classes share one parent but can add different specialized behavior."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()\n\n# Inspect the Method Resolution Order (MRO)\nprint(Developer.mro())\nprint(Designer.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\ndeveloper = Developer()\ndesigner = Designer()\ndeveloper.introduce()\ndeveloper.write_code()\ndesigner.introduce()\ndesigner.create_design()"
           },
           {
             kind: "prose",
             body: [
-              "Both child classes inherit `introduce()`. This is useful when several classes share a common foundation but need different specialized behavior.",
-              "### 5. Hybrid inheritance",
+              "Both child classes inherit **introduce()**. This is useful when several classes share a common foundation but need different specialized behavior."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Hybrid Inheritance",
+            body: [
               "Hybrid inheritance is a combination of two or more types of inheritance. For example, combining hierarchical and multiple inheritance:"
             ]
           },
           {
+            kind: "syntax",
+            title: "Hybrid inheritance pattern",
+            code: "class Parent:\n    pass\n\nclass LeftChild(Parent):\n    pass\n\nclass RightChild(Parent):\n    pass\n\nclass Combined(LeftChild, RightChild):\n    pass",
+            description: "Hybrid inheritance combines patterns, so its class relationships should remain easy to understand."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()\n\n# Inspect the Method Resolution Order (MRO)\nprint(TeamLead.mro())"
+            code: "class Employee:\n    def introduce(self):\n        print(\"I am an employee.\")\n\nclass Developer(Employee):\n    def write_code(self):\n        print(\"Writing code.\")\n\nclass Designer(Employee):\n    def create_design(self):\n        print(\"Creating a design.\")\n\nclass TeamLead(Developer, Designer):\n    def manage_team(self):\n        print(\"Managing the team.\")\n\nteam_lead = TeamLead()\nteam_lead.introduce()\nteam_lead.write_code()\nteam_lead.create_design()\nteam_lead.manage_team()"
           },
           {
             kind: "prose",
             body: [
-              "`TeamLead` inherits from both `Developer` and `Designer`. Through those classes, it also receives behavior from `Employee`.",
+              "**TeamLead** inherits from both **Developer** and **Designer**. Through those classes, it also receives behavior from **Employee**.",
               "Hybrid inheritance can model complex relationships, but it should be used carefully. Complex inheritance trees can make code harder to understand and maintain."
             ]
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Method Resolution Order (MRO)",
             body: [
-              "### 1. Create a parent class",
-              "Start with a class that contains behavior shared by several related objects."
+              "**Method Resolution Order**, or **MRO**, is the order Python follows when it searches for a method in an inheritance hierarchy.",
+              "Python checks the child class first, then follows a consistent order through its parents, and finally reaches the base **object** class. MRO is especially important when parent classes provide methods with the same name."
             ]
           },
           {
+            kind: "syntax",
+            title: "Inspecting MRO",
+            code: "ClassName.mro()\n# or\nClassName.__mro__",
+            description: "Use either form to inspect the method-search order for a class."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nemployee = Employee(\"Maya\")\nemployee.introduce()"
+            code: "class A:\n    def show(self):\n        print(\"A\")\n\nclass B(A):\n    def show(self):\n        print(\"B\")\n\nclass C(A):\n    def show(self):\n        print(\"C\")\n\nclass D(B, C):\n    pass\n\nitem = D()\nitem.show()\nprint([cls.__name__ for cls in D.mro()])"
           },
           {
             kind: "prose",
             body: [
-              "This class will act as the parent.",
-              "### 2. Create a child class",
-              "To inherit from another class, place the parent class name inside parentheses."
+              "This is the **diamond problem**: both **B** and **C** inherit from **A**, while **D** inherits from **B** and **C**. The MRO is **D → B → C → A → object**, so **B.show()** runs first.",
+              "Python calculates this order with C3 linearization. The same order is followed by **super()** in multiple-inheritance code."
             ]
-          },
-          {
-            kind: "interactive-code",
-            code: "class Employee:\n    def __init__(self, name):\n        self.name = name\n\n    def introduce(self):\n        print(f\"Hi, I'm {self.name}.\")\n\nclass Developer(Employee):\n    pass\n\ndeveloper = Developer(\"Leo\")\nprint(developer.name)\ndeveloper.introduce()"
           },
           {
             kind: "prose",
+            heading: "Parent and Child Classes",
             body: [
-              "`Developer` now inherits from `Employee`.",
-              "Python looks in `Developer` first. If it does not find the requested method there, it can look in its parent class.",
-              "### 3. Add behavior specific to the child",
-              "A child class can add its own attributes and methods."
+              "Start with a parent class that contains behavior shared by several related objects. Then place the parent name in parentheses when defining a child class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Parent and child class pattern",
+            code: "class Parent:\n    def shared_method(self):\n        pass\n\nclass Child(Parent):\n    pass",
+            description: "The child can use the parent's shared method without copying it."
           },
           {
             kind: "interactive-code",
@@ -963,10 +1340,44 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The child class extends the parent without copying its existing code.",
-              "### 4. Extend initialization with `super()`",
-              "Sometimes the child needs extra data. Suppose every employee has a name, but developers also have a programming language."
+              "The child class extends the parent without copying its existing code. Python looks in **Developer** first and then looks in **Employee** when needed."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Constructor in Inheritance",
+            body: [
+              "When a child object is created, Python uses the child's **__init__()** method. If the child does not define one, it inherits and uses the parent's initializer."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Inherited constructor pattern",
+            code: "class Parent:\n    def __init__(self, value):\n        self.value = value\n\nclass Child(Parent):\n    pass",
+            description: "Without its own **__init__()**, the child uses the parent's initializer."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Person:\n    def __init__(self, name):\n        self.name = name\n\nclass Student(Person):\n    pass\n\nstudent = Student(\"Aman\")\nprint(student.name)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "**Student** has no initializer of its own, so Python runs **Person.__init__()**. If the child defines its own initializer, the parent initializer does not run automatically."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "super()",
+            body: [
+              "Use **super()** inside a child method to call the next implementation in the MRO. In single inheritance, this is normally the parent method."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Calling a parent constructor with super()",
+            code: "class Child(Parent):\n    def __init__(self, parent_value, child_value):\n        super().__init__(parent_value)\n        self.child_value = child_value",
+            description: "Call **super().__init__()** before setting data that belongs only to the child."
           },
           {
             kind: "interactive-code",
@@ -975,25 +1386,35 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "`super()` gives you access to methods from the parent class.",
-              "Here, `super().__init__(name)` runs the parent's `__init__()` method and sets `self.name = name`. Then the child adds its own attribute: `self.language = language`.",
-              "### 5. Override inherited behavior",
-              "A child class can replace an inherited method with its own version. This is called **method overriding**."
+              "**super().__init__(name)** runs the parent initializer and sets the shared **name**. The child then adds its own **language** attribute."
             ]
           },
           {
+            kind: "prose",
+            heading: "Method Overriding",
+            body: [
+              "Method overriding happens when a child class defines a method with the same name as an inherited method. Calling that method on a child object uses the child's version."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Method overriding pattern",
+            code: "class Parent:\n    def method(self):\n        pass\n\nclass Child(Parent):\n    def method(self):\n        pass",
+            description: "Define the same method name in the child to provide specialized behavior."
+          },
+          {
             kind: "interactive-code",
-            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nemployee = Employee()\ndeveloper = Developer()\n\nemployee.work()\ndeveloper.work()"
+            code: "class Employee:\n    def work(self):\n        print(\"Employee is working.\")\n\nclass Developer(Employee):\n    def work(self):\n        print(\"Developer is writing code.\")\n\nemployee = Employee()\ndeveloper = Developer()\nemployee.work()\ndeveloper.work()"
           },
           {
             kind: "prose",
             body: [
-              "Both classes have a `work()` method, but each provides behavior appropriate to that class."
+              "Both classes have a **work()** method, but each provides behavior appropriate to that class. A child can still use **super().work()** when it needs the parent behavior too."
             ]
           },
           {
             kind: "prose",
-            heading: "Choosing the right type of inheritance",
+            heading: "Choosing an Inheritance Pattern",
             body: [
               "Use **single inheritance** when one class is a straightforward specialization of another.",
               "Use **multiple inheritance** when a class genuinely combines independent behaviors and the relationship remains easy to understand.",
@@ -1007,7 +1428,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             kind: "callout",
             tone: "warn",
             title: "Common mistakes",
-            body: "- **Repeating parent code in every child**: Put truly shared attributes and behavior in the parent class instead.\n- **Forgetting `super().__init__()`**: If the child defines its own initializer and still needs parent initialization, call the parent initializer with `super()`.\n- **Using inheritance only to avoid typing code**: Inheritance works best when there is a meaningful relationship between the classes.\n- **Assuming the child changes the parent**: Adding or overriding behavior in a child class does not modify the parent class.\n- **Using multiple inheritance without understanding MRO**: If parent classes contain overlapping methods, learn how Python chooses which method to call.\n- **Creating deep inheritance trees**: Too many levels can make code difficult to follow. Prefer simple, meaningful hierarchies.\n- **Using inheritance for a has-a relationship**: Use composition when one object contains or uses another object instead of being a specialized version of it."
+            body: "- **Repeating parent code in every child**: Put truly shared attributes and behavior in the parent class instead.\n- **Forgetting super().__init__()**: If the child defines its own initializer and still needs parent initialization, call the parent initializer with **super()**.\n- **Using inheritance only to avoid typing code**: Inheritance works best when there is a meaningful relationship between the classes.\n- **Assuming the child changes the parent**: Adding or overriding behavior in a child class does not modify the parent class.\n- **Using multiple inheritance without understanding MRO**: If parent classes contain overlapping methods, learn how Python chooses which method to call.\n- **Creating deep inheritance trees**: Too many levels can make code difficult to follow. Prefer simple, meaningful hierarchies.\n- **Using inheritance for a has-a relationship**: Use composition when one object contains or uses another object instead of being a specialized version of it."
           },
           {
             kind: "takeaways",
@@ -1018,8 +1439,9 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Multilevel inheritance creates a chain of parent and child classes.",
               "Hierarchical inheritance gives several child classes the same parent.",
               "Hybrid inheritance combines multiple inheritance patterns.",
+              "MRO determines the order Python searches for methods in an inheritance hierarchy.",
               "A child class can add its own behavior without copying the parent's code.",
-              "`super()` lets a child use functionality from its parent.",
+              "**super()** lets a child use functionality from its parent or the next class in the MRO.",
               "Method overriding lets a child replace inherited behavior.",
               "Use inheritance when the classes have a meaningful relationship."
             ]
@@ -1053,33 +1475,33 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "inheritance-3",
-                question: "Why might a child class use `super().__init__()`?",
+                question: "In the class declaration D(B, C), which class does Python search immediately after D when resolving a method?",
                 options: [
-                  "To skip calling the parent's initializer.",
-                  "To call the parent's initializer so that the parent can set up the base attributes, before the child sets up its own.",
-                  "To automatically create a new object of the parent class.",
-                  "To delete the parent object."
+                  "A, because it is the shared parent.",
+                  "B, because it is the first parent listed in D(B, C).",
+                  "C, because it is the last parent listed.",
+                  "object, because it is Python's base class."
                 ],
                 correctIndex: 1,
-                explanation: "`super()` delegates method calls back to the parent class. Using it in `__init__` ensures the parent's setup logic runs."
+                explanation: "For this diamond hierarchy, the MRO is D → B → C → A → object. Python searches B immediately after D."
               },
               {
                 id: "inheritance-4",
-                question: "Create a `Vehicle` class with a `move()` method that prints \"Vehicle is moving.\". Then create a `Bike` class that inherits from `Vehicle` and adds a `ring_bell()` method that prints \"Ring ring!\".",
+                question: "Create a **Vehicle** class with a **move()** method that prints \"Vehicle is moving.\". Then create a **Bike** class that inherits from **Vehicle** and adds a **ring_bell()** method that prints \"Ring ring!\".",
                 interactiveCode: true,
                 initialCode: "# 1. Create the Vehicle class\n\n\n\n# 2. Create the Bike class (inherit from Vehicle)\n\n\n",
                 testCode: "bike = Bike()\nbike.move()\nbike.ring_bell()",
                 expectedOutput: "Vehicle is moving.\nRing ring!",
-                explanation: "`Bike` can use the `move()` method it inherits from `Vehicle`, and it also has its own `ring_bell()` method."
+                explanation: "**Bike** can use the **move()** method it inherits from **Vehicle**, and it also has its own **ring_bell()** method."
               },
               {
                 id: "inheritance-5",
-                question: "Create a `Flyer` class with a `fly()` method that prints \"Flying.\". Create a `Swimmer` class with a `swim()` method that prints \"Swimming.\". Then create a `Duck` class that inherits from both.",
+                question: "Create a **Flyer** class with a **fly()** method that prints \"Flying.\". Create a **Swimmer** class with a **swim()** method that prints \"Swimming.\". Then create a **Duck** class that inherits from both.",
                 interactiveCode: true,
                 initialCode: "# 1. Create Flyer and Swimmer classes\n\n\n\n\n# 2. Create Duck class (multiple inheritance)\n\n\n",
                 testCode: "duck = Duck()\nduck.fly()\nduck.swim()",
                 expectedOutput: "Flying.\nSwimming.",
-                explanation: "This is an example of Multiple Inheritance where `Duck(Flyer, Swimmer)` gets capabilities from both."
+                explanation: "This is an example of multiple inheritance where **Duck(Flyer, Swimmer)** gets capabilities from both."
               }
             ]
           }
@@ -1093,7 +1515,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Polymorphism Matters",
             body: [
               "Programs often perform the same kind of action on different types of data.",
               "Python allows the same operator, function, or method name to behave differently depending on what receives it. This idea is called **polymorphism**, and it helps you write flexible code without creating separate logic for every object type."
@@ -1101,7 +1523,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Polymorphism Fundamentals",
             body: [
               "Polymorphism means \"many forms.\"",
               "In Python, one operation can take different forms depending on the values or objects involved.",
@@ -1119,11 +1541,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "Step-by-step",
+            heading: "Operator Polymorphism",
             body: [
-              "### 1. See polymorphism in the addition operator",
               "Python operators can behave differently for different data types. Consider addition:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "One operator, different operands",
+            code: "number_result = left_number + right_number\ntext_result = left_text + right_text",
+            description: "Python selects behavior based on the operands supplied to the plus operator."
           },
           {
             kind: "interactive-code",
@@ -1132,14 +1559,44 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The same `+` operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved. This is **operator polymorphism**.",
-              "### 2. Understand operator overloading",
-              "Python also lets your own classes define how operators should behave. This is called **operator overloading**.",
-              "You can define special methods with double underscores (like `__add__()` for the `+` operator) to control how objects behave.",
-              "These are commonly called **dunder methods**. Because this is such an important aspect of polymorphism, you can dive deeper into `__add__()`, `__str__()`, `__len__()`, and more in the dedicated [Special Methods](/python/oop/special-methods) lesson!",
-              "### 3. See function polymorphism",
-              "A function can also work with different types of objects. The built-in `len()` function is a simple example."
+              "The same plus operator performs numeric addition, string concatenation, and list concatenation. Python determines the correct behavior from the objects involved."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Operator Overloading",
+            body: [
+              "Your own classes can define how an operator should behave. This is **operator overloading** and is implemented with special methods."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Overload the plus operator",
+            code: "class ClassName:\n    def __add__(self, other):\n        return ClassName(...)\n\nresult = first + second",
+            description: "Python calls **__add__()** when the plus operator is used with your objects."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __add__(self, other):\n        return Money(self.amount + other.amount)\n\ntotal = Money(100) + Money(50)\nprint(total.amount)"
+          },
+          {
+            kind: "prose",
+            body: [
+              "The **Money** class gives the plus operator a meaning for two Money objects. Special methods are often called **dunder methods**; the dedicated [Special Methods](/python/oop/special-methods) lesson explores them further."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Function Polymorphism",
+            body: [
+              "A function can work with different types of objects. The built-in **len()** function is a simple example."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Function applied to many types",
+            code: "result = len(value)",
+            description: "The same function can produce a useful result for strings, lists, dictionaries, and other sized objects."
           },
           {
             kind: "interactive-code",
@@ -1148,10 +1605,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The same `len()` function works with several different data types. What it counts depends on the object: characters, list items, or dictionary keys. This is an example of **function polymorphism**.",
-              "### 4. Use class polymorphism",
-              "Different classes can define methods with the same name."
+              "The same **len()** function works with several data types. What it counts depends on the object: characters, list items, or dictionary keys."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Shared Interfaces Without Inheritance",
+            body: [
+              "Different, unrelated classes can expose the same method name. The calling code only needs the shared behavior; it does not need a common parent class."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Shared interface pattern",
+            code: "def process(item):\n    item.method_name()",
+            description: "Any object with the required method can be passed to **process()**."
           },
           {
             kind: "interactive-code",
@@ -1160,10 +1628,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The exact same line `notification.send()` produces different behavior depending on the object. This is **class polymorphism**.",
-              "### 5. Use polymorphism with inheritance",
-              "Polymorphism commonly works together with inheritance. A parent class can define a method, and child classes can override that method."
+              "The same **send()** call produces different behavior depending on the object. These notification classes do not share a parent, which distinguishes this example from inheritance-based polymorphism."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Polymorphism Through Method Overriding",
+            body: [
+              "Inheritance-based polymorphism starts with a shared parent class. Child classes override the same inherited method to provide specialized behavior."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Override a shared method",
+            code: "class Parent:\n    def action(self):\n        pass\n\nclass Child(Parent):\n    def action(self):\n        pass",
+            description: "Each child can implement the inherited method differently while keeping the same interface."
           },
           {
             kind: "interactive-code",
@@ -1172,10 +1651,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "Every object supports the same operation (`work()`) but each subclass provides its own implementation. This combines Inheritance (sharing a common parent) and Polymorphism (each child responds differently to the same method).",
-              "### 6. Understand duck typing",
-              "Python does not always require objects to share a parent class. If an object provides the behavior your code needs, Python can often use it. This idea is known as **duck typing**."
+              "Every object supports the same **work()** operation, but each subclass provides its own implementation. This combines inheritance, which supplies a common parent, with polymorphism, which changes the behavior by subclass."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Duck Typing",
+            body: [
+              "Python does not always require objects to share a parent class. If an object provides the behavior your code needs, Python can often use it. This idea is **duck typing**."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Duck typing pattern",
+            code: "def save_log(logger, message):\n    logger.write(message)",
+            description: "The function requires a **write()** behavior, not a specific class."
           },
           {
             kind: "interactive-code",
@@ -1184,10 +1674,21 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "These classes do not need a shared parent. `save_log()` cares about what the object can do (`write`), not what class it belongs to.",
-              "### A simple example",
-              "Imagine building the checkout system for an online store. Customers can pay with a credit card, PayPal, or a gift card. Each payment method performs the same general action (`pay(amount)`) but the actual process is different."
+              "These classes do not need a shared parent. **save_log()** cares about what the object can do, not what class it belongs to."
             ]
+          },
+          {
+            kind: "prose",
+            heading: "Polymorphism in Practice",
+            body: [
+              "In an online store, customers can pay with a credit card, PayPal, or a gift card. Each payment method performs the same general action, but the process is different."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Delegate to a payment method",
+            code: "def checkout(payment_method, amount):\n    payment_method.pay(amount)",
+            description: "Checkout delegates the payment action to whichever payment object it receives."
           },
           {
             kind: "interactive-code",
@@ -1196,7 +1697,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           {
             kind: "prose",
             body: [
-              "The `checkout()` function does not contain long `if/elif` chains checking the payment type. Instead, each payment object knows how to perform its own `pay()` operation. This makes adding another payment method incredibly easy:"
+              "The **checkout()** function does not contain long conditional chains checking the payment type. Each payment object knows how to perform its own **pay()** operation, which makes adding another payment method straightforward."
             ]
           },
           {
@@ -1206,35 +1707,47 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             body: "- **Thinking polymorphism only means method overriding**: Python also shows polymorphism through operators, functions, and duck typing.\n- **Confusing operator overloading with normal addition**: Operator overloading means defining how an operator such as `+` behaves for your own class.\n- **Thinking polymorphism requires inheritance**: Python can use polymorphic behavior between unrelated classes if they provide the expected methods.\n- **Using long type-checking chains unnecessarily**: If several objects provide the same method, let the objects handle their own behavior instead of checking their type first."
           },
           {
+            kind: "takeaways",
+            items: [
+              "Polymorphism allows one operation to take different forms.",
+              "Operators such as plus behave differently depending on their operands.",
+              "Operator overloading lets your own classes define operator behavior using special methods such as **__add__()**.",
+              "Functions such as **len()** can work with several types of objects.",
+              "Different classes can provide the same method name with different implementations.",
+              "Inheritance and method overriding are common ways to implement polymorphism.",
+              "Python's duck typing allows code to focus on an object's behavior rather than only its exact class."
+            ]
+          },
+          {
             kind: "quiz",
             questions: [
               {
                 id: "poly-1",
-                question: "Why can `+` work with both integers and strings?",
+                question: "Why can the plus operator work with both integers and strings?",
                 options: [
                   "Because integers and strings inherit from the same parent.",
                   "Because Python automatically converts everything to strings.",
-                  "Because of operator polymorphism, where `+` behaves differently based on the data type.",
+                  "Because of operator polymorphism, where the plus operator behaves differently based on the data type.",
                   "Because strings contain numbers in Python."
                 ],
                 correctIndex: 2,
-                explanation: "The `+` operator has polymorphic behavior, mapping to numeric addition for ints and string concatenation for strings."
+                explanation: "The plus operator has polymorphic behavior, mapping to numeric addition for integers and string concatenation for strings."
               },
               {
                 id: "poly-2",
-                question: "What special method lets a class define how the `+` operator behaves?",
+                question: "What special method lets a class define how the plus operator behaves?",
                 options: [
-                  "`__plus__()`",
-                  "`__add__()`",
-                  "`__sum__()`",
-                  "`__combine__()`"
+                  "__plus__()",
+                  "__add__()",
+                  "__sum__()",
+                  "__combine__()"
                 ],
                 correctIndex: 1,
-                explanation: "Python calls the `__add__()` method when the `+` operator is used on an object."
+                explanation: "Python calls **__add__()** when the plus operator is used on an object."
               },
               {
                 id: "poly-3",
-                question: "Why is `len()` an example of function polymorphism?",
+                question: "Why is **len()** an example of function polymorphism?",
                 options: [
                   "It can only be used on strings.",
                   "It can return different data types.",
@@ -1242,7 +1755,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
                   "It works with several different data types, counting their respective elements."
                 ],
                 correctIndex: 3,
-                explanation: "`len()` can count characters in a string, items in a list, or keys in a dictionary."
+                explanation: "**len()** can count characters in a string, items in a list, or keys in a dictionary."
               },
               {
                 id: "poly-4",
@@ -1256,34 +1769,13 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               },
               {
                 id: "poly-tiny-task",
-                question: "Create two classes, `PDFReport` and `CSVReport`. Both should provide an `export()` method. Then create a function `export_report(report)` that calls `export()` on any report passed to it.",
+                question: "Create two classes, **PDFReport** and **CSVReport**. Both should provide an **export()** method. Then create a function **export_report(report)** that calls **export()** on any report passed to it.",
                 interactiveCode: true,
                 initialCode: "# Write your classes and function here:\n\n",
                 testCode: "export_report(PDFReport())\nexport_report(CSVReport())",
                 expectedOutput: "Exporting PDF report.\nExporting CSV report.",
-                explanation: "Both classes implement `export()`, allowing `export_report` to treat them polymorphically."
-              },
-              {
-                id: "poly-bonus-task",
-                question: "Create a `Money` class that takes an `amount` in `__init__`. Define `__add__()` so two `Money` objects can be added, returning a new `Money` object with the total amount. Print the final amount.",
-                interactiveCode: true,
-                initialCode: "# Create your Money class here:\n\n",
-                testCode: "m1 = Money(100)\nm2 = Money(50)\ntotal = m1 + m2\nprint(total.amount)",
-                expectedOutput: "150",
-                explanation: "By defining `__add__(self, other)`, you taught Python how to combine two Money objects using the `+` operator."
+                explanation: "Both classes implement **export()**, allowing **export_report** to treat them polymorphically."
               }
-            ]
-          },
-          {
-            kind: "takeaways",
-            items: [
-              "Polymorphism allows one operation to take different forms.",
-              "Operators such as `+` behave differently depending on their operands.",
-              "Operator overloading lets your own classes define operator behavior using special methods such as `__add__()`.",
-              "Functions such as `len()` can work with several types of objects.",
-              "Different classes can provide the same method name with different implementations.",
-              "Inheritance and method overriding are common ways to implement polymorphism.",
-              "Python's duck typing allows code to focus on an object's behavior rather than only its exact class."
             ]
           }
         ]
@@ -1295,7 +1787,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Abstraction Matters",
             body: [
               "In larger programs, you often care about what an object can do more than how it performs the task internally.",
               "Abstraction helps you define a clear contract for related classes. Each class can implement the details differently while the rest of your program uses the same simple interface."
@@ -1308,7 +1800,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Abstraction Fundamentals",
             body: [
               "Abstraction means exposing the essential behavior of an object while hiding unnecessary implementation details.",
               "You already use abstraction every day in Python.",
@@ -1320,11 +1812,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Start with a shared interface",
+            heading: "Shared Interfaces",
             body: [
               "Suppose you are building a payment system.",
               "Every payment type should support the same operation: `pay(amount)`. You could start with a normal parent class and then create child classes:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "A shared interface",
+            code: "class ParentClass:\n    def operation(self, value):\n        pass\n\n\nclass ChildClass(ParentClass):\n    def operation(self, value):\n        # implementation\n        pass",
+            description: "A parent class can describe the operation that related child classes should provide, even before the contract is enforced."
           },
           {
             kind: "interactive-code",
@@ -1350,11 +1848,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Create an abstract class with ABC",
+            heading: "Abstract Base Classes",
             body: [
               "Python provides the `abc` module for abstraction.",
               "ABC stands for Abstract Base Class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Abstract base class",
+            code: "from abc import ABC\n\n\nclass ClassName(ABC):\n    pass",
+            description: "Import `ABC` from the `abc` module, then inherit from it to create an abstract base class."
           },
           {
             kind: "interactive-code",
@@ -1369,10 +1873,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Define an abstract method",
+            heading: "Abstract Methods",
             body: [
               "Use the `@abstractmethod` decorator to define behavior that child classes must provide."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Required abstract method",
+            code: "from abc import ABC, abstractmethod\n\n\nclass ParentClass(ABC):\n    @abstractmethod\n    def operation(self, value):\n        pass",
+            description: "Mark a method with `@abstractmethod` when every concrete child must implement that behavior."
           },
           {
             kind: "interactive-code",
@@ -1408,10 +1918,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Require every child class to follow the contract",
+            heading: "Implementing an Abstract Contract",
             body: [
               "Now create another payment type. Both child classes satisfy the same contract."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Concrete child implementation",
+            code: "class ChildClass(ParentClass):\n    def operation(self, value):\n        # required implementation\n        pass",
+            description: "A concrete child class supplies every abstract method before Python lets you create its objects."
           },
           {
             kind: "interactive-code",
@@ -1436,11 +1952,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Combine abstraction with polymorphism",
+            heading: "Abstraction with Polymorphism",
             body: [
               "Abstraction and polymorphism work naturally together.",
               "Once every payment class follows the same contract, you can write one checkout function:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Using a shared contract",
+            code: "def use_object(item, value):\n    item.operation(value)",
+            description: "Code that receives an abstract contract can call the required operation without depending on a particular child class."
           },
           {
             kind: "interactive-code",
@@ -1458,11 +1980,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Add concrete methods to an abstract class",
+            heading: "Concrete Methods in Abstract Classes",
             body: [
               "Abstract classes do not need to contain only abstract methods.",
               "They can also provide shared behavior."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Shared concrete method",
+            code: "class ParentClass(ABC):\n    def shared_helper(self, value):\n        return value\n\n    @abstractmethod\n    def operation(self, value):\n        pass",
+            description: "An abstract class can combine normal reusable methods with methods that child classes must implement."
           },
           {
             kind: "interactive-code",
@@ -1476,13 +2004,19 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Abstraction Together",
             body: [
               "Imagine you are building a report-export system for a business dashboard.",
               "Users can export reports as PDF, CSV, or Excel files.",
               "Every exporter should provide the same operation: `export(data)`",
               "But each format handles the export differently."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Abstract exporter pattern",
+            code: "class Exporter(ABC):\n    @abstractmethod\n    def export(self, data):\n        pass\n\n\ndef use_exporter(exporter, data):\n    exporter.export(data)",
+            description: "Define one required operation, implement it in each exporter, then use the shared interface in the rest of the program."
           },
           {
             kind: "interactive-code",
@@ -1594,7 +2128,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Composition Matters",
             body: [
               "Real applications are made of objects that work together.",
               "An order has products. A computer has a processor. A car has an engine. Composition lets you model these relationships by placing one object inside another object.",
@@ -1608,7 +2142,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Composition Fundamentals",
             body: [
               "Composition means building one object using objects from other classes.",
               "It usually represents a **has-a** relationship.",
@@ -1616,6 +2150,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Car has an Engine. Computer has a Processor. Order has a ShoppingCart.",
               "Consider:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "A has-a relationship",
+            code: "class Component:\n    def operation(self):\n        pass\n\n\nclass Container:\n    def __init__(self):\n        self.component = Component()",
+            description: "Composition stores a component object as an attribute of the larger object."
           },
           {
             kind: "interactive-code",
@@ -1631,10 +2171,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Create the component class",
+            heading: "Component Classes",
             body: [
               "Start with a class that handles one responsibility."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Component class",
+            code: "class Component:\n    def operation(self):\n        # specialized work\n        pass",
+            description: "Give a component one focused responsibility that another class can use."
           },
           {
             kind: "interactive-code",
@@ -1649,10 +2195,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Place one object inside another",
+            heading: "Creating a Component Inside an Object",
             body: [
               "Now create the `Car` class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Create and store a component",
+            code: "class Container:\n    def __init__(self, value):\n        self.value = value\n        self.component = Component()",
+            description: "Create the component in the outer object’s initializer when that object owns the component."
           },
           {
             kind: "interactive-code",
@@ -1668,11 +2220,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Delegate work to the component",
+            heading: "Delegation",
             body: [
               "You may not want users of `Car` to interact with the engine directly.",
               "The `Car` class can expose its own method:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Delegate to a component",
+            code: "class Container:\n    def operation(self):\n        self.component.operation()",
+            description: "A delegation method presents a simple outer interface and forwards specialized work to its component."
           },
           {
             kind: "interactive-code",
@@ -1688,11 +2246,17 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Pass a component into another object",
+            heading: "Passing Components to an Object",
             body: [
               "A class does not always need to create its component itself.",
               "You can create the component first and pass it in:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Inject a component",
+            code: "class Container:\n    def __init__(self, component):\n        self.component = component",
+            description: "Accept a component as an argument when the caller should choose which compatible object the container uses."
           },
           {
             kind: "interactive-code",
@@ -1717,7 +2281,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Compare composition and inheritance",
+            heading: "Composition vs Inheritance",
             body: [
               "Inheritance and composition both connect classes, but they describe different relationships.",
               "Inheritance usually represents **is-a**.",
@@ -1725,6 +2289,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "Composition usually represents **has-a**.",
               "Example: `Car` has an `Engine`. `Order` has a `ShoppingCart`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "is-a and has-a patterns",
+            code: "class Child(Parent):\n    pass  # is-a\n\n\nclass Container:\n    def __init__(self):\n        self.component = Component()  # has-a",
+            description: "Inherit when the child is a specialized form of the parent; compose when an object owns or uses a separate component."
           },
           {
             kind: "interactive-code",
@@ -1740,12 +2310,18 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Understand composition vs aggregation",
+            heading: "Composition vs Aggregation",
             body: [
               "You may also encounter the term **aggregation**.",
               "Both composition and aggregation describe objects containing or using other objects. The difference is mainly about ownership and lifetime.",
               "Consider **composition**:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Ownership and aggregation",
+            code: "class Owner:\n    def __init__(self):\n        self.part = Part()  # composition\n\n\nclass Group:\n    def __init__(self, member):\n        self.member = member  # aggregation",
+            description: "Composition creates and strongly owns a component; aggregation receives an object that can exist independently."
           },
           {
             kind: "interactive-code",
@@ -1775,12 +2351,18 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Putting Composition Together",
             body: [
               "Imagine you are building the order system for an online store.",
               "An order contains a shopping cart. The shopping cart is responsible for storing products and calculating the total.",
               "Instead of putting all cart logic inside `Order`, create a separate class."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Composed order pattern",
+            code: "class Order:\n    def __init__(self, order_id):\n        self.order_id = order_id\n        self.cart = ShoppingCart()\n\n    def checkout(self):\n        return self.cart.calculate_total()",
+            description: "Keep the outer workflow in one class and delegate a focused responsibility to its component."
           },
           {
             kind: "interactive-code",
@@ -1894,7 +2476,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
         sections: [
           {
             kind: "prose",
-            heading: "Why this matters",
+            heading: "Why Special Methods Matter",
             body: [
               "Built-in Python objects feel natural to use:",
               "\`len(items)\`   \`price1 + price2\`   \`user1 == user2\`   \`print(product)\`",
@@ -1909,7 +2491,7 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "The core idea",
+            heading: "Special Methods Fundamentals",
             body: [
               "A dunder method is a method with a name such as:",
               "\`__init__()\`   \`__str__()\`   \`__repr__()\`   \`__len__()\`   \`__add__()\`   \`__eq__()\`",
@@ -1925,10 +2507,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "1. Initialize objects with __init__()",
+            heading: "Object Initialization with __init__()",
             body: [
               "You have already used the most familiar special method:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Object initialization",
+            code: "class ClassName:\n    def __init__(self, value):\n        self.value = value",
+            description: "Python calls `__init__` after creating an object with ClassName(...), allowing the class to set its initial state."
           },
           {
             kind: "interactive-code",
@@ -1943,10 +2531,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "2. Make objects readable with __str__()",
+            heading: "User-Friendly Strings with __str__()",
             body: [
               "Without a custom string representation, printing an object is not very useful. Define \`__str__()\`:"
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Readable string representation",
+            code: "class ClassName:\n    def __str__(self):\n        return \"readable text\"",
+            description: "`__str__` must return a string. Python uses it for `str(object)` and `print(object)`."
           },
           {
             kind: "interactive-code",
@@ -1960,10 +2554,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "3. Add a developer representation with __repr__()",
+            heading: "Developer Representations with __repr__()",
             body: [
               "\`__repr__()\` also returns a string representation, but it is usually aimed at developers."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Developer representation",
+            code: "class ClassName:\n    def __repr__(self):\n        return \"ClassName(value=...)\"",
+            description: "`__repr__` must return a string that helps developers inspect an object while debugging."
           },
           {
             kind: "interactive-code",
@@ -1980,10 +2580,16 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "4. Support len() with __len__()",
+            heading: "Custom Length with __len__()",
             body: [
               "Suppose a shopping cart stores several products. Python's \`len()\` operation uses \`__len__()\`, which must return a non-negative integer."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom length",
+            code: "class Collection:\n    def __len__(self):\n        return non_negative_integer",
+            description: "`__len__` must return a non-negative integer when Python evaluates `len(object)`."
           },
           {
             kind: "interactive-code",
@@ -1991,11 +2597,53 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "5. Overload operators with __add__()",
+            heading: "Truthiness with __bool__()",
+            body: [
+              "`__bool__` controls how an object behaves in a Boolean context, such as an `if` statement or `bool(object)`.",
+              "It must return `True` or `False`. If a class has no `__bool__`, Python can use `__len__`: a length of zero is falsey."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom truth value",
+            code: "class ClassName:\n    def __bool__(self):\n        return condition",
+            description: "`__bool__` returns `True` or `False` and defines whether an object is truthy in conditional code."
+          },
+          {
+            kind: "interactive-code",
+            code: "class ShoppingCart:\n    def __init__(self, items):\n        self.items = items\n\n    def __bool__(self):\n        return len(self.items) > 0\n\ncart = ShoppingCart([\"Book\"])\n\nif cart:\n    print(\"Cart has items.\")"
+          },
+          {
+            kind: "prose",
+            heading: "Indexing and Slicing with __getitem__()",
+            body: [
+              "`__getitem__` lets an object support square-bracket access such as `object[index]`.",
+              "When it passes the received index on to a list, it can support both ordinary indexes and slices."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom indexing",
+            code: "class Collection:\n    def __getitem__(self, index):\n        return self.items[index]",
+            description: "Python passes the value inside brackets to `__getitem__`; that value can be an integer or a slice."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Team:\n    def __init__(self, members):\n        self.members = members\n\n    def __getitem__(self, index):\n        return self.members[index]\n\nteam = Team([\"Aman\", \"Riya\", \"Kabir\"])\nprint(team[0])\nprint(team[1:])"
+          },
+          {
+            kind: "prose",
+            heading: "Addition with __add__()",
             body: [
               "Suppose you want two shopping carts to be combined using \`+\`.",
               "Your class defines what \`+\` means for its objects by implementing \`__add__()\`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom addition",
+            code: "class ClassName:\n    def __add__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return result",
+            description: "`__add__` defines `left + right`. Return `NotImplemented` when the other operand type is unsupported."
           },
           {
             kind: "interactive-code",
@@ -2015,22 +2663,70 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "6. Compare objects with __eq__()",
+            heading: "Subtraction and Related Operators",
+            body: [
+              "Other arithmetic operators follow the same pattern. For example, `__sub__` defines subtraction with `-`.",
+              "As with addition, return `NotImplemented` when the other value is not a supported type."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Custom subtraction",
+            code: "class ClassName:\n    def __sub__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return result",
+            description: "`__sub__` defines `left - right`; the same operator-overloading approach also applies to multiplication and division."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Money:\n    def __init__(self, amount):\n        self.amount = amount\n\n    def __sub__(self, other):\n        if not isinstance(other, Money):\n            return NotImplemented\n        return Money(self.amount - other.amount)\n\n    def __str__(self):\n        return f\"Amount: {self.amount}\"\n\nprint(Money(100) - Money(40))"
+          },
+          {
+            kind: "prose",
+            heading: "Equality with __eq__()",
             body: [
               "By default, two separate custom objects are not automatically considered equal simply because their attributes contain the same values.",
               "You can define what equality means with \`__eq__()\`."
             ]
           },
           {
+            kind: "syntax",
+            title: "Custom equality",
+            code: "class ClassName:\n    def __eq__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return self.value == other.value",
+            description: "`__eq__` defines `left == right`. It should return a Boolean result or `NotImplemented` for unsupported types."
+          },
+          {
             kind: "interactive-code",
-            code: "class Product:\n    def __init__(self, sku, name):\n        self.sku = sku\n        self.name = name\n\n    def __eq__(self, other):\n        return self.sku == other.sku\n\nproduct1 = Product(\"SKU100\", \"Laptop\")\nproduct2 = Product(\"SKU100\", \"Laptop Pro\")\n\n# Same SKU -> Same product\nprint(product1 == product2)  # Output: True"
+            code: "class Product:\n    def __init__(self, sku, name):\n        self.sku = sku\n        self.name = name\n\n    def __eq__(self, other):\n        if not isinstance(other, Product):\n            return NotImplemented\n        return self.sku == other.sku\n\nproduct1 = Product(\"SKU100\", \"Laptop\")\nproduct2 = Product(\"SKU100\", \"Laptop Pro\")\n\n# Same SKU -> Same product\nprint(product1 == product2)  # Output: True"
           },
           {
             kind: "prose",
-            heading: "7. Make objects callable with __call__()",
+            heading: "Ordering Comparisons",
+            body: [
+              "Comparison methods can also define ordering. For example, `__lt__` controls the less-than operator, `<`.",
+              "The related methods are `__ne__`, `__le__`, `__gt__`, and `__ge__`. They should produce Boolean results or `NotImplemented` for unsupported types."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Less-than comparison",
+            code: "class ClassName:\n    def __lt__(self, other):\n        if not isinstance(other, ClassName):\n            return NotImplemented\n        return self.value < other.value",
+            description: "`__lt__` defines `left < right`; use comparison methods only when the ordering has a clear meaning."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Student:\n    def __init__(self, name, marks):\n        self.name = name\n        self.marks = marks\n\n    def __lt__(self, other):\n        if not isinstance(other, Student):\n            return NotImplemented\n        return self.marks < other.marks\n\naman = Student(\"Aman\", 85)\nriya = Student(\"Riya\", 92)\nprint(aman < riya)"
+          },
+          {
+            kind: "prose",
+            heading: "Callable Objects with __call__()",
             body: [
               "A class can even make its objects behave like functions using \`__call__()\`."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Callable object",
+            code: "class ClassName:\n    def __call__(self, value):\n        return result",
+            description: "`__call__` defines what happens when an object is followed by parentheses, such as object(value)."
           },
           {
             kind: "interactive-code",
@@ -2045,11 +2741,77 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
           },
           {
             kind: "prose",
-            heading: "A simple example",
+            heading: "Context Managers with __enter__() and __exit__()",
+            body: [
+              "Context managers work with the `with` statement. Python calls `__enter__` when the block starts and calls `__exit__` when it ends, even if an error occurs inside the block.",
+              "This pattern is useful for setup and cleanup, such as opening and closing a file."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Context manager protocol",
+            code: "class ClassName:\n    def __enter__(self):\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        pass",
+            description: "`__enter__` prepares the resource for the `with` block. `__exit__` receives exception details and performs cleanup."
+          },
+          {
+            kind: "interactive-code",
+            code: "class SimpleContext:\n    def __enter__(self):\n        print(\"Entering\")\n        return self\n\n    def __exit__(self, exc_type, exc_value, traceback):\n        print(\"Exiting\")\n\nwith SimpleContext():\n    print(\"Inside with block\")"
+          },
+          {
+            kind: "prose",
+            body: [
+              "If `__exit__` returns `True`, it suppresses an exception from the `with` block. Returning `False` or `None` lets that exception continue normally."
+            ]
+          },
+          {
+            kind: "prose",
+            heading: "Custom Iteration with __iter__() and __next__()",
+            body: [
+              "An iterable object can participate in a `for` loop by providing the iterator protocol.",
+              "`__iter__` returns an iterator, and `__next__` produces one value at a time until it raises `StopIteration`."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Iterator protocol",
+            code: "class Iterator:\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if no_values_left:\n            raise StopIteration\n        return next_value",
+            description: "A `for` loop repeatedly calls `__next__` on the iterator until `StopIteration` signals that there are no values left."
+          },
+          {
+            kind: "interactive-code",
+            code: "class CountUpTo:\n    def __init__(self, limit):\n        self.current = 1\n        self.limit = limit\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current > self.limit:\n            raise StopIteration\n        value = self.current\n        self.current += 1\n        return value\n\nfor number in CountUpTo(3):\n    print(number)"
+          },
+          {
+            kind: "prose",
+            heading: "Membership with __contains__()",
+            body: [
+              "`__contains__` defines the membership test performed by the `in` operator.",
+              "It should return `True` or `False` to state whether the requested item belongs to the object."
+            ]
+          },
+          {
+            kind: "syntax",
+            title: "Membership test",
+            code: "class Collection:\n    def __contains__(self, item):\n        return item in self.items",
+            description: "`__contains__` defines the result of an expression such as item in collection."
+          },
+          {
+            kind: "interactive-code",
+            code: "class Team:\n    def __init__(self, members):\n        self.members = members\n\n    def __contains__(self, member):\n        return member in self.members\n\nteam = Team([\"Aman\", \"Riya\", \"Kabir\"])\nprint(\"Aman\" in team)\nprint(\"Neha\" in team)"
+          },
+          {
+            kind: "prose",
+            heading: "Putting Special Methods Together",
             body: [
               "Imagine you are building the shopping-cart system for an online store.",
               "You want your custom objects to work naturally with Python."
             ]
+          },
+          {
+            kind: "syntax",
+            title: "Natural Python objects",
+            code: "class ClassName:\n    def __str__(self):\n        return \"readable text\"\n\n    def __len__(self):\n        return 0",
+            description: "Implement only the special methods that give your class a clear and natural behavior with Python syntax."
           },
           {
             kind: "interactive-code",
@@ -2067,6 +2829,12 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
             ]
           },
           {
+            kind: "callout",
+            tone: "warn",
+            title: "Special method rules",
+            body: "- **Return the required type**: `__str__` and `__repr__` must return strings; `__len__` must return a non-negative integer; and `__bool__` must return `True` or `False`.\n- **Return `NotImplemented` for unsupported operands**: This lets Python try the other operand's reflected method or raise the appropriate error.\n- **Keep operators intuitive**: Define `+`, `-`, comparisons, and other operators only when they have a clear meaning for your class.\n- **Use normal Python syntax**: Prefer `len(cart)` over calling `cart.__len__()` directly."
+          },
+          {
             kind: "takeaways",
             items: [
               "Special methods connect your classes to Python's built-in syntax and operations.",
@@ -2076,6 +2844,8 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
               "\`__len__()\` lets objects work with \`len()\`, and \`__eq__()\` defines equality between objects.",
               "\`__add__()\` and related methods support operator overloading.",
               "\`__call__()\` lets an object behave like a callable (like a function).",
+              "\`__getitem__()\`, \`__contains__()\`, and the iterator protocol let custom objects work with indexing, membership checks, and loops.",
+              "\`__enter__()\` and \`__exit__()\` support safe setup and cleanup in a \`with\` block.",
               "Implement special methods when they give your class natural Python behavior."
             ]
           },
@@ -2117,11 +2887,33 @@ export const OOP_TOPICS: Record<string, { title: string; slug: string; lessons: 
                 ],
                 correctIndex: 0,
                 explanation: "The `+` operator maps directly to the `__add__()` dunder method."
+              },
+              {
+                id: "q4",
+                question: "Which special method is called when Python evaluates `item in collection`?",
+                options: [
+                  "__contains__()",
+                  "__getitem__()",
+                  "__iter__()",
+                  "__bool__()"
+                ],
+                correctIndex: 0,
+                explanation: "The `in` operator uses `__contains__()` when that method is defined."
+              },
+              {
+                id: "q5",
+                interactiveCode: true,
+                question: "Create a `Playlist` class that stores a list of songs. Implement `__len__()` so that `len(playlist)` returns the number of songs.",
+                initialCode: "class Playlist:\n    def __init__(self, songs):\n        self.songs = songs\n\n    # Add __len__ here\n",
+                testCode: "playlist = Playlist(['Intro', 'Focus', 'Outro'])\nprint(len(playlist))",
+                expectedOutput: "3",
+                explanation: "`__len__()` must return a non-negative integer; Python calls it when evaluating `len(playlist)`."
               }
             ]
           }
         ]
-      }
+      },
+      OOP_FINAL_QUIZ_LESSON
 
     ]
   }
