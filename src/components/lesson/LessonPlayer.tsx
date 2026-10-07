@@ -84,7 +84,9 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
   const safeIdx = Math.min(stepIndex, total - 1);
   const step = steps[safeIdx];
   const panelMin = step.complexity
-    ? "min-h-[480px]"
+    ? step.complexity.blocks.length > 5
+      ? "min-h-[560px]"
+      : "min-h-[480px]"
     : wideViz
       ? "min-h-[260px]"
       : hasPair
@@ -275,7 +277,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
       />
 
       <div
-        className={`grid grid-cols-1 gap-4 ${step.complexity ? "lg:grid-cols-[0.85fr_1.15fr]" : wideViz ? "" : "lg:grid-cols-[1.15fr_1fr]"}`}
+        className={`grid grid-cols-1 gap-4 ${step.complexity ? "lg:grid-cols-[0.85fr_1.15fr]" : wideViz ? "" : "lg:grid-cols-[minmax(0,1fr)_fit-content(68%)]"}`}
       >
         <div
           className={`relative grid-bg ${panelMin} overflow-hidden rounded-2xl border border-hairline bg-surface`}
@@ -306,7 +308,7 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
             )}
           </div>
         </div>
-        <div className={panelMin}>
+        <div className={`min-w-0 ${panelMin}`}>
           <CodePane
             code={builder.codeFor ? builder.codeFor(inputs) : builder.code}
             activeLine={codeLine}
