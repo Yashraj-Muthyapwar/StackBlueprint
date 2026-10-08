@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { InteractivePythonBlock } from "./InteractivePythonBlock";
+import { emitQuizResults, type QuizReviewItem } from "@/lib/rivet/quiz";
 
 export type QuizQuestion = {
   id: string;
@@ -168,6 +169,7 @@ function NormalQuiz({
   const [isCommandCorrect, setIsCommandCorrect] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutput, setEvaluationOutput] = useState("");
+  const reviewRef = React.useRef<QuizReviewItem[]>([]);
 
   useEffect(() => {
     onActiveChange?.(isStarted && !isFinished);
@@ -192,6 +194,7 @@ function NormalQuiz({
 
   useEffect(() => {
     if (isFinished) {
+      emitQuizResults(reviewRef.current);
       const percentage = Math.round((score / data.questions.length) * 100);
       if (percentage >= 80) {
         window.dispatchEvent(new CustomEvent("quiz-passed", { detail: { score: percentage } }));
@@ -209,6 +212,7 @@ function NormalQuiz({
     setIsCommandCorrect(false);
     setIsAnswered(false);
     setEvaluationOutput("");
+    reviewRef.current = [];
     setQuizAttempt((prev) => prev + 1);
 
     // Dispatch a custom event so other components (like animations) know the quiz started
@@ -219,7 +223,15 @@ function NormalQuiz({
     if (isAnswered) return;
     setSelectedOption(index);
     setIsAnswered(true);
-    if (shuffledOptions[index].isCorrect) {
+    const picked = shuffledOptions[index];
+    reviewRef.current.push({
+      question: currentQuestion.question,
+      userAnswer: picked.text,
+      correctAnswer: shuffledOptions.find((o) => o.isCorrect)?.text ?? "",
+      correct: picked.isCorrect,
+      explanation: currentQuestion.explanation,
+    });
+    if (picked.isCorrect) {
       setScore((s) => s + 1);
     }
   };
@@ -269,6 +281,17 @@ function NormalQuiz({
     }
 
     setIsCommandCorrect(correct);
+    reviewRef.current.push({
+      question: currentQuestion.question,
+      userAnswer: commandInput,
+      correctAnswer: currentQuestion.interactiveCode
+        ? `Expected output: ${currentQuestion.expectedOutput ?? ""}`
+        : [currentQuestion.commandAnswer].flat().join(" or "),
+      correct,
+      explanation: currentQuestion.interactiveCode
+        ? [currentQuestion.explanation, actualOutput && `Your output: ${actualOutput}`].filter(Boolean).join(" ")
+        : currentQuestion.explanation,
+    });
     if (correct) {
       setScore((s) => s + 1);
     }
@@ -697,6 +720,7 @@ function FinalQuiz({
     setIsEvaluating(true);
     let calculatedScore = 0;
     const newOutputs: Record<number, string> = {};
+    const review: QuizReviewItem[] = [];
 
     for (let idx = 0; idx < shuffledQuestions.length; idx++) {
       const q = shuffledQuestions[idx];
@@ -705,6 +729,13 @@ function FinalQuiz({
           const validationError = validateRequiredCodePatterns(q, commandAnswers[idx] || "");
           if (validationError) {
             newOutputs[idx] = validationError;
+            review.push({
+              question: q.question,
+              userAnswer: commandAnswers[idx] || "",
+              correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+              correct: false,
+              explanation: [q.explanation, validationError].filter(Boolean).join(" "),
+            });
             continue;
           }
           const { getPyodide } = await import("@/lib/pyodide-loader");
@@ -720,19 +751,46 @@ function FinalQuiz({
 
           const actualOutput = out.trim();
           newOutputs[idx] = actualOutput;
-          if (actualOutput === (q.expectedOutput || "").trim()) {
-            calculatedScore++;
-          }
+          const ok = actualOutput === (q.expectedOutput || "").trim();
+          if (ok) calculatedScore++;
+          review.push({
+            question: q.question,
+            userAnswer: commandAnswers[idx] || "",
+            correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+            correct: ok,
+            explanation: [q.explanation, !ok && `Your output: ${actualOutput}`].filter(Boolean).join(" "),
+          });
         } catch (e: any) {
           newOutputs[idx] = String(e);
+          review.push({
+            question: q.question,
+            userAnswer: commandAnswers[idx] || "",
+            correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+            correct: false,
+            explanation: [q.explanation, `Error: ${String(e)}`].filter(Boolean).join(" "),
+          });
         }
       } else if (q.commandAnswer) {
-        if (isCommandCorrect(q, commandAnswers[idx])) calculatedScore++;
+        const ok = isCommandCorrect(q, commandAnswers[idx]);
+        if (ok) calculatedScore++;
+        review.push({
+          question: q.question,
+          userAnswer: commandAnswers[idx] || "",
+          correctAnswer: [q.commandAnswer].flat().join(" or "),
+          correct: ok,
+          explanation: q.explanation,
+        });
       } else {
         const selected = selectedAnswers[idx];
-        if (selected !== undefined && q.shuffledOptions[selected]?.isCorrect) {
-          calculatedScore++;
-        }
+        const ok = selected !== undefined && Boolean(q.shuffledOptions[selected]?.isCorrect);
+        if (ok) calculatedScore++;
+        review.push({
+          question: q.question,
+          userAnswer: selected !== undefined ? q.shuffledOptions[selected]?.text ?? "" : "(no answer)",
+          correctAnswer: q.shuffledOptions.find((o) => o.isCorrect)?.text ?? "",
+          correct: ok,
+          explanation: q.explanation,
+        });
       }
     }
 
@@ -741,6 +799,7 @@ function FinalQuiz({
     setIsEvaluating(false);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    emitQuizResults(review);
 
     const percentage = Math.round((calculatedScore / data.questions.length) * 100);
     if (percentage >= 80) {

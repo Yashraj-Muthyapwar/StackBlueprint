@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { LessonCompleteButton } from "./LessonCompleteButton";
 import { FloatingTOC, type TOCItem } from "./FloatingTOC";
+import { RivetCompanion } from "@/components/rivet";
+import { extractLessonText } from "@/lib/rivet/context";
 
 export interface LessonLayoutProps {
   trackTitle: string;
@@ -220,6 +222,19 @@ export function LessonLayout({
         </div>
       </div>
       {tocItems.length > 0 && <FloatingTOC items={tocItems} />}
+      {!isEffectivelyPlaceholder && (
+        <RivetCompanion
+          context={{
+            lessonKey: lesson.path ?? `${effectiveBasePath}/${topic.slug}/${lesson.slug}`,
+            trackTitle,
+            topicTitle: topic.title,
+            lessonTitle: lesson.title,
+            lessonText: extractLessonText(sections),
+          }}
+          quizActive={isQuizActive}
+          quizPending={Boolean(sections?.some((s) => s.kind === "quiz" && s.isFinalQuiz))}
+        />
+      )}
     </div>
   );
 }
