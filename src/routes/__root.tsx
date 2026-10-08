@@ -163,6 +163,8 @@ function RootComponent() {
                 </Link>
               </div>
               <div className="flex items-center gap-2">
+                {/* Lessons portal their table-of-contents button here on phone widths. */}
+                <div id="lesson-toc-slot" className="contents" />
                 <GlobalSearch />
                 <ThemeToggle />
               </div>
