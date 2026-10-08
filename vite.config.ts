@@ -5,6 +5,7 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { rivetLessonIndex } from "./scripts/rivet/build-lesson-index.mjs";
 
 export default defineConfig({
   // Force-enable Nitro when Vercel is building the app, otherwise leave it alone
@@ -17,6 +18,8 @@ export default defineConfig({
   },
   
   vite: {
+    // Keeps Rivet's list of linkable lessons in sync with src/lessons (dev start, file changes, build).
+    plugins: [rivetLessonIndex()],
     build: {
       chunkSizeWarningLimit: 1000,
     },
