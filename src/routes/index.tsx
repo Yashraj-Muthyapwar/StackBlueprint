@@ -49,32 +49,32 @@ function Landing() {
       <div className="grid-bg absolute inset-0 -z-20 opacity-[0.15] pointer-events-none" />
 
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center border-b border-hairline px-8 py-32 text-center lg:px-16 lg:py-48">
+      <section className="relative flex flex-col items-center justify-center border-b border-hairline px-4 py-20 text-center sm:px-8 sm:py-28 lg:px-16 lg:py-40">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-mint/15 via-background/0 to-background/0" />
         
         <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-mint/20 bg-mint/5 px-4 py-1.5 shadow-[0_0_15px_-3px_rgba(94,234,212,0.2)] backdrop-blur-md">
-            <span className="relative flex size-2">
+          <div className="mb-6 inline-flex max-w-full items-center gap-2 rounded-full border border-mint/20 bg-mint/5 px-3.5 py-1.5 shadow-[0_0_15px_-3px_rgba(94,234,212,0.2)] backdrop-blur-md sm:mb-8 sm:px-4">
+            <span className="relative flex size-2 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-mint opacity-75"></span>
               <span className="relative inline-flex size-2 rounded-full bg-mint"></span>
             </span>
-            <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-mint">
+            <span className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.12em] sm:tracking-[0.2em] text-mint truncate">
               StackBlueprint · Patterns track live
             </span>
           </div>
-          <h1 className="text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl lg:text-7xl lg:leading-[1.1]">
-            Your roadmap to <br className="hidden lg:block" />
+          <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground leading-[1.15] lg:leading-[1.1] max-w-4xl">
+            Your roadmap to <br className="hidden sm:block" />
             <span className="bg-gradient-to-r from-mint via-emerald-400 to-teal-500 bg-clip-text text-transparent drop-shadow-sm">
               engineering mastery.
             </span>
           </h1>
-          <p className="mt-8 max-w-2xl text-balance text-lg text-muted-foreground/90 lg:text-xl">
-            StackBlueprint is a visual, interactive playbook for the things engineers actually get asked about: <strong className="font-semibold">DSA patterns</strong>, <strong className="font-semibold">SQL</strong>, <strong className="font-semibold">system design</strong>, and the <strong className="font-semibold">data architecture</strong> they all run on.
+          <p className="mt-6 max-w-2xl text-balance text-base text-muted-foreground/90 sm:mt-8 sm:text-lg lg:text-xl">
+            StackBlueprint is a visual, interactive playbook for the things engineers actually get asked about: <strong className="font-semibold text-foreground">DSA patterns</strong>, <strong className="font-semibold text-foreground">SQL</strong>, <strong className="font-semibold text-foreground">system design</strong>, and the <strong className="font-semibold text-foreground">data architecture</strong> they all run on.
           </p>
-          <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row">
+          <div className="mt-8 flex w-full max-w-xs flex-col items-stretch gap-3.5 sm:mt-12 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-4">
             <Link
               to="/patterns"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-mint px-8 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_0_40px_-10px_rgba(94,234,212,0.8)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(94,234,212,1)]"
+              className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-mint px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-[0_0_40px_-10px_rgba(94,234,212,0.8)] transition-all duration-300 hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(94,234,212,1)]"
             >
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 transition-all duration-1000 group-hover:animate-[shimmer_1.5s_infinite]" />
               Start with Patterns (DSA)
@@ -82,7 +82,7 @@ function Landing() {
             </Link>
             <Link
               to="/sql"
-              className="group inline-flex items-center gap-2 rounded-full border border-hairline bg-surface/30 px-8 py-3.5 text-sm font-semibold text-foreground backdrop-blur-md transition-all duration-300 hover:border-mint/30 hover:bg-surface/60 hover:shadow-[0_0_20px_-5px_rgba(94,234,212,0.2)]"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-hairline bg-surface/30 px-6 py-3.5 text-sm font-semibold text-foreground backdrop-blur-md transition-all duration-300 hover:border-mint/30 hover:bg-surface/60 hover:shadow-[0_0_20px_-5px_rgba(94,234,212,0.2)]"
             >
               Explore SQL Mastery
             </Link>
@@ -91,30 +91,30 @@ function Landing() {
       </section>
 
       {/* Roadmap grid */}
-      <section className="px-8 py-20 lg:px-16">
+      <section className="px-4 py-12 sm:px-8 sm:py-20 lg:px-16">
         <div className="mx-auto max-w-6xl">
-          <div className="mb-12 flex items-baseline justify-between border-b border-hairline pb-4">
-            <h2 className="text-3xl font-bold tracking-tight">The roadmap</h2>
-            <span className="rounded-full bg-surface-2 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+          <div className="mb-8 sm:mb-12 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between border-b border-hairline pb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">The roadmap</h2>
+            <span className="self-start sm:self-auto rounded-full bg-surface-2 px-3 py-1 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.14em] sm:tracking-[0.18em] text-muted-foreground">
               {roadmap.length} tracks · {unlockedCategories} unlocked
             </span>
           </div>
 
-          <div className="space-y-16">
+          <div className="space-y-12 sm:space-y-16">
             {categorizedRoadmap.map((category) => (
               <div key={category.title}>
-                <h3 className="mb-6 flex items-center gap-3 text-xl font-semibold tracking-tight text-foreground/90">
+                <h3 className="mb-4 sm:mb-6 flex items-center gap-3 text-lg sm:text-xl font-semibold tracking-tight text-foreground/90">
                   {category.title}
                   <div className="h-px flex-1 bg-hairline/50" />
                 </h3>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-2">
                   {category.tracks.map((cat) => {
                     const isUnlocked = !cat.locked;
                     const isSql = cat.slug === "sql-mastery";
                     const hasContent = isUnlocked || isSql;
                     const card = (
                       <div
-                        className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-7 transition-all duration-500 ${
+                        className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 sm:p-7 transition-all duration-500 ${
                           hasContent
                             ? "border-hairline/60 bg-surface/30 backdrop-blur-md hover:-translate-y-1.5 hover:border-mint/40 hover:bg-surface/60 hover:shadow-[0_12px_40px_-10px_rgba(94,234,212,0.2)]"
                             : "border-hairline/40 bg-surface/10 backdrop-blur-sm hover:-translate-y-1 hover:border-foreground/20 hover:bg-surface/30 hover:shadow-xl"
@@ -229,14 +229,14 @@ function Landing() {
       </section>
 
       {/* How it works */}
-      <section className="relative border-t border-hairline px-8 py-24 lg:px-16 overflow-hidden">
+      <section className="relative border-t border-hairline px-4 py-16 sm:px-8 sm:py-24 lg:px-16 overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-mint/5 via-background/0 to-background/0" />
         <div className="mx-auto max-w-5xl">
-          <div className="mb-12 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground lg:text-4xl">Built for visual learners</h2>
-            <p className="mt-4 text-lg text-muted-foreground">Interactive elements that make complex concepts click.</p>
+          <div className="mb-10 sm:mb-12 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">Built for visual learners</h2>
+            <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground">Interactive elements that make complex concepts click.</p>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-3">
             {[
               {
                 k: "01",
