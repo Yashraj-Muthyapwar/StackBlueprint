@@ -242,7 +242,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="flex w-full justify-center bg-surface-2/30 py-4">
-            <ZoomableImage src={section.src} alt={section.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
+            <ZoomableImage
+              src={section.src}
+              alt={section.alt}
+              caption={section.caption}
+              className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+            />
           </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
