@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 
 import { roadmap } from "@/lessons/roadmap";
 import { HeroInteractiveDemo } from "@/components/HeroInteractiveDemo";
@@ -82,12 +82,13 @@ function Landing() {
               Start with Patterns (DSA)
               <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
             </Link>
-            <Link
-              to="/sql"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-hairline bg-surface/30 px-4 py-2 text-xs sm:text-sm font-semibold text-foreground backdrop-blur-md transition-all duration-300 hover:border-mint/30 hover:bg-surface/60"
+            <a
+              href="#roadmap"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-hairline/80 bg-surface px-4 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-xs transition-all duration-300 hover:border-mint/50 hover:bg-surface-2 hover:shadow-sm"
             >
-              Explore SQL Mastery
-            </Link>
+              Explore Roadmap
+              <ChevronDown className="size-3.5 transition-transform group-hover:translate-y-0.5 text-mint" />
+            </a>
           </div>
 
           {/* Interactive Hero Widget Preview */}
@@ -96,7 +97,7 @@ function Landing() {
       </section>
 
       {/* Roadmap grid */}
-      <section className="px-4 py-12 sm:px-8 sm:py-20 lg:px-16">
+      <section id="roadmap" className="scroll-mt-8 px-4 py-12 sm:px-8 sm:py-20 lg:px-16">
         <div className="mx-auto max-w-6xl">
           <div className="mb-8 sm:mb-12 flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between border-b border-hairline pb-4">
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">The roadmap</h2>
