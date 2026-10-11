@@ -348,6 +348,19 @@ export type RoadmapSection =
 export function sectionPatterns(section: RoadmapSection): RoadmapPattern[] {
   return section.patterns ?? [section as RoadmapPattern];
 }
+
+/** Sections are the canonical grouping when present; `patterns` can duplicate them (e.g. DSA). */
+export function categoryPatterns(cat: RoadmapCategory): RoadmapPattern[] {
+  return cat.sections?.length ? cat.sections.flatMap(sectionPatterns) : cat.patterns;
+}
+
+/** A category is unlocked if it is not locked itself and has at least one unlocked pattern. */
+export function isCategoryUnlocked(cat: RoadmapCategory): boolean {
+  if (cat.locked) return false;
+  const patterns = categoryPatterns(cat);
+  if (patterns.length === 0) return !cat.locked;
+  return patterns.some((p) => !p.locked);
+}
 export interface RoadmapCategory {
   title: string;
   slug: string;
