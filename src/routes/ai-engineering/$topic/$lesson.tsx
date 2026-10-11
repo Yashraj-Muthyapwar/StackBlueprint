@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { useProgress } from "@/hooks/use-progress";
-import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { CATEGORY_BY_SLUG, sectionPatterns } from "@/lessons/roadmap";
 import { AI_ENGINEERING_TOPICS } from "@/lessons/ai-engineering/core-concepts-content";
 import { SectionRenderer } from "@/components/ai-engineering/SectionRenderer";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
@@ -30,7 +30,7 @@ function AIEngineeringLessonPage() {
   const cat = CATEGORY_BY_SLUG["ai-engineering"];
   const t =
     cat?.patterns.find((p) => p.slug === topic) ||
-    cat?.sections?.flatMap((s) => s.patterns).find((p) => p.slug === topic);
+    cat?.sections?.flatMap(sectionPatterns).find((p) => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
   const content = AI_ENGINEERING_TOPICS[topic as keyof typeof AI_ENGINEERING_TOPICS]?.lessons.find(

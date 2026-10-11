@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { CATEGORY_BY_SLUG, sectionPatterns } from "@/lessons/roadmap";
 import { ChapterIndexLayout } from "@/components/learning-paths/ChapterIndexLayout";
 
 export const Route = createFileRoute("/data-warehouses/foundations/$topic/")({
@@ -9,7 +9,7 @@ export const Route = createFileRoute("/data-warehouses/foundations/$topic/")({
 function DataWarehousesTopicPage() {
   const { topic } = Route.useParams();
   const cat = CATEGORY_BY_SLUG["data-warehouses"];
-  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
+  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(sectionPatterns).find(p => p.slug === topic);
 
   return (
     <ChapterIndexLayout

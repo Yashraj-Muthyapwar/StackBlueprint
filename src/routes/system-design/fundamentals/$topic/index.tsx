@@ -5,7 +5,7 @@ import { useProgress } from "@/hooks/use-progress";
 
 const ICONS = { container: Container, layers: Layers, terminal: Terminal } as const;
 
-export const Route = createFileRoute("/system-design/foundations/$topic/")({
+export const Route = createFileRoute("/system-design/fundamentals/$topic/")({
   component: FoundationTopicPage,
 });
 
