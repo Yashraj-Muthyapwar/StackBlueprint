@@ -147,16 +147,13 @@ export function RoadmapCard({ cat }: RoadmapCardProps) {
     </div>
   );
 
-  if (cat.overviewPath === "/patterns") return <Link to="/patterns" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/sql") return <Link to="/sql" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/data-warehouses") return <Link to="/data-warehouses" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/docker") return <Link to="/docker" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/web-scraping") return <Link to="/web-scraping" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/system-design") return <Link to="/system-design" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/terraform") return <Link to="/terraform" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/git-github") return <Link to="/git-github" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/python") return <Link to="/python" className="block h-full">{cardContent}</Link>;
-  if (cat.overviewPath === "/data-engineering") return <Link to="/data-engineering" className="block h-full">{cardContent}</Link>;
+  if (cat.overviewPath) {
+    return (
+      <Link to={cat.overviewPath as any} className="block h-full">
+        {cardContent}
+      </Link>
+    );
+  }
 
   return (
     <Link to="/tracks/$track" params={{ track: cat.slug }} className="block h-full">
