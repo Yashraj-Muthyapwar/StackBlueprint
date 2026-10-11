@@ -27,7 +27,7 @@ function InteractivePipelineFlow({ steps }: { steps: { title: string; descriptio
                 setActiveStep(i);
                 setIsAutoPlaying(false);
               }}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium text-sm shadow-sm transition-colors ${activeStep === i ? 'bg-mint text-white border-mint' : 'bg-white dark:bg-zinc-800/80 border-hairline text-foreground hover:bg-slate-50 dark:hover:bg-zinc-700'}`}
+              className={`px-3.5 py-1.5 rounded-lg border font-medium text-sm shadow-sm transition-colors ${activeStep === i ? 'bg-primary text-primary-foreground border-primary' : 'bg-white dark:bg-zinc-800/80 border-hairline text-foreground hover:bg-slate-50 dark:hover:bg-zinc-700'}`}
             >
               {step.title}
             </button>
