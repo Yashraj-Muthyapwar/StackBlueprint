@@ -13,7 +13,7 @@ export function TrackChip({
   return (
     <span
       className={cn(
-        "truncate max-w-[200px] sm:max-w-[240px] rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset ring-hairline bg-background",
+        "shrink truncate max-w-[150px] sm:max-w-[190px] xl:max-w-[240px] rounded-md px-2.5 py-1 text-xs font-medium ring-1 ring-inset ring-hairline bg-background",
         variant === "default" ? "text-foreground" : "text-muted-foreground",
         className
       )}
