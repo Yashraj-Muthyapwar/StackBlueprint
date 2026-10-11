@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
-import { roadmap } from "@/lessons/roadmap";
+import { roadmap, isCategoryUnlocked } from "@/lessons/roadmap";
 import { HeroInteractiveDemo } from "@/components/HeroInteractiveDemo";
 import { RoadmapCard } from "@/components/RoadmapCard";
 
@@ -26,21 +26,50 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
-  const unlockedCategories = roadmap.filter((c) => !c.locked).length;
+  const unlockedCategories = roadmap.filter(isCategoryUnlocked).length;
 
   const categorizedRoadmap = [
     {
       title: "Software Engineering",
-      tracks: roadmap.filter(cat => ["patterns-dsa", "python", "system-design", "web-scraping"].includes(cat.slug))
+      tracks: [
+        "patterns-dsa",
+        "python",
+        "system-design",
+        "web-scraping",
+      ]
+        .map((slug) => roadmap.find((c) => c.slug === slug))
+        .filter(Boolean) as typeof roadmap,
     },
     {
-      title: "Data & Analytics",
-      tracks: roadmap.filter(cat => ["sql-mastery", "data-warehouses", "data-engineering", "pandas"].includes(cat.slug))
+      title: "Data & Databases",
+      tracks: [
+        "sql-mastery",
+        "mongodb",
+        "data-engineering",
+        "data-warehouses",
+      ]
+        .map((slug) => roadmap.find((c) => c.slug === slug))
+        .filter(Boolean) as typeof roadmap,
     },
     {
-      title: "DevOps & Tools",
-      tracks: roadmap.filter(cat => ["docker", "terraform", "git-github"].includes(cat.slug))
-    }
+      title: "AI & Data Science",
+      tracks: [
+        "ai-engineering",
+        "pandas",
+      ]
+        .map((slug) => roadmap.find((c) => c.slug === slug))
+        .filter(Boolean) as typeof roadmap,
+    },
+    {
+      title: "DevOps & Cloud",
+      tracks: [
+        "docker",
+        "terraform",
+        "git-github",
+      ]
+        .map((slug) => roadmap.find((c) => c.slug === slug))
+        .filter(Boolean) as typeof roadmap,
+    },
   ];
 
   return (
@@ -113,7 +142,7 @@ function Landing() {
                   {category.title}
                   <div className="h-px flex-1 bg-hairline/50" />
                 </h3>
-                <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {category.tracks.map((cat) => (
                     <RoadmapCard key={cat.slug} cat={cat} />
                   ))}
