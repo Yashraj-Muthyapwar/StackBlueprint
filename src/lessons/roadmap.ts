@@ -336,11 +336,18 @@ export type RoadmapPattern = {
   locked?: boolean;
   keywords?: string[];
 };
-export type RoadmapSection = {
-  title: string;
-  blurb?: string;
-  patterns: RoadmapPattern[];
-};
+/**
+ * A labelled group of modules, or a single module listed directly (Web Scraping
+ * lists some modules this way). Read either shape with `sectionPatterns`.
+ */
+export type RoadmapSection =
+  | { title: string; blurb?: string; patterns: RoadmapPattern[] }
+  | (RoadmapPattern & { patterns?: undefined });
+
+/** The modules a section holds: its group, or the section itself when it is a module. */
+export function sectionPatterns(section: RoadmapSection): RoadmapPattern[] {
+  return section.patterns ?? [section as RoadmapPattern];
+}
 export interface RoadmapCategory {
   title: string;
   slug: string;
