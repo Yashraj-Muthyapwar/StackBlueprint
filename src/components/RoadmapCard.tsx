@@ -36,16 +36,19 @@ export function RoadmapCard({ cat }: RoadmapCardProps) {
       onMouseLeave={handleMouseLeave}
       className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border p-5 sm:p-7 transition-all duration-300 ${
         hasContent
-          ? "border-hairline/60 bg-surface/30 backdrop-blur-md hover:-translate-y-1 hover:border-mint/50 hover:bg-surface/50 hover:shadow-[0_16px_40px_-12px_rgba(94,234,212,0.2)]"
-          : "border-hairline/40 bg-surface/10 backdrop-blur-sm hover:-translate-y-0.5 hover:border-foreground/20 hover:bg-surface/25 hover:shadow-xl"
+          ? "border-hairline/60 bg-surface/30 backdrop-blur-md hover:-translate-y-1.5 hover:border-mint/60 hover:bg-surface/50 hover:shadow-[0_20px_48px_-12px_rgba(94,234,212,0.22)]"
+          : "border-hairline/40 bg-surface/10 backdrop-blur-sm hover:-translate-y-1 hover:border-foreground/20 hover:bg-surface/25 hover:shadow-xl"
       }`}
     >
+      {/* Ambient background glow card corner */}
+      <div className="pointer-events-none absolute -right-12 -top-12 size-36 rounded-full bg-mint/5 blur-[35px] transition-all duration-500 group-hover:bg-mint/15 group-hover:scale-125" />
+
       {/* Spotlight cursor glow */}
       {mousePos.isHovered && hasContent && (
         <div
           className="pointer-events-none absolute -inset-px rounded-2xl opacity-100 transition-opacity duration-300"
           style={{
-            background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, rgba(94,234,212,0.12), transparent 75%)`,
+            background: `radial-gradient(420px circle at ${mousePos.x}px ${mousePos.y}px, rgba(94,234,212,0.16), transparent 75%)`,
           }}
         />
       )}
