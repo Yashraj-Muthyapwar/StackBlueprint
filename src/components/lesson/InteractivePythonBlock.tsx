@@ -37,13 +37,23 @@ export function InteractivePythonBlock({
   const [isLoadingPyodide, setIsLoadingPyodide] = useState(false);
 
   useEffect(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsRunning(false);
+    setIsLoadingPyodide(false);
     setCode(initialCode);
     setOutput("");
     setError("");
   }, [initialCode]);
 
   const abortRef = useRef<AbortController | null>(null);
-  useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(
+    () => () => {
+      abortRef.current?.abort();
+      abortRef.current = null;
+    },
+    [],
+  );
 
   const handleRun = async () => {
     if (isRunning) return;
@@ -59,10 +69,11 @@ export function InteractivePythonBlock({
       code,
       packages,
       signal: controller.signal,
-      onStatus: (m) => m === "running" && setIsLoadingPyodide(false),
-      onStdout: (str) => setOutput((prev) => prev + str + "\n"),
-      onStderr: (str) => setError((prev) => prev + str + "\n"),
+      onStatus: (m) => !controller.signal.aborted && m === "running" && setIsLoadingPyodide(false),
+      onStdout: (str) => !controller.signal.aborted && setOutput((prev) => prev + str),
+      onStderr: (str) => !controller.signal.aborted && setError((prev) => prev + str),
     });
+    if (abortRef.current !== controller) return;
     if (result.stopped) setError((prev) => prev + stoppedMessage(result) + "\n");
     else if (!result.ok && result.error) setError((prev) => prev + result.error + "\n");
     if (abortRef.current === controller) abortRef.current = null;
@@ -73,6 +84,10 @@ export function InteractivePythonBlock({
   const handleStop = () => abortRef.current?.abort();
 
   const handleReset = () => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsRunning(false);
+    setIsLoadingPyodide(false);
     setCode(initialCode);
     setOutput("");
     setError("");

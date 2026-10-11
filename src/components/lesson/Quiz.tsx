@@ -11,19 +11,25 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { InteractivePythonBlock } from "./InteractivePythonBlock";
 import { emitQuizResults, QUIZ_STARTED_EVENT, type QuizReviewItem } from "@/lib/rivet/quiz";
 import { runPython, stoppedMessage } from "@/lib/python-sandbox";
 
 /** Runs answer code in the isolated sandbox and returns its combined output. Throws on errors. */
-async function runGradedPython(code: string, packages?: string[]): Promise<string> {
+async function runGradedPython(
+  code: string,
+  packages: string[] | undefined,
+  signal: AbortSignal,
+): Promise<string> {
   let out = "";
   const r = await runPython({
     code,
     packages,
+    signal,
     timeoutMs: 30_000,
-    onStdout: (t) => (out += t + "\n"),
-    onStderr: (t) => (out += t + "\n"),
+    onStdout: (t) => (out += t),
+    onStderr: (t) => (out += t),
   });
   if (r.stopped) throw new Error(stoppedMessage(r, 30_000));
   if (!r.ok) throw new Error(r.error ?? "Python failed to run.");
@@ -186,6 +192,14 @@ function NormalQuiz({
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutput, setEvaluationOutput] = useState("");
   const reviewRef = React.useRef<QuizReviewItem[]>([]);
+  const evaluationRef = React.useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      evaluationRef.current?.abort();
+      evaluationRef.current = null;
+    },
+    [data],
+  );
 
   useEffect(() => {
     onActiveChange?.(isStarted && !isFinished);
@@ -200,6 +214,8 @@ function NormalQuiz({
       isCorrect: idx === currentQuestion.correctIndex,
       originalIndex: idx,
     }));
+    // Re-shuffle for each new attempt as well as each new question.
+    void quizAttempt;
     // Fisher-Yates shuffle
     for (let i = options.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -219,6 +235,9 @@ function NormalQuiz({
   }, [isFinished, score, data.questions.length]);
 
   const handleStart = () => {
+    evaluationRef.current?.abort();
+    evaluationRef.current = null;
+    setIsEvaluating(false);
     setIsStarted(true);
     setCurrentIndex(0);
     setScore(0);
@@ -256,11 +275,14 @@ function NormalQuiz({
     if (
       (!currentQuestion.commandAnswer && !currentQuestion.interactiveCode) ||
       isAnswered ||
-      isEvaluating
+      isEvaluating ||
+      evaluationRef.current
     )
       return;
 
     setIsEvaluating(true);
+    const controller = new AbortController();
+    evaluationRef.current = controller;
     let correct = false;
     let actualOutput = "";
 
@@ -272,12 +294,13 @@ function NormalQuiz({
           throw new Error(validationError);
         }
         const fullCode = commandInput + "\n\n" + (currentQuestion.testCode || "");
-        actualOutput = await runGradedPython(fullCode, currentQuestion.packages);
+        actualOutput = await runGradedPython(fullCode, currentQuestion.packages, controller.signal);
         correct = actualOutput === (currentQuestion.expectedOutput || "").trim();
-      } catch (e: any) {
+      } catch (e: unknown) {
         actualOutput = String(e);
         correct = false;
       }
+      if (controller.signal.aborted || evaluationRef.current !== controller) return;
       setEvaluationOutput(actualOutput);
     } else {
       const normalize = (str: string) => str.trim().replace(/\s+/g, " ");
@@ -305,6 +328,7 @@ function NormalQuiz({
       setScore((s) => s + 1);
     }
 
+    evaluationRef.current = null;
     setIsEvaluating(false);
     setIsAnswered(true);
   };
@@ -431,14 +455,29 @@ function NormalQuiz({
           className="my-0 border-hairline/60"
           customFooterAction={
             !isAnswered && (
-              <button
-                onClick={handleCommandSubmit}
-                disabled={!commandInput.trim() || isEvaluating}
-                className="h-7 px-3 text-xs inline-flex items-center gap-1.5 rounded bg-mint hover:bg-mint/90 font-bold text-slate-900 shadow-[0_0_12px_rgba(110,231,183,0.3)] transition-all disabled:pointer-events-none disabled:opacity-50"
-              >
-                {isEvaluating ? <Loader2 className="size-3.5 animate-spin" /> : "Submit"}
-                {!isEvaluating && <ArrowRight className="size-3.5" />}
-              </button>
+              <div className="flex items-center gap-2">
+                {isEvaluating && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      evaluationRef.current?.abort();
+                      evaluationRef.current = null;
+                      setIsEvaluating(false);
+                    }}
+                  >
+                    Stop
+                  </Button>
+                )}
+                <button
+                  onClick={handleCommandSubmit}
+                  disabled={!commandInput.trim() || isEvaluating}
+                  className="h-7 px-3 text-xs inline-flex items-center gap-1.5 rounded bg-mint hover:bg-mint/90 font-bold text-slate-900 shadow-[0_0_12px_rgba(110,231,183,0.3)] transition-all disabled:pointer-events-none disabled:opacity-50"
+                >
+                  {isEvaluating ? <Loader2 className="size-3.5 animate-spin" /> : "Submit"}
+                  {!isEvaluating && <ArrowRight className="size-3.5" />}
+                </button>
+              </div>
             )
           }
         />
@@ -696,6 +735,14 @@ function FinalQuiz({
   const [score, setScore] = useState(0);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutputs, setEvaluationOutputs] = useState<Record<number, string>>({});
+  const evaluationRef = React.useRef<AbortController | null>(null);
+  useEffect(
+    () => () => {
+      evaluationRef.current?.abort();
+      evaluationRef.current = null;
+    },
+    [data],
+  );
 
   const [shuffledQuestions] = useState(() => {
     return data.questions.map((q) => {
@@ -728,7 +775,7 @@ function FinalQuiz({
     setCommandAnswers((prev) => ({ ...prev, [questionIndex]: value }));
   };
 
-  const isCommandCorrect = (q: any, val: string) => {
+  const isCommandCorrect = (q: QuizQuestion, val: string) => {
     if (!q.commandAnswer) return false;
     const normalize = (str: string) => str.trim().replace(/\s+/g, " ");
     const answers = Array.isArray(q.commandAnswer) ? q.commandAnswer : [q.commandAnswer];
@@ -736,12 +783,16 @@ function FinalQuiz({
   };
 
   const handleSubmit = async () => {
+    if (evaluationRef.current || isSubmitted) return;
+    const controller = new AbortController();
+    evaluationRef.current = controller;
     setIsEvaluating(true);
     let calculatedScore = 0;
     const newOutputs: Record<number, string> = {};
     const review: QuizReviewItem[] = [];
 
     for (let idx = 0; idx < shuffledQuestions.length; idx++) {
+      if (controller.signal.aborted) return;
       const q = shuffledQuestions[idx];
       if (q.interactiveCode) {
         try {
@@ -759,7 +810,7 @@ function FinalQuiz({
           }
           const fullCode =
             (commandAnswers[idx] || q.initialCode || "") + "\n\n" + (q.testCode || "");
-          const actualOutput = await runGradedPython(fullCode, q.packages);
+          const actualOutput = await runGradedPython(fullCode, q.packages, controller.signal);
           newOutputs[idx] = actualOutput;
           const ok = actualOutput === (q.expectedOutput || "").trim();
           if (ok) calculatedScore++;
@@ -772,7 +823,7 @@ function FinalQuiz({
               .filter(Boolean)
               .join(" "),
           });
-        } catch (e: any) {
+        } catch (e: unknown) {
           newOutputs[idx] = String(e);
           review.push({
             question: q.question,
@@ -807,6 +858,8 @@ function FinalQuiz({
       }
     }
 
+    if (controller.signal.aborted || evaluationRef.current !== controller) return;
+    evaluationRef.current = null;
     setEvaluationOutputs(newOutputs);
     setScore(calculatedScore);
     setIsEvaluating(false);
@@ -906,7 +959,7 @@ function FinalQuiz({
                   </div>
                 ) : (
                   <div className="space-y-3 mt-4">
-                    {q.shuffledOptions.map((opt: any, oIndex: number) => {
+                    {q.shuffledOptions.map((opt, oIndex: number) => {
                       const isSelected = selectedAnswers[qIndex] === oIndex;
                       const isCorrect = opt.isCorrect;
 
@@ -1085,7 +1138,19 @@ function FinalQuiz({
       </div>
 
       {!isSubmitted && (
-        <div className="mt-16 flex justify-center pt-8">
+        <div className="mt-16 flex items-center justify-center gap-3 pt-8">
+          {isEvaluating && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                evaluationRef.current?.abort();
+                evaluationRef.current = null;
+                setIsEvaluating(false);
+              }}
+            >
+              Stop evaluation
+            </Button>
+          )}
           <button
             onClick={handleSubmit}
             disabled={!allAnswered || isEvaluating}
