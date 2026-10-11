@@ -148,12 +148,15 @@ const CODE_LINES = [
 export function HeroInteractiveDemo() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState<0.5 | 1 | 2>(1);
   const [mobileTab, setMobileTab] = useState<"visual" | "code">("visual");
 
   const step = STEPS[currentStep];
 
+  // Base delay: 2000ms / speed factor (e.g. 0.5x = 4000ms, 1x = 2000ms, 2x = 1000ms)
   useEffect(() => {
     if (!isPlaying) return;
+    const intervalMs = Math.round(2000 / speed);
     const timer = setInterval(() => {
       setCurrentStep((prev) => {
         if (prev >= STEPS.length - 1) {
@@ -162,13 +165,33 @@ export function HeroInteractiveDemo() {
         }
         return prev + 1;
       });
-    }, 2200);
+    }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [isPlaying]);
+  }, [isPlaying, speed]);
+
+  // Keyboard navigation for Left, Right arrow keys and Spacebar
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setIsPlaying(false);
+      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setIsPlaying(false);
+      setCurrentStep((prev) => Math.max(prev - 1, 0));
+    } else if (e.key === " " || e.key === "Spacebar") {
+      e.preventDefault();
+      setIsPlaying((prev) => !prev);
+    }
+  };
 
   return (
-    <div className="mx-auto mt-6 sm:mt-8 w-full max-w-[960px] px-1 sm:px-0">
+    <div
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
+      className="group/widget mx-auto mt-6 sm:mt-8 w-full max-w-[960px] px-1 sm:px-0 outline-none focus-visible:ring-2 focus-visible:ring-mint/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-2xl transition-all"
+    >
       <div className="relative overflow-hidden rounded-2xl border border-hairline/80 bg-surface/50 shadow-2xl backdrop-blur-xl">
         {/* Ambient background glow */}
         <div className="pointer-events-none absolute -left-16 -top-16 -z-10 size-48 rounded-full bg-mint/15 blur-[55px]" />
@@ -227,11 +250,11 @@ export function HeroInteractiveDemo() {
           </div>
         </div>
 
-        {/* Workspace Body: 5 cols Visual, 7 cols Code on md+ */}
+        {/* Workspace Body: 5 cols Visual, 7 cols Code on md+ with zero line-overflow */}
         <div className="grid grid-cols-1 md:grid-cols-12 md:divide-x md:divide-hairline/60">
           
           {/* Visual Column (5 cols on md+) */}
-          <div className={`p-4 sm:p-5 lg:p-6 md:col-span-5 flex flex-col justify-between ${mobileTab === "code" ? "hidden md:flex" : "flex"}`}>
+          <div className={`p-4 sm:p-5 md:col-span-5 flex flex-col justify-between ${mobileTab === "code" ? "hidden md:flex" : "flex"}`}>
             {/* Top header */}
             <div className="flex items-center justify-between font-mono text-xs sm:text-[12.5px]">
               <span className="font-semibold uppercase tracking-wider text-muted-foreground">
@@ -243,9 +266,9 @@ export function HeroInteractiveDemo() {
             </div>
 
             {/* Central visual animation and explanation positioned gracefully in the middle */}
-            <div className="my-auto flex flex-col justify-center py-4 sm:py-6">
+            <div className="my-auto flex flex-col justify-center py-4 sm:py-5">
               {/* Number cells with larger size on desktop */}
-              <div className="flex justify-center gap-2 sm:gap-3">
+              <div className="flex justify-center gap-2 sm:gap-2.5">
                 {step.array.map((num, idx) => {
                   const isLeft = idx === step.left;
                   const isRight = idx === step.right;
@@ -319,7 +342,7 @@ export function HeroInteractiveDemo() {
             </div>
 
             {/* Stepper controls pinned cleanly at bottom */}
-            <div className="flex items-center justify-between border-t border-hairline/60 pt-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hairline/60 pt-3">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
@@ -343,10 +366,29 @@ export function HeroInteractiveDemo() {
                     setCurrentStep(0);
                   }}
                   className="rounded-lg border border-hairline bg-surface p-1.5 text-muted-foreground hover:text-foreground transition-colors"
-                  title="Reset to step 1"
+                  title="Reset to step 1 (Keyboard: Left/Right to step, Space to play)"
                 >
                   <RotateCcw className="size-3.5" />
                 </button>
+
+                {/* Speed Toggle (0.5x, 1x, 2x) */}
+                <div className="flex items-center rounded-lg border border-hairline bg-surface/60 p-0.5 text-[10px] font-mono">
+                  {([0.5, 1, 2] as const).map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSpeed(s)}
+                      className={`rounded px-1.5 py-0.5 font-semibold transition-all ${
+                        speed === s
+                          ? "bg-mint text-primary-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title={`Playback speed ${s}x`}
+                    >
+                      {s}x
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Step progress pills */}
@@ -371,8 +413,8 @@ export function HeroInteractiveDemo() {
             </div>
           </div>
 
-          {/* Python Code Column (7 cols on md+): Beautiful larger font, comfortable room */}
-          <div className={`bg-surface/30 p-4 sm:p-5 lg:p-6 font-mono text-xs md:col-span-7 flex flex-col justify-between ${mobileTab === "visual" ? "hidden md:flex" : "flex"}`}>
+          {/* Python Code Column (7 cols on md+): Generous horizontal space, 0 overflow */}
+          <div className={`bg-surface/30 p-4 sm:p-5 md:col-span-7 flex flex-col justify-between ${mobileTab === "visual" ? "hidden md:flex" : "flex"}`}>
             <div>
               <div className="mb-2.5 flex items-center justify-between text-muted-foreground">
                 <span className="text-xs sm:text-[12.5px] font-semibold uppercase tracking-wider">Python (In-Place)</span>
@@ -383,8 +425,8 @@ export function HeroInteractiveDemo() {
                 </div>
               </div>
 
-              <div className="rounded-xl bg-background/90 p-2.5 sm:p-3.5 border border-hairline/70 shadow-inner overflow-x-auto">
-                <div className="flex flex-col font-mono text-[11px] sm:text-[12px] lg:text-[12.5px] leading-[1.48] text-left min-w-full">
+              <div className="rounded-xl bg-background/90 p-2 sm:p-3 border border-hairline/70 shadow-inner overflow-x-auto">
+                <div className="flex flex-col font-mono text-[10.5px] sm:text-[11px] lg:text-[11.5px] leading-[1.48] text-left min-w-full">
                   {CODE_LINES.map((line) => {
                     const isHighlighted = step.highlightLines.includes(line.num);
                     return (
@@ -396,7 +438,7 @@ export function HeroInteractiveDemo() {
                             : "text-muted-foreground/80 hover:text-muted-foreground"
                         }`}
                       >
-                        <span className="w-5 shrink-0 text-right pr-2.5 text-muted-foreground/35 select-none font-mono text-[10px] sm:text-[11px]">
+                        <span className="w-4 shrink-0 text-right pr-2 text-muted-foreground/35 select-none font-mono text-[9.5px] sm:text-[10px]">
                           {line.num}
                         </span>
                         <span className="whitespace-pre font-mono text-left select-text">
