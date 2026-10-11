@@ -1,7 +1,7 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content";
 
-export const Route = createFileRoute("/system-design/foundations/$topic")({
+export const Route = createFileRoute("/system-design/fundamentals/$topic")({
   head: ({ params }) => {
     const t = FOUNDATIONS_TOPICS[params.topic];
     if (!t) return { meta: [{ title: "Foundations — System Design" }] };

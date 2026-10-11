@@ -9,6 +9,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -27,13 +28,11 @@ function NotFoundComponent() {
       <div className="max-w-md text-center">
         <h1 className="font-mono text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          That route isn't on the roadmap yet.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">That route isn't on the roadmap yet.</p>
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-mint px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-mint/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Back to roadmap
           </Link>
@@ -43,7 +42,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -65,7 +64,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-mint px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-mint/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Try again
           </button>
@@ -116,11 +115,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Per-request CSP nonce (see server.ts). Browsers hide nonce attributes after load,
+  // so the client router reads it back from this meta tag.
+  const nonce = useRouter().options.ssr?.nonce;
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {nonce && <meta property="csp-nonce" content={nonce} />}
         <HeadContent />
         <script
+          nonce={nonce}
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `
               try {
@@ -151,15 +156,15 @@ function RootComponent() {
         <div className="flex min-h-screen w-full bg-background text-foreground">
           <AppSidebar />
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-hairline bg-background/80 px-3 backdrop-blur">
+            <header className="sticky top-0 z-30 flex h-12 items-center justify-between border-b border-hairline/80 bg-background/80 px-3.5 backdrop-blur-md transition-shadow duration-200">
               <div className="flex items-center gap-2">
-                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-                <div className="ml-1 h-4 w-px bg-hairline" />
+                <SidebarTrigger className="text-muted-foreground transition-colors hover:text-foreground" title="Toggle Sidebar (⌘B)" />
+                <div className="ml-1 h-3.5 w-px bg-hairline" />
                 <Link
                   to="/"
-                  className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
+                  className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <span>stackblueprint</span>
+                  <span className="font-semibold transition-colors group-hover:text-mint">stackblueprint</span>
                 </Link>
               </div>
               <div className="flex items-center gap-2">

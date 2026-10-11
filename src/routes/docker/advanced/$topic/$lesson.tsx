@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useProgress } from "@/hooks/use-progress";
-import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { CATEGORY_BY_SLUG, sectionPatterns } from "@/lessons/roadmap";
 import { FOUNDATION_TOPICS } from "@/lessons/docker/foundations-content";
 import { IMAGES_CONTAINERS_TOPICS } from "@/lessons/docker/images-containers-content";
 import { SectionRenderer } from "@/components/docker/SectionRenderer";
@@ -21,7 +21,7 @@ function DockerLessonPage() {
   const { isCompleted, markComplete, markIncomplete } = useProgress();
 
   const cat = CATEGORY_BY_SLUG["docker"];
-  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
+  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(sectionPatterns).find(p => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 

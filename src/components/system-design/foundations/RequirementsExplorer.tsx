@@ -354,7 +354,7 @@ function SortDemo() {
           <button
             type="button"
             onClick={() => reset(deck)}
-            className="flex h-7 items-center gap-1.5 rounded-md bg-mint px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-mint/90"
+            className="flex h-7 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <RotateCcw className="size-3.5" /> Play again
           </button>
@@ -422,7 +422,7 @@ function SortDemo() {
               <button
                 type="button"
                 onClick={next}
-                className="h-8 shrink-0 rounded-md bg-mint px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-mint/90"
+                className="h-8 shrink-0 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 {i + 1 >= items.length ? "Finish" : "Next"}
               </button>

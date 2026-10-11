@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useProgress } from "@/hooks/use-progress";
-import { CATEGORY_BY_SLUG } from "@/lessons/roadmap";
+import { CATEGORY_BY_SLUG, sectionPatterns } from "@/lessons/roadmap";
 import { FOUNDATION_TOPICS } from "@/lessons/data-engineering/foundations-content";
 import { SectionRenderer } from "@/components/data-engineering/SectionRenderer";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
@@ -9,7 +9,7 @@ import { LessonLayout } from "@/components/learning-paths/LessonLayout";
 export const Route = createFileRoute("/data-engineering/$topic/$lesson")({
   head: ({ params }) => {
     const cat = CATEGORY_BY_SLUG["data-engineering"];
-    const t = cat?.patterns.find((p) => p.slug === params.topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === params.topic);
+    const t = cat?.patterns.find((p) => p.slug === params.topic) || cat?.sections?.flatMap(sectionPatterns).find(p => p.slug === params.topic);
     const l = t?.lessons?.find((x) => x.slug === params.lesson);
     if (!t || !l) return { meta: [{ title: "Lesson — Data Engineering" }] };
     return {
@@ -27,7 +27,7 @@ function DataEngineeringLessonPage() {
   const { topic, lesson } = Route.useParams();
   const { isCompleted, markComplete, markIncomplete } = useProgress();
   const cat = CATEGORY_BY_SLUG["data-engineering"];
-  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(s => s.patterns).find(p => p.slug === topic);
+  const t = cat?.patterns.find((p) => p.slug === topic) || cat?.sections?.flatMap(sectionPatterns).find(p => p.slug === topic);
   const idx = t?.lessons?.findIndex((x) => x.slug === lesson) ?? -1;
   const l = idx >= 0 ? t!.lessons![idx] : undefined;
 

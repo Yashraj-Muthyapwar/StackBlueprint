@@ -1,106 +1,327 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 /**
- * Stateless relay for providers that block browser calls (CORS). It only
- * forwards to an allowlisted host, never stores or logs keys, bodies or
- * responses, and only accepts requests from this site's own pages.
+ * Stateless relay for providers that block browser calls (CORS). The browser
+ * names one of two fixed NVIDIA calls; it never supplies a URL. The relay does
+ * not store or log keys, bodies or responses.
+ *
+ * Abuse controls here are per server instance (memory resets on restart and is
+ * not shared between instances). Production also needs a shared limit at the
+ * edge (Vercel Firewall or Cloudflare rate-limiting rule on /api/rivet-proxy),
+ * and request logging that does not record the Authorization header or bodies.
  */
-const ALLOWED_HOSTS = new Set(["integrate.api.nvidia.com"]);
-/** Exactly the two calls Rivet makes. Anything else on the allowed host is refused. */
-const ALLOWED_CALLS = new Set(["POST /v1/chat/completions", "GET /v1/models"]);
-const MAX_BODY_BYTES = 512 * 1024;
-const LIMIT = 60;
-const WINDOW_MS = 60_000;
-const hits = new Map<string, { count: number; resetAt: number }>();
+const CALLS = {
+  chat: { method: "POST", url: "https://integrate.api.nvidia.com/v1/chat/completions" },
+  models: { method: "GET", url: "https://integrate.api.nvidia.com/v1/models" },
+} as const;
+type CallName = keyof typeof CALLS;
 
-function rateLimited(ip: string) {
+const MAX_BODY_BYTES = 256 * 1024;
+const MAX_MESSAGES = 64;
+const MAX_MESSAGE_CHARS = 100_000;
+const MAX_TOKENS = 4096;
+const PER_CLIENT_LIMIT = 60; // requests per window
+const GLOBAL_LIMIT = 1200; // requests per window, per instance
+const WINDOW_MS = 60_000;
+const PER_CLIENT_CONCURRENCY = 3;
+const GLOBAL_CONCURRENCY = 64;
+const HEADERS_TIMEOUT_MS = 30_000;
+const BODY_IDLE_TIMEOUT_MS = 5_000;
+const BODY_TOTAL_TIMEOUT_MS = 15_000;
+const IDLE_TIMEOUT_MS = 30_000;
+const TOTAL_TIMEOUT_MS = 180_000;
+
+const hits = new Map<string, { count: number; resetAt: number }>();
+let globalWindow = { count: 0, resetAt: 0 };
+const active = new Map<string, number>();
+let activeTotal = 0;
+
+const env = (name: string) => (typeof process !== "undefined" ? process.env?.[name] : undefined);
+
+/**
+ * The client address from a header the hosting platform sets and overwrites,
+ * so a caller cannot reset its own limit by sending a different value.
+ * Without a trusted header every caller shares one bucket (safe, but strict).
+ */
+function clientId(request: Request): string {
+  const header = env("RIVET_TRUSTED_IP_HEADER") ?? (env("VERCEL") ? "x-real-ip" : "");
+  const value = header ? request.headers.get(header)?.split(",")[0]?.trim() : "";
+  return value || "shared";
+}
+
+function rateLimited(id: string): boolean {
   const now = Date.now();
-  const entry = hits.get(ip);
+  if (globalWindow.resetAt < now) globalWindow = { count: 0, resetAt: now + WINDOW_MS };
+  if (++globalWindow.count > GLOBAL_LIMIT) return true;
+  const entry = hits.get(id);
   if (!entry || entry.resetAt < now) {
-    hits.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    hits.set(id, { count: 1, resetAt: now + WINDOW_MS });
     if (hits.size > 5000) for (const [k, v] of hits) if (v.resetAt < now) hits.delete(k);
     return false;
   }
   entry.count += 1;
-  return entry.count > LIMIT;
+  return entry.count > PER_CLIENT_LIMIT;
 }
 
-const json = (status: number, message: string) =>
+/** Reserves a concurrency slot; the returned release is safe to call more than once. */
+function acquire(id: string): (() => void) | null {
+  if (activeTotal >= GLOBAL_CONCURRENCY || (active.get(id) ?? 0) >= PER_CLIENT_CONCURRENCY)
+    return null;
+  activeTotal += 1;
+  active.set(id, (active.get(id) ?? 0) + 1);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    activeTotal -= 1;
+    const n = (active.get(id) ?? 1) - 1;
+    if (n <= 0) active.delete(id);
+    else active.set(id, n);
+  };
+}
+
+const json = (status: number, message: string, extra: Record<string, string> = {}) =>
   new Response(JSON.stringify({ error: { message } }), {
     status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
+    headers: { "content-type": "application/json", "cache-control": "no-store", ...extra },
   });
 
+/** Browsers label same-site fetches with Sec-Fetch-Site and send Origin on POSTs. */
 function isSameSiteRequest(request: Request): boolean {
-  if (request.headers.get("sec-fetch-site") === "same-origin") return true;
+  const site = request.headers.get("sec-fetch-site");
+  if (site) return site === "same-origin";
   const origin = request.headers.get("origin");
   if (!origin) return false;
   try {
-    return new URL(origin).host === new URL(request.url).host;
+    return new URL(origin).origin === new URL(request.url).origin;
   } catch {
     return false;
   }
 }
 
+type BodyResult = { ok: true; text: string } | { ok: false; reason: "too-large" | "timeout" };
+
+/**
+ * Reads the body as text, refusing it as soon as it passes the size limit, and
+ * giving up on uploads that stall or drag on, so a slow sender cannot hold a
+ * concurrency slot open.
+ */
+async function readBody(request: Request, signal: AbortSignal): Promise<BodyResult> {
+  const declared = Number(request.headers.get("content-length") ?? "0");
+  if (declared > MAX_BODY_BYTES) return { ok: false, reason: "too-large" };
+  if (!request.body) return { ok: true, text: "" };
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  const started = Date.now();
+  try {
+    for (;;) {
+      const wait = Math.min(BODY_IDLE_TIMEOUT_MS, BODY_TOTAL_TIMEOUT_MS - (Date.now() - started));
+      if (wait <= 0 || signal.aborted) return { ok: false, reason: "timeout" };
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      let stop!: () => void;
+      const timeout = new Promise<"timeout">((resolve) => {
+        stop = () => resolve("timeout");
+        timer = setTimeout(stop, wait);
+      });
+      const onAbort = () => stop(); // the caller disconnected
+      signal.addEventListener("abort", onAbort, { once: true });
+      const result = await Promise.race([reader.read(), timeout]).finally(() => {
+        clearTimeout(timer);
+        signal.removeEventListener("abort", onAbort);
+      });
+      if (result === "timeout") return { ok: false, reason: "timeout" };
+      if (result.done) break;
+      size += result.value.byteLength;
+      if (size > MAX_BODY_BYTES) return { ok: false, reason: "too-large" };
+      chunks.push(result.value);
+    }
+  } finally {
+    // Stops reading a body we refused or gave up on; harmless once it is fully read.
+    reader.cancel().catch(() => {});
+  }
+  const all = new Uint8Array(size);
+  let offset = 0;
+  for (const c of chunks) {
+    all.set(c, offset);
+    offset += c.byteLength;
+  }
+  return { ok: true, text: new TextDecoder().decode(all) };
+}
+
+/** Accepts only the chat-completions fields Rivet sends, and rebuilds the body from them. */
+function validateChat(text: string): string | null {
+  let body: Record<string, unknown>;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    return null;
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return null;
+  const { model, messages, stream, temperature, max_tokens } = body;
+  if (typeof model !== "string" || !/^[\w.:/-]{1,200}$/.test(model)) return null;
+  if (!Array.isArray(messages) || messages.length === 0 || messages.length > MAX_MESSAGES)
+    return null;
+  const clean: { role: string; content: string }[] = [];
+  for (const m of messages) {
+    const { role, content } = (m ?? {}) as Record<string, unknown>;
+    if (role !== "system" && role !== "user" && role !== "assistant") return null;
+    if (typeof content !== "string" || content.length > MAX_MESSAGE_CHARS) return null;
+    clean.push({ role, content });
+  }
+  const tokens =
+    typeof max_tokens === "number" && Number.isFinite(max_tokens)
+      ? Math.min(Math.max(1, Math.floor(max_tokens)), MAX_TOKENS)
+      : MAX_TOKENS;
+  return JSON.stringify({
+    model,
+    messages: clean,
+    stream: stream === true,
+    temperature:
+      typeof temperature === "number" && temperature >= 0 && temperature <= 2 ? temperature : 0.4,
+    max_tokens: tokens,
+  });
+}
+
+/**
+ * Passes the upstream body through while enforcing an idle gap and a total
+ * deadline, and releases the concurrency slot however the stream ends.
+ */
+function guardedBody(
+  upstream: ReadableStream<Uint8Array>,
+  abort: () => void,
+  release: () => void,
+  deadline: number,
+): ReadableStream<Uint8Array> {
+  const reader = upstream.getReader();
+  let idle: ReturnType<typeof setTimeout> | undefined;
+  const stop = () => {
+    clearTimeout(idle);
+    release();
+  };
+  return new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      clearTimeout(idle);
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) {
+        abort();
+        stop();
+        controller.error(new Error("deadline"));
+        return;
+      }
+      idle = setTimeout(abort, Math.min(IDLE_TIMEOUT_MS, remaining));
+      try {
+        const { done, value } = await reader.read();
+        clearTimeout(idle);
+        if (done) {
+          stop();
+          controller.close();
+        } else controller.enqueue(value);
+      } catch (e) {
+        stop();
+        controller.error(e);
+      }
+    },
+    cancel() {
+      abort();
+      stop();
+      reader.cancel().catch(() => {});
+    },
+  });
+}
+
 async function relay(request: Request): Promise<Response> {
-  // Browsers always label a same-site fetch with Sec-Fetch-Site, and send Origin on POSTs. Requiring
-  // one of them blocks other websites and casual scripts. A determined non-browser client can fake
-  // headers, so the hard limits live in the host's rate-limit rules (see docs/rivet-prd.md).
+  // Origin evidence blocks other websites and casual scripts. It is not authentication:
+  // a non-browser client can set any header, which is why the limits below exist.
   if (!isSameSiteRequest(request)) return json(403, "Not allowed.");
 
-  let target: URL;
+  const callName = request.headers.get("x-rivet-call");
+  if (callName !== "chat" && callName !== "models") return json(400, "Unknown call.");
+  const call = CALLS[callName as CallName];
+  if (request.method !== call.method) return json(405, "Method not allowed.");
+
+  const auth = request.headers.get("authorization") ?? "";
+  if (!/^Bearer [\x21-\x7e]{8,512}$/.test(auth)) return json(401, "Missing or malformed API key.");
+
+  const id = clientId(request);
+  if (rateLimited(id))
+    return json(429, "Too many requests. Slow down for a minute.", {
+      "x-rivet-relay": "rate-limited",
+      "retry-after": "60",
+    });
+  const release = acquire(id);
+  if (!release) return json(429, "Too many requests at once.", { "x-rivet-relay": "rate-limited" });
+
+  // The deadline covers the whole request, starting before the upload is read.
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  request.signal?.addEventListener("abort", abort);
+  const deadline = Date.now() + TOTAL_TIMEOUT_MS;
+
+  let body: string | undefined;
   try {
-    target = new URL(request.headers.get("x-rivet-target") ?? "");
+    if (call.method === "POST") {
+      const read = await readBody(request, controller.signal);
+      if (!read.ok) {
+        release();
+        return read.reason === "too-large"
+          ? json(413, "Request is too large.")
+          : json(408, "The request took too long to arrive.");
+      }
+      const valid = validateChat(read.text);
+      if (valid === null) {
+        release();
+        return json(400, "Request is not a valid chat request.");
+      }
+      body = valid;
+    }
   } catch {
-    return json(400, "Missing or invalid target.");
+    release();
+    return json(400, "Could not read the request.");
   }
-  if (
-    target.protocol !== "https:" ||
-    !ALLOWED_HOSTS.has(target.hostname) ||
-    !ALLOWED_CALLS.has(`${request.method} ${target.pathname}`) ||
-    target.search ||
-    target.username ||
-    target.password
-  ) {
-    return json(400, "Target is not allowed.");
+  if (controller.signal.aborted) {
+    release();
+    return json(499, "The request was cancelled.");
   }
+  const headersTimer = setTimeout(abort, HEADERS_TIMEOUT_MS);
 
-  const ip =
-    request.headers.get("cf-connecting-ip") ??
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
-  if (rateLimited(ip)) return json(429, "Too many requests. Slow down for a minute.");
-
-  const body = request.method === "POST" ? await request.text() : undefined;
-  if (body !== undefined && new TextEncoder().encode(body).length > MAX_BODY_BYTES) {
-    return json(413, "Request is too large.");
-  }
-
-  const headers = new Headers();
-  const auth = request.headers.get("authorization");
-  if (auth) headers.set("authorization", auth);
-  headers.set("accept", request.headers.get("accept") ?? "application/json");
-  if (request.method === "POST") headers.set("content-type", "application/json");
+  const headers = new Headers({
+    authorization: auth,
+    accept: "application/json, text/event-stream",
+  });
+  if (body !== undefined) headers.set("content-type", "application/json");
 
   let upstream: Response;
   try {
-    upstream = await fetch(target, {
-      method: request.method,
+    upstream = await fetch(call.url, {
+      method: call.method,
       headers,
       body,
-      redirect: "error", // never follow a redirect off the allowed host
-      signal: request.signal,
+      redirect: "error", // never follow a redirect off the fixed endpoint
+      signal: controller.signal,
     });
   } catch {
+    clearTimeout(headersTimer);
+    release();
     return json(502, "Could not reach the provider.");
+  } finally {
+    clearTimeout(headersTimer);
   }
 
-  return new Response(upstream.body, {
+  const type = upstream.headers.get("content-type") ?? "";
+  const contentType = type.startsWith("text/event-stream")
+    ? "text/event-stream"
+    : "application/json";
+  if (!upstream.body) {
+    release();
+    return new Response(null, {
+      status: upstream.status,
+      headers: { "cache-control": "no-store" },
+    });
+  }
+  return new Response(guardedBody(upstream.body, abort, release, deadline), {
     status: upstream.status,
-    headers: {
-      "content-type": upstream.headers.get("content-type") ?? "application/json",
-      "cache-control": "no-store",
-    },
+    headers: { "content-type": contentType, "cache-control": "no-store" },
   });
 }
 

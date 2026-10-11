@@ -110,15 +110,15 @@ export function LessonControls({
             <RotateCcw className="mr-1 size-3.5" /> Default
           </Button>
           {isDirty ? (
-            <Button size="sm" onClick={run} className="bg-mint text-primary-foreground hover:bg-mint/90">
+            <Button size="sm" onClick={run} className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Play className="mr-1 size-3.5" /> Run
             </Button>
           ) : playing ? (
-            <Button size="sm" onClick={onPlayToggle} className="bg-amber text-primary-foreground hover:bg-amber/90">
+            <Button size="sm" onClick={onPlayToggle} className="bg-amber text-slate-950 font-semibold hover:bg-amber/90">
               <Pause className="mr-1 size-3.5" /> Pause
             </Button>
           ) : (
-            <Button size="sm" onClick={onPlayToggle} className="bg-mint text-primary-foreground hover:bg-mint/90">
+            <Button size="sm" onClick={onPlayToggle} className="bg-primary text-primary-foreground hover:bg-primary/90">
               <Play className="mr-1 size-3.5" /> Play
             </Button>
           )}

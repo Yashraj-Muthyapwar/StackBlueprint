@@ -28,6 +28,7 @@ import { Route as PandasIndexRouteImport } from './routes/pandas/index'
 import { Route as PatternsIndexRouteImport } from './routes/patterns/index'
 import { Route as PatternsPatternRouteImport } from './routes/patterns/$pattern'
 import { Route as PythonIndexRouteImport } from './routes/python/index'
+import { Route as SandboxPythonRouteImport } from './routes/sandbox/python'
 import { Route as SqlIndexRouteImport } from './routes/sql/index'
 import { Route as SystemDesignIndexRouteImport } from './routes/system-design/index'
 import { Route as TerraformIndexRouteImport } from './routes/terraform/index'
@@ -181,6 +182,11 @@ const PatternsPatternRoute = PatternsPatternRouteImport.update({
 const PythonIndexRoute = PythonIndexRouteImport.update({
   id: '/python/',
   path: '/python/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SandboxPythonRoute = SandboxPythonRouteImport.update({
+  id: '/sandbox/python',
+  path: '/sandbox/python',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SqlIndexRoute = SqlIndexRouteImport.update({
@@ -527,6 +533,7 @@ export interface FileRoutesByFullPath {
   '/data-engineering/$topic': typeof DataEngineeringTopicRouteWithChildren
   '/mongodb/$topic': typeof MongodbTopicRouteWithChildren
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
+  '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering/': typeof AiEngineeringIndexRoute
   '/data-engineering/': typeof DataEngineeringIndexRoute
@@ -603,6 +610,7 @@ export interface FileRoutesByTo {
   '/sql-playground': typeof SqlPlaygroundRoute
   '/terms': typeof TermsRoute
   '/api/rivet-proxy': typeof ApiRivetProxyRoute
+  '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering': typeof AiEngineeringIndexRoute
   '/data-engineering': typeof DataEngineeringIndexRoute
@@ -671,6 +679,7 @@ export interface FileRoutesById {
   '/data-engineering/$topic': typeof DataEngineeringTopicRouteWithChildren
   '/mongodb/$topic': typeof MongodbTopicRouteWithChildren
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
+  '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering/': typeof AiEngineeringIndexRoute
   '/data-engineering/': typeof DataEngineeringIndexRoute
@@ -753,6 +762,7 @@ export interface FileRouteTypes {
     | '/data-engineering/$topic'
     | '/mongodb/$topic'
     | '/patterns/$pattern'
+    | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering/'
     | '/data-engineering/'
@@ -829,6 +839,7 @@ export interface FileRouteTypes {
     | '/sql-playground'
     | '/terms'
     | '/api/rivet-proxy'
+    | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering'
     | '/data-engineering'
@@ -896,6 +907,7 @@ export interface FileRouteTypes {
     | '/data-engineering/$topic'
     | '/mongodb/$topic'
     | '/patterns/$pattern'
+    | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering/'
     | '/data-engineering/'
@@ -977,6 +989,7 @@ export interface RootRouteChildren {
   DataEngineeringTopicRoute: typeof DataEngineeringTopicRouteWithChildren
   MongodbTopicRoute: typeof MongodbTopicRouteWithChildren
   PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
+  SandboxPythonRoute: typeof SandboxPythonRoute
   TracksTrackRoute: typeof TracksTrackRoute
   AiEngineeringIndexRoute: typeof AiEngineeringIndexRoute
   DataEngineeringIndexRoute: typeof DataEngineeringIndexRoute
@@ -1146,6 +1159,13 @@ declare module '@tanstack/react-router' {
       path: '/python'
       fullPath: '/python/'
       preLoaderRoute: typeof PythonIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sandbox/python': {
+      id: '/sandbox/python'
+      path: '/sandbox/python'
+      fullPath: '/sandbox/python'
+      preLoaderRoute: typeof SandboxPythonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sql/': {
@@ -1836,6 +1856,7 @@ const rootRouteChildren: RootRouteChildren = {
   DataEngineeringTopicRoute: DataEngineeringTopicRouteWithChildren,
   MongodbTopicRoute: MongodbTopicRouteWithChildren,
   PatternsPatternRoute: PatternsPatternRouteWithChildren,
+  SandboxPythonRoute: SandboxPythonRoute,
   TracksTrackRoute: TracksTrackRoute,
   AiEngineeringIndexRoute: AiEngineeringIndexRoute,
   DataEngineeringIndexRoute: DataEngineeringIndexRoute,

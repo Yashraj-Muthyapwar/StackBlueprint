@@ -1591,7 +1591,7 @@ export function SshConnectionFlow() {
               aria-label={playing ? "Pause" : "Play"}
               title="Play / pause (Space)"
               onClick={togglePlay}
-              className="flex h-8 items-center gap-1.5 rounded-md bg-mint px-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-mint/90"
+              className="flex h-8 items-center gap-1.5 rounded-md bg-primary px-3.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
             >
               {playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
               {playing ? "Pause" : idx >= last ? "Replay" : "Play"}

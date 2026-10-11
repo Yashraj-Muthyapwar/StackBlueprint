@@ -59,7 +59,7 @@ export function TrackIndexLayout({
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-12 lg:py-20">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 xl:px-12 py-16 lg:py-20">
         <div className="flex flex-col gap-24">
           {renderSections.map((sec, secIdx) => {
             const parts = sec.title ? sec.title.split(" — ") : [];
@@ -73,9 +73,9 @@ export function TrackIndexLayout({
               <div
                 key={secIdx}
                 id={sectionId}
-                className="scroll-mt-24 flex flex-col lg:flex-row lg:items-start lg:gap-16"
+                className="scroll-mt-24 flex flex-col lg:flex-row lg:items-start lg:gap-8 xl:gap-12 2xl:gap-16"
               >
-                <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
+                <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-56 xl:w-64 2xl:w-72">
                   <div className="flex items-center gap-3">
                     <div className="grid size-8 shrink-0 place-items-center rounded-full bg-[#E2E8F0] dark:bg-border text-sm font-bold text-foreground">
                       {secIdx + 1}
@@ -91,7 +91,7 @@ export function TrackIndexLayout({
                   )}
                 </div>
 
-                <div className="flex w-full flex-col gap-4">
+                <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
                   {sec.patterns?.map((t: any) => {
                     const Icon = t.lessons?.[0]?.icon || LockKeyhole;
                     const isLocked = t.locked;

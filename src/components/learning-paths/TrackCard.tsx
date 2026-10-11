@@ -26,20 +26,20 @@ export function TrackCard({
 }: TrackCardProps) {
   const cardContent = (
     <div
-      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:h-[220px] sm:flex-row ${
+      className={`group relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:min-h-[200px] sm:flex-row ${
         isLocked
           ? "bg-card/20 opacity-80 grayscale"
           : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
       }`}
     >
-      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
+      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-32 lg:w-32 xl:w-40 sm:border-b-0 sm:border-r">
         <Icon
-          className={`size-12 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
+          className={`size-10 xl:size-12 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
           strokeWidth={1.5}
         />
       </div>
 
-      <div className="flex flex-1 flex-col p-6 sm:p-8">
+      <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6 xl:p-8">
         <div className="flex items-center justify-between gap-4">
           <h3 className="text-xl font-semibold tracking-tight text-foreground line-clamp-1">
             {title}
@@ -53,7 +53,7 @@ export function TrackCard({
           </p>
         )}
 
-        <div className="mt-auto flex flex-wrap items-center gap-2 pr-12">
+        <div className="mt-auto flex flex-wrap items-center gap-1.5 sm:gap-2 pr-8 sm:pr-12 pt-3">
           {lessons?.slice(0, 2).map((m) => (
             <TrackChip key={m.slug}>{m.title}</TrackChip>
           ))}
@@ -82,7 +82,7 @@ export function TrackCard({
   }
 
   return (
-    <Link to={href} className="block w-full outline-none">
+    <Link to={href} className="block w-full min-w-0 outline-none">
       {cardContent}
     </Link>
   );

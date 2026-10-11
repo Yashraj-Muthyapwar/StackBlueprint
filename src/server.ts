@@ -4,7 +4,10 @@ import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
 type ServerEntry = {
-  fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
+  fetch: (
+    request: Request,
+    opts?: { context?: { nonce?: string } },
+  ) => Promise<Response> | Response;
 };
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
@@ -40,43 +43,64 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 /**
  * Security headers for pages.
  *
- * ENFORCED: directives that almost never break an app and close real holes
- * (no plugins, no <base> hijacking, forms only post to this site, no embedding
- * of this site in other sites' frames).
+ * Production enforces a nonce-based script policy: only scripts from this site,
+ * scripts carrying this response's nonce (TanStack Start stamps it on its own
+ * inline scripts, see router.tsx), and the pinned DuckDB bundle may run.
+ * `connect-src` lists every host the page legitimately talks to, so injected
+ * code cannot quietly send data elsewhere, and `img-src` is not open to every
+ * https host (an <img> is an easy exfiltration channel).
  *
- * REPORT-ONLY: the policy that would stop a rogue script from sending data
- * (such as saved API keys) to an unknown server. It only logs violations to the
- * browser console until we have confirmed nothing legitimate is blocked, then
- * it can be moved to the enforced header. Providers Rivet talks to are listed in
- * connect-src; `https:` for images keeps lesson images working.
+ * Development keeps the same policy as report-only, because Vite injects
+ * inline scripts without a nonce. Set CSP_REPORT_ONLY=1 to roll production
+ * back to report-only without a code change.
+ *
+ * A route that sends its own Content-Security-Policy (the Python sandbox) keeps it.
  */
-const ENFORCED_CSP = [
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "frame-ancestors 'self'", // clickjacking: other sites cannot embed ours in a frame
-].join("; ");
+const DUCKDB_CDN = "https://cdn.jsdelivr.net/npm/@duckdb/";
+const PROVIDER_HOSTS = [
+  "https://generativelanguage.googleapis.com",
+  "https://api.groq.com",
+  "https://openrouter.ai",
+];
 
-const REPORT_ONLY_CSP = [
-  "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net",
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "font-src 'self' data: https://fonts.gstatic.com",
-  "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://generativelanguage.googleapis.com https://api.groq.com https://openrouter.ai https://cdn.jsdelivr.net https://pypi.org https://files.pythonhosted.org",
-  "worker-src 'self' blob:",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join("; ");
+function pagePolicy(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'wasm-unsafe-eval' ${DUCKDB_CDN}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self' data:",
+    "img-src 'self' data: blob:",
+    `connect-src 'self' ${PROVIDER_HOSTS.join(" ")} ${DUCKDB_CDN}`,
+    "worker-src 'self' blob:",
+    "frame-src 'self' https://mad.firstmark.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'self'",
+  ].join("; ");
+}
 
-function withSecurityHeaders(response: Response): Response {
+const env = (name: string) => (typeof process !== "undefined" ? process.env?.[name] : undefined);
+const enforce = import.meta.env.PROD && env("CSP_REPORT_ONLY") !== "1";
+
+function withSecurityHeaders(response: Response, nonce: string): Response {
   if (!(response.headers.get("content-type") ?? "").includes("text/html")) return response;
   const headers = new Headers(response.headers);
-  headers.set("Content-Security-Policy", ENFORCED_CSP);
-  headers.set("Content-Security-Policy-Report-Only", REPORT_ONLY_CSP);
+  if (!headers.has("content-security-policy")) {
+    const policy = pagePolicy(nonce);
+    if (enforce) headers.set("Content-Security-Policy", policy);
+    else {
+      // Still block plugins, <base> hijacking and framing while the full policy only reports.
+      headers.set(
+        "Content-Security-Policy",
+        "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'",
+      );
+      headers.set("Content-Security-Policy-Report-Only", policy);
+    }
+  }
   headers.set("X-Content-Type-Options", "nosniff");
-  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  if (!headers.has("referrer-policy"))
+    headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -84,12 +108,20 @@ function withSecurityHeaders(response: Response): Response {
   });
 }
 
+function createNonce(): string {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return btoa(String.fromCharCode(...bytes));
+}
+
 export default {
-  async fetch(request: Request, env: unknown, ctx: unknown) {
+  async fetch(request: Request) {
+    const nonce = createNonce();
     try {
       const handler = await getServerEntry();
-      const response = await handler.fetch(request, env, ctx);
-      return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response));
+      // The nonce reaches the router through the request context (see getCspNonce in router.tsx).
+      const response = await handler.fetch(request, { context: { nonce } });
+      return withSecurityHeaders(await normalizeCatastrophicSsrResponse(response), nonce);
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

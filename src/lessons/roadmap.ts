@@ -336,11 +336,31 @@ export type RoadmapPattern = {
   locked?: boolean;
   keywords?: string[];
 };
-export type RoadmapSection = {
-  title: string;
-  blurb?: string;
-  patterns: RoadmapPattern[];
-};
+/**
+ * A labelled group of modules, or a single module listed directly (Web Scraping
+ * lists some modules this way). Read either shape with `sectionPatterns`.
+ */
+export type RoadmapSection =
+  | { title: string; blurb?: string; patterns: RoadmapPattern[] }
+  | (RoadmapPattern & { patterns?: undefined });
+
+/** The modules a section holds: its group, or the section itself when it is a module. */
+export function sectionPatterns(section: RoadmapSection): RoadmapPattern[] {
+  return section.patterns ?? [section as RoadmapPattern];
+}
+
+/** Sections are the canonical grouping when present; `patterns` can duplicate them (e.g. DSA). */
+export function categoryPatterns(cat: RoadmapCategory): RoadmapPattern[] {
+  return cat.sections?.length ? cat.sections.flatMap(sectionPatterns) : cat.patterns;
+}
+
+/** A category is unlocked if it is not locked itself and has at least one unlocked pattern. */
+export function isCategoryUnlocked(cat: RoadmapCategory): boolean {
+  if (cat.locked) return false;
+  const patterns = categoryPatterns(cat);
+  if (patterns.length === 0) return !cat.locked;
+  return patterns.some((p) => !p.locked);
+}
 export interface RoadmapCategory {
   title: string;
   slug: string;
@@ -1090,6 +1110,241 @@ export const roadmap: RoadmapCategory[] = [
     ],
   },
   {
+    title: "Python",
+    slug: "python",
+    icon: pythonLogo,
+    locked: false,
+    overviewPath: "/python",
+    blurb: "Master Python from basic syntax to advanced asynchronous programming.",
+    patterns: [],
+    sections: [
+      {
+        title: "Foundations",
+        patterns: [
+          {
+            title: "Python Basics",
+            slug: "basics",
+            blurb: "Introduction, syntax, variables, data types, and I/O.",
+            locked: false,
+            path: "/python/basics",
+            lessons: [
+              { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
+              { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
+              { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
+              { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
+              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: HelpCircle, path: "/python/basics/python-basics-final-quiz" },
+            ],
+          },
+          {
+            title: "Control Flow",
+            slug: "control-flow",
+            blurb: "Control the execution path with conditions and loops.",
+            locked: false,
+            path: "/python/control-flow",
+            lessons: [
+              { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
+              { slug: "if-else", title: "Conditional Branching: If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
+              { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
+              { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
+              { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
+              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
+            ],
+          },
+          {
+            title: "Data Structures",
+            slug: "data-structures",
+            blurb: "Lists, dictionaries, sets, and tuples.",
+            locked: false,
+            path: "/python/data-structures",
+            lessons: [
+              { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
+              { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
+              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
+              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
+              { slug: "collections-module", title: "Collections Module", icon: Database, path: "/python/data-structures/collections-module" },
+              { slug: "data-structures-final-quiz", title: "Data Structures Final Quiz", icon: HelpCircle, path: "/python/data-structures/data-structures-final-quiz" },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Intermediate Concepts",
+        patterns: [
+          {
+            title: "Functions & Modules",
+            slug: "functions",
+            blurb: "Defining functions, scope, and importing modules.",
+            locked: false,
+            path: "/python/functions",
+            lessons: [
+              { slug: "function-basics", title: "Function Basics", icon: FunctionSquare, path: "/python/functions/function-basics" },
+              { slug: "arguments-parameters", title: "Arguments & Parameters", icon: FunctionSquare, path: "/python/functions/arguments-parameters" },
+              { slug: "scope-namespaces", title: "Scope & Namespaces", icon: FunctionSquare, path: "/python/functions/scope-namespaces" },
+              { slug: "advanced-functions", title: "Advanced Functions", icon: FunctionSquare, path: "/python/functions/advanced-functions" },
+              { slug: "modules-packages", title: "Modules & Packages", icon: FunctionSquare, path: "/python/functions/modules-packages" },
+              { slug: "package-management", title: "Package Management", icon: FunctionSquare, path: "/python/functions/package-management" },
+              { slug: "functions-final-quiz", title: "Functions & Modules Final Quiz", icon: HelpCircle, path: "/python/functions/functions-final-quiz" },
+            ],
+          },
+          {
+            slug: "oop",
+            title: "Object-Oriented Programming",
+            blurb: "Classes, inheritance, and polymorphism.",
+            locked: false,
+            path: "/python/oop",
+            lessons: [
+              {
+                slug: "classes-and-objects",
+                title: "OOP Basics: Classes and Objects",
+                icon: Box,
+                path: "/python/oop/classes-and-objects",
+              },
+              {
+                slug: "instance-and-class-attributes",
+                title: "Instance and Class Attributes",
+                icon: Box,
+                path: "/python/oop/instance-and-class-attributes",
+              },
+              {
+                slug: "types-of-methods",
+                title: "Types of Methods",
+                icon: Box,
+                path: "/python/oop/types-of-methods",
+              },
+              {
+                slug: "encapsulation",
+                title: "Encapsulation",
+                icon: Box,
+                path: "/python/oop/encapsulation",
+              },
+              {
+                slug: "inheritance",
+                title: "Inheritance",
+                icon: Box,
+                path: "/python/oop/inheritance",
+              },
+              {
+                slug: "polymorphism",
+                title: "Polymorphism",
+                icon: Box,
+                path: "/python/oop/polymorphism",
+              },
+              {
+                slug: "abstraction",
+                title: "Abstraction",
+                icon: Box,
+                path: "/python/oop/abstraction",
+              },
+              {
+                slug: "composition",
+                title: "Composition",
+                icon: Box,
+                path: "/python/oop/composition",
+              },
+              {
+                slug: "special-methods",
+                title: "Special Methods",
+                icon: Code2,
+                path: "/python/oop/special-methods",
+              },
+              {
+                slug: "oop-final-quiz",
+                title: "Object-Oriented Programming Final Quiz",
+                icon: HelpCircle,
+                path: "/python/oop/oop-final-quiz",
+              },
+            ],
+          },
+          {
+            slug: "file-handling",
+            title: "File Handling",
+            blurb: "Read and write text, CSV, and JSON files in Python.",
+            locked: false,
+            path: "/python/file-handling",
+            lessons: [
+              {
+                slug: "file-basics",
+                title: "File Basics",
+                icon: FileText,
+                path: "/python/file-handling/file-basics",
+              },
+              {
+                slug: "working-with-paths",
+                title: "Working with Paths",
+                icon: FileText,
+                path: "/python/file-handling/working-with-paths",
+              },
+              {
+                slug: "reading-files",
+                title: "Reading Files",
+                icon: FileText,
+                path: "/python/file-handling/reading-files",
+              },
+              {
+                slug: "writing-files",
+                title: "Writing Files",
+                icon: FileText,
+                path: "/python/file-handling/writing-files",
+              },
+              {
+                slug: "file-modes",
+                title: "File Modes",
+                icon: FileText,
+                path: "/python/file-handling/file-modes",
+              },
+              {
+                slug: "file-methods",
+                title: "File Methods",
+                icon: FileText,
+                path: "/python/file-handling/file-methods",
+              },
+              {
+                slug: "os-module",
+                title: "OS Module",
+                icon: FileText,
+                path: "/python/file-handling/os-module",
+              },
+              {
+                slug: "working-with-json",
+                title: "Working with JSON",
+                icon: FileText,
+                path: "/python/file-handling/working-with-json",
+              },
+              {
+                slug: "working-with-csv",
+                title: "Working with CSV",
+                icon: FileText,
+                path: "/python/file-handling/working-with-csv",
+              },
+              {
+                slug: "pickle-module",
+                title: "Pickle Module",
+                icon: FileText,
+                path: "/python/file-handling/pickle-module",
+              },
+              {
+                slug: "shutil-module",
+                title: "Shutil Module",
+                icon: FileText,
+                path: "/python/file-handling/shutil-module",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Advanced Python",
+        patterns: [
+          lockedPattern(
+            "Advanced Python",
+            "advanced",
+            "Decorators, generators, and context managers.",
+          ),
+        ],
+      },
+    ],
+  },
+  {
     title: "System Design",
     slug: "system-design",
     icon: systemDesignLogo,
@@ -1099,7 +1354,7 @@ export const roadmap: RoadmapCategory[] = [
     patterns: [],
     sections: [
       {
-        title: "1 · Foundations",
+        title: "Foundations",
         blurb: "Requirements, estimation, core metrics, networking, APIs and caching.",
         patterns: [
           {
@@ -1159,7 +1414,7 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
-        title: "2 · Data, Scaling & Architecture",
+        title: "Data, Scaling & Architecture",
         blurb: "Storage internals, replication, sharding, consistency, messaging.",
         patterns: [
           lockedPattern(
@@ -1201,7 +1456,7 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
-        title: "3 · Distributed & Data Systems",
+        title: "Distributed & Data Systems",
         blurb: "Network failures, clocks, consensus, and data-engineering patterns.",
         patterns: [
           {
@@ -1245,7 +1500,7 @@ export const roadmap: RoadmapCategory[] = [
         ],
       },
       {
-        title: "4 · Interview Fluency",
+        title: "Interview Fluency",
         blurb: "Specialized structures, technology deep-dives, and case studies.",
         patterns: [
           lockedPattern(
@@ -2485,241 +2740,6 @@ export const roadmap: RoadmapCategory[] = [
             "Capstone",
             "capstone",
             "Simulate a real-world team project: branching, reviewing, and releasing.",
-          ),
-        ],
-      },
-    ],
-  },
-  {
-    title: "Python",
-    slug: "python",
-    icon: pythonLogo,
-    locked: false,
-    overviewPath: "/python",
-    blurb: "Master Python from basic syntax to advanced asynchronous programming.",
-    patterns: [],
-    sections: [
-      {
-        title: "1. Foundations",
-        patterns: [
-          {
-            title: "Python Basics",
-            slug: "basics",
-            blurb: "Introduction, syntax, variables, data types, and I/O.",
-            locked: false,
-            path: "/python/basics",
-            lessons: [
-              { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
-              { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
-              { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
-              { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
-              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: HelpCircle, path: "/python/basics/python-basics-final-quiz" },
-            ],
-          },
-          {
-            title: "Control Flow",
-            slug: "control-flow",
-            blurb: "Control the execution path with conditions and loops.",
-            locked: false,
-            path: "/python/control-flow",
-            lessons: [
-              { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
-              { slug: "if-else", title: "Conditional Branching: If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
-              { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
-              { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
-              { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
-              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
-            ],
-          },
-          {
-            title: "Data Structures",
-            slug: "data-structures",
-            blurb: "Lists, dictionaries, sets, and tuples.",
-            locked: false,
-            path: "/python/data-structures",
-            lessons: [
-              { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
-              { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
-              { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
-              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
-              { slug: "collections-module", title: "Collections Module", icon: Database, path: "/python/data-structures/collections-module" },
-              { slug: "data-structures-final-quiz", title: "Data Structures Final Quiz", icon: HelpCircle, path: "/python/data-structures/data-structures-final-quiz" },
-            ],
-          },
-        ],
-      },
-      {
-        title: "2. Intermediate Concepts",
-        patterns: [
-          {
-            title: "Functions & Modules",
-            slug: "functions",
-            blurb: "Defining functions, scope, and importing modules.",
-            locked: false,
-            path: "/python/functions",
-            lessons: [
-              { slug: "function-basics", title: "Function Basics", icon: FunctionSquare, path: "/python/functions/function-basics" },
-              { slug: "arguments-parameters", title: "Arguments & Parameters", icon: FunctionSquare, path: "/python/functions/arguments-parameters" },
-              { slug: "scope-namespaces", title: "Scope & Namespaces", icon: FunctionSquare, path: "/python/functions/scope-namespaces" },
-              { slug: "advanced-functions", title: "Advanced Functions", icon: FunctionSquare, path: "/python/functions/advanced-functions" },
-              { slug: "modules-packages", title: "Modules & Packages", icon: FunctionSquare, path: "/python/functions/modules-packages" },
-              { slug: "package-management", title: "Package Management", icon: FunctionSquare, path: "/python/functions/package-management" },
-              { slug: "functions-final-quiz", title: "Functions & Modules Final Quiz", icon: HelpCircle, path: "/python/functions/functions-final-quiz" },
-            ],
-          },
-          {
-            slug: "oop",
-            title: "Object-Oriented Programming",
-            blurb: "Classes, inheritance, and polymorphism.",
-            locked: false,
-            path: "/python/oop",
-            lessons: [
-              {
-                slug: "classes-and-objects",
-                title: "OOP Basics: Classes and Objects",
-                icon: Box,
-                path: "/python/oop/classes-and-objects",
-              },
-              {
-                slug: "instance-and-class-attributes",
-                title: "Instance and Class Attributes",
-                icon: Box,
-                path: "/python/oop/instance-and-class-attributes",
-              },
-              {
-                slug: "types-of-methods",
-                title: "Types of Methods",
-                icon: Box,
-                path: "/python/oop/types-of-methods",
-              },
-              {
-                slug: "encapsulation",
-                title: "Encapsulation",
-                icon: Box,
-                path: "/python/oop/encapsulation",
-              },
-              {
-                slug: "inheritance",
-                title: "Inheritance",
-                icon: Box,
-                path: "/python/oop/inheritance",
-              },
-              {
-                slug: "polymorphism",
-                title: "Polymorphism",
-                icon: Box,
-                path: "/python/oop/polymorphism",
-              },
-              {
-                slug: "abstraction",
-                title: "Abstraction",
-                icon: Box,
-                path: "/python/oop/abstraction",
-              },
-              {
-                slug: "composition",
-                title: "Composition",
-                icon: Box,
-                path: "/python/oop/composition",
-              },
-              {
-                slug: "special-methods",
-                title: "Special Methods",
-                icon: Code2,
-                path: "/python/oop/special-methods",
-              },
-              {
-                slug: "oop-final-quiz",
-                title: "Object-Oriented Programming Final Quiz",
-                icon: HelpCircle,
-                path: "/python/oop/oop-final-quiz",
-              },
-            ],
-          },
-          {
-            slug: "file-handling",
-            title: "File Handling",
-            blurb: "Read and write text, CSV, and JSON files in Python.",
-            locked: false,
-            path: "/python/file-handling",
-            lessons: [
-              {
-                slug: "file-basics",
-                title: "File Basics",
-                icon: FileText,
-                path: "/python/file-handling/file-basics",
-              },
-              {
-                slug: "working-with-paths",
-                title: "Working with Paths",
-                icon: FileText,
-                path: "/python/file-handling/working-with-paths",
-              },
-              {
-                slug: "reading-files",
-                title: "Reading Files",
-                icon: FileText,
-                path: "/python/file-handling/reading-files",
-              },
-              {
-                slug: "writing-files",
-                title: "Writing Files",
-                icon: FileText,
-                path: "/python/file-handling/writing-files",
-              },
-              {
-                slug: "file-modes",
-                title: "File Modes",
-                icon: FileText,
-                path: "/python/file-handling/file-modes",
-              },
-              {
-                slug: "file-methods",
-                title: "File Methods",
-                icon: FileText,
-                path: "/python/file-handling/file-methods",
-              },
-              {
-                slug: "os-module",
-                title: "OS Module",
-                icon: FileText,
-                path: "/python/file-handling/os-module",
-              },
-              {
-                slug: "working-with-json",
-                title: "Working with JSON",
-                icon: FileText,
-                path: "/python/file-handling/working-with-json",
-              },
-              {
-                slug: "working-with-csv",
-                title: "Working with CSV",
-                icon: FileText,
-                path: "/python/file-handling/working-with-csv",
-              },
-              {
-                slug: "pickle-module",
-                title: "Pickle Module",
-                icon: FileText,
-                path: "/python/file-handling/pickle-module",
-              },
-              {
-                slug: "shutil-module",
-                title: "Shutil Module",
-                icon: FileText,
-                path: "/python/file-handling/shutil-module",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: "3. Advanced Python",
-        patterns: [
-          lockedPattern(
-            "Advanced Python",
-            "advanced",
-            "Decorators, generators, and context managers.",
           ),
         ],
       },

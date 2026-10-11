@@ -60,6 +60,7 @@ export function SectionRenderer({
             <ZoomableImage
               src={section.src}
               alt={section.alt}
+              caption={section.caption}
               className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
             />
           </div>
