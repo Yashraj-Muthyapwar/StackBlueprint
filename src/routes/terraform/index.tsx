@@ -181,11 +181,11 @@ function TerraformIndex() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-12 lg:py-20">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 xl:px-12 py-16 lg:py-20">
         <div className="flex flex-col gap-24">
           {sections.map((sec, i) => (
-            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
-              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
+            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-8 xl:gap-12 2xl:gap-16">
+              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-56 xl:w-64 2xl:w-72">
                 <div className="flex items-center gap-3">
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
@@ -199,7 +199,7 @@ function TerraformIndex() {
                 </p>
               </div>
 
-              <div className="flex w-full flex-col gap-4">
+              <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
@@ -209,20 +209,20 @@ function TerraformIndex() {
 
                   const card = (
                     <div
-                      className={`group relative flex w-full flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:flex-row ${
+                      className={`group relative flex w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-hairline transition-all duration-300 sm:min-h-[200px] sm:flex-row ${
                         isLocked
                           ? "bg-card/20 opacity-80 grayscale"
                           : "bg-card hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-background/20"
                       }`}
                     >
-                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-40 sm:border-b-0 sm:border-r">
+                      <div className="flex shrink-0 items-center justify-center border-b border-hairline bg-background/50 p-6 sm:w-32 lg:w-32 xl:w-40 sm:border-b-0 sm:border-r">
                         <Icon
-                          className={`size-10 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
+                          className={`size-10 xl:size-12 ${isLocked ? "text-muted-foreground" : "text-mint"}`}
                           strokeWidth={1.5}
                         />
                       </div>
 
-                      <div className="flex flex-1 flex-col p-6 sm:p-8">
+                      <div className="flex min-w-0 flex-1 flex-col p-5 sm:p-6 xl:p-8">
                         <div className="flex items-center justify-between gap-4">
                           <h3 className="text-xl font-semibold tracking-tight text-foreground">
                             {t.title}
@@ -233,15 +233,20 @@ function TerraformIndex() {
                           {t.blurb}
                         </p>
 
-                        <div className="mt-6 flex flex-wrap gap-2 pr-12">
-                          {t.modules.map((m) => (
+                        <div className="mt-6 flex flex-wrap gap-1.5 sm:gap-2 pr-8 sm:pr-12">
+                          {t.modules.slice(0, 2).map((m) => (
                             <span
                               key={m}
-                              className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
+                              className="shrink truncate max-w-[150px] sm:max-w-[190px] xl:max-w-[240px] rounded-md bg-background px-2.5 py-1 text-xs font-medium text-foreground ring-1 ring-inset ring-hairline"
                             >
                               {m}
                             </span>
                           ))}
+                          {t.modules.length > 2 && (
+                            <span className="rounded-md bg-background px-2.5 py-1 text-xs font-medium text-muted-foreground ring-1 ring-inset ring-hairline">
+                              +{t.modules.length - 2} more
+                            </span>
+                          )}
                         </div>
                         
                         {!isLocked && (
@@ -275,7 +280,7 @@ function TerraformIndex() {
 
                   const toPath = t.to || `/terraform/${t.routeBase}/${t.slug}`;
                   return (
-                    <Link key={t.slug} to={toPath} className="block w-full outline-none">
+                    <Link key={t.slug} to={toPath} className="block w-full min-w-0 outline-none">
                       {card}
                     </Link>
                   );
