@@ -76,7 +76,7 @@ function Landing() {
           <div className="mt-3.5 flex w-full max-w-xs flex-col items-stretch gap-2 sm:mt-4 sm:max-w-none sm:w-auto sm:flex-row sm:items-center sm:gap-3">
             <Link
               to="/patterns"
-              className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-mint px-4 py-2 text-xs sm:text-sm font-semibold text-primary-foreground shadow-[0_0_30px_-6px_rgba(94,234,212,0.7)] transition-all duration-300 hover:scale-105"
+              className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-primary px-4 py-2 text-xs sm:text-sm font-semibold text-primary-foreground shadow-[0_0_24px_-6px_rgba(15,133,115,0.5)] dark:shadow-[0_0_30px_-6px_rgba(94,234,212,0.6)] transition-all duration-300 hover:scale-105 hover:bg-primary/90"
             >
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-white/0 via-white/20 to-white/0 transition-all duration-1000 group-hover:animate-[shimmer_1.5s_infinite]" />
               Start with Patterns (DSA)
