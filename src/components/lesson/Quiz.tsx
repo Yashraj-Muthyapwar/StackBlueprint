@@ -12,6 +12,23 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { InteractivePythonBlock } from "./InteractivePythonBlock";
+import { emitQuizResults, QUIZ_STARTED_EVENT, type QuizReviewItem } from "@/lib/rivet/quiz";
+import { runPython, stoppedMessage } from "@/lib/python-sandbox";
+
+/** Runs answer code in the isolated sandbox and returns its combined output. Throws on errors. */
+async function runGradedPython(code: string, packages?: string[]): Promise<string> {
+  let out = "";
+  const r = await runPython({
+    code,
+    packages,
+    timeoutMs: 30_000,
+    onStdout: (t) => (out += t + "\n"),
+    onStderr: (t) => (out += t + "\n"),
+  });
+  if (r.stopped) throw new Error(stoppedMessage(r, 30_000));
+  if (!r.ok) throw new Error(r.error ?? "Python failed to run.");
+  return out.trim();
+}
 
 export type QuizQuestion = {
   id: string;
@@ -168,6 +185,7 @@ function NormalQuiz({
   const [isCommandCorrect, setIsCommandCorrect] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutput, setEvaluationOutput] = useState("");
+  const reviewRef = React.useRef<QuizReviewItem[]>([]);
 
   useEffect(() => {
     onActiveChange?.(isStarted && !isFinished);
@@ -192,6 +210,7 @@ function NormalQuiz({
 
   useEffect(() => {
     if (isFinished) {
+      emitQuizResults(reviewRef.current);
       const percentage = Math.round((score / data.questions.length) * 100);
       if (percentage >= 80) {
         window.dispatchEvent(new CustomEvent("quiz-passed", { detail: { score: percentage } }));
@@ -209,6 +228,7 @@ function NormalQuiz({
     setIsCommandCorrect(false);
     setIsAnswered(false);
     setEvaluationOutput("");
+    reviewRef.current = [];
     setQuizAttempt((prev) => prev + 1);
 
     // Dispatch a custom event so other components (like animations) know the quiz started
@@ -219,7 +239,15 @@ function NormalQuiz({
     if (isAnswered) return;
     setSelectedOption(index);
     setIsAnswered(true);
-    if (shuffledOptions[index].isCorrect) {
+    const picked = shuffledOptions[index];
+    reviewRef.current.push({
+      question: currentQuestion.question,
+      userAnswer: picked.text,
+      correctAnswer: shuffledOptions.find((o) => o.isCorrect)?.text ?? "",
+      correct: picked.isCorrect,
+      explanation: currentQuestion.explanation,
+    });
+    if (picked.isCorrect) {
       setScore((s) => s + 1);
     }
   };
@@ -243,17 +271,8 @@ function NormalQuiz({
           actualOutput = validationError;
           throw new Error(validationError);
         }
-        const { getPyodide } = await import("@/lib/pyodide-loader");
-        const pyodide = await getPyodide();
-        if (currentQuestion.packages?.length) await pyodide.loadPackage(currentQuestion.packages);
-        let out = "";
-        pyodide.setStdout({ batched: (str: string) => (out += str + "\n") });
-        pyodide.setStderr({ batched: (str: string) => (out += str + "\n") });
-
         const fullCode = commandInput + "\n\n" + (currentQuestion.testCode || "");
-        await pyodide.runPythonAsync(fullCode);
-
-        actualOutput = out.trim();
+        actualOutput = await runGradedPython(fullCode, currentQuestion.packages);
         correct = actualOutput === (currentQuestion.expectedOutput || "").trim();
       } catch (e: any) {
         actualOutput = String(e);
@@ -269,6 +288,19 @@ function NormalQuiz({
     }
 
     setIsCommandCorrect(correct);
+    reviewRef.current.push({
+      question: currentQuestion.question,
+      userAnswer: commandInput,
+      correctAnswer: currentQuestion.interactiveCode
+        ? `Expected output: ${currentQuestion.expectedOutput ?? ""}`
+        : [currentQuestion.commandAnswer].flat().join(" or "),
+      correct,
+      explanation: currentQuestion.interactiveCode
+        ? [currentQuestion.explanation, actualOutput && `Your output: ${actualOutput}`]
+            .filter(Boolean)
+            .join(" ")
+        : currentQuestion.explanation,
+    });
     if (correct) {
       setScore((s) => s + 1);
     }
@@ -302,7 +334,7 @@ function NormalQuiz({
         </p>
         <button
           onClick={handleStart}
-          className="mt-5 inline-flex items-center gap-2 rounded-full bg-mint px-6 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-105 active:scale-95"
+          className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 active:scale-95"
         >
           Start Quiz
           <ArrowRight className="size-4" />
@@ -466,7 +498,7 @@ function NormalQuiz({
             <button
               onClick={handleCommandSubmit}
               disabled={!commandInput.trim()}
-              className="inline-flex w-fit items-center gap-2 rounded-lg bg-mint px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+              className="inline-flex w-fit items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
             >
               Submit Command
               <ArrowRight className="size-4" />
@@ -517,7 +549,7 @@ function NormalQuiz({
                       className={cn(
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border text-sm font-medium transition-colors",
                         isAnswered && isCorrect
-                          ? "border-mint bg-mint text-white"
+                          ? "border-primary bg-primary text-primary-foreground"
                           : isAnswered && isSelected && !isCorrect
                             ? "border-rose-500 bg-rose-500 text-white"
                             : "border-hairline bg-surface text-muted-foreground",
@@ -676,13 +708,23 @@ function FinalQuiz({
     return () => onActiveChange?.(false);
   }, [onActiveChange]);
 
+  // Final quizzes have no Start button, so the first answer is what tells Rivet a quiz has begun.
+  const announcedStart = React.useRef(false);
+  const announceStart = () => {
+    if (announcedStart.current) return;
+    announcedStart.current = true;
+    window.dispatchEvent(new CustomEvent(QUIZ_STARTED_EVENT));
+  };
+
   const handleSelectOption = (questionIndex: number, optionIndex: number) => {
     if (isSubmitted) return;
+    announceStart();
     setSelectedAnswers((prev) => ({ ...prev, [questionIndex]: optionIndex }));
   };
 
   const handleCommandChange = (questionIndex: number, value: string) => {
     if (isSubmitted) return;
+    if (value.trim()) announceStart();
     setCommandAnswers((prev) => ({ ...prev, [questionIndex]: value }));
   };
 
@@ -697,6 +739,7 @@ function FinalQuiz({
     setIsEvaluating(true);
     let calculatedScore = 0;
     const newOutputs: Record<number, string> = {};
+    const review: QuizReviewItem[] = [];
 
     for (let idx = 0; idx < shuffledQuestions.length; idx++) {
       const q = shuffledQuestions[idx];
@@ -705,34 +748,62 @@ function FinalQuiz({
           const validationError = validateRequiredCodePatterns(q, commandAnswers[idx] || "");
           if (validationError) {
             newOutputs[idx] = validationError;
+            review.push({
+              question: q.question,
+              userAnswer: commandAnswers[idx] || "",
+              correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+              correct: false,
+              explanation: [q.explanation, validationError].filter(Boolean).join(" "),
+            });
             continue;
           }
-          const { getPyodide } = await import("@/lib/pyodide-loader");
-          const pyodide = await getPyodide();
-          if (q.packages?.length) await pyodide.loadPackage(q.packages);
-          let out = "";
-          pyodide.setStdout({ batched: (str: string) => (out += str + "\n") });
-          pyodide.setStderr({ batched: (str: string) => (out += str + "\n") });
-
           const fullCode =
             (commandAnswers[idx] || q.initialCode || "") + "\n\n" + (q.testCode || "");
-          await pyodide.runPythonAsync(fullCode);
-
-          const actualOutput = out.trim();
+          const actualOutput = await runGradedPython(fullCode, q.packages);
           newOutputs[idx] = actualOutput;
-          if (actualOutput === (q.expectedOutput || "").trim()) {
-            calculatedScore++;
-          }
+          const ok = actualOutput === (q.expectedOutput || "").trim();
+          if (ok) calculatedScore++;
+          review.push({
+            question: q.question,
+            userAnswer: commandAnswers[idx] || "",
+            correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+            correct: ok,
+            explanation: [q.explanation, !ok && `Your output: ${actualOutput}`]
+              .filter(Boolean)
+              .join(" "),
+          });
         } catch (e: any) {
           newOutputs[idx] = String(e);
+          review.push({
+            question: q.question,
+            userAnswer: commandAnswers[idx] || "",
+            correctAnswer: `Expected output: ${q.expectedOutput ?? ""}`,
+            correct: false,
+            explanation: [q.explanation, `Error: ${String(e)}`].filter(Boolean).join(" "),
+          });
         }
       } else if (q.commandAnswer) {
-        if (isCommandCorrect(q, commandAnswers[idx])) calculatedScore++;
+        const ok = isCommandCorrect(q, commandAnswers[idx]);
+        if (ok) calculatedScore++;
+        review.push({
+          question: q.question,
+          userAnswer: commandAnswers[idx] || "",
+          correctAnswer: [q.commandAnswer].flat().join(" or "),
+          correct: ok,
+          explanation: q.explanation,
+        });
       } else {
         const selected = selectedAnswers[idx];
-        if (selected !== undefined && q.shuffledOptions[selected]?.isCorrect) {
-          calculatedScore++;
-        }
+        const ok = selected !== undefined && Boolean(q.shuffledOptions[selected]?.isCorrect);
+        if (ok) calculatedScore++;
+        review.push({
+          question: q.question,
+          userAnswer:
+            selected !== undefined ? (q.shuffledOptions[selected]?.text ?? "") : "(no answer)",
+          correctAnswer: q.shuffledOptions.find((o) => o.isCorrect)?.text ?? "",
+          correct: ok,
+          explanation: q.explanation,
+        });
       }
     }
 
@@ -741,6 +812,7 @@ function FinalQuiz({
     setIsEvaluating(false);
     setIsSubmitted(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+    emitQuizResults(review);
 
     const percentage = Math.round((calculatedScore / data.questions.length) * 100);
     if (percentage >= 80) {
@@ -845,13 +917,13 @@ function FinalQuiz({
                       if (isSelected) {
                         rowClass =
                           "border-mint bg-mint/5 text-foreground shadow-md ring-1 ring-mint/50";
-                        indicatorClass = "border-mint bg-mint text-white";
+                        indicatorClass = "border-primary bg-primary text-primary-foreground";
                       }
 
                       if (isSubmitted) {
                         if (isCorrect) {
                           rowClass = "border-mint bg-mint/10 text-foreground ring-1 ring-mint";
-                          indicatorClass = "border-mint bg-mint text-white";
+                          indicatorClass = "border-primary bg-primary text-primary-foreground";
                         } else if (isSelected) {
                           rowClass =
                             "border-rose-500 bg-rose-500/10 text-foreground ring-1 ring-rose-500";
@@ -879,7 +951,9 @@ function FinalQuiz({
                           >
                             {String.fromCharCode(65 + oIndex)}
                           </div>
-                          <span className="mt-1 flex-1 text-base leading-relaxed">{renderInlineCode(opt.text)}</span>
+                          <span className="mt-1 flex-1 text-base leading-relaxed">
+                            {renderInlineCode(opt.text)}
+                          </span>
 
                           {isSubmitted && isCorrect && (
                             <CheckCircle2 className="ml-auto size-6 shrink-0 text-mint" />
@@ -1015,7 +1089,7 @@ function FinalQuiz({
           <button
             onClick={handleSubmit}
             disabled={!allAnswered || isEvaluating}
-            className="inline-flex items-center gap-3 rounded-full bg-mint px-10 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-mint/20 transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
+            className="inline-flex items-center gap-3 rounded-full bg-primary px-10 py-4 text-lg font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:bg-primary/90 hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
           >
             {isEvaluating ? "Evaluating..." : "Submit Exam"}
             <ArrowRight className="size-5" />
