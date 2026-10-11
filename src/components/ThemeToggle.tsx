@@ -49,10 +49,10 @@ export function ThemeToggle() {
       }}
     >
       <div 
-        className={`relative z-10 text-[1.4rem] transition-all duration-300 ${
+        className={`relative z-10 text-[1.4rem] transition-all duration-300 active:scale-90 active:rotate-12 ${
           !isDark 
-            ? "text-[#ea580c] drop-shadow-[0_0_8px_rgba(234,88,12,0.5)] group-hover:text-[#f97316] group-hover:drop-shadow-[0_0_12px_rgba(249,115,22,0.8)]" 
-            : "text-slate-400 group-hover:text-slate-200 group-hover:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)]"
+            ? "text-[#ea580c] drop-shadow-[0_0_8px_rgba(234,88,12,0.5)] group-hover:text-[#f97316] group-hover:drop-shadow-[0_0_12px_rgba(249,115,22,0.8)] group-hover:rotate-6" 
+            : "text-slate-400 group-hover:text-slate-200 group-hover:drop-shadow-[0_0_8px_rgba(226,232,240,0.5)] group-hover:-rotate-6"
         }`}
       >
         {(() => {
@@ -60,7 +60,7 @@ export function ThemeToggle() {
           const AnyLightbulb = Lightbulb as any;
           return (
             <AnyLightbulb
-              className="pointer-events-none" 
+              className="pointer-events-none transition-transform duration-300" 
             />
           );
         })()}

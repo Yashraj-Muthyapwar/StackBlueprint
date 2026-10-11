@@ -478,11 +478,11 @@ function SqlIndex() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-6 py-16 lg:px-12 lg:py-20">
+      <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8 xl:px-12 py-16 lg:py-20">
         <div className="flex flex-col gap-24">
           {sections.map((sec, i) => (
-            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-16">
-              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-64 xl:w-72">
+            <div key={sec.group} className="flex flex-col lg:flex-row lg:items-start lg:gap-8 xl:gap-12 2xl:gap-16">
+              <div className="mb-8 w-full shrink-0 lg:sticky lg:top-24 lg:mb-0 lg:w-56 xl:w-64 2xl:w-72">
                 <div className="flex items-center gap-3">
                   <div className="grid size-6 place-items-center rounded-full bg-border text-xs font-bold text-foreground">
                     {i + 1}
@@ -494,7 +494,7 @@ function SqlIndex() {
                 </p>
               </div>
 
-              <div className="flex w-full flex-col gap-4">
+              <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
                 {sec.topics.map((t) => {
                   const Icon = t.icon;
                   const isLocked = !t.unlocked;
