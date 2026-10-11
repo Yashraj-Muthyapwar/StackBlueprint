@@ -11,6 +11,7 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "datasets": "node scripts/datasets/build.mjs",
+    "rivet:lessons": "node scripts/rivet/build-lesson-index.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write ."
