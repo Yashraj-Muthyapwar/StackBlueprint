@@ -127,84 +127,88 @@ export function TransformerExplorer() {
             <h3 className="mt-2 text-xl font-semibold tracking-tight">{current.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{current.text}</p>
           </motion.div>
-          <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
-            <Stage label="Prompt" active={active === "tokens"}>
-              <div className="flex flex-wrap gap-1.5">
-                <Token label="The" tone="mint" />
-                <Token label="cat" tone="mint" />
-                <Token label="sat" tone="mint" />
+          <div className="overflow-x-auto pb-2 -mx-1 px-1">
+            <div className="min-w-[460px] space-y-6">
+              <div className="grid gap-3 grid-cols-[1fr_auto_1fr_auto_1fr]">
+                <Stage label="Prompt" active={active === "tokens"}>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Token label="The" tone="mint" />
+                    <Token label="cat" tone="mint" />
+                    <Token label="sat" tone="mint" />
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">IDs + embeddings + position</p>
+                </Stage>
+                <Arrow />
+                <Stage label="Q · K · V" active={active === "qkv"}>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <Token label="Q" tone="violet" />
+                    <Token label="K" tone="amber" />
+                    <Token label="V" tone="mint" />
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">three learned projections</p>
+                </Stage>
+                <Arrow />
+                <Stage label="Attention" active={active === "attention"}>
+                  <div className="grid grid-cols-3 gap-1.5 font-mono text-[10px]">
+                    {["1.0", "0.0", "0.0", "0.3", "0.7", "0.0", "0.2", "0.5", "0.3"].map(
+                      (value, index) => (
+                        <span
+                          key={index}
+                          className={`rounded px-1.5 py-1 text-center ${index === 7 && active === "attention" ? "bg-mint/25 text-mint" : "bg-surface-2 text-muted-foreground"}`}
+                        >
+                          {value}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">masked score matrix</p>
+                </Stage>
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">IDs + embeddings + position</p>
-            </Stage>
-            <Arrow />
-            <Stage label="Q · K · V" active={active === "qkv"}>
-              <div className="grid grid-cols-3 gap-1.5">
-                <Token label="Q" tone="violet" />
-                <Token label="K" tone="amber" />
-                <Token label="V" tone="mint" />
+              <div className="flex justify-center">
+                <span className="text-muted-foreground">↓</span>
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">three learned projections</p>
-            </Stage>
-            <Arrow />
-            <Stage label="Attention" active={active === "attention"}>
-              <div className="grid grid-cols-3 gap-1.5 font-mono text-[10px]">
-                {["1.0", "0.0", "0.0", "0.3", "0.7", "0.0", "0.2", "0.5", "0.3"].map(
-                  (value, index) => (
-                    <span
-                      key={index}
-                      className={`rounded px-1.5 py-1 text-center ${index === 7 && active === "attention" ? "bg-mint/25 text-mint" : "bg-surface-2 text-muted-foreground"}`}
-                    >
-                      {value}
-                    </span>
-                  ),
-                )}
+              <div className="grid gap-3 grid-cols-[1fr_auto_1fr_auto_1fr]">
+                <Stage label="Multi-head" active={active === "heads"}>
+                  <div className="flex gap-1.5">
+                    {[1, 2, 3, 4].map((head) => (
+                      <Token
+                        key={head}
+                        label={`H${head}`}
+                        tone={active === "heads" ? "violet" : "neutral"}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">parallel relation finders</p>
+                </Stage>
+                <Arrow />
+                <Stage label="Residual + MLP" active={active === "mlp"}>
+                  <div className="flex items-center justify-between">
+                    <Token label="+" tone="mint" />
+                    <span className="text-muted-foreground">→</span>
+                    <Token label="MLP" tone="amber" />
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">preserve, normalize, transform</p>
+                </Stage>
+                <Arrow />
+                <Stage label="Next token" active={active === "output"}>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between text-mint">
+                      <span>on</span>
+                      <span>0.61</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>the</span>
+                      <span>0.18</span>
+                    </div>
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>near</span>
+                      <span>0.05</span>
+                    </div>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">softmax over the vocabulary</p>
+                </Stage>
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">masked score matrix</p>
-            </Stage>
-          </div>
-          <div className="flex justify-center">
-            <span className="text-muted-foreground">↓</span>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
-            <Stage label="Multi-head" active={active === "heads"}>
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4].map((head) => (
-                  <Token
-                    key={head}
-                    label={`H${head}`}
-                    tone={active === "heads" ? "violet" : "neutral"}
-                  />
-                ))}
-              </div>
-              <p className="mt-3 text-xs text-muted-foreground">parallel relation finders</p>
-            </Stage>
-            <Arrow />
-            <Stage label="Residual + MLP" active={active === "mlp"}>
-              <div className="flex items-center justify-between">
-                <Token label="+" tone="mint" />
-                <span className="text-muted-foreground">→</span>
-                <Token label="MLP" tone="amber" />
-              </div>
-              <p className="mt-3 text-xs text-muted-foreground">preserve, normalize, transform</p>
-            </Stage>
-            <Arrow />
-            <Stage label="Next token" active={active === "output"}>
-              <div className="space-y-1.5 text-xs">
-                <div className="flex justify-between text-mint">
-                  <span>on</span>
-                  <span>0.61</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>the</span>
-                  <span>0.18</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>near</span>
-                  <span>0.05</span>
-                </div>
-              </div>
-              <p className="mt-3 text-xs text-muted-foreground">softmax over the vocabulary</p>
-            </Stage>
+            </div>
           </div>
           <div className="flex items-center justify-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             <span className={isAtOrPast("attention") ? "text-mint" : ""}>
