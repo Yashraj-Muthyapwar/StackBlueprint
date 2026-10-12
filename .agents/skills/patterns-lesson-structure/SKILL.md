@@ -1,6 +1,6 @@
 ---
 name: patterns-lesson-structure
-description: Create or revamp StackBlueprint Patterns (DSA) lessons, such as two pointers, sliding window, strings, linked lists, recursion or binary search, using the staged lesson structure and the shared pattern UI kit (PatternCanvas, PatternExample, PatternStepper, PatternExercises, global Quiz) so every lesson looks and behaves like Two Pointers: Opposite Ends. Use for any lesson under /patterns/<pattern>/<lesson>.
+description: "Create or revamp StackBlueprint Patterns (DSA) lessons, such as two pointers, sliding window, strings, linked lists, recursion or binary search, using the staged lesson structure and the shared pattern UI kit (PatternCanvas, PatternExample, PatternStepper, PatternExercises, global Quiz) so every lesson looks and behaves like Two Pointers Opposite Ends. Use for any lesson under /patterns/<pattern>/<lesson>."
 ---
 
 # Patterns Lesson Structure
