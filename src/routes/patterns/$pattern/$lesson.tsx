@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -35,6 +36,13 @@ export const Route = createFileRoute("/patterns/$pattern/$lesson")({
 function LessonPage() {
   const { isCompleted, markComplete, markIncomplete } = useProgress();
   const { pattern, lesson } = Route.useParams();
+
+  // The shared Quiz announces a pass; completing the lesson is gated on it.
+  useEffect(() => {
+    const handleQuizPassed = () => markComplete(lesson);
+    window.addEventListener("quiz-passed", handleQuizPassed);
+    return () => window.removeEventListener("quiz-passed", handleQuizPassed);
+  }, [lesson, markComplete]);
   const p = PATTERN_BY_SLUG[pattern];
   if (!p)
     return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
