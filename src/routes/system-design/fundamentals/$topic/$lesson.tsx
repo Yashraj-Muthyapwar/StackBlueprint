@@ -5,7 +5,7 @@ import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content"
 import { SectionRenderer } from "@/components/system-design/SectionRenderer";
 import { useProgress } from "@/hooks/use-progress";
 
-export const Route = createFileRoute("/system-design/foundations/$topic/$lesson")({
+export const Route = createFileRoute("/system-design/fundamentals/$topic/$lesson")({
   head: ({ params }) => {
     const t = FOUNDATIONS_TOPICS[params.topic];
     const l = t?.lessons.find((x) => x.slug === params.lesson);

@@ -2,7 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ArrowUpRight, Check, ChevronRight, Database, Lock, Terminal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { roadmap, sectionPatterns, type RoadmapCategory, type RoadmapPattern } from "@/lessons/roadmap";
+import { roadmap, categoryPatterns, sectionPatterns, type RoadmapCategory, type RoadmapPattern } from "@/lessons/roadmap";
 import logoImg from "@/images/logos/new-logo.png";
 import { useProgress } from "@/hooks/use-progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -11,11 +11,6 @@ import { Sidebar, SidebarContent, SidebarHeader, useSidebar } from "@/components
 /* ───────────────────────── helpers ───────────────────────── */
 
 type IsDone = (patSlug: string, lessonSlug: string) => boolean;
-
-/** Sections are the canonical grouping when present; `patterns` can duplicate them (e.g. DSA). */
-function categoryPatterns(cat: RoadmapCategory): RoadmapPattern[] {
-  return cat.sections?.length ? cat.sections.flatMap(sectionPatterns) : cat.patterns;
-}
 
 function countLessons(patterns: RoadmapPattern[], isDone: IsDone) {
   let total = 0;

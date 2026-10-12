@@ -1,12 +1,7 @@
 import type { Row, Stage, StageStep, RowState, Tone } from "@/components/lesson/MultiStage";
 import { bucketPanel, pass, r, sidePanel, st } from "../animation-shared";
 import { HCOLS, ORD_H } from "./aggregation";
-const USERS_J: Row[] = [
-  { id: 1, name: "Alice" },
-  { id: 2, name: "Bob" },
-  { id: 3, name: "Charlie" },
-  { id: 4, name: "David" },
-];
+const USERS_J: Row[] = [r(1, 1, "Alice"), r(2, 2, "Bob"), r(3, 3, "Charlie"), r(4, 4, "David")];
 
 // ----- q-scalar -----
 export const scalarStages: Stage[] = [

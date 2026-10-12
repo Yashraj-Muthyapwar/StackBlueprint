@@ -347,7 +347,7 @@ export function HeroInteractiveDemo() {
                 <button
                   type="button"
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-mint px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-95"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-95"
                 >
                   {isPlaying ? (
                     <>
@@ -380,7 +380,7 @@ export function HeroInteractiveDemo() {
                       onClick={() => setSpeed(s)}
                       className={`rounded px-1.5 py-0.5 font-semibold transition-all ${
                         speed === s
-                          ? "bg-mint text-primary-foreground shadow-xs"
+                          ? "bg-primary text-primary-foreground shadow-xs"
                           : "text-muted-foreground hover:text-foreground"
                       }`}
                       title={`Playback speed ${s}x`}

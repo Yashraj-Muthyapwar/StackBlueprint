@@ -26,7 +26,13 @@ export function ImageCarousel({ images }: { images: { src: string; alt: string; 
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="w-full flex justify-center bg-surface-2/30 py-4 relative min-h-[300px] items-center">
-        <ZoomableImage key={currentImage.src} src={currentImage.src} alt={currentImage.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
+        <ZoomableImage
+          key={currentImage.src}
+          src={currentImage.src}
+          alt={currentImage.alt}
+          caption={currentImage.caption}
+          className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+        />
         
         {images.length > 1 && (
           <>

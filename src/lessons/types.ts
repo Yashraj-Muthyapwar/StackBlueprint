@@ -253,10 +253,14 @@ export type QuizQuestion = {
   requiredCodePatterns?: string[];
   /** Learner-facing guidance displayed when required source constructs are missing. */
   validationMessage?: string;
+  /** Source constructs a coding answer must not use, each with its own learner-facing message. */
+  forbiddenCodePatterns?: { pattern: string; message: string }[];
+  /** Grade only the final output line, so learner prints before the hidden tests are ignored. */
+  gradeLastLine?: boolean;
 };
 
 export type Section =
-  | { kind: "prose"; heading?: string; body: string[] }
+  | { kind: "prose"; heading?: string; eyebrow?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "syntax"; title: string; code: string; description: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
@@ -265,6 +269,14 @@ export type Section =
   | { kind: "array-operations-lab" }
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
+  | { kind: "opposite-ends-intuition"; caption?: string }
+  | {
+      kind: "opposite-ends-steps";
+      steps: { title: string; array: number[]; left: number; right: number; note: string }[];
+    }
+  | { kind: "opposite-ends-visualizer" }
+  | { kind: "opposite-ends-example" }
+  | { kind: "opposite-ends-practice" }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
@@ -325,6 +337,14 @@ export type Section =
     }
   | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
+  | {
+      kind: "playground-practice";
+      title: string;
+      prompt: string;
+      tables: string[];
+      successCheck: string;
+      href: string;
+    }
   | {
       kind: "list";
       heading?: string;

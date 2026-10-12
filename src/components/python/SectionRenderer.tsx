@@ -10,6 +10,11 @@ import { SliceViewExplorer } from "@/components/dsa/array-basics/SliceViewExplor
 import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
 import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
 import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
+import { OppositeEndsIntuition } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsIntuition";
+import { OppositeEndsSteps } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsSteps";
+import { OppositeEndsVisualizer } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsVisualizer";
+import { OppositeEndsPractice } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsPractice";
+import { OppositeEndsExample } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsExample";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -204,6 +209,24 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
+/** Numbered section marker such as "1 · Why"; it also names the section in the table of contents. */
+function SectionMarker({ label }: { label: string }) {
+  const match = label.match(/^(\d+)\s*·\s*(.+)$/);
+  return (
+    <div className="!mb-2 flex items-center gap-3">
+      {match ? (
+        <span className="flex h-7 min-w-7 items-center justify-center rounded-lg bg-mint/15 px-2 font-mono text-sm font-bold text-mint">
+          {match[1].padStart(2, "0")}
+        </span>
+      ) : null}
+      <span className="font-mono text-sm font-semibold uppercase tracking-[0.22em] text-mint sm:text-base">
+        {match ? match[2] : label}
+      </span>
+      <span className="h-px flex-1 bg-mint/20" />
+    </div>
+  );
+}
+
 export function SectionRenderer({
   section,
   onQuizActiveChange,
@@ -220,6 +243,7 @@ export function SectionRenderer({
     case "prose":
       return (
         <section className="space-y-3">
+          {section.eyebrow ? <SectionMarker label={section.eyebrow} /> : null}
           {section.heading ? (
             <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
@@ -346,6 +370,21 @@ export function SectionRenderer({
     case "string-character-explorer":
       return <StringCharacterExplorer />;
 
+    case "opposite-ends-intuition":
+      return <OppositeEndsIntuition caption={section.caption} />;
+
+    case "opposite-ends-steps":
+      return <OppositeEndsSteps steps={section.steps} />;
+
+    case "opposite-ends-visualizer":
+      return <OppositeEndsVisualizer />;
+
+    case "opposite-ends-example":
+      return <OppositeEndsExample />;
+
+    case "opposite-ends-practice":
+      return <OppositeEndsPractice />;
+
     case "table":
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
@@ -459,6 +498,7 @@ export function SectionRenderer({
             <ZoomableImage
               src={section.src}
               alt={section.alt}
+              caption={section.caption}
               className={`h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl ${section.className ?? ""}`}
             />
           </div>
