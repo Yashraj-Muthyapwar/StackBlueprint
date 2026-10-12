@@ -202,6 +202,67 @@ function responseHeader(init, decision = "ALLOW") {
   return marker.replace(":ALLOW]]", `:${decision}]]`) + "\n";
 }
 
+test("lesson references use real headings without exposing internal section numbers", async () => {
+  const api = await moduleAt(
+    'export * from "./src/lib/rivet/context.ts"; export { oppositeEnds } from "./src/lessons/two-pointers/opposite-ends.ts";',
+  );
+  const actual = api.extractLessonText(api.oppositeEnds.sections, "When does this pattern work?");
+  assert.match(actual, /\[Lesson heading: When does this pattern work\?\]/);
+  assert.doesNotMatch(actual, /\[Section \d/);
+  assert.ok(actual.length <= 8000);
+
+  const sections = [
+    { kind: "prose", heading: "Starting pointers", body: "Use both ends." },
+    { kind: "code", code: "left = 0", solution: "PRIVATE_SOLUTION", tests: "PRIVATE_TESTS" },
+    { kind: "quiz", heading: "PRIVATE_QUIZ", questions: ["PRIVATE_ANSWER"] },
+  ];
+  const short = api.extractLessonText(sections);
+  assert.match(short, /\[Lesson heading: Starting pointers\]/);
+  assert.match(short, /\[Lesson content block\]\n```\nleft = 0/);
+  assert.doesNotMatch(short, /PRIVATE_/);
+  const long = api.extractLessonText([
+    ...sections,
+    ...Array.from({ length: 30 }, () => ({ kind: "prose", body: "Long reference ".repeat(300) })),
+  ]);
+  assert.ok(long.length <= 8000);
+  assert.match(long, /Not included here: Unnamed lesson content/);
+  assert.doesNotMatch(long, /\[Section \d|PRIVATE_/);
+});
+
+test("practice exclusions and noisy wording reach the one answer request intact", async () => {
+  const tab = tabs().make();
+  const requests = [];
+  const question =
+    "Give me one new 2-pointers opposite and question. No trapping rainwater, sorted two/three sum, or reversal. Only arrest, not strings.";
+  const exercise =
+    "Strict Mountain Array: return true only for a strict rise to one interior peak followed by a strict fall. [1, 3, 7, 5, 2] -> true; [1, 3, 3, 2] -> false. Arrays shorter than three return false. Aim for O(n) time and O(1) extra space.";
+  const api = await moduleAt(combined, {
+    ...tab.globals(),
+    fetch: async (_url, init) => {
+      requests.push(JSON.parse(init.body));
+      return geminiReply(responseHeader(init) + exercise);
+    },
+  });
+  api.saveProviderKey("gemini", "DUMMY-TEST-KEY", "saved");
+  api.updateSettings({ providerId: "gemini" });
+  api.setProviderModel("gemini", "test-model");
+  api.appendMessage("/patterns/two-pointers/opposite-ends", "user", question);
+  let reply = "";
+  for await (const part of api.streamReply(
+    "/patterns/two-pointers/opposite-ends",
+    lessonContext,
+    new AbortController().signal,
+  )) {
+    if ("text" in part) reply += part.text;
+  }
+  assert.equal(requests.length, 1);
+  const request = requests[0];
+  assert.ok(request.contents.at(-1).parts[0].text.endsWith("Learner request:\n" + question));
+  assert.ok(!request.systemInstruction.parts[0].text.includes(question));
+  assert.equal(reply, exercise);
+  // This verifies transport/framing only. Live model selection is evaluated in the release checklist.
+});
+
 test("all four providers decide relevance and answer in exactly one request", async () => {
   for (const provider of ["gemini", "groq", "openrouter", "nvidia"]) {
     for (const decision of ["ALLOW", "REDIRECT", "CLARIFY", "malformed", "partial", "stale"]) {
