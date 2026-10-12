@@ -132,8 +132,6 @@ export type Step = {
   cellNotes2?: CellNote[];
   cellHighlights2?: CellHighlight[];
   cellPointers2?: CellPointer[];
-  // optional water levels for elevation-map
-  waterLevels?: number[];
   // the "why" behind this step, rendered in its own callout in the narration card
   proof?: string;
   // predict mode: pause here and ask the learner to choose the next move
@@ -144,9 +142,6 @@ export type Step = {
   dimmed?: number[];
   // array view: bracket under two cells with a label (e.g. "12 vs 9")
   link?: { from: number; to: number; label: string };
-  // elevation-map view: running maxima for the guide lines
-  leftMax?: number;
-  rightMax?: number;
   // array view: small pills under cells, e.g. "+7" on the cell entering a window, "−2" on the one leaving
   badges?: { index: number; text: string; tone: PointerColor }[];
   // array view: prefix values drawn on the gaps between cells, under the array
@@ -155,7 +150,7 @@ export type Step = {
   bits?: BitsView;
 };
 
-export type View = "array" | "linked-list" | "matrix" | "elevation-map";
+export type View = "array" | "linked-list" | "matrix";
 
 export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
@@ -235,6 +230,9 @@ export type LinkedListStep = Pick<
   "line" | "narration" | "status" | "pointers" | "highlight"
 > & { pointers: Pointer[] };
 
+import type { PatternExercise } from "@/components/dsa/shared/PatternExercises";
+import type { PatternStepperStep } from "@/components/dsa/shared/PatternStepper";
+
 // ============= Lesson content sections (SQL / Data Warehouses) =============
 
 export type QuizQuestion = {
@@ -270,13 +268,11 @@ export type Section =
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
-  | {
-      kind: "opposite-ends-steps";
-      steps: { title: string; array: number[]; left: number; right: number; note: string }[];
-    }
-  | { kind: "opposite-ends-visualizer" }
-  | { kind: "opposite-ends-example" }
-  | { kind: "opposite-ends-practice" }
+  /** Shared pattern-lesson UI kit (src/components/dsa/shared); problem sets live in problem-sets.ts. */
+  | { kind: "pattern-canvas"; problemSet: string }
+  | { kind: "pattern-example"; problemSet: string }
+  | { kind: "pattern-stepper"; steps: PatternStepperStep[] }
+  | { kind: "pattern-exercises"; exercises: PatternExercise[] }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
