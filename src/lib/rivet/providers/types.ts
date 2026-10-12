@@ -16,6 +16,8 @@ export interface StreamArgs extends ProviderConfig {
   signal?: AbortSignal;
   /** Output cap for this request. Defaults to MAX_OUTPUT_TOKENS. */
   maxTokens?: number;
+  /** Lower values suit short scope decisions. Defaults to 0.4. */
+  temperature?: number;
 }
 
 /** Why a stream ended. "length": the output cap was hit; "filtered": the provider withheld the rest. */

@@ -36,6 +36,7 @@ export async function* streamOpenAI(
     turns: ChatTurn[];
     signal?: AbortSignal;
     maxTokens?: number;
+    temperature?: number;
   },
 ): AsyncGenerator<StreamPart> {
   let res: Response;
@@ -47,7 +48,7 @@ export async function* streamOpenAI(
       body: JSON.stringify({
         model: args.model,
         stream: true,
-        temperature: 0.4,
+        temperature: args.temperature ?? 0.4,
         max_tokens: args.maxTokens ?? MAX_OUTPUT_TOKENS,
         messages: [{ role: "system", content: args.system }, ...args.turns],
       }),
