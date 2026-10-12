@@ -12,7 +12,7 @@
  * It reads every TypeScript file under src/lessons without executing it, finds each
  * lesson object (an object with a string `slug` and a `sections` property) and
  * records its track and slug when `sections` is not the literal empty array.
- * Placeholder lessons (`sections: []`, see AGENTS.md) are left out. If a slug is
+ * Placeholder lessons (`sections: []` per AGENTS.md, or a single "Coming Soon" section) are left out. If a slug is
  * a placeholder anywhere in the same track it is treated as unavailable too, so a
  * repeated slug can never make an empty lesson look real.
  *
@@ -52,6 +52,22 @@ const stringProp = (obj, name) => {
 
 const sectionsProp = (obj) => findProp(obj, "sections");
 
+/**
+ * A placeholder is `sections: []`, or the older form with one prose section headed
+ * "Coming Soon". LessonLayout shows the "Coming Soon" screen for both, so Rivet
+ * must treat both as lessons that do not exist yet.
+ */
+function isPlaceholderSections(node) {
+  if (!ts.isArrayLiteralExpression(node)) return false;
+  if (node.elements.length === 0) return true;
+  if (node.elements.length !== 1) return false;
+  const only = node.elements[0];
+  return (
+    ts.isObjectLiteralExpression(only) &&
+    stringProp(only, "heading")?.toLowerCase() === "coming soon"
+  );
+}
+
 /** Scans src/lessons and rewrites the generated file if the list changed. */
 export function generateLessonIndex() {
   const withContent = new Set();
@@ -72,9 +88,7 @@ export function generateLessonIndex() {
         const slug = stringProp(node, "slug");
         const sections = sectionsProp(node);
         if (slug && sections) {
-          const empty =
-            ts.isArrayLiteralExpression(sections.initializer) &&
-            sections.initializer.elements.length === 0;
+          const empty = isPlaceholderSections(sections.initializer);
           (empty ? placeholders : withContent).add(`${track}/${slug}`);
         }
       }
