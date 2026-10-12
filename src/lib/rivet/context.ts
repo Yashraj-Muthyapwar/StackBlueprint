@@ -94,8 +94,8 @@ const shorten = (text: string, max: number) =>
   text.length > max ? `${text.slice(0, max - 1)}…` : text;
 const label = (s: LessonSection) =>
   s.heading
-    ? `[Section ${s.index}: ${shorten(s.heading, MAX_HEADING_CHARS)}]`
-    : `[Section ${s.index}]`;
+    ? `[Lesson heading: ${shorten(s.heading, MAX_HEADING_CHARS)}]`
+    : "[Lesson content block]";
 const clip = (text: string, max: number) =>
   text.length > max ? `${text.slice(0, max)}\n[section shortened]` : text;
 
@@ -148,7 +148,7 @@ function omittedNote(omitted: LessonSection[]): string {
   const names: string[] = [];
   let size = 0;
   for (const s of omitted) {
-    const name = shorten(s.heading || `Section ${s.index}`, MAX_HEADING_CHARS);
+    const name = shorten(s.heading || "Unnamed lesson content", MAX_HEADING_CHARS);
     if (size + name.length + 2 > OMITTED_BUDGET - 60) break;
     names.push(name);
     size += name.length + 2;
