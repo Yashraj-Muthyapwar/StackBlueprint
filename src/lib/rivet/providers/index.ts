@@ -9,4 +9,11 @@ export const PROVIDERS: ProviderDef[] = [gemini, groq, nvidia, openrouter];
 export const getProvider = (id: ProviderId): ProviderDef =>
   PROVIDERS.find((p) => p.id === id) ?? gemini;
 
-export type { ChatTurn, ProviderConfig, ProviderDef, ProviderId } from "./types";
+export type {
+  ChatTurn,
+  FinishReason,
+  ProviderConfig,
+  ProviderDef,
+  ProviderId,
+  StreamPart,
+} from "./types";

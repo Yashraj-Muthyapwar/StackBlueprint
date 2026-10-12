@@ -20,10 +20,17 @@ export const openrouter: ProviderDef = {
   name: "OpenRouter",
   tagline: "Many models, including :free ones",
   keyUrl: "https://openrouter.ai/keys",
+  setupSteps: [
+    "Sign in at openrouter.ai.",
+    "Open Keys and choose Create Key. Set a credit limit on it.",
+    "Paste the key here. Rivet only lists models ending in :free.",
+  ],
+  costNote:
+    "Rivet only offers :free models, which have tight daily limits. If the account has credits, set a limit on the key so it cannot be overspent if it leaks.",
   fallbackModels: [],
   stream: (args) => streamOpenAI(endpoint(args), args),
   async listModels(cfg, signal) {
-    return (await listOpenAIModels(endpoint(cfg), signal))
+    return (await listOpenAIModels(endpoint(cfg), cfg.key, signal))
       .filter((id) => id.endsWith(":free"))
       .sort();
   },
@@ -36,7 +43,7 @@ export const openrouter: ProviderDef = {
       if (isAbort(e)) throw e;
       throw errorFromNetwork(e, "OpenRouter");
     }
-    if (!res.ok) throw await errorFromResponse(res, "OpenRouter");
-    return { models: await this.listModels(cfg, signal) };
+    if (!res.ok) throw await errorFromResponse(res, "OpenRouter", cfg.key);
+    return { models: await this.listModels(cfg, signal), keyVerified: true };
   },
 };

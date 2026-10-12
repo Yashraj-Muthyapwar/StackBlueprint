@@ -1,6 +1,13 @@
-import { RivetError, errorFromNetwork, errorFromResponse, isAbort } from "./errors";
+import {
+  RivetError,
+  cutOff,
+  errorFromNetwork,
+  errorFromResponse,
+  errorFromStreamFrame,
+  isAbort,
+} from "./errors";
 import { sseData } from "./stream";
-import type { ProviderDef } from "./types";
+import { MAX_OUTPUT_TOKENS, type FinishReason, type ProviderDef } from "./types";
 
 interface GeminiModel {
   name?: string;
@@ -9,6 +16,7 @@ interface GeminiModel {
 
 const BASE = "https://generativelanguage.googleapis.com/v1beta";
 const SKIP = /embedding|aqa|imagen|veo|tts|image|live|audio|robotics|computer-use|learnlm|gemma/i;
+const FILTERED = /SAFETY|RECITATION|BLOCKLIST|PROHIBITED_CONTENT|SPII|LANGUAGE|OTHER/;
 
 const rank = (id: string) =>
   id.includes("flash") && !id.includes("lite") ? 0 : id.includes("lite") ? 1 : 2;
@@ -18,9 +26,16 @@ export const gemini: ProviderDef = {
   name: "Google Gemini",
   tagline: "Generous free tier via AI Studio",
   keyUrl: "https://aistudio.google.com/apikey",
+  setupSteps: [
+    "Sign in to Google AI Studio with a Google account.",
+    "Choose Get API key, then Create API key.",
+    "Copy the key and paste it here.",
+  ],
+  costNote:
+    "The free tier has daily limits and is not offered in every country. If the key's Google Cloud project has billing turned on, usage can be charged.",
   fallbackModels: ["gemini-flash-latest", "gemini-flash-lite-latest"],
 
-  async *stream({ key, model, system, turns, signal }) {
+  async *stream({ key, model, system, turns, signal, maxTokens }) {
     let res: Response;
     try {
       res = await fetch(
@@ -35,7 +50,7 @@ export const gemini: ProviderDef = {
               role: t.role === "assistant" ? "model" : "user",
               parts: [{ text: t.content }],
             })),
-            generationConfig: { temperature: 0.4 },
+            generationConfig: { temperature: 0.4, maxOutputTokens: maxTokens ?? MAX_OUTPUT_TOKENS },
           }),
         },
       );
@@ -43,24 +58,41 @@ export const gemini: ProviderDef = {
       if (isAbort(e)) throw e;
       throw errorFromNetwork(e, "Gemini");
     }
-    if (!res.ok || !res.body) throw await errorFromResponse(res, "Gemini");
+    if (!res.ok || !res.body) throw await errorFromResponse(res, "Gemini", key);
 
+    let finished = false;
     for await (const data of sseData(res.body)) {
+      let json: {
+        error?: unknown;
+        promptFeedback?: { blockReason?: string };
+        candidates?: {
+          content?: { parts?: { text?: unknown; thought?: unknown }[] };
+          finishReason?: string;
+        }[];
+      };
       try {
-        const json = JSON.parse(data);
-        const block = json?.promptFeedback?.blockReason;
-        if (block)
-          throw new RivetError(
-            "server",
-            `Gemini declined this request (${block}). Try rephrasing.`,
-          );
-        for (const part of json?.candidates?.[0]?.content?.parts ?? []) {
-          if (typeof part?.text === "string" && !part.thought) yield part.text;
-        }
-      } catch (e) {
-        if (e instanceof RivetError) throw e;
+        json = JSON.parse(data);
+      } catch {
+        continue;
+      }
+      if (json?.error) throw errorFromStreamFrame(json.error, "Gemini", key);
+      const block = json?.promptFeedback?.blockReason;
+      if (block)
+        throw new RivetError("server", `Gemini declined this request (${block}). Try rephrasing.`);
+      const candidate = json?.candidates?.[0];
+      for (const part of candidate?.content?.parts ?? []) {
+        if (typeof part?.text === "string" && part.text && !part.thought) yield { text: part.text };
+      }
+      const reason = candidate?.finishReason;
+      if (reason && reason !== "FINISH_REASON_UNSPECIFIED") {
+        finished = true;
+        const finish: FinishReason =
+          reason === "MAX_TOKENS" ? "length" : FILTERED.test(reason) ? "filtered" : "stop";
+        yield { finish };
       }
     }
+    // Gemini always sends a finishReason on its last chunk; without one the connection was cut.
+    if (!finished) throw cutOff("Gemini");
   },
 
   async listModels({ key }, signal) {
@@ -74,7 +106,7 @@ export const gemini: ProviderDef = {
       if (isAbort(e)) throw e;
       throw errorFromNetwork(e, "Gemini");
     }
-    if (!res.ok) throw await errorFromResponse(res, "Gemini");
+    if (!res.ok) throw await errorFromResponse(res, "Gemini", key);
     const json = await res.json().catch(() => null);
     const ids: string[] = (json?.models ?? [])
       .filter(
@@ -88,6 +120,7 @@ export const gemini: ProviderDef = {
   },
 
   async test(cfg, signal) {
-    return { models: await this.listModels(cfg, signal) };
+    // Listing models requires a valid key.
+    return { models: await this.listModels(cfg, signal), keyVerified: true };
   },
 };

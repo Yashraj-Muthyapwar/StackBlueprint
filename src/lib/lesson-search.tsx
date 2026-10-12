@@ -1,4 +1,4 @@
-import { roadmap, type RoadmapPattern } from "@/lessons/roadmap";
+import { roadmap, sectionPatterns, type RoadmapPattern } from "@/lessons/roadmap";
 
 export type SearchItem = {
   id: string; title: string; context: string; track: string;
@@ -52,7 +52,7 @@ export function buildSearchItems(): SearchItem[] {
       pushPattern(out, p, c.title, ctx);
     };
     if (c.sections?.length) {
-      for (const s of c.sections) for (const p of s.patterns ?? []) visit(p, `${c.title} › ${s.title}`);
+      for (const s of c.sections) for (const p of sectionPatterns(s)) visit(p, `${c.title} › ${s.title}`);
     } else {
       for (const p of c.patterns ?? []) visit(p, c.title);
     }

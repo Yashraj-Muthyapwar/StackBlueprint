@@ -1,4 +1,4 @@
-import { roadmap, type RoadmapPattern } from "@/lessons/roadmap";
+import { roadmap, sectionPatterns, type RoadmapPattern } from "@/lessons/roadmap";
 import { AVAILABLE_LESSONS } from "./available-lessons.generated";
 
 /**
@@ -41,11 +41,7 @@ function build() {
 
   for (const category of roadmap) {
     if (category.locked) continue;
-    // Most sections hold `patterns`, but a few (Web Scraping) list lessons directly, so accept both shapes.
-    const fromSections = (category.sections ?? []).flatMap((section) => {
-      const loose = section as { patterns?: RoadmapPattern[]; lessons?: RoadmapPattern["lessons"] };
-      return loose.patterns ?? (loose.lessons ? [section as unknown as RoadmapPattern] : []);
-    });
+    const fromSections = (category.sections ?? []).flatMap(sectionPatterns);
     const patterns: RoadmapPattern[] = [...category.patterns, ...fromSections].filter(Boolean);
     for (const pattern of patterns) {
       if (pattern.locked) continue;
