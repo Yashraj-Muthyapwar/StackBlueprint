@@ -109,6 +109,20 @@ const words = (text: string) =>
     .split(/[^a-z0-9]+/)
     .filter((w) => w.length >= 3 && !STOP.has(w));
 
+/** Course identity comes from the site's registry, never from a learner's claim. */
+export function courseForLesson(path: string): { title: string; topics: string[] } | undefined {
+  const here = normalizePath(path);
+  const { links } = build();
+  const current = links.find((link) => link.path === here);
+  if (!current) return undefined;
+  return {
+    title: current.track,
+    topics: [
+      ...new Set(links.filter((link) => link.track === current.track).map((link) => link.module)),
+    ].slice(0, 40),
+  };
+}
+
 /**
  * Picks the lessons worth showing the model for this question: the learner's
  * current module first, then the rest of the track, then anything whose title

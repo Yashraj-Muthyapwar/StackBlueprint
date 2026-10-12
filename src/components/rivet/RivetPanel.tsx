@@ -406,7 +406,7 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
                 </h3>
                 <p className="mt-1 max-w-[19rem] text-[13px] leading-snug text-muted-foreground">
                   {!quiz
-                    ? "Ask me anything about this lesson. I'll nudge you toward the answer first."
+                    ? "Ask about this course, a relevant example, or where to learn next. I'll nudge you toward the answer first."
                     : missed.length === 0
                       ? "Want to go deeper, or hear why each answer works?"
                       : `${missed.length} to revisit. I've got the lesson and your answers, so we can go through them together.`}
@@ -663,7 +663,7 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
                     send(draft);
                   }
                 }}
-                placeholder="Ask Rivet about this lesson…"
+                placeholder="Ask Rivet about this course…"
                 className="max-h-28 min-h-8 flex-1 resize-none bg-transparent px-1.5 py-1.5 text-base outline-none placeholder:text-muted-foreground sm:text-sm"
               />
               {busy ? (

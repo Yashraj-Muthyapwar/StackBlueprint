@@ -35,7 +35,7 @@ export const gemini: ProviderDef = {
     "The free tier has daily limits and is not offered in every country. If the key's Google Cloud project has billing turned on, usage can be charged.",
   fallbackModels: ["gemini-flash-latest", "gemini-flash-lite-latest"],
 
-  async *stream({ key, model, system, turns, signal, maxTokens }) {
+  async *stream({ key, model, system, turns, signal, maxTokens, temperature }) {
     let res: Response;
     try {
       res = await fetch(
@@ -50,7 +50,10 @@ export const gemini: ProviderDef = {
               role: t.role === "assistant" ? "model" : "user",
               parts: [{ text: t.content }],
             })),
-            generationConfig: { temperature: 0.4, maxOutputTokens: maxTokens ?? MAX_OUTPUT_TOKENS },
+            generationConfig: {
+              temperature: temperature ?? 0.4,
+              maxOutputTokens: maxTokens ?? MAX_OUTPUT_TOKENS,
+            },
           }),
         },
       );
