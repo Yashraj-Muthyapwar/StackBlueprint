@@ -50,6 +50,8 @@ export type QuizQuestion = {
   packages?: string[];
   requiredCodePatterns?: string[];
   validationMessage?: string;
+  forbiddenCodePatterns?: { pattern: string; message: string }[];
+  gradeLastLine?: boolean;
 };
 
 function renderInlineCode(text: string) {
@@ -69,11 +71,17 @@ function renderInlineCode(text: string) {
 }
 
 function validateRequiredCodePatterns(question: QuizQuestion, code: string): string | null {
-  if (!question.requiredCodePatterns?.length) return null;
-
   // Comments do not count as a solution. This catches output-only shortcuts while
   // allowing normal whitespace differences in a learner's code.
   const executableCode = code.replace(/#.*/g, "");
+
+  const forbidden = question.forbiddenCodePatterns?.find(({ pattern }) =>
+    new RegExp(pattern, "m").test(executableCode),
+  );
+  if (forbidden) return forbidden.message;
+
+  if (!question.requiredCodePatterns?.length) return null;
+
   const matchesAllPatterns = question.requiredCodePatterns.every((pattern) =>
     new RegExp(pattern, "m").test(executableCode),
   );
@@ -81,6 +89,42 @@ function validateRequiredCodePatterns(question: QuizQuestion, code: string): str
   return matchesAllPatterns
     ? null
     : question.validationMessage || "Your code needs to use the required variables and operations.";
+}
+
+/**
+ * Pass rule: 75% for a four-question quiz, 80% otherwise, and every coding
+ * question must pass regardless of the overall score.
+ */
+function getQuizPassResult(total: number, score: number, codingResults: boolean[]) {
+  const required = total === 4 ? 75 : 80;
+  const percentage = total ? Math.round((score / total) * 100) : 0;
+  const codingPassed = codingResults.every(Boolean);
+  return { percentage, required, codingPassed, passed: percentage >= required && codingPassed };
+}
+
+function PassStatus({ result }: { result: ReturnType<typeof getQuizPassResult> }) {
+  return (
+    <p
+      className={cn(
+        "mx-auto mt-3 max-w-md text-sm font-medium",
+        result.passed ? "text-mint" : "text-rose",
+      )}
+    >
+      {result.passed
+        ? "Passed. This lesson is now marked complete."
+        : !result.codingPassed && result.percentage >= result.required
+          ? "Not passed yet. The coding question must pass to complete this lesson."
+          : `Not passed yet. You need ${result.required}%${result.codingPassed ? "" : " and a passing coding answer"} to complete this lesson.`}
+    </p>
+  );
+}
+
+/** Compares graded output, optionally only the last line so learner prints cannot affect it. */
+function isExpectedOutput(question: QuizQuestion, actualOutput: string): boolean {
+  const expected = (question.expectedOutput || "").trim();
+  if (!question.gradeLastLine) return actualOutput === expected;
+  const lines = actualOutput.trim().split("\n");
+  return lines[lines.length - 1].trim() === expected;
 }
 
 function parsePythonError(errorText: string): { coreIssue: string; hint: string } | null {
@@ -191,6 +235,7 @@ function NormalQuiz({
   const [isCommandCorrect, setIsCommandCorrect] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutput, setEvaluationOutput] = useState("");
+  const [codingResults, setCodingResults] = useState<boolean[]>([]);
   const reviewRef = React.useRef<QuizReviewItem[]>([]);
   const evaluationRef = React.useRef<AbortController | null>(null);
   useEffect(
@@ -227,12 +272,14 @@ function NormalQuiz({
   useEffect(() => {
     if (isFinished) {
       emitQuizResults(reviewRef.current);
-      const percentage = Math.round((score / data.questions.length) * 100);
-      if (percentage >= 80) {
-        window.dispatchEvent(new CustomEvent("quiz-passed", { detail: { score: percentage } }));
+      const result = getQuizPassResult(data.questions.length, score, codingResults);
+      if (result.passed) {
+        window.dispatchEvent(
+          new CustomEvent("quiz-passed", { detail: { score: result.percentage } }),
+        );
       }
     }
-  }, [isFinished, score, data.questions.length]);
+  }, [isFinished, score, data.questions.length, codingResults]);
 
   const handleStart = () => {
     evaluationRef.current?.abort();
@@ -241,6 +288,7 @@ function NormalQuiz({
     setIsStarted(true);
     setCurrentIndex(0);
     setScore(0);
+    setCodingResults([]);
     setIsFinished(false);
     setSelectedOption(null);
     setCommandInput("");
@@ -295,7 +343,7 @@ function NormalQuiz({
         }
         const fullCode = commandInput + "\n\n" + (currentQuestion.testCode || "");
         actualOutput = await runGradedPython(fullCode, currentQuestion.packages, controller.signal);
-        correct = actualOutput === (currentQuestion.expectedOutput || "").trim();
+        correct = isExpectedOutput(currentQuestion, actualOutput);
       } catch (e: unknown) {
         actualOutput = String(e);
         correct = false;
@@ -311,6 +359,7 @@ function NormalQuiz({
     }
 
     setIsCommandCorrect(correct);
+    if (currentQuestion.interactiveCode) setCodingResults((results) => [...results, correct]);
     reviewRef.current.push({
       question: currentQuestion.question,
       userAnswer: commandInput,
@@ -335,7 +384,8 @@ function NormalQuiz({
 
   const handleNext = () => {
     if (currentIndex < data.questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
+      // Clamp so a fast double click cannot step past the last question.
+      setCurrentIndex((i) => Math.min(i + 1, data.questions.length - 1));
       setSelectedOption(null);
       setCommandInput("");
       setIsCommandCorrect(false);
@@ -383,6 +433,7 @@ function NormalQuiz({
         </div>
         <h3 className="text-xl font-semibold text-foreground mt-4">{percentage}% Score</h3>
         <p className="mt-2 text-muted-foreground">{feedback}</p>
+        <PassStatus result={getQuizPassResult(data.questions.length, score, codingResults)} />
 
         <button
           onClick={handleStart}
@@ -733,6 +784,7 @@ function FinalQuiz({
   const [commandAnswers, setCommandAnswers] = useState<Record<number, string>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [passResult, setPassResult] = useState<ReturnType<typeof getQuizPassResult> | null>(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluationOutputs, setEvaluationOutputs] = useState<Record<number, string>>({});
   const evaluationRef = React.useRef<AbortController | null>(null);
@@ -788,6 +840,7 @@ function FinalQuiz({
     evaluationRef.current = controller;
     setIsEvaluating(true);
     let calculatedScore = 0;
+    const codingOutcomes: boolean[] = [];
     const newOutputs: Record<number, string> = {};
     const review: QuizReviewItem[] = [];
 
@@ -798,6 +851,7 @@ function FinalQuiz({
         try {
           const validationError = validateRequiredCodePatterns(q, commandAnswers[idx] || "");
           if (validationError) {
+            codingOutcomes.push(false);
             newOutputs[idx] = validationError;
             review.push({
               question: q.question,
@@ -812,7 +866,8 @@ function FinalQuiz({
             (commandAnswers[idx] || q.initialCode || "") + "\n\n" + (q.testCode || "");
           const actualOutput = await runGradedPython(fullCode, q.packages, controller.signal);
           newOutputs[idx] = actualOutput;
-          const ok = actualOutput === (q.expectedOutput || "").trim();
+          const ok = isExpectedOutput(q, actualOutput);
+          codingOutcomes.push(ok);
           if (ok) calculatedScore++;
           review.push({
             question: q.question,
@@ -824,6 +879,7 @@ function FinalQuiz({
               .join(" "),
           });
         } catch (e: unknown) {
+          codingOutcomes.push(false);
           newOutputs[idx] = String(e);
           review.push({
             question: q.question,
@@ -867,9 +923,12 @@ function FinalQuiz({
     window.scrollTo({ top: 0, behavior: "smooth" });
     emitQuizResults(review);
 
-    const percentage = Math.round((calculatedScore / data.questions.length) * 100);
-    if (percentage >= 80) {
-      window.dispatchEvent(new CustomEvent("quiz-passed", { detail: { score: percentage } }));
+    const result = getQuizPassResult(data.questions.length, calculatedScore, codingOutcomes);
+    setPassResult(result);
+    if (result.passed) {
+      window.dispatchEvent(
+        new CustomEvent("quiz-passed", { detail: { score: result.percentage } }),
+      );
     }
   };
 
@@ -891,6 +950,7 @@ function FinalQuiz({
           <h2 className="text-xl font-medium text-foreground mt-4">
             {Math.round((score / data.questions.length) * 100)}% Final Score
           </h2>
+          {passResult ? <PassStatus result={passResult} /> : null}
         </div>
       )}
 

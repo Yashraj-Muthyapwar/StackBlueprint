@@ -6,7 +6,6 @@ import { SectionRenderer } from "@/components/python/SectionRenderer";
 import { ArrayCanvas } from "./ArrayCanvas";
 import { BitsStrip } from "./BitsStrip";
 import { CodePane } from "./CodePane";
-import { ElevationMapCanvas } from "./ElevationMapCanvas";
 import { LinkedListCanvas } from "./LinkedListCanvas";
 import { MatrixCanvas } from "./MatrixCanvas";
 import { NarrationCard } from "./NarrationCard";
@@ -297,7 +296,6 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
                 return (
                   <>
                     {viewType === "array" && <ArrayCanvas step={step} />}
-                    {viewType === "elevation-map" && <ElevationMapCanvas step={step} />}
                     {viewType === "matrix" && <MatrixCanvas step={step} />}
                     {viewType === "linked-list" && shape && (
                       <LinkedListCanvas step={step as LinkedListStep} shape={shape} />
