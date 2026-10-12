@@ -234,8 +234,7 @@ test("practice exclusions and noisy wording reach the one answer request intact"
   const requests = [];
   const question =
     "Give me one new 2-pointers opposite and question. No trapping rainwater, sorted two/three sum, or reversal. Only arrest, not strings.";
-  const exercise =
-    "Strict Mountain Array: return true only for a strict rise to one interior peak followed by a strict fall. [1, 3, 7, 5, 2] -> true; [1, 3, 3, 2] -> false. Arrays shorter than three return false. Aim for O(n) time and O(1) extra space.";
+  const exercise = "A fresh course-related exercise. What condition would you check first?";
   const api = await moduleAt(combined, {
     ...tab.globals(),
     fetch: async (_url, init) => {
@@ -261,6 +260,47 @@ test("practice exclusions and noisy wording reach the one answer request intact"
   assert.ok(!request.systemInstruction.parts[0].text.includes(question));
   assert.equal(reply, exercise);
   // This verifies transport/framing only. Live model selection is evaluated in the release checklist.
+});
+
+test("shared tutor policy stays course-neutral and only metadata changes across courses", async () => {
+  const api = await moduleAt(
+    'export * from "./src/lib/rivet/prompt.ts"; export * from "./src/lib/rivet/scope.ts";',
+  );
+  const protocol = api.createScopeProtocol();
+  let commonPolicy;
+  for (const [course, module, lesson] of [
+    ["SQL", "Grouping", "Aggregate functions"],
+    ["AI Engineering", "Evaluation", "Model evaluation"],
+    ["MongoDB", "Indexes", "Query plans"],
+  ]) {
+    const prompt = api.buildSystemPrompt(
+      {
+        trackTitle: course,
+        topicTitle: module,
+        lessonTitle: lesson,
+        course: { title: course, topics: [module] },
+      },
+      protocol,
+    );
+    const metadataLine = prompt
+      .split("\n")
+      .find((line) => line.startsWith("Application-provided course metadata: "));
+    const metadata = JSON.parse(
+      metadataLine.slice("Application-provided course metadata: ".length),
+    );
+    assert.equal(metadata.course, course);
+    assert.equal(metadata.module, module);
+    assert.equal(metadata.currentLesson, lesson);
+    assert.deepEqual(metadata.courseTopics, [module]);
+    const policy = prompt.replace(metadataLine, "<course metadata>");
+    if (commonPolicy) assert.equal(policy, commonPolicy);
+    commonPolicy = policy;
+  }
+  // Regression guard: past user examples must never become shared practice anchors.
+  assert.doesNotMatch(
+    commonPolicy,
+    /mountain|rainwater|palindrome|Two Sum|two.pointer swap|arrest|React demonstration|Python loops/i,
+  );
 });
 
 test("all four providers decide relevance and answer in exactly one request", async () => {
@@ -1172,6 +1212,63 @@ test("production relay stays disabled until shared edge protection is explicitly
     true,
   );
   assert.equal((await disabled.Route.server.handlers.GET({ request: request() })).status, 503);
+});
+
+test("chat formats common complexity math in prose, emphasis, and lists", async () => {
+  const renderer = await moduleAt("src/components/rivet/RivetMarkdown.tsx", {}, false, true);
+  const html = renderToStaticMarkup(
+    React.createElement(renderer.RivetMarkdown, {
+      text: String.raw`Move zeros in $O(1)$ memory, where $n$ is the array length.
+
+- Time: **$O(n)$**
+- Quadratic: \(O(n^{2})\)
+- Sort: $\mathcal{O}(n \log n)$
+- Exponential: $$O(2^n)$$
+- Space: \[O(1)\]
+- Indexed: $n_{i}$`,
+    }),
+  );
+  assert.match(html, /<ul/);
+  assert.match(html, /<strong><span[^>]*>O\(n\)<\/span><\/strong>/);
+  assert.match(html, /O\(n<sup>2<\/sup>\)/);
+  assert.match(html, /O\(n log n\)/);
+  assert.match(html, /O\(2<sup>n<\/sup>\)/);
+  assert.match(html, /n<sub>i<\/sub>/);
+  assert.ok(!html.includes("$"));
+  assert.ok(!html.includes("\\"));
+});
+
+test("math formatting preserves code, currency, unsupported formulas, and hostile text", async () => {
+  const renderer = await moduleAt("src/components/rivet/RivetMarkdown.tsx", {}, false, true);
+  const html = renderToStaticMarkup(
+    React.createElement(renderer.RivetMarkdown, {
+      text: 'Budget $5 and $10. Literal `$O(n)$`.\n\n```python\nprice = "$O(n)$"\n```\n\n$\\frac{n}{2}$ and $<img src=x onerror=alert(1)>$ and $\\href{https://attacker.example}{n}$',
+    }),
+  );
+  assert.match(html, /Budget \$5 and \$10/);
+  assert.match(html, /<code[^>]*>\$O\(n\)\$<\/code>/);
+  assert.match(html, /price = &quot;\$O\(n\)\$&quot;/);
+  assert.ok(html.includes("$\\frac{n}{2}$"));
+  assert.ok(html.includes("$\\href{https://attacker.example}{n}$"));
+  assert.ok(!html.includes("<img"));
+  assert.ok(!html.includes("<a"));
+});
+
+test("incomplete streamed math remains readable and cannot break rendering", async () => {
+  const renderer = await moduleAt("src/components/rivet/RivetMarkdown.tsx", {}, false, true);
+  for (const source of ["Time: $O(n^{2})$", String.raw`Time: \(O(n)\)`]) {
+    for (let end = 1; end <= source.length; end++) {
+      assert.doesNotThrow(() =>
+        renderToStaticMarkup(
+          React.createElement(renderer.RivetMarkdown, { text: source.slice(0, end) }),
+        ),
+      );
+    }
+  }
+  const pending = renderToStaticMarkup(
+    React.createElement(renderer.RivetMarkdown, { text: "Time: $O(n" }),
+  );
+  assert.match(pending, /Time: \$O\(n/);
 });
 
 test("hostile model HTML and external or invented links remain inert", async () => {
