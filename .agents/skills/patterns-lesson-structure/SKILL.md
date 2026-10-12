@@ -78,10 +78,6 @@ src/
 
 Reference: `src/components/dsa/two-pointers/opposite-ends/` holds exactly `ArrayStage.tsx`, `array-step.ts`, `problems.tsx` and `OppositeEndsIntuition.tsx`.
 
-### 1.2 Legacy lessons
-
-Older pattern lessons (for example Fast & Slow and Dutch Flag) still use the step-player (`LessonPlayer`, `view`, `build`) and its helpers, including `src/components/dsa/two-pointers/ComplexityCanvas.tsx` and `src/lessons/two-pointers/complexity-review.ts`. Keep those files while any lesson uses them. Do not migrate a legacy lesson to this structure unless the user asks for that lesson.
-
 ## 2. Lesson structure
 
 Six numbered stages. Each opens with a `prose` section that has an `eyebrow` (rendered as a numbered section marker that also names the stage in the table of contents) and a `heading`:
@@ -346,5 +342,5 @@ The working folder may not be a git repository; changes often reach the `staging
   - the lesson's component folder (stage, step helpers, `problems.tsx`) and its entry in `shared/problem-sets.ts`;
   - any player file (`LessonPlayer.tsx`) together with the removal of a canvas it used to import.
 - **Upload before deleting.** Add and update files first, then delete the replaced ones, and say that staging can be briefly broken in between when using the web uploader.
-- **Give a post-deploy check**: the lesson's canvas dropdown and `Try it` sync, the stepper, the exercises, the table of contents, quiz completion, and that neighbouring legacy lessons still load.
+- **Give a post-deploy check**: the lesson's canvas dropdown and `Try it` sync, the stepper, the exercises, the table of contents, quiz completion, and that the other lessons in the same pattern still load.
 - **Back up deletions.** When deleting files in a folder without version control, copy them somewhere first and tell the user where, and whether that location survives the session.
