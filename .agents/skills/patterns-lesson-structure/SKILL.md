@@ -22,6 +22,7 @@ Use this skill to create or revamp a lesson in the Patterns track (`/patterns/<p
 
 - When the user supplies lesson text, **use it verbatim**. Only add structure (headings, markers, components, order). Do not reword, trim or "improve" it.
 - Text the user did not write (narrations, explanations, takeaways, exercise feedback, pseudocode) must be original, specific and free of filler.
+- Refer to other lessons as "the previous lesson", "this lesson" or "the next lesson", never "Module N", even when the supplied text says "module".
 - Never write em dashes in lesson text. If supplied headings look like `1. WHY — Why do we use this pattern?`, split them into a section marker (`1 · Why`) and a heading (`Why do we use this pattern?`). That is structure, not a content change.
 
 ## 1. How a pattern lesson is wired
@@ -33,7 +34,7 @@ The builder still needs the legacy player fields to satisfy its type; keep them 
 ```ts
 export const myLesson: LessonBuilder<Record<string, never>> = {
   slug: "my-lesson",
-  title: "Pattern Name: Lesson Name",
+  title: "Pattern Name: Lesson Name",            // e.g. "Two Pointers: Opposite Ends"; colon, never an em dash
   subtitle: "One sentence on what the learner will be able to do.",
   problem: "One-sentence problem statement.",
   spotIt: ["Interview signals that suggest this pattern."],
@@ -76,7 +77,11 @@ src/
           <Lesson>Intuition.tsx        # optional lesson-specific scene (+ a section kind)
 ```
 
-Reference: `src/components/dsa/two-pointers/opposite-ends/` holds exactly `ArrayStage.tsx`, `array-step.ts`, `problems.tsx` and `OppositeEndsIntuition.tsx`.
+References: `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) and `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`).
+
+Header rules, so every lesson header looks the same:
+- **Title:** `Pattern Name: Lesson Name`, matching the other lessons in the pattern (for example `Two Pointers: Opposite Ends`, `Two Pointers: Same Direction (Slow & Fast)`).
+- **Subtitle:** one plain sentence of at most about 95 characters, with no colon, so it stays on one line on desktop. The header balances wrapped text, so a longer subtitle breaks into two short lines and looks unfinished.
 
 ## 2. Lesson structure
 
@@ -236,6 +241,7 @@ Token helpers for notes: `L()` left / `R()` right / `V()` value / `OUT()` result
   kind: "pattern-stepper",
   steps: [
     {
+      label: "Step 1",                               // optional; defaults to "Step N" (use "Start" for an initial state)
       title: "Swap the outer elements",
       cells: [10, 20, 30, 40, 50],                   // or ["l", "e", "v", "e", "l"]
       pointers: [
@@ -250,7 +256,7 @@ Token helpers for notes: `L()` left / `R()` right / `V()` value / `OUT()` result
 
 ## 5. Exercises (stage 6)
 
-Start with "trace it first" exercises that need no code. Two types:
+Start with "trace it first" exercises that need no code. Three types: `fields` (labelled answers), `cells` (one answer per index) and `choice` (pick one option). Each card is labelled "Exercise N" unless you set `label` (for example `"Question A"` when the supplied content letters its questions).
 
 ```ts
 {
@@ -275,11 +281,21 @@ Start with "trace it first" exercises that need no code. Two types:
       success: "Correct. Only the two outer values changed places.",
       hint: "Only the values at left and right move.",
     },
+    {
+      type: "choice",                                  // one correct option
+      label: "Question A",
+      title: "Duplicate or new value?",
+      prompt: "When fast = 1, do the pointers detect a duplicate or a new value?",
+      options: ["A duplicate", "A new value"],
+      answer: 0,                                       // index of the correct option
+      success: "Right. numbers[1] equals numbers[0], so slow stays.",
+      hint: "Compare numbers[fast] with numbers[slow].",
+    },
   ],
 }
 ```
 
-Numbers are compared by value; text answers are trimmed and compared case-insensitively. A wrong check shows "N of M correct." followed by your `hint`, so write the hint as the next thing to think about, not the answer.
+Numbers are compared by value; text answers are trimmed and compared case-insensitively. A wrong check shows "N of M correct." (or "Not quite." for `choice`) followed by your `hint`, so write the hint as the next thing to think about, not the answer.
 
 ## 6. Quiz and completion criteria
 
