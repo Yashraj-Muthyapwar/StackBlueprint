@@ -10,11 +10,12 @@ import { SliceViewExplorer } from "@/components/dsa/array-basics/SliceViewExplor
 import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
 import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
 import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
+import { PatternCanvas } from "@/components/dsa/shared/PatternCanvas";
+import { PatternExample } from "@/components/dsa/shared/PatternExample";
+import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
+import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
+import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
 import { OppositeEndsIntuition } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsIntuition";
-import { OppositeEndsSteps } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsSteps";
-import { OppositeEndsVisualizer } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsVisualizer";
-import { OppositeEndsPractice } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsPractice";
-import { OppositeEndsExample } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsExample";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -325,22 +326,30 @@ export function SectionRenderer({
         <figure className="my-6 overflow-hidden rounded-xl border border-violet/25 bg-violet/[0.035] shadow-sm">
           <figcaption className="flex items-center justify-between border-b border-violet/20 bg-violet/[0.07] px-4 py-3">
             <div>
-              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet">Syntax</div>
+              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet">
+                Syntax
+              </div>
               <div className="mt-1 text-sm font-semibold text-foreground">{section.title}</div>
             </div>
-            <span className="rounded-full border border-violet/25 bg-violet/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-violet">Pattern</span>
+            <span className="rounded-full border border-violet/25 bg-violet/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-violet">
+              Pattern
+            </span>
           </figcaption>
           <pre className="overflow-x-auto bg-slate-950 px-4 py-4 font-mono text-sm leading-7 shadow-inner sm:text-[15px]">
             <code>
               {lines.map((line, i) => (
                 <div key={i} className="flex">
-                  <span className="mr-4 inline-block w-5 select-none text-right text-slate-600">{i + 1}</span>
+                  <span className="mr-4 inline-block w-5 select-none text-right text-slate-600">
+                    {i + 1}
+                  </span>
                   <span className="text-slate-100">{highlightPython(line)}</span>
                 </div>
               ))}
             </code>
           </pre>
-          <div className="border-t border-violet/15 bg-surface/70 px-4 py-3 text-sm leading-relaxed text-muted-foreground">{parseInlineMarkdown(section.description)}</div>
+          <div className="border-t border-violet/15 bg-surface/70 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+            {parseInlineMarkdown(section.description)}
+          </div>
         </figure>
       );
     }
@@ -373,17 +382,27 @@ export function SectionRenderer({
     case "opposite-ends-intuition":
       return <OppositeEndsIntuition caption={section.caption} />;
 
-    case "opposite-ends-steps":
-      return <OppositeEndsSteps steps={section.steps} />;
+    case "pattern-canvas": {
+      const set = PROBLEM_SETS[section.problemSet];
+      return set ? (
+        <PatternCanvas
+          problems={set.problems}
+          problemSet={section.problemSet}
+          stageMinHeight={set.stageMinHeight}
+        />
+      ) : null;
+    }
 
-    case "opposite-ends-visualizer":
-      return <OppositeEndsVisualizer />;
+    case "pattern-example": {
+      const set = PROBLEM_SETS[section.problemSet];
+      return set ? <PatternExample problems={set.problems} problemSet={section.problemSet} /> : null;
+    }
 
-    case "opposite-ends-example":
-      return <OppositeEndsExample />;
+    case "pattern-stepper":
+      return <PatternStepper steps={section.steps} />;
 
-    case "opposite-ends-practice":
-      return <OppositeEndsPractice />;
+    case "pattern-exercises":
+      return <PatternExercises exercises={section.exercises} />;
 
     case "table":
       return (

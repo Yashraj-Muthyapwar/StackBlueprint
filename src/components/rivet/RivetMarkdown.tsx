@@ -7,7 +7,7 @@ import { isKnownLessonPath } from "@/lib/rivet/sitemap";
 /**
  * Small, safe markdown renderer for model replies. It builds React nodes
  * (never HTML strings), supports paragraphs, lists, headings, bold, italics,
- * inline code, links and fenced code blocks, and tolerates the half-written
+ * inline code, common complexity notation, links and fenced code blocks, and tolerates the half-written
  * markdown seen while a reply is still streaming.
  *
  * Links are checked, not trusted: only links to StackBlueprint lessons that
@@ -16,6 +16,7 @@ import { isKnownLessonPath } from "@/lib/rivet/sitemap";
  * made up, is shown as plain text.
  */
 const NavigateContext = createContext<() => void>(() => {});
+const INLINE_EXPRESSION_CLASS = "rounded bg-mint/10 px-1 py-0.5 font-mono text-[0.85em] text-mint";
 
 /** Turns a model-written href into a site path, or null when it points somewhere else. */
 function toSitePath(href: string): string | null {
@@ -43,27 +44,68 @@ function RivetLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+/** Small, inert TeX subset for complexity/variables. Unsupported math stays literal. */
+function math(part: string, key: number): ReactNode | null {
+  const delimiters = [
+    ["$$", "$$"],
+    ["$", "$"],
+    ["\\(", "\\)"],
+    ["\\[", "\\]"],
+  ];
+  const pair = delimiters.find(([start, end]) => part.startsWith(start) && part.endsWith(end));
+  if (!pair) return null;
+  const expression = part
+    .slice(pair[0].length, -pair[1].length)
+    .trim()
+    .replace(/\\(?:mathcal|mathrm|operatorname)\{(O|log|ln)\}/g, "$1")
+    .replace(/\\(?:left|right)(?=[()])/g, "")
+    .replace(/\\(?:log|ln)\b/g, (command) => command.slice(1))
+    .replace(/\\(?:cdot|times)\b/g, "·")
+    .replace(/\\[,;! ]/g, " ")
+    .replace(/\s+/g, " ");
+  // Never consume currency or arbitrary prose between dollars. No TeX/HTML evaluation.
+  const words = expression.match(/[a-zA-Z]+/g) ?? [];
+  if (
+    !words.length ||
+    words.some((word) => !/^(?:O|log|ln|[a-zA-Z])$/.test(word)) ||
+    !/^[\w\s()+\-*/^{}.!·]+$/.test(expression) ||
+    /[_^](?!\{[\w+-]+\}|[\w+-])/.test(expression)
+  )
+    return null;
+  const nodes = expression.split(/([_^](?:\{[\w+-]+\}|[\w]))/g).map((chunk, i) => {
+    if (/^[_^]/.test(chunk)) {
+      const value = chunk.slice(1).replace(/^\{|\}$/g, "");
+      return chunk[0] === "^" ? <sup key={i}>{value}</sup> : <sub key={i}>{value}</sub>;
+    }
+    return <Fragment key={i}>{chunk}</Fragment>;
+  });
+  return (
+    <span key={key} className={INLINE_EXPRESSION_CLASS}>
+      {nodes}
+    </span>
+  );
+}
+
 function inline(text: string): ReactNode[] {
   return text
     .split(
-      /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\((?:https?:\/\/|\/(?!\/))[^)\s]+\)|\*[^*\s][^*\n]*\*)/g,
+      /(`[^`\n]+`|\*\*[^*\n]+\*\*|\[[^\]\n]+\]\((?:https?:\/\/|\/(?!\/))[^)\s]+\)|(?<!\\)\$\$[^$\n]{1,160}\$\$|(?<![\\$])\$(?!\$)[^$\n]{1,160}\$(?!\$)|\\\([^\n]{1,160}?\\\)|\\\[[^\n]{1,160}?\\\]|\*[^*\s][^*\n]*\*)/g,
     )
     .map((part, i) => {
       if (part.startsWith("`") && part.endsWith("`") && part.length > 2)
         return (
-          <code
-            key={i}
-            className="rounded bg-mint/10 px-1 py-0.5 font-mono text-[0.85em] text-mint"
-          >
+          <code key={i} className={INLINE_EXPRESSION_CLASS}>
             {part.slice(1, -1)}
           </code>
         );
       if (part.startsWith("**") && part.endsWith("**") && part.length > 4)
-        return <strong key={i}>{part.slice(2, -2)}</strong>;
+        return <strong key={i}>{inline(part.slice(2, -2))}</strong>;
       const link = part.match(/^\[([^\]]+)\]\(((?:https?:\/\/|\/(?!\/))[^)\s]+)\)$/);
       if (link) return <RivetLink key={i} href={link[2]} label={link[1]} />;
       if (part.startsWith("*") && part.endsWith("*") && part.length > 2)
-        return <em key={i}>{part.slice(1, -1)}</em>;
+        return <em key={i}>{inline(part.slice(1, -1))}</em>;
+      const formula = math(part, i);
+      if (formula) return formula;
       return <Fragment key={i}>{part}</Fragment>;
     });
 }

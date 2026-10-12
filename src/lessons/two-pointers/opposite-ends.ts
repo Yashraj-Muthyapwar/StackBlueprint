@@ -239,27 +239,33 @@ const oppositeEndsSections: Section[] = [
     code: "numbers = [10, 20, 30, 40, 50]\nleft = 0\nright = len(numbers) - 1",
   },
   {
-    kind: "opposite-ends-steps",
+    kind: "pattern-stepper",
     steps: [
       {
         title: "Swap the outer elements",
-        array: [10, 20, 30, 40, 50],
-        left: 0,
-        right: 4,
+        cells: [10, 20, 30, 40, 50],
+        pointers: [
+          { index: 0, label: "left", tone: "left" },
+          { index: 4, label: "right", tone: "right" },
+        ],
         note: "Swap `numbers[left]` with `numbers[right]`.",
       },
       {
         title: "Move both pointers inward",
-        array: [50, 20, 30, 40, 10],
-        left: 1,
-        right: 3,
+        cells: [50, 20, 30, 40, 10],
+        pointers: [
+          { index: 1, label: "left", tone: "left" },
+          { index: 3, label: "right", tone: "right" },
+        ],
         note: "Now `left = 1` and `right = 3`.",
       },
       {
         title: "Swap again",
-        array: [50, 40, 30, 20, 10],
-        left: 1,
-        right: 3,
+        cells: [50, 40, 30, 20, 10],
+        pointers: [
+          { index: 1, label: "left", tone: "left" },
+          { index: 3, label: "right", tone: "right" },
+        ],
         note: "The array is reversed.",
       },
     ],
@@ -270,8 +276,8 @@ const oppositeEndsSections: Section[] = [
     heading: "Python implementation",
     body: ["Read this code. Focus on the pointer positions."],
   },
-  { kind: "opposite-ends-visualizer" },
-  { kind: "opposite-ends-example" },
+  { kind: "pattern-canvas", problemSet: "opposite-ends" },
+  { kind: "pattern-example", problemSet: "opposite-ends" },
   {
     kind: "list",
     body: ["There are three important operations:"],
@@ -330,7 +336,32 @@ const oppositeEndsSections: Section[] = [
       "Assume that you are reversing the array by swapping the elements at `left` and `right`.",
     ],
   },
-  { kind: "opposite-ends-practice" },
+  {
+    kind: "pattern-exercises",
+    exercises: [
+      {
+        type: "fields",
+        title: "Identify the pointers",
+        prompt: "Enter the starting index and the value stored at that index.",
+        fields: [
+          { label: "Left index", answer: 0, tone: "left" },
+          { label: "Left value", answer: 3, tone: "left" },
+          { label: "Right index", answer: 4, tone: "right" },
+          { label: "Right value", answer: 21, tone: "right" },
+        ],
+        success: "Both pointers are in the right place.",
+        hint: "Indices start at 0, and the last index is len(numbers) - 1.",
+      },
+      {
+        type: "cells",
+        title: "After the first swap",
+        prompt: "What does the array look like after you swap the two elements?",
+        answers: [21, 8, 12, 17, 3],
+        success: "Correct. Only the two outer values changed places.",
+        hint: "Only the values at left and right move.",
+      },
+    ],
+  },
   {
     kind: "takeaways",
     items: [

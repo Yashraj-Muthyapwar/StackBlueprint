@@ -1,91 +1,30 @@
-/** Step-by-step traces for the opposite-ends visualizer: one builder per problem. */
+/** Opposite-ends problem set: reverse an array, two sum on a sorted array, trapping rain water. */
 
-export type Tone = "left" | "right" | "value" | "result" | "plain";
-export type Token = { text: string; tone?: Tone };
-export type FlowTone = "amber" | "violet" | "mint" | "rose";
+import { L, OUT, P, R, V, type PatternProblem } from "@/components/dsa/shared/pattern-canvas-types";
 
-export type TraceItem = { id: number; value: number };
-
-export type TraceStep = {
-  /** Short status shown above the array. */
-  phase: string;
-  items: TraceItem[];
-  left: number | null;
-  right: number | null;
-  /** Python lines (1-based) highlighted in the code view. */
-  codeLines: number[];
-  /** The active Python line rewritten with the current values. */
-  codeNote: Token[];
-  /** Pseudocode line (1-based) highlighted in the algorithm view. */
-  algoLine: number;
-  algoNote: Token[];
-  narration: string;
-  /** Indices whose values just traded places. */
-  swapped?: [number, number];
-  /** Indices currently being read. */
-  focus?: number[];
-  /** Indices finished with, styled by the problem's `settledStyle`. */
-  settled?: number[];
-  /** Highlights left and right as the answer. */
-  found?: boolean;
-  /** Arc drawn between left and right under the array. */
-  arc?: { tone: FlowTone; label: string; dashed?: boolean };
-  /** Bracket drawn under a range of indices when no arc is shown. */
-  bracket?: { from: number; to: number; label: string; tone: FlowTone | "muted" };
-  /** Trapped water per index (bars view only). */
-  water?: number[];
-  /** Variables shown beside the narration. */
-  stats: { label: string; value: string | number; tone?: Tone }[];
-};
-
-export type ProblemId = "reverse" | "two-sum" | "rain-water";
-
-export type Problem = {
-  id: ProblemId;
-  label: string;
-  file: string;
-  view: "cells" | "bars";
-  settledStyle: "placed" | "eliminated" | "none";
-  presets: { label: string; values: number[]; target?: number }[];
-  hasTarget: boolean;
-  maxValues: number;
-  python: string[];
-  algorithm: string[];
-  complexity: { time: string; space: string };
-  /** Runnable example appended to the Python listing in the lesson's example block. */
-  example: { call: string; output: string };
-  validate: (values: number[]) => string | null;
-  build: (values: number[], target: number) => TraceStep[];
-};
-
-const L = (text: string): Token => ({ text, tone: "left" });
-const R = (text: string): Token => ({ text, tone: "right" });
-const V = (text: string): Token => ({ text, tone: "value" });
-const OUT = (text: string): Token => ({ text, tone: "result" });
-const P = (text: string): Token => ({ text });
-
-const toItems = (values: number[]) => values.map((value, id) => ({ id, value }));
-const listText = (items: TraceItem[]) => `[${items.map((item) => item.value).join(", ")}]`;
-const range = (from: number, to: number) =>
-  Array.from({ length: Math.max(0, to - from + 1) }, (_, i) => from + i);
-const pointerStats = (left: number | null, right: number | null) => [
-  { label: "L", value: left ?? "·", tone: "left" as const },
-  { label: "R", value: right ?? "·", tone: "right" as const },
-];
+import { ArrayStage } from "./ArrayStage";
+import {
+  listText,
+  parseNumberList,
+  pointerStats,
+  range,
+  toItems,
+  type ArrayStep,
+} from "./array-step";
 
 /* ------------------------------ Reverse array ------------------------------ */
 
-function buildReverse(values: number[]): TraceStep[] {
+function buildReverse(values: number[]): ArrayStep[] {
   let items = toItems(values);
   const n = items.length;
-  const steps: TraceStep[] = [];
+  const steps: ArrayStep[] = [];
   let swaps = 0;
   let left = 0;
   let right = n - 1;
 
   const settledOutside = () => range(0, n - 1).filter((i) => i < left || i > right);
   const stats = () => [...pointerStats(left, right), { label: "swaps", value: swaps }];
-  const remaining = (): TraceStep["bracket"] =>
+  const remaining = (): ArrayStep["bracket"] =>
     left <= right
       ? {
           from: left,
@@ -271,10 +210,10 @@ function buildReverse(values: number[]): TraceStep[] {
 
 /* ---------------------------- Two Sum (sorted) ----------------------------- */
 
-function buildTwoSum(values: number[], target: number): TraceStep[] {
+function buildTwoSum(values: number[], target: number): ArrayStep[] {
   const items = toItems(values);
   const n = items.length;
-  const steps: TraceStep[] = [];
+  const steps: ArrayStep[] = [];
   let left = 0;
   let right = n - 1;
   const outside = () => range(0, n - 1).filter((i) => i < left || i > right);
@@ -283,7 +222,7 @@ function buildTwoSum(values: number[], target: number): TraceStep[] {
     { label: "target", value: target, tone: "value" as const },
     { label: "sum", value: total ?? "·", tone: "result" as const },
   ];
-  const window = (): TraceStep["bracket"] =>
+  const window = (): ArrayStep["bracket"] =>
     left <= right ? { from: left, to: right, label: "candidates", tone: "muted" } : undefined;
 
   steps.push({
@@ -447,10 +386,10 @@ function buildTwoSum(values: number[], target: number): TraceStep[] {
 
 /* --------------------------- Trapping rain water --------------------------- */
 
-function buildRainWater(values: number[]): TraceStep[] {
+function buildRainWater(values: number[]): ArrayStep[] {
   const items = toItems(values);
   const n = items.length;
-  const steps: TraceStep[] = [];
+  const steps: ArrayStep[] = [];
   const water = values.map(() => 0);
   let total = 0;
   let left = 0;
@@ -463,7 +402,7 @@ function buildRainWater(values: number[]): TraceStep[] {
     { label: "right_max", value: rightMax, tone: "right" as const },
     { label: "water", value: total, tone: "result" as const },
   ];
-  const open = (): TraceStep["bracket"] =>
+  const open = (): ArrayStep["bracket"] =>
     left < right ? { from: left, to: right, label: "not settled yet", tone: "muted" } : undefined;
   const snapshot = () => water.slice();
 
@@ -672,22 +611,46 @@ function buildRainWater(values: number[]): TraceStep[] {
 
 /* -------------------------------- Registry -------------------------------- */
 
-const isWhole = (values: number[]) => values.every((value) => Number.isInteger(value));
+type ArrayInput = { values: number[]; target: number };
+type ArrayProblem = PatternProblem<ArrayStep, ArrayInput>;
 
-export const PROBLEMS: Problem[] = [
+const isWhole = (values: number[]) => values.every((value) => Number.isInteger(value));
+const identifiers = { left: "left", left_max: "left", right: "right", right_max: "right" } as const;
+const valuesField = (placeholder: string) => ({
+  key: "values",
+  placeholder,
+  size: "wide" as const,
+});
+
+/** Formats and parses the toolbar fields shared by the three problems. */
+const arrayInput = (
+  max: number,
+  check: (values: number[]) => string | null,
+  withTarget = false,
+) => ({
+  formatInput: (input: ArrayInput) => ({
+    values: input.values.join(", "),
+    ...(withTarget ? { target: String(input.target) } : {}),
+  }),
+  parseInput: (fields: Record<string, string>): ArrayInput | string => {
+    const values = parseNumberList(fields.values ?? "", max);
+    if (typeof values === "string") return values;
+    const error = check(values);
+    if (error) return error;
+    if (!withTarget) return { values, target: 0 };
+    const target = Number(fields.target);
+    if (!fields.target?.trim() || !Number.isInteger(target))
+      return "The target must be a whole number.";
+    return { values, target };
+  },
+});
+
+export const OPPOSITE_ENDS_PROBLEMS: ArrayProblem[] = [
   {
     id: "reverse",
     label: "Reverse Array",
     file: "reverse_array.py",
-    view: "cells",
-    settledStyle: "placed",
-    hasTarget: false,
-    maxValues: 8,
-    presets: [
-      { label: "Odd length", values: [10, 20, 30, 40, 50] },
-      { label: "Even length", values: [1, 2, 3, 4, 5, 6] },
-      { label: "Single value", values: [7] },
-    ],
+    identifiers,
     python: [
       "def reverse_array(numbers):",
       "    left = 0",
@@ -719,23 +682,23 @@ export const PROBLEMS: Problem[] = [
       call: "numbers = [10, 20, 30, 40, 50]\nprint(reverse_array(numbers))",
       output: "[50, 40, 30, 20, 10]",
     },
-    validate: (values) =>
+    presets: [
+      { label: "Odd length", input: { values: [10, 20, 30, 40, 50], target: 0 } },
+      { label: "Even length", input: { values: [1, 2, 3, 4, 5, 6], target: 0 } },
+      { label: "Single value", input: { values: [7], target: 0 } },
+    ],
+    inputFields: [valuesField("e.g. 4, 9, 1, 7")],
+    ...arrayInput(8, (values) =>
       values.length < 1 || !isWhole(values) ? "Enter at least one whole number." : null,
-    build: (values) => buildReverse(values),
+    ),
+    build: ({ values }) => buildReverse(values),
+    Stage: (props) => <ArrayStage {...props} view="cells" settledStyle="placed" />,
   },
   {
     id: "two-sum",
     label: "Two Sum (Sorted)",
     file: "two_sum.py",
-    view: "cells",
-    settledStyle: "eliminated",
-    hasTarget: true,
-    maxValues: 8,
-    presets: [
-      { label: "Pair inside", values: [1, 3, 4, 5, 7, 10, 11], target: 9 },
-      { label: "Pair at start", values: [2, 7, 11, 15], target: 9 },
-      { label: "No pair", values: [1, 2, 4, 8], target: 20 },
-    ],
+    identifiers,
     python: [
       "def two_sum(arr, target):",
       "    left, right = 0, len(arr) - 1",
@@ -763,27 +726,33 @@ export const PROBLEMS: Problem[] = [
       call: "numbers = [1, 3, 4, 5, 7, 10, 11]\nprint(two_sum(numbers, 9))",
       output: "(2, 3)",
     },
-    validate: (values) => {
-      if (values.length < 2 || !isWhole(values)) return "Enter at least two whole numbers.";
-      if (values.some((value, i) => i > 0 && value < values[i - 1]))
-        return "Two Sum with opposite-end pointers needs the values sorted from smallest to largest.";
-      return null;
-    },
-    build: buildTwoSum,
+    presets: [
+      { label: "Pair inside", input: { values: [1, 3, 4, 5, 7, 10, 11], target: 9 } },
+      { label: "Pair at start", input: { values: [2, 7, 11, 15], target: 9 } },
+      { label: "No pair", input: { values: [1, 2, 4, 8], target: 20 } },
+    ],
+    inputFields: [
+      valuesField("e.g. 1, 3, 4, 7"),
+      { key: "target", label: "target", size: "narrow" },
+    ],
+    ...arrayInput(
+      8,
+      (values) => {
+        if (values.length < 2 || !isWhole(values)) return "Enter at least two whole numbers.";
+        if (values.some((value, i) => i > 0 && value < values[i - 1]))
+          return "Two Sum with opposite-end pointers needs the values sorted from smallest to largest.";
+        return null;
+      },
+      true,
+    ),
+    build: ({ values, target }) => buildTwoSum(values, target),
+    Stage: (props) => <ArrayStage {...props} view="cells" settledStyle="eliminated" />,
   },
   {
     id: "rain-water",
     label: "Trapping Rain Water",
     file: "trap.py",
-    view: "bars",
-    settledStyle: "none",
-    hasTarget: false,
-    maxValues: 12,
-    presets: [
-      { label: "Basin", values: [4, 2, 0, 3, 2, 5] },
-      { label: "Classic", values: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1] },
-      { label: "No water", values: [1, 2, 3, 4] },
-    ],
+    identifiers,
     python: [
       "def trap(heights):",
       "    if not heights:",
@@ -820,11 +789,18 @@ export const PROBLEMS: Problem[] = [
       call: "heights = [4, 2, 0, 3, 2, 5]\nprint(trap(heights))",
       output: "9",
     },
-    validate: (values) =>
-      values.length < 2 ||
-      values.some((value) => !Number.isInteger(value) || value < 0 || value > 9)
+    presets: [
+      { label: "Basin", input: { values: [4, 2, 0, 3, 2, 5], target: 0 } },
+      { label: "Classic", input: { values: [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1], target: 0 } },
+      { label: "No water", input: { values: [1, 2, 3, 4], target: 0 } },
+    ],
+    inputFields: [valuesField("heights, e.g. 3, 0, 2")],
+    ...arrayInput(12, (values) =>
+      values.length < 2 || values.some((value) => value < 0 || value > 9)
         ? "Use at least two bar heights, each a whole number from 0 to 9."
         : null,
-    build: (values) => buildRainWater(values),
+    ),
+    build: ({ values }) => buildRainWater(values),
+    Stage: (props) => <ArrayStage {...props} view="bars" settledStyle="none" />,
   },
 ];

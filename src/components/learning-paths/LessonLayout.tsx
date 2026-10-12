@@ -66,11 +66,12 @@ export function LessonLayout({
     let subIndex = 0;
 
     // 1. Top-level explicitly defined heading
-    if (s.heading) {
+    // A section marker such as "1 · Why" names the section in the table of contents.
+    if (s.eyebrow || s.heading) {
       tocItems.push({
         id: `section-${i}-h`,
         targetId: `section-${i}`,
-        title: s.heading,
+        title: s.eyebrow ?? s.heading,
         index: tocItems.length,
       });
     }
