@@ -238,6 +238,40 @@ function NormalQuiz({
   const [codingResults, setCodingResults] = useState<boolean[]>([]);
   const reviewRef = React.useRef<QuizReviewItem[]>([]);
   const evaluationRef = React.useRef<AbortController | null>(null);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  const feedbackRef = React.useRef<HTMLDivElement>(null);
+  const nextButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  // After an answer: focus "Next Question" (it is sticky, so it is already on screen) so Enter
+  // continues, and once the feedback has expanded, bring the explanation into view if needed.
+  useEffect(() => {
+    if (isAnswered) nextButtonRef.current?.focus({ preventScroll: true });
+  }, [isAnswered]);
+
+  const revealFeedback = () => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    feedbackRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "nearest" });
+  };
+
+  // On Start Quiz (and Retake), the card expands from the start panel, so bring its top to
+  // the top of the screen instead of leaving the first question low on the page.
+  useEffect(() => {
+    if (quizAttempt === 0) return;
+    const card = cardRef.current;
+    if (!card) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }, [quizAttempt]);
+
+  // On the next question, scroll back up only if the top of the card has left the screen.
+  useEffect(() => {
+    if (!isStarted || currentIndex === 0) return;
+    const card = cardRef.current;
+    if (!card || card.getBoundingClientRect().top >= 72) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    card.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }, [currentIndex, isStarted]);
+
   useEffect(
     () => () => {
       evaluationRef.current?.abort();
@@ -448,11 +482,13 @@ function NormalQuiz({
 
   return (
     <div
-      className={
+      ref={cardRef}
+      className={cn(
+        "scroll-mt-24",
         data.isFinalQuiz
-          ? "mt-12 relative overflow-hidden rounded-3xl border border-white/5 bg-gradient-to-br from-surface to-surface-2 p-8 shadow-2xl md:p-12"
-          : "mt-8 rounded-xl border border-hairline bg-surface p-6 shadow-sm overflow-hidden"
-      }
+          ? "mt-12 relative overflow-clip rounded-3xl border border-white/5 bg-gradient-to-br from-surface to-surface-2 p-8 shadow-2xl md:p-12"
+          : "mt-8 rounded-xl border border-hairline bg-surface p-6 shadow-sm overflow-clip",
+      )}
     >
       {data.isFinalQuiz && (
         <div className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-mint/5 blur-[100px]" />
@@ -679,6 +715,11 @@ function NormalQuiz({
             initial={{ opacity: 0, height: 0, marginTop: 0 }}
             animate={{ opacity: 1, height: "auto", marginTop: 24 }}
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            ref={feedbackRef}
+            onAnimationComplete={(definition) => {
+              // Fires for both enter and exit; only the enter animation expands to "auto".
+              if ((definition as { height?: unknown }).height === "auto") revealFeedback();
+            }}
             className="overflow-hidden"
           >
             <div
@@ -756,19 +797,23 @@ function NormalQuiz({
                     </p>
                   )}
             </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={handleNext}
-                className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background transition-transform hover:scale-105 active:scale-95"
-              >
-                {currentIndex < data.questions.length - 1 ? "Next Question" : "See Results"}
-                <ArrowRight className="size-4" />
-              </button>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Sticky, so it is reachable without scrolling even when the feedback runs below the screen. */}
+      {isAnswered && (
+        <div className="sticky bottom-4 z-10 mt-6 flex justify-end">
+          <button
+            ref={nextButtonRef}
+            onClick={handleNext}
+            className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2 text-sm font-medium text-background shadow-lg transition-transform hover:scale-105 active:scale-95"
+          >
+            {currentIndex < data.questions.length - 1 ? "Next Question" : "See Results"}
+            <ArrowRight className="size-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
