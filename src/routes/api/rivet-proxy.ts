@@ -89,9 +89,9 @@ const json = (status: number, message: string, extra: Record<string, string> = {
 /** Browsers label same-site fetches with Sec-Fetch-Site and send Origin on POSTs. */
 function isSameSiteRequest(request: Request): boolean {
   const site = request.headers.get("sec-fetch-site");
-  if (site) return site === "same-origin";
+  if (site && site !== "same-origin") return false;
   const origin = request.headers.get("origin");
-  if (!origin) return false;
+  if (!origin) return site === "same-origin";
   try {
     return new URL(origin).origin === new URL(request.url).origin;
   } catch {
@@ -192,45 +192,78 @@ function guardedBody(
   abort: () => void,
   release: () => void,
   deadline: number,
+  signal: AbortSignal,
 ): ReadableStream<Uint8Array> {
   const reader = upstream.getReader();
   let idle: ReturnType<typeof setTimeout> | undefined;
-  const stop = () => {
+  let total: ReturnType<typeof setTimeout> | undefined;
+  let ended = false;
+  let output!: ReadableStreamDefaultController<Uint8Array>;
+  let bytes = 0;
+  const cleanup = () => {
     clearTimeout(idle);
+    clearTimeout(total);
+    signal.removeEventListener("abort", cancelled);
     release();
   };
+  const terminate = (reason: string) => {
+    if (ended) return;
+    ended = true;
+    cleanup();
+    output.error(new Error(reason));
+    abort();
+    reader.cancel().catch(() => {});
+  };
+  const cancelled = () => terminate("The request was cancelled.");
   return new ReadableStream<Uint8Array>({
+    start(controller) {
+      output = controller;
+      signal.addEventListener("abort", cancelled, { once: true });
+      // This timer survives downstream backpressure and does not depend on pull().
+      total = setTimeout(
+        () => terminate("Response deadline exceeded."),
+        Math.max(0, deadline - Date.now()),
+      );
+      if (signal.aborted) cancelled();
+    },
     async pull(controller) {
+      if (ended) return;
       clearTimeout(idle);
-      const remaining = deadline - Date.now();
-      if (remaining <= 0) {
-        abort();
-        stop();
-        controller.error(new Error("deadline"));
-        return;
-      }
-      idle = setTimeout(abort, Math.min(IDLE_TIMEOUT_MS, remaining));
+      idle = setTimeout(() => terminate("Provider response stalled."), IDLE_TIMEOUT_MS);
       try {
         const { done, value } = await reader.read();
         clearTimeout(idle);
+        if (ended) return;
         if (done) {
-          stop();
+          ended = true;
+          cleanup();
           controller.close();
-        } else controller.enqueue(value);
-      } catch (e) {
-        stop();
-        controller.error(e);
+        } else {
+          bytes += value.byteLength;
+          if (bytes > 4 * 1024 * 1024) terminate("Provider response is too large.");
+          else controller.enqueue(value);
+        }
+      } catch {
+        terminate("Provider response ended unexpectedly.");
       }
     },
     cancel() {
+      if (ended) return;
+      ended = true;
+      cleanup();
       abort();
-      stop();
       reader.cancel().catch(() => {});
     },
   });
 }
 
 async function relay(request: Request): Promise<Response> {
+  if (env("RIVET_RELAY_DISABLED") === "1")
+    return json(503, "Rivet's relay is temporarily unavailable.");
+  // Production must have a shared edge rule; in-process counters cannot enforce it.
+  // Set this only after configuring and verifying the rule in the hosting console.
+  if (import.meta.env.PROD && env("RIVET_EDGE_RATE_LIMITED") !== "1")
+    return json(503, "Rivet's NVIDIA relay has not been enabled for this deployment.");
   // Origin evidence blocks other websites and casual scripts. It is not authentication:
   // a non-browser client can set any header, which is why the limits below exist.
   if (!isSameSiteRequest(request)) return json(403, "Not allowed.");
@@ -249,13 +282,22 @@ async function relay(request: Request): Promise<Response> {
       "x-rivet-relay": "rate-limited",
       "retry-after": "60",
     });
-  const release = acquire(id);
-  if (!release) return json(429, "Too many requests at once.", { "x-rivet-relay": "rate-limited" });
+  const slot = acquire(id);
+  if (!slot)
+    return json(429, "Too many requests at once.", {
+      "x-rivet-relay": "rate-limited",
+      "retry-after": "60",
+    });
 
   // The deadline covers the whole request, starting before the upload is read.
   const controller = new AbortController();
   const abort = () => controller.abort();
+  const release = () => {
+    request.signal.removeEventListener("abort", abort);
+    slot();
+  };
   request.signal?.addEventListener("abort", abort);
+  if (request.signal.aborted) abort();
   const deadline = Date.now() + TOTAL_TIMEOUT_MS;
 
   let body: string | undefined;
@@ -319,9 +361,13 @@ async function relay(request: Request): Promise<Response> {
       headers: { "cache-control": "no-store" },
     });
   }
-  return new Response(guardedBody(upstream.body, abort, release, deadline), {
+  return new Response(guardedBody(upstream.body, abort, release, deadline, controller.signal), {
     status: upstream.status,
-    headers: { "content-type": contentType, "cache-control": "no-store" },
+    headers: {
+      "content-type": contentType,
+      "cache-control": "no-store",
+      "x-accel-buffering": "no",
+    },
   });
 }
 

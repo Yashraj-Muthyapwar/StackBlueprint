@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactElement } from "react";
 import { motion } from "motion/react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 
@@ -19,7 +19,7 @@ const labels: Record<Phase, string> = {
   pass: "pass does nothing and the loop continues",
 };
 
-const code: Record<Phase, JSX.Element> = {
+const code: Record<Phase, ReactElement> = {
   break: <><div><span className="text-mint">for</span> number <span className="text-mint">in</span> [4, 7, 12, 18]:</div><div className="pl-5"><span className="text-mint">if</span> number == <span className="text-amber">12</span>:</div><div className="pl-10 text-rose-300">break</div><div className="pl-5 text-blue-300">print(number)</div></>,
   continue: <><div><span className="text-mint">for</span> score <span className="text-mint">in</span> [82, None, 91]:</div><div className="pl-5"><span className="text-mint">if</span> score <span className="text-mint">is</span> None:</div><div className="pl-10 text-amber">continue</div><div className="pl-5 text-blue-300">print(score)</div></>,
   pass: <><div><span className="text-mint">for</span> _ <span className="text-mint">in</span> range(<span className="text-amber">2</span>):</div><div className="pl-5 text-violet-300">pass</div><div className="mt-3 text-blue-300">print(<span className="text-green-300">"Finished"</span>)</div></>,

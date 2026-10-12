@@ -34,12 +34,18 @@ import {
   appendMessage,
   clearThread,
   removeMessage,
+  threadVersion,
   updateMessage,
   useRivetThread,
+  useHistoryStorageError,
+  type ChatMessage,
 } from "@/lib/rivet/history";
 import { streamReply } from "@/lib/rivet/chat";
 import { RivetError, isAbort, type RivetErrorKind } from "@/lib/rivet/providers/errors";
-import { resolveActive, useRivetSettings } from "@/lib/rivet/settings";
+import { markModelWorking, resolveActive, useRivetSettings } from "@/lib/rivet/settings";
+
+/** How often streamed text is pushed to the UI and history (instead of on every token). */
+const RENDER_INTERVAL_MS = 60;
 
 export interface RivetContext {
   /** Stable id of the lesson (its path), used to keep one conversation per lesson. */
@@ -47,7 +53,9 @@ export interface RivetContext {
   trackTitle: string;
   topicTitle: string;
   lessonTitle: string;
-  /** Plain text of the lesson, sent to the model as grounding. */
+  /** Raw lesson sections; Rivet picks the parts relevant to each question. */
+  lessonSections?: unknown[];
+  /** Plain text of the lesson, for pages without sections. */
   lessonText?: string;
   /** Present once the learner has submitted this lesson's quiz. */
   quiz?: QuizResults | null;
@@ -136,8 +144,10 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
   const [draft, setDraft] = useState("");
   const [state, setState] = useState<RivetState>("idle");
   const abortRef = useRef<AbortController | null>(null);
+  const requestThread = useRef<{ key: string; version: number } | null>(null);
   const [error, setError] = useState<{ kind: RivetErrorKind; message: string } | null>(null);
   const settings = useRivetSettings();
+  const historyStorageError = useHistoryStorageError();
   const active = resolveActive(settings);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -150,13 +160,26 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
 
   useEffect(() => {
     inputRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    const onKey = (e: KeyboardEvent) => {
+      // Escape inside an open dropdown (the model picker) closes only the dropdown.
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      if (document.querySelector("[data-radix-popper-content-wrapper]")) return;
+      onClose();
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
   // Stop any in-flight reply when the panel unmounts (not on every parent re-render).
   useEffect(() => () => abortRef.current?.abort(), []);
+  useEffect(() => {
+    const request = requestThread.current;
+    if (
+      request &&
+      (request.key !== context.lessonKey || threadVersion(request.key) !== request.version)
+    )
+      abortRef.current?.abort();
+  }, [messages, context.lessonKey]);
 
   const opened = useRef(false);
   useEffect(() => {
@@ -178,31 +201,68 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
   /** Streams a reply to the latest message in this lesson's thread. */
   const run = async () => {
     const key = context.lessonKey;
+    const version = threadVersion(key);
+    const used = active;
     const controller = new AbortController();
     abortRef.current = controller;
+    requestThread.current = { key, version };
     setError(null);
     setAnnounce("Rivet is thinking");
     setState("thinking");
     let replyId: number | null = null;
     let text = "";
+    let finish: string | null = null;
+    let flushTimer: number | undefined;
+    // The thread was cleared mid-reply: drop the rest instead of recreating it.
+    const stale = () => threadVersion(key) !== version;
+    const flush = (status?: ChatMessage["status"]) => {
+      window.clearTimeout(flushTimer);
+      flushTimer = undefined;
+      if (replyId !== null && !stale()) updateMessage(key, replyId, text, status);
+    };
     try {
-      for await (const token of streamReply(key, context, controller.signal)) {
+      for await (const part of streamReply(key, context, controller.signal)) {
+        if (stale()) break;
+        if ("finish" in part) {
+          finish = part.finish;
+          continue;
+        }
         if (replyId === null) {
           replyId = appendMessage(key, "rivet", "");
           setState("speaking");
+          setAnnounce("Rivet is replying");
         }
-        text += token;
-        updateMessage(key, replyId, text);
+        text += part.text;
+        flushTimer ??= window.setTimeout(() => flush(), RENDER_INTERVAL_MS);
       }
+      if (stale()) return;
       if (!text.trim())
         throw new RivetError(
           "empty",
-          "Rivet got an empty answer from the model. Try again, or pick another model.",
+          finish === "filtered"
+            ? "The provider withheld this answer. Try rephrasing your question."
+            : "Rivet got an empty answer from the model. Try again, or pick another model.",
         );
+      flush(finish === "length" ? "truncated" : undefined);
+      if (used) markModelWorking(used.provider.id, used.config.model, used.keyRevision);
+      setAnnounce(
+        finish === "length"
+          ? "Rivet finished replying. The reply was cut short at the length limit."
+          : finish === "filtered"
+            ? "Rivet finished replying. The provider withheld part of the answer."
+            : "Rivet finished replying.",
+      );
     } catch (e) {
-      setAnnounce("");
-      if (replyId !== null && !text.trim()) removeMessage(key, replyId);
-      if (!isAbort(e)) {
+      window.clearTimeout(flushTimer);
+      if (!stale() && replyId !== null) {
+        // Keep a partial reply, clearly marked, and leave it out of what is resent to the model.
+        if (text.trim()) updateMessage(key, replyId, text, "interrupted");
+        else removeMessage(key, replyId);
+      }
+      if (isAbort(e)) {
+        setAnnounce("Reply stopped.");
+      } else {
+        setAnnounce("");
         setError(
           e instanceof RivetError
             ? { kind: e.kind, message: e.message }
@@ -213,7 +273,10 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
         );
       }
     } finally {
-      if (abortRef.current === controller) abortRef.current = null;
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+        requestThread.current = null;
+      }
       setState("idle");
     }
   };
@@ -278,7 +341,7 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
               onClick={() => {
                 stop();
                 setError(null);
-                clearThread(context.lessonKey);
+                void clearThread(context.lessonKey);
               }}
               aria-label="Clear conversation"
             >
@@ -305,6 +368,12 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
           </Button>
         </div>
       </header>
+
+      {historyStorageError && view === "chat" && (
+        <p role="alert" className="border-b px-4 py-2 text-xs text-destructive">
+          {historyStorageError}
+        </p>
+      )}
 
       {view === "settings" ? (
         <RivetSettings onDone={() => setView("chat")} />
@@ -383,14 +452,14 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
                     <p className="mt-1.5 flex items-center gap-1.5 border-t pt-1.5 text-[10px] text-muted-foreground">
                       <ClipboardCheck className="h-3 w-3 text-primary" />
                       {quiz
-                        ? "Rivet can see this lesson and your quiz results"
-                        : "Rivet can see this lesson"}
+                        ? "Rivet sees this lesson's text and code, and your quiz results"
+                        : "Rivet sees this lesson's text and code"}
                     </p>
                   </div>
                 ) : (
                   <div
                     className="mt-3 flex max-w-full items-center gap-1.5 rounded-full border bg-card/80 py-1 pl-2.5 pr-3 text-xs shadow-sm"
-                    title="Rivet reads this lesson so its answers fit what you are learning"
+                    title="Rivet reads this lesson's text and examples, not your code editor"
                   >
                     <BookOpen className="h-3.5 w-3.5 shrink-0 text-primary" />
                     <span className="shrink-0 text-muted-foreground">Reading with you:</span>
@@ -458,13 +527,22 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
                           {m.role === "user" ? "You said: " : "Rivet said: "}
                         </span>
                         {m.role === "rivet" ? (
-                          <RivetMarkdown
-                            text={m.text}
-                            onNavigate={() => {
-                              // On phones the panel covers the page, so close it to show the lesson.
-                              if (window.matchMedia("(max-width: 639px)").matches) onClose();
-                            }}
-                          />
+                          <>
+                            <RivetMarkdown
+                              text={m.text}
+                              onNavigate={() => {
+                                // On phones the panel covers the page, so close it to show the lesson.
+                                if (window.matchMedia("(max-width: 639px)").matches) onClose();
+                              }}
+                            />
+                            {m.status && (
+                              <p className="mt-1.5 border-t pt-1 text-[11px] text-muted-foreground">
+                                {m.status === "truncated"
+                                  ? "Cut short at the length limit. Ask Rivet to continue."
+                                  : "Interrupted before it finished. Not used as context for later answers."}
+                              </p>
+                            )}
+                          </>
                         ) : (
                           m.text
                         )}
@@ -537,9 +615,9 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
               >
                 <Plug className="h-4 w-4 shrink-0 text-amber" />
                 <span>
-                  <span className="font-medium">Connect a free model to start chatting.</span>{" "}
+                  <span className="font-medium">Connect a model to start chatting.</span>{" "}
                   <span className="text-muted-foreground">
-                    Gemini, Groq, NVIDIA or OpenRouter, about a minute.
+                    Bring a key from Gemini, Groq, NVIDIA or OpenRouter. See what is shared first.
                   </span>
                 </span>
               </button>

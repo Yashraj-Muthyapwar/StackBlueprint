@@ -19,7 +19,7 @@ function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="mt-4 font-mono text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-            Last updated: October 9, 2026
+            Last updated: October 11, 2026
           </p>
         </div>
 
@@ -120,7 +120,12 @@ function PrivacyPage() {
               are saved per lesson (the latest 40 messages, for up to 30 lessons) unless you turn
               off "Remember conversations on this device". Conversations unused for 30 days are
               deleted the next time you use Rivet. "Clear all Rivet data" in the Rivet settings
-              removes all of it. StackBlueprint cannot see or recover this data.
+              removes saved keys and conversations and turns history saving off. Small local
+              preference and deletion records remain to prevent another open tab from restoring
+              cleared conversations. They contain no messages or API keys. Browsers without safe
+              cross-tab locking keep new conversations in memory. If the browser blocks removal,
+              Rivet shows a warning and asks you to clear this site's data in your browser settings.
+              StackBlueprint cannot see or recover this data.
             </p>
           </section>
 

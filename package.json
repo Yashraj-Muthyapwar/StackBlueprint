@@ -14,7 +14,11 @@
     "rivet:lessons": "node scripts/rivet/build-lesson-index.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "test:rivet": "node --test scripts/rivet/rivet.test.mjs",
+    "lint:rivet": "eslint src/lib/rivet src/components/rivet src/routes/api/rivet-proxy.ts src/server.ts",
+    "test:production": "node scripts/rivet/check-production.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.11.0",
@@ -104,6 +108,7 @@
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "esbuild": "0.28.1"
   }
 }

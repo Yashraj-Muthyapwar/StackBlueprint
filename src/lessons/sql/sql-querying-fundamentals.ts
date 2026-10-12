@@ -1,4 +1,4 @@
-import type { LessonContent } from "../types";
+import type { LessonContent } from "./foundations-content";
 import { type QuizQuestion } from "@/components/lesson/Quiz";
 import commentsAndOperatorsImg from "@/images/sql/querying-fundamentals/comments-and-operators.png";
 import distinctOrderLimitImg from "@/images/sql/querying-fundamentals/distinct-order-limit.png";

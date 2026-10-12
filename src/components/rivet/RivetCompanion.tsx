@@ -41,17 +41,22 @@ export function RivetCompanion({
   const wasOpen = useRef(false);
   const [quiz, setQuiz] = useState<QuizResults | null>(null);
   const context: RivetContext = { ...baseContext, quiz };
-  const hidden = quizActive || (quizPending && !quiz);
+  const [quizRunning, setQuizRunning] = useState(false);
+  const hidden = quizActive || quizRunning || (quizPending && !quiz);
 
   // Quiz lifecycle: forget old results when a quiz (re)starts, remember them once it is submitted.
   useEffect(() => {
     setQuiz(null);
+    // Pages without a quiz-aware layout rely on these events alone to know when to hide.
+    setQuizRunning(false);
     const onStart = () => {
+      setQuizRunning(true);
       setQuiz(null);
       addDivider(baseContext.lessonKey, "New quiz attempt");
     };
     const onResults = (e: Event) => {
       const results = (e as CustomEvent<QuizResults>).detail;
+      setQuizRunning(false);
       setQuiz(results);
       setTyped(true);
       setNudge(true);
@@ -66,9 +71,15 @@ export function RivetCompanion({
 
   // Hand keyboard focus back to the launcher when the panel closes.
   useEffect(() => {
-    if (wasOpen.current && !open) launcherRef.current?.focus();
+    const frame =
+      wasOpen.current && !open && !hidden
+        ? window.requestAnimationFrame(() => launcherRef.current?.focus())
+        : undefined;
     wasOpen.current = open;
-  }, [open]);
+    return () => {
+      if (frame !== undefined) window.cancelAnimationFrame(frame);
+    };
+  }, [open, hidden]);
 
   // Close the panel if a quiz begins while it is open.
   useEffect(() => {
@@ -97,6 +108,8 @@ export function RivetCompanion({
 
   const showNudge = nudge && !open && !hidden;
   const shortTitle = context.lessonTitle.replace(/[?!.:\s]+$/, "");
+
+  if (import.meta.env.VITE_RIVET_ENABLED === "false") return null;
 
   return (
     <MotionConfig reducedMotion="user">
@@ -187,6 +200,7 @@ export function RivetCompanion({
           </AnimatePresence>
 
           <motion.button
+            ref={launcherRef}
             onClick={() => {
               dismiss();
               setOpen(true);
