@@ -15,6 +15,7 @@ import { PatternExample } from "@/components/dsa/shared/PatternExample";
 import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
 import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
 import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
+import { DutchFlagIntuition } from "@/components/dsa/two-pointers/dutch-flag/DutchFlagIntuition";
 import { FastSlowIntuition } from "@/components/dsa/two-pointers/fast-slow/FastSlowIntuition";
 import { OppositeEndsIntuition } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsIntuition";
 import { useLocation, Link } from "@tanstack/react-router";
@@ -379,6 +380,9 @@ export function SectionRenderer({
 
     case "string-character-explorer":
       return <StringCharacterExplorer />;
+
+    case "dutch-flag-intuition":
+      return <DutchFlagIntuition groups={section.groups} />;
 
     case "fast-slow-intuition":
       return <FastSlowIntuition roles={section.roles} />;

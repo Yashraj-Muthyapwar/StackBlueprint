@@ -9,7 +9,6 @@ import { CodePane } from "./CodePane";
 import { LinkedListCanvas } from "./LinkedListCanvas";
 import { MatrixCanvas } from "./MatrixCanvas";
 import { NarrationCard } from "./NarrationCard";
-import { ComplexityCanvas } from "@/components/dsa/two-pointers/ComplexityCanvas";
 import { PredictCard } from "./PredictCard";
 import { TransportBar } from "./TransportBar";
 import { LessonControls } from "./LessonControls";
@@ -287,23 +286,19 @@ export function LessonPlayer({ builder }: { builder: LessonBuilder }) {
             </span>
           </div>
           <div className="absolute inset-0">
-            {step.complexity ? (
-              <ComplexityCanvas key={step.complexity.title} data={step.complexity} />
-            ) : (
-              (() => {
-                const viewType =
-                  typeof builder.view === "function" ? builder.view(inputs) : builder.view;
-                return (
-                  <>
-                    {viewType === "array" && <ArrayCanvas step={step} />}
-                    {viewType === "matrix" && <MatrixCanvas step={step} />}
-                    {viewType === "linked-list" && shape && (
-                      <LinkedListCanvas step={step as LinkedListStep} shape={shape} />
-                    )}
-                  </>
-                );
-              })()
-            )}
+            {(() => {
+              const viewType =
+                typeof builder.view === "function" ? builder.view(inputs) : builder.view;
+              return (
+                <>
+                  {viewType === "array" && <ArrayCanvas step={step} />}
+                  {viewType === "matrix" && <MatrixCanvas step={step} />}
+                  {viewType === "linked-list" && shape && (
+                    <LinkedListCanvas step={step as LinkedListStep} shape={shape} />
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
         <div className={`min-w-0 ${panelMin}`}>
