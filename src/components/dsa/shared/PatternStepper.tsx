@@ -9,6 +9,8 @@ export type StepperTone = "left" | "right" | "mid" | "accent";
 
 export type PatternStepperStep = {
   title: string;
+  /** Tab and heading label; defaults to "Step N". Use it when steps are not numbered from 1. */
+  label?: string;
   /** Cell contents: numbers, characters, or short labels. */
   cells: (string | number)[];
   /** Named pointers drawn above cells, e.g. `{ index: 0, label: "left", tone: "left" }`. */
@@ -55,6 +57,10 @@ export function PatternStepper({ steps }: { steps: PatternStepperStep[] }) {
   const n = step.cells.length;
   const columns = { gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` };
   const pointerAt = (index: number) => step.pointers.filter((p) => p.index === index);
+  // When several pointers share a cell, the most specific role colours it.
+  const TONE_PRIORITY: StepperTone[] = ["accent", "mid", "left", "right"];
+  const cellTone = (index: number) =>
+    TONE_PRIORITY.find((tone) => pointerAt(index).some((p) => p.tone === tone));
 
   return (
     <section className="overflow-clip rounded-2xl border border-hairline bg-slate-50 shadow-sm dark:bg-surface">
@@ -71,7 +77,7 @@ export function PatternStepper({ steps }: { steps: PatternStepperStep[] }) {
                 : "border-hairline bg-background text-muted-foreground hover:text-foreground",
             )}
           >
-            <span className="font-semibold">Step {i + 1}</span>
+            <span className="font-semibold">{item.label ?? `Step ${i + 1}`}</span>
             <span className="hidden sm:inline">{item.title}</span>
           </button>
         ))}
@@ -84,32 +90,52 @@ export function PatternStepper({ steps }: { steps: PatternStepperStep[] }) {
         transition={{ duration: 0.2 }}
         className="px-5 py-6"
       >
-        <p className="text-xs font-semibold text-muted-foreground">Step {active + 1}</p>
+        <p className="text-xs font-semibold text-muted-foreground">
+          {step.label ?? `Step ${active + 1}`}
+        </p>
         <h3 className="lesson-subsection-title mt-1 font-semibold tracking-tight text-foreground">
           {step.title}
         </h3>
 
         <div className="mx-auto mt-6 w-full" style={{ maxWidth: `${n * 5.5}rem` }}>
-          <div className="grid" style={columns}>
-            {step.cells.map((_, index) => (
-              <span key={`ptr-${index}`} className="flex h-5 justify-center gap-1">
-                {pointerAt(index).map((p) => (
-                  <span
-                    key={p.label}
-                    className={cn(
-                      "whitespace-nowrap font-mono text-xs font-bold",
-                      TONE[p.tone].text,
-                    )}
-                  >
-                    {p.label} ▼
-                  </span>
-                ))}
-              </span>
-            ))}
+          <div className="grid items-end" style={columns}>
+            {step.cells.map((_, index) => {
+              const here = pointerAt(index);
+              // One pointer reads "left ▼"; several stack as lines above a single arrow.
+              return (
+                <span
+                  key={`ptr-${index}`}
+                  className="flex min-h-5 flex-col items-center justify-end leading-tight"
+                >
+                  {here.map((p) => (
+                    <span
+                      key={p.label}
+                      className={cn(
+                        "whitespace-nowrap font-mono text-xs font-bold",
+                        TONE[p.tone].text,
+                      )}
+                    >
+                      {p.label}
+                      {here.length === 1 ? " ▼" : ""}
+                    </span>
+                  ))}
+                  {here.length > 1 ? (
+                    <span
+                      className={cn(
+                        "font-mono text-xs leading-none",
+                        TONE[cellTone(index) ?? here[0].tone].text,
+                      )}
+                    >
+                      ▼
+                    </span>
+                  ) : null}
+                </span>
+              );
+            })}
           </div>
           <div className="mt-1 grid" style={columns}>
             {step.cells.map((value, index) => {
-              const tone = pointerAt(index)[0]?.tone;
+              const tone = cellTone(index);
               return (
                 <div key={`cell-${index}`} className="flex justify-center px-1 sm:px-1.5">
                   <motion.div

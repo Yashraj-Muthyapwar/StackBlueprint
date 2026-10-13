@@ -168,13 +168,20 @@ function Listing({
   render: (line: string) => ReactNode[];
 }) {
   const noteAfter = active[active.length - 1];
-  // Long listings use a smaller size so lines stay on one row side by side.
+  // Long lines use a smaller size so they stay on one row side by side, and listings of more
+  // than 16 lines are set tighter so the whole canvas stays about as tall as a 16-line one,
+  // which keeps the controls on screen.
   const long = Math.max(...lines.map((line) => line.length)) > 46;
+  const tall = lines.length > 16;
   return (
     <div
       className={cn(
-        "font-mono leading-[1.75]",
-        long ? "text-[11px] @min-[36rem]:text-[12px]" : "text-[12.5px] @min-[36rem]:text-[14px]",
+        "font-mono",
+        tall
+          ? "text-[12px] leading-[1.4] @min-[36rem]:text-[12.5px] @min-[36rem]:leading-[1.4]"
+          : long
+            ? "text-[11px] leading-[1.75] @min-[36rem]:text-[12px]"
+            : "text-[12.5px] leading-[1.75] @min-[36rem]:text-[14px]",
       )}
     >
       {lines.map((line, i) => {
