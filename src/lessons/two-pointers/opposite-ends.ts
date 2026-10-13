@@ -377,7 +377,7 @@ const oppositeEndsSections: Section[] = [
 
 export const oppositeEnds: LessonBuilder<Record<string, never>> = {
   slug: "opposite-ends",
-  title: "Two Pointers — Opposite Ends",
+  title: "Two Pointers: Opposite Ends",
   subtitle:
     "Reverse an array in place by swapping values from both ends until the pointers meet or cross.",
   problem: "Reverse an array in place using a left pointer and a right pointer.",

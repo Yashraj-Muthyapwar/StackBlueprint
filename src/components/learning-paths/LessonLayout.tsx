@@ -56,6 +56,11 @@ export function LessonLayout({
   const prev = idx > 0 ? topic.lessons![idx - 1] : undefined;
   const next = idx < (topic.lessons?.length ?? 0) - 1 ? topic.lessons![idx + 1] : undefined;
 
+  // A lesson that opens with an intro paragraph (no heading) continues the subtitle, so it
+  // sits closer to the header; a lesson that opens with a heading keeps the full gap.
+  const opensWithIntro =
+    sections?.[0]?.kind === "prose" && !sections[0].heading && !sections[0].eyebrow;
+
   const isEffectivelyPlaceholder =
     isPlaceholder ||
     (!children && (!sections || sections.length === 0)) ||
@@ -143,7 +148,9 @@ export function LessonLayout({
             )}
           </p>
         )}
-        <div className="mt-12 w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div
+          className={`${opensWithIntro ? "mt-6" : "mt-12"} w-full animate-in fade-in slide-in-from-bottom-4 duration-700`}
+        >
           {isEffectivelyPlaceholder ? (
             <div className="rounded-3xl border border-dashed border-mint/30 bg-mint/5 px-6 py-20 text-center shadow-sm">
               <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-mint/10 text-mint">

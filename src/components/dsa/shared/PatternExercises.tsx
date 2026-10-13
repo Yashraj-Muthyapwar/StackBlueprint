@@ -10,6 +10,8 @@ import { cn } from "@/lib/utils";
 export type ExerciseTone = "left" | "right" | "mid" | "accent";
 
 type ExerciseBase = {
+  /** Card label; defaults to "Exercise N". */
+  label?: string;
   title: string;
   prompt: string;
   /** Shown when every answer is right. */
@@ -32,7 +34,15 @@ export type CellsExercise = ExerciseBase & {
   brackets?: boolean;
 };
 
-export type PatternExercise = FieldsExercise | CellsExercise;
+/** One correct option, e.g. "Duplicate" or "New value". */
+export type ChoiceExercise = ExerciseBase & {
+  type: "choice";
+  options: string[];
+  /** Index of the correct option. */
+  answer: number;
+};
+
+export type PatternExercise = FieldsExercise | CellsExercise | ChoiceExercise;
 
 type Status = "idle" | "correct" | "wrong";
 
@@ -59,7 +69,7 @@ const fieldClass = (ok: boolean, checked: boolean) =>
 
 /** The card shell shared by every exercise type. */
 export function ExerciseCard({
-  number,
+  label,
   title,
   prompt,
   status,
@@ -68,7 +78,7 @@ export function ExerciseCard({
   onCheck,
   onReset,
 }: {
-  number: number;
+  label: string;
   title: string;
   prompt: string;
   status: Status;
@@ -79,9 +89,7 @@ export function ExerciseCard({
 }) {
   return (
     <div className="rounded-2xl border border-hairline bg-slate-50 p-5 shadow-sm dark:bg-surface">
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mint">
-        Exercise {number}
-      </p>
+      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-mint">{label}</p>
       <h3 className="lesson-subsection-title mt-1 font-semibold tracking-tight text-foreground">
         {title}
       </h3>
@@ -119,7 +127,11 @@ export function ExerciseCard({
 function Exercise({ exercise, number }: { exercise: PatternExercise; number: number }) {
   const id = useId();
   const answers =
-    exercise.type === "fields" ? exercise.fields.map((field) => field.answer) : exercise.answers;
+    exercise.type === "fields"
+      ? exercise.fields.map((field) => field.answer)
+      : exercise.type === "choice"
+        ? [exercise.answer]
+        : exercise.answers;
   const [values, setValues] = useState<string[]>(() => answers.map(() => ""));
   const [status, setStatus] = useState<Status>("idle");
   const [checked, setChecked] = useState(false);
@@ -134,14 +146,16 @@ function Exercise({ exercise, number }: { exercise: PatternExercise; number: num
 
   const card = (children: ReactNode) => (
     <ExerciseCard
-      number={number}
+      label={exercise.label ?? `Exercise ${number}`}
       title={exercise.title}
       prompt={exercise.prompt}
       status={status}
       feedback={
         status === "correct"
           ? exercise.success
-          : `${correct} of ${answers.length} correct. ${exercise.hint}`
+          : exercise.type === "choice"
+            ? `Not quite. ${exercise.hint}`
+            : `${correct} of ${answers.length} correct. ${exercise.hint}`
       }
       onCheck={() => {
         setChecked(true);
@@ -156,6 +170,37 @@ function Exercise({ exercise, number }: { exercise: PatternExercise; number: num
       {children}
     </ExerciseCard>
   );
+
+  if (exercise.type === "choice") {
+    return card(
+      <div role="radiogroup" aria-label={exercise.prompt} className="grid gap-2 sm:grid-cols-2">
+        {exercise.options.map((option, i) => {
+          const selected = values[0] === String(i);
+          return (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => update(0, String(i))}
+              className={cn(
+                "min-h-11 rounded-lg border px-4 py-2 text-left text-sm font-medium transition-colors",
+                selected
+                  ? checked
+                    ? i === exercise.answer
+                      ? "border-mint bg-mint/10 text-mint ring-1 ring-mint/40"
+                      : "border-rose bg-rose/10 text-rose ring-1 ring-rose/40"
+                    : "border-mint bg-mint/10 text-foreground"
+                  : "border-hairline bg-background text-foreground/80 hover:border-mint/40",
+              )}
+            >
+              {option}
+            </button>
+          );
+        })}
+      </div>,
+    );
+  }
 
   if (exercise.type === "fields") {
     return card(
