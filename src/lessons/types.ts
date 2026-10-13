@@ -268,6 +268,7 @@ export type Section =
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
+  | { kind: "dutch-flag-intuition"; groups: { value: number; title: string }[] }
   | {
       kind: "fast-slow-intuition";
       roles: { pointer: string; nickname: string; text: string; tone: "left" | "right" }[];
