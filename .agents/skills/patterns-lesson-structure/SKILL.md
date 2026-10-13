@@ -22,7 +22,7 @@ Use this skill to create or revamp a lesson in the Patterns track (`/patterns/<p
 
 - When the user supplies lesson text, **use it verbatim**. Only add structure (headings, markers, components, order). Do not reword, trim or "improve" it.
 - Text the user did not write (narrations, explanations, takeaways, exercise feedback, pseudocode) must be original, specific and free of filler.
-- Refer to other lessons as "the previous lesson", "this lesson" or "the next lesson", never "Module N", even when the supplied text says "module".
+- Refer to other lessons by name ("the Opposite Ends lesson", "the Fast & Slow lesson") or as "the previous lesson" and "this lesson", never "Lesson 1", "Module 2" or similar numbering, even when the supplied text uses it.
 - Never write em dashes in lesson text. If supplied headings look like `1. WHY — Why do we use this pattern?`, split them into a section marker (`1 · Why`) and a heading (`Why do we use this pattern?`). That is structure, not a content change.
 
 ## 1. How a pattern lesson is wired
@@ -77,7 +77,7 @@ src/
           <Lesson>Intuition.tsx        # optional lesson-specific scene (+ a section kind)
 ```
 
-References: `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) and `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`).
+References: `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`) and `src/components/dsa/two-pointers/dutch-flag/` (`FlagStage.tsx`, `flag-step.ts`, `problems.tsx`, `DutchFlagIntuition.tsx`, three pointers and one builder shared by two problems).
 
 Header rules, so every lesson header looks the same:
 - **Title:** `Pattern Name: Lesson Name`, matching the other lessons in the pattern (for example `Two Pointers: Opposite Ends`, `Two Pointers: Same Direction (Slow & Fast)`).
@@ -92,6 +92,13 @@ Six numbered stages. Each opens with a `prose` section that has an `eyebrow` (re
 ```
 
 Only stage-opening sections get an eyebrow. Follow-up prose inside a stage has no heading.
+
+**Stage 4 (Example) always has the same three parts, in this order**, so every lesson reads the same. None of them is optional, even when the supplied text lacks it:
+1. **A description line under the heading.** The stage-opening `prose` has the eyebrow, a heading such as "Python implementation" or "Python logic", and a one-sentence lead-in in `body`: `"Read this code. Focus on the pointer positions."` (use it as written unless the supplied text has its own).
+2. **The code, live.** `pattern-canvas`, then `pattern-example`. Do not add a "Test it:" or "Example:" line between them; the example block already carries its own "Try it" caption.
+3. **A short explanation below the code.** A `list` introduced by one sentence ("There are three important operations:", "Notice three things:", "This is the core decision structure."), followed by a `callout` (`tone: "info"`) for the rule, caveat or stopping condition. Keep it to a few lines. Use the supplied wording; split paragraphs into list items and a callout instead of leaving them as plain prose.
+
+A stage that jumps straight from the heading to the canvas, or follows the code with loose paragraphs, is wrong.
 
 | Stage | Eyebrow | Purpose | Typical sections |
 |---|---|---|---|
@@ -226,7 +233,16 @@ Token helpers for notes: `L()` left / `R()` right / `V()` value / `OUT()` result
 - The longest narration of any preset sets the status-card height, so keep narrations to one or two sentences.
 - Give each problem 2 or 3 presets covering edge cases (odd and even length, a single value, no answer).
 
-### 3.3 Visual rules for stages
+### 3.3 Canvas size budget
+
+The canvas must keep **one size** for every step and problem, and it must also be **short enough that its controls stay on screen**. A canvas taller than the other lessons pushes Autoplay, the arrows and the speed buttons below the fold on laptop screens, which reads as a layout bug.
+
+- **Height budget:** about **725px at desktop width** (Opposite Ends is 722px, Fast & Slow 602px). Measure it; the Autoplay row must end inside an 830px-tall window with the canvas just under the site header.
+- **The code listing sets the height.** The supplied code is kept verbatim, so do not trim it. `PatternCanvas` already sets listings of more than 16 lines tighter (12.5px, line height 1.4); a 23-line listing then lands at about 726px. Do not hand-tune font sizes in a lesson, and do not add height anywhere else.
+- **The stage must not add height.** Reserve space for the tallest pointer stack and give the cell row a fixed height (for example `h-[5.5rem]`), so presets with different numbers of cells do not move the row. `stageMinHeight` is the tallest stage any problem draws, not a safe-looking large number.
+- **Measure, do not guess.** See the browser checks in section 7.
+
+### 3.4 Visual rules for stages
 
 - Colour roles are fixed site-wide: **left / first pointer mint, right / second pointer blue, reading amber, swapping or a third pointer violet, rejected rose, done mint**. Never repurpose them.
 - Size the stage with fluid columns (`grid-template-columns: repeat(n, minmax(0, 1fr))`), not fixed widths, so it never overflows on phones. Use container units (`cqi`) for text that must shrink.
@@ -253,6 +269,8 @@ Token helpers for notes: `L()` left / `R()` right / `V()` value / `OUT()` result
   ],
 }
 ```
+
+Several pointers can share a cell (for example `low`, `mid` and `high` all at index 0): they stack above one arrow, and the cell takes the colour of the most specific role (`accent`, then `mid`, `left`, `right`). In a stage, reserve room for the tallest stack of pointer labels so the cells never move.
 
 ## 5. Exercises (stage 6)
 
@@ -300,7 +318,10 @@ Numbers are compared by value; text answers are trimmed and compared case-insens
 ## 6. Quiz and completion criteria
 
 ### Composition
-- 3 to 5 multiple-choice questions that test understanding (why the loop condition, complexity, when the pattern applies), plus **one coding challenge**.
+- 3 to 5 multiple-choice questions that test understanding (why the loop condition, complexity, when the pattern applies), plus **exactly one coding challenge as the last question**. A lesson quiz without a coding challenge is incomplete.
+- Use the questions the user supplied. **If the supplied content has no coding challenge, write one** and say so in your summary, because the wording is yours.
+- Make the challenge a **transfer**, not a repeat: apply the same pattern to a new rule, and never reuse the lesson's own function, which would hand over the answer (for example Dutch National Flag asks for `sort_by_sign`, negatives then zeros then positives, not `sort_colors`).
+- With three multiple-choice questions plus the challenge there are four questions, so the bar is 75% and one multiple-choice miss is allowed. Without a challenge a three-question quiz needs every answer right.
 - Options are shuffled at runtime, so never write "A.", "B." or "all of the above".
 - Every question has an `explanation`. Write complexity as `O(n)`, `O(n²)` (no LaTeX).
 
@@ -316,7 +337,8 @@ A coding answer must not pass by printing the expected output, hardcoding, or us
 2. **`requiredCodePatterns`** with `validationMessage`: the function definition and the required construct.
 3. **A hidden grader in `testCode`**, with `gradeLastLine: true` and a sentinel `expectedOutput` such as `"All hidden tests passed"`:
    - Reach builtins through `import builtins as _sb_b`, so a learner who shadows `list` or `print` cannot break or fake it.
-   - Pass instrumented inputs (for lists, a `list` subclass that raises on slicing, iteration and copying and counts writes) to prove the method, not just the result.
+   - Pass instrumented inputs (for lists, a `list` subclass that raises on slicing, iteration and copying and counts reads and writes) to prove the method, not just the result.
+   - Budget the operations (for example reads at most `6n + 10`, writes at most `2n`) and include one **large** input (around 40 values), so quadratic sorts and nested scans exceed the budget.
    - Run fixed edge cases **and** inputs generated at run time, so answers cannot be hardcoded.
    - Assert the result, the return contract and, when taught, the exact operation count.
    - Print one specific failure message, or the sentinel.
@@ -329,9 +351,11 @@ Run all of these before you report the lesson done.
 
 1. `npx tsc --noEmit`, `npx eslint` on every touched file, and `npx prettier --write` on new files.
 2. **Traces and examples**: with `npx tsx --tsconfig ./tsconfig.json`, build every preset of every problem and check the final step, that every `codeLines` / `algoLine` is inside its listing, that `parseInput(formatInput(preset))` round-trips, and that `python.join("\n") + example.call` run with `python3 -I` prints `example.output`.
-3. **Grader**: run `testCode` after a correct solution, an alternative correct solution, an off-by-one solution, the untouched starter, each forbidden shortcut, a hardcoded `print`, and a copy-based answer. Only correct solutions may print the sentinel.
+3. **Grader**: run `testCode` after a correct solution, an alternative correct solution, an off-by-one solution, the untouched starter, each forbidden shortcut, a hardcoded `print`, a copy-based answer, and an O(n²) sort. Only correct solutions may print the sentinel. The quiz must end with the coding challenge.
 4. **Browser**, on `/patterns/<pattern>/<lesson>`:
    - At 375, 768, 1024, 1280 and 1440px: no page-level horizontal scroll, no code overflow in the canvas, controls directly under the stage when stacked, and **one canvas height** across every step of every preset of every problem.
+   - **Canvas budget:** at 1280px wide the canvas is about 725px tall or less, and in an 831px-tall window the Autoplay row ends inside the window with the canvas under the header. Compare with Opposite Ends (722px).
+   - **Example stage:** description line under the heading, then canvas and example with no "Test it:", then the list and callout.
    - The file-name dropdown switches problems, and the `pattern-example` caption and code follow it.
    - Exercises report correct and wrong answers; the stepper steps.
    - The table of contents lists exactly the six stage names, and there are no console errors.
@@ -345,6 +369,7 @@ The Claude browser pane may be hidden, which freezes `motion` and CSS animations
 - Do not edit `HeroInteractiveDemo.tsx` for a lesson.
 - Do not add a static code block that duplicates the canvas listing.
 - Do not leave old canvases, view types, Step fields or helper files behind after a revamp.
+- Do not ship a quiz without a coding challenge, an Example stage without its description line and explanation below the code, or a canvas taller than the budget in section 3.3.
 - Do not change the global sidebar, Rivet or quiz behaviour for one lesson without asking.
 
 ## 9. Shipping changes
