@@ -268,6 +268,10 @@ export type Section =
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
+  | {
+      kind: "fast-slow-intuition";
+      roles: { pointer: string; nickname: string; text: string; tone: "left" | "right" }[];
+    }
   /** Shared pattern-lesson UI kit (src/components/dsa/shared); problem sets live in problem-sets.ts. */
   | { kind: "pattern-canvas"; problemSet: string }
   | { kind: "pattern-example"; problemSet: string }
