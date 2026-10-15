@@ -1,6 +1,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
@@ -190,6 +191,7 @@ function Listing({
         return (
           <div key={number}>
             <div
+              data-active-line={isActive ? "true" : undefined}
               className={cn(
                 "flex rounded-r-md border-l-2 px-2 transition-colors duration-200",
                 isActive
@@ -210,6 +212,7 @@ function Listing({
             {number === noteAfter ? (
               <div
                 key={noteKey}
+                data-live-note="true"
                 className="my-1 ml-10 flex items-start gap-2 rounded-md border border-violet/30 bg-violet/10 px-2.5 py-1 duration-300 animate-in fade-in slide-in-from-left-2 [contain:inline-size]"
               >
                 <span className="select-none text-violet">↳</span>
@@ -285,6 +288,11 @@ export function PatternCanvas({
   const identifiers = problem.identifiers ?? {};
   const functions = useMemo(() => functionNames(problem.python), [problem]);
 
+  // Listings longer than 23 lines would make the canvas taller than its budget, so they scroll
+  // inside the panel and follow the highlighted line instead.
+  const scrollCode = problems.some((p) => Math.max(p.python.length, p.algorithm.length) > 23);
+  const codeScrollRef = useRef<HTMLDivElement>(null);
+
   // The card reserves room for the longest descriptions of every problem, plus any custom run.
   const reservedNarrations = useMemo(
     () => longestNarrations([...presetNarrations(problems), ...steps.map((s) => s.narration)]),
@@ -306,6 +314,31 @@ export function PatternCanvas({
     );
     return () => clearInterval(timer);
   }, [playing, speed, steps.length]);
+
+  useEffect(() => {
+    if (!scrollCode) return;
+    const box = codeScrollRef.current;
+    const panel = box?.querySelector('[role="tabpanel"][aria-hidden="false"]');
+    if (!box || !panel) return;
+    const rows = [...panel.querySelectorAll<HTMLElement>('[data-active-line="true"]')];
+    const note = panel.querySelector<HTMLElement>('[data-live-note="true"]');
+    const top = rows[0] ?? note;
+    const bottom = note ?? rows[rows.length - 1];
+    if (!top || !bottom) return;
+    const view = box.getBoundingClientRect();
+    const t = top.getBoundingClientRect();
+    const b = bottom.getBoundingClientRect();
+    const margin = 10;
+    let delta = 0;
+    if (b.bottom > view.bottom - margin) {
+      // Show the live-values note, but never push the highlighted line itself off the top.
+      delta = Math.min(b.bottom - view.bottom + margin, t.top - view.top - margin);
+    }
+    if (t.top < view.top + margin) delta = t.top - view.top - margin;
+    if (Math.abs(delta) < 1) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    box.scrollTo({ top: box.scrollTop + delta, behavior: reduce ? "auto" : "smooth" });
+  }, [stepKey, view, scrollCode]);
 
   const clampStep = (index: number) => Math.max(0, Math.min(index, steps.length - 1));
   const goTo = (index: number) => {
@@ -508,7 +541,7 @@ export function PatternCanvas({
         Stacked (narrow): stage, controls, code, so the controls sit right under what they drive.
         Side by side (wide): stage | code, with the controls spanning the bottom.
       */}
-      <div className="relative grid grid-cols-1 [grid-template-areas:'visual'_'controls'_'code'] @min-[54rem]:grid-cols-[minmax(0,1fr)_auto] @min-[54rem]:[grid-template-areas:'visual_code'_'controls_controls']">
+      <div className="relative grid grid-cols-1 [grid-template-areas:'visual'_'controls'_'code'] @min-[54rem]:grid-cols-[minmax(0,1fr)_fit-content(56%)] @min-[54rem]:[grid-template-areas:'visual_code'_'controls_controls']">
         {/* Stage column: the lesson draws this, centred in a fixed-height area */}
         <div className="flex min-w-0 flex-col gap-4 p-4 [grid-area:visual] sm:p-6">
           <div
@@ -683,11 +716,17 @@ export function PatternCanvas({
           </div>
 
           {/* Both listings stay mounted in one grid cell, so the canvas keeps its size on toggle. */}
-          <div className="grid flex-1 grid-cols-[minmax(0,1fr)] rounded-xl border border-hairline bg-background p-3 shadow-inner">
+          <div
+            ref={codeScrollRef}
+            className={cn(
+              "grid flex-1 grid-cols-[minmax(0,1fr)] rounded-xl border border-hairline bg-background p-3 shadow-inner",
+              scrollCode && "max-h-[29rem] content-start overflow-y-auto overscroll-contain",
+            )}
+          >
             {/*
               Invisible copies of every listing reserve the largest size of any problem, so switching
-              never resizes the canvas. Side by side they also fix the width (no wrapping); stacked
-              they take the column width and wrap like the real listing.
+              never resizes the canvas. They wrap exactly like the real listing; side by side their
+              widest unwrapped line sizes the column (up to 56% of the card).
             */}
             {problems
               .flatMap((p) => [
@@ -698,7 +737,7 @@ export function PatternCanvas({
                 <div
                   key={ghost.key}
                   aria-hidden
-                  className="invisible min-w-0 [contain:inline-size] [grid-area:1/1] @min-[54rem]:[contain:none] @min-[54rem]:[&_span]:whitespace-pre!"
+                  className="invisible min-w-0 [contain:inline-size] [grid-area:1/1] @min-[54rem]:[contain:none]"
                 >
                   <Listing
                     lines={ghost.lines}

@@ -4,6 +4,7 @@ import { ChevronRight, ArrowLeft, ArrowRight } from "lucide-react";
 import { LessonCompleteButton } from "./LessonCompleteButton";
 import { FloatingTOC, type TOCItem } from "./FloatingTOC";
 import { RivetCompanion } from "@/components/rivet";
+import { ConceptTag } from "./ConceptTag";
 
 export interface LessonLayoutProps {
   trackTitle: string;
@@ -19,6 +20,8 @@ export interface LessonLayoutProps {
     slug: string;
     title: string;
     subtitle?: string;
+    /** Concept-lesson tag, e.g. "Concept". */
+    tag?: string;
     path?: string;
   };
   children?: React.ReactNode;
@@ -128,9 +131,12 @@ export function LessonLayout({
           </span>
         </nav>
 
-        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          Chapter · {topic.title} · Lesson {idx + 1} of {topic.lessons?.length ?? 0}
-        </p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+            Chapter · {topic.title} · Lesson {idx + 1} of {topic.lessons?.length ?? 0}
+          </p>
+          {lesson.tag ? <ConceptTag label={lesson.tag} /> : null}
+        </div>
         <h1 className="lesson-title mt-2 font-semibold tracking-tight">{lesson.title}</h1>
         {lesson.subtitle && (
           <p className="lesson-subtitle mt-3 text-balance text-muted-foreground">
