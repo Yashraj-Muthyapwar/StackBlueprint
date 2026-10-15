@@ -71,6 +71,7 @@ function LessonPage() {
           slug: entry.builder.slug,
           title: entry.builder.title,
           subtitle: entry.builder.subtitle,
+          tag: entry.builder.tag,
           path: `/patterns/${p.slug}/${entry.builder.slug}`,
         }}
         sections={entry.builder.sections}

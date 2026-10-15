@@ -15,6 +15,8 @@ import { PatternExample } from "@/components/dsa/shared/PatternExample";
 import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
 import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
 import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
+import { InvariantRegions } from "@/components/dsa/two-pointers/invariants/InvariantRegions";
+import { ThreeSumIntuition } from "@/components/dsa/two-pointers/three-sum/ThreeSumIntuition";
 import { DutchFlagIntuition } from "@/components/dsa/two-pointers/dutch-flag/DutchFlagIntuition";
 import { FastSlowIntuition } from "@/components/dsa/two-pointers/fast-slow/FastSlowIntuition";
 import { OppositeEndsIntuition } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsIntuition";
@@ -381,6 +383,12 @@ export function SectionRenderer({
     case "string-character-explorer":
       return <StringCharacterExplorer />;
 
+    case "three-sum-intuition":
+      return <ThreeSumIntuition roles={section.roles} />;
+
+    case "invariant-regions":
+      return <InvariantRegions rules={section.rules} />;
+
     case "dutch-flag-intuition":
       return <DutchFlagIntuition groups={section.groups} />;
 
@@ -403,7 +411,9 @@ export function SectionRenderer({
 
     case "pattern-example": {
       const set = PROBLEM_SETS[section.problemSet];
-      return set ? <PatternExample problems={set.problems} problemSet={section.problemSet} /> : null;
+      return set ? (
+        <PatternExample problems={set.problems} problemSet={section.problemSet} />
+      ) : null;
     }
 
     case "pattern-stepper":

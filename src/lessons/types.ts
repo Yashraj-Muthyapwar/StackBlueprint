@@ -187,6 +187,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   slug: string;
   title: string;
   subtitle: string;
+  /** Marks a lesson that teaches a way of thinking, not a pattern. Shown as a tag in the header and on track cards. */
+  tag?: string;
   /** Concise problem statement shown under the lesson title. */
   problem?: string | ((inputs: TInputs) => string);
   /** Signals in an interview prompt that hint this pattern applies. */
@@ -268,7 +270,15 @@ export type Section =
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
+  | {
+      kind: "invariant-regions";
+      rules: { region: "zeros" | "ones" | "unknown" | "twos"; text: string }[];
+    }
   | { kind: "dutch-flag-intuition"; groups: { value: number; title: string }[] }
+  | {
+      kind: "three-sum-intuition";
+      roles: { symbol: string; title: string; text: string; tone: "fixed" | "left" | "right" }[];
+    }
   | {
       kind: "fast-slow-intuition";
       roles: { pointer: string; nickname: string; text: string; tone: "left" | "right" }[];

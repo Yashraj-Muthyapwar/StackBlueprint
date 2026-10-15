@@ -77,7 +77,7 @@ src/
           <Lesson>Intuition.tsx        # optional lesson-specific scene (+ a section kind)
 ```
 
-References: `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`) and `src/components/dsa/two-pointers/dutch-flag/` (`FlagStage.tsx`, `flag-step.ts`, `problems.tsx`, `DutchFlagIntuition.tsx`, three pointers and one builder shared by two problems).
+References: `src/components/dsa/two-pointers/three-sum/` (`TripletStage.tsx`, `triplet-step.ts`, `problems.tsx`, `ThreeSumIntuition.tsx`: a fixed pointer plus left and right, a 30-line listing, a single problem), `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`) and `src/components/dsa/two-pointers/dutch-flag/` (`FlagStage.tsx`, `flag-step.ts`, `problems.tsx`, `DutchFlagIntuition.tsx`, three pointers and one builder shared by two problems).
 
 Header rules, so every lesson header looks the same:
 - **Title:** `Pattern Name: Lesson Name`, matching the other lessons in the pattern (for example `Two Pointers: Opposite Ends`, `Two Pointers: Same Direction (Slow & Fast)`).
@@ -96,7 +96,7 @@ Only stage-opening sections get an eyebrow. Follow-up prose inside a stage has n
 **Stage 4 (Example) always has the same three parts, in this order**, so every lesson reads the same. None of them is optional, even when the supplied text lacks it:
 1. **A description line under the heading.** The stage-opening `prose` has the eyebrow, a heading such as "Python implementation" or "Python logic", and a one-sentence lead-in in `body`: `"Read this code. Focus on the pointer positions."` (use it as written unless the supplied text has its own).
 2. **The code, live.** `pattern-canvas`, then `pattern-example`. Do not add a "Test it:" or "Example:" line between them; the example block already carries its own "Try it" caption.
-3. **A short explanation below the code.** A `list` introduced by one sentence ("There are three important operations:", "Notice three things:", "This is the core decision structure."), followed by a `callout` (`tone: "info"`) for the rule, caveat or stopping condition. Keep it to a few lines. Use the supplied wording; split paragraphs into list items and a callout instead of leaving them as plain prose.
+3. **A short explanation below the code.** A `list` introduced by one sentence ("There are three important operations:", "Notice three things:", "This is the core decision structure."), followed by a `callout` (`tone: "info"`) **when the supplied text contains a rule, caveat or stopping condition**. If the text has none (3-Sum ends with a list of three details), do not invent one: the list alone is the explanation. Keep it to a few lines. Use the supplied wording; split paragraphs into list items (and a callout when there is a rule) instead of leaving them as plain prose.
 
 A stage that jumps straight from the heading to the canvas, or follows the code with loose paragraphs, is wrong.
 
@@ -118,6 +118,14 @@ Also:
 - Interview rules go in `callout` with `tone: "info"`; common mistakes in `callout` with `tone: "warn"`.
 - Cost tables use `table` with headers such as `["Measure", "Cost"]`.
 - Runnable code goes in `pattern-example`, never a static code block that duplicates the canvas listing.
+
+### 2.1 Concept lessons
+
+A lesson that teaches a way of thinking instead of an algorithm (the Two Pointers one is `pointer-invariants`) keeps the six stages, takeaways and quiz, but:
+- sets `tag: "Concept"` on the `LessonBuilder`, which renders `ConceptTag` (`src/components/learning-paths/ConceptTag.tsx`) in the lesson header and on the track card, so it reads as different from the patterns;
+- opens with a `callout` (`tone: "violet"`) saying it is not a pattern, and never calls it one in copy;
+- has no `pattern-canvas` or `pattern-example`; the Example stage is a `table` that connects the idea to the other lessons;
+- still ends with a quiz whose last question is a coding challenge, written as a pure function (for example `check_invariant`) that the hidden grader compares with a reference on fixed and generated inputs.
 
 ## 3. The shared UI kit (`src/components/dsa/shared/`)
 
@@ -240,6 +248,7 @@ The canvas must keep **one size** for every step and problem, and it must also b
 - **Height budget:** about **725px at desktop width** (Opposite Ends is 722px, Fast & Slow 602px). Measure it; the Autoplay row must end inside an 830px-tall window with the canvas just under the site header.
 - **The code listing sets the height.** The supplied code is kept verbatim, so do not trim it. `PatternCanvas` already sets listings of more than 16 lines tighter (12.5px, line height 1.4); a 23-line listing then lands at about 726px. Do not hand-tune font sizes in a lesson, and do not add height anywhere else.
 - **The stage must not add height.** Reserve space for the tallest pointer stack and give the cell row a fixed height (for example `h-[5.5rem]`), so presets with different numbers of cells do not move the row. `stageMinHeight` is the tallest stage any problem draws, not a safe-looking large number.
+- **Long listings scroll inside the code panel.** `PatternCanvas` caps the code column at `fit-content(56%)` so the animation keeps its width, and a listing of more than 23 lines (3-Sum has 30) scrolls in a 29rem panel that follows the highlighted line and live-values note. Never trim the supplied code to avoid this, and never let lines wrap; long lines scroll sideways inside the panel.
 - **Measure, do not guess.** See the browser checks in section 7.
 
 ### 3.4 Visual rules for stages
@@ -342,6 +351,7 @@ A coding answer must not pass by printing the expected output, hardcoding, or us
    - Run fixed edge cases **and** inputs generated at run time, so answers cannot be hardcoded.
    - Assert the result, the return contract and, when taught, the exact operation count.
    - Print one specific failure message, or the sentinel.
+   - For challenges that return a value instead of changing a list in place (for example 3-Sum closest), count executed lines with `sys.settrace` on the learner's function and fail above a budget such as `12*n*n + 200`. This catches brute force even when the learner copies the list through `sorted`. Forbid `settrace` in the learner's code. The in-browser Pyodide sandbox may not support tracing, so test the grader with `python3 -I` locally.
 
 `initialCode` contains the function stub and the test call from the challenge text.
 

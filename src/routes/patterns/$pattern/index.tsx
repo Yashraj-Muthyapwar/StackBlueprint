@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { ConceptTag } from "@/components/learning-paths/ConceptTag";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
 import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
@@ -61,7 +62,8 @@ function PatternIndex() {
                 <div className="grid size-10 place-items-center rounded-md bg-mint/15 text-mint ring-1 ring-mint/30">
                   <les.icon className="size-5" />
                 </div>
-                <span className="font-mono text-[11px] text-muted-foreground">
+                <span className="flex items-center gap-2 font-mono text-[11px] text-muted-foreground">
+                  {les.builder.tag ? <ConceptTag label={les.builder.tag} /> : null}
                   {String(i + 1).padStart(2, "0")} / {String(p.lessons.length).padStart(2, "0")}
                 </span>
               </div>

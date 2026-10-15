@@ -77,6 +77,8 @@ import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems-
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
 import { dutchFlag } from "./two-pointers/dutch-flag";
+import { threeSum } from "./two-pointers/three-sum";
+import { pointerInvariants } from "./two-pointers/pointer-invariants";
 
 import { fixedSize } from "./sliding-window/fixed-size";
 import { variableExpandShrink } from "./sliding-window/variable-expand-shrink";
@@ -160,6 +162,8 @@ export const patterns: PatternEntry[] = [
       { builder: oppositeEnds, icon: ArrowLeftRight },
       { builder: fastSlow, icon: Repeat },
       { builder: dutchFlag, icon: Flag },
+      { builder: threeSum, icon: Sigma },
+      { builder: pointerInvariants, icon: Lightbulb },
     ],
   },
   {
