@@ -104,7 +104,7 @@ export const powerSqrtLogStages: Stage[] = [
     table: {
       name: "steps",
       cols: ["step"],
-      rows: SCALE_ROWS.map((row) => r(row.id, row.cells[0])),
+      rows: SCALE_ROWS.map((row) => r(row.key, row.cells[0])),
     },
     steps: [
       st(

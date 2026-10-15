@@ -27,7 +27,7 @@ function InteractivePipelineFlow({ steps }: { steps: { title: string; descriptio
                 setActiveStep(i);
                 setIsAutoPlaying(false);
               }}
-              className={`px-3.5 py-1.5 rounded-lg border font-medium text-sm shadow-sm transition-colors ${activeStep === i ? 'bg-mint text-white border-mint' : 'bg-white dark:bg-zinc-800/80 border-hairline text-foreground hover:bg-slate-50 dark:hover:bg-zinc-700'}`}
+              className={`px-3.5 py-1.5 rounded-lg border font-medium text-sm shadow-sm transition-colors ${activeStep === i ? 'bg-primary text-primary-foreground border-primary' : 'bg-white dark:bg-zinc-800/80 border-hairline text-foreground hover:bg-slate-50 dark:hover:bg-zinc-700'}`}
             >
               {step.title}
             </button>
@@ -220,7 +220,12 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <figure className="overflow-hidden rounded-xl border border-hairline bg-slate-50 dark:bg-surface shadow-sm">
           <div className="w-full flex justify-center bg-surface-2/30 py-4">
-            <ZoomableImage src={section.src} alt={section.alt} className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl" />
+            <ZoomableImage
+              src={section.src}
+              alt={section.alt}
+              caption={section.caption}
+              className="h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl"
+            />
           </div>
           {section.caption ? (
             <figcaption className="border-t border-hairline px-4 py-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">

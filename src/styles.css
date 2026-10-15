@@ -87,7 +87,7 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0.01 250);
 
-  --primary: oklch(0.55 0.14 175);          /* darker mint for contrast on light */
+  --primary: oklch(0.50 0.13 175);          /* accessible teal/mint for text-primary-foreground (5.06:1) */
   --primary-foreground: oklch(0.98 0.02 200);
   --secondary: oklch(0.94 0.014 260);
   --secondary-foreground: oklch(0.15 0.01 250);
@@ -99,7 +99,7 @@
   --destructive-foreground: oklch(0.98 0.005 250);
   --border: oklch(0.88 0.015 260);
   --input: oklch(0.88 0.015 260);
-  --ring: oklch(0.55 0.14 175);
+  --ring: oklch(0.50 0.13 175);
 
   /* Semantic accents (pointers) - slightly darker for light mode */
   --mint:   oklch(0.65 0.14 175);    
@@ -107,14 +107,15 @@
   --violet: oklch(0.60 0.16 295);    
   --rose:   oklch(0.60 0.18 15);     
 
-  --sidebar: oklch(0.98 0.005 250);
+  --sidebar: oklch(0.975 0.006 255);
   --sidebar-foreground: oklch(0.15 0.01 250);
-  --sidebar-primary: oklch(0.55 0.14 175);
+  --sidebar-primary: oklch(0.50 0.13 175);
   --sidebar-primary-foreground: oklch(0.98 0.02 200);
   --sidebar-accent: oklch(0.94 0.014 260);
   --sidebar-accent-foreground: oklch(0.15 0.01 250);
   --sidebar-border: oklch(0.90 0.015 260);
-  --sidebar-ring: oklch(0.55 0.14 175);
+  --sidebar-ring: oklch(0.50 0.13 175);
+  --sb-card: oklch(1 0 0);
 }
 
 .dark {
@@ -150,14 +151,15 @@
   --violet: oklch(0.74 0.16 295);    /* #A78BFA — mid / pivot */
   --rose:   oklch(0.72 0.18 15);     /* #FB7185 — swap / compare flash */
 
-  --sidebar: oklch(0.14 0.012 260);
+  --sidebar: oklch(0.145 0.012 260);
   --sidebar-foreground: oklch(0.92 0.005 250);
   --sidebar-primary: oklch(0.86 0.14 175);
   --sidebar-primary-foreground: oklch(0.18 0.02 200);
   --sidebar-accent: oklch(0.22 0.014 260);
   --sidebar-accent-foreground: oklch(0.96 0.005 250);
-  --sidebar-border: oklch(0.26 0.015 260);
+  --sidebar-border: oklch(0.27 0.015 260);
   --sidebar-ring: oklch(0.86 0.14 175);
+  --sb-card: oklch(0.195 0.013 260);
 }
 
 @layer base {
@@ -290,4 +292,493 @@
   33% { transform: translate(30px, -50px) scale(1.1); }
   66% { transform: translate(-20px, 20px) scale(0.9); }
   100% { transform: translate(0, 0) scale(1); }
+}
+
+/* ───────────────────────── App sidebar ("Blueprint") ─────────────────────────
+ * Self-contained styles for src/components/app-sidebar.tsx. All colours derive
+ * from theme tokens, so light and dark mode stay in sync automatically.
+ */
+@layer components {
+  .sb-root {
+    --sb-accent: var(--mint);
+    --sb-accent-2: var(--violet);
+    --sb-text: color-mix(in oklab, var(--sidebar-foreground) 82%, transparent);
+    --sb-muted: color-mix(in oklab, var(--sidebar-foreground) 62%, transparent);
+    --sb-faint: color-mix(in oklab, var(--sidebar-foreground) 46%, transparent);
+    --sb-hover: color-mix(in oklab, var(--sidebar-foreground) 6%, transparent);
+    --sb-line: color-mix(in oklab, var(--sidebar-foreground) 11%, transparent);
+    --sb-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Header ------------------------------------------------------------- */
+  .sb-header {
+    position: relative;
+    gap: 0;
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--sidebar-border);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .sb-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, var(--sb-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--sb-line) 1px, transparent 1px);
+    background-size: 14px 14px;
+    mask-image: radial-gradient(130% 100% at 0% 0%, #000 10%, transparent 75%);
+  }
+  .sb-header::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    width: 220px;
+    height: 220px;
+    left: -70px;
+    top: -120px;
+    background: radial-gradient(circle, color-mix(in oklab, var(--sb-accent) 30%, transparent), transparent 68%);
+  }
+  .sb-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    border-radius: 10px;
+    outline: none;
+  }
+  .sb-brand:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+  .sb-brand-logo {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    /* Tinted plate with a brand-colored glyph: reads as the logo without
+       out-shouting the wordmark or the hero accents. */
+    background: color-mix(in oklab, var(--primary) 12%, var(--sb-card));
+    color: var(--primary);
+    border: 1px solid color-mix(in oklab, var(--primary) 28%, transparent);
+    transition: transform 0.3s var(--sb-ease);
+  }
+  .sb-brand-logo svg { width: 80%; height: 80%; }
+  .sb-brand:hover .sb-brand-logo { transform: rotate(-6deg) scale(1.05); }
+  .sb-brand-text { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
+  .sb-brand-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--sidebar-foreground);
+  }
+  .sb-brand-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sb-faint);
+  }
+
+  .sb-mini-bar > span {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--sb-accent), var(--sb-accent-2));
+    transition: width 0.6s var(--sb-ease);
+  }
+
+  /* Content ------------------------------------------------------------ */
+  .sb-content { gap: 0; padding: 16px 10px 28px; }
+  .sb-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 8px;
+    padding: 0 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--sb-faint);
+  }
+  .sb-label-count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--sb-hover);
+    letter-spacing: 0;
+    color: var(--sb-muted);
+  }
+
+  /* Tools -------------------------------------------------------------- */
+  .sb-tools {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .sb-tool {
+    --c1: oklch(0.6 0.15 255);
+    --c2: oklch(0.78 0.15 85);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--sidebar-border);
+    background: color-mix(in oklab, var(--sb-card) 70%, transparent);
+    outline: none;
+    transition: transform 0.2s var(--sb-ease), border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  }
+  .sb-tool[data-tone="sql"] { --c1: oklch(0.68 0.13 175); --c2: oklch(0.58 0.15 240); }
+  .sb-tool:hover {
+    transform: translateY(-2px);
+    background: var(--sb-card);
+    border-color: color-mix(in oklab, var(--c1) 45%, var(--sidebar-border));
+    box-shadow: 0 10px 24px -14px color-mix(in oklab, var(--c1) 70%, transparent);
+  }
+  .sb-tool:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+  .sb-tool[data-active="true"] {
+    border-color: transparent;
+    background:
+      linear-gradient(var(--sb-card), var(--sb-card)) padding-box,
+      linear-gradient(135deg, var(--c1), var(--c2)) border-box;
+    box-shadow: 0 10px 28px -14px color-mix(in oklab, var(--c1) 80%, transparent);
+  }
+  .sb-tool-icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--c1), var(--c2));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.3),
+      0 4px 10px -4px color-mix(in oklab, var(--c1) 80%, transparent);
+    transition: transform 0.25s var(--sb-ease);
+  }
+  .sb-tool-icon svg { width: 15px; height: 15px; filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.25)); }
+  .sb-tool:hover .sb-tool-icon { transform: scale(1.08) rotate(-4deg); }
+  .sb-tool-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.1;
+    color: var(--sidebar-foreground);
+  }
+  .sb-tool-sub { display: block; margin-top: 3px; font-size: 11px; color: var(--sb-faint); }
+  .sb-tool-arrow {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 14px;
+    height: 14px;
+    color: var(--sb-muted);
+    opacity: 0;
+    transform: translate(-3px, 3px);
+    transition: opacity 0.2s, transform 0.2s var(--sb-ease);
+  }
+  .sb-tool:hover .sb-tool-arrow,
+  .sb-tool[data-active="true"] .sb-tool-arrow { opacity: 1; transform: none; }
+
+  /* Tracks ------------------------------------------------------------- */
+  .sb-tracks { display: flex; flex-direction: column; gap: 2px; }
+  .sb-track {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 13px;
+    transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .sb-track[data-current="true"] {
+    margin: 4px 0;
+    background: var(--sb-card);
+    border-color: var(--sidebar-border);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 28px -20px rgb(0 0 0 / 0.35);
+  }
+  .sb-track[data-current="true"]::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 10px;
+    width: 3px;
+    height: 22px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(var(--sb-accent), var(--sb-accent-2));
+  }
+  .sb-track-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 5px 5px 6px;
+    border-radius: 12px;
+    transition: background-color 0.15s;
+  }
+  .sb-track:not([data-current="true"]) > .sb-track-row:hover { background: var(--sb-hover); }
+  .sb-track-link {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 0;
+    border-radius: 9px;
+    text-align: left;
+    outline: none;
+    cursor: pointer;
+  }
+  .sb-track-link:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+  .sb-track-logo {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--sb-card) 60%, transparent);
+    border: 1px solid color-mix(in oklab, var(--sidebar-border) 70%, transparent);
+    transition: transform 0.25s var(--sb-ease), border-color 0.2s, box-shadow 0.2s;
+  }
+  .sb-track-logo img,
+  .sb-track-logo svg { width: 20px; height: 20px; object-fit: contain; }
+  .sb-track-row:hover .sb-track-logo { transform: scale(1.07); }
+  /* Some logo files carry a lot of built-in padding; scale them (image only,
+     the file is untouched) so every track icon reads at the same optical size. */
+  .sb-track-logo[data-track="data-warehouses"] img,
+  .sb-track-logo[data-track="data-engineering"] img { transform: scale(1.4); }
+  /* Track logos are drawn for light backgrounds (dark outlines, navy glyphs),
+     so give them a light plate in dark mode instead of a translucent one. */
+  .dark .sb-track-logo {
+    background: oklch(0.97 0.005 250);
+    border-color: color-mix(in oklab, white 12%, transparent);
+  }
+  .sb-track[data-current="true"] .sb-track-logo {
+    border-color: color-mix(in oklab, var(--sb-accent) 50%, var(--sidebar-border));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--sb-accent) 15%, transparent);
+  }
+  .sb-track-text { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 5px; }
+  .sb-track-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+    font-weight: 550;
+    line-height: 1.15;
+    color: var(--sb-text);
+    transition: color 0.15s;
+  }
+  .sb-track-row:hover .sb-track-title { color: var(--sidebar-foreground); }
+  .sb-track[data-current="true"] .sb-track-title { font-weight: 650; color: var(--sidebar-foreground); }
+  .sb-track-meta { display: flex; align-items: center; gap: 8px; height: 12px; }
+  .sb-mini-bar {
+    flex: 1;
+    max-width: 96px;
+    height: 3px;
+    border-radius: 999px;
+    background: var(--sb-line);
+    overflow: hidden;
+  }
+  .sb-track-count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    color: var(--sb-faint);
+  }
+  .sb-soon {
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--amber) 80%, var(--sidebar-foreground));
+    background: color-mix(in oklab, var(--amber) 15%, transparent);
+  }
+  .sb-icon-btn {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    color: var(--sb-faint);
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .sb-icon-btn:hover { background: var(--sb-hover); color: var(--sidebar-foreground); }
+  .sb-icon-btn:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+  .sb-icon-btn svg { width: 15px; height: 15px; transition: transform 0.25s var(--sb-ease); }
+  .sb-icon-btn[data-state="open"] svg { transform: rotate(90deg); }
+
+  /* Expand / collapse ---------------------------------------------------- */
+  .sb-collapse { overflow: hidden; }
+  .sb-collapse[data-state="open"] { animation: sb-expand 0.26s var(--sb-ease); }
+  .sb-collapse[data-state="closed"] { animation: sb-shrink 0.18s ease-in; }
+
+  /* Track body ------------------------------------------------------------ */
+  .sb-track-body { padding: 2px 8px 10px 10px; }
+  .sb-section + .sb-section { margin-top: 6px; }
+  .sb-section-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 10px 0 4px 6px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sb-faint);
+  }
+  .sb-section:first-child .sb-section-label { margin-top: 4px; }
+  .sb-section-num { color: var(--sb-accent); }
+
+  .sb-module-btn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    width: 100%;
+    padding: 6px 6px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 500;
+    text-align: left;
+    color: var(--sb-muted);
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .sb-module-btn:hover { background: var(--sb-hover); color: var(--sidebar-foreground); }
+  .sb-module-btn:focus-visible { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+  .sb-module-btn[data-active="true"] { font-weight: 600; color: var(--sidebar-foreground); }
+  .sb-module-btn[data-locked="true"] { cursor: default; color: var(--sb-faint); }
+  .sb-module-btn[data-locked="true"]:hover { background: transparent; }
+  .sb-module-chev {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    color: var(--sb-faint);
+    transition: transform 0.25s var(--sb-ease);
+  }
+  .sb-module-btn[data-state="open"] .sb-module-chev { transform: rotate(90deg); }
+  .sb-module-title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .sb-module-count {
+    display: grid;
+    place-items: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--sb-faint);
+  }
+  .sb-module-count svg {
+    width: 15px;
+    height: 15px;
+    padding: 3px;
+    border-radius: 999px;
+    stroke-width: 3.5;
+    color: var(--sb-card);
+    background: var(--sb-accent);
+  }
+
+  /* Lesson timeline -------------------------------------------------------- */
+  .sb-timeline {
+    position: relative;
+    margin: 0 0 4px 12px;
+    padding: 2px 0;
+    list-style: none;
+  }
+  .sb-timeline::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    bottom: 14px;
+    width: 1.5px;
+    border-radius: 2px;
+    background: var(--sb-line);
+  }
+  .sb-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 1px 0;
+    font-size: 12.5px;
+    color: var(--sb-muted);
+    outline: none;
+    transition: color 0.15s;
+  }
+  .sb-step-dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: 1.5px solid color-mix(in oklab, var(--sidebar-foreground) 24%, transparent);
+    background: var(--sidebar);
+    transition: transform 0.2s var(--sb-ease), border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+  }
+  .sb-track[data-current="true"] .sb-step-dot { background: var(--sb-card); }
+  .sb-step-dot svg { width: 7px; height: 7px; stroke-width: 4; }
+  .sb-step-text {
+    flex: 1;
+    min-width: 0;
+    padding: 5px 8px;
+    border-radius: 7px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: background-color 0.15s;
+  }
+  .sb-step:hover { color: var(--sidebar-foreground); }
+  .sb-step:hover .sb-step-text { background: var(--sb-hover); }
+  .sb-step:hover .sb-step-dot { transform: scale(1.18); border-color: var(--sb-accent); }
+  .sb-step:focus-visible .sb-step-text { box-shadow: 0 0 0 2px var(--sidebar-ring); }
+
+  .sb-step[data-done="true"] .sb-step-dot {
+    border-color: var(--sb-accent);
+    background: var(--sb-accent);
+    color: var(--sb-card);
+  }
+  .sb-step[data-current="true"] { font-weight: 600; color: var(--sidebar-foreground); }
+  .sb-step[data-current="true"] .sb-step-text {
+    background: color-mix(in oklab, var(--sb-accent) 13%, transparent);
+  }
+  .sb-step[data-current="true"] .sb-step-dot {
+    border-color: var(--sb-accent);
+    background: var(--sb-card);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--sb-accent) 22%, transparent);
+  }
+  .sb-step[data-current="true"] .sb-step-dot::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--sb-accent);
+  }
+  .sb-step[data-locked="true"] { color: var(--sb-faint); }
+  .sb-step[data-locked="true"] .sb-step-dot { border-style: dashed; color: var(--sb-faint); }
+  .sb-step[data-locked="true"] .sb-step-dot svg { width: 6px; height: 6px; stroke-width: 3; }
+}
+
+@keyframes sb-expand {
+  from { height: 0; opacity: 0; }
+  to { height: var(--radix-collapsible-content-height); opacity: 1; }
+}
+@keyframes sb-shrink {
+  from { height: var(--radix-collapsible-content-height); opacity: 1; }
+  to { height: 0; opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-root *,
+  .sb-root *::before,
+  .sb-root *::after { animation: none !important; transition: none !important; }
 }

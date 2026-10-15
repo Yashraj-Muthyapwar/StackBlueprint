@@ -51,7 +51,7 @@ export function TransportBar({
           onClick={onPlayToggle}
           disabled={locked}
           title={locked ? lockedTitle : "Play / Pause (Space)"}
-          className="bg-mint text-primary-foreground hover:bg-mint/90"
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
         </Button>

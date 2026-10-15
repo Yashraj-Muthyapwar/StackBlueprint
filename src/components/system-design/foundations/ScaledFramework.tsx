@@ -520,7 +520,7 @@ function ConsistencyDemo() {
           type="button"
           onClick={write}
           disabled={locked}
-          className="ml-auto flex h-7 items-center gap-1.5 rounded-md bg-mint px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-mint/90 disabled:opacity-50"
+          className="ml-auto flex h-7 items-center gap-1.5 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
         >
           Add 1 like (write to A)
         </button>
@@ -1430,7 +1430,7 @@ function YourTurnDemo() {
             type="button"
             disabled={!ready}
             onClick={() => setChecked(true)}
-            className="h-8 shrink-0 rounded-md bg-mint px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-mint/90 disabled:opacity-40"
+            className="h-8 shrink-0 rounded-md bg-primary px-3 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-40"
           >
             Check
           </button>

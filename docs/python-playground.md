@@ -1,87 +1,80 @@
-# Python Playgrounds: Interactive Tracing & Execution
+# Python execution and playgrounds
 
-This document describes the architecture of the Python execution environments in DataVizCore, which provide in-browser Python execution, visual heap tracing, and interactive in-lesson learning blocks.
+Python runs in the learner's browser through Pyodide WebAssembly. The server serves an isolated execution page; it does not execute learner Python.
 
-> [!NOTE]  
-> All Python execution happens entirely in the browser using WebAssembly. No code is sent to a backend server to execute.
+## Isolation and lifecycle
 
-## 1. System Architecture Diagram
+`src/lib/python-sandbox.ts` queues requests and creates a new hidden iframe for each run. The iframe points at `/sandbox/python` and uses `sandbox="allow-scripts"`, without `allow-same-origin`. The route sends the same restriction in its enforced Content-Security-Policy. The frame and its blob worker have an opaque origin, separating them from the application's DOM, cookies, localStorage, sessionStorage, and IndexedDB.
 
-```mermaid
-flowchart TD
-    %% UI Layer
-    subgraph UI["React Components"]
-        FullPlayground["PythonPlayground.tsx<br/>(Full Tracing IDE)"]
-        InLesson["InteractivePythonBlock.tsx<br/>(Lightweight Block)"]
-    end
+The route permits scripts and network connections only to the pinned Pyodide distribution in `src/lib/python-sandbox-config.ts`. Package names are validated before loading through Pyodide's package loader. Arbitrary package URLs and network connections are blocked by CSP. The runtime's virtual filesystem is available during execution.
 
-    %% Execution Engine
-    subgraph WASM["Pyodide WebAssembly"]
-        CPython["CPython Runtime"]
-        Tracer["sys.settrace() Tracker<br/>(Playground only)"]
-    end
+Each run gets a fresh interpreter and virtual filesystem. Definitions, files, modified built-ins, and scheduled JavaScript tasks do not carry over to another block, question, or run. Examples that need setup must include it in the same run. Browser HTTP caching can reuse downloaded runtime and package assets.
 
-    %% Outputs
-    subgraph Outputs["Visual Output"]
-        StdOut["Standard Output & Errors"]
-        Heap["Heap & Frame Visualizer"]
-        Predict["Predict Mode Engine"]
-    end
+The iframe transfers a private MessagePort into the worker before learner code starts. The worker captures its native sending method inside a closure. Public worker `postMessage` messages terminate the run without being forwarded, so learner code cannot forge a completion message through Pyodide's JavaScript bridge. Both the iframe and parent validate the protocol, IDs, types, and limits. The parent additionally checks the frame's window and opaque origin.
 
-    %% Flow
-    InLesson --> |"Standard runPythonAsync()"| CPython
-    CPython --> |"Captures stdout/stderr"| StdOut
-    
-    FullPlayground --> |"Injects Tracer"| CPython
-    CPython --> |"Executes Code"| Tracer
-    Tracer --> |"Captures Locals & Heap"| Heap
-    Heap -.-> |"Intercepts Step"| Predict
-    Tracer --> StdOut
+On completion or failure, the iframe terminates its worker and closes the channel before reporting completion. The parent removes the iframe and listeners. The iframe has an execution watchdog, and the parent has a fallback deadline. Stop or cancellation removes the execution frame; queued cancellation settles immediately without waiting for another run. Runtime startup failures are recoverable because the next request creates a new frame and worker.
+
+## Limits
+
+The shared limits in `python-sandbox-config.ts` count UTF-16 characters rather than bytes.
+
+| Resource                                        | Limit                                                   |
+| ----------------------------------------------- | ------------------------------------------------------- |
+| Learner code                                    | 100,000 characters                                      |
+| Trusted prelude                                 | 50,000 characters                                       |
+| Injected string variables                       | 16 variables; 200,000 characters combined               |
+| Packages                                        | 16 validated names                                      |
+| Combined stdout and stderr                      | 100,000 characters                                      |
+| Output message                                  | 4,000 characters                                        |
+| Result                                          | 2,000,000 characters                                    |
+| Messages per run                                | 512                                                     |
+| Waiting runs                                    | 8; one active run                                       |
+| Frame startup                                   | 20 seconds                                              |
+| Execution, runtime download and package loading | Up to 60 seconds; playground and grading use 30 seconds |
+
+The worker batches output and stops reporting once its budget is exhausted. The iframe enforces an independent output and message budget before forwarding anything to React. Output callbacks receive chunks that already include their newlines. Exceeding output or result limits produces an execution error, rather than a successful truncated answer.
+
+Browser workers do not provide a hard memory quota. A large allocation can exhaust browser memory before a watchdog fires, and background-tab timer throttling can delay a timeout. These limits protect normal interactive use and bound accepted messages; they do not provide server-grade resource guarantees for hostile programs.
+
+## Lesson blocks and quizzes
+
+`InteractivePythonBlock.tsx` uses CodeMirror, Run, Stop, Reset, and text-only terminal output. Reset and content changes cancel an active request. Unmounting cancels execution and prevents stale results from changing component state.
+
+`Quiz.tsx` runs each answer and its test code together in a fresh interpreter. Expected output comparisons use the same captured output as before. Quizzes support stopping evaluation and cancel pending execution when their component is removed. Browser-side grading is a learning aid; learners control their browser and can inspect expected answers or modify client-side scores.
+
+## Playground tracing
+
+`PythonPlayground.tsx` submits the tracer prelude from `python-tracer.ts`, the source string, and a request for the serialized trace result. It supports Stop and cancellation on navigation or sample changes. It validates the returned JSON structure before the visualizer traverses it.
+
+The tracer captures line, call, and return events with stack frames, local variables, object references, and stdout. Limits are:
+
+- 400 snapshots and approximately 1,000,000 characters of serialized snapshots.
+- 10,000 characters of captured stdout.
+- 20 frames, 50 locals per frame, and 200 heap objects per snapshot.
+- 50 entries per collection, depth 6, and 1,000 visited values per snapshot.
+
+Cycles reuse object IDs. Large integers and nonfinite floats have display-safe representations. Collections are sampled without copying the whole collection. Playback, breakpoints, memory diffing, alias indicators, and prediction mode consume the checked snapshots.
+
+## Verification
+
+Run the regression suite from the repository root:
+
+```sh
+node --test scripts/python-sandbox/sandbox.test.mjs
+npm run build
 ```
 
-## 2. In-Browser Execution (Pyodide)
+The regression suite uses mocked runtime dependencies to exercise the real generated worker/frame scripts and the client module. It covers message forgery, cleanup, request/output/result limits, timeouts, download recovery, queue bounds, immediate queued cancellation, callback failures, and invalid traces. Its tracer check uses local `python3` when available. It does not replace browser checks with real Pyodide.
 
-Both environments use **Pyodide** (CPython compiled to WASM). 
-To avoid bloating the initial application bundle and page load:
-- Pyodide is loaded dynamically on-demand from a CDN via `src/lib/pyodide-loader.ts`.
-- The runtime instance is cached on the `window` object as `window.__pyodide`.
+Browser checks must cover normal execution, Pyodide package loading, forged public worker messages, storage denial, blocked off-allowlist network requests, output floods, timeouts, Stop, recovery, filesystem isolation, and tracing. Verify that no sandbox iframe remains after each completed run.
 
-## 3. In-Lesson Code Blocks (`InteractivePythonBlock.tsx`)
+## Deployment
 
-For guided lessons and quizzes, we use a lightweight CodeMirror block that executes Python directly.
-- **Purpose**: Let learners quickly run snippets (e.g. testing string slicing or basic math) directly inside a curriculum page without context-switching.
-- **Execution**: Calls the standard `pyodide.runPythonAsync(code)`.
-- **Output**: Intercepts `sys.stdout` and `sys.stderr` via `pyodide.setStdout` and streams it directly to a terminal-style DOM node at the bottom of the block.
-- **Overhead**: Minimal. It does not trace memory, pause execution, or use `sys.settrace()`.
+Deploy the TanStack Start server build, including the `/sandbox/python` GET handler. A static-files-only deployment cannot serve the execution endpoint correctly. Preserve `src/server.ts` and its security-header handling: it must retain the route's own CSP rather than replace it with the parent page's policy.
 
-## 4. The Full Execution Tracer (`python-tracer.ts`)
+Before releasing on a hosting provider:
 
-The full `PythonPlayground.tsx` is meant for deep algorithmic learning. Instead of just evaluating code, it injects a custom Python tracer script before running the learner's code.
-
-It hooks into the Python `sys.settrace()` API and records a complete memory snapshot at every executed line, function call, and return.
-
-A single snapshot includes:
-- **`event`**: The trigger type ("line", "call", or "return").
-- **`line`**: The current execution line number.
-- **`frames`**: The active call stack, containing function names and local variable values.
-- **`heap`**: A flattened memory graph of complex objects (lists, dicts, sets). It captures object types, sizes, and references, resolving cyclic references safely via memory IDs.
-
-> [!WARNING]  
-> The tracer runs synchronously in the main thread during execution. A `MAX_STEPS` limit (currently 400 steps) is strictly enforced to prevent `while True:` infinite loops from hanging the browser.
-
-## 5. Visual Memory & Diffing
-
-The `PythonPlayground.tsx` component reads the array of snapshots and offers IDE-grade features:
-- **Playback Controls**: Step forward, step back, click the gutter to set breakpoints and "Run to breakpoint", or autoplay at variable speeds (0.5x to 4x).
-- **Visual Memory Diffing**: A custom diffing engine compares the current snapshot to the previous one to highlight exactly which variables and heap items changed (flashing them amber).
-- **Aliasing Detection**: The engine automatically detects when multiple variables point to the same memory address (e.g., `a = []`; `b = a`) and generates a plain-English warning to the learner about reference mutation.
-
-## 6. Predict Mode (Active Learning)
-
-Predict mode transforms passive watching into active reasoning. It forces the learner to guess the outcome of a step *before* it is revealed on the screen.
-
-The UI engine statically analyzes the transition between `Snapshot[n]` and `Snapshot[n+1]` to dynamically generate multiple-choice questions:
-- If a function is about to return a primitive, it asks: *"The function(x=5) is about to return. What value comes back?"*
-- If a local variable changes, it asks: *"The highlighted line is about to run. What will `count` be after it?"*
-
-The learner must commit to an answer (with generated decoy options) before the playground allows them to advance to the next step.
+1. Verify `/sandbox/python` returns HTTP 200, HTML, enforced `Content-Security-Policy` with `sandbox allow-scripts`, the pinned CDN path, and `Cache-Control: no-store`.
+2. Verify the hosting proxy does not strip or replace those headers and that the parent page permits its same-origin frame.
+3. Repeat the browser checks on the staging deployment and supported Chrome, Firefox, and Safari versions, including a cold download and a failed download followed by retry.
+4. Keep the Pyodide version pinned. Review a runtime upgrade and its compatibility separately; changing the version also changes the CSP allowlist.

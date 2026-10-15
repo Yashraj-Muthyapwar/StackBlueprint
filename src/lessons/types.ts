@@ -132,8 +132,6 @@ export type Step = {
   cellNotes2?: CellNote[];
   cellHighlights2?: CellHighlight[];
   cellPointers2?: CellPointer[];
-  // optional water levels for elevation-map
-  waterLevels?: number[];
   // the "why" behind this step, rendered in its own callout in the narration card
   proof?: string;
   // predict mode: pause here and ask the learner to choose the next move
@@ -144,9 +142,6 @@ export type Step = {
   dimmed?: number[];
   // array view: bracket under two cells with a label (e.g. "12 vs 9")
   link?: { from: number; to: number; label: string };
-  // elevation-map view: running maxima for the guide lines
-  leftMax?: number;
-  rightMax?: number;
   // array view: small pills under cells, e.g. "+7" on the cell entering a window, "−2" on the one leaving
   badges?: { index: number; text: string; tone: PointerColor }[];
   // array view: prefix values drawn on the gaps between cells, under the array
@@ -155,7 +150,7 @@ export type Step = {
   bits?: BitsView;
 };
 
-export type View = "array" | "linked-list" | "matrix" | "elevation-map";
+export type View = "array" | "linked-list" | "matrix";
 
 export type InputField =
   | { key: string; label: string; kind: "intArray"; help?: string; hidden?: (v: any) => boolean }
@@ -192,6 +187,8 @@ export type LessonBuilder<TInputs extends Record<string, any> = any> = {
   slug: string;
   title: string;
   subtitle: string;
+  /** Marks a lesson that teaches a way of thinking, not a pattern. Shown as a tag in the header and on track cards. */
+  tag?: string;
   /** Concise problem statement shown under the lesson title. */
   problem?: string | ((inputs: TInputs) => string);
   /** Signals in an interview prompt that hint this pattern applies. */
@@ -235,6 +232,9 @@ export type LinkedListStep = Pick<
   "line" | "narration" | "status" | "pointers" | "highlight"
 > & { pointers: Pointer[] };
 
+import type { PatternExercise } from "@/components/dsa/shared/PatternExercises";
+import type { PatternStepperStep } from "@/components/dsa/shared/PatternStepper";
+
 // ============= Lesson content sections (SQL / Data Warehouses) =============
 
 export type QuizQuestion = {
@@ -253,10 +253,14 @@ export type QuizQuestion = {
   requiredCodePatterns?: string[];
   /** Learner-facing guidance displayed when required source constructs are missing. */
   validationMessage?: string;
+  /** Source constructs a coding answer must not use, each with its own learner-facing message. */
+  forbiddenCodePatterns?: { pattern: string; message: string }[];
+  /** Grade only the final output line, so learner prints before the hidden tests are ignored. */
+  gradeLastLine?: boolean;
 };
 
 export type Section =
-  | { kind: "prose"; heading?: string; body: string[] }
+  | { kind: "prose"; heading?: string; eyebrow?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
   | { kind: "syntax"; title: string; code: string; description: string }
   | { kind: "interactive-code"; code: string; caption?: string; packages?: string[] }
@@ -265,6 +269,31 @@ export type Section =
   | { kind: "array-operations-lab" }
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
+  | { kind: "opposite-ends-intuition"; caption?: string }
+  | { kind: "hashing-intuition" }
+  | { kind: "locker-demo" }
+  | { kind: "set-dict-intuition" }
+  | { kind: "set-dict-walkthrough" }
+  | { kind: "hashing-flow"; steps: { title: string; text: string }[] }
+  | { kind: "hashing-cost-chart" }
+  | {
+      kind: "invariant-regions";
+      rules: { region: "zeros" | "ones" | "unknown" | "twos"; text: string }[];
+    }
+  | { kind: "dutch-flag-intuition"; groups: { value: number; title: string }[] }
+  | {
+      kind: "three-sum-intuition";
+      roles: { symbol: string; title: string; text: string; tone: "fixed" | "left" | "right" }[];
+    }
+  | {
+      kind: "fast-slow-intuition";
+      roles: { pointer: string; nickname: string; text: string; tone: "left" | "right" }[];
+    }
+  /** Shared pattern-lesson UI kit (src/components/dsa/shared); problem sets live in problem-sets.ts. */
+  | { kind: "pattern-canvas"; problemSet: string }
+  | { kind: "pattern-example"; problemSet: string }
+  | { kind: "pattern-stepper"; steps: PatternStepperStep[] }
+  | { kind: "pattern-exercises"; exercises: PatternExercise[] }
   | { kind: "table"; caption?: string; headers: string[]; rows: (string | number)[][] }
   | { kind: "callout"; tone: "info" | "warn" | "success" | "violet"; title: string; body: string }
   | { kind: "analogy"; title: string; text: string }
@@ -325,6 +354,14 @@ export type Section =
     }
   | { kind: "pipeline-flow"; steps: { title: string; description: string }[] }
   | { kind: "takeaways"; items: string[] }
+  | {
+      kind: "playground-practice";
+      title: string;
+      prompt: string;
+      tables: string[];
+      successCheck: string;
+      href: string;
+    }
   | {
       kind: "list";
       heading?: string;

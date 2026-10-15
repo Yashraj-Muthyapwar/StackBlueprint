@@ -1,581 +1,476 @@
-import type { LessonBuilder, PracticeProblem, Prediction, Step } from "../types";
-import { stringifyIntArray } from "../util";
-import { withComplexityReview } from "./complexity-review";
+import type { LessonBuilder, QuizQuestion, Section } from "../types";
 
-type Mode = "remove-duplicates" | "find-duplicate";
-type Inputs = { mode: Mode; arr: number[] };
-
-/** Remove Duplicates asks at most this many predict-mode questions, so a long array doesn't become a chore. */
-const MAX_PREDICTIONS = 5;
-
-const codeRemoveDuplicates = `def remove_duplicates(arr):
-    if not arr:
+const removeDuplicatesCode = `def remove_duplicates(numbers):
+    if not numbers:
         return 0
+
     slow = 0
-    for fast in range(1, len(arr)):
-        if arr[fast] != arr[slow]:
+    for fast in range(1, len(numbers)):
+        if numbers[fast] != numbers[slow]:
             slow += 1
-            arr[slow] = arr[fast]
+            numbers[slow] = numbers[fast]
+
     return slow + 1`;
 
-const codeFindDuplicate = `def find_duplicate(nums):
-    slow = fast = nums[0]
-    while True:
-        slow = nums[slow]
-        fast = nums[nums[fast]]
-        if slow == fast:
-            break
-    slow = nums[0]
-    while slow != fast:
-        slow = nums[slow]
-        fast = nums[fast]
-    return slow`;
+/**
+ * Hidden grader for the Move Zeros challenge. It runs after the learner's code and reaches
+ * builtins directly, so shadowing `list` or `print` cannot fake a pass. A tracked list rejects
+ * slicing, sorting, copying and resizing, so only in-place index moves can succeed.
+ */
+const moveZerosTests = String.raw`import builtins as _sb_b
+import random as _sb_random
 
-const DEFAULTS: Record<Mode, number[]> = {
-  "remove-duplicates": [0, 0, 1, 1, 1, 2, 2, 3, 3, 4],
-  "find-duplicate": [1, 3, 4, 2, 2],
+
+def _sb_grade():
+    _b = _sb_b
+    fn = globals().get("move_zeros")
+    if not _b.callable(fn):
+        return "Define a function named move_zeros(numbers)."
+
+    def _blocked(message):
+        def method(self, *args, **kwargs):
+            raise _b.RuntimeError(message)
+        return method
+
+    copy_msg = "Do not copy the list or build another array. Move values inside numbers."
+    resize_msg = "Do not add or remove items. Keep the same length and overwrite or swap values by index."
+
+    class _Tracked(_b.list):
+        def __getitem__(self, index):
+            if _b.isinstance(index, _b.slice):
+                raise _b.RuntimeError("Slicing is not allowed. Read one index at a time.")
+            return _b.list.__getitem__(self, index)
+
+        def __setitem__(self, index, value):
+            if _b.isinstance(index, _b.slice):
+                raise _b.RuntimeError("Slice assignment is not allowed. Write one index at a time.")
+            _b.list.__setitem__(self, index, value)
+
+        sort = _blocked("Sorting is not allowed. Use a slow and a fast pointer.")
+        reverse = _blocked("list.reverse() is not allowed. Use a slow and a fast pointer.")
+        __reversed__ = _blocked("reversed() is not allowed. Use a slow and a fast pointer.")
+        copy = _blocked(copy_msg)
+        __add__ = _blocked(copy_msg)
+        __mul__ = _blocked(copy_msg)
+        __rmul__ = _blocked(copy_msg)
+        __iadd__ = _blocked(resize_msg)
+        __imul__ = _blocked(resize_msg)
+        __delitem__ = _blocked(resize_msg)
+        append = _blocked(resize_msg)
+        extend = _blocked(resize_msg)
+        insert = _blocked(resize_msg)
+        pop = _blocked(resize_msg)
+        remove = _blocked(resize_msg)
+        clear = _blocked(resize_msg)
+
+    cases = [
+        [0, 1, 0, 3, 12],
+        [],
+        [0],
+        [5],
+        [0, 0, 0],
+        [1, 2, 3],
+        [1, 0],
+        [0, 1],
+        [4, 0, 0, 4, 0, 5],
+        [-1, 0, -2, 0, 0, 7],
+    ]
+    rng = _sb_random.Random()
+    for _ in _b.range(5):
+        size = rng.randint(3, 12)
+        cases.append([rng.choice([0, 0, rng.randint(-9, 20)]) for _ in _b.range(size)])
+
+    for case in cases:
+        tracked = _Tracked(case)
+        try:
+            result = fn(tracked)
+        except _b.Exception as error:
+            return f"move_zeros({case}) raised {_b.type(error).__name__}: {error}"
+        actual = _b.list.__getitem__(tracked, _b.slice(None))
+        expected = [value for value in case if value != 0] + [0] * case.count(0)
+        if actual != expected:
+            return f"move_zeros({case}) left the list as {actual}. Expected {expected}."
+        if result is not None and result is not tracked:
+            return "Change numbers in place. Do not return a new list."
+    return "All hidden tests passed"
+
+
+_sb_b.print(_sb_grade())`;
+
+const challenge: QuizQuestion = {
+  id: "fast-slow-move-zeros",
+  question:
+    "Practical challenge: Move zeros. Write your own Python function `move_zeros(numbers)`. For this input, `numbers = [0, 1, 0, 3, 12]`, the expected result is `[1, 3, 12, 0, 0]`. Your function must modify the original array, preserve the order of non-zero elements, and avoid creating another array.",
+  interactiveCode: true,
+  initialCode: `def move_zeros(numbers):
+    # Write your code here.
+    pass
+
+
+numbers = [0, 1, 0, 3, 12]
+move_zeros(numbers)
+print(numbers)
+`,
+  testCode: moveZerosTests,
+  expectedOutput: "All hidden tests passed",
+  gradeLastLine: true,
+  requiredCodePatterns: [
+    String.raw`def\s+move_zeros\s*\(`,
+    String.raw`\bfor\b|\bwhile\b`,
+    String.raw`\]\s*=(?!=)`,
+  ],
+  validationMessage:
+    "Define `move_zeros(numbers)`, scan it with a loop, and write values back into `numbers` by index.",
+  forbiddenCodePatterns: [
+    {
+      pattern: String.raw`\[[^\]\n]*:[^\]\n]*\]`,
+      message: "Slicing is not allowed. Read and write one index at a time.",
+    },
+    {
+      pattern: String.raw`\bsorted\s*\(|\.sort\s*\(`,
+      message: "Sorting is not allowed. Use a slow pointer and a fast pointer.",
+    },
+    {
+      pattern: String.raw`\breversed\s*\(|\.reverse\s*\(`,
+      message: "Reversing is not allowed. Use a slow pointer and a fast pointer.",
+    },
+    {
+      pattern: String.raw`\blist\s*\(|\btuple\s*\(|\bset\s*\(|\bdict\s*\(|\.copy\s*\(|\[\s*\]|\[[^\]\n]*\bfor\b|\]\s*\*|\*\s*\[|\bfilter\s*\(|\bdeque\b`,
+      message: "Do not create another array. Move the values inside `numbers`.",
+    },
+    {
+      pattern: String.raw`\.append\s*\(|\.insert\s*\(|\.extend\s*\(|\.pop\s*\(|\.remove\s*\(|\.clear\s*\(|\bdel\b`,
+      message: "Do not add or remove items. Keep the length and overwrite or swap values by index.",
+    },
+    {
+      pattern: String.raw`\bimport\b|__|\bexec\b|\beval\b|\bglobals\b|\bsetattr\b|\bcompile\b`,
+      message: "This challenge does not need imports or Python internals. Use plain index moves.",
+    },
+  ],
+  explanation:
+    "Let `fast` scan every index. When `numbers[fast]` is not 0, write it to `numbers[slow]` (or swap the two) and move `slow` forward. Afterwards, every index from `slow` to the end holds 0. The hidden tests try empty, all-zero, no-zero and random arrays.",
 };
 
-const practiceLadder: PracticeProblem[] = [
+const quizQuestions: QuizQuestion[] = [
   {
-    name: "Linked List Cycle",
-    difficulty: "easy",
-    hint: "Classic tortoise and hare. If there's a cycle, the fast pointer will eventually lap the slow pointer.",
-    link: "https://leetcode.com/problems/linked-list-cycle/",
+    id: "fast-slow-scanner",
+    question: "Which pointer scans every element?",
+    options: ["Slow", "Fast", "Both must always move together"],
+    correctIndex: 1,
+    explanation:
+      "`fast` visits every index exactly once. `slow` moves only when `fast` finds a value worth keeping.",
   },
   {
-    name: "Remove Duplicates from Sorted Array",
-    difficulty: "easy",
-    hint: "Slow pointer tracks the unique prefix, fast pointer scans for new elements.",
-    link: "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+    id: "fast-slow-duplicate",
+    question: "What happens when the fast value equals the last unique value?",
+    options: [
+      "Advance slow and copy the value",
+      "Leave slow in place and continue scanning",
+      "Stop the loop",
+    ],
+    correctIndex: 1,
+    explanation:
+      "An equal value is a duplicate, so nothing is written. `slow` keeps marking the last unique value while `fast` moves on.",
   },
   {
-    name: "Linked List Cycle II",
-    difficulty: "medium",
-    hint: "Find where the cycle begins. The math proves that after they meet, if you restart one pointer, they will meet at the start of the cycle.",
-    link: "https://leetcode.com/problems/linked-list-cycle-ii/",
+    id: "fast-slow-space",
+    question: "What is the extra space complexity?",
+    options: ["O(1)", "O(n)", "O(n²)"],
+    correctIndex: 0,
+    explanation:
+      "The algorithm only keeps two indexes, no matter how long the array is. It reuses the original array instead of creating a new one.",
   },
-  {
-    name: "Find the Duplicate Number",
-    difficulty: "medium",
-    hint: "Treat the array values as next pointers. The duplicate is the start of the cycle.",
-    link: "https://leetcode.com/problems/find-the-duplicate-number/",
-  },
-  {
-    name: "Minimum Window Substring",
-    difficulty: "hard",
-    hint: "Expand with fast pointer until valid, shrink with slow pointer until invalid. Keep track of the best window.",
-    link: "https://leetcode.com/problems/minimum-window-substring/",
-  },
-  {
-    name: "Subarrays with K Different Integers",
-    difficulty: "hard",
-    hint: "Standard sliding window only gives 'at most K'. The trick is 'exactly K' = 'at most K' - 'at most K-1'.",
-    link: "https://leetcode.com/problems/subarrays-with-k-different-integers/",
-  },
+  challenge,
 ];
 
-function ptrs(slow: number, fast: number, n: number) {
-  // Clamp to valid indices so the canvas never points off-array.
-  const cs = Math.max(0, Math.min(n - 1, slow));
-  const cf = Math.max(0, Math.min(n - 1, fast));
-  return [
-    { name: "slow", index: cs, color: "mint" as const, placement: "below" as const },
-    { name: "fast", index: cf, color: "amber" as const, placement: "above" as const },
-  ];
-}
-
-/**
- * Multiple-choice index options for "where does this pointer land?" questions.
- * The correct index is always included; distractors are the classic mistakes
- * (walking to the next cell, or jumping twice). Order is rotated so the
- * correct answer isn't always first.
- */
-function indexOptions(correct: number, distractors: number[], n: number, rotate: number) {
-  const seen = new Set<number>();
-  const ordered: number[] = [];
-  const add = (v: number) => {
-    if (Number.isInteger(v) && v >= 0 && v < n && !seen.has(v)) {
-      seen.add(v);
-      ordered.push(v);
-    }
-  };
-  add(correct);
-  distractors.forEach(add);
-  for (let i = 0; i < n && ordered.length < 3; i++) add(i);
-  const picked = ordered.slice(0, 3);
-  const k = picked.length ? rotate % picked.length : 0;
-  const rotated = [...picked.slice(k), ...picked.slice(0, k)];
-  return rotated.map((i) => ({ id: String(i), label: `index ${i}` }));
-}
-
-/* -------------------------------------------------------------------------- */
-/* Remove Duplicates from Sorted Array                                        */
-/* -------------------------------------------------------------------------- */
-
-function buildRemoveDuplicates(arr: number[]): Step[] {
-  const steps: Step[] = [];
-  const data = [...arr];
-  const n = data.length;
-
-  if (n === 0) {
-    steps.push({
-      line: 2,
-      lineEnd: 3,
-      array: [],
-      pointers: [],
-      narration: "Empty array: nothing to dedupe. Return 0.",
-    });
-    return steps;
-  }
-
-  const win = (slow: number) => [
-    { from: 0, to: slow, tone: "mid" as const, label: `unique [0..${slow}]` },
-  ];
-
-  let slow = 0;
-  let asked = 0;
-
-  steps.push({
-    line: 2,
-    lineEnd: 4,
-    array: [...data],
-    pointers: ptrs(0, 0, n),
-    partitions: win(0),
-    highlight: { kind: "compare", indices: [0] },
-    status: "slow = 0",
-    narration:
-      "The array isn't empty, so index 0 is trivially unique. slow marks the end of the unique prefix.",
-    proof:
-      "slow always points at the last unique value we've kept. fast scouts ahead looking for the next value that differs.",
-  });
-
-  for (let fast = 1; fast < n; fast++) {
-    const f = data[fast];
-    const s = data[slow];
-    const same = f === s;
-
-    const predict: Prediction | undefined =
-      asked++ < MAX_PREDICTIONS
-        ? {
-            question: `fast is at index ${fast} (value ${f}); slow is at index ${slow} (value ${s}). What should happen?`,
-            options: [
-              { id: "skip", label: "Skip it (duplicate)" },
-              { id: "keep", label: "Keep it (new value)" },
-            ],
-            answer: same ? "skip" : "keep",
-          }
-        : undefined;
-
-    // Decision step: the loop advances fast, then compares. Both branches share these lines.
-    steps.push({
-      line: 5,
-      lineEnd: 6,
-      array: [...data],
-      pointers: ptrs(slow, fast, n),
-      partitions: win(slow),
-      highlight: { kind: "compare", indices: [slow, fast] },
-      status: `fast = ${fast}:  arr[${fast}] = ${f}  vs  arr[${slow}] = ${s}`,
-      narration: same
-        ? `fast → ${fast}. arr[fast] = ${f} equals arr[slow] = ${s}. It's a repeat, so skip it.`
-        : `fast → ${fast}. arr[fast] = ${f} differs from arr[slow] = ${s}. A new value.`,
-      proof: same
-        ? `The array is sorted, so every repeat of ${s} sits right next to it. This one adds nothing new: slow stays put and fast keeps scanning.`
-        : f > s
-          ? `The array is sorted, so ${f} is larger than every value already kept. It has never appeared before and must join the unique prefix.`
-          : `The input isn't sorted, so ${f} is only different from the last kept value, not guaranteed new. This algorithm assumes sorted input.`,
-      predict,
-    });
-
-    if (!same) {
-      const stale = data[slow + 1];
-      slow += 1;
-      data[slow] = f;
-      steps.push({
-        line: 7,
-        lineEnd: 8,
-        array: [...data],
-        pointers: ptrs(slow, fast, n),
-        partitions: win(slow),
-        highlight: { kind: "swap", indices: [slow] },
-        status: `slow = ${slow},  arr[${slow}] = ${f}`,
-        narration:
-          slow === fast
-            ? `slow → ${slow}, the same cell as fast. The copy changes nothing; the unique prefix just grows by one.`
-            : `slow → ${slow}. Copy ${f} over the stale ${stale} at index ${slow}, extending the unique prefix.`,
-        proof:
-          slow === fast
-            ? undefined
-            : "Cells between slow and fast are leftovers we've already scanned, so they're safe to overwrite. That's how the array is compacted in place with no extra memory.",
-      });
-    }
-  }
-
-  steps.push({
-    line: 9,
-    array: [...data],
-    pointers: ptrs(slow, n - 1, n),
-    partitions: win(slow),
-    status: `return ${slow + 1}`,
-    narration: `fast ran off the end. Unique prefix length = ${slow + 1}: values [0..${slow}] are the answer.`,
-    proof: `Everything after index ${slow} is leftover junk. Only the first ${slow + 1} cells matter.`,
-  });
-  return steps;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Find the Duplicate Number (Floyd's tortoise and hare)                      */
-/* -------------------------------------------------------------------------- */
-
-function buildFindDuplicate(arr: number[]): Step[] {
-  const steps: Step[] = [];
-  const n = arr.length;
-
-  if (n < 2) {
-    steps.push({ line: 1, array: [...arr], pointers: [], narration: "Need at least 2 elements." });
-    return steps;
-  }
-  const bad = arr.some((v) => !Number.isInteger(v) || v < 1 || v >= n);
-  if (bad) {
-    steps.push({
-      line: 1,
-      array: [...arr],
-      pointers: [],
-      narration:
-        "Values must be in [1..n] so each value maps to a valid index. Adjust the array and run again.",
-    });
-    return steps;
-  }
-
-  const start = arr[0];
-  let slow = start;
-  let fast = start;
-
-  steps.push({
-    line: 2,
-    array: [...arr],
-    pointers: ptrs(slow, fast, n),
-    highlight: { kind: "compare", indices: [start] },
-    status: `slow = fast = nums[0] = ${start}`,
-    narration: `Both pointers start on index ${start}, which is nums[0]: one step along the path from index 0.`,
-    proof:
-      "Each value is a pointer to the next index. n + 1 values can only name n different indices, so walking the pointers from index 0 must eventually loop. The loop's entrance is the index pointed to twice: the duplicate.",
-  });
-
-  // Phase 1: slow takes 1 step, fast takes 2, until they meet inside the cycle.
-  let round = 0;
-  for (let i = 0; i < n * 3; i++) {
-    round += 1;
-    const ns = arr[slow];
-    const f1 = arr[fast];
-    const f2 = arr[f1];
-
-    if (round === 1) {
-      // Pre-move step so the learner can predict where slow lands.
-      steps.push({
-        line: 4,
-        array: [...arr],
-        pointers: ptrs(slow, fast, n),
-        highlight: { kind: "compare", indices: [slow] },
-        status: `round 1: slow is at index ${slow}`,
-        narration: `slow reads nums[${slow}] = ${ns}, so it jumps to index ${ns}.`,
-        proof:
-          "The value in a cell is the index to jump to, not an offset. slow always lands on index nums[slow].",
-        predict: {
-          question: `Round 1: slow is at index ${slow}. Where does one step take it?`,
-          options: indexOptions(ns, [slow + 1, arr[ns], slow], n, slow),
-          answer: String(ns),
-        },
-      });
-    }
-
-    const met = ns === f2;
-    steps.push({
-      line: 4,
-      lineEnd: 5,
-      array: [...arr],
-      pointers: ptrs(ns, f2, n),
-      highlight: met ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, f2] },
-      status: `slow ${slow} → ${ns}    fast ${fast} → ${f1} → ${f2}`,
-      narration: `slow steps to ${ns}. fast hops twice: nums[${fast}] = ${f1}, then nums[${f1}] = ${f2}.`,
-    });
-
-    slow = ns;
-    fast = f2;
-
-    if (met) {
-      steps.push({
-        line: 6,
-        lineEnd: 7,
-        array: [...arr],
-        pointers: ptrs(slow, fast, n),
-        highlight: { kind: "match", indices: [slow] },
-        status: `slow (${slow}) == fast (${fast}) → break`,
-        narration: `slow == fast at index ${slow}: they met inside the cycle. Phase 1 is over.`,
-        proof:
-          "The meeting point is somewhere in the cycle, but not necessarily its entrance. The distance from index 0 to the entrance equals the distance from the meeting point around to the entrance, so restarting one pointer from the beginning lets them meet exactly there.",
-        predict: {
-          question: `slow and fast both sit on index ${slow}. What should the algorithm do next?`,
-          options: [
-            { id: "return", label: `Return index ${slow} as the duplicate` },
-            { id: "reset", label: "Reset slow to nums[0], then move both one step at a time" },
-            { id: "again", label: "Keep going: slow one step, fast two steps" },
-          ],
-          answer: "reset",
-        },
-      });
-      break;
-    }
-
-    steps.push({
-      line: 6,
-      array: [...arr],
-      pointers: ptrs(slow, fast, n),
-      highlight: { kind: "compare", indices: [slow, fast] },
-      status: `slow (${slow}) != fast (${fast}) → keep going`,
-      narration: `slow (${slow}) != fast (${fast}). Not met yet, so keep walking.`,
-    });
-  }
-
-  // Phase 2: restart slow from the beginning; both move one step per turn.
-  slow = arr[0];
-  steps.push({
-    line: 8,
-    array: [...arr],
-    pointers: ptrs(slow, fast, n),
-    highlight: { kind: "compare", indices: [slow] },
-    status: `reset slow = nums[0] = ${slow}`,
-    narration: `slow resets to nums[0] = ${slow}. fast stays at the meeting point, index ${fast}. From here both move one step at a time.`,
-  });
-
-  let round2 = 0;
-  for (let i = 0; i < n * 2 && slow !== fast; i++) {
-    round2 += 1;
-    const ns = arr[slow];
-    const nf = arr[fast];
-
-    steps.push({
-      line: 9,
-      array: [...arr],
-      pointers: ptrs(slow, fast, n),
-      highlight: { kind: "compare", indices: [slow, fast] },
-      status: `slow = ${slow}, fast = ${fast}`,
-      narration: `slow (${slow}) != fast (${fast}), so both take one step.`,
-      proof:
-        round2 === 1
-          ? "Phase 2 uses equal speeds: fast no longer double-hops. Both pointers are now the same distance from the cycle entrance, so they arrive there together."
-          : undefined,
-      predict:
-        round2 === 1
-          ? {
-              question: `Both pointers now take ONE step. fast is at index ${fast}. Where does fast land?`,
-              options: indexOptions(nf, [arr[nf], fast + 1, fast], n, fast),
-              answer: String(nf),
-            }
-          : undefined,
-    });
-
-    const met = ns === nf;
-    steps.push({
-      line: 10,
-      lineEnd: 11,
-      array: [...arr],
-      pointers: ptrs(ns, nf, n),
-      highlight: met ? { kind: "match", indices: [ns] } : { kind: "compare", indices: [ns, nf] },
-      status: `slow ${slow} → ${ns}    fast ${fast} → ${nf}`,
-      narration: met
-        ? `slow → ${ns}, fast → ${nf}. They land together: this is the cycle entrance.`
-        : `slow → ${ns}, fast → ${nf}.`,
-    });
-
-    slow = ns;
-    fast = nf;
-  }
-
-  steps.push({
-    line: 12,
-    array: [...arr],
-    pointers: ptrs(slow, fast, n),
-    highlight: { kind: "match", indices: [slow] },
-    status: `return ${slow}`,
-    narration: `slow == fast, so the loop ends. Return ${slow}: that's the duplicate.`,
-    proof:
-      "Two different cells hold this value, so two arrows point into this index. That's what makes it the cycle's entrance.",
-  });
-  return steps;
-}
-
-function build({ mode, arr }: Inputs): Step[] {
-  const steps = mode === "find-duplicate" ? buildFindDuplicate(arr) : buildRemoveDuplicates(arr);
-  const n = arr.length;
-  if (mode === "remove-duplicates") {
-    const passes = steps.filter((step) => step.line === 5).length;
-    return withComplexityReview(steps, {
-      n,
-      checks: passes,
-      timeBlocks: [
-        { line: 2, end: 4, label: "Check input; initialize slow", cost: "O(1) once" },
-        { line: 5, label: "Advance fast", cost: "O(1) per pass" },
-        { line: 6, end: 8, label: "Compare; optionally copy", cost: "O(1) per pass" },
-        { line: 9, label: "Return prefix length", cost: "O(1) once" },
-      ],
-      memoryBlocks: [
-        { line: 4, label: "slow", cost: "1 index" },
-        { line: 5, label: "fast and range iterator", cost: "O(1) storage" },
-        { line: 8, label: "Overwrite input cell", cost: "No new array" },
-        { line: 9, label: "Return prefix length", cost: "1 number" },
-      ],
-      body: {
-        line: 6,
-        lineEnd: 8,
-        formula: "Compare + optional increment and copy → O(1) per pass",
-        narration:
-          "One pass compares arr[fast] with arr[slow]. If the values differ, it moves slow once and copies one value. A larger array does not add work inside this pass. Each pass costs O(1).",
-        proof:
-          "Reading by index, comparing, incrementing, and writing one value each take constant time. A duplicate skips the copy. Neither branch scans the array.",
-      },
-      loop: {
-        line: 5,
-        lineEnd: 8,
-        formula: "O(1) + (n − 1) × O(1) + O(1) → O(n)",
-        narration:
-          n === 0
-            ? "The array is empty, so this run returns before the loop. It takes O(1) time. For a nonempty array, fast checks each index from 1 to n - 1 exactly once. Those repeated constant-time checks give O(n) time."
-            : `For these ${n} values, fast made ${passes} passes. It visits indices 1 through ${n - 1} once each. Even if slow also moves, that move happens inside the same pass. At most n - 1 passes of O(1) work give O(n) time.`,
-        proof:
-          "Advancing the for loop once costs O(1); the full loop costs O(n) because it repeats. slow never starts its own scan. Initialization and returning add fixed work, so they do not change the linear total.",
-      },
-      space: {
-        line: 4,
-        lineEnd: 9,
-        formula: "Fixed indices + in-place writes → O(1) extra space",
-        narration:
-          "slow and fast each store one index. New unique values replace cells in the original array. The function does not build another array, so its extra space stays O(1).",
-        proof:
-          "Python range does not store a list of every index; it uses constant storage. The result is one prefix length. The input and animation copies are separate from the Python function's extra memory.",
-      },
-    });
-  }
-  // Invalid inputs do not complete Floyd's algorithm and have no result to analyze.
-  if (steps[steps.length - 1].line !== 12) return steps;
-  const firstPasses = steps.filter((step) => step.line === 4 && step.lineEnd === 5).length;
-  const secondPasses = steps.filter((step) => step.line === 10).length;
-  return withComplexityReview(steps, {
-    n,
-    checks: firstPasses + secondPasses,
-    timeBlocks: [
-      { line: 2, label: "Initialize pointers", cost: "O(1) once" },
-      { line: 3, label: "Phase 1 loop", cost: "O(n) total" },
-      { line: 4, end: 7, label: "Follow links; compare", cost: "O(1) per pass" },
-      { line: 8, label: "Reset slow", cost: "O(1) once" },
-      { line: 9, label: "Phase 2 loop", cost: "O(n) total" },
-      { line: 10, end: 11, label: "Follow one link each", cost: "O(1) per pass" },
-      { line: 12, label: "Return duplicate", cost: "O(1) once" },
+const fastSlowSections: Section[] = [
+  {
+    kind: "prose",
+    body: [
+      "In the previous lesson, you moved two pointers toward each other. In this lesson, both pointers move from left to right.",
+      "We will learn the pattern by using a common interview problem: **Remove Duplicates from a Sorted Array**.",
     ],
-    memoryBlocks: [
-      { line: 2, label: "slow and fast", cost: "2 indices" },
-      { line: 5, label: "Double lookup", cost: "O(1) temporary storage" },
-      { line: 8, label: "Reuse slow", cost: "No new collection" },
-      { line: 12, label: "Return duplicate", cost: "1 number" },
+  },
+  {
+    kind: "prose",
+    eyebrow: "1 · Why",
+    heading: "What problem does it solve?",
+    body: ["Suppose you have this sorted array:"],
+  },
+  {
+    kind: "code",
+    language: "python",
+    caption: "The sorted array",
+    code: "numbers = [2, 2, 4, 4, 6, 6, 8]",
+  },
+  {
+    kind: "prose",
+    body: [
+      "You need to remove the duplicates without creating another array.",
+      "The expected unique values are:",
     ],
-    body: {
-      line: 4,
-      lineEnd: 6,
-      formula: "1 slow lookup + 2 fast lookups + comparison → O(1)",
-      narration:
-        "In phase 1, slow follows one array link and fast follows two. That is three index lookups and one comparison per pass, regardless of array length. Each pass takes O(1). In phase 2, each pointer follows one link, also O(1) per pass.",
-      proof:
-        "nums[nums[fast]] is two lookups, not two loops. A pointer can jump to a distant index without scanning the cells between. The same variables are updated after each lookup.",
-    },
-    loop: {
-      line: 3,
-      lineEnd: 11,
-      formula: "O(n) phase 1 + O(n) phase 2 → O(n), not O(n²)",
-      narration: `This run used ${firstPasses} passes to meet inside the cycle and ${secondPasses} passes to reach its entrance. Each phase takes O(n) time. The loops run one after the other, so add their costs: O(n) + O(n) = O(n).`,
-      proof:
-        "Let μ be the path length to the cycle and λ be the cycle length. Phase 1 takes at most μ + λ passes: after both pointers enter the cycle, fast gains one position per pass and meets slow within λ passes. Phase 2 takes μ passes. μ + λ is at most the number of reachable indices, so the total is O(n).",
-    },
-    space: {
-      line: 2,
-      lineEnd: 11,
-      formula: "Two reused pointers; no visited set → O(1) extra space",
-      narration:
-        "Both phases reuse slow and fast. The function does not store the path or a set of visited indices. Following more links takes more time, but it does not increase the stored data. Extra space remains O(1).",
-      proof:
-        "The array is the input, not extra storage. The two pointer indices, temporary lookup values, and returned number have fixed size in this analysis. Animation snapshots are separate display data.",
-    },
-  });
-}
+  },
+  { kind: "code", language: "text", caption: "Unique values", code: "[2, 4, 6, 8]" },
+  {
+    kind: "prose",
+    body: [
+      "A beginner might create a new array and copy the unique values into it. But interviews often require you to modify the original array in place.",
+      "The slow-fast pattern helps us do this in one pass, with constant extra space.",
+    ],
+  },
+  {
+    kind: "prose",
+    eyebrow: "2 · Intuition",
+    heading: "Imagine a scout and a recorder",
+    body: [],
+  },
+  {
+    kind: "fast-slow-intuition",
+    roles: [
+      {
+        pointer: "Fast pointer",
+        nickname: "The scout",
+        text: "Checks each element in the array. It looks for a new value.",
+        tone: "right",
+      },
+      {
+        pointer: "Slow pointer",
+        nickname: "The recorder",
+        text: "Marks the position of the last unique value. When the scout finds a new value, the recorder advances and stores it.",
+        tone: "left",
+      },
+    ],
+  },
+  { kind: "prose", body: ["Remember this rule:"] },
+  { kind: "mnemonic", text: "Fast finds. Slow writes." },
+  {
+    kind: "prose",
+    body: [
+      "Both pointers move in the same direction. However, they do not move the same number of times.",
+    ],
+  },
+  {
+    kind: "prose",
+    eyebrow: "3 · How",
+    heading: "Follow the pointers step by step",
+    body: ["Start with:"],
+  },
+  {
+    kind: "code",
+    language: "python",
+    caption: "Starting array",
+    code: "numbers = [2, 2, 4, 4, 6]",
+  },
+  { kind: "prose", body: ["The initial positions are:"] },
+  { kind: "code", language: "python", caption: "Initial pointers", code: "slow = 0\nfast = 1" },
+  {
+    kind: "pattern-stepper",
+    steps: [
+      {
+        label: "Start",
+        title: "Initial array",
+        cells: [2, 2, 4, 4, 6],
+        pointers: [
+          { index: 0, label: "slow", tone: "left" },
+          { index: 1, label: "fast", tone: "right" },
+        ],
+        note: "Slow marks index 0. Fast begins at index 1.",
+      },
+      {
+        label: "Step 1",
+        title: "Fast finds another 2",
+        cells: [2, 2, 4, 4, 6],
+        pointers: [
+          { index: 0, label: "slow", tone: "left" },
+          { index: 1, label: "fast", tone: "right" },
+        ],
+        note: "The value at fast equals the value at slow. This is a duplicate, so slow does not move.",
+      },
+      {
+        label: "Step 2",
+        title: "Fast finds 4",
+        cells: [2, 4, 4, 4, 6],
+        pointers: [
+          { index: 1, label: "slow", tone: "left" },
+          { index: 2, label: "fast", tone: "right" },
+        ],
+        note: "The value at fast differs from the value at slow. Advance slow by one and copy 4 to that position.",
+      },
+    ],
+  },
+  {
+    kind: "prose",
+    body: [
+      "Only the unique prefix matters. The elements after the prefix can still contain old values.",
+      "Continue the same process. Fast checks the remaining elements. Slow advances only when fast finds a new unique value.",
+      "At the end, the array begins with:",
+    ],
+  },
+  { kind: "code", language: "text", caption: "Unique prefix", code: "[2, 4, 6]" },
+  { kind: "prose", body: ["The number of unique values is 3."] },
+  {
+    kind: "prose",
+    eyebrow: "4 · Example",
+    heading: "Python implementation",
+    body: ["Here is a complete solution for removing duplicates from a sorted array."],
+  },
+  { kind: "pattern-canvas", problemSet: "fast-slow" },
+  { kind: "prose", body: ["Example:"] },
+  { kind: "pattern-example", problemSet: "fast-slow" },
+  {
+    kind: "list",
+    body: ["Notice three things:"],
+    items: [
+      "`fast` checks every element, starting at index 1.",
+      "`slow` advances only when a new value appears.",
+      "`slow + 1` gives the number of unique elements because array indexes start at 0.",
+    ],
+  },
+  {
+    kind: "callout",
+    tone: "info",
+    title: "Important",
+    body: "The function does not shorten the Python list. It returns the number of valid elements. Only the first `k` elements are the unique result.",
+  },
+  {
+    kind: "prose",
+    eyebrow: "5 · Trade-offs",
+    heading: "When does this pattern work?",
+    body: [],
+  },
+  {
+    kind: "table",
+    caption: "Where the slow-fast approach fits",
+    headers: ["Situation", "Result"],
+    rows: [
+      ["Sorted array with adjacent duplicates", "Works well"],
+      ["Need to modify the array in place", "Works well"],
+      ["Need to preserve the order of unique values", "Works well"],
+      ["Unsorted array with duplicates anywhere", "This exact approach is not sufficient"],
+    ],
+  },
+  {
+    kind: "prose",
+    body: [
+      "**Why does sorting matter?** In a sorted array, equal values appear next to each other. Therefore, comparing the fast value with the latest unique value is enough.",
+    ],
+  },
+  { kind: "prose", body: ["For this algorithm:"] },
+  {
+    kind: "table",
+    caption: "Cost of removing duplicates with slow and fast pointers",
+    headers: ["Measure", "Cost", "Why"],
+    rows: [
+      ["Time complexity", "`O(n)`", "The fast pointer scans each element once."],
+      ["Extra space", "`O(1)`", "Only a fixed number of extra variables are used."],
+    ],
+  },
+  {
+    kind: "callout",
+    tone: "info",
+    title: "Array contents",
+    body: "The algorithm does not move all duplicates to the end. It places unique values at the beginning. The remaining positions may contain old values and are not part of the result.",
+  },
+  {
+    kind: "prose",
+    body: [
+      "The slow pointer marks the position of the last unique value. The fast pointer searches for the next unique value.",
+    ],
+  },
+  {
+    kind: "prose",
+    eyebrow: "6 · Practice",
+    heading: "Trace the pointers yourself",
+    body: ["Do not run Python yet.", "Given this sorted array:"],
+  },
+  {
+    kind: "code",
+    language: "python",
+    caption: "Practice array",
+    code: "numbers = [3, 3, 6, 6, 9]",
+  },
+  { kind: "prose", body: ["Initially:"] },
+  { kind: "code", language: "python", caption: "Initial pointers", code: "slow = 0\nfast = 1" },
+  { kind: "prose", body: ["Answer these questions:"] },
+  {
+    kind: "pattern-exercises",
+    exercises: [
+      {
+        type: "choice",
+        label: "Question A",
+        title: "Duplicate or new value?",
+        prompt: "When fast = 1, do the pointers detect a duplicate or a new value?",
+        options: ["A duplicate", "A new value"],
+        answer: 0,
+        success: "Right. numbers[1] is 3, the same as numbers[0], so slow stays at 0.",
+        hint: "Compare numbers[fast] with numbers[slow].",
+      },
+      {
+        type: "fields",
+        label: "Question B",
+        title: "When fast reaches the 6",
+        prompt: "When fast = 2, what happens to slow and the array?",
+        fields: [
+          { label: "slow moves to index", answer: 1, tone: "left" },
+          { label: "Value written there", answer: 6, tone: "left" },
+        ],
+        success: "Correct. 6 differs from 3, so slow moves to 1 and numbers[1] becomes 6.",
+        hint: "6 differs from numbers[slow], so slow advances first, then the value is copied.",
+      },
+      {
+        type: "fields",
+        label: "Question C",
+        title: "Count the unique values",
+        prompt: "After the loop finishes, how many unique values are there?",
+        fields: [{ label: "Unique values", answer: 3 }],
+        success: "Correct. The prefix is [3, 6, 9], so the function returns slow + 1 = 3.",
+        hint: "Follow fast to the end and count how many times slow advanced, plus the first value.",
+      },
+    ],
+  },
+  {
+    kind: "takeaways",
+    items: [
+      "Same-direction pointers both move left to right: `fast` checks every element, and `slow` moves only when something is kept.",
+      "`slow` marks the end of the valid prefix. Everything after it is leftover data, not part of the result.",
+      "In a sorted array, comparing `numbers[fast]` with `numbers[slow]` is enough, because equal values sit next to each other.",
+      "The function returns a count instead of shortening the list. Read the result as `numbers[:k]`.",
+      "One pass and two indexes: `O(n)` time and `O(1)` extra space.",
+    ],
+  },
+  { kind: "quiz", questions: quizQuestions },
+];
 
-export const fastSlow: LessonBuilder<Inputs> = {
+export const fastSlow: LessonBuilder<Record<string, never>> = {
   slug: "fast-slow",
-  title: "Same Direction - Slow & Fast",
+  title: "Two Pointers: Same Direction (Slow & Fast)",
   subtitle:
-    "Two pointers walking the same way: slow tracks a frontier while fast scouts ahead. Pick a problem and watch it unfold.",
-  problem:
-    "There are two common problems you can solve with same-direction two pointers. Pick one from the dropdown above to see how it works.\n\n" +
-    "1. Remove Duplicates: Given a sorted array, remove duplicates in-place so each value appears only once. Return the length of the unique prefix. You can't use extra memory.\n\n" +
-    "2. Find the Duplicate Number: You have an array where every value points to a valid index. Exactly one value repeats. Find it without modifying the array or using extra memory. The trick is to treat the array like a linked list, where duplicates create a cycle.",
+    "Remove duplicates from a sorted array in place as one pointer scans and the other writes.",
+  problem: "Remove duplicates from a sorted array in place and return the number of unique values.",
   spotIt: [
-    "Array is sorted and you need an in-place dedup or compaction.",
-    "Cycle detection where each value implies the next index (functional graph).",
-    "Constraint forbids extra space or modifying the input.",
+    "The array is sorted and you must remove duplicates or keep each value a limited number of times.",
+    "The prompt asks you to modify the array in place and return a count.",
   ],
   avoidWhen: [
-    "Order doesn't matter — a hash set is simpler than two pointers.",
-    "Array isn't sorted (for the dedup variant) — sort first or switch patterns.",
-    "Values can be outside [1..n] — Floyd-on-values needs that index mapping to be valid.",
+    "Duplicates can appear anywhere in an unsorted array.",
+    "You need a brand-new array and may use extra memory.",
   ],
-  practiceLadder,
+  takeaways: [
+    "Fast finds. Slow writes.",
+    "slow marks the end of the unique prefix; return slow + 1.",
+    "One pass, O(n) time and O(1) extra space.",
+  ],
   variant: "fast-slow",
   view: "array",
-  code: codeRemoveDuplicates,
-  codeFor: (inputs) =>
-    (inputs.mode as Mode) === "find-duplicate" ? codeFindDuplicate : codeRemoveDuplicates,
-  defaultInputs: { mode: "remove-duplicates", arr: DEFAULTS["remove-duplicates"] },
-  inputs: [
+  code: removeDuplicatesCode,
+  sections: fastSlowSections,
+  defaultInputs: {},
+  inputs: [],
+  build: () => [
     {
-      key: "mode",
-      label: "Problem",
-      kind: "select",
-      options: [
-        { value: "remove-duplicates", label: "Remove Duplicates from Sorted Array" },
-        { value: "find-duplicate", label: "Find the Duplicate Number" },
-      ],
-      help: "switches the algorithm",
+      line: 1,
+      array: [2, 2, 4, 4, 6, 6, 8],
+      narration: "Use the concept lesson to trace the slow and fast pointers.",
     },
-    { key: "arr", label: "Array", kind: "intArray" },
   ],
-  // When the mode changes, swap the array to that mode's sensible default
-  // so the input is always valid for the active algorithm.
-  onInputChange: (key, value) => {
-    if (key !== "mode") return null;
-    const next = (value as Mode) in DEFAULTS ? (value as Mode) : "remove-duplicates";
-    return { arr: stringifyIntArray(DEFAULTS[next]) };
-  },
-  validate: ({ mode, arr }) => {
-    const w: string[] = [];
-    if (arr.length === 0) w.push("Array is empty.");
-    if (mode === "remove-duplicates") {
-      for (let i = 1; i < arr.length; i++) {
-        if (arr[i] < arr[i - 1]) {
-          w.push("Array isn't sorted ascending — dedup assumes sorted input.");
-          break;
-        }
-      }
-    } else {
-      const n = arr.length - 1;
-      if (n < 1) w.push("Need at least 2 elements (n+1 with n ≥ 1).");
-      else if (arr.some((v) => v < 1 || v > n))
-        w.push(`Values must be in [1..${n}] for Floyd-on-values to map to valid indices.`);
-    }
-    return w;
-  },
-  build,
-};
-
-// Re-export the code variants so the player can swap the displayed source per mode.
-export const fastSlowCodeByMode: Record<Mode, string> = {
-  "remove-duplicates": codeRemoveDuplicates,
-  "find-duplicate": codeFindDuplicate,
 };

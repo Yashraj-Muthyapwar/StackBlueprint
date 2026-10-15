@@ -10,6 +10,22 @@ import { SliceViewExplorer } from "@/components/dsa/array-basics/SliceViewExplor
 import { ArrayOperationsLab } from "@/components/dsa/array-basics/ArrayOperationsLab";
 import { MatrixOperationsLab } from "@/components/dsa/array-basics/MatrixOperationsLab";
 import { StringCharacterExplorer } from "@/components/dsa/strings/StringCharacterExplorer";
+import { PatternCanvas } from "@/components/dsa/shared/PatternCanvas";
+import { PatternExample } from "@/components/dsa/shared/PatternExample";
+import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
+import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
+import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
+import { HashingCostChart } from "@/components/dsa/hashing/foundations/HashingCostChart";
+import { LockerDemo } from "@/components/dsa/hashing/foundations/LockerDemo";
+import { SetDictIntuition } from "@/components/dsa/hashing/foundations/SetDictIntuition";
+import { SetDictWalkthrough } from "@/components/dsa/hashing/foundations/SetDictWalkthrough";
+import { HashingFlow } from "@/components/dsa/hashing/foundations/HashingFlow";
+import { HashingIntuition } from "@/components/dsa/hashing/foundations/HashingIntuition";
+import { InvariantRegions } from "@/components/dsa/two-pointers/invariants/InvariantRegions";
+import { ThreeSumIntuition } from "@/components/dsa/two-pointers/three-sum/ThreeSumIntuition";
+import { DutchFlagIntuition } from "@/components/dsa/two-pointers/dutch-flag/DutchFlagIntuition";
+import { FastSlowIntuition } from "@/components/dsa/two-pointers/fast-slow/FastSlowIntuition";
+import { OppositeEndsIntuition } from "@/components/dsa/two-pointers/opposite-ends/OppositeEndsIntuition";
 import { useLocation, Link } from "@tanstack/react-router";
 
 function highlightPython(line: string) {
@@ -204,6 +220,24 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
+/** Numbered section marker such as "1 · Why"; it also names the section in the table of contents. */
+function SectionMarker({ label }: { label: string }) {
+  const match = label.match(/^(\d+)\s*·\s*(.+)$/);
+  return (
+    <div className="!mb-2 flex items-center gap-3">
+      {match ? (
+        <span className="flex h-7 min-w-7 items-center justify-center rounded-lg bg-mint/15 px-2 font-mono text-sm font-bold text-mint">
+          {match[1].padStart(2, "0")}
+        </span>
+      ) : null}
+      <span className="font-mono text-sm font-semibold uppercase tracking-[0.22em] text-mint sm:text-base">
+        {match ? match[2] : label}
+      </span>
+      <span className="h-px flex-1 bg-mint/20" />
+    </div>
+  );
+}
+
 export function SectionRenderer({
   section,
   onQuizActiveChange,
@@ -220,6 +254,7 @@ export function SectionRenderer({
     case "prose":
       return (
         <section className="space-y-3">
+          {section.eyebrow ? <SectionMarker label={section.eyebrow} /> : null}
           {section.heading ? (
             <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
@@ -301,22 +336,30 @@ export function SectionRenderer({
         <figure className="my-6 overflow-hidden rounded-xl border border-violet/25 bg-violet/[0.035] shadow-sm">
           <figcaption className="flex items-center justify-between border-b border-violet/20 bg-violet/[0.07] px-4 py-3">
             <div>
-              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet">Syntax</div>
+              <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-violet">
+                Syntax
+              </div>
               <div className="mt-1 text-sm font-semibold text-foreground">{section.title}</div>
             </div>
-            <span className="rounded-full border border-violet/25 bg-violet/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-violet">Pattern</span>
+            <span className="rounded-full border border-violet/25 bg-violet/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-violet">
+              Pattern
+            </span>
           </figcaption>
           <pre className="overflow-x-auto bg-slate-950 px-4 py-4 font-mono text-sm leading-7 shadow-inner sm:text-[15px]">
             <code>
               {lines.map((line, i) => (
                 <div key={i} className="flex">
-                  <span className="mr-4 inline-block w-5 select-none text-right text-slate-600">{i + 1}</span>
+                  <span className="mr-4 inline-block w-5 select-none text-right text-slate-600">
+                    {i + 1}
+                  </span>
                   <span className="text-slate-100">{highlightPython(line)}</span>
                 </div>
               ))}
             </code>
           </pre>
-          <div className="border-t border-violet/15 bg-surface/70 px-4 py-3 text-sm leading-relaxed text-muted-foreground">{parseInlineMarkdown(section.description)}</div>
+          <div className="border-t border-violet/15 bg-surface/70 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+            {parseInlineMarkdown(section.description)}
+          </div>
         </figure>
       );
     }
@@ -345,6 +388,63 @@ export function SectionRenderer({
 
     case "string-character-explorer":
       return <StringCharacterExplorer />;
+
+    case "three-sum-intuition":
+      return <ThreeSumIntuition roles={section.roles} />;
+
+    case "locker-demo":
+      return <LockerDemo />;
+
+    case "set-dict-intuition":
+      return <SetDictIntuition />;
+
+    case "set-dict-walkthrough":
+      return <SetDictWalkthrough />;
+
+    case "hashing-intuition":
+      return <HashingIntuition />;
+
+    case "hashing-flow":
+      return <HashingFlow steps={section.steps} />;
+
+    case "hashing-cost-chart":
+      return <HashingCostChart />;
+
+    case "invariant-regions":
+      return <InvariantRegions rules={section.rules} />;
+
+    case "dutch-flag-intuition":
+      return <DutchFlagIntuition groups={section.groups} />;
+
+    case "fast-slow-intuition":
+      return <FastSlowIntuition roles={section.roles} />;
+
+    case "opposite-ends-intuition":
+      return <OppositeEndsIntuition caption={section.caption} />;
+
+    case "pattern-canvas": {
+      const set = PROBLEM_SETS[section.problemSet];
+      return set ? (
+        <PatternCanvas
+          problems={set.problems}
+          problemSet={section.problemSet}
+          stageMinHeight={set.stageMinHeight}
+        />
+      ) : null;
+    }
+
+    case "pattern-example": {
+      const set = PROBLEM_SETS[section.problemSet];
+      return set ? (
+        <PatternExample problems={set.problems} problemSet={section.problemSet} />
+      ) : null;
+    }
+
+    case "pattern-stepper":
+      return <PatternStepper steps={section.steps} />;
+
+    case "pattern-exercises":
+      return <PatternExercises exercises={section.exercises} />;
 
     case "table":
       return (
@@ -459,6 +559,7 @@ export function SectionRenderer({
             <ZoomableImage
               src={section.src}
               alt={section.alt}
+              caption={section.caption}
               className={`h-auto w-full max-w-full object-contain px-4 lg:max-w-4xl ${section.className ?? ""}`}
             />
           </div>

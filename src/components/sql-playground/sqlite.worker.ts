@@ -1,5 +1,6 @@
 // Use importScripts to load sql.js directly from the public directory.
 // This completely bypasses Vite/Rolldown module resolution bugs in Web Workers.
+declare function importScripts(...urls: string[]): void;
 importScripts("/sql/sql-wasm.js");
 
 declare var initSqlJs: any;

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { BookOpen, GripHorizontal } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface TOCItem {
   id: string;
@@ -17,6 +19,8 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
   const [activeId, setActiveId] = useState<string>("");
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const dragStart = useRef({ x: 0, y: 0 });
   const posStart = useRef({ x: 0, y: 0 });
 
@@ -58,6 +62,11 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
       setPosition({ x: 0, y: newY });
     }
   };
+
+  // Phones: the root header exposes a slot so the contents button lives in the nav bar, not over the lesson.
+  useEffect(() => {
+    setSlot(document.getElementById("lesson-toc-slot"));
+  }, []);
 
   useEffect(() => {
     if (items.length === 0) return;
@@ -111,9 +120,63 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
     }
   };
 
+  const menu = slot
+    ? createPortal(
+        <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+          <PopoverTrigger asChild>
+            <button
+              className="grid size-9 cursor-pointer place-items-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+              aria-label="Table of contents"
+            >
+              <BookOpen className="size-[18px]" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            align="end"
+            sideOffset={8}
+            className="max-h-[65vh] w-[min(20rem,calc(100vw-1.5rem))] overflow-y-auto p-2"
+          >
+            <p className="px-2 pb-1.5 pt-1 font-mono text-[10px] font-medium uppercase tracking-[0.18em] text-mint">
+              Table of Contents
+            </p>
+            <ul className="flex flex-col gap-0.5">
+              {items.map((item) => {
+                const isActive = activeId === item.id;
+                return (
+                  <li key={item.id}>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        scrollToSection(item.targetId);
+                      }}
+                      className={`flex w-full cursor-pointer items-start gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors ${
+                        isActive
+                          ? "bg-mint/10 font-medium text-foreground"
+                          : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                      }`}
+                    >
+                      <span
+                        className={`mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full ${
+                          isActive ? "bg-mint" : "bg-muted-foreground/40"
+                        }`}
+                      />
+                      <span className="leading-snug">{item.title}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </PopoverContent>
+        </Popover>,
+        slot,
+      )
+    : null;
+
   return (
+    <>
+      {menu}
     <div
-      className="fixed bottom-6 right-6 z-50 flex flex-col items-end lg:bottom-auto lg:top-32"
+      className="fixed z-50 hidden flex-col items-end lg:right-6 lg:top-32 lg:flex"
       style={{
         transform: `translate(${position.x}px, ${position.y}px)`,
         touchAction: "none"
@@ -190,5 +253,6 @@ export function FloatingTOC({ items }: FloatingTOCProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

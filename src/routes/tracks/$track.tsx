@@ -105,7 +105,7 @@ function TrackPreview() {
                 <Link
                   to="/patterns/$pattern/$lesson"
                   params={{ pattern: "two-pointers", lesson: "opposite-ends" }}
-                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-mint px-4 py-2 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.02]"
+                  className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 hover:scale-[1.02]"
                 >
                   Open Two Pointers
                 </Link>
