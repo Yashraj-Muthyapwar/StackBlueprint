@@ -57,12 +57,19 @@ export function AppSidebar() {
   const isDone: IsDone = (patSlug, lessonSlug) =>
     completed.has(lessonSlug) || completed.has(`${patSlug}-${lessonSlug}`);
 
-  // Keep the current lesson in view after navigation.
+  // Keep the current lesson in view after navigation. On a track overview
+  // there is no current lesson, so bring the track header to the top instead;
+  // otherwise collapsing the previous track leaves it scrolled out of view.
   useEffect(() => {
     const id = window.setTimeout(() => {
+      const step = document.querySelector('[data-sb-current-step="true"]');
+      if (step) {
+        step.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        return;
+      }
       document
-        .querySelector('[data-sb-current-step="true"]')
-        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        .querySelector('.sb-track[data-current="true"]')
+        ?.scrollIntoView({ block: "start", behavior: "smooth" });
     }, 260);
     return () => window.clearTimeout(id);
   }, [pathname]);
@@ -193,8 +200,10 @@ function TrackItem({
 }) {
   const current = isCategoryCurrent(cat, pathname);
   const [open, setOpen] = useState(current);
+  // Follow the active track: open on entering it, collapse on leaving it.
+  // Manual toggles in between are kept until the next track change.
   useEffect(() => {
-    if (current) setOpen(true);
+    setOpen(current);
   }, [current]);
 
   const patterns = categoryPatterns(cat);
