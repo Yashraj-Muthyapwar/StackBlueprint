@@ -119,6 +119,7 @@ import { rabinKarp } from "./strings/rabin-karp";
 import { zAlgorithm } from "./strings/z-algorithm";
 import { stringCharacters, stringOperations, stringScans } from "./strings/basics";
 
+import { whyHashing } from "./hash-map/why-hashing";
 import { frequencyCounting } from "./hash-map/frequency-counting";
 import { topKFrequent } from "./hash-map/top-k-frequent";
 import { twoSum } from "./hash-map/two-sum";
@@ -267,6 +268,14 @@ export const patterns: PatternEntry[] = [
     ],
   },
   {
+    slug: "hashing-foundations",
+    title: "Hashing Foundations",
+    category: "Hash Map",
+    blurb:
+      "Start here: the search cost hashing removes, how a key finds its slot, and what it costs.",
+    lessons: [{ builder: whyHashing, icon: Hash }],
+  },
+  {
     slug: "hash-frequency",
     title: "Frequency Based",
     category: "Hash Map",
@@ -395,7 +404,8 @@ const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
   })),
 });
 
-const roadmapPatternBySlug = (slug: string): RoadmapPattern => toRoadmapPattern(PATTERN_BY_SLUG[slug]!);
+const roadmapPatternBySlug = (slug: string): RoadmapPattern =>
+  toRoadmapPattern(PATTERN_BY_SLUG[slug]!);
 
 /**
  * DSA sidebar and overview grouping, in teaching order. Only the grouping lives
@@ -411,14 +421,22 @@ const dsaSections: { title: string; blurb: string; modules: string[] }[] = [
   },
   {
     title: "Two Pointers",
-    blurb: "Two indices walk the input, converging, chasing or partitioning, on arrays and strings.",
+    blurb:
+      "Two indices walk the input, converging, chasing or partitioning, on arrays and strings.",
     modules: ["two-pointers", "two-pointers-string"],
   },
   {
     title: "Hashing",
     blurb:
       "Use lookup tables, sets and frequency counts to trade brute force for linear-time solutions.",
-    modules: ["hash-frequency", "hash-lookup", "hash-set", "hash-index", "hash-grouping"],
+    modules: [
+      "hashing-foundations",
+      "hash-frequency",
+      "hash-lookup",
+      "hash-set",
+      "hash-index",
+      "hash-grouping",
+    ],
   },
   {
     title: "Windows & Ranges",
@@ -1166,11 +1184,36 @@ export const roadmap: RoadmapCategory[] = [
             locked: false,
             path: "/python/basics",
             lessons: [
-              { slug: "what-is-python", title: "What is Python?", icon: FileText, path: "/python/basics/what-is-python" },
-              { slug: "basic-syntax", title: "Basic Syntax", icon: Code2, path: "/python/basics/basic-syntax" },
-              { slug: "variables-and-data-types", title: "Variables & Data Types", icon: Database, path: "/python/basics/variables-and-data-types" },
-              { slug: "io-and-conversions", title: "I/O & Type Conversions", icon: Zap, path: "/python/basics/io-and-conversions" },
-              { slug: "python-basics-final-quiz", title: "Python Basics Final Quiz", icon: HelpCircle, path: "/python/basics/python-basics-final-quiz" },
+              {
+                slug: "what-is-python",
+                title: "What is Python?",
+                icon: FileText,
+                path: "/python/basics/what-is-python",
+              },
+              {
+                slug: "basic-syntax",
+                title: "Basic Syntax",
+                icon: Code2,
+                path: "/python/basics/basic-syntax",
+              },
+              {
+                slug: "variables-and-data-types",
+                title: "Variables & Data Types",
+                icon: Database,
+                path: "/python/basics/variables-and-data-types",
+              },
+              {
+                slug: "io-and-conversions",
+                title: "I/O & Type Conversions",
+                icon: Zap,
+                path: "/python/basics/io-and-conversions",
+              },
+              {
+                slug: "python-basics-final-quiz",
+                title: "Python Basics Final Quiz",
+                icon: HelpCircle,
+                path: "/python/basics/python-basics-final-quiz",
+              },
             ],
           },
           {
@@ -1180,12 +1223,42 @@ export const roadmap: RoadmapCategory[] = [
             locked: false,
             path: "/python/control-flow",
             lessons: [
-              { slug: "operators", title: "Operators", icon: GitBranch, path: "/python/control-flow/operators" },
-              { slug: "if-else", title: "Conditional Branching: If/Else", icon: GitBranch, path: "/python/control-flow/if-else" },
-              { slug: "match-case", title: "Match-Case (Switch)", icon: GitBranch, path: "/python/control-flow/match-case" },
-              { slug: "loops", title: "Loops", icon: GitBranch, path: "/python/control-flow/loops" },
-              { slug: "loop-control", title: "Loop Control", icon: GitBranch, path: "/python/control-flow/loop-control" },
-              { slug: "control-flow-final-quiz", title: "Control Flow Final Quiz", icon: HelpCircle, path: "/python/control-flow/control-flow-final-quiz" },
+              {
+                slug: "operators",
+                title: "Operators",
+                icon: GitBranch,
+                path: "/python/control-flow/operators",
+              },
+              {
+                slug: "if-else",
+                title: "Conditional Branching: If/Else",
+                icon: GitBranch,
+                path: "/python/control-flow/if-else",
+              },
+              {
+                slug: "match-case",
+                title: "Match-Case (Switch)",
+                icon: GitBranch,
+                path: "/python/control-flow/match-case",
+              },
+              {
+                slug: "loops",
+                title: "Loops",
+                icon: GitBranch,
+                path: "/python/control-flow/loops",
+              },
+              {
+                slug: "loop-control",
+                title: "Loop Control",
+                icon: GitBranch,
+                path: "/python/control-flow/loop-control",
+              },
+              {
+                slug: "control-flow-final-quiz",
+                title: "Control Flow Final Quiz",
+                icon: HelpCircle,
+                path: "/python/control-flow/control-flow-final-quiz",
+              },
             ],
           },
           {
@@ -1195,12 +1268,37 @@ export const roadmap: RoadmapCategory[] = [
             locked: false,
             path: "/python/data-structures",
             lessons: [
-              { slug: "lists", title: "Lists", icon: Database, path: "/python/data-structures/lists" },
-              { slug: "tuples", title: "Tuples", icon: Database, path: "/python/data-structures/tuples" },
+              {
+                slug: "lists",
+                title: "Lists",
+                icon: Database,
+                path: "/python/data-structures/lists",
+              },
+              {
+                slug: "tuples",
+                title: "Tuples",
+                icon: Database,
+                path: "/python/data-structures/tuples",
+              },
               { slug: "sets", title: "Sets", icon: Database, path: "/python/data-structures/sets" },
-              { slug: "dictionaries", title: "Dictionaries", icon: Database, path: "/python/data-structures/dictionaries" },
-              { slug: "collections-module", title: "Collections Module", icon: Database, path: "/python/data-structures/collections-module" },
-              { slug: "data-structures-final-quiz", title: "Data Structures Final Quiz", icon: HelpCircle, path: "/python/data-structures/data-structures-final-quiz" },
+              {
+                slug: "dictionaries",
+                title: "Dictionaries",
+                icon: Database,
+                path: "/python/data-structures/dictionaries",
+              },
+              {
+                slug: "collections-module",
+                title: "Collections Module",
+                icon: Database,
+                path: "/python/data-structures/collections-module",
+              },
+              {
+                slug: "data-structures-final-quiz",
+                title: "Data Structures Final Quiz",
+                icon: HelpCircle,
+                path: "/python/data-structures/data-structures-final-quiz",
+              },
             ],
           },
         ],
@@ -1215,13 +1313,48 @@ export const roadmap: RoadmapCategory[] = [
             locked: false,
             path: "/python/functions",
             lessons: [
-              { slug: "function-basics", title: "Function Basics", icon: FunctionSquare, path: "/python/functions/function-basics" },
-              { slug: "arguments-parameters", title: "Arguments & Parameters", icon: FunctionSquare, path: "/python/functions/arguments-parameters" },
-              { slug: "scope-namespaces", title: "Scope & Namespaces", icon: FunctionSquare, path: "/python/functions/scope-namespaces" },
-              { slug: "advanced-functions", title: "Advanced Functions", icon: FunctionSquare, path: "/python/functions/advanced-functions" },
-              { slug: "modules-packages", title: "Modules & Packages", icon: FunctionSquare, path: "/python/functions/modules-packages" },
-              { slug: "package-management", title: "Package Management", icon: FunctionSquare, path: "/python/functions/package-management" },
-              { slug: "functions-final-quiz", title: "Functions & Modules Final Quiz", icon: HelpCircle, path: "/python/functions/functions-final-quiz" },
+              {
+                slug: "function-basics",
+                title: "Function Basics",
+                icon: FunctionSquare,
+                path: "/python/functions/function-basics",
+              },
+              {
+                slug: "arguments-parameters",
+                title: "Arguments & Parameters",
+                icon: FunctionSquare,
+                path: "/python/functions/arguments-parameters",
+              },
+              {
+                slug: "scope-namespaces",
+                title: "Scope & Namespaces",
+                icon: FunctionSquare,
+                path: "/python/functions/scope-namespaces",
+              },
+              {
+                slug: "advanced-functions",
+                title: "Advanced Functions",
+                icon: FunctionSquare,
+                path: "/python/functions/advanced-functions",
+              },
+              {
+                slug: "modules-packages",
+                title: "Modules & Packages",
+                icon: FunctionSquare,
+                path: "/python/functions/modules-packages",
+              },
+              {
+                slug: "package-management",
+                title: "Package Management",
+                icon: FunctionSquare,
+                path: "/python/functions/package-management",
+              },
+              {
+                slug: "functions-final-quiz",
+                title: "Functions & Modules Final Quiz",
+                icon: HelpCircle,
+                path: "/python/functions/functions-final-quiz",
+              },
             ],
           },
           {
