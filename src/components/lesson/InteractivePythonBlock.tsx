@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { keymap } from "@codemirror/view";
-import { indentWithTab } from "@codemirror/commands";
+import { pythonEditorBehaviour } from "./python-editor-extensions";
 import { Play, Loader2, Square, RotateCcw } from "lucide-react";
 import { runPython, stoppedMessage } from "@/lib/python-sandbox";
 import { Button } from "@/components/ui/button";
@@ -155,7 +154,7 @@ export function InteractivePythonBlock({
             setCode(v);
             onChange?.(v);
           }}
-          extensions={[python(), keymap.of([indentWithTab])]}
+          extensions={[python(), ...pythonEditorBehaviour]}
           theme={oneDark}
           basicSetup={{
             lineNumbers: true,

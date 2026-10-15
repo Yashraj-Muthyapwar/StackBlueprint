@@ -15,6 +15,9 @@ import { PatternExample } from "@/components/dsa/shared/PatternExample";
 import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
 import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
 import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
+import { HashingCostChart } from "@/components/dsa/hashing/foundations/HashingCostChart";
+import { HashingFlow } from "@/components/dsa/hashing/foundations/HashingFlow";
+import { HashingIntuition } from "@/components/dsa/hashing/foundations/HashingIntuition";
 import { InvariantRegions } from "@/components/dsa/two-pointers/invariants/InvariantRegions";
 import { ThreeSumIntuition } from "@/components/dsa/two-pointers/three-sum/ThreeSumIntuition";
 import { DutchFlagIntuition } from "@/components/dsa/two-pointers/dutch-flag/DutchFlagIntuition";
@@ -385,6 +388,15 @@ export function SectionRenderer({
 
     case "three-sum-intuition":
       return <ThreeSumIntuition roles={section.roles} />;
+
+    case "hashing-intuition":
+      return <HashingIntuition />;
+
+    case "hashing-flow":
+      return <HashingFlow steps={section.steps} />;
+
+    case "hashing-cost-chart":
+      return <HashingCostChart />;
 
     case "invariant-regions":
       return <InvariantRegions rules={section.rules} />;
