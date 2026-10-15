@@ -141,7 +141,7 @@ export type PatternEntry = {
 export const patterns: PatternEntry[] = [
   {
     slug: "array-matrix-basics",
-    title: "Basics",
+    title: "Array Basics",
     category: "Arrays",
     blurb:
       "Learn what arrays are, explore 1D through 3D indexing, then build toward traversal, matrices, and operation costs.",
@@ -155,7 +155,7 @@ export const patterns: PatternEntry[] = [
   },
   {
     slug: "two-pointers",
-    title: "Two Pointers",
+    title: "Two Pointers: Arrays",
     category: "Arrays",
     blurb: "Two indices walk the array — converging, chasing, or partitioning.",
     lessons: [
@@ -168,7 +168,7 @@ export const patterns: PatternEntry[] = [
   },
   {
     slug: "sliding-window",
-    title: "Sliding Window",
+    title: "Sliding Window: Arrays",
     category: "Arrays",
     blurb: "A window of contiguous elements expands and contracts as the pointers walk.",
     lessons: [
@@ -223,7 +223,7 @@ export const patterns: PatternEntry[] = [
   },
   {
     slug: "string-basics",
-    title: "Basics",
+    title: "String Basics",
     category: "Strings",
     blurb:
       "Learn characters, string operations, and the single-pass scans that power later patterns.",
@@ -235,7 +235,7 @@ export const patterns: PatternEntry[] = [
   },
   {
     slug: "sliding-window-string",
-    title: "Sliding Window",
+    title: "Sliding Window: Strings",
     category: "Strings",
     blurb: "Windowed substring problems — distinct chars, cover-of-pattern, anagrams.",
     lessons: [
@@ -246,7 +246,7 @@ export const patterns: PatternEntry[] = [
   },
   {
     slug: "two-pointers-string",
-    title: "Two Pointers",
+    title: "Two Pointers: Strings",
     category: "Strings",
     blurb: "Mirror/converging pointers and in-place reads-writes over char buffers.",
     lessons: [
@@ -395,15 +395,68 @@ const toRoadmapPattern = (p: PatternEntry): RoadmapPattern => ({
   })),
 });
 
-const arrayPatterns: RoadmapPattern[] = patterns
-  .filter((p) => p.category === "Arrays")
-  .map(toRoadmapPattern);
-const stringPatterns: RoadmapPattern[] = patterns
-  .filter((p) => p.category === "Strings")
-  .map(toRoadmapPattern);
-const hashMapPatterns: RoadmapPattern[] = patterns
-  .filter((p) => p.category === "Hash Map")
-  .map(toRoadmapPattern);
+const roadmapPatternBySlug = (slug: string): RoadmapPattern => toRoadmapPattern(PATTERN_BY_SLUG[slug]!);
+
+/**
+ * DSA sidebar and overview grouping, in teaching order. Only the grouping lives
+ * here: module slugs, lesson slugs and `/patterns/<module>/<lesson>` paths still
+ * come from `patterns` above, so routes, progress and prev/next are unaffected.
+ */
+const dsaSections: { title: string; blurb: string; modules: string[] }[] = [
+  {
+    title: "Foundations",
+    blurb:
+      "Start with how arrays and strings are stored, indexed and scanned before layering patterns on top.",
+    modules: ["array-matrix-basics", "string-basics"],
+  },
+  {
+    title: "Two Pointers",
+    blurb: "Two indices walk the input, converging, chasing or partitioning, on arrays and strings.",
+    modules: ["two-pointers", "two-pointers-string"],
+  },
+  {
+    title: "Hashing",
+    blurb:
+      "Use lookup tables, sets and frequency counts to trade brute force for linear-time solutions.",
+    modules: ["hash-frequency", "hash-lookup", "hash-set", "hash-index", "hash-grouping"],
+  },
+  {
+    title: "Windows & Ranges",
+    blurb:
+      "Sliding windows, prefix state and subarray scans that reuse work instead of recomputing it.",
+    modules: ["sliding-window", "sliding-window-string", "prefix", "kadane"],
+  },
+  {
+    title: "Search & Grids",
+    blurb: "Halve the search space, or work index arithmetic over 2D grids.",
+    modules: ["binary-search", "matrix"],
+  },
+  {
+    title: "String Matching",
+    blurb: "Exact substring search with failure functions, rolling hashes and Z-arrays.",
+    modules: ["pattern-matching"],
+  },
+];
+
+const dsaRoadmapSections = dsaSections.map((sec) => ({
+  title: sec.title,
+  blurb: sec.blurb,
+  patterns: sec.modules.map(roadmapPatternBySlug),
+}));
+
+const anchorOf = (title: string) =>
+  title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+/** Which DSA section a module sits in, with the overview-page anchor for breadcrumbs. */
+export const PATTERN_SECTION_BY_SLUG: Record<string, { title: string; anchor: string }> =
+  Object.fromEntries(
+    dsaSections.flatMap((sec) =>
+      sec.modules.map((slug) => [slug, { title: sec.title, anchor: anchorOf(sec.title) }] as const),
+    ),
+  );
 
 const lockedPattern = (title: string, slug: string, blurb: string): RoadmapPattern => ({
   title,
@@ -470,27 +523,8 @@ export const roadmap: RoadmapCategory[] = [
     icon: dsaLogo,
     blurb: "Visual, animated walkthroughs of the canonical DSA patterns.",
     overviewPath: "/patterns",
-    sections: [
-      {
-        title: "Arrays / Matrix",
-        blurb:
-          "Build a strong foundation with the array patterns that show up in nearly every interview loop.",
-        patterns: arrayPatterns,
-      },
-      {
-        title: "Strings",
-        blurb:
-          "Turn character problems into fast, reliable scans with a small set of reusable techniques.",
-        patterns: stringPatterns,
-      },
-      {
-        title: "Hash Map",
-        blurb:
-          "Use lookup tables, sets, and frequency counts to trade brute force for linear-time solutions.",
-        patterns: hashMapPatterns,
-      },
-    ],
-    patterns: [...arrayPatterns, ...stringPatterns, ...hashMapPatterns],
+    sections: dsaRoadmapSections,
+    patterns: dsaRoadmapSections.flatMap((sec) => sec.patterns),
   },
   {
     title: "SQL Mastery",
