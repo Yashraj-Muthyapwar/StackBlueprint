@@ -270,6 +270,9 @@ export type Section =
   | { kind: "matrix-operations-lab" }
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
+  | { kind: "hashing-intuition" }
+  | { kind: "hashing-flow"; steps: { title: string; text: string }[] }
+  | { kind: "hashing-cost-chart" }
   | {
       kind: "invariant-regions";
       rules: { region: "zeros" | "ones" | "unknown" | "twos"; text: string }[];

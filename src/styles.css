@@ -314,7 +314,7 @@
   .sb-header {
     position: relative;
     gap: 0;
-    padding: 16px 14px 14px;
+    padding: 16px 18px 14px;
     border-bottom: 1px solid var(--sidebar-border);
     overflow: hidden;
     isolation: isolate;
@@ -351,12 +351,18 @@
   .sb-brand-logo {
     display: grid;
     place-items: center;
-    width: 38px;
-    height: 38px;
+    width: 34px;
+    height: 34px;
     flex-shrink: 0;
+    border-radius: 10px;
+    /* Tinted plate with a brand-colored glyph: reads as the logo without
+       out-shouting the wordmark or the hero accents. */
+    background: color-mix(in oklab, var(--primary) 12%, var(--sb-card));
+    color: var(--primary);
+    border: 1px solid color-mix(in oklab, var(--primary) 28%, transparent);
     transition: transform 0.3s var(--sb-ease);
   }
-  .sb-brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .sb-brand-logo svg { width: 80%; height: 80%; }
   .sb-brand:hover .sb-brand-logo { transform: rotate(-6deg) scale(1.05); }
   .sb-brand-text { display: flex; flex-direction: column; gap: 3px; line-height: 1; }
   .sb-brand-name {
@@ -496,7 +502,7 @@
     content: "";
     position: absolute;
     left: -1px;
-    top: 14px;
+    top: 10px;
     width: 3px;
     height: 22px;
     border-radius: 0 3px 3px 0;
@@ -530,15 +536,24 @@
     width: 32px;
     height: 32px;
     flex-shrink: 0;
-    border-radius: 9px;
-    background: var(--sb-card);
-    border: 1px solid var(--sidebar-border);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+    border-radius: 10px;
+    background: color-mix(in oklab, var(--sb-card) 60%, transparent);
+    border: 1px solid color-mix(in oklab, var(--sidebar-border) 70%, transparent);
     transition: transform 0.25s var(--sb-ease), border-color 0.2s, box-shadow 0.2s;
   }
   .sb-track-logo img,
-  .sb-track-logo svg { width: 17px; height: 17px; object-fit: contain; }
+  .sb-track-logo svg { width: 20px; height: 20px; object-fit: contain; }
   .sb-track-row:hover .sb-track-logo { transform: scale(1.07); }
+  /* Some logo files carry a lot of built-in padding; scale them (image only,
+     the file is untouched) so every track icon reads at the same optical size. */
+  .sb-track-logo[data-track="data-warehouses"] img,
+  .sb-track-logo[data-track="data-engineering"] img { transform: scale(1.4); }
+  /* Track logos are drawn for light backgrounds (dark outlines, navy glyphs),
+     so give them a light plate in dark mode instead of a translucent one. */
+  .dark .sb-track-logo {
+    background: oklch(0.97 0.005 250);
+    border-color: color-mix(in oklab, white 12%, transparent);
+  }
   .sb-track[data-current="true"] .sb-track-logo {
     border-color: color-mix(in oklab, var(--sb-accent) 50%, var(--sidebar-border));
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--sb-accent) 15%, transparent);

@@ -3,7 +3,7 @@ import { ArrowUpRight, Check, ChevronRight, Database, Lock, Terminal } from "luc
 import { useEffect, useMemo, useState } from "react";
 
 import { roadmap, categoryPatterns, sectionPatterns, type RoadmapCategory, type RoadmapPattern } from "@/lessons/roadmap";
-import logoImg from "@/images/logos/new-logo.png";
+import { BrandMark } from "@/components/BrandMark";
 import { useProgress } from "@/hooks/use-progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Sidebar, SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -57,12 +57,19 @@ export function AppSidebar() {
   const isDone: IsDone = (patSlug, lessonSlug) =>
     completed.has(lessonSlug) || completed.has(`${patSlug}-${lessonSlug}`);
 
-  // Keep the current lesson in view after navigation.
+  // Keep the current lesson in view after navigation. On a track overview
+  // there is no current lesson, so bring the track header to the top instead;
+  // otherwise collapsing the previous track leaves it scrolled out of view.
   useEffect(() => {
     const id = window.setTimeout(() => {
+      const step = document.querySelector('[data-sb-current-step="true"]');
+      if (step) {
+        step.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        return;
+      }
       document
-        .querySelector('[data-sb-current-step="true"]')
-        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        .querySelector('.sb-track[data-current="true"]')
+        ?.scrollIntoView({ block: "start", behavior: "smooth" });
     }, 260);
     return () => window.clearTimeout(id);
   }, [pathname]);
@@ -72,7 +79,7 @@ export function AppSidebar() {
       <SidebarHeader className="sb-header">
         <Link to="/" onClick={closeMobile} className="sb-brand" aria-label="StackBlueprint home">
           <span className="sb-brand-logo">
-            <img src={logoImg} alt="" />
+            <BrandMark />
           </span>
           <span className="sb-brand-text">
             <span className="sb-brand-name">StackBlueprint</span>
@@ -170,7 +177,7 @@ function ToolTile({
 
 function TrackLogo({ cat }: { cat: RoadmapCategory }) {
   return (
-    <span className="sb-track-logo">
+    <span className="sb-track-logo" data-track={cat.slug}>
       {typeof cat.icon === "string" ? (
         <img src={cat.icon} alt="" />
       ) : (
@@ -193,8 +200,10 @@ function TrackItem({
 }) {
   const current = isCategoryCurrent(cat, pathname);
   const [open, setOpen] = useState(current);
+  // Follow the active track: open on entering it, collapse on leaving it.
+  // Manual toggles in between are kept until the next track change.
   useEffect(() => {
-    if (current) setOpen(true);
+    setOpen(current);
   }, [current]);
 
   const patterns = categoryPatterns(cat);
@@ -219,7 +228,9 @@ function TrackItem({
     <>
       <TrackLogo cat={cat} />
       <span className="sb-track-text">
-        <span className="sb-track-title">{cat.title}</span>
+        <span className="sb-track-title" title={cat.title}>
+          {cat.title}
+        </span>
         <span className="sb-track-meta">{meta}</span>
       </span>
     </>
