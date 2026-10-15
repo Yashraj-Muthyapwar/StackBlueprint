@@ -1,5 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle, Check, CheckCircle2, ExternalLink, Loader2, ShieldCheck } from "lucide-react";
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  ClipboardCheck,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Info,
+  KeyRound,
+  Loader2,
+  MessageSquareText,
+  Route,
+  ShieldCheck,
+  Trash2,
+} from "lucide-react";
 import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   clearAllRivetData,
   setRememberConversations,
@@ -41,15 +58,45 @@ type Status =
   | { kind: "warn"; message: string }
   | { kind: "error"; message: string };
 
-const STATUS_BADGE: Record<
-  KeyStatus["state"],
-  { label: string; className: string; check?: boolean }
-> = {
-  tested: { label: "Ready", className: "text-mint", check: true },
-  verified: { label: "Key verified", className: "text-primary" },
-  saved: { label: "Not verified", className: "text-amber" },
-  "rate-limited": { label: "Rate limited", className: "text-amber" },
+const STATUS_BADGE: Record<KeyStatus["state"], { label: string; dot: string; text: string }> = {
+  tested: { label: "Ready", dot: "bg-mint", text: "text-mint" },
+  verified: { label: "Key verified", dot: "bg-primary", text: "text-primary" },
+  saved: { label: "Not verified", dot: "bg-amber", text: "text-amber" },
+  "rate-limited": { label: "Rate limited", dot: "bg-amber", text: "text-amber" },
 };
+
+/** Short tile captions; the full taglines are too long for a two-column grid. */
+const TILE_CAPTION: Record<ProviderId, string> = {
+  gemini: "Google AI Studio",
+  groq: "Very fast replies",
+  nvidia: "build.nvidia.com",
+  openrouter: ":free models",
+};
+
+const STEP_LABEL =
+  "flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground";
+
+function StepNumber({ n }: { n: number }) {
+  return (
+    <span className="grid h-4 w-4 place-items-center rounded-full bg-primary/15 text-[9px] font-semibold text-primary">
+      {n}
+    </span>
+  );
+}
+
+const STATUS_STYLE = {
+  ok: { box: "border-mint/30 bg-mint/10 text-foreground", icon: "text-mint", Icon: CheckCircle2 },
+  warn: {
+    box: "border-amber/40 bg-amber/10 text-foreground",
+    icon: "text-amber",
+    Icon: AlertCircle,
+  },
+  error: {
+    box: "border-destructive/30 bg-destructive/5 text-foreground",
+    icon: "text-destructive",
+    Icon: AlertCircle,
+  },
+} as const;
 
 const maskKey = (key: string) => `${key.slice(0, 4)}${"•".repeat(8)}${key.slice(-4)}`;
 
@@ -64,6 +111,8 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [models, setModels] = useState<string[]>(provider.fallbackModels);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [showKey, setShowKey] = useState(false);
+  const [stepsOpen, setStepsOpen] = useState(!savedKey);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -74,6 +123,8 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
     const controller = new AbortController();
     abortRef.current = controller;
     setKeyInput("");
+    setShowKey(false);
+    setStepsOpen(!savedKey);
     setStatus({ kind: "idle" });
     setModels(provider.fallbackModels);
     if (savedKey) {
@@ -106,6 +157,8 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
       updateSettings({ providerId: provider.id });
       setModels(result.models);
       setKeyInput("");
+      setShowKey(false);
+      setStepsOpen(false);
       setStatus({ kind: result.warning ? "warn" : "ok", message: result.message });
     } catch (e) {
       if (isAbort(e)) return;
@@ -143,14 +196,19 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
   const modelOptions =
     savedModel && !models.includes(savedModel) ? [savedModel, ...models] : models;
 
+  const testing = status.kind === "testing";
+  const savedStatus = savedKey
+    ? STATUS_BADGE[settings.status[provider.id]?.state ?? "saved"]
+    : null;
+  const shownStatus = status.kind === "ok" || status.kind === "warn" || status.kind === "error";
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-4">
         <div>
           <h3 className="text-sm font-semibold">Connect a model</h3>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            Bring your own key from one of these providers. Use a dedicated key with a spending
-            limit, and revoke it in the provider's console if you think it has leaked.
+            Rivet runs on your own API key. Each provider below has a free tier.
           </p>
         </div>
 
@@ -173,254 +231,350 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
           </p>
         )}
 
-        <div className="grid gap-2" role="radiogroup" aria-label="Provider" onKeyDown={onRadioKey}>
-          {PROVIDERS.map((p) => {
-            const active = p.id === provider.id;
-            const st = settings.keys[p.id] ? settings.status[p.id] : undefined;
-            const badge = settings.keys[p.id] ? STATUS_BADGE[st?.state ?? "saved"] : null;
-            return (
-              <button
-                key={p.id}
-                ref={(el) => {
-                  radioRefs.current[p.id] = el;
-                }}
-                role="radio"
-                aria-checked={active}
-                tabIndex={active ? 0 : -1}
-                onClick={() => selectProvider(p.id)}
-                className={cn(
-                  "flex cursor-pointer items-center justify-between rounded-lg border bg-surface px-3 py-2.5 text-left transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  active && "border-primary bg-surface-2 ring-1 ring-primary/40",
-                )}
-              >
-                <span>
-                  <span className="block text-sm font-medium">{p.name}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    {p.tagline}
-                    {p.viaRelay ? " · via our relay" : ""}
-                  </span>
-                </span>
-                {badge ? (
-                  <Badge
-                    variant="secondary"
-                    className={cn("shrink-0 gap-1 whitespace-nowrap text-[10px]", badge.className)}
-                  >
-                    {badge.check && <Check className="h-3 w-3" />} {badge.label}
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="shrink-0 whitespace-nowrap text-[10px]">
-                    Free tier
-                  </Badge>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="space-y-3 rounded-lg border bg-surface p-3">
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="rivet-key" className="text-xs">
-                {provider.name} API key
-              </Label>
-              {provider.keyUrl && (
-                <a
-                  href={provider.keyUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                >
-                  Get a key <ExternalLink className="h-3 w-3" />
-                </a>
-              )}
-            </div>
-            {savedKey && !keyInput ? (
-              <div className="flex items-center justify-between rounded-md border bg-background px-3 py-2">
-                <span className="font-mono text-xs text-muted-foreground">{maskKey(savedKey)}</span>
+        {/* Step 1: provider */}
+        <section className="space-y-2">
+          <p className={STEP_LABEL}>
+            <StepNumber n={1} /> Provider
+          </p>
+          <div
+            className="grid grid-cols-2 gap-2"
+            role="radiogroup"
+            aria-label="Provider"
+            onKeyDown={onRadioKey}
+          >
+            {PROVIDERS.map((p) => {
+              const active = p.id === provider.id;
+              const badge = settings.keys[p.id]
+                ? STATUS_BADGE[settings.status[p.id]?.state ?? "saved"]
+                : null;
+              return (
                 <button
-                  className="cursor-pointer text-xs text-destructive hover:underline"
+                  key={p.id}
+                  ref={(el) => {
+                    radioRefs.current[p.id] = el;
+                  }}
+                  role="radio"
+                  aria-checked={active}
+                  aria-description={[
+                    p.tagline,
+                    p.viaRelay ? "Requests pass through our relay" : "",
+                    badge?.label ?? "",
+                  ]
+                    .filter(Boolean)
+                    .join(". ")}
+                  tabIndex={active ? 0 : -1}
+                  onClick={() => selectProvider(p.id)}
+                  className={cn(
+                    "relative flex min-h-[3.75rem] cursor-pointer flex-col justify-between rounded-lg border bg-surface px-3 py-2 text-left transition-colors hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                    active && "border-primary bg-primary/5 ring-1 ring-primary/40",
+                  )}
+                >
+                  <span className="flex items-center justify-between gap-1.5">
+                    <span className="truncate text-[13px] font-medium">
+                      {p.name.replace("Google ", "")}
+                    </span>
+                    {badge && (
+                      <span
+                        className={cn("h-2 w-2 shrink-0 rounded-full", badge.dot)}
+                        aria-hidden
+                      />
+                    )}
+                  </span>
+                  <span className="mt-0.5 flex items-center gap-1 text-[11px] leading-tight text-muted-foreground">
+                    <span className="truncate">{badge ? badge.label : TILE_CAPTION[p.id]}</span>
+                    {p.viaRelay && (
+                      <span className="shrink-0 rounded bg-muted px-1 py-px font-mono text-[9px] uppercase tracking-wide">
+                        relay
+                      </span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Step 2: key */}
+        <section className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className={STEP_LABEL}>
+              <StepNumber n={2} /> {provider.name} key
+            </p>
+            {provider.keyUrl && (
+              <a
+                href={provider.keyUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+              >
+                Get a key <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+          </div>
+
+          <div className="space-y-3 rounded-xl border bg-surface p-3 shadow-sm">
+            {savedKey && !keyInput && savedStatus && (
+              <div className="flex items-center gap-2.5 rounded-lg border bg-background px-3 py-2">
+                <KeyRound className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-mono text-xs">{maskKey(savedKey)}</p>
+                  <p
+                    className={cn("mt-0.5 flex items-center gap-1.5 text-[11px]", savedStatus.text)}
+                  >
+                    <span className={cn("h-1.5 w-1.5 rounded-full", savedStatus.dot)} />
+                    {savedStatus.label}
+                    <span className="text-muted-foreground">
+                      · {settings.rememberKeys ? "saved on this device" : "this tab only"}
+                    </span>
+                  </p>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
                   onClick={() => {
                     removeProviderKey(provider.id);
                     setStatus({ kind: "idle" });
                   }}
                 >
-                  Remove key
-                </button>
+                  Remove
+                </Button>
               </div>
-            ) : null}
-            <Input
-              id="rivet-key"
-              type="password"
-              autoComplete="off"
-              spellCheck={false}
-              placeholder={savedKey ? "Paste a new key to replace it" : "Paste your key"}
-              value={keyInput}
-              onChange={(e) => setKeyInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && void connect()}
-            />
-          </div>
+            )}
 
-          {!savedKey && (
-            <div className="space-y-1.5 rounded-md bg-background px-3 py-2">
-              <ol className="list-decimal space-y-0.5 pl-4 text-[11px] leading-snug text-muted-foreground">
-                {provider.setupSteps.map((step) => (
-                  <li key={step}>{step}</li>
-                ))}
-              </ol>
-              <p className="text-[11px] leading-snug text-muted-foreground">{provider.costNote}</p>
-            </div>
-          )}
-
-          {modelOptions.length > 0 && savedKey && (
             <div className="space-y-1.5">
-              <Label className="text-xs">Model</Label>
-              <Select
-                value={savedModel || undefined}
-                onValueChange={(m) => setProviderModel(provider.id, m)}
+              <Label htmlFor="rivet-key" className={cn("text-xs", savedKey ? "" : "sr-only")}>
+                {savedKey ? "Replace key" : `${provider.name} API key`}
+              </Label>
+              <div className="relative">
+                <Input
+                  id="rivet-key"
+                  type={showKey ? "text" : "password"}
+                  autoComplete="off"
+                  spellCheck={false}
+                  placeholder={savedKey ? "Paste a new key" : "Paste your API key"}
+                  value={keyInput}
+                  onChange={(e) => setKeyInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && !testing && void connect()}
+                  className="pr-10 font-mono text-sm placeholder:font-sans"
+                />
+                {keyInput && (
+                  <button
+                    type="button"
+                    onClick={() => setShowKey((v) => !v)}
+                    aria-label={showKey ? "Hide key" : "Show key"}
+                    aria-pressed={showKey}
+                    className="absolute inset-y-0 right-0 grid w-10 cursor-pointer place-items-center rounded-r-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {modelOptions.length > 0 && savedKey && (
+              <div className="space-y-1.5">
+                <Label className="text-xs">Model</Label>
+                <Select
+                  value={savedModel || undefined}
+                  onValueChange={(m) => setProviderModel(provider.id, m)}
+                >
+                  <SelectTrigger className="h-9 font-mono text-xs">
+                    <SelectValue placeholder="Choose a model" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    {modelOptions.map((m) => (
+                      <SelectItem key={m} value={m} className="font-mono text-xs">
+                        {m}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            {testing ? (
+              <div className="flex gap-2">
+                <Button size="sm" className="flex-1" disabled>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  Testing key and model…
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    abortRef.current?.abort();
+                    setStatus({ kind: "idle" });
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button
+                size="sm"
+                variant={savedKey && !keyInput ? "outline" : "default"}
+                className="w-full"
+                disabled={!keyInput.trim() && !savedKey}
+                onClick={() => void connect()}
               >
-                <SelectTrigger className="h-9 font-mono text-xs">
-                  <SelectValue placeholder="Choose a model" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  {modelOptions.map((m) => (
-                    <SelectItem key={m} value={m} className="font-mono text-xs">
-                      {m}
-                    </SelectItem>
+                {savedKey && !keyInput ? "Test again" : "Save and test"}
+              </Button>
+            )}
+
+            {shownStatus && (
+              <div
+                role={status.kind === "error" ? "alert" : "status"}
+                className={cn(
+                  "flex items-start gap-2 rounded-lg border px-3 py-2 text-xs leading-snug",
+                  STATUS_STYLE[status.kind].box,
+                )}
+              >
+                {(() => {
+                  const { Icon, icon } = STATUS_STYLE[status.kind];
+                  return <Icon className={cn("mt-px h-3.5 w-3.5 shrink-0", icon)} />;
+                })()}
+                <span>{status.message}</span>
+              </div>
+            )}
+
+            {provider.id === "nvidia" && (
+              <p className="flex items-start gap-2 text-[11px] leading-snug text-muted-foreground">
+                <Route className="mt-px h-3.5 w-3.5 shrink-0" />
+                NVIDIA blocks browser calls, so your key and messages pass through our relay on the
+                way to NVIDIA. The relay does not store or log them; the host may keep basic request
+                records such as time and address.
+              </p>
+            )}
+
+            <Collapsible open={stepsOpen} onOpenChange={setStepsOpen} className="border-t pt-2">
+              <CollapsibleTrigger className="group flex w-full cursor-pointer items-center justify-between rounded-md py-1 text-xs font-medium text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                How to get a {provider.name.replace("Google ", "")} key
+                <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-2 pt-1.5">
+                <ol className="space-y-1.5">
+                  {provider.setupSteps.map((step, i) => (
+                    <li
+                      key={step}
+                      className="flex gap-2 text-[11px] leading-snug text-muted-foreground"
+                    >
+                      <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full border text-[9px] font-semibold text-foreground">
+                        {i + 1}
+                      </span>
+                      {step}
+                    </li>
                   ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-
-          <Button
-            variant="secondary"
-            size="sm"
-            className="w-full"
-            disabled={status.kind === "testing"}
-            onClick={() => void connect()}
-          >
-            {status.kind === "testing" && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            {status.kind === "testing"
-              ? "Checking the key and model…"
-              : savedKey && !keyInput
-                ? "Test connection"
-                : "Save and test"}
-          </Button>
-          {status.kind === "testing" && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => {
-                abortRef.current?.abort();
-                setStatus({ kind: "idle" });
-              }}
-            >
-              Cancel connection test
-            </Button>
-          )}
-
-          {status.kind === "ok" && (
-            <p className="flex items-start gap-1.5 text-xs text-mint" role="status">
-              <CheckCircle2 className="mt-px h-3.5 w-3.5 shrink-0" />
-              {status.message}
-            </p>
-          )}
-          {status.kind === "warn" && (
-            <p className="flex items-start gap-1.5 text-xs text-amber" role="status">
-              <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
-              {status.message}
-            </p>
-          )}
-          {status.kind === "error" && (
-            <p className="flex items-start gap-1.5 text-xs text-destructive" role="alert">
-              <AlertCircle className="mt-px h-3.5 w-3.5 shrink-0" />
-              {status.message}
-            </p>
-          )}
-          {provider.id === "nvidia" && (
-            <p className="text-[11px] leading-snug text-muted-foreground">
-              NVIDIA blocks direct browser calls, so your key and messages pass through
-              StackBlueprint's server on the way to NVIDIA. The relay code does not store or log
-              them, though the hosting platform may keep basic request records such as time and
-              address.
-            </p>
-          )}
-        </div>
-
-        <div className="rounded-lg border bg-surface p-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <Label htmlFor="rivet-remember-keys" className="text-xs">
-                Remember my API keys on this device
-              </Label>
-              <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
-                Off (recommended): your key is kept only in this tab's memory and is gone when you
-                reload or close it. On: it is saved in this browser's storage until you remove it.
-                Either way, a browser extension allowed on this site can read it.
-              </p>
-            </div>
-            <Switch
-              id="rivet-remember-keys"
-              checked={settings.rememberKeys}
-              onCheckedChange={setRememberKeys}
-            />
+                </ol>
+                <p className="flex items-start gap-2 rounded-md bg-muted/60 px-2.5 py-2 text-[11px] leading-snug text-muted-foreground">
+                  <Info className="mt-px h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {provider.costNote} Use a dedicated key with a spending limit, and revoke it in
+                    the provider's console if it leaks.
+                  </span>
+                </p>
+              </CollapsibleContent>
+            </Collapsible>
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-3 rounded-lg border bg-surface p-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <Label htmlFor="rivet-remember" className="text-xs">
-                Remember conversations on this device
-              </Label>
-              <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
-                One chat per lesson, in this browser only. Chats unused for 30 days, and all but the
-                30 most recent, are deleted the next time you use Rivet. Turn off on a shared
-                computer.
-              </p>
+        {/* Privacy and storage */}
+        <section className="space-y-2">
+          <p className={STEP_LABEL}>
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" /> Privacy and storage
+          </p>
+          <div className="divide-y rounded-xl border bg-surface">
+            <div className="flex items-start justify-between gap-3 p-3">
+              <div>
+                <Label htmlFor="rivet-remember-keys" className="text-xs">
+                  Remember API keys
+                </Label>
+                <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                  Off keeps your key in this tab only, gone on reload. A browser extension allowed
+                  on this site can read it either way.
+                </p>
+              </div>
+              <Switch
+                id="rivet-remember-keys"
+                checked={settings.rememberKeys}
+                onCheckedChange={setRememberKeys}
+              />
             </div>
-            <Switch
-              id="rivet-remember"
-              checked={remember}
-              onCheckedChange={(value) => {
-                void setRememberConversations(value);
-              }}
-            />
+            <div className="flex items-start justify-between gap-3 p-3">
+              <div>
+                <Label htmlFor="rivet-remember" className="text-xs">
+                  Remember conversations
+                </Label>
+                <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                  One chat per lesson, in this browser. Chats unused for 30 days are removed the
+                  next time you use Rivet.
+                </p>
+              </div>
+              <Switch
+                id="rivet-remember"
+                checked={remember}
+                onCheckedChange={(value) => {
+                  void setRememberConversations(value);
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-between gap-3 px-3 py-2">
+              <p className="text-[11px] text-muted-foreground">
+                {confirmClear
+                  ? "Delete keys, settings and every chat?"
+                  : "Keys, settings and chats"}
+              </p>
+              <Button
+                variant={confirmClear ? "destructive" : "ghost"}
+                size="sm"
+                className={cn(
+                  "h-7 gap-1.5 px-2 text-xs",
+                  !confirmClear &&
+                    "text-destructive hover:bg-destructive/10 hover:text-destructive",
+                )}
+                onClick={() => {
+                  if (!confirmClear) {
+                    setConfirmClear(true);
+                    window.setTimeout(() => setConfirmClear(false), 4000);
+                    return;
+                  }
+                  void clearAllRivetData();
+                  setConfirmClear(false);
+                  setStatus({ kind: "idle" });
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {confirmClear ? "Yes, delete all" : "Clear all data"}
+              </Button>
+            </div>
           </div>
-          <Button
-            variant={confirmClear ? "destructive" : "outline"}
-            size="sm"
-            className="w-full"
-            onClick={() => {
-              if (!confirmClear) {
-                setConfirmClear(true);
-                window.setTimeout(() => setConfirmClear(false), 4000);
-                return;
-              }
-              void clearAllRivetData();
-              setConfirmClear(false);
-              setStatus({ kind: "idle" });
-            }}
-          >
-            {confirmClear ? "Click again to delete all Rivet data" : "Clear all Rivet data"}
-          </Button>
           {historyStorageError && (
             <p role="alert" className="text-xs text-destructive">
               {historyStorageError}
             </p>
           )}
-        </div>
+        </section>
 
-        <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          <span>
-            <span className="font-medium text-foreground">What is shared.</span> Each message sends
-            your question, recent messages from this chat, excerpts of the lesson and, after you
-            submit a quiz, your quiz answers. Gemini, Groq and OpenRouter requests go straight from
-            your browser to that provider. NVIDIA requests pass through our relay. Your key is
-            stored on this device only if you turn on Remember. Some free tiers use prompts to
-            improve their models. See the{" "}
+        {/* What is sent */}
+        <section className="space-y-2 rounded-xl bg-muted/50 p-3">
+          <p className="text-xs font-medium">What each message sends</p>
+          <ul className="space-y-1.5 text-[11px] leading-snug text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <MessageSquareText className="mt-px h-3.5 w-3.5 shrink-0 text-primary" />
+              Your question and recent messages from this chat
+            </li>
+            <li className="flex items-start gap-2">
+              <BookOpen className="mt-px h-3.5 w-3.5 shrink-0 text-primary" />
+              Excerpts of the lesson you are on
+            </li>
+            <li className="flex items-start gap-2">
+              <ClipboardCheck className="mt-px h-3.5 w-3.5 shrink-0 text-primary" />
+              Your quiz answers, only after you submit a quiz
+            </li>
+          </ul>
+          <p className="border-t pt-2 text-[11px] leading-snug text-muted-foreground">
+            Gemini, Groq and OpenRouter get it straight from your browser; NVIDIA through our relay.
+            Some free tiers use prompts to improve their models.{" "}
             <a
               href="/privacy"
               target="_blank"
@@ -429,13 +583,12 @@ export function RivetSettings({ onDone }: { onDone: () => void }) {
             >
               Privacy Policy
             </a>
-            .
-          </span>
-        </p>
+          </p>
+        </section>
       </div>
       <div className="border-t px-4 py-3">
-        <Button className="w-full" onClick={onDone}>
-          Back to chat
+        <Button className="w-full" variant={savedKey ? "default" : "outline"} onClick={onDone}>
+          {savedKey ? "Start chatting" : "Back to chat"}
         </Button>
       </div>
     </div>
