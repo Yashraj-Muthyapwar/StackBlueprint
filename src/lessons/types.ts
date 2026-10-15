@@ -271,6 +271,9 @@ export type Section =
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
   | { kind: "hashing-intuition" }
+  | { kind: "locker-demo" }
+  | { kind: "set-dict-intuition" }
+  | { kind: "set-dict-walkthrough" }
   | { kind: "hashing-flow"; steps: { title: string; text: string }[] }
   | { kind: "hashing-cost-chart" }
   | {

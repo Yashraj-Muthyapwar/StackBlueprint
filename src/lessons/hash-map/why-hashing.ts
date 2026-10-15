@@ -151,6 +151,13 @@ const quizQuestions: QuizQuestion[] = [
 const whyHashingSections: Section[] = [
   {
     kind: "prose",
+    body: [
+      "**Hashing** is a technique that turns a **key**, such as a student ID or a word, into a number called a **hash value**. A data structure uses that number to decide where to store the key, and later where to look for it.",
+      "Because the lookup goes straight to a calculated location instead of checking items one by one, hashing makes searching fast. Python's `set` and `dict` are built on this idea.",
+    ],
+  },
+  {
+    kind: "prose",
     eyebrow: "1 · Why",
     heading: "The problem hashing solves",
     body: ["Suppose you have an array containing student IDs:"],

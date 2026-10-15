@@ -120,6 +120,8 @@ import { zAlgorithm } from "./strings/z-algorithm";
 import { stringCharacters, stringOperations, stringScans } from "./strings/basics";
 
 import { whyHashing } from "./hash-map/why-hashing";
+import { setVsDict } from "./hash-map/set-vs-dict";
+import { hashFunctionsCollisions } from "./hash-map/hash-functions-collisions";
 import { frequencyCounting } from "./hash-map/frequency-counting";
 import { topKFrequent } from "./hash-map/top-k-frequent";
 import { twoSum } from "./hash-map/two-sum";
@@ -273,7 +275,11 @@ export const patterns: PatternEntry[] = [
     category: "Hash Map",
     blurb:
       "Start here: the search cost hashing removes, how a key finds its slot, and what it costs.",
-    lessons: [{ builder: whyHashing, icon: Hash }],
+    lessons: [
+      { builder: whyHashing, icon: Hash },
+      { builder: setVsDict, icon: Braces },
+      { builder: hashFunctionsCollisions, icon: Layers },
+    ],
   },
   {
     slug: "hash-frequency",
