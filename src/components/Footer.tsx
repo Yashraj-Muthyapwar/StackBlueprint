@@ -1,4 +1,4 @@
-import logoImg from "@/images/logos/new-logo.png";
+import { BrandMark } from "@/components/BrandMark";
 import { Shield, FileText } from "lucide-react";
 
 export function Footer() {
@@ -14,8 +14,8 @@ export function Footer() {
         
         {/* Left side: Brand lockup */}
         <div className="group flex cursor-pointer items-center gap-2">
-          <div className="grid size-8 shrink-0 place-items-center transition-transform duration-500 group-hover:scale-110">
-            <img src={logoImg} alt="StackBlueprint Logo" className="w-full h-full object-contain" />
+          <div className="grid size-8 shrink-0 place-items-center rounded-[9px] border border-primary/30 bg-primary/10 text-primary transition-transform duration-500 group-hover:scale-110" role="img" aria-label="StackBlueprint logo">
+            <BrandMark className="size-[78%]" />
           </div>
           <div className="flex flex-col">
             <span className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-sm font-bold tracking-tight text-transparent transition-all duration-300 group-hover:to-mint/80">

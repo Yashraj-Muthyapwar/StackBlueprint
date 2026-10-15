@@ -3,7 +3,7 @@ import { ArrowUpRight, Check, ChevronRight, Database, Lock, Terminal } from "luc
 import { useEffect, useMemo, useState } from "react";
 
 import { roadmap, categoryPatterns, sectionPatterns, type RoadmapCategory, type RoadmapPattern } from "@/lessons/roadmap";
-import logoImg from "@/images/logos/new-logo.png";
+import { BrandMark } from "@/components/BrandMark";
 import { useProgress } from "@/hooks/use-progress";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Sidebar, SidebarContent, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -79,7 +79,7 @@ export function AppSidebar() {
       <SidebarHeader className="sb-header">
         <Link to="/" onClick={closeMobile} className="sb-brand" aria-label="StackBlueprint home">
           <span className="sb-brand-logo">
-            <img src={logoImg} alt="" />
+            <BrandMark />
           </span>
           <span className="sb-brand-text">
             <span className="sb-brand-name">StackBlueprint</span>
@@ -177,7 +177,7 @@ function ToolTile({
 
 function TrackLogo({ cat }: { cat: RoadmapCategory }) {
   return (
-    <span className="sb-track-logo">
+    <span className="sb-track-logo" data-track={cat.slug}>
       {typeof cat.icon === "string" ? (
         <img src={cat.icon} alt="" />
       ) : (
@@ -228,7 +228,9 @@ function TrackItem({
     <>
       <TrackLogo cat={cat} />
       <span className="sb-track-text">
-        <span className="sb-track-title">{cat.title}</span>
+        <span className="sb-track-title" title={cat.title}>
+          {cat.title}
+        </span>
         <span className="sb-track-meta">{meta}</span>
       </span>
     </>
