@@ -3,6 +3,7 @@ import type React from "react";
 import type { LucideIcon } from "lucide-react";
 import { motion } from "motion/react";
 import {
+  ArrowRight,
   ArrowUp,
   BookOpen,
   Settings2,
@@ -138,6 +139,41 @@ function useKeyboardAwareStyle(): React.CSSProperties | undefined {
   return style;
 }
 
+/** Quiz score as a small progress ring: mint when strong, amber in the middle, rose when low. */
+function ScoreRing({ score, total }: { score: number; total: number }) {
+  const ratio = total > 0 ? score / total : 0;
+  const r = 20;
+  const circumference = 2 * Math.PI * r;
+  const tone = ratio >= 0.8 ? "var(--mint)" : ratio >= 0.5 ? "var(--amber)" : "var(--rose)";
+  return (
+    <div
+      className="relative grid h-12 w-12 shrink-0 place-items-center"
+      role="img"
+      aria-label={`Score ${score} of ${total}`}
+    >
+      <svg viewBox="0 0 48 48" className="absolute inset-0 h-full w-full -rotate-90">
+        <circle cx="24" cy="24" r={r} fill="none" strokeWidth="4" className="stroke-muted" />
+        <motion.circle
+          cx="24"
+          cy="24"
+          r={r}
+          fill="none"
+          strokeWidth="4"
+          strokeLinecap="round"
+          style={{ stroke: tone }}
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: circumference * (1 - ratio) }}
+          transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
+        />
+      </svg>
+      <span className="font-mono text-[13px] font-semibold tabular-nums">
+        {score}/{total}
+      </span>
+    </div>
+  );
+}
+
 export function RivetPanel({ context, onClose }: { context: RivetContext; onClose: () => void }) {
   const [view, setView] = useState<"chat" | "settings">("chat");
   const messages = useRivetThread(context.lessonKey);
@@ -157,6 +193,8 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
   const quiz = context.quiz;
   const missed = quiz?.items.filter((i) => !i.correct) ?? [];
   const actions = quiz ? REVIEW_ACTIONS : QUICK_ACTIONS;
+  /** The empty, non-quiz chat screen already shows a large Rivet. */
+  const bigRivetShown = view === "chat" && messages.length === 0 && !quiz;
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -315,7 +353,20 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
               "linear-gradient(120deg, color-mix(in oklab, var(--mint) 14%, transparent), transparent 55%, color-mix(in oklab, var(--violet) 12%, transparent))",
           }}
         />
-        <RivetOrb size={46} state={state} follow className="relative" />
+        {/* The start screen shows a big Rivet, so the header one steps aside until chatting begins. */}
+        <motion.div
+          className="relative shrink-0 overflow-visible"
+          initial={false}
+          animate={
+            bigRivetShown
+              ? { width: 0, opacity: 0, scale: 0.6, marginRight: -12 }
+              : { width: 46, opacity: 1, scale: 1, marginRight: 0 }
+          }
+          transition={{ type: "spring", stiffness: 320, damping: 30 }}
+          aria-hidden
+        >
+          <RivetOrb size={46} state={state} follow />
+        </motion.div>
         <div className="relative min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-semibold leading-none">Rivet</h2>
@@ -394,106 +445,150 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex min-h-full flex-col items-center justify-center text-center"
+                className={cn(
+                  "flex min-h-full flex-col",
+                  quiz ? "justify-center gap-3" : "items-center justify-center text-center",
+                )}
               >
-                <RivetOrb size={84} state={state} follow />
-                <h3 className="mt-5 text-lg font-semibold tracking-tight">
-                  {!quiz
-                    ? "Stuck? Let's rivet it down."
-                    : missed.length === 0
-                      ? "Flawless run. Nicely done."
-                      : "Quiz done. Let's learn from it."}
-                </h3>
-                <p className="mt-1 max-w-[19rem] text-[13px] leading-snug text-muted-foreground">
-                  {!quiz
-                    ? "Ask about this course, a relevant example, or where to learn next. I'll nudge you toward the answer first."
-                    : missed.length === 0
-                      ? "Want to go deeper, or hear why each answer works?"
-                      : `${missed.length} to revisit. I've got the lesson and your answers, so we can go through them together.`}
-                </p>
                 {quiz ? (
-                  <div className="mt-3 w-full rounded-lg border bg-card px-3 py-2 text-left shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 shrink-0 text-primary" />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-medium">{context.lessonTitle}</p>
-                        <p className="truncate text-[11px] text-muted-foreground">
-                          {context.trackTitle} · {context.topicTitle}
+                  // Quiz review: a compact header so the results and actions fit without scrolling.
+                  <>
+                    <div className="flex items-center gap-3">
+                      {/* The header already shows Rivet, so the score takes this spot. */}
+                      <ScoreRing score={quiz.score} total={quiz.total} />
+                      <div className="min-w-0">
+                        <h3 className="text-base font-semibold leading-tight tracking-tight">
+                          {missed.length === 0
+                            ? "Flawless run. Nicely done."
+                            : "Quiz done. Let's learn from it."}
+                        </h3>
+                        <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                          {missed.length === 0
+                            ? "Want to go deeper, or hear why each answer works?"
+                            : `${missed.length} to revisit. I have the lesson and your answers.`}
                         </p>
                       </div>
-                      {quiz && (
-                        <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-[11px] font-medium text-primary">
-                          {quiz.score}/{quiz.total}
-                        </span>
-                      )}
                     </div>
-                    {quiz && (
-                      <ul className="mt-1.5 space-y-0.5 border-t pt-1.5">
-                        {quiz.items.slice(0, 3).map((it, i) => (
-                          <li
-                            key={i}
-                            className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground"
-                          >
-                            {it.correct ? (
-                              <CheckCircle2 className="mt-px h-3 w-3 shrink-0 text-mint" />
-                            ) : (
-                              <XCircle className="mt-px h-3 w-3 shrink-0 text-rose" />
+                    <div className="w-full rounded-lg border bg-card px-3 py-2 text-left shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <BookOpen className="h-3.5 w-3.5 shrink-0 text-primary" />
+                        <p className="min-w-0 flex-1 truncate text-xs font-medium">
+                          {context.lessonTitle}
+                        </p>
+                      </div>
+                      {(() => {
+                        // Missed questions first: they are what the review is about.
+                        const ordered = [...missed, ...quiz.items.filter((i) => i.correct)];
+                        const shown = ordered.slice(
+                          0,
+                          missed.length > 0 ? Math.min(missed.length, 3) : 2,
+                        );
+                        const rest = quiz.items.length - shown.length;
+                        return (
+                          <ul className="mt-1.5 space-y-0.5 border-t pt-1.5">
+                            {shown.map((it, i) => (
+                              <li
+                                key={i}
+                                className="flex items-start gap-1.5 text-[11px] leading-snug text-muted-foreground"
+                              >
+                                {it.correct ? (
+                                  <CheckCircle2 className="mt-px h-3 w-3 shrink-0 text-mint" />
+                                ) : (
+                                  <XCircle className="mt-px h-3 w-3 shrink-0 text-rose" />
+                                )}
+                                <span className="line-clamp-1">
+                                  {it.question.replace(/`/g, "")}
+                                </span>
+                              </li>
+                            ))}
+                            {rest > 0 && (
+                              <li className="pl-[18px] text-[11px] text-muted-foreground">
+                                +{rest} {missed.length > 0 ? "answered correctly" : "more"}
+                              </li>
                             )}
-                            <span className="line-clamp-1">{it.question.replace(/`/g, "")}</span>
-                          </li>
+                          </ul>
+                        );
+                      })()}
+                    </div>
+                    <div>
+                      <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                        Review together
+                      </p>
+                      <div className="grid w-full grid-cols-2 gap-2">
+                        {actions.map(({ label, prompt, hint, icon: Icon }, i) => (
+                          <motion.button
+                            key={label}
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 + i * 0.05 }}
+                            onClick={() => send(prompt ?? label)}
+                            title={hint}
+                            aria-description={hint}
+                            className="group flex cursor-pointer items-center gap-2 rounded-lg border bg-card px-2.5 py-2 text-left shadow-sm transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                            <span className="text-xs font-medium leading-tight">{label}</span>
+                          </motion.button>
                         ))}
-                        {quiz.items.length > 3 && (
-                          <li className="pl-[18px] text-[11px] text-muted-foreground">
-                            +{quiz.items.length - 3} more
-                          </li>
-                        )}
-                      </ul>
-                    )}
-                    <p className="mt-1.5 flex items-center gap-1.5 border-t pt-1.5 text-[10px] text-muted-foreground">
+                      </div>
+                    </div>
+                    <p className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                       <ClipboardCheck className="h-3 w-3 text-primary" />
-                      {quiz
-                        ? "Rivet sees this lesson's text and code, and your quiz results"
-                        : "Rivet sees this lesson's text and code"}
+                      Rivet sees this lesson's text and code, and your quiz results
                     </p>
-                  </div>
+                  </>
                 ) : (
-                  <div
-                    className="mt-3 flex max-w-full items-center gap-1.5 rounded-full border bg-card/80 py-1 pl-2.5 pr-3 text-xs shadow-sm"
-                    title="Rivet reads this lesson's text and examples, not your code editor"
-                  >
-                    <BookOpen className="h-3.5 w-3.5 shrink-0 text-primary" />
-                    <span className="shrink-0 text-muted-foreground">Reading with you:</span>
-                    <span className="truncate font-medium">{context.lessonTitle}</span>
-                  </div>
-                )}
-                <p className="mb-2 mt-5 w-full text-left font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                  {quiz ? "Review together" : "Try asking"}
-                </p>
-                <div className="grid w-full grid-cols-2 gap-2.5">
-                  {actions.map(({ label, prompt, hint, icon: Icon }, i) => (
-                    <motion.button
-                      key={label}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 + i * 0.06 }}
-                      whileHover={{ y: -2 }}
-                      onClick={() => send(prompt ?? label)}
-                      className="group cursor-pointer rounded-lg border bg-card px-2.5 py-2 text-left shadow-sm transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  <>
+                    <RivetOrb size={84} state={state} follow />
+                    <h3 className="mt-5 text-lg font-semibold tracking-tight">
+                      Stuck? Let's rivet it down.
+                    </h3>
+                    <p className="mt-1 max-w-[19rem] text-[13px] leading-snug text-muted-foreground">
+                      Ask about this course, a relevant example, or where to learn next. I'll nudge
+                      you toward the answer first.
+                    </p>
+                    <div
+                      className="mt-3 flex max-w-full items-center gap-1.5 rounded-full border bg-card/80 py-1 pl-2.5 pr-3 text-xs shadow-sm"
+                      title="Rivet reads this lesson's text and examples, not your code editor"
                     >
-                      <span className="flex items-start gap-2">
-                        <span className="mt-px grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-primary transition-transform group-hover:scale-110">
-                          <Icon className="h-3.5 w-3.5" />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-xs font-medium leading-tight">{label}</span>
-                          <span className="mt-0.5 block text-[11px] leading-tight text-muted-foreground">
-                            {hint}
+                      <BookOpen className="h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span className="shrink-0 text-muted-foreground">Reading with you:</span>
+                      <span className="truncate font-medium">{context.lessonTitle}</span>
+                    </div>
+                    <p className="mb-2 mt-5 w-full text-left font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                      Try asking
+                    </p>
+                    <div className="grid w-full grid-cols-2 gap-2.5">
+                      {actions.map(({ label, prompt, hint, icon: Icon }, i) => (
+                        <motion.button
+                          key={label}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.15 + i * 0.06 }}
+                          whileHover={{ y: -2 }}
+                          onClick={() => send(prompt ?? label)}
+                          className="group cursor-pointer rounded-lg border bg-card px-2.5 py-2 text-left shadow-sm transition-colors hover:border-primary/50 hover:bg-surface-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <span className="flex items-start gap-2">
+                            <span className="mt-px grid h-6 w-6 shrink-0 place-items-center rounded-md bg-primary/10 text-primary transition-transform group-hover:scale-110">
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-xs font-medium leading-tight">
+                                {label}
+                              </span>
+                              <span className="mt-0.5 block text-[11px] leading-tight text-muted-foreground">
+                                {hint}
+                              </span>
+                            </span>
                           </span>
-                        </span>
-                      </span>
-                    </motion.button>
-                  ))}
-                </div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </motion.div>
             ) : (
               <>
@@ -611,14 +706,14 @@ export function RivetPanel({ context, onClose }: { context: RivetContext; onClos
             {!active && (
               <button
                 onClick={() => setView("settings")}
-                className="mb-2 flex w-full cursor-pointer items-center gap-2 rounded-lg border border-amber/40 bg-amber/10 px-3 py-2 text-left text-xs transition-colors hover:bg-amber/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="group mb-2 flex w-full cursor-pointer items-center gap-2 rounded-lg border border-amber/40 bg-amber/10 px-3 py-1.5 text-left text-xs transition-colors hover:bg-amber/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Plug className="h-4 w-4 shrink-0 text-amber" />
-                <span>
-                  <span className="font-medium">Connect a model to start chatting.</span>{" "}
-                  <span className="text-muted-foreground">
-                    Bring a key from Gemini, Groq, NVIDIA or OpenRouter. See what is shared first.
-                  </span>
+                <Plug className="h-3.5 w-3.5 shrink-0 text-amber" />
+                <span className="min-w-0 flex-1 truncate font-medium">
+                  Connect a model to start chatting
+                </span>
+                <span className="flex shrink-0 items-center gap-0.5 text-muted-foreground group-hover:text-foreground">
+                  Set up <ArrowRight className="h-3 w-3" />
                 </span>
               </button>
             )}

@@ -6,20 +6,37 @@ import { RivetPanel, type RivetContext } from "./RivetPanel";
 import { addDivider } from "@/lib/rivet/history";
 import { QUIZ_RESULTS_EVENT, QUIZ_STARTED_EVENT, type QuizResults } from "@/lib/rivet/quiz";
 
-const DISMISS_KEY = "rivet:nudge-dismissed";
+const NUDGE_DELAY_MS = 4000;
+const MAX_TOPIC_CHARS = 40;
 
-const readDismissed = () => {
-  try {
-    return sessionStorage.getItem(DISMISS_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
+/**
+ * Bubble wording for a lesson. Pattern lessons are titled "Module: Lesson", so
+ * the part after the colon is enough. A title that is already a question is
+ * used as the headline itself. Anything still long becomes "this lesson"
+ * rather than being cut off mid-sentence.
+ */
+const QUESTION_START = /^(what|why|how|when|where|which|who|is|are|can|do|does|should)\b/i;
+
+function bubbleCopy(title: string): { headline: string; detail: string } {
+  const clean = title.replace(/[!.:\s]+$/, "").trim();
+  const topic = (clean.includes(": ") ? clean.slice(clean.indexOf(": ") + 2) : clean).trim();
+  const fits = topic.length > 0 && topic.length <= MAX_TOPIC_CHARS;
+  if (fits && (topic.endsWith("?") || QUESTION_START.test(topic)))
+    return {
+      headline: topic.endsWith("?") ? topic : `${topic}?`,
+      detail: "Stuck? I've read this lesson with you.",
+    };
+  return {
+    headline: fits ? `Stuck on ${topic.replace(/\?+$/, "")}?` : "Stuck on this lesson?",
+    detail: "I've read this lesson with you.",
+  };
+}
+const NUDGE_VISIBLE_MS = 25000;
 
 /**
  * Floating AI companion for lesson pages: an animated Rivet launcher that
- * nudges once per session, then opens the chat panel. Mount once inside
- * LessonLayout.
+ * nudges a few seconds into every lesson visit, then opens the chat panel.
+ * Mount once inside LessonLayout.
  */
 export function RivetCompanion({
   context: baseContext,
@@ -86,28 +103,27 @@ export function RivetCompanion({
     if (hidden) setOpen(false);
   }, [hidden]);
 
-  // Show the nudge after a pause, once per session, and let it fade on its own.
+  // Every lesson visit: show the nudge after a short pause and let it fade on its own.
+  // Closing it or opening Rivet only affects this visit, so the next lesson nudges again.
+  const lessonKey = baseContext.lessonKey;
   useEffect(() => {
     setNudge(false);
     setTyped(false);
-    if (readDismissed()) return;
-    const show = window.setTimeout(() => setNudge(true), 6000);
-    const type = window.setTimeout(() => setTyped(true), 7000);
-    const hide = window.setTimeout(() => setNudge(false), 22000);
+    const show = window.setTimeout(() => setNudge(true), NUDGE_DELAY_MS);
+    const type = window.setTimeout(() => setTyped(true), NUDGE_DELAY_MS + 1000);
+    const hide = window.setTimeout(() => setNudge(false), NUDGE_DELAY_MS + NUDGE_VISIBLE_MS);
     return () => [show, type, hide].forEach(window.clearTimeout);
-  }, [context.lessonTitle]);
+  }, [lessonKey]);
 
-  const dismiss = () => {
+  const dismiss = () => setNudge(false);
+
+  const openPanel = () => {
     setNudge(false);
-    try {
-      sessionStorage.setItem(DISMISS_KEY, "1");
-    } catch {
-      /* private mode: the nudge just returns on the next lesson */
-    }
+    setOpen(true);
   };
 
   const showNudge = nudge && !open && !hidden;
-  const shortTitle = context.lessonTitle.replace(/[?!.:\s]+$/, "");
+  const copy = bubbleCopy(context.lessonTitle);
 
   if (import.meta.env.VITE_RIVET_ENABLED === "false") return null;
 
@@ -146,36 +162,24 @@ export function RivetCompanion({
                 </div>
 
                 <button
-                  onClick={() => setOpen(true)}
+                  onClick={openPanel}
                   className="group mt-1.5 block w-full cursor-pointer text-left"
                 >
                   {typed ? (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                      <p className="line-clamp-2 text-[13px] leading-snug">
-                        {quiz ? (
-                          quiz.score === quiz.total ? (
-                            <>
-                              Perfect{" "}
-                              <span className="font-semibold">
-                                {quiz.score}/{quiz.total}
-                              </span>
-                              ! Want a tougher one?
-                            </>
-                          ) : (
-                            <>
-                              You got{" "}
-                              <span className="font-semibold">
-                                {quiz.score} of {quiz.total}
-                              </span>
-                              . Want to go through the {quiz.total - quiz.score} you missed?
-                            </>
-                          )
-                        ) : (
-                          <>
-                            Hey, stuck on <span className="font-semibold">{shortTitle}</span>? I've
-                            read this lesson with you.
-                          </>
-                        )}
+                      <p className="text-[13.5px] font-semibold leading-snug">
+                        {quiz
+                          ? quiz.score === quiz.total
+                            ? `Perfect ${quiz.score}/${quiz.total}!`
+                            : `You got ${quiz.score} of ${quiz.total}.`
+                          : copy.headline}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-snug text-muted-foreground">
+                        {quiz
+                          ? quiz.score === quiz.total
+                            ? "Want a tougher one?"
+                            : `Want to go through the ${quiz.total - quiz.score} you missed?`
+                          : copy.detail}
                       </p>
                       <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary">
                         {quiz ? "Review together" : "Ask me"}
@@ -201,16 +205,13 @@ export function RivetCompanion({
 
           <motion.button
             ref={launcherRef}
-            onClick={() => {
-              dismiss();
-              setOpen(true);
-            }}
+            onClick={openPanel}
             onHoverStart={() => setHovered(true)}
             onHoverEnd={() => setHovered(false)}
             whileHover={{ scale: 1.06 }}
             whileTap={{ scale: 0.94 }}
             aria-label="Ask Rivet"
-            className="group relative flex cursor-pointer items-center gap-2 rounded-full border bg-card/90 p-1.5 shadow-lg backdrop-blur transition-[padding] hover:pr-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="group relative flex cursor-pointer items-center gap-1 rounded-full border border-primary/20 bg-card/90 p-1 shadow-lg backdrop-blur transition-[padding] hover:pr-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {showNudge && !reduce && (
               <motion.span
@@ -219,7 +220,19 @@ export function RivetCompanion({
                 transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
               />
             )}
-            <RivetOrb size={50} state={hovered ? "speaking" : "idle"} follow />
+            {/* The artwork sits low in its box (hat at the top, shadow at the bottom), so a
+                fixed round well with a slight lift keeps the hat clear of the rim while it floats. */}
+            <span
+              className="grid h-14 w-14 shrink-0 place-items-center overflow-visible rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 35%, color-mix(in oklab, var(--mint) 24%, var(--card)), color-mix(in oklab, var(--mint) 9%, var(--card)) 70%)",
+              }}
+            >
+              <span className="-translate-y-[3px]">
+                <RivetOrb size={48} state={hovered ? "speaking" : "idle"} follow />
+              </span>
+            </span>
             <span className="hidden max-w-0 overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300 group-hover:max-w-24 sm:block">
               Ask Rivet
             </span>
