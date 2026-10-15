@@ -48,6 +48,7 @@ export const AVAILABLE_LESSONS: readonly string[] = [
   "docker/what-is-a-docker-image",
   "docker/why-docker-exists",
   "docker/your-first-container",
+  "hash-map/why-hashing",
   "mongodb/introduction-to-nosql",
   "python/abstraction",
   "python/advanced-functions",
