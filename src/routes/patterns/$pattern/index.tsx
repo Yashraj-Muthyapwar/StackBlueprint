@@ -2,7 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ConceptTag } from "@/components/learning-paths/ConceptTag";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
-import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
+import { PATTERN_BY_SLUG, PATTERN_SECTION_BY_SLUG } from "@/lessons/roadmap";
 
 export const Route = createFileRoute("/patterns/$pattern/")({
   head: ({ params }) => {
@@ -25,8 +25,8 @@ function PatternIndex() {
   const p = PATTERN_BY_SLUG[pattern];
   if (!p)
     return <div className="px-6 py-16 text-center text-muted-foreground">Pattern not found.</div>;
-  const categoryAnchor =
-    p.category === "Arrays" ? "arrays-matrix" : p.category === "Strings" ? "strings" : "hash-map";
+  const section = PATTERN_SECTION_BY_SLUG[p.slug] ?? { title: p.category, anchor: "" };
+  const categoryAnchor = section.anchor;
   return (
     <div className="px-6 py-10 lg:px-12 lg:py-14">
       <div className="mx-auto max-w-6xl">
@@ -39,13 +39,13 @@ function PatternIndex() {
           </Link>
           <ChevronRight className="size-3" />
           <Link to="/patterns" hash={categoryAnchor} className="hover:text-foreground">
-            {p.category}
+            {section.title}
           </Link>
           <ChevronRight className="size-3" />
           <span className="text-foreground">{p.title}</span>
         </nav>
         <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-          {p.category} · Pattern
+          {section.title} · Pattern
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight lg:text-5xl">{p.title}</h1>
         <p className="mt-4 max-w-2xl text-balance text-muted-foreground lg:text-lg">{p.blurb}</p>

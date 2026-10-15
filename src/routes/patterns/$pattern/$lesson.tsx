@@ -11,7 +11,7 @@ import { LessonLayout } from "@/components/learning-paths/LessonLayout";
 import { SectionRenderer as PythonSectionRenderer } from "@/components/python/SectionRenderer";
 import { BuilderRivet } from "@/components/rivet";
 import { useProgress } from "@/hooks/use-progress";
-import { PATTERN_BY_SLUG } from "@/lessons/roadmap";
+import { PATTERN_BY_SLUG, PATTERN_SECTION_BY_SLUG } from "@/lessons/roadmap";
 
 export const Route = createFileRoute("/patterns/$pattern/$lesson")({
   head: ({ params }) => {
@@ -52,8 +52,8 @@ function LessonPage() {
   const entry = p.lessons[idx];
   const prev = idx > 0 ? p.lessons[idx - 1] : null;
   const next = idx < p.lessons.length - 1 ? p.lessons[idx + 1] : null;
-  const categoryAnchor =
-    p.category === "Arrays" ? "arrays-matrix" : p.category === "Strings" ? "strings" : "hash-map";
+  const section = PATTERN_SECTION_BY_SLUG[p.slug] ?? { title: p.category, anchor: "" };
+  const categoryAnchor = section.anchor;
 
   if (entry.builder.sections) {
     const topicLessons = p.lessons.map((item) => ({
@@ -107,7 +107,7 @@ function LessonPage() {
               </Link>
               <ChevronRight className="size-3" />
               <Link to="/patterns" hash={categoryAnchor} className="hover:text-foreground">
-                {p.category}
+                {section.title}
               </Link>
               <ChevronRight className="size-3" />
               <Link
@@ -123,7 +123,7 @@ function LessonPage() {
               </span>
             </nav>
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-              {p.category} · {p.title} · {String(idx + 1).padStart(2, "0")} /{" "}
+              {section.title} · {p.title} · {String(idx + 1).padStart(2, "0")} /{" "}
               {String(p.lessons.length).padStart(2, "0")}
             </p>
             <h1 className="lesson-title mt-1.5 font-semibold tracking-tight">

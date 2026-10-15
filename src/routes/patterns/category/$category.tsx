@@ -5,9 +5,9 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 export const Route = createFileRoute("/patterns/category/$category")({
   beforeLoad: ({ params }) => {
     const anchorByCategory: Record<string, string> = {
-      arrays: "arrays-matrix",
-      strings: "strings",
-      "hash-map": "hash-map",
+      arrays: "foundations",
+      strings: "foundations",
+      "hash-map": "hashing",
     };
     throw redirect({ to: "/patterns", hash: anchorByCategory[params.category] });
   },
