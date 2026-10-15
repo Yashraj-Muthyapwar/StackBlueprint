@@ -488,7 +488,7 @@ export function clearAllRivetData(): Promise<CleanupResult> {
     if (!writeStorage(PREFS_KEY, JSON.stringify({ remember: false }))) storageFailed();
     remember = false;
     try {
-      for (const key of ["rivet:nudge-dismissed", "rivet:keys"]) {
+      for (const key of ["rivet:nudge-dismissed", "rivet:nudged-lessons", "rivet:keys"]) {
         window.sessionStorage.removeItem(key);
         if (window.sessionStorage.getItem(key) !== null) throw new Error("Removal failed");
       }
