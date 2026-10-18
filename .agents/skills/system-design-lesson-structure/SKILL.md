@@ -205,7 +205,8 @@ Databases are **cylinders** (one grouped component; the body keeps the component
 - Excalidraw measures text with whatever font is ready. **Wait for the font** (`whenFontReady()`) before building elements, and pad composite label boxes, or the last letters are clipped.
 - `convertToExcalidrawElements` regenerates ids by default. Pass `{ regenerateIds: false }` whenever you group parts or position labels by id.
 - Arrows are not always attached and labels are not always bound (learners type loose text, draw arrows by hand). `graph.ts` therefore also accepts loose text on or near a shape and arrows that merely start and end on or near shapes. Keep that behaviour; test it with the node script described in section 8.
-- Excalidraw's Library panel is a flat grid and cannot show group headings. The grouped palette is ours; the Library button carries only the community icons.
+- Excalidraw's Library panel is a flat grid and cannot show group headings, so the grouped palette is ours and Excalidraw's own Library button is hidden. Do not add community libraries: learners must build from our named components so boards can be graded reliably.
+- A first-visit tip popup (key `sb-diagram-tip:v1`, reopened by "How it works") asks learners to use the components. Keep its wording free of promises the checker does not keep: hand-drawn shapes can still pass, but only clearly named components are reliably recognised.
 
 ## 6. Key takeaways
 
@@ -257,10 +258,10 @@ The working folder may not be a git repository. Tell the user exactly what to mo
   - the topic content file, `src/lessons/types.ts`, `src/components/system-design/SectionRenderer.tsx`, `src/routes/system-design/index.tsx` if the module list changed;
   - the lesson's animation file;
   - the whole `src/components/lesson/diagram-board/` folder, `src/components/lesson/SectionMarker.tsx` (and the Python renderer that imports it);
-  - `package.json` and `package-lock.json` (the `@excalidraw/excalidraw` dependency) and `public/libraries/software-architecture.excalidrawlib`;
+  - `package.json` and `package-lock.json` (the `@excalidraw/excalidraw` dependency);
   - the lesson image in `src/images/system-design/`.
 - **Exclude unrelated changes** and name them.
 - **Upload before deleting.** Add and update first, then delete replaced files, and say staging can be briefly broken in between.
-- **Credit**: the community icon library is by Youri Tjang (libraries.excalidraw.com). Keep the credit in the whiteboard hint. Check the library's licence before a public launch.
+- **Dependency licence**: `@excalidraw/excalidraw` is MIT licensed. No community libraries or third-party artwork ship with the board.
 - **Back up deletions** and say where the backup lives and whether it survives the session.
 - Give a **post-deploy check**: the table of contents, the animation controls, the exercises, the whiteboard (palette, example, badge, reload keeps the drawing), quiz completion, and that the other lessons in the track still load.
