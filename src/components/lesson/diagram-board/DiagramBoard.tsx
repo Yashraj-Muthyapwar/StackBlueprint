@@ -1,4 +1,13 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  lazy,
+  Suspense,
+  type ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   Boxes,
   Check,
@@ -17,7 +26,7 @@ import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ComponentPalette } from "./ComponentPalette";
-import type { BoardController } from "./ExcalidrawCanvas";
+import type { BoardController, CanvasProps } from "./ExcalidrawCanvas";
 import { BOARDS, evaluateRules, type DiagramGraph } from "./rules";
 
 /*
@@ -27,8 +36,15 @@ import { BOARDS, evaluateRules, type DiagramGraph } from "./rules";
  * drawing and the badge are remembered in this browser only.
  */
 
-// Excalidraw is large, so it loads on demand and only in the browser.
-const ExcalidrawCanvas = lazy(() => import("./ExcalidrawCanvas"));
+// Excalidraw is large and needs `window`, so it loads on demand and only in the browser. The
+// `import.meta.env.SSR` check is replaced at build time, which removes the import from the server
+// bundle altogether. Without it the bundler puts Excalidraw next to React in a shared server
+// chunk, every page loads it on Node, and the whole site fails with "window is not defined".
+const ExcalidrawCanvas = lazy(() =>
+  import.meta.env.SSR
+    ? Promise.resolve({ default: (() => null) as unknown as ComponentType<CanvasProps> })
+    : import("./ExcalidrawCanvas"),
+);
 
 const STROKES = ["#1e1e1e", "#e03131", "#2f9e44", "#1971c2", "#f08c00"];
 const FILLS = ["transparent", "#ffc9c9", "#b2f2bb", "#a5d8ff", "#ffec99"];
