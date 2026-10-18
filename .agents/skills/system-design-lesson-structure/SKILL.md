@@ -198,7 +198,7 @@ Databases are **cylinders** (one grouped component; the body keeps the component
 
 ### 5.3 Excalidraw pitfalls (all of these happened)
 
-- Load it only through `React.lazy` inside `ClientOnly`. It is large and cannot render on the server.
+- Load it only through `React.lazy` inside `ClientOnly`, **and guard the import with `import.meta.env.SSR`** (see `DiagramBoard.tsx`). `lazy` and `ClientOnly` alone are not enough: the bundler still puts Excalidraw into the server build, next to the React code every page shares, so on Vercel every page crashed with `ReferenceError: window is not defined` and showed "This page didn't load". The build log still said success.
 - Set `handleKeyboardGlobally={false}` so its shortcuts never hijack the page.
 - The floating properties panel covers the canvas. It is hidden with an injected rule using `!important`, because a Tailwind utility class loses to Excalidraw's own CSS. The learner picks colours from our colour strip instead.
 - The site's global `::selection` colour becomes dark on dark in Excalidraw's dark mode. The board overrides `::selection` inside `.sb-excalidraw`.
@@ -236,7 +236,14 @@ Run all of these before you report the lesson done.
    - Insert components from the palette by click and by drag, search for one, and confirm the goals tick.
    - Type a label into a shape in **light and dark** mode and confirm it is readable while editing and after.
 5. **Browser** (hidden panes freeze animation, so verify state through the DOM and say plainly when smoothness was not observed): at 375, 768, 1024, 1280 and 1440px there is no page-level horizontal scroll; at 1280px the animation's controls stay on screen; the whiteboard canvas and its goals strip are fully usable; no console errors. Remove any test data you wrote to `localStorage` (clear the board afterwards, because the board re-saves on change).
-6. **Production**: run `npm run build` once for a lesson that adds or changes a board, and confirm it succeeds.
+6. **Production (server rendering)**: a passing `npm run build` is not enough. Run `VERCEL=1 npm run build`, then call the server function and check that pages return 200 and that no browser-only library ended up in it:
+
+   ```bash
+   grep -rl "excalidraw" .vercel/output/functions/__server.func | wc -l    # expect 0
+   node scratch/ssr-test.mjs "$PWD/.vercel/output/functions/__server.func/index.mjs"
+   ```
+
+   The script imports the function's default export and calls `fetch(new Request("http://localhost/<path>"))` for `/` and the lesson path, printing the status and whether the body contains "This page didn't load". Do this for any lesson that adds a browser-only dependency.
 
 ## 9. Do not
 

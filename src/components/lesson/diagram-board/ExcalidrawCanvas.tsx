@@ -42,17 +42,14 @@ const BOARD_CSS = `
 `;
 const storageKey = (id: string) => `sb-diagram:v1:${id}`;
 
-export default function ExcalidrawCanvas({
-  board,
-  theme,
-  onGraph,
-  onReady,
-}: {
+export type CanvasProps = {
   board: BoardDefinition;
   theme: "light" | "dark";
   onGraph: (graph: DiagramGraph) => void;
   onReady: (controller: BoardController) => void;
-}) {
+};
+
+export default function ExcalidrawCanvas({ board, theme, onGraph, onReady }: CanvasProps) {
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const saveTimer = useRef<number | undefined>(undefined);
   const inserted = useRef(0);
