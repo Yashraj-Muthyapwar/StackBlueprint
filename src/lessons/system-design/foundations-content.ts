@@ -5,7 +5,7 @@ import deliveryFrameworkFlowImg from "@/images/system-design/Foundations/deliver
 import estimationCheatSheetMapImg from "@/images/system-design/Foundations/estimation-cheat-sheet-map.png";
 import scalabilityLoopImg from "@/images/system-design/Foundations/scalability-loop.png";
 import scalabilityArchitectureImg from "@/images/system-design/Foundations/scalability-architecture.png";
-import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
+import funcVsNonFuncImg from "@/images/system-design/Foundations/functional-vs-non-functional.png";
 import backOfTheEnvelopeImg from "@/images/system-design/Foundations/back-of-the-envelope.png";
 import internetProtocolImg from "@/images/system-design/Foundations/internet-protocol.png";
 import osiModelImg from "@/images/system-design/Foundations/OSI-Model.png";
@@ -786,173 +786,323 @@ export const scaledLesson: LessonContent = {
 
 // Keep your existing imports at the top of this file:
 //   import { type LessonContent } from "@/lessons/types";
-//   import funcVsNonFuncImg from "@/images/system-design/Foundations/functionl-vs-non-functional.png";
+//   import funcVsNonFuncImg from "@/images/system-design/Foundations/functional-vs-non-functional.png";
 export const functionalVsNonFunctional: LessonContent = {
   slug: "functional-vs-non-functional-requirements",
   title: "Functional vs Non-Functional Requirements",
-  subtitle:
-    "Ask two questions at the start of each design. What must the system do? How well must it do that?",
+  subtitle: "What a system must do, and how well it must do it.",
   sections: [
     {
       kind: "prose",
-      heading: "Two Kinds of Requirement",
+      eyebrow: "1 · Why",
+      heading: "Why do requirements exist?",
       body: [
-        "A requirement is a statement about what a system must do or must be. Every design problem has two kinds of requirement.",
-        "**Functional requirements** describe the work that the system does. **Non-functional requirements** describe how well the system does that work.",
-        "The SCALED qualities help you here. Requirements tell you which of the six qualities matter most for the product.",
+        "Imagine that an interviewer says:",
+        "**Design a URL shortening system like Bitly.**",
+        "You start to design a database. You select Redis for caching. You also add a load balancer.",
+        "But you have not asked what the system must do.",
+        "You may design a system that does not solve the correct problem.",
+        "Requirements tell engineers what to build and what conditions the system must meet.",
+        "There are two main types:",
       ],
     },
     {
-      kind: "table",
-      caption: "The two kinds of requirement",
-      headers: ["Kind", "Question it answers", "Example"],
-      rows: [
-        ["**Functional**", "What must the system do?", "A user can book a ride."],
-        ["**Non-functional**", "How well must it do that?", "The booking takes less than 2 seconds."],
+      kind: "list",
+      items: [
+        "**Functional requirements (FR):** Define what the system must do.",
+        "**Non-functional requirements (NFR):** Define how well the system must operate or what constraints it must meet.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "In a system design interview, requirements help you select the correct architecture.",
       ],
     },
     {
       kind: "image",
       src: funcVsNonFuncImg,
-      alt: "Diagram that compares functional and non-functional requirements",
-      caption: "A feature list is not enough. Each feature also needs a quality target.",
+      alt: "Infographic comparing functional requirements (what the system does) with non-functional requirements (how well it does it) for a URL shortener, with the request flow and how requirements drive design",
+      caption: "Ask requirements first. Functional is what the system does. Non-functional is how well it does it.",
     },
     {
-      kind: "analogy",
-      title: "A taxi ride",
-      text: "You book a taxi to the airport. The **functional requirements** say what the taxi does: it collects you at home, drives to the airport, carries two people and three bags, and takes a card payment. The **non-functional requirements** say how well it does this: it arrives in less than 40 minutes, the fare is below $45, the car is clean, and the driver obeys the speed limit.",
+      kind: "prose",
+      eyebrow: "2 · Intuition",
+      heading: "The restaurant analogy",
+      body: ["Imagine you own a restaurant."],
     },
     {
       kind: "callout",
-      tone: "warn",
-      title: "A feature list is not enough",
-      body: "A taxi can take you to the airport and still give a bad ride. It can arrive late, charge $90, and drive too fast. A system is the same. It can have every feature and still fail. If it is slow, stops at peak time, or is too costly to run, users leave.",
+      tone: "success",
+      title: "Functional",
+      body: "The restaurant must let customers order food, prepare meals, and accept payments. What does it do?",
+    },
+    {
+      kind: "callout",
+      tone: "violet",
+      title: "Non-functional",
+      body: "The restaurant must serve meals within 20 minutes and follow food safety rules. How well must it operate?",
     },
     {
       kind: "prose",
-      heading: "Try the Two Kinds",
       body: [
-        "Use the animation to break a taxi ride, sort real requirements, and practice the three interview steps.",
+        "Now apply the same idea to software.",
+        "A URL shortener must create short URLs. This describes a function.",
+        "The URL shortener must respond quickly, even when many people use it. This describes a quality of the system.",
       ],
     },
-    { kind: "requirements-explorer" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Memory rule",
+      body: "Functional = WHAT. Non-functional = HOW WELL. Non-functional requirements can also define constraints, such as security rules or legal obligations.",
+    },
     {
       kind: "prose",
-      heading: "Three Steps for an Interview",
+      eyebrow: "3 · How",
+      heading: "How do you identify requirements?",
       body: [
-        "At the start of a design interview, use three steps. **Scope** the features. **Measure** the qualities. **Choose** between qualities that conflict.",
-        "You can practice all of these steps, explore different quality groups, and see examples of real-world requirements in the interactive component above."
+        "Use this process when an interviewer asks you to design a system.",
       ],
     },
     {
-      kind: "list",
-      heading: "Practice Plan",
-      items: [
-        "**Pick three apps.** Write five features and five quality targets for each app.",
-        "**Add numbers.** Replace each word such as \"fast\" with a number.",
-        "**Map each target.** Write the SCALED letter next to it.",
-        "**Say the steps aloud.** Scope, measure, choose.",
+      kind: "prose",
+      heading: "Step 1: Identify user actions",
+      body: [
+        "Ask: What must users be able to do?",
+        "Examples: Create a URL, open a URL, delete a URL.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Step 2: Write functional requirements",
+      body: [
+        "Describe the main behavior of the system.",
+        "Example: Users can create short URLs from long URLs.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Step 3: Define quality requirements",
+      body: [
+        "Ask about latency, availability, traffic, security, and data durability.",
+        "Example: 95% of redirects must complete within 200 ms.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Step 4: Make each requirement testable",
+      body: [
+        "Replace vague words such as fast, reliable, and scalable with measurable targets where possible.",
+      ],
+    },
+    {
+      kind: "prose",
+      eyebrow: "4 · Example",
+      heading: "Design a URL shortener",
+      body: [
+        "A user enters a long URL:",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "https://example.com/products/electronics/laptops",
+    },
+    {
+      kind: "prose",
+      body: ["The system creates:"],
+    },
+    {
+      kind: "code",
+      language: "text",
+      code: "https://short.ly/a7Bx9",
+    },
+    {
+      kind: "prose",
+      body: [
+        "When another user opens the short URL, the system redirects them to the original address.",
+      ],
+    },
+    { kind: "url-shortener-whiteboard" },
+    {
+      kind: "prose",
+      body: [
+        "This design implements a function. It does not yet prove that the system can meet its performance or availability targets.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Requirements table",
+      headers: ["Functional requirements", "Non-functional requirements"],
+      rows: [
+        ["Create short URLs", "Redirect latency p95 ≤ 200 ms"],
+        ["Redirect to original URLs", "Availability ≥ 99.9%"],
+        ["Support custom URL aliases", "Handle 10,000 redirect requests per second"],
+        ["Delete short URLs", "Protect stored data and control access"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "The numbers above are example design targets, not actual Bitly service guarantees.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Important interview concept",
+      body: "Non-functional requirements influence architectural choices. For example: high traffic can require load balancing and horizontal scaling. Low latency can make caching useful. High availability can require redundancy and failover. These are possible solutions, not requirements themselves.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "5 · Trade-offs",
+      heading: "What can go wrong?",
+      body: ["Consider three design decisions."],
+    },
+    {
+      kind: "table",
+      headers: ["Design choice", "Benefit", "Trade-off or failure mode"],
+      rows: [
+        ["Add Redis cache", "Faster redirects", "More cost; stale data if cache invalidation fails"],
+        ["Add database replicas", "Better read capacity and potential availability", "More complexity; replication lag"],
+        ["Use one server", "Simple and inexpensive", "Server failure can stop the service"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "A senior engineer does not select technology only because it is popular. They use requirements to justify each design choice.",
       ],
     },
     {
       kind: "callout",
       tone: "success",
-      title: "Start with requirements",
-      body: "Questions about requirements show that you plan before you build. They keep the design small. They also give the discussion a clear order.",
+      title: "Key distinction",
+      body: "\"Use Redis\" is usually an implementation decision. \"95% of redirects must finish in 200 ms\" is a non-functional requirement.",
     },
+    {
+      kind: "prose",
+      eyebrow: "6 · Practice",
+      heading: "Your turn",
+      body: [
+        "Classify two requirements, then make a vague one measurable.",
+      ],
+    },
+    {
+      kind: "pattern-exercises",
+      exercises: [
+        {
+          type: "choice",
+          label: "Practice A",
+          title: "Short URL generation",
+          prompt: "Users can generate short URLs.",
+          options: ["Functional", "Non-functional", "Not sure"],
+          answer: 0,
+          success: "Right. Generating a short URL is a feature, so it is functional.",
+          hint: "Ask: is this something the system does, or how well it does it?",
+        },
+        {
+          type: "choice",
+          label: "Practice A",
+          title: "Server failure",
+          prompt: "The service must remain available during the failure of one application server.",
+          options: ["Functional", "Non-functional", "Not sure"],
+          answer: 1,
+          success: "Right. Staying available under failure is a quality target, so it is non-functional.",
+          hint: "Does this add a feature, or say how well the service must keep running?",
+        },
+        {
+          type: "choice",
+          label: "Practice C",
+          title: "The URL shortener must be fast",
+          prompt: "Which rewrite is a clear requirement with a measurable target?",
+          options: [
+            "The URL shortener must be very fast.",
+            "The URL shortener must use a cache.",
+            "At least 95% of redirects must complete within 200 ms.",
+            "The URL shortener must respond quickly under heavy traffic.",
+          ],
+          answer: 2,
+          success: "Correct. It names the operation, the percentile, and the latency target.",
+          hint: "A measurable requirement has a number you can test. A cache is a solution, not a requirement.",
+        },
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now draw the basic flow yourself on the whiteboard. This is optional practice: the goals tick as you go, and a badge appears when you meet them all.",
+      ],
+    },
+    { kind: "diagram-board", boardId: "url-shortener-basic" },
     {
       kind: "takeaways",
       items: [
-        "Functional requirements say what the system does. Non-functional requirements say how well it does it.",
-        "A system with every feature can still fail. Both kinds of requirement matter.",
-        "Most non-functional requirements match a SCALED quality. Ask about security separately.",
-        "Use three steps: scope the features, measure the qualities, and choose between conflicts.",
-        "Ask for numbers, such as p95 latency, requests each second, and uptime.",
+        "Functional requirements define what the system must do. Non-functional requirements define how well it must operate or what constraints it must meet.",
+        "Non-functional requirements can also define constraints, such as security rules or legal obligations.",
+        "Follow four steps: identify user actions, write functional requirements, define quality requirements, and make each one testable.",
+        "Replace vague words such as fast, reliable, and scalable with measurable targets.",
+        "Redis, replicas, and load balancers are possible solutions, not requirements. Use requirements to justify each design choice.",
       ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "req-functional",
-          question: "A ride app must let a user book a ride. What kind of requirement is this?",
-          options: ["Functional", "Non-functional", "A security rule", "A cost limit"],
-          correctIndex: 0,
-          explanation: "Booking a ride is a feature. It says what the system does.",
+          id: "fnr-availability",
+          question: "Which metric measures the percentage of time a service is operational and accessible?",
+          options: ["Latency", "Availability", "Throughput", "Storage capacity"],
+          correctIndex: 1,
+          explanation: "Availability is the share of time the service works. Latency is delay and throughput is volume.",
         },
         {
-          id: "req-nfr-reset",
-          question: "Which requirement is non-functional?",
+          id: "fnr-implementation",
+          question: "Which statement is an implementation decision, not a requirement?",
           options: [
-            "A user can reset a password.",
-            "The reset email arrives in less than 10 seconds.",
-            "A user can change an email address.",
-            "A user can delete an account.",
+            "Availability must be at least 99.9%.",
+            "Use Redis for the redirect lookups.",
+            "Users can delete short URLs.",
+            "p95 redirect latency must be at most 200 ms.",
           ],
           correctIndex: 1,
-          explanation: "A time limit says how well the system works. The other three are features.",
+          explanation: "Redis is a possible solution. The other three say what the system does or how well it must do it.",
         },
         {
-          id: "req-taxi",
-          question: "Which taxi requirement is non-functional?",
+          id: "fnr-users",
+          question: "An interviewer says, \"The system must handle 5 million users.\" What is the best next question?",
           options: [
-            "Collect the passenger at home",
-            "Take a card payment",
-            "Fare below $45",
-            "Drive to the airport",
+            "Which programming language should we use?",
+            "Should we install Redis?",
+            "Are these registered, daily active, or concurrent users, and what is the expected peak request rate?",
+            "Which database is most popular?",
           ],
           correctIndex: 2,
-          explanation: "A fare limit is a cost target. It does not describe a feature of the ride.",
+          explanation: "\"Users\" is ambiguous. Clarify what is counted and the peak load before choosing any technology.",
         },
         {
-          id: "req-seat",
-          question: "A ticket site says: \"Two buyers never get the same seat.\" Which SCALED quality is this?",
-          options: ["Latency", "Consistency", "Efficiency", "Scalability"],
+          id: "fnr-p95",
+          question: "What does a p95 latency of 200 ms mean?",
+          options: [
+            "Every request completes within 200 ms.",
+            "At least 95% of measured requests complete within 200 ms.",
+            "The average request takes 200 ms.",
+            "95% of requests take exactly 200 ms.",
+          ],
           correctIndex: 1,
-          explanation: "All users must see the same seat state. This is a consistency requirement.",
+          explanation: "A percentile target allows a slow tail. It does not promise that every request is fast.",
         },
         {
-          id: "req-security",
-          question: "Which topic has no letter in SCALED?",
-          options: ["Efficiency", "Durability", "Security", "Latency"],
-          correctIndex: 2,
-          explanation: "SCALED covers six qualities. Security is not one of them. Ask about it separately.",
-        },
-        {
-          id: "req-first-step",
-          question: "What is the first step of the interview approach?",
+          id: "fnr-scale-vs-availability",
+          question: "A booking system handles 50,000 requests per second. Why is it not automatically 99.99% available?",
           options: [
-            "Choose between conflicts",
-            "Measure the qualities",
-            "Set the scope",
-            "Draw the database",
+            "Throughput and availability are the same measure.",
+            "Handling load says nothing about how often the system is down or how it fails over.",
+            "High traffic always lowers availability.",
+            "Availability only depends on the database.",
           ],
-          correctIndex: 2,
-          explanation: "Scope comes first. Then you measure the qualities. Then you choose between conflicts.",
-        },
-        {
-          id: "req-number",
-          question: "Which requirement is the best?",
-          options: [
-            "The app is fast.",
-            "The app is very reliable.",
-            "The menu loads in less than 1 second for 95% of requests.",
-            "The app has good performance.",
-          ],
-          correctIndex: 2,
-          explanation: "A good requirement has a number. You can test it. The other three are only opinions.",
-        },
-        {
-          id: "req-failed",
-          question: "A system has every feature but is down for hours each week. What is it?",
-          options: [
-            "A successful system",
-            "A system with no requirements",
-            "A failed system",
-            "A secure system",
-          ],
-          correctIndex: 2,
-          explanation: "A missing quality target can make a system fail, even when every feature exists.",
+          correctIndex: 1,
+          explanation: "Scalability is capacity under load. Availability is uptime, which needs redundancy and failover.",
         },
       ],
     },

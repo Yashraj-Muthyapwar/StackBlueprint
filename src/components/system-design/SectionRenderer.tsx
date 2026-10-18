@@ -3,6 +3,8 @@ import { AlertTriangle, CheckCircle2, Info, X, Copy, Check, Brain } from "lucide
 import { LessonAnimation } from "@/components/system-design/LessonAnimation";
 import { TerminalAnimation } from "@/components/docker/TerminalAnimation";
 import DockerRunUnderTheHood from "@/components/docker/DockerRunUnderTheHood";
+import { SectionMarker } from "@/components/lesson/SectionMarker";
+import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
 import { Quiz } from "@/components/lesson/Quiz";
 import { useState, useEffect } from "react";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
@@ -39,7 +41,8 @@ import { FeedStrategy } from "@/components/system-design/foundations/FeedStrateg
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
 import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
-import { RequirementsExplorer } from "@/components/system-design/foundations/RequirementsExplorer";
+import { UrlShortenerWhiteboard } from "@/components/system-design/foundations/UrlShortenerWhiteboard";
+import { DiagramBoard } from "@/components/lesson/diagram-board/DiagramBoard";
 import { ScaledFramework } from "@/components/system-design/foundations/ScaledFramework";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
@@ -230,6 +233,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "prose":
       return (
         <section className="space-y-3">
+          {section.eyebrow ? <SectionMarker label={section.eyebrow} /> : null}
           {section.heading ? (
             <h2 className="lesson-section-title font-semibold tracking-tight">
               {section.heading}
@@ -442,8 +446,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "system-design-scalability-loop":
       return <ScalabilityLoop />;
 
-    case "requirements-explorer":
-      return <RequirementsExplorer />;
+    case "url-shortener-whiteboard":
+      return <UrlShortenerWhiteboard />;
+
+    case "diagram-board":
+      return <DiagramBoard boardId={section.boardId} />;
 
     case "scaled-framework":
       return <ScaledFramework />;
@@ -543,6 +550,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return <PacelcTheoremDiagram />;
     case "osi-tcp-mapping-diagram":
         return <OsiToTcpDiagram />;
+    case "pattern-exercises":
+      return <PatternExercises exercises={section.exercises} />;
+
     case "takeaways":
       return (
         <section className="rounded-xl border border-mint/30 bg-mint/5 p-5">
