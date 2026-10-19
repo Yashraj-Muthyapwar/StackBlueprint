@@ -32,6 +32,8 @@ export type CellsExercise = ExerciseBase & {
   answers: (string | number)[];
   /** Draw `[` and `]` around the cells on wider screens. Defaults to true. */
   brackets?: boolean;
+  /** Labels drawn above each cell instead of `[0]`, `[1]`, ..., e.g. the key each answer belongs to. */
+  cellLabels?: string[];
 };
 
 /** One correct option, e.g. "Duplicate" or "New value". */
@@ -243,12 +245,14 @@ function Exercise({ exercise, number }: { exercise: PatternExercise; number: num
         {exercise.answers.map((answer, i) => (
           <div key={i} className="flex min-w-0 flex-col items-center gap-1">
             <Label htmlFor={`${id}-${i}`} className="font-mono text-xs text-muted-foreground">
-              [{i}]
+              {exercise.cellLabels?.[i] ?? `[${i}]`}
             </Label>
             <Input
               id={`${id}-${i}`}
               inputMode={numeric ? "numeric" : "text"}
-              aria-label={`Value at index ${i}`}
+              aria-label={
+                exercise.cellLabels ? `Answer for ${exercise.cellLabels[i]}` : `Value at index ${i}`
+              }
               value={values[i]}
               onChange={(event) => update(i, event.target.value)}
               className={cn("w-full px-1", fieldClass(isMatch(values[i], answer), checked))}

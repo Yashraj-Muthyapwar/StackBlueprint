@@ -271,6 +271,8 @@ export type Section =
   | { kind: "string-character-explorer" }
   | { kind: "opposite-ends-intuition"; caption?: string }
   | { kind: "hashing-intuition" }
+  | { kind: "guard-notebook" }
+  | { kind: "seen-flowchart" }
   | { kind: "locker-demo" }
   | { kind: "set-dict-intuition" }
   | { kind: "set-dict-walkthrough" }

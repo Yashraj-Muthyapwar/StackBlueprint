@@ -17,6 +17,8 @@ import { PatternExercises } from "@/components/dsa/shared/PatternExercises";
 import { PatternStepper } from "@/components/dsa/shared/PatternStepper";
 import { PROBLEM_SETS } from "@/components/dsa/shared/problem-sets";
 import { HashingCostChart } from "@/components/dsa/hashing/foundations/HashingCostChart";
+import { GuardNotebook } from "@/components/dsa/hashing/membership/GuardNotebook";
+import { SeenFlowchart } from "@/components/dsa/hashing/membership/SeenFlowchart";
 import { LockerDemo } from "@/components/dsa/hashing/foundations/LockerDemo";
 import { SetDictIntuition } from "@/components/dsa/hashing/foundations/SetDictIntuition";
 import { SetDictWalkthrough } from "@/components/dsa/hashing/foundations/SetDictWalkthrough";
@@ -374,6 +376,12 @@ export function SectionRenderer({
 
     case "three-sum-intuition":
       return <ThreeSumIntuition roles={section.roles} />;
+
+    case "guard-notebook":
+      return <GuardNotebook />;
+
+    case "seen-flowchart":
+      return <SeenFlowchart />;
 
     case "locker-demo":
       return <LockerDemo />;
