@@ -76,6 +76,7 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
   const [paletteOpen, setPaletteOpen] = useState(true);
   const [tipOpen, setTipOpen] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
+  const tipButtonRef = useRef<HTMLButtonElement>(null);
   const [stroke, setStroke] = useState(STROKES[0]);
   const [fill, setFill] = useState(FILLS[0]);
 
@@ -87,14 +88,36 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
     }
   }, [boardId]);
 
-  // First visit in this browser: ask learners to build with our components. Reopen it any time.
+  // First visit in this browser: ask learners to build with our components, but only once they
+  // have scrolled to the whiteboard. Opening it on page load would pull focus (and the scroll
+  // position) down the page before they have read anything. Reopen it any time.
   useEffect(() => {
+    let seen = false;
     try {
-      if (window.localStorage.getItem(tipKey) !== "1") setTipOpen(true);
+      seen = window.localStorage.getItem(tipKey) === "1";
     } catch {
-      setTipOpen(true);
+      /* storage unavailable: show the tip */
     }
+    // Watch the canvas area: the whole card can be taller than a laptop screen.
+    const el = boardRef.current;
+    if (seen || !el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setTipOpen(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
+
+  // Focus the dialog's button for keyboard users, without scrolling anything.
+  useEffect(() => {
+    if (tipOpen) tipButtonRef.current?.focus({ preventScroll: true });
+  }, [tipOpen]);
 
   const closeTip = useCallback(() => {
     setTipOpen(false);
@@ -333,7 +356,7 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
                 </li>
               </ul>
               <div className="mt-4 flex justify-start">
-                <Button type="button" size="sm" onClick={closeTip} autoFocus>
+                <Button ref={tipButtonRef} type="button" size="sm" onClick={closeTip}>
                   Got it
                 </Button>
               </div>
