@@ -1,6 +1,110 @@
 import type { LessonBuilder, QuizQuestion, Section } from "../types";
 
 /**
+ * Hidden grader for the duplicate-ID warm-up. The IDs arrive in a list that raises on `in`,
+ * `index`, `count`, `sort` and slicing and counts every read, so a learner has to remember the IDs
+ * in a hash-based set. Reads are budgeted on a 300-value input, which rejects nested scans.
+ * Builtins are reached directly so shadowing cannot fake a pass.
+ */
+const duplicateTests = String.raw`
+import builtins as _sb_b
+
+class _SbList(_sb_b.list):
+    reads = 0
+    def __iter__(self):
+        _SbList.reads += _sb_b.len(self)
+        return _sb_b.list.__iter__(self)
+    def __getitem__(self, key):
+        if _sb_b.isinstance(key, _sb_b.slice):
+            raise _sb_b.RuntimeError("Do not slice the list. Remember the IDs you have seen in a set.")
+        _SbList.reads += 1
+        return _sb_b.list.__getitem__(self, key)
+    def __contains__(self, item):
+        raise _sb_b.RuntimeError("Do not use 'in' on the list. Remember the IDs you have seen in a set.")
+    def index(self, *args):
+        raise _sb_b.RuntimeError("Do not search the list. Remember the IDs you have seen in a set.")
+    def count(self, *args):
+        raise _sb_b.RuntimeError("Do not search the list. Remember the IDs you have seen in a set.")
+    def sort(self, *args, **kwargs):
+        raise _sb_b.RuntimeError("Do not sort the input. Use a hash-based set.")
+
+def _sb_grade():
+    cases = [
+        [101, 205, 309, 101],
+        [101, 205, 309, 412],
+        [],
+        [7],
+        [7, 7],
+        [0, -1, 1, -1],
+        [5, 4, 3, 2, 1, 5],
+    ]
+    seed = 8675309
+    for size in _sb_b.range(1, 70):
+        values = []
+        for _k in _sb_b.range(size):
+            seed = (seed * 1103515245 + 12345) % 2147483648
+            values.append((seed >> 8) % (size * 3 + 5))
+        cases.append(values)
+    cases.append(_sb_b.list(_sb_b.range(300)))
+    cases.append(_sb_b.list(_sb_b.range(300)) + [0])
+    for values in cases:
+        want = _sb_b.len(_sb_b.set(values)) != _sb_b.len(values)
+        _SbList.reads = 0
+        inputs = _SbList(values)
+        try:
+            got = contains_duplicate(inputs)
+        except _sb_b.RuntimeError as problem:
+            return _sb_b.str(problem)
+        if _sb_b.list.copy(inputs) != values:
+            return "contains_duplicate must not change the list."
+        if got is not True and got is not False:
+            return "contains_duplicate must return True or False."
+        if got != want:
+            return "Wrong answer: expected " + _sb_b.str(want) + " but got " + _sb_b.str(got) + " for " + _sb_b.str(values) + "."
+        if _SbList.reads > 2 * _sb_b.len(values) + 5:
+            return "Too many reads: look at each ID once and use a set for the IDs you have seen."
+    return "All hidden tests passed"
+
+_sb_b.print(_sb_grade())`;
+
+const duplicateChallenge: QuizQuestion = {
+  id: "contains-duplicate-warmup",
+  question:
+    "Warm-up challenge: Find duplicate student IDs. You receive a list of student IDs, and some IDs may appear more than once. Write `contains_duplicate(student_ids)` that returns `True` if any ID appears at least twice, and `False` otherwise. Keep the given function signature, use a hash-based data structure, and do not sort the input. Handle empty lists, one-element lists and repeated IDs. For `[101, 205, 309, 101]` the answer is `True`, for `[101, 205, 309, 412]` it is `False`, and for `[]` it is `False`.",
+  interactiveCode: true,
+  initialCode: `def contains_duplicate(student_ids: list[int]) -> bool:
+    # Write your solution here
+    pass
+
+
+print(contains_duplicate([101, 205, 309, 101]))
+print(contains_duplicate([101, 205, 309, 412]))
+print(contains_duplicate([]))
+`,
+  testCode: duplicateTests,
+  expectedOutput: "All hidden tests passed",
+  gradeLastLine: true,
+  requiredCodePatterns: [
+    String.raw`def\s+contains_duplicate\s*\(`,
+    String.raw`\bset\s*\(|=\s*\{|\bdict\b`,
+  ],
+  validationMessage:
+    "Define `contains_duplicate(student_ids)` and use a hash-based set to remember the IDs you have seen.",
+  forbiddenCodePatterns: [
+    {
+      pattern: String.raw`\bimport\b|__|\bexec\b|\beval\b|\bglobals\b|\bsetattr\b|\bcompile\b`,
+      message: "This challenge does not need imports or Python internals. Use a set.",
+    },
+    {
+      pattern: String.raw`\bsorted\s*\(|\.sort\s*\(`,
+      message: "Do not sort the input. Use a hash-based set instead.",
+    },
+  ],
+  explanation:
+    "Read the IDs once and keep a set named `seen`. If the ID is already in `seen`, return `True`. Otherwise add it. When the loop ends, return `False`. Empty and one-element lists never find a repeat, so they return `False`. Time is O(n), because each set lookup and insertion is O(1) on average. Additional space is O(n), because in the worst case every ID is stored in the set. Sorting would avoid the set, but it costs O(n log n) time and changes the input.",
+};
+
+/**
  * Hidden grader for the collision-finder challenge. It compares the learner's dictionary with a
  * reference on fixed and generated inputs. Builtins are reached directly so shadowing cannot fake
  * a pass, and the inputs are checked for changes.
@@ -111,6 +215,7 @@ const quizQuestions: QuizQuestion[] = [
     explanation:
       "Keys must be hashable. A tuple of hashable values is hashable, while lists, dictionaries and sets can change and are not hashable.",
   },
+  duplicateChallenge,
   challenge,
 ];
 
@@ -118,9 +223,14 @@ const hashFunctionSections: Section[] = [
   {
     kind: "prose",
     body: [
-      "You already understand two important facts: a Python `set` stores unique elements, and a Python `dict` stores key-value pairs. You also know that both provide `O(1)` average-case lookup.",
-      "But one important question remains: **how can Python find an element quickly without checking every element?**",
-      "To answer this, we must understand hash functions and collisions. We will use a simplified hash table first. Then we will connect it to Python's real implementation.",
+      "You already understand two important facts:",
+      "1. A Python `set` stores unique elements.",
+      "2. A Python `dict` stores key-value pairs.",
+      "You also know that both provide `O(1)` average-case lookup.",
+      "But one important question remains: ",
+      "**how can Python find an element quickly without checking every element?**",
+      "To answer this, we must understand **hash functions** and **collisions**.",
+      "We will use a simplified hash table first. Then we will connect it to Python's real implementation.",
     ],
   },
   {
@@ -138,10 +248,10 @@ const hashFunctionSections: Section[] = [
   {
     kind: "prose",
     body: [
-      "Suppose we want to check whether 412 exists.",
-      "With a list, Python might need to inspect multiple elements. With a set, Python can usually locate the element much faster.",
+      "Suppose we want to check whether `412` exists.",
+      "With a `list`, Python might need to inspect multiple elements. With a `set`, Python can usually locate the element much faster.",
       "But how does Python know where to look? It needs a way to transform the student ID into information that helps find its storage location. A **hash function** performs this transformation.",
-      "However, a problem exists. A hash table has a limited number of storage locations, so different keys can compete for the same location. That problem is called a **hash collision**.",
+      "However, a problem exists. A **hash table** has a limited number of storage locations, so different keys can compete for the same location. That problem is called a **hash collision**.",
     ],
   },
   {
@@ -165,10 +275,10 @@ const hashFunctionSections: Section[] = [
   {
     kind: "list",
     items: [
-      "Student 101 → locker 1",
-      "Student 205 → locker 5",
-      "Student 309 → locker 9",
-      "Student 412 → locker 2",
+      "Student `101` → locker `1`",
+      "Student `205` → locker `5`",
+      "Student `309` → locker `9`",
+      "Student `412` → locker `2`",
     ],
   },
   {
@@ -212,7 +322,7 @@ const hashFunctionSections: Section[] = [
     kind: "prose",
     body: [
       "For a standard Python integer such as 42, the result is `42`. For strings, the result is a hash value derived from the string. The exact value can differ between Python processes because Python **randomizes string hashing**.",
-      "A hash value is not necessarily the final position in memory. The hash table uses the hash value and its internal table size to identify an **initial storage location**.",
+      "A **hash value** is not necessarily the final position in memory. The **hash table** uses the **hash value** and its internal table size to identify an **initial storage location**.",
       "**Step 2. Find the storage location.** In our simplified example:",
     ],
   },
@@ -224,7 +334,7 @@ const hashFunctionSections: Section[] = [
   {
     kind: "prose",
     body: [
-      "**Step 3. Store or find the key.** If the selected location is available, the hash table can use it to store the key. If the key already exists, the table can identify it and avoid adding a duplicate to a set. For a dictionary, an existing key can have its value updated.",
+      "**Step 3. Store or find the key.** If the selected location is available, the **hash table** can use it to store the key. If the key already exists, the table can identify it and avoid adding a duplicate to a `set`. For a `dictionary`, an existing key can have its value updated.",
       "**Step 4. Handle a collision.** Suppose two student IDs are 412 and 422. In our simplified model:",
     ],
   },
@@ -236,7 +346,7 @@ const hashFunctionSections: Section[] = [
   {
     kind: "prose",
     body: [
-      "Both select location 2. Two different keys compete for the same location. How can a hash table resolve this? Two well-known techniques are:",
+      "Both select location 2. Two different keys compete for the same location. How can a **hash table** resolve this? Two well-known techniques are:",
     ],
   },
   {
@@ -254,7 +364,7 @@ const hashFunctionSections: Section[] = [
   {
     kind: "prose",
     body: [
-      "Python's built-in dictionaries and sets use forms of **open addressing**. When a collision happens, Python can probe other locations according to its internal rules. You do not need to memorize Python's exact probing formula for normal coding interviews.",
+      "Python's built-in `dictionaries` and `sets` use forms of **open addressing**. When a collision happens, Python can probe other locations according to its internal rules. You do not need to memorize Python's exact probing formula for normal coding interviews.",
       "You do need to understand that collisions can cause **extra comparisons** and additional lookup work.",
     ],
   },
@@ -365,13 +475,13 @@ const hashFunctionSections: Section[] = [
   {
     kind: "code",
     language: "python",
-    caption: "Practice A",
+    caption: "Practice",
     code: "keys = [23, 15, 33, 42, 25]\nindex = key % 10",
   },
   {
     kind: "prose",
     body: [
-      "Suppose the table has 10 storage locations. Calculate each key's index. Then identify which keys collide.",
+      "Suppose the table has **10 storage locations**, numbered 0 to 9. Each key selects one of them. Then identify which keys collide.",
     ],
   },
   {
@@ -380,15 +490,18 @@ const hashFunctionSections: Section[] = [
       {
         type: "cells",
         label: "Practice A",
-        title: "Calculate storage locations",
-        prompt: "What is the index of 23, 15, 33, 42 and 25, in that order?",
+        title: "Find the storage location for each key",
+        prompt:
+          "Calculate `key % 10` for each key and enter the location it selects, from 0 to 9. Each box belongs to the key written above it.",
+        cellLabels: ["key 23", "key 15", "key 33", "key 42", "key 25"],
+        brackets: false,
         answers: [3, 5, 3, 2, 5],
-        success: "Correct. The remainders are 3, 5, 3, 2 and 5.",
-        hint: "The index is the last digit of each key, because the table has 10 locations.",
+        success: "Correct. The locations are 3, 5, 3, 2 and 5.",
+        hint: "The location is the last digit of each key, because the table has 10 locations.",
       },
       {
         type: "choice",
-        label: "Practice A",
+        label: "Practice B",
         title: "Which keys collide?",
         prompt: "Which keys collide?",
         options: [
@@ -402,7 +515,7 @@ const hashFunctionSections: Section[] = [
       },
       {
         type: "choice",
-        label: "Practice B",
+        label: "Practice C",
         title: "Why lookup needs extra work",
         prompt:
           "Three different keys compete for the same storage location. Why can lookup require additional work?",
@@ -418,7 +531,7 @@ const hashFunctionSections: Section[] = [
       },
       {
         type: "choice",
-        label: "Practice B",
+        label: "Practice D",
         title: "Are the keys equal?",
         prompt: "Does that mean all three keys must be equal?",
         options: [
@@ -432,7 +545,7 @@ const hashFunctionSections: Section[] = [
       },
       {
         type: "choice",
-        label: "Interview question",
+        label: "Practice E",
         title: "Is the statement correct?",
         prompt:
           '"Python dictionary lookups are always O(1) because dictionaries use hashing." Is this statement completely correct?',
