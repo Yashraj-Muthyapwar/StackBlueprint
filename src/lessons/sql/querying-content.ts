@@ -1328,7 +1328,7 @@ ORDER BY city;`,
     },
     {
       kind: "callout",
-      tone: "tip",
+      tone: "info",
       title: "Include the group size with summary metrics",
       body: "A small group can make a metric look more meaningful than it is. Include COUNT(*) beside SUM or AVG so readers can judge reliability. For example, the returned status has 4 Cycle Depot orders, while delivered has 84.",
     },
@@ -1574,7 +1574,7 @@ ORDER BY order_count DESC, status ASC;`,
     },
     {
       kind: "callout",
-      tone: "tip",
+      tone: "info",
       title: "Filter rows as early as possible",
       body: "Keep row-level conditions in WHERE even when a database also accepts them in HAVING. Filtering web orders before grouping means the database has fewer rows to aggregate and can more easily use an index when one is available.",
     },
@@ -2476,6 +2476,66 @@ LIMIT  100;`,
 };
 
 // =============================================================
+// ADVANCED SQL: WINDOW FUNCTION FOUNDATIONS
+// =============================================================
+
+const groupByVsWindow: LessonContent = {
+  slug: "group-by-vs-window",
+  title: "GROUP BY vs Window Functions",
+  subtitle: "Collapsing rows vs keeping every row / aggregate next to detail / when each one fits",
+  sections: [],
+};
+
+const overWindowConcept: LessonContent = {
+  slug: "over-window-concept",
+  title: "OVER() and the Window Concept",
+  subtitle: "OVER() / empty window / the window as a per-row set of rows / aggregate vs window call",
+  sections: [],
+};
+
+const partitionBy: LessonContent = {
+  slug: "partition-by",
+  title: "PARTITION BY",
+  subtitle: "PARTITION BY / independent windows per group / multiple partition keys / partition vs GROUP BY",
+  sections: [],
+};
+
+const orderByInOver: LessonContent = {
+  slug: "order-by-in-over",
+  title: "ORDER BY inside OVER()",
+  subtitle: "ORDER BY in OVER / running totals / ordering vs output ORDER BY / tie-breaking",
+  sections: [],
+};
+
+const defaultFramesPeers: LessonContent = {
+  slug: "default-frames-peers",
+  title: "Default Window Frames and Peers",
+  subtitle: "default frame / RANGE vs ROWS / peer rows / ties in running totals",
+  sections: [],
+};
+
+const sqlLogicalExecutionOrder: LessonContent = {
+  slug: "sql-logical-execution-order",
+  title: "SQL Logical Execution Order",
+  subtitle: "FROM / WHERE / GROUP BY / HAVING / window / SELECT / ORDER BY / why windows cannot appear in WHERE",
+  sections: [],
+};
+
+const windowFoundationsQuiz: LessonContent = {
+  slug: "window-foundations-quiz",
+  title: "Window Function Foundations: Final Quiz",
+  subtitle: "Test your knowledge on window function foundations.",
+  sections: [],
+};
+
+const windowFoundationsCheatsheet: LessonContent = {
+  slug: "window-foundations-cheatsheet",
+  title: "Window Function Foundations: Cheatsheet",
+  subtitle: "One-page reference for OVER(), PARTITION BY, ORDER BY, frames, and execution order.",
+  sections: [],
+};
+
+// =============================================================
 // TOPIC INDEX
 // =============================================================
 
@@ -2506,6 +2566,15 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "Start advanced analytical SQL with multi-dimensional totals, then build toward window-function techniques.",
     lessons: [groupingSets],
+  },
+  "window-function-foundations": {
+    slug: "window-function-foundations",
+    title: "Window Function Foundations",
+    category: "Advanced SQL",
+    iconKey: "database",
+    blurb:
+      "How window functions differ from GROUP BY, what OVER() defines, and the rules that decide which rows each calculation sees.",
+    lessons: [groupByVsWindow, overWindowConcept, partitionBy, orderByInOver, defaultFramesPeers, sqlLogicalExecutionOrder, windowFoundationsQuiz, windowFoundationsCheatsheet],
   },
   joins: {
     slug: "joins",
