@@ -1164,71 +1164,71 @@ export const roadmap: RoadmapCategory[] = [
           {
             title: "Window Function Foundations",
             slug: "window-function-foundations",
-            path: "/sql/querying/window-function-foundations",
+            path: "/sql/window-functions/window-function-foundations",
             blurb:
               "How window functions differ from GROUP BY, what OVER() defines, and the rules that decide which rows each calculation sees.",
             lessons: [
               {
                 title: "GROUP BY vs Window Functions",
                 slug: "group-by-vs-window",
-                path: "/sql/querying/window-function-foundations/group-by-vs-window",
+                path: "/sql/window-functions/window-function-foundations/group-by-vs-window",
                 icon: Layers,
               },
               {
                 title: "OVER() and the Window Concept",
                 slug: "over-window-concept",
-                path: "/sql/querying/window-function-foundations/over-window-concept",
+                path: "/sql/window-functions/window-function-foundations/over-window-concept",
                 icon: FunctionSquare,
               },
               {
                 title: "PARTITION BY",
                 slug: "partition-by",
-                path: "/sql/querying/window-function-foundations/partition-by",
+                path: "/sql/window-functions/window-function-foundations/partition-by",
                 icon: FunctionSquare,
               },
               {
                 title: "ORDER BY inside OVER()",
                 slug: "order-by-in-over",
-                path: "/sql/querying/window-function-foundations/order-by-in-over",
+                path: "/sql/window-functions/window-function-foundations/order-by-in-over",
                 icon: FunctionSquare,
               },
               {
                 title: "Default Window Frames and Peers",
                 slug: "default-frames-peers",
-                path: "/sql/querying/window-function-foundations/default-frames-peers",
+                path: "/sql/window-functions/window-function-foundations/default-frames-peers",
                 icon: FunctionSquare,
               },
               {
                 title: "SQL Logical Execution Order",
                 slug: "sql-logical-execution-order",
-                path: "/sql/querying/window-function-foundations/sql-logical-execution-order",
+                path: "/sql/window-functions/window-function-foundations/sql-logical-execution-order",
                 icon: FunctionSquare,
               },
               {
                 title: "Window Function Foundations: Final Quiz",
                 slug: "window-foundations-quiz",
-                path: "/sql/querying/window-function-foundations/window-foundations-quiz",
+                path: "/sql/window-functions/window-function-foundations/window-foundations-quiz",
                 icon: HelpCircle,
               },
               {
                 title: "Window Function Foundations: Cheatsheet",
                 slug: "window-foundations-cheatsheet",
-                path: "/sql/querying/window-function-foundations/window-foundations-cheatsheet",
+                path: "/sql/window-functions/window-function-foundations/window-foundations-cheatsheet",
                 icon: FileText,
               },
             ],
           },
           {
             title: "Window Functions",
-            slug: "window-functions",
-            path: "/sql/querying/window-functions",
+            slug: "multi-dimensional-aggregations",
+            path: "/sql/window-functions/multi-dimensional-aggregations",
             blurb:
               "Advanced analytical SQL, beginning with multi-dimensional GROUPING SETS, ROLLUP, and CUBE.",
             lessons: [
               {
                 title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
                 slug: "grouping-sets",
-                path: "/sql/querying/window-functions/grouping-sets",
+                path: "/sql/window-functions/multi-dimensional-aggregations/grouping-sets",
                 icon: Sigma,
               },
             ],
