@@ -121,6 +121,7 @@ import { stringCharacters, stringOperations, stringScans } from "./strings/basic
 
 import { whyHashing } from "./hash-map/why-hashing";
 import { setVsDict } from "./hash-map/set-vs-dict";
+import { hashSetMembership } from "./hash-map/hash-set-membership";
 import { hashFunctionsCollisions } from "./hash-map/hash-functions-collisions";
 import { frequencyCounting } from "./hash-map/frequency-counting";
 import { topKFrequent } from "./hash-map/top-k-frequent";
@@ -282,6 +283,13 @@ export const patterns: PatternEntry[] = [
     ],
   },
   {
+    slug: "hash-membership",
+    title: "Membership and Duplicate Detection",
+    category: "Hash Map",
+    blurb: "Remember what you have already seen with a set, and spot repeats in a single pass.",
+    lessons: [{ builder: hashSetMembership, icon: Search }],
+  },
+  {
     slug: "hash-frequency",
     title: "Frequency Based",
     category: "Hash Map",
@@ -437,6 +445,7 @@ const dsaSections: { title: string; blurb: string; modules: string[] }[] = [
       "Use lookup tables, sets and frequency counts to trade brute force for linear-time solutions.",
     modules: [
       "hashing-foundations",
+      "hash-membership",
       "hash-frequency",
       "hash-lookup",
       "hash-set",
@@ -1152,6 +1161,63 @@ export const roadmap: RoadmapCategory[] = [
       {
         title: "Advanced SQL",
         patterns: [
+          {
+            title: "Window Function Foundations",
+            slug: "window-function-foundations",
+            path: "/sql/querying/window-function-foundations",
+            blurb:
+              "How window functions differ from GROUP BY, what OVER() defines, and the rules that decide which rows each calculation sees.",
+            lessons: [
+              {
+                title: "GROUP BY vs Window Functions",
+                slug: "group-by-vs-window",
+                path: "/sql/querying/window-function-foundations/group-by-vs-window",
+                icon: Layers,
+              },
+              {
+                title: "OVER() and the Window Concept",
+                slug: "over-window-concept",
+                path: "/sql/querying/window-function-foundations/over-window-concept",
+                icon: FunctionSquare,
+              },
+              {
+                title: "PARTITION BY",
+                slug: "partition-by",
+                path: "/sql/querying/window-function-foundations/partition-by",
+                icon: FunctionSquare,
+              },
+              {
+                title: "ORDER BY inside OVER()",
+                slug: "order-by-in-over",
+                path: "/sql/querying/window-function-foundations/order-by-in-over",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Default Window Frames and Peers",
+                slug: "default-frames-peers",
+                path: "/sql/querying/window-function-foundations/default-frames-peers",
+                icon: FunctionSquare,
+              },
+              {
+                title: "SQL Logical Execution Order",
+                slug: "sql-logical-execution-order",
+                path: "/sql/querying/window-function-foundations/sql-logical-execution-order",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Window Function Foundations: Final Quiz",
+                slug: "window-foundations-quiz",
+                path: "/sql/querying/window-function-foundations/window-foundations-quiz",
+                icon: HelpCircle,
+              },
+              {
+                title: "Window Function Foundations: Cheatsheet",
+                slug: "window-foundations-cheatsheet",
+                path: "/sql/querying/window-function-foundations/window-foundations-cheatsheet",
+                icon: FileText,
+              },
+            ],
+          },
           {
             title: "Window Functions",
             slug: "window-functions",
