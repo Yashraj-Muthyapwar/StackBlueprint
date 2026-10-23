@@ -260,6 +260,24 @@ const sections: Section[] = [
     groupBlurb: "The features that separate analyst SQL from engineer SQL.",
     topics: [
       {
+        slug: "window-function-foundations",
+        title: "Window Function Foundations",
+        blurb: "GROUP BY vs windows, OVER(), PARTITION BY, ordering, default frames, and execution order.",
+        icon: FunctionIcon,
+        modules: [
+          "GROUP BY vs Window Functions",
+          "OVER() and the window concept",
+          "PARTITION BY",
+          "ORDER BY inside OVER()",
+          "Default window frames and peers",
+          "SQL logical execution order",
+          "Final quiz",
+          "Cheatsheet",
+        ],
+        unlocked: true,
+        routeBase: "querying",
+      },
+      {
         slug: "window-functions",
         title: "Window Functions",
         blurb: "Advanced analytical SQL, beginning with GROUPING SETS, ROLLUP, and CUBE.",
