@@ -80,8 +80,9 @@ export function getErrorCopy(
 export function getCheckFeedback(reason: CheckReason, detail?: string): { body: string } {
   switch (reason) {
     case "extra-column":
+      return { body: detail ? `Not quite yet. Your result has a column that was not asked for: ${detail}. Return exactly the requested columns.` : `Not quite yet. Make sure you return exactly the requested columns.` };
     case "missing-column":
-      return { body: detail ? `Not quite yet. Check the required columns. ${detail} is incorrect.` : `Not quite yet. Make sure you return exactly the requested columns.` };
+      return { body: detail ? `Not quite yet. Your result is missing the column ${detail}. Return exactly the requested columns.` : `Not quite yet. Make sure you return exactly the requested columns.` };
     case "missing-rows":
       return { body: "Your query ran, but it leaves out some expected rows. Check your JOIN conditions and WHERE filters." };
     case "extra-rows":
@@ -130,7 +131,7 @@ export function categorizeEngineError(errorMsg: string): { category: QueryErrorC
     return { category: "type-mismatch" };
   }
   
-  if (msg.includes("timeout") || msg.includes("memory limit") || msg.includes("aborted")) {
+  if (msg.includes("timeout") || msg.includes("was stopped") || msg.includes("memory limit") || msg.includes("aborted")) {
     return { category: "timeout" };
   }
   

@@ -18,6 +18,8 @@ export type ChallengeDefinition = {
   starterSql?: string;
   hints: string[];
   solutionSql: Partial<Record<ChallengeEngine, string>>;
+  /** Hand-indented version of the solution, shown when revealed. Falls back to a formatted solutionSql. */
+  solutionDisplay?: string;
   validator: ResultValidator;
   success: SuccessCopy;
 };
