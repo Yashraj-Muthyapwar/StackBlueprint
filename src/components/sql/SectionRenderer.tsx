@@ -2,6 +2,7 @@ import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info, Brain, Play } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
 import { TwoRoomsVisual } from "@/components/sql/window-functions/TwoRoomsVisual";
+import { CalculatorWindowVisual } from "@/components/sql/window-functions/CalculatorWindowVisual";
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { Quiz } from "@/components/lesson/Quiz";
@@ -474,7 +475,11 @@ export function SectionRenderer({
       return <ImageCarousel images={section.images} />;
 
     case "visual":
-      return <TwoRoomsVisual caption={section.caption} />;
+      return section.id === "window-calculator" ? (
+        <CalculatorWindowVisual caption={section.caption} />
+      ) : (
+        <TwoRoomsVisual caption={section.caption} />
+      );
 
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;

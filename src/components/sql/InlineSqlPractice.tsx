@@ -19,7 +19,7 @@ import type { QueryResult } from "@/components/sql-playground/db/db-client";
 import { pgSandbox } from "@/components/sql/sandbox/pg-sandbox";
 import { SCHEMA_HINT } from "@/components/sql-playground/db/dataset";
 import { getChallenge } from "@/components/sql-playground/challenges/definitions";
-import { enforceQueryPolicy } from "@/components/sql-playground/challenges/query-policy";
+import { enforceQueryPolicy, findForbiddenConstruct } from "@/components/sql-playground/challenges/query-policy";
 import { validateResult } from "@/components/sql-playground/challenges/validate";
 import {
   categorizeEngineError,
@@ -148,6 +148,13 @@ export default function InlineSqlPractice({
     const policy = enforceQueryPolicy(text);
     if (!policy.valid) {
       setFeedback({ state: "query-error", category: policy.category, detail: policy.detail });
+      setResult(null);
+      setRunning(false);
+      return;
+    }
+    const forbidden = findForbiddenConstruct(policy.sql, challenge.forbiddenSql);
+    if (forbidden) {
+      setFeedback({ state: "incorrect", reason: "forbidden-construct", detail: forbidden });
       setResult(null);
       setRunning(false);
       return;
