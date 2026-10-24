@@ -89,8 +89,8 @@ const myLesson: LessonContent = {
 
 Never use the `diagram` section. Never use a database-table animation for the intuition step.
 
-1. **Intuition visual** (simple, shows the idea with real-world objects). A small React component in `src/components/sql/<topic>/`, modeled on `TwoRoomsVisual.tsx` (people in rooms, four steps, play, back, next, restart, same control bar as other animations, dark mode safe, no layout jump between steps).
-   - Register it as a `visual` section. Add its `id` to the `visual` section type in `src/lessons/sql/foundations-content.ts`, and add a `case` for it in `SectionRenderer.tsx`. Today `visual` renders `TwoRoomsVisual`, so give each new visual a distinct `id` and branch on `section.id`.
+1. **Intuition visual** (simple, shows the idea with real-world objects). A small React component in `src/components/sql/<topic>/`, modeled on `TwoRoomsVisual.tsx` (people in rooms) or `CalculatorWindowVisual.tsx` (calculators in one shared window). Build it on the shared `VisualPlayer.tsx` (frame, step chip, note and play / back / next / restart bar): pass `steps` (`label` and `note`) and a `renderStep(step)` body. Four steps, dark mode safe, no layout jump between steps, no overflow at 375px.
+   - Register it as a `visual` section. Add its `id` to the `visual` section type in `src/lessons/sql/foundations-content.ts`, and add a `case` for it in `SectionRenderer.tsx`. `visual` branches on `section.id` (`window-two-rooms`, `window-calculator`), so give each new visual a distinct `id`.
 2. **Step-by-step SQL animation (required, placed in section 4 EXAMPLE).** An `animation` section using `Stage[]` (see `src/components/sql/window-functions/group-by-vs-window.tsx`). Put the stage file in `src/components/sql/<topic>/` and register the variant in `src/components/sql/animation-registry.ts`. Each step shows one state change.
 3. Images, if any, use the zoomable image component with a descriptive `caption`. Multiple related images use `image-carousel`.
 
@@ -104,6 +104,7 @@ Keep animation tables narrow. Do not render more columns or long values than the
    - three `hints`,
    - `solutionSql` for `postgres` and `duckdb`,
    - a hand-indented `solutionDisplay`,
+   - `forbiddenSql` when the exercise bans constructs (for example "Do not use GROUP BY, PARTITION BY, or a subquery"): a list of `{ pattern, message }` regexes tested with comments and quotes removed; a match shows the message instead of running the query,
    - a `result-set` `validator` (`requiredColumns`, `columnOrder: "exact"`, `rowOrder: "any"` unless order is the point),
    - `success` copy.
    Add a matching entry in `src/components/sql-playground/content/practice.ts`.
