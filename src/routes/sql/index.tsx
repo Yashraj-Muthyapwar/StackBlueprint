@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useProgress } from "@/hooks/use-progress";
 import { TrackCard } from "@/components/learning-paths/TrackCard";
 import { FOUNDATION_TOPICS, type FoundationTopicMeta } from "@/lessons/sql/foundations-content";
+import { WINDOW_FUNCTION_TOPICS } from "@/lessons/sql/window-functions-content";
 import { QUERYING_TOPICS } from "@/lessons/sql/querying-content";
 import { SPECIALIZED_TOPICS } from "@/lessons/sql/specialized-content";
 import sqlLogo from "@/images/logos/sql-logo.png";
@@ -70,7 +71,7 @@ type Topic = {
   icon: LucideIcon;
   modules: string[];
   unlocked?: boolean;
-  routeBase?: "foundations" | "querying" | "specialized";
+  routeBase?: "foundations" | "querying" | "specialized" | "window-functions";
   to?: string;
 };
 
@@ -260,13 +261,31 @@ const sections: Section[] = [
     groupBlurb: "The features that separate analyst SQL from engineer SQL.",
     topics: [
       {
-        slug: "window-functions",
+        slug: "window-function-foundations",
+        title: "Window Function Foundations",
+        blurb: "GROUP BY vs windows, OVER(), PARTITION BY, ordering, default frames, and execution order.",
+        icon: FunctionIcon,
+        modules: [
+          "GROUP BY vs Window Functions",
+          "OVER() and the window concept",
+          "PARTITION BY",
+          "ORDER BY inside OVER()",
+          "Default window frames and peers",
+          "SQL logical execution order",
+          "Final quiz",
+          "Cheatsheet",
+        ],
+        unlocked: true,
+        routeBase: "window-functions",
+      },
+      {
+        slug: "multi-dimensional-aggregations",
         title: "Window Functions",
         blurb: "Advanced analytical SQL, beginning with GROUPING SETS, ROLLUP, and CUBE.",
         icon: BarChart3,
         modules: ["GROUPING SETS / ROLLUP / CUBE"],
         unlocked: true,
-        routeBase: "querying",
+        routeBase: "window-functions",
       },
       {
         slug: "ctes",
@@ -502,6 +521,8 @@ function SqlIndex() {
                   let realTopic: FoundationTopicMeta | undefined;
                   if (t.routeBase === "specialized") {
                     realTopic = SPECIALIZED_TOPICS[t.slug as keyof typeof SPECIALIZED_TOPICS];
+                  } else if (t.routeBase === "window-functions") {
+                    realTopic = WINDOW_FUNCTION_TOPICS[t.slug as keyof typeof WINDOW_FUNCTION_TOPICS];
                   } else if (t.routeBase === "querying") {
                     realTopic = QUERYING_TOPICS[t.slug as keyof typeof QUERYING_TOPICS];
                   } else {

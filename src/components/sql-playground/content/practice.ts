@@ -408,6 +408,19 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name and price for Road Bikes, highest price first, keeping 3 rows.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-customer-order-totals": {
+    id: "cycledepot-customer-order-totals",
+    title: "Show each order beside its customer total",
+    prompt:
+      "Write a PostgreSQL query on customer_orders to return the following columns: order_id, customer_id, amount, customer_total (the total amount spent by that order's customer). Do not use a GROUP BY query that removes individual orders.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-order-totals",
+    starterSql: `-- Show every order beside its customer's total.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and customer_total.
+-- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",

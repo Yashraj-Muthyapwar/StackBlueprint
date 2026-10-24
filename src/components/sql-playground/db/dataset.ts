@@ -91,6 +91,18 @@ CREATE TABLE employees (
   hired_on   DATE          NOT NULL,
   salary     DECIMAL(10,2) NOT NULL
 );
+
+CREATE TABLE staff_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
+
+CREATE TABLE customer_orders (
+  order_id    INTEGER PRIMARY KEY,
+  customer_id VARCHAR NOT NULL,
+  amount      INTEGER NOT NULL
+);
 `;
 
 // ---------------------------------------------------------------- source data
@@ -412,6 +424,20 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
       employees,
     ),
+    // Tiny tables for the Window Function Foundations lessons.
+    ...insertBatches("staff_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+    ]),
+    ...insertBatches("customer_orders", ["order_id", "customer_id", "amount"], [
+      ["101", q("A"), "100"],
+      ["102", q("A"), "200"],
+      ["103", q("B"), "150"],
+      ["104", q("B"), "250"],
+      ["105", q("B"), "100"],
+    ]),
   ];
 
   const tables: DatasetTableInfo[] = [
@@ -432,6 +458,16 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       rows: employees.length,
       blurb: "Self-referencing hierarchy via manager_id.",
     },
+    {
+      name: "staff_salaries",
+      rows: 4,
+      blurb: "Four employees in IT and HR. Used by the window function lessons.",
+    },
+    {
+      name: "customer_orders",
+      rows: 5,
+      blurb: "Five orders from customers A and B. Used by the window function lessons.",
+    },
   ];
 
   cached = { statements, tables };
@@ -445,6 +481,8 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   orders: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
   order_items: ["id", "order_id", "product_id", "quantity", "unit_price"],
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
+  staff_salaries: ["employee_id", "department", "salary"],
+  customer_orders: ["order_id", "customer_id", "amount"],
 };
 
 export const STARTER_SQL = `-- Cycle Depot. Same data on PostgreSQL and DuckDB.

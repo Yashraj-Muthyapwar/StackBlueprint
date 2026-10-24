@@ -61,12 +61,12 @@ export const DATASETS: DatasetDef[] = [
     name: "Cycle Depot",
     tagline: "A small, hand-built store. Loads instantly.",
     about:
-      "Five tables generated in the browser, so there is nothing to download and nothing to wait for. Built for the fundamentals: joins, grouping, NULL handling and window functions, with deliberate quirks like customers who never ordered and line items priced below list.",
+      "Seven tables generated in the browser, so there is nothing to download and nothing to wait for. Built for the fundamentals: joins, grouping, NULL handling and window functions, with deliberate quirks like customers who never ordered and line items priced below list.",
     difficulty: "beginner",
     engines: ["postgres", "duckdb"],
     source: { kind: "generated" },
     bytes: 0,
-    stats: { tables: 5, rows: 507 },
+    stats: { tables: 7, rows: 516 },
     credit: { label: "Generated for this lab", url: "" },
   },
   {

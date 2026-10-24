@@ -2366,6 +2366,59 @@ ORDER BY raw_product_id;`,
     requirements: ["Generate dates from 2016-09-04 through 2016-09-08.", "LEFT JOIN the orders table with a half-open daily predicate.", "Return exactly purchase_date and order_count.", "Use COUNT(order_id) AS order_count.", "Order by purchase_date."], requiredTables: ["orders"], starterSql: "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count.", hints: ["Use generate_series with a one-day interval.", "Join where the timestamp is >= the spine date and < the next date.", "Group and order by the spine date."],
     solutionSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, validator: { kind: "result-set", expectedSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, requiredColumns: ["purchase_date", "order_count"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Date gaps filled", body: "Correct. You preserved the complete date axis and turned unmatched order rows into real zeroes.", nextConcept: "Date & Time final quiz" },
   },
+  {
+    id: "cycle-depot-customer-order-totals",
+    version: 1,
+    title: "Show each order beside its customer total",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every order together with the total amount spent by that order's customer.",
+    requirements: [
+      "Use the customer_orders table.",
+      "Return exactly order_id, customer_id, amount, and customer_total.",
+      "Calculate customer_total with SUM(amount) OVER (PARTITION BY customer_id).",
+      "Keep all 5 order rows. Do not collapse them with GROUP BY.",
+    ],
+    requiredTables: ["customer_orders"],
+    starterSql: `-- Show every order beside its customer's total.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and customer_total.
+-- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add SUM(amount) OVER (...) as a fourth column named customer_total.",
+      "Put PARTITION BY customer_id inside the OVER parentheses.",
+    ],
+    solutionDisplay: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY customer_id
+    ) AS customer_total
+FROM customer_orders;`,
+    solutionSql: {
+      postgres: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+      duckdb: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+        duckdb: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+      },
+      requiredColumns: ["order_id", "customer_id", "amount", "customer_total"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Window total complete",
+      body: "Correct. Every order kept its own row and also carries its customer's total, which a plain GROUP BY cannot do.",
+      nextConcept: "OVER() and the window concept",
+    },
+  },
 ];
 
 export function getChallenges(
