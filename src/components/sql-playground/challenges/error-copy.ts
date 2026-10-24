@@ -95,6 +95,10 @@ export function getCheckFeedback(reason: CheckReason, detail?: string): { body: 
       return { body: "The grouping is close, but the totals do not match. Check the join grain before summing values." };
     case "duplicate-rows":
       return { body: "Some rows appear more than once. A join may be multiplying records; inspect the join keys and grouping." };
+    case "wrong-column-order":
+      return { body: detail ? `Not quite yet. You have the right columns, but in a different order. Return them in this order: ${detail}.` : "Not quite yet. You have the right columns, but in a different order." };
+    case "forbidden-construct":
+      return { body: detail ? `Not quite yet. ${detail}` : "Not quite yet. This exercise asks you to avoid a construct your query uses." };
     case "wrong-value":
       return { body: "The result values don't quite match the expected output. Double check your logic." };
     default:

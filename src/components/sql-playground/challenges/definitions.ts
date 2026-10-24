@@ -2419,6 +2419,64 @@ FROM customer_orders;`,
       nextConcept: "OVER() and the window concept",
     },
   },
+  {
+    id: "cycle-depot-order-average-over",
+    version: 1,
+    title: "Show each order beside the overall average",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every order together with the average amount across all five orders.",
+    requirements: [
+      "Use the customer_orders table.",
+      "Return exactly order_id, customer_id, amount, and average_order_amount.",
+      "Calculate average_order_amount with AVG(amount) OVER ().",
+      "Keep all 5 order rows.",
+      "Do not use GROUP BY, PARTITION BY, or a subquery.",
+    ],
+    requiredTables: ["customer_orders"],
+    starterSql: `-- Show every order beside the average of all five orders.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and average_order_amount.
+-- Do not use GROUP BY, PARTITION BY, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add AVG(amount) as a fourth column named average_order_amount.",
+      "Put empty parentheses after OVER so the window uses all five rows.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the order rows." },
+      { pattern: "\\bpartition\\s+by\\b", message: "This exercise asks you not to use PARTITION BY. Leave the OVER parentheses empty." },
+      { pattern: "\\(\\s*(select|with)\\b", message: "This exercise asks you not to use a subquery. Let OVER () do the work." },
+    ],
+    solutionDisplay: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    AVG(amount) OVER () AS average_order_amount
+FROM customer_orders;`,
+    solutionSql: {
+      postgres: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+      duckdb: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+        duckdb: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+      },
+      requiredColumns: ["order_id", "customer_id", "amount", "average_order_amount"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Overall average complete",
+      body: "Correct. OVER () put the average of all five orders on every row, and no order row was lost.",
+      nextConcept: "PARTITION BY",
+    },
+  },
 ];
 
 export function getChallenges(

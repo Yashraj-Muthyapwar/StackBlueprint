@@ -36,7 +36,7 @@ import { ChallengeList } from "./challenges/ChallengeList";
 import { ChallengePanel } from "./challenges/ChallengePanel";
 import { DatasetSwitchDialog } from "./challenges/DatasetSwitchDialog";
 import { getChallenge } from "./challenges/definitions";
-import { enforceQueryPolicy } from "./challenges/query-policy";
+import { enforceQueryPolicy, findForbiddenConstruct } from "./challenges/query-policy";
 import { validateResult } from "./challenges/validate";
 import { categorizeEngineError } from "./challenges/error-copy";
 import {
@@ -282,6 +282,13 @@ export function SqlPlayground() {
         category: policy.category,
         detail: policy.detail,
       });
+      setRunning(false);
+      return;
+    }
+
+    const forbidden = findForbiddenConstruct(policy.sql, challenge.forbiddenSql);
+    if (forbidden) {
+      setChallengeFeedback({ state: "incorrect", reason: "forbidden-construct", detail: forbidden });
       setRunning(false);
       return;
     }
