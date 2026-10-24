@@ -1,106 +1,149 @@
 ---
 name: sql-lesson-revamp
-description: "Create or revamp a DataVizCore SQL lesson from a study-day plan or teaching brief, using clear concepts, real datasets, visuals, animations, and checked practice. Use for a new SQL lesson or a learner-focused refresh."
+description: "Create or rewrite a StackBlueprint SQL lesson from user-supplied content, using the GROUP BY vs Window Functions lesson as the fixed template: numbered WHY / INTUITION / HOW / EXAMPLE / TRADE-OFFS / PRACTICE sections, an intuition animation in section 2, a step-by-step SQL animation in section 4, an inline SQL sandbox practice, takeaways, and a 4-question quiz. Use whenever the user gives SQL lesson content to format, or asks for a new or revamped SQL lesson."
 ---
 
-# SQL Lesson Creation and Revamp
+# SQL Lesson Template
 
-Create or revamp a lesson as a clear, accurate learning experience grounded in the selected dataset. The goal is not a superficial find-and-replace of table names or a lesson that introduces concepts before the learner is ready.
+Every SQL lesson follows the structure of `groupByVsWindow` in `src/lessons/sql/window-functions-content.ts`. The user supplies the content. Your job is to **keep their wording exactly** and format it into this structure. Do not rewrite, summarise, or add filler. Add only what the structure needs (for example a syntax table, a visual, a quiz).
+
+Read `AGENTS.md` (sections 1 to 5) and `.agents/skills/course-creation/SKILL.md` first. Treat both as binding.
 
 ## When to use this skill
 
-Use this skill when the user asks to:
+- The user pastes or describes SQL lesson content and wants it formatted into a lesson.
+- The user asks for a new SQL lesson, or to rewrite an existing one to match the standard.
 
-- create a new SQL lesson from a study plan, teaching brief, or a specified concept;
-- adapt or rewrite an existing SQL lesson for a day-by-day study plan;
-- reframe a lesson around Cycle Depot or another supplied dataset;
-- improve lesson content, examples, diagrams, animations, or practice;
-- make a lesson easier to learn without breaking its existing route or functionality.
+Do not use it for a typo-only change or for a playground-only feature.
 
-Do not use it for a small typo-only change, a wholly new course architecture, or a playground-only feature that does not alter lesson learning content.
+## Step 0: Decide the mode and the location
 
-## Choose the right mode
+- **New lesson:** find the module and the lessons immediately before and after it. Do not assume later concepts. Do not move or rename other lessons. If the requested placement breaks prerequisite order, say so and ask.
+- **Existing placeholder (`sections: []`):** keep its slug, route and progress id, and fill in `sections`.
+- **Existing real lesson:** keep slug, route and progress id unless the user asks otherwise.
 
-### Create a new lesson
+## Step 1: Section order (fixed)
 
-Use this mode when the requested concept has no existing lesson. First decide where it belongs in the current course sequence and identify the immediately preceding and following lessons. The new lesson must respect the concepts those lessons have already introduced and must not assume later knowledge.
+Use numbered headings in the style `N. NAME: subtitle`, taken from the user's content when they provide them.
 
-Create the lesson content, route-visible topic registration, roadmap/sidebar entry, any animation registration, and checked practice as one coherent feature. Reuse the existing content and animation structure for the lesson's module; create a new lesson-specific animation file only when a visual state change genuinely benefits learning.
+| # | Section | Sections to use |
+|---|---------|-----------------|
+| 1 | `1. WHY: ...` | `prose`, the lesson's data as a `table`, then a `callout` (tone `info`) for the core idea |
+| 2 | `2. INTUITION: ...` | `prose`, a **visual** (see Step 3), then a `callout` (tone `info`) titled "The key difference" using the user's wording |
+| 3 | `3. HOW: ...` | `prose` with `A.` / `B.` sub-headings. Each approach gets a `code` block (`language: "sql"`, with `caption`). If the lesson introduces new syntax, add a syntax `code` block (`language: "text"`) and a `table` captioned "Reading the syntax" with columns Part / Role / Required?. Explain the conceptual steps in `prose` after the code. No animation in this section |
+| 4 | `4. EXAMPLE: ...` | A short `prose` lead-in (user's wording), then the **step-by-step SQL `animation`** (always required, it replays the lesson's example query step by step), then a captioned `table` per result with the row count in the prose before each. Close with the user's "Notice that..." line as `prose` |
+| 5 | `5. TRADE-OFFS: ...` | A `table` (Requirement / Preferred approach). A `callout` (tone `warn`) plus `code` blocks (fails / works) for the main pitfall. Then a `list` titled "Important limitations" for the rest. **Never use a table for limitations** |
+| 6 | `6. PRACTICE: Your turn` | A `prose` section with `body: []`, then one `sql-practice` section. Do not repeat the task text as prose. Never label practice "Task A" or "Task B" |
+| 7 | End | `takeaways` (the last content section), then `quiz` (always the very last section) |
 
-Choose a stable slug, title, subtitle, and navigation position. Do not move or rename an existing lesson as an incidental consequence of adding the new one. If the requested placement conflicts with the established prerequisite order, explain the conflict and ask the user to choose rather than silently changing the curriculum.
+The lesson page adds the mark-complete button. Do not add one yourself.
 
-### Revamp an existing lesson
+### Skeleton
 
-Use this mode when the lesson already exists. Retain its stable slug, route, progress ID, and required prerequisite concepts unless the user specifically asks for a structural change. Improve the teaching flow and supporting material without making an unrelated module reorganisation.
+```ts
+const myLesson: LessonContent = {
+  slug: "my-lesson",
+  title: "My Lesson",
+  subtitle: "short / slash / separated / topics",
+  sections: [
+    { kind: "prose", heading: "1. WHY: ...", body: ["..."] },
+    { kind: "table", caption: "The employees table", headers: [...], rows: [[...]] },
+    { kind: "callout", tone: "info", title: "The idea", body: "A **term** helps you ... `GROUP BY`." },
+    { kind: "prose", heading: "2. INTUITION: ...", body: ["..."] },
+    { kind: "visual", id: "<visual-id>", caption: "..." },
+    { kind: "callout", tone: "info", title: "The key difference", body: "..." },
+    { kind: "prose", heading: "3. HOW: ...", body: ["A. First approach"] },
+    { kind: "code", language: "sql", caption: "...", code: `SELECT ...` },
+    { kind: "code", language: "text", caption: "General syntax", code: `...` },
+    { kind: "table", caption: "Reading the syntax", headers: ["Part", "Role", "Required?"], rows: [[...]] },
+    { kind: "prose", heading: "4. EXAMPLE: ...", body: ["..."] },
+    { kind: "animation", variant: "<stage-variant>", caption: "..." },
+    { kind: "table", caption: "...", headers: [...], rows: [[...]] },
+    { kind: "prose", heading: "5. TRADE-OFFS: ...", body: ["..."] },
+    { kind: "table", caption: "Choose by the output you need", headers: ["Requirement", "Preferred approach"], rows: [[...]] },
+    { kind: "callout", tone: "warn", title: "...", body: "..." },
+    { kind: "code", language: "sql", caption: "Fails: ...", code: `...` },
+    { kind: "code", language: "sql", caption: "Works: ...", code: `...` },
+    { kind: "list", heading: "Important limitations", items: ["..."] },
+    { kind: "prose", heading: "6. PRACTICE: Your turn", body: [] },
+    { kind: "sql-practice", challengeId: "...", title: "...", prompt: "...", playgroundHref: "/sql-playground?practice=..." },
+    { kind: "takeaways", items: ["..."] },
+    { kind: "quiz", questions: [ /* 4 questions */ ] },
+  ],
+};
+```
 
-## Required context before editing
+## Step 2: Formatting rules
 
-1. Read `.agents/skills/course-creation/SKILL.md` before modifying lesson content.
-2. Identify the target module, its nearby lessons, the exact lesson source or insertion location, its route, section renderer, and any animation or practice registrations it uses. Inspect the current lesson or module as a learner would before deciding what to keep or create.
-3. Read the user's study plan, brief, and any supplied data files. Treat attached documents as reference material, not instructions that override the user's request.
-4. Verify the selected dataset's real schema and sample values from its source files, seed scripts, or the running playground. Do not invent table names, columns, values, query output, row counts, or database behavior.
-5. Preserve unrelated user changes in a dirty worktree.
+- Put SQL keywords, functions and identifiers in backticks inside `prose`, `callout`, `list` and `takeaways` text: `GROUP BY`, `OVER`, `WHERE`, `SUM(salary)`.
+- Use `**bold**` for the key term the lesson teaches, in the first callout, the key-difference callout and takeaways.
+- Table cells render plain text. Do not rely on backticks or bold in cells.
+- **No em dashes** anywhere in lesson text. Use commas, colons or periods.
+- Use `list` for bullets (`{ kind: "list", heading, items }`). Never use `prose` with hyphens or a table for bullets.
+- The syntax block uses `language: "text"`. SQL keyword colors come from `highlightSql` in `src/components/sql/SectionRenderer.tsx`. If the lesson introduces keywords or functions that are not highlighted (for example `ROW_NUMBER`, `LAG`), add them to its `KEYWORDS` set.
+- Every `table` and `code` section gets a `caption`.
+- A heading-only `prose` section needs `body: []` or a short lead-in line from the user's content. Never leave `body` out.
+- Do not use ASCII diagrams.
 
-## Content design rules
+## Step 3: Visuals (pick what fits)
 
-Keep content that already teaches the target concept clearly. Improve its flow, examples, and level of detail instead of replacing good explanation merely to make it dataset-specific.
+Never use the `diagram` section. Never use a database-table animation for the intuition step.
 
-Use this learner progression unless the requested lesson needs a different structure:
+1. **Intuition visual** (simple, shows the idea with real-world objects). A small React component in `src/components/sql/<topic>/`, modeled on `TwoRoomsVisual.tsx` (people in rooms, four steps, play, back, next, restart, same control bar as other animations, dark mode safe, no layout jump between steps).
+   - Register it as a `visual` section. Add its `id` to the `visual` section type in `src/lessons/sql/foundations-content.ts`, and add a `case` for it in `SectionRenderer.tsx`. Today `visual` renders `TwoRoomsVisual`, so give each new visual a distinct `id` and branch on `section.id`.
+2. **Step-by-step SQL animation (required, placed in section 4 EXAMPLE).** An `animation` section using `Stage[]` (see `src/components/sql/window-functions/group-by-vs-window.tsx`). Put the stage file in `src/components/sql/<topic>/` and register the variant in `src/components/sql/animation-registry.ts`. Each step shows one state change.
+3. Images, if any, use the zoomable image component with a descriptive `caption`. Multiple related images use `image-carousel`.
 
-1. State the useful mental model or business question in plain language.
-2. Introduce the smallest useful query that demonstrates the day’s primary concept.
-3. Show the corresponding result or a clearly labelled deterministic preview.
-4. Add one small, purposeful variation that deepens the same concept.
-5. Use an animation only when it makes a transformation, relationship, or execution idea easier to see. For a new lesson, add a visual or animation when it materially reduces conceptual load; do not add one merely for symmetry.
-6. Finish with a checked hands-on practice task, concise takeaways, and concept-aligned questions when the lesson structure supports them.
+Keep animation tables narrow. Do not render more columns or long values than the layout can show without overlap.
 
-Teach only the intended stage of SQL. Early foundation lessons should not quietly introduce aliases, `DISTINCT`, filters, joins, aggregation, or ordering unless that is the explicit focus. Intermediate lessons may combine one new operation with previously learned concepts. Advanced lessons should make row grain, grouping, partitions, and intermediate results explicit.
+## Step 4: Practice (inline SQL sandbox, not a link to the playground)
 
-Use plain, learner-friendly language. Explain why a query is useful before adding syntax. Keep queries runnable in the configured playground dialect and format them for reading. Do not use em dashes in lesson text.
+1. **Data.** Add the lesson's small tables to `DDL`, the seed `statements`, the `tables` info list and `SCHEMA_HINT` in `src/components/sql-playground/db/dataset.ts`. Cycle Depot already has `orders` and `employees` with different columns, so use new names (for example `staff_salaries`, `customer_orders`). Update `stats` and the "N tables" wording in `src/components/sql-playground/db/datasets/index.ts`.
+2. **Challenge.** Add one to `src/components/sql-playground/challenges/definitions.ts` (`group: "windows"` for window lessons) with:
+   - `starterSql` (comments only, safe in the editor),
+   - three `hints`,
+   - `solutionSql` for `postgres` and `duckdb`,
+   - a hand-indented `solutionDisplay`,
+   - a `result-set` `validator` (`requiredColumns`, `columnOrder: "exact"`, `rowOrder: "any"` unless order is the point),
+   - `success` copy.
+   Add a matching entry in `src/components/sql-playground/content/practice.ts`.
+3. **Lesson.** Use `{ kind: "sql-practice", challengeId, title, prompt, playgroundHref }`. The prompt is the user's practice wording, minus any "Task" labels. Do not show the table again as a lesson `table`.
+4. **Runtime (do not weaken).** The practice runs in `src/components/sql/sandbox/` (isolated Web Worker, in-memory PostgreSQL, read-only transaction, 5 second timeout, 500-row cap). The query check in `src/components/sql-playground/challenges/query-policy.ts` allows a single `SELECT` or `WITH` and blocks writes, `INTO`, and risky functions. Reveal solution stays locked until the learner runs a query once. Learner-typed text uses plain keyboard ASCII.
+5. Quiz and practice must agree with the same table and column names.
 
-## Dataset adaptation
+## Step 5: Quiz (4 questions)
 
-Choose examples that make the lesson's idea natural:
+Always include these four kinds:
+1. A row-count or output-shape question.
+2. A pick-the-right-approach question.
+3. A pick-the-correct-query question (one correct query, three plausible wrong ones: misplaced clause, missing required clause, illegal location).
+4. The lesson's main pitfall.
 
-- For introductory querying, prefer recognisable entities and a small number of columns, such as Cycle Depot `customers`, `products`, or `orders`.
-- For filtering and grouping, use real business questions with values that exist in the supplied data.
-- For joins, use the actual key relationships and name the resulting row grain.
-- For aggregations, use measures and group labels that make the outcome easy to interpret.
-- For advanced SQL, choose the dataset and complexity that best reveal the operation, even when that means using a different supplied dataset.
+Give each question a unique `id` prefixed with the lesson slug (`<slug>-row-count`), `options`, `correctIndex`, and an `explanation`. Questions that mention a table must state its columns, because the lesson does not repeat the practice table.
 
-Every displayed result must match the shown query. A preview may show only a subset of a result, but it must say that it is a preview and use a stable order when order matters. Do not claim an implicit ordering from SQL.
+## Step 6: Registration checklist (AGENTS.md section 4)
 
-## Visual and animation standards
+- [ ] `src/lessons/roadmap.ts`: slug, title, exact `path`, `icon`.
+- [ ] Track index `src/routes/sql/index.tsx`: topic card with `routeBase` and `modules` list. Include `path` data the cards need.
+- [ ] Content registry: the lesson is in the module's topic `lessons` array in the right content file (for window lessons, `src/lessons/sql/window-functions-content.ts`, `WINDOW_FUNCTION_TOPICS`).
+- [ ] `src/components/sql/SectionRenderer.tsx` renders every section kind used (`visual`, `list`, `sql-practice`, `animation`, `takeaways`, `quiz`).
+- [ ] A new module group gets its own route folder under `src/routes/sql/<module>/$topic` and its own content file under `src/lessons/sql/`, like `window-functions`.
+- [ ] Placeholders stay `sections: []`.
 
-Prefer the application's existing lesson section types, image component, table components, and animation primitives. Add new rendering infrastructure only when the existing system cannot express the needed learning interaction.
+## Step 7: Verify (all of it)
 
-- Use a visual to clarify something, not as decoration.
-- Give every lesson image accurate alt text and a concise caption that explains its teaching purpose.
-- When generating or replacing a raster illustration, use the `imagegen` skill. Verify visible table names, columns, values, and SQL before adding it to the lesson. Put the approved asset in the workspace and update the lesson import deliberately.
-- Use native rendered tables for dense, exact data when a generated image would reduce readability.
-- Keep animations spacious at desktop and narrower viewports. Do not show more columns or long values than the layout can render without overlap. Truncate only when the full value is available through an intentional interaction such as a tooltip.
-- An animation step should show one meaningful state change. If it requires too many columns, rows, or ideas, split it into stages or simplify the data.
+1. `npx tsc --noEmit -p .` is clean.
+2. `npm run rivet:lessons` runs. Commit the regenerated `src/lib/rivet/available-lessons.generated.ts` when it changes.
+3. Search the lesson for `—` (em dash). There must be none.
+4. Start the dev server (`preview_start` with the `dev` configuration) and open the lesson as a learner:
+   - the visual plays through all steps and the SQL animation steps through every stage,
+   - keywords are highlighted in code blocks and in text,
+   - the practice boots, a **correct query passes**, and a **wrong query** gives sensible feedback (missing column, extra column, wrong approach, typo, write attempt),
+   - Reveal solution is locked before the first run and shows indented SQL after,
+   - Hint steps through three hints,
+   - dark mode and a narrow width look right.
+5. Never leave a dev server running. Stop it when done.
 
-## Practice and feedback standards
+## Step 8: Report
 
-When the lesson has a hands-on SQL task, connect it to the existing checked-practice system rather than presenting an answer-only exercise.
-
-- Give a short business prompt, an explicit table, requested columns or behavior, and a starter query that is incomplete but syntactically safe for the editor experience.
-- Use keyboard-friendly ASCII characters in any SQL or literal value the learner must type. Standard keyboard punctuation such as `!`, `=`, `-`, `<`, `>`, `/`, `\\`, `(`, `)`, `*`, `&`, `^`, `%`, `$`, `#`, and `@` is appropriate when it represents the intended SQL or output. Do not require typographic-only characters such as a middle dot, curly quote, em dash, or Unicode arrow in learner-entered text.
-- Validate semantic intent through the query result, expected columns, and where appropriate expected data. Do not rely only on matching SQL text.
-- Preserve the learner's current editor draft on failed attempts.
-- Use short, helpful feedback that identifies the next action. Do not expose raw engine errors, stack traces, or implementation details to learners.
-- For invalid SQL, show a friendly diagnosis, identify the relevant clause or object when known, and offer the smallest next correction. Avoid claiming certainty when the parser or engine response is ambiguous.
-- Keep practice scoped to the current active dataset. If tables from another database or workspace are unavailable, explain that the table is not in the current dataset and name the active dataset or the selection action needed. Never silently run a query against a different database.
-
-## Compatibility and verification
-
-Make the smallest coherent change set. For a new lesson, add only the route, registration, navigation, animation, image, and practice changes required to make it discoverable and complete. For a revamp, preserve routes, lesson IDs, progress behavior, existing lesson contracts, and unrelated content unless the user explicitly requests a structural change.
-
-Before finishing:
-
-1. Confirm examples against the actual schema and query engine where practical.
-2. Check that the new or revised route, sidebar and topic entry, image imports, animation IDs, practice IDs, and renderer registrations resolve correctly.
-3. Run the repository's relevant build or type-check command.
-4. Open the revised lesson locally and inspect the changed flow as a learner. Check any table or animation for clipping, overlap, and mobile or constrained-width behavior when it is relevant.
-5. Report what was retained, what was adapted, the selected dataset, and the verification completed. Call out any unverified assumption instead of presenting it as fact.
+Say what was formatted, which files changed (so the user can push them), what was verified and what was not. Name any assumption instead of presenting it as fact. Do not claim a check you did not run.
