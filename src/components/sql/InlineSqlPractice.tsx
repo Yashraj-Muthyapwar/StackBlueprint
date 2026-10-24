@@ -270,7 +270,7 @@ export default function InlineSqlPractice({
             {running ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
             Run and check
           </button>
-          <button type="button" className={btn} onClick={() => { setSql(starter); setFeedback(null); setResult(null); }}>
+          <button type="button" className={btn} onClick={() => { setSql(starter); setFeedback(null); setResult(null); setHintIndex(-1); setShowSolution(false); }}>
             <RotateCcw className="size-3.5" /> Reset
           </button>
           {challenge.hints.length > 0 ? (
