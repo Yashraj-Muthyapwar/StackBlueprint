@@ -225,8 +225,272 @@ FROM employees;`,
 const overWindowConcept: LessonContent = {
   slug: "over-window-concept",
   title: "OVER() and the Window Concept",
-  subtitle: "OVER() / empty window / the window as a per-row set of rows / aggregate vs window call",
-  sections: [],
+  subtitle: "Mastering the empty OVER() clause and calculating aggregates across rows without collapsing them.",
+  sections: [
+    {
+      kind: "prose",
+      body: ["In Previous Lesson, you learned:"],
+    },
+    {
+      kind: "list",
+      items: [
+        "`GROUP BY` produces one result row per group.",
+        "**Window functions** calculate values across related rows without collapsing them.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["Now we will learn what `OVER()` means and how it changes an aggregate function."],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need OVER()?",
+      body: ["Consider an employees table."],
+    },
+    {
+      kind: "table",
+      caption: "The employees table",
+      headers: ["employee_id", "department", "salary"],
+      rows: [
+        ["1", "IT", "5000"],
+        ["2", "IT", "6000"],
+        ["3", "HR", "4000"],
+        ["4", "HR", "4500"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Your manager asks: Show every employee's salary and the total salary paid to all employees.",
+        "We need two things in the same result:",
+        "1. Each employee's individual salary.",
+        "2. The total salary across all employees.",
+        "A normal aggregate query with `SUM(salary)` and no `GROUP BY` produces one summary row. It cannot also return individual employee columns directly.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "The `OVER()` clause lets us calculate the total without removing the employee rows.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of a calculator and a window",
+      body: ["Imagine that every employee holds a calculator."],
+    },
+    {
+      kind: "visual",
+      id: "window-calculator",
+      caption: "A calculator and a window",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "`SUM()` tells PostgreSQL what to calculate. `OVER()` tells PostgreSQL which rows to use for the window calculation. With empty parentheses, `OVER()` uses all rows available to the window function.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How does OVER() work?",
+      body: ["Start with this PostgreSQL query:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "SUM with an empty OVER ()",
+      code: `SELECT
+    employee_id,
+    department,
+    salary,
+    SUM(salary) OVER () AS company_total
+FROM employees;`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "PostgreSQL conceptually does the following:",
+        "1. Read the rows: the `FROM employees` clause provides the four rows.",
+        "2. Define the window: `OVER ()` includes all four rows in one window because there is no `PARTITION BY` or window `ORDER BY`.",
+        "3. Calculate the total: PostgreSQL evaluates `SUM(salary)` over the window.",
+        "4. Return the original rows with the result: each employee receives the same company total.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Anatomy of the syntax",
+      body: [],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Window function syntax",
+      code: `SUM(salary) OVER ()`,
+    },
+    {
+      kind: "table",
+      caption: "Reading the syntax",
+      headers: ["Part", "Meaning"],
+      rows: [
+        ["SUM", "Aggregate function"],
+        ["salary", "Column to calculate"],
+        ["OVER", "Apply the function as a window function"],
+        ["()", "Window definition: empty means no partitioning or ordering"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["A window can also have additional instructions:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A window with additional instructions",
+      code: `SUM(salary) OVER (
+    PARTITION BY department
+    ORDER BY employee_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "For now, focus only on `OVER ()`. We will study `PARTITION BY`, `ORDER BY`, and frames separately.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Compare three different calculations",
+      body: ["We will use the same four employee rows."],
+    },
+    {
+      kind: "animation",
+      variant: "q-window-over-concept",
+      caption: "Interactive OVER() example: SUM, AVG and COUNT on the same four rows.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "All three queries keep the four employee rows. The function changes the calculation, not the number of rows returned.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and common mistakes",
+      body: ["Watch for these common mistakes when you first use `OVER()`."],
+    },
+    {
+      kind: "list",
+      heading: "Common mistakes",
+      items: [
+        "**Confusing** `OVER()` **with** `GROUP BY` **:** `OVER()` does not collapse rows. Every original row remains in the result set alongside the computed window value.",
+        "**Assuming** `OVER()` **always spans the entire table:** An empty `OVER()` covers all rows, but `PARTITION BY`, `ORDER BY`, and window frame clauses (`ROWS/RANGE BETWEEN`) restrict the calculation window.",
+        "**Parenthesis syntax errors:** Writing `SUM(salary) (OVER)` is invalid. The `OVER` keyword comes before the window specification parentheses: `SUM(salary) OVER ()`.",
+        "**Assuming all SQL functions support** `OVER()` **:** Scalar functions (like `ROUND()` or `UPPER()`) do not support `OVER()`. Only dedicated window functions (`ROW_NUMBER()`, `RANK()`, `LEAD()`) and compatible aggregate functions (`SUM()`, `AVG()`) can use it.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "OVER () works on the remaining rows",
+      body: "One more important detail: a window function works on the rows that remain after `WHERE`, `GROUP BY`, and `HAVING` processing. So `OVER ()` does not always mean every row in the physical table.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "**For example**, if you filter out HR employees, `SUM(salary) OVER ()` will only calculate over the remaining IT rows.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Filtering first changes the window",
+      code: `SELECT
+    employee_id,
+    salary,
+    SUM(salary) OVER () AS company_total
+FROM employees
+WHERE department <> 'HR';`,
+    },
+    {
+      kind: "table",
+      caption: "Result: 2 rows, and the total covers only the IT rows",
+      headers: ["employee_id", "salary", "company_total"],
+      rows: [
+        ["1", "5000", "11000"],
+        ["2", "6000", "11000"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Solve it yourself",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-order-average-over",
+      title: "Show each order beside the overall average",
+      prompt: "Write a query that returns: order_id, customer_id, amount, average_order_amount. The new column must show the average amount across all five orders, while keeping every order row. Do not use GROUP BY, PARTITION BY, or a subquery.",
+      playgroundHref: "/sql-playground?practice=cycledepot-order-average-over",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`OVER ()` turns an aggregate such as `SUM` into a **window function** that keeps every row.",
+        "`SUM()` tells PostgreSQL what to calculate. `OVER ()` tells PostgreSQL which rows to use.",
+        "With empty parentheses, the window uses all rows available to the window function.",
+        "The function changes the calculation, not the number of rows returned.",
+        "A window function works on the rows left after `WHERE`, `GROUP BY`, and `HAVING`, so `OVER ()` does not always mean every row in the table.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "over-window-concept-sum-vs-sum-over",
+          question: "An orders table has five rows with order_id, customer_id and amount, and the amounts add up to 800. Explain the difference between `SUM(amount)` and `SUM(amount) OVER ()`.",
+          options: [
+            "Without GROUP BY, SUM(amount) produces one summary row. SUM(amount) OVER () preserves the five order rows and shows the total on each row.",
+            "SUM(amount) keeps all five order rows, and SUM(amount) OVER () returns one summary row.",
+            "They return exactly the same result, because both calculate 800.",
+            "SUM(amount) OVER () groups the five orders by customer_id.",
+          ],
+          correctIndex: 0,
+          explanation: "Both can calculate 800, but the shape of the result is different. SUM(amount) without GROUP BY produces one summary row. SUM(amount) OVER () preserves five order rows and shows the total on each row. Also, SUM(amount) does not always mean all rows in the table. With GROUP BY, it calculates a total for each group.",
+        },
+        {
+          id: "over-window-concept-approach",
+          question: "An employees table has employee_id, department and salary. You need every employee's salary and the total salary paid to all employees in the same result. Which approach fits?",
+          options: [
+            "Add SUM(salary) OVER () as a column next to the employee columns",
+            "Add SUM(salary) as a column with no GROUP BY",
+            "Use GROUP BY employee_id and SUM(salary)",
+            "Use SELECT DISTINCT salary",
+          ],
+          correctIndex: 0,
+          explanation: "OVER () calculates the total across all rows without removing the employee rows. A plain SUM(salary) with no GROUP BY cannot be listed beside employee_id, and GROUP BY employee_id gives one total per employee, not the company total.",
+        },
+        {
+          id: "over-window-concept-correct-query",
+          question: "Which query returns employee_id, salary and the average salary of all employees on every row, keeping all four employees?",
+          options: [
+            "SELECT employee_id, salary, AVG(salary) OVER () AS company_average FROM employees;",
+            "SELECT employee_id, salary, AVG(salary) (OVER) AS company_average FROM employees;",
+            "SELECT employee_id, salary, AVG(salary) AS company_average FROM employees;",
+            "SELECT employee_id, salary, AVG(salary) OVER () AS company_average FROM employees GROUP BY employee_id, salary;",
+          ],
+          correctIndex: 0,
+          explanation: "The correct syntax is AVG(salary) OVER (). Writing (OVER) is invalid. A plain AVG(salary) with no GROUP BY cannot sit beside employee_id. Adding GROUP BY employee_id, salary first collapses the rows to one per employee, so each row would only average itself.",
+        },
+        {
+          id: "over-window-concept-where-filter",
+          question: "A query uses WHERE department <> 'HR' and SUM(salary) OVER (). The employees are 1 (IT, 5000), 2 (IT, 6000), 3 (HR, 4000) and 4 (HR, 4500). What total appears on each returned row?",
+          options: ["11000", "19500", "8500", "5500"],
+          correctIndex: 0,
+          explanation: "A window function works on the rows that remain after WHERE, GROUP BY and HAVING. After the HR rows are filtered out, only the two IT rows are left, so the window total is 5000 + 6000 = 11000.",
+        },
+      ],
+    },
+  ],
 };
 
 const partitionBy: LessonContent = {
