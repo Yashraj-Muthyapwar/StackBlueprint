@@ -32,7 +32,7 @@ export type Section =
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
-  | { kind: "visual"; id: "window-two-rooms"; caption?: string }
+  | { kind: "visual"; id: "window-two-rooms" | "window-calculator"; caption?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | {
       kind: "animation";
