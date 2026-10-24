@@ -1,4 +1,4 @@
-// Rich lesson content for SQL "Window Functions" (Advanced SQL) — StackBlueprint curriculum.
+// Rich lesson content for SQL "Window Functions" (Advanced SQL) - StackBlueprint curriculum.
 
 import type { LessonContent, FoundationTopicMeta } from "./foundations-content";
 
@@ -6,7 +6,220 @@ const groupByVsWindow: LessonContent = {
   slug: "group-by-vs-window",
   title: "GROUP BY vs Window Functions",
   subtitle: "Collapsing rows vs keeping every row / aggregate next to detail / when each one fits",
-  sections: [],
+  sections: [
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do window functions exist?",
+      body: [
+        "Suppose you are a data engineer at a company. You have an `employees` table:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The employees table",
+      headers: ["employee_id", "department", "salary"],
+      rows: [
+        ["1", "IT", "5000"],
+        ["2", "IT", "6000"],
+        ["3", "HR", "4000"],
+        ["4", "HR", "4500"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Your manager asks two questions.",
+        "**Question A**: What is the total salary of each department? You can use `GROUP BY`.",
+        "**Question B**: What is each employee's salary, along with the total salary of their department? This is different. You must keep every employee row.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "A **window function** helps you calculate a value across related rows without removing the individual rows.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Grouping vs looking through a window",
+      body: [
+        "Imagine four employees standing in two rooms.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "window-two-rooms",
+      caption: "Grouping vs looking through a window",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The key difference",
+      body: "`GROUP BY` combines rows into groups and produces one row per group in this example. A **window function** calculates values using related rows while keeping each original row.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How do they work?",
+      body: ["**A. GROUP BY**"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "GROUP BY: one row per department",
+      code: `SELECT
+    department,
+    SUM(salary) AS department_total
+FROM employees
+GROUP BY department;`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "PostgreSQL groups employees by department, then calculates `SUM(salary)` for each group. Result: 2 rows.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["**B. Window Function**"],
+    },
+    {
+      kind: "prose",
+      body: [
+        "The general structure is: `FUNCTION(...) OVER (window_definition)`",
+        "The `OVER` keyword must come immediately after the function call. The parentheses after `OVER` contain the window definition.",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Window function: every employee row stays",
+      code: `SELECT
+    employee_id,
+    department,
+    salary,
+    SUM(salary) OVER (
+        PARTITION BY department
+    ) AS department_total
+FROM employees;`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "**PostgreSQL** takes these conceptual steps:",
+        "**1.** Read the **employees** table.",
+        "**2.** Divide the rows into **partitions** based on `department`.",
+        "**3.** Calculate the **salary** total for each partition.",
+        "**4.** Add that total to every **employee** row in the partition.",
+        "**Result**: `4` rows.",
+        "The `OVER()` clause makes `SUM()` act as a window function. `PARTITION BY` defines the groups of related rows. We will study both in detail in later lessons.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Compare the outputs",
+      body: ["Now that you understand the core idea, let's look at the results side by side."],
+    },
+    {
+      kind: "animation",
+      variant: "q-window-group-by-vs-window",
+      caption: "The same idea in SQL: GROUP BY collapses the rows, a window function keeps them.",
+    },
+    {
+      kind: "prose",
+      body: ["Notice that the **department total** appears beside each **employee's original salary**."],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: When should you use each?",
+      body: ["Pick the approach that matches the output you need."],
+    },
+    {
+      kind: "table",
+      caption: "Choose by the output you need",
+      headers: ["Requirement", "Preferred approach"],
+      rows: [
+        ["One total per department", "GROUP BY"],
+        ["Total salary beside each employee", "Window function"],
+        ["One result per category", "GROUP BY"],
+        ["Employee rank within a department", "Window function"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "Window functions can require sorting and extra processing.",
+        "A window function does not automatically reduce the row count.",
+        "In PostgreSQL, you cannot use a window function directly in `WHERE`. You usually need to wrap the query in a **CTE** or **subquery**.",
+        "The correct choice depends on the output you need. Window functions are not always better than `GROUP BY`.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-customer-order-totals",
+      title: "Show each order beside its customer total",
+      prompt: "Write a PostgreSQL query to return the following columns: order_id, customer_id, amount, customer_total. Do not use a GROUP BY query that removes individual orders.",
+      playgroundHref: "/sql-playground?practice=cycledepot-customer-order-totals",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`GROUP BY` combines rows into groups and produces one row per group.",
+        "A **window function** calculates values using related rows while keeping each original row.",
+        "The structure is `FUNCTION(...) OVER (window_definition)`, and `OVER` must come immediately after the function call.",
+        "Use `GROUP BY` for one result per category, and a window function for a total beside each row or a rank within a department.",
+        "You cannot use a window function directly in `WHERE` in PostgreSQL. Use a subquery or CTE.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "group-by-vs-window-row-count",
+          question: "The employees table has 4 rows in 2 departments. How many rows does `SUM(salary) OVER (PARTITION BY department)` return?",
+          options: ["4 rows", "2 rows", "1 row", "6 rows"],
+          correctIndex: 0,
+          explanation: "A window function keeps every input row. GROUP BY would return 2 rows, one per department.",
+        },
+        {
+          id: "group-by-vs-window-task-a",
+          question: "An orders table has order_id, customer_id and amount. display every order and the total amount spent by that order's customer. Which approach should you use?",
+          options: [
+            "A window function with SUM(amount) OVER (PARTITION BY customer_id)",
+            "GROUP BY customer_id alone",
+            "GROUP BY order_id",
+            "SELECT DISTINCT customer_id",
+          ],
+          correctIndex: 0,
+          explanation: "Every order row must stay, so a window function is the right tool. GROUP BY customer_id alone would return only 2 rows.",
+        },
+        {
+          id: "group-by-vs-window-task-b",
+          question: "For the same orders table, which query returns order_id, customer_id, amount and customer_total while keeping every order?",
+          options: [
+            "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM orders;",
+            "SELECT order_id, customer_id, amount, SUM(amount) AS customer_total FROM orders GROUP BY customer_id;",
+            "SELECT order_id, customer_id, amount, SUM(amount) OVER () PARTITION BY customer_id AS customer_total FROM orders;",
+            "SELECT order_id, customer_id, amount FROM orders WHERE SUM(amount) OVER (PARTITION BY customer_id) > 0;",
+          ],
+          correctIndex: 0,
+          explanation: "OVER must come directly after the function, with PARTITION BY inside its parentheses. Customer A rows show 300 and customer B rows show 500. The GROUP BY option fails because order_id is not grouped, and a window function is not allowed in WHERE.",
+        },
+        {
+          id: "group-by-vs-window-where",
+          question: "In PostgreSQL, where can you NOT use a window function directly?",
+          options: ["In the WHERE clause", "In the SELECT list", "Next to other columns", "In a subquery's SELECT list"],
+          correctIndex: 0,
+          explanation: "Window functions are not allowed in WHERE. Compute them in a subquery or CTE, then filter in the outer query.",
+        },
+      ],
+    },
+  ],
 };
 
 const overWindowConcept: LessonContent = {
