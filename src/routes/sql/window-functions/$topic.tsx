@@ -7,9 +7,9 @@ export const Route = createFileRoute("/sql/window-functions/$topic")({
     if (!t) return { meta: [{ title: "Window Functions — SQL Mastery" }] };
     return {
       meta: [
-        { title: `${t.title} — Window Functions` },
+        { title: `${t.title} — Advanced SQL` },
         { name: "description", content: t.blurb },
-        { property: "og:title", content: `${t.title} — Window Functions` },
+        { property: "og:title", content: `${t.title} — Advanced SQL` },
         { property: "og:description", content: t.blurb },
       ],
     };

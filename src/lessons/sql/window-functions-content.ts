@@ -213,7 +213,7 @@ FROM employees;`,
         {
           id: "group-by-vs-window-where",
           question: "In PostgreSQL, where can you NOT use a window function directly?",
-          options: ["In the WHERE clause", "In the SELECT list", "Next to other columns", "In a subquery's SELECT list"],
+          options: ["In the WHERE clause", "In the SELECT list", "In an ORDER BY clause", "In a subquery's SELECT list"],
           correctIndex: 0,
           explanation: "Window functions are not allowed in WHERE. Compute them in a subquery or CTE, then filter in the outer query.",
         },
