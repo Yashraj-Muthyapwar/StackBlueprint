@@ -24,11 +24,11 @@ export const groupByVsWindowStages: Stage[] = [
   {
     name: "GROUP BY collapses rows",
     blurb: "Four employees go in. One row per department comes out.",
-    canvasMinHeight: 520,
     sql: [
       "SELECT department, SUM(salary) AS department_total",
       "FROM   staff_salaries",
       "GROUP  BY department",
+      "-- one row per department",
     ],
     table: { name: "staff_salaries", cols: COLS, rows: STAFF },
     steps: [
@@ -64,7 +64,6 @@ export const groupByVsWindowStages: Stage[] = [
   {
     name: "A window function keeps every row",
     blurb: "Each employee keeps a row and also sees the total of their own department.",
-    canvasMinHeight: 520,
     sql: [
       "SELECT employee_id, department, salary,",
       "       SUM(salary) OVER (PARTITION BY department)",

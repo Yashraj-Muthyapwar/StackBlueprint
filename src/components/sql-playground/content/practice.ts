@@ -421,6 +421,35 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return order_id, customer_id, amount, and customer_total.
 -- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-order-average-over": {
+    id: "cycledepot-order-average-over",
+    title: "Show each order beside the overall average",
+    prompt:
+      "Write a query that returns order_id, customer_id, amount, and average_order_amount from customer_orders. The new column must show the average amount across all five orders, while keeping every order row. Do not use GROUP BY, PARTITION BY, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-order-average-over",
+    starterSql: `-- Show every order beside the average of all five orders.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and average_order_amount.
+-- Do not use GROUP BY, PARTITION BY, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-department-average-partition": {
+    id: "cycledepot-department-average-partition",
+    title: "Show each employee beside their department average",
+    prompt:
+      "Write a query on department_salaries returning employee_id, department, salary, department_avg. Use AVG() with OVER() and PARTITION BY. Do not use GROUP BY, a CTE, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-department-average-partition",
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",

@@ -2,6 +2,9 @@ import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info, Brain, Play } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
 import { TwoRoomsVisual } from "@/components/sql/window-functions/TwoRoomsVisual";
+import { CalculatorWindowVisual } from "@/components/sql/window-functions/CalculatorWindowVisual";
+import { OrderSlipsVisual } from "@/components/sql/window-functions/OrderSlipsVisual";
+import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { Quiz } from "@/components/lesson/Quiz";
@@ -474,7 +477,16 @@ export function SectionRenderer({
       return <ImageCarousel images={section.images} />;
 
     case "visual":
-      return <TwoRoomsVisual caption={section.caption} />;
+      switch (section.id) {
+        case "window-calculator":
+          return <CalculatorWindowVisual caption={section.caption} />;
+        case "window-order-slips":
+          return <OrderSlipsVisual caption={section.caption} />;
+        case "window-partition-explorer":
+          return <PartitionExplorer caption={section.caption} />;
+        default:
+          return <TwoRoomsVisual caption={section.caption} />;
+      }
 
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;

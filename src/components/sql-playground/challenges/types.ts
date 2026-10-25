@@ -18,6 +18,8 @@ export type ChallengeDefinition = {
   starterSql?: string;
   hints: string[];
   solutionSql: Partial<Record<ChallengeEngine, string>>;
+  /** Constructs the exercise forbids. Tested against the query with comments and quoted text removed. */
+  forbiddenSql?: { pattern: string; message: string }[];
   /** Hand-indented version of the solution, shown when revealed. Falls back to a formatted solutionSql. */
   solutionDisplay?: string;
   validator: ResultValidator;
@@ -86,7 +88,9 @@ export type CheckReason =
   | "zero-rows"
   | "aggregate-mismatch"
   | "duplicate-rows"
-  | "wrong-value";
+  | "wrong-value"
+  | "forbidden-construct"
+  | "wrong-column-order";
 
 export type CheckOutcome =
   | { state: "passed"; rowCount: number }

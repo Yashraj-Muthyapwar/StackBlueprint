@@ -131,3 +131,20 @@ export function enforceQueryPolicy(sql: string): PolicyOutcome {
 
   return { valid: true, sql: stmt };
 }
+
+/**
+ * Check a query against the constructs an exercise forbids (for example
+ * "Do not use GROUP BY, PARTITION BY, or a subquery"). Comments and quoted
+ * text are ignored. Returns the learner-facing message, or null when clean.
+ */
+export function findForbiddenConstruct(
+  sql: string,
+  forbidden: { pattern: string; message: string }[] | undefined,
+): string | null {
+  if (!forbidden?.length) return null;
+  const cleaned = stripQuotedText(sql);
+  for (const rule of forbidden) {
+    if (new RegExp(rule.pattern, "i").test(cleaned)) return rule.message;
+  }
+  return null;
+}
