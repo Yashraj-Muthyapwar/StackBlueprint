@@ -90,11 +90,15 @@ const myLesson: LessonContent = {
 Never use the `diagram` section. Never use a database-table animation for the intuition step.
 
 1. **Intuition visual** (simple, shows the idea with real-world objects). A small React component in `src/components/sql/<topic>/`, modeled on `TwoRoomsVisual.tsx` (people in rooms) or `CalculatorWindowVisual.tsx` (calculators in one shared window). Build it on the shared `VisualPlayer.tsx` (frame, step chip, note and play / back / next / restart bar): pass `steps` (`label` and `note`) and a `renderStep(step)` body. Four steps, dark mode safe, no layout jump between steps, no overflow at 375px.
-   - Register it as a `visual` section. Add its `id` to the `visual` section type in `src/lessons/sql/foundations-content.ts`, and add a `case` for it in `SectionRenderer.tsx`. `visual` branches on `section.id` (`window-two-rooms`, `window-calculator`), so give each new visual a distinct `id`.
+   - Register it as a `visual` section. Add its `id` to the `visual` section type in `src/lessons/sql/foundations-content.ts`, and add a `case` for it in `SectionRenderer.tsx`. `visual` branches on `section.id` (`window-two-rooms`, `window-calculator`, `window-order-slips`, `window-partition-explorer`), so give each new visual a distinct `id`. A `visual` can also be an interactive control instead of a stepped animation, such as `PartitionExplorer.tsx` (tabs that highlight one partition at a time); use that when the user's content describes an "Explore" control.
 2. **Step-by-step SQL animation (required, placed in section 4 EXAMPLE).** An `animation` section using `Stage[]` (see `src/components/sql/window-functions/group-by-vs-window.tsx`). Put the stage file in `src/components/sql/<topic>/` and register the variant in `src/components/sql/animation-registry.ts`. Each step shows one state change.
 3. Images, if any, use the zoomable image component with a descriptive `caption`. Multiple related images use `image-carousel`.
 
 Keep animation tables narrow. Do not render more columns or long values than the layout can show without overlap.
+
+Keep every SQL animation short enough that its controls are visible without scrolling: no `canvasMinHeight` (the player already reserves the tallest step), keep the side panel cards (put two cards side by side with `grid grid-cols-2` rather than stacking them), and a step height of about 450 to 600px. Measure the hidden step wrappers (`[aria-hidden="true"]` children of the animation figure) in the browser. All steps should be within about 50px of each other.
+
+Keep the layout still while stepping. The intuition visuals reserve the tallest step automatically through `VisualPlayer`, so the canvas and controls never move. Every stage in one animation must have the same number of SQL lines (pad with a short `--` comment line), and no SQL line may be long enough to wrap in the narrow query panel (about 38 characters), so split long lines. Then measure, step by step, the height of the query panel and the top of the first table row. They must be identical in every step of every stage, and the control bar must not move.
 
 ## Step 4: Practice (inline SQL sandbox, not a link to the playground)
 
