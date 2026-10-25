@@ -146,6 +146,7 @@ export const AVAILABLE_LESSONS: readonly string[] = [
   "sql/outer-joins-null",
   "sql/over-window-concept",
   "sql/overlapping-ranges",
+  "sql/partition-by",
   "sql/position-split-part",
   "sql/power-sqrt-log",
   "sql/querying-fundamentals-quiz",
