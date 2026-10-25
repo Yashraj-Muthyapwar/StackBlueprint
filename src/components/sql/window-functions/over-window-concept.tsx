@@ -20,7 +20,6 @@ const stage = (
 ): Stage => ({
   name,
   blurb,
-  canvasMinHeight: 500,
   sql: ["SELECT employee_id, salary,", `       ${fn} OVER () AS ${alias}`, "FROM   employees"],
   table: { name: "employees", cols: SOURCE_COLS, rows: STAFF, columnTemplate: TEMPLATE },
   steps: [

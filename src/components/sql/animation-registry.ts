@@ -61,6 +61,7 @@ import { olistDateSpinesStages } from "./datetime-functions/date-spines-gap-fill
 import { shopflowInnerJoinStages } from "./querying/inner-joins-conditions.tsx";
 import { shopflowOuterJoinStages } from "./querying/outer-joins-null.tsx";
 import { shopflowCrossSelfJoinStages } from "./querying/cross-self-joins.tsx";
+import { partitionByStages } from "./window-functions/partition-by";
 import { overWindowConceptStages } from "./window-functions/over-window-concept";
 import { groupByVsWindowStages } from "./window-functions/group-by-vs-window";
 import { shopflowSemiAntiJoinStages } from "./querying/semi-anti-joins.tsx";
@@ -140,6 +141,7 @@ export const STAGES_REGISTRY = {
   "q-shopflow-semi-anti-joins": shopflowSemiAntiJoinStages,
   "q-window-group-by-vs-window": groupByVsWindowStages,
   "q-window-over-concept": overWindowConceptStages,
+  "q-window-partition-by": partitionByStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

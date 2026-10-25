@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight, Pause, Play, RotateCcw } from "lucide-react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 
@@ -38,16 +38,57 @@ function Player({
     [count],
   );
 
+  const measureRefs = useRef(new Map<number, HTMLDivElement>());
+  const [reserved, setReserved] = useState(0);
+
+  const measure = useCallback(() => {
+    const tallest = Math.ceil(
+      Math.max(0, ...Array.from(measureRefs.current.values()).map((el) => el.getBoundingClientRect().height)),
+    );
+    // Only ever grow, so the canvas never shrinks and nothing below it moves.
+    if (tallest > 0) setReserved((current) => Math.max(current, tallest));
+  }, []);
+
+  useLayoutEffect(() => {
+    const observer = new ResizeObserver(measure);
+    measureRefs.current.forEach((el) => observer.observe(el));
+    measure();
+    return () => observer.disconnect();
+  }, [measure, count]);
+
+  const content = (index: number) => (
+    <>
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        <span className="rounded-full border border-mint/40 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
+          {steps[index].label}
+        </span>
+      </div>
+      {renderStep(index)}
+      <p className="lesson-supporting mt-4 text-foreground/85">{steps[index].note}</p>
+    </>
+  );
+
   return (
     <div className="flex flex-col">
-      <div className="px-5 py-6 lg:px-7 lg:py-8">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-mint/40 bg-mint/10 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-mint">
-            {steps[step].label}
-          </span>
+      <div className="relative">
+        <div className="px-5 py-6 lg:px-7 lg:py-8" style={reserved ? { minHeight: reserved } : undefined}>
+          {content(step)}
         </div>
-        {renderStep(step)}
-        <p className="lesson-supporting mt-4 min-h-[3.5rem] text-foreground/85">{steps[step].note}</p>
+        {/* Every step is drawn off-screen once, so the canvas reserves the tallest one. */}
+        <div aria-hidden="true" className="pointer-events-none invisible absolute inset-x-0 top-0">
+          {steps.map((_, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                if (el) measureRefs.current.set(i, el);
+                else measureRefs.current.delete(i);
+              }}
+              className="px-5 py-6 lg:px-7 lg:py-8"
+            >
+              {content(i)}
+            </div>
+          ))}
+        </div>
       </div>
       <div className="flex items-center justify-between border-t border-hairline bg-surface-2/40 px-4 py-2.5">
         <div className="flex items-center gap-1">
