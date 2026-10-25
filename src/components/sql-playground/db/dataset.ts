@@ -103,6 +103,12 @@ CREATE TABLE customer_orders (
   customer_id VARCHAR NOT NULL,
   amount      INTEGER NOT NULL
 );
+
+CREATE TABLE department_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
 `;
 
 // ---------------------------------------------------------------- source data
@@ -438,6 +444,13 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["104", q("B"), "250"],
       ["105", q("B"), "100"],
     ]),
+    ...insertBatches("department_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+      ["5", q("Sales"), "7000"],
+    ]),
   ];
 
   const tables: DatasetTableInfo[] = [
@@ -468,6 +481,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       rows: 5,
       blurb: "Five orders from customers A and B. Used by the window function lessons.",
     },
+    {
+      name: "department_salaries",
+      rows: 5,
+      blurb: "Five employees in IT, HR and Sales. Used by the PARTITION BY lesson.",
+    },
   ];
 
   cached = { statements, tables };
@@ -483,6 +501,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
   staff_salaries: ["employee_id", "department", "salary"],
   customer_orders: ["order_id", "customer_id", "amount"],
+  department_salaries: ["employee_id", "department", "salary"],
 };
 
 export const STARTER_SQL = `-- Cycle Depot. Same data on PostgreSQL and DuckDB.

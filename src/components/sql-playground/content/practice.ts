@@ -435,6 +435,21 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Do not use GROUP BY, PARTITION BY, or a subquery.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-department-average-partition": {
+    id: "cycledepot-department-average-partition",
+    title: "Show each employee beside their department average",
+    prompt:
+      "Write a query on department_salaries returning employee_id, department, salary, department_avg. Use AVG() with OVER() and PARTITION BY. Do not use GROUP BY, a CTE, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-department-average-partition",
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",

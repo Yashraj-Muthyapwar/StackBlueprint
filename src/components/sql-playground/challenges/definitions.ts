@@ -2477,6 +2477,67 @@ FROM customer_orders;`,
       nextConcept: "PARTITION BY",
     },
   },
+  {
+    id: "cycle-depot-department-average-partition",
+    version: 1,
+    title: "Show each employee beside their department average",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every employee with the average salary of their own department.",
+    requirements: [
+      "Use the department_salaries table.",
+      "Return exactly employee_id, department, salary, and department_avg.",
+      "Calculate department_avg with AVG(salary) OVER (PARTITION BY department).",
+      "Keep all 5 employee rows.",
+      "Do not use GROUP BY, a CTE, or a subquery.",
+    ],
+    requiredTables: ["department_salaries"],
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add AVG(salary) OVER (...) as a fourth column named department_avg.",
+      "Put PARTITION BY department inside the OVER parentheses.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the employee rows." },
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let PARTITION BY do the work." },
+    ],
+    solutionDisplay: `SELECT
+    employee_id,
+    department,
+    salary,
+    AVG(salary) OVER (
+        PARTITION BY department
+    ) AS department_avg
+FROM department_salaries;`,
+    solutionSql: {
+      postgres: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+      duckdb: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+        duckdb: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+      },
+      requiredColumns: ["employee_id", "department", "salary", "department_avg"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Department average complete",
+      body: "Correct. PARTITION BY gave each department its own average, and every employee kept their own row.",
+      nextConcept: "ORDER BY inside OVER()",
+    },
+  },
 ];
 
 export function getChallenges(
