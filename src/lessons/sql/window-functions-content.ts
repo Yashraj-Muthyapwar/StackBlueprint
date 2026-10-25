@@ -496,8 +496,320 @@ WHERE department <> 'HR';`,
 const partitionBy: LessonContent = {
   slug: "partition-by",
   title: "PARTITION BY",
-  subtitle: "PARTITION BY / independent windows per group / multiple partition keys / partition vs GROUP BY",
-  sections: [],
+  subtitle: "Independent windows per group / multiple partition keys / partition vs GROUP BY",
+  sections: [
+    {
+      kind: "prose",
+      body: ["In the previous lesson, you learned:"],
+    },
+    {
+      kind: "list",
+      items: [
+        "`SUM(amount)` calculates an aggregate.",
+        "`SUM(amount) OVER ()` calculates a total across all available rows while preserving individual rows.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now we will answer an important question:",
+        "What if you want to calculate a separate total for each customer, department, or category?",
+        "This is where `PARTITION BY` becomes useful.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need PARTITION BY?",
+      body: ["Suppose you work for an **e-commerce company**. You have this orders table:"],
+    },
+    {
+      kind: "table",
+      caption: "The orders table",
+      headers: ["order_id", "customer_id", "amount"],
+      rows: [
+        ["101", "A", "100"],
+        ["102", "A", "200"],
+        ["103", "B", "150"],
+        ["104", "B", "250"],
+        ["105", "B", "100"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Your manager asks: Show every order and the total money spent by the customer who placed that order.",
+        "You cannot use `SUM(amount) OVER ()` alone because it calculates the total across all five orders.",
+        "You need a separate total for each customer.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "`PARTITION BY` solves this problem by dividing rows into independent groups for the window calculation.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of separate rooms",
+      body: ["Imagine five customers' order slips on a desk. You place the slips into separate rooms according to their `customer_id`."],
+    },
+    {
+      kind: "visual",
+      id: "window-order-slips",
+      caption: "Order slips in separate rooms",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "`PARTITION BY` divides the rows for a calculation. It does not remove or combine the original rows.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How does PARTITION BY work?",
+      body: ["Consider this PostgreSQL expression:"],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "Window function syntax with PARTITION BY",
+      code: `SUM(amount) OVER (
+    PARTITION BY customer_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "**PostgreSQL** conceptually performs these steps:",
+        "1. **Read** the rows available to the `window function`.",
+        "2. **Divide** those rows into partitions based on `customer_id`.",
+        "3. **Calculate** `SUM(amount)` independently for each partition.",
+        "4. **Attach** the relevant customer's total to every order row.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Understand the syntax",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Reading the syntax",
+      headers: ["SQL component", "Purpose"],
+      rows: [
+        ["SUM(amount)", "Calculate the total amount"],
+        ["OVER (...)", "Apply the function over a window"],
+        ["PARTITION BY customer_id", "Create one partition for each customer"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Unlike `GROUP BY`, `PARTITION BY` does not collapse the individual orders.",
+        "Also, `PARTITION BY` does not sort rows. We will study ordering in the next lesson.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Compare the results",
+      body: ["Compare the same five orders with and without `PARTITION BY`."],
+    },
+    {
+      kind: "animation",
+      variant: "q-window-partition-by",
+      caption: "The same five orders with OVER () and with OVER (PARTITION BY customer_id).",
+    },
+    {
+      kind: "prose",
+      body: ["**Example A: Without PARTITION BY**"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "SUM with an empty OVER ()",
+      code: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    SUM(amount) OVER () AS total_amount
+FROM orders
+ORDER BY order_id;`,
+    },
+    {
+      kind: "table",
+      caption: "Result: 5 rows, every row gets the overall total",
+      headers: ["order_id", "customer_id", "amount", "total_amount"],
+      rows: [
+        ["101", "A", "100", "800"],
+        ["102", "A", "200", "800"],
+        ["103", "B", "150", "800"],
+        ["104", "B", "250", "800"],
+        ["105", "B", "100", "800"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["Every row receives the overall total: 800."],
+    },
+    {
+      kind: "prose",
+      body: ["**Example B: With PARTITION BY**"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "SUM with PARTITION BY customer_id",
+      code: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY customer_id
+    ) AS customer_total
+FROM orders
+ORDER BY order_id;`,
+    },
+    {
+      kind: "visual",
+      id: "window-partition-explorer",
+      caption: "Explore each partition",
+    },
+    {
+      kind: "prose",
+      body: ["Notice that the rows for customer A receive 300, while the rows for customer B receive 500."],
+    },
+    {
+      kind: "prose",
+      heading: "Important comparison",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Three ways to total the same orders",
+      headers: ["SQL", "Calculation"],
+      rows: [
+        ["SUM(amount) OVER ()", "Total across all available rows"],
+        ["SUM(amount) OVER (PARTITION BY customer_id)", "Separate total for each customer"],
+        ["GROUP BY customer_id with SUM(amount)", "One summary row per customer"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and common mistakes",
+      body: ["Watch for these mistakes when you first use `PARTITION BY`."],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Mistake 3: choosing the wrong partition key",
+      body: "If you partition by `order_id`, and every order ID is unique, each partition contains only one order. Then `SUM(amount)` returns that order's own amount, not its customer's total.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Fails to give customer totals: partitioning by order_id",
+      code: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY order_id
+    ) AS customer_total
+FROM orders
+ORDER BY order_id;`,
+    },
+    {
+      kind: "table",
+      caption: "Result: every partition holds one order, so customer_total equals amount",
+      headers: ["order_id", "customer_id", "amount", "customer_total"],
+      rows: [
+        ["101", "A", "100", "100"],
+        ["102", "A", "200", "200"],
+        ["103", "B", "150", "150"],
+        ["104", "B", "250", "250"],
+        ["105", "B", "100", "100"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "**Mistake 1:** thinking `PARTITION BY` is the same as `GROUP BY`. Both organize rows into groups. However, `GROUP BY` produces summary groups, while window partitioning retains individual result rows.",
+        "**Mistake 2:** thinking `PARTITION BY` sorts rows. It defines partitions, not their output order. Use the query's outer `ORDER BY` when you need a guaranteed display order.",
+        "**Performance consideration:** window functions can require extra memory and sorting. Large partitions can increase query cost. A grouped aggregate may be more suitable when you need only one summary row per customer.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Solve it yourself",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-department-average-partition",
+      title: "Show each employee beside their department average",
+      prompt: "Write a query returning: employee_id, department, salary, department_avg. Use AVG() with OVER() and PARTITION BY. Do not use GROUP BY, a CTE, or a subquery.",
+      playgroundHref: "/sql-playground?practice=cycledepot-department-average-partition",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`PARTITION BY` divides the rows into independent groups for a **window function**. It does not remove or combine the original rows.",
+        "`SUM(amount) OVER (PARTITION BY customer_id)` gives each order its own customer's total.",
+        "Unlike `GROUP BY`, `PARTITION BY` keeps every individual row.",
+        "`PARTITION BY` does not sort rows. Use the outer `ORDER BY` for a guaranteed display order.",
+        "Choose the partition key with care: partitioning by a unique column gives every row its own partition.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "partition-by-controls-and-row-count",
+          question: "What does `PARTITION BY` control, and why does it not reduce the number of output rows?",
+          options: [
+            "It controls how rows are divided into groups for a window function. It does not reduce the rows because the window function calculates a result for each original row.",
+            "It controls the sort order of the output. It keeps every row because sorting never removes rows.",
+            "It controls which rows are filtered out. It keeps every row because the filter runs after the window function.",
+            "It controls how rows are combined into one summary row per group, so the output always has one row per partition.",
+          ],
+          correctIndex: 0,
+          explanation: "PARTITION BY controls how rows are divided into groups for a window function. It doesn't reduce the number of rows because the window function calculates a result for each original row. If a partition contains only one row, the window calculation is performed using just that one row. For example, if you use AVG(salary) and every partition has one employee, each employee's average will simply equal their own salary.",
+        },
+        {
+          id: "partition-by-vs-group-by",
+          question: "What is the difference between `PARTITION BY` and `GROUP BY` in PostgreSQL? What happens if you omit `PARTITION BY` from a window function?",
+          options: [
+            "GROUP BY combines rows and returns one summary row per group. PARTITION BY keeps the rows available to the window function and calculates a window result for each row within its group. If you omit PARTITION BY, the window function treats the entire result set as one partition.",
+            "PARTITION BY combines rows and returns one summary row per group. GROUP BY keeps every row. If you omit PARTITION BY, the window function returns an error.",
+            "They are two names for the same thing. If you omit PARTITION BY, each row becomes its own partition.",
+            "GROUP BY sorts the rows and PARTITION BY filters them. If you omit PARTITION BY, the window function ignores NULL values.",
+          ],
+          correctIndex: 0,
+          explanation: "GROUP BY combines rows and returns one summary row per group. PARTITION BY keeps the rows available to the window function and calculates a window result for each row within its group. If you omit PARTITION BY, the window function treats the entire result set as one partition, which is why SUM(amount) OVER () gives every row the same total.",
+        },
+        {
+          id: "partition-by-correct-query",
+          question: "An orders table has order_id, customer_id and amount. Which query shows every order with the number of orders placed by that order's customer?",
+          options: [
+            "SELECT order_id, customer_id, COUNT(*) OVER (PARTITION BY customer_id) AS orders_by_customer FROM orders;",
+            "SELECT order_id, customer_id, COUNT(*) OVER () PARTITION BY customer_id AS orders_by_customer FROM orders;",
+            "SELECT order_id, customer_id, COUNT(*) PARTITION BY customer_id AS orders_by_customer FROM orders;",
+            "SELECT order_id, customer_id, COUNT(*) OVER (customer_id) AS orders_by_customer FROM orders;",
+          ],
+          correctIndex: 0,
+          explanation: "PARTITION BY belongs inside the OVER parentheses: COUNT(*) OVER (PARTITION BY customer_id). Putting it after OVER () or without OVER is a syntax error, and OVER (customer_id) is read as a window name, not a partition.",
+        },
+        {
+          id: "partition-by-wrong-key",
+          question: "In the orders table every order_id is unique. What does `SUM(amount) OVER (PARTITION BY order_id)` return for order 103, which has an amount of 150?",
+          options: ["150", "500", "800", "250"],
+          correctIndex: 0,
+          explanation: "Every order_id is unique, so each partition holds exactly one order. The sum of a single row is that row's own amount, 150, not the customer's total of 500.",
+        },
+      ],
+    },
+  ],
 };
 
 const orderByInOver: LessonContent = {
