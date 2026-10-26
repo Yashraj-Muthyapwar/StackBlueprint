@@ -4,6 +4,9 @@ import { LessonAnimation } from "@/components/sql/LessonAnimation";
 import { TwoRoomsVisual } from "@/components/sql/window-functions/TwoRoomsVisual";
 import { CalculatorWindowVisual } from "@/components/sql/window-functions/CalculatorWindowVisual";
 import { OrderSlipsVisual } from "@/components/sql/window-functions/OrderSlipsVisual";
+import { ExecutionOrderVisual } from "@/components/sql/window-functions/ExecutionOrderVisual";
+import { FrameSelector } from "@/components/sql/window-functions/FrameSelector";
+import { ScoreboardVisual } from "@/components/sql/window-functions/ScoreboardVisual";
 import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
@@ -482,6 +485,12 @@ export function SectionRenderer({
           return <CalculatorWindowVisual caption={section.caption} />;
         case "window-order-slips":
           return <OrderSlipsVisual caption={section.caption} />;
+        case "window-execution-order":
+          return <ExecutionOrderVisual caption={section.caption} />;
+        case "window-frame-selector":
+          return <FrameSelector caption={section.caption} />;
+        case "window-scoreboard":
+          return <ScoreboardVisual caption={section.caption} />;
         case "window-partition-explorer":
           return <PartitionExplorer caption={section.caption} />;
         default:

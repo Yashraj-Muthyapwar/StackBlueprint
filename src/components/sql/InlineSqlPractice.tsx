@@ -19,7 +19,7 @@ import type { QueryResult } from "@/components/sql-playground/db/db-client";
 import { pgSandbox } from "@/components/sql/sandbox/pg-sandbox";
 import { SCHEMA_HINT } from "@/components/sql-playground/db/dataset";
 import { getChallenge } from "@/components/sql-playground/challenges/definitions";
-import { enforceQueryPolicy, findForbiddenConstruct } from "@/components/sql-playground/challenges/query-policy";
+import { enforceQueryPolicy, findForbiddenConstruct, findMissingRequirement, hasOuterOrderBy } from "@/components/sql-playground/challenges/query-policy";
 import { validateResult } from "@/components/sql-playground/challenges/validate";
 import {
   categorizeEngineError,
@@ -30,6 +30,8 @@ import { getProgress, saveProgress } from "@/components/sql-playground/challenge
 import type { CheckOutcome } from "@/components/sql-playground/challenges/types";
 
 const ENGINE = "postgres" as const;
+const OUTER_ORDER_BY_MESSAGE =
+  "Add an ORDER BY after FROM. The window ORDER BY only orders the calculation, so only an outer ORDER BY guarantees the display order.";
 
 function MiniTable({ result, maxRows = 8 }: { result: QueryResult; maxRows?: number }) {
   const rows = result.rows.slice(0, maxRows);
@@ -97,23 +99,29 @@ export default function InlineSqlPractice({
     setPassedBefore(Boolean(getProgress(challengeId)?.completedAt));
   }, [challengeId]);
 
-  // Boot the in-browser PostgreSQL once this practice scrolls into view.
+  // Boot the in-browser PostgreSQL once this practice is near the screen. A short
+  // timer is the fallback in case the observer never reports (for example in a
+  // background tab), so the practice always becomes usable.
   const [rootNode, setRootNode] = useState<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const el = rootNode;
-    if (!el || visible) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "300px" },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
+    if (!rootNode || visible) return;
+    const start = () => setVisible(true);
+    const fallback = window.setTimeout(start, 3000);
+    let observer: IntersectionObserver | undefined;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) start();
+        },
+        { rootMargin: "300px" },
+      );
+      observer.observe(rootNode);
+    }
+    return () => {
+      window.clearTimeout(fallback);
+      observer?.disconnect();
+    };
   }, [rootNode, visible]);
 
   useEffect(() => {
@@ -131,7 +139,7 @@ export default function InlineSqlPractice({
           setReady(true);
         }
       })
-      .catch(() => {
+      .catch((e) => {
         if (!cancelled) setBootLabel("The SQL sandbox could not start. Try reloading the page.");
       });
     return () => {
@@ -152,7 +160,10 @@ export default function InlineSqlPractice({
       setRunning(false);
       return;
     }
-    const forbidden = findForbiddenConstruct(policy.sql, challenge.forbiddenSql);
+    const forbidden =
+      findForbiddenConstruct(policy.sql, challenge.forbiddenSql) ??
+      findMissingRequirement(policy.sql, challenge.requiredSql) ??
+      (challenge.requiresOuterOrderBy && !hasOuterOrderBy(policy.sql) ? OUTER_ORDER_BY_MESSAGE : null);
     if (forbidden) {
       setFeedback({ state: "incorrect", reason: "forbidden-construct", detail: forbidden });
       setResult(null);
