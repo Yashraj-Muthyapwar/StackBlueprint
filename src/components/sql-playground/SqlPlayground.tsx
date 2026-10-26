@@ -36,7 +36,7 @@ import { ChallengeList } from "./challenges/ChallengeList";
 import { ChallengePanel } from "./challenges/ChallengePanel";
 import { DatasetSwitchDialog } from "./challenges/DatasetSwitchDialog";
 import { getChallenge } from "./challenges/definitions";
-import { enforceQueryPolicy, findForbiddenConstruct } from "./challenges/query-policy";
+import { enforceQueryPolicy, findForbiddenConstruct, findMissingRequirement, hasOuterOrderBy } from "./challenges/query-policy";
 import { validateResult } from "./challenges/validate";
 import { categorizeEngineError } from "./challenges/error-copy";
 import {
@@ -286,7 +286,12 @@ export function SqlPlayground() {
       return;
     }
 
-    const forbidden = findForbiddenConstruct(policy.sql, challenge.forbiddenSql);
+    const forbidden =
+      findForbiddenConstruct(policy.sql, challenge.forbiddenSql) ??
+      findMissingRequirement(policy.sql, challenge.requiredSql) ??
+      (challenge.requiresOuterOrderBy && !hasOuterOrderBy(policy.sql)
+        ? "Add an ORDER BY after FROM. The window ORDER BY only orders the calculation, so only an outer ORDER BY guarantees the display order."
+        : null);
     if (forbidden) {
       setChallengeFeedback({ state: "incorrect", reason: "forbidden-construct", detail: forbidden });
       setRunning(false);
