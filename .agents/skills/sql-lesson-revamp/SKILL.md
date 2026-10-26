@@ -109,6 +109,8 @@ Keep the layout still while stepping. The intuition visuals reserve the tallest 
    - `solutionSql` for `postgres` and `duckdb`,
    - a hand-indented `solutionDisplay`,
    - `forbiddenSql` when the exercise bans constructs (for example "Do not use GROUP BY, PARTITION BY, or a subquery"): a list of `{ pattern, message }` regexes tested with comments and quotes removed; a match shows the message instead of running the query,
+   - `requiredSql` (a list of `{ pattern, message }` regexes the query must match) when the result alone cannot prove the learner used the taught construct, for example an explicit `ROWS` frame where the data has no ties,
+   - `requiresOuterOrderBy: true` when the lesson teaches that only the outer `ORDER BY` guarantees display order (the query must then contain its own top-level `ORDER BY`),
    - a `result-set` `validator` (`requiredColumns`, `columnOrder: "exact"`, `rowOrder: "any"` unless order is the point),
    - `success` copy.
    Add a matching entry in `src/components/sql-playground/content/practice.ts`.
