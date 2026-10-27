@@ -1328,7 +1328,7 @@ ORDER BY city;`,
     },
     {
       kind: "callout",
-      tone: "tip",
+      tone: "info",
       title: "Include the group size with summary metrics",
       body: "A small group can make a metric look more meaningful than it is. Include COUNT(*) beside SUM or AVG so readers can judge reliability. For example, the returned status has 4 Cycle Depot orders, while delivered has 84.",
     },
@@ -1574,7 +1574,7 @@ ORDER BY order_count DESC, status ASC;`,
     },
     {
       kind: "callout",
-      tone: "tip",
+      tone: "info",
       title: "Filter rows as early as possible",
       body: "Keep row-level conditions in WHERE even when a database also accepts them in HAVING. Filtering web orders before grouping means the database has fewer rows to aggregate and can more easily use an index when one is available.",
     },
@@ -1780,108 +1780,6 @@ const aggregationsFinalQuiz: LessonContent = {
           explanation:
             "HAVING filters finished groups after GROUP BY and COUNT(*) have produced a value for each group.",
         },
-      ],
-    },
-  ],
-};
-
-// ---------- Advanced SQL: Multi-Dimensional Aggregations (GROUPING SETS) ----------
-const groupingSets: LessonContent = {
-  slug: "grouping-sets",
-  title: "Multi-Dimensional Aggregations (GROUPING SETS / ROLLUP / CUBE)",
-  subtitle: "Build related detail rows and subtotals in one grouped query, without separate UNION ALL queries.",
-  sections: [
-    {
-      kind: "prose",
-      heading: "1. The 'Why' — Conceptual Anchor",
-      body: [
-        "BI dashboards need totals at multiple grains — region, region+quarter, grand total. UNION ALL of separate GROUP BYs scans the table once per query.",
-        "GROUPING SETS streams each row into multiple accumulator arrays simultaneously — one scan, all marginal totals.",
-      ],
-    },
-    {
-      kind: "animation",
-      variant: "q-cube",
-      caption: "Each row fans into multiple bucket lanes — one per grouping set.",
-    },
-    {
-      kind: "prose",
-      heading: "2. Visual Logic — Animation Blueprint",
-      body: [
-        "Source rows sit left; three bucket arrays (region, quarter, region×quarter) and a grand-total pill sit right.",
-        "Each row fans into all three arrays and the grand-total pill simultaneously. The source scan bar shows it runs exactly once.",
-        "Viewport contains region totals, quarter totals, detail rows, and the grand total. The GROUPING() column marks which dimension was rolled up.",
-      ],
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "One scan, every margin",
-      code: `-- /* Phase 1: single pass over the fact table */
-SELECT region,
-       quarter,
-       SUM(amount) AS revenue,
-       GROUPING(region)  AS region_is_total,   -- /* 1 = aggregated out */
-       GROUPING(quarter) AS quarter_is_total
-FROM   sales_fact
-GROUP  BY GROUPING SETS (                      -- /* Phase 2: each row fans into 4 buckets */
-  (region, quarter),                           -- /* detail grain */
-  (region),                                    -- /* region subtotal */
-  (quarter),                                   -- /* quarter subtotal */
-  ()                                           -- /* grand total */
-)
-ORDER  BY region NULLS LAST, quarter NULLS LAST;
-
--- /* ROLLUP is shorthand for hierarchical subtotals */
-SELECT region, quarter, SUM(amount)
-FROM   sales_fact
-GROUP  BY ROLLUP (region, quarter);            -- /* = GROUPING SETS ((region,quarter),(region),()) */
-
--- /* CUBE is shorthand for the full lattice */
-SELECT region, quarter, SUM(amount)
-FROM   sales_fact
-GROUP  BY CUBE (region, quarter);              -- /* every subset of the two dimensions */`,
-    },
-    {
-      kind: "table",
-      caption: "Shorthand expansions",
-      headers: ["Construct", "Expands to"],
-      rows: [
-        ["ROLLUP(a, b)", "(a,b), (a), ()"],
-        ["ROLLUP(a, b, c)", "(a,b,c), (a,b), (a), ()"],
-        ["CUBE(a, b)", "(a,b), (a), (b), ()"],
-        ["GROUPING SETS(...)", "Explicit list — no expansion"],
-      ],
-    },
-    {
-      kind: "table",
-      caption: "4. Progression Path — curated LeetCode matrix",
-      headers: ["Tier", "Problem", "Focus"],
-      rows: [
-        ["Warm-up [1303]", "Find the Team Size", "Basic GROUP BY producing per-key totals (warmup for marginal sums)."],
-        ["Drill [1393]", "Capital Gain/Loss", "Multi-dimensional aggregation across two pivots."],
-        ["Challenge [1212]", "Team Scores in Football Tournament", "Multi-grain totals fused with self-join / UNION ALL alternatives."],
-      ],
-    },
-    {
-      kind: "callout",
-      tone: "warn",
-      title: "Logic Trap — rollup NULLs vs data NULLs",
-      body: "A NULL region can mean the source row had no region OR that region was rolled up. Read GROUPING(region) = 1 to distinguish — without it you double-count real NULLs as subtotals.",
-    },
-    {
-      kind: "callout",
-      tone: "info",
-      title: "One scan vs N scans",
-      body: "PostgreSQL implements GROUPING SETS as a single heap scan plus one sort — vs N scans for equivalent UNION ALL queries. Memory peaks at the largest grouping set; spills write partial aggregates to disk in batches.",
-    },
-    {
-      kind: "takeaways",
-      items: [
-        "GROUPING SETS produces all marginal totals in one table pass.",
-        "ROLLUP = hierarchical subtotals; CUBE = full lattice.",
-        "Use GROUPING(col) to distinguish real NULLs from roll-up NULLs.",
-        "Always faster than the equivalent UNION ALL of separate GROUP BYs.",
       ],
     },
   ],
@@ -2497,15 +2395,6 @@ export const QUERYING_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "Count, summarise, group, and filter Cycle Depot data with a dependable aggregation workflow.",
     lessons: [aggregateFns, groupByLesson, havingLesson, aggregationsFinalQuiz],
-  },
-  "window-functions": {
-    slug: "window-functions",
-    title: "Window Functions",
-    category: "Advanced SQL",
-    iconKey: "database",
-    blurb:
-      "Start advanced analytical SQL with multi-dimensional totals, then build toward window-function techniques.",
-    lessons: [groupingSets],
   },
   joins: {
     slug: "joins",

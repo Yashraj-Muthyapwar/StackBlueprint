@@ -36,3 +36,33 @@ Whenever you are asked to add, create, or rewrite a lesson (from any module or t
 - [ ] **Track Index (`src/routes/[track-name]/index.tsx`)**: If the track has a local `[TRACK]_SECTIONS` registry, you MUST update it with the new lesson and **ensure the `path` attribute is included**. Missing the `path` attribute will break the module cards and breadcrumb navigation (`track > module > 01 / 10`).
 - [ ] **Content Registry (`src/lessons/[track-name]/[module]-content.ts`)**: Add the lesson content ensuring `slug` and structure matches the roadmap.
 - [ ] **Section Renderer (`src/components/[track-name]/SectionRenderer.tsx`)**: Ensure the track's `SectionRenderer` properly implements all required section types used in your content (especially `quiz`, `image-carousel`, `takeaways`). Do not assume they are implemented by default; verify and add them if they are missing.
+
+### 5. SQL Lesson Template (follow for every SQL lesson, based on `group-by-vs-window`)
+When the user supplies lesson content for a SQL lesson, keep their wording exactly and only format it into this structure. Reference implementation: the `groupByVsWindow` lesson in `src/lessons/sql/window-functions-content.ts`.
+
+**Section order (numbered headings in the same `N. NAME: subtitle` style):**
+1. `1. WHY: ...` prose (+ the lesson's data as a `table`), then a `callout` (tone `info`) for the core idea.
+2. `2. INTUITION: ...` prose, then a visual (see below), then a `callout` titled "The key difference" using the user's wording.
+3. `3. HOW: ...` prose with `A.` / `B.` sub-headings. Each approach gets a `code` block (`language: "sql"`, with a `caption`). Include a syntax `code` block (`language: "text"`) plus a `table` titled "Reading the syntax" (Part / Role / Required?) whenever the lesson introduces new syntax. Explain conceptual steps in `prose` after the code. No animation in this section.
+4. `4. EXAMPLE: ...` a short prose lead-in, then the step-by-step SQL `animation` (required), then the outputs as `table`s with captions (one per result, with row counts in the prose).
+5. `5. TRADE-OFFS: ...` a `table` (Requirement / Preferred approach), a `callout` (tone `warn`) plus `code` blocks (fails / works) for the main pitfall, and a `list` section titled "Important limitations" for the rest. Never use a table for limitations.
+6. `6. PRACTICE: Your turn` a prose section with `body: []`, then one `sql-practice` section. Do not repeat the task text as prose, and never label practice as "Task A" or "Task B".
+7. `takeaways` (always last content section), then `quiz`, which is always the very last section. The lesson page adds the mark-complete button.
+
+**Formatting rules:**
+- Put SQL keywords, functions and identifiers in backticks inside prose, callouts, list items and takeaways (`GROUP BY`, `OVER`, `WHERE`). Use `**bold**` for the key term being taught. Table cells render plain text, so do not rely on backticks there.
+- No em dashes. Use the user's wording; do not add filler.
+- Use `list` for bullets (`{ kind: "list", heading, items }`), never a table.
+
+**Visuals (pick what fits, do not use ASCII diagrams):**
+- Simple intuition animation: a small React component in `src/components/sql/<topic>/` registered as a `visual` section (see `TwoRoomsVisual.tsx`, people and rooms, not a database table). Add its `id` to the `visual` section type in `foundations-content.ts` and `SectionRenderer.tsx`.
+- Step-by-step SQL animation: `animation` section using `Stage[]` in `src/components/sql/<topic>/`, registered in `src/components/sql/animation-registry.ts`.
+
+**Practice (inline SQL sandbox, not a link to the playground):**
+1. Add the lesson's small tables to `DDL`, the seed statements, the `tables` info and `SCHEMA_HINT` in `src/components/sql-playground/db/dataset.ts` (Cycle Depot already has `orders` and `employees`, so use new names such as `customer_orders` and `staff_salaries`) and update the dataset stats in `src/components/sql-playground/db/datasets/index.ts`.
+2. Add a challenge to `src/components/sql-playground/challenges/definitions.ts` (`group: "windows"` for window lessons) with `starterSql`, three `hints`, `solutionSql`, a hand-indented `solutionDisplay`, and a `result-set` validator. Add a matching entry to `src/components/sql-playground/content/practice.ts`.
+3. In the lesson use `{ kind: "sql-practice", challengeId, title, prompt, playgroundHref }`. It runs in `src/components/sql/sandbox/` (isolated worker, read-only transaction, 5 second timeout) and the query check in `challenges/query-policy.ts` blocks writes. Reveal solution stays locked until the learner runs a query once. Do not weaken these.
+
+**Quiz:** 4 questions, include a row-count or output-shape question, a pick-the-right-approach question, a pick-the-correct-query question, and the main pitfall. Give each a unique `id` prefixed with the lesson slug and an `explanation`.
+
+**After writing a lesson:** run `npx tsc --noEmit -p .` and `npm run rivet:lessons`, open the lesson in the dev server, run the practice with a correct and a wrong query, and check dark mode. Then complete the registration checklist in section 4 (roadmap, track index, content registry, SectionRenderer).

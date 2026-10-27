@@ -1,5 +1,6 @@
 import { DUTCH_FLAG_PROBLEMS } from "@/components/dsa/two-pointers/dutch-flag/problems";
 import { FAST_SLOW_PROBLEMS } from "@/components/dsa/two-pointers/fast-slow/problems";
+import { HASH_MEMBERSHIP_PROBLEMS } from "@/components/dsa/hashing/membership/problems";
 import { THREE_SUM_PROBLEMS } from "@/components/dsa/two-pointers/three-sum/problems";
 import { OPPOSITE_ENDS_PROBLEMS } from "@/components/dsa/two-pointers/opposite-ends/problems";
 
@@ -19,5 +20,6 @@ export const PROBLEM_SETS: Record<string, ProblemSet> = {
   "opposite-ends": { problems: OPPOSITE_ENDS_PROBLEMS, stageMinHeight: "20.5rem" },
   "fast-slow": { problems: FAST_SLOW_PROBLEMS, stageMinHeight: "13rem" },
   "dutch-flag": { problems: DUTCH_FLAG_PROBLEMS, stageMinHeight: "15rem" },
+  "hash-membership": { problems: HASH_MEMBERSHIP_PROBLEMS, stageMinHeight: "17rem" },
   "three-sum": { problems: THREE_SUM_PROBLEMS, stageMinHeight: "20rem" },
 };

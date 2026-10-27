@@ -206,6 +206,7 @@ Databases are **cylinders** (one grouped component; the body keeps the component
 - `convertToExcalidrawElements` regenerates ids by default. Pass `{ regenerateIds: false }` whenever you group parts or position labels by id.
 - Arrows are not always attached and labels are not always bound (learners type loose text, draw arrows by hand). `graph.ts` therefore also accepts loose text on or near a shape and arrows that merely start and end on or near shapes. Keep that behaviour; test it with the node script described in section 8.
 - Excalidraw's Library panel is a flat grid and cannot show group headings, so the grouped palette is ours and Excalidraw's own Library button is hidden. Do not add community libraries: learners must build from our named components so boards can be graded reliably.
+- **Nothing on a lesson page may take focus or scroll on load.** `autoFocus` on a button inside the board made the lesson open scrolled 22,000px down to the whiteboard. The tip popup now opens only when the canvas scrolls into view (an `IntersectionObserver` on the canvas area, not the whole card) and focuses its button with `focus({ preventScroll: true })`. Check that a lesson opened from the sidebar starts at `scrollY` 0.
 - A first-visit tip popup (key `sb-diagram-tip:v1`, reopened by "How it works") asks learners to use the components. Keep its wording free of promises the checker does not keep: hand-drawn shapes can still pass, but only clearly named components are reliably recognised.
 
 ## 6. Key takeaways

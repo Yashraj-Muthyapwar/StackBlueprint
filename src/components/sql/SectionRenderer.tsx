@@ -1,9 +1,22 @@
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info, Brain, Play } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
+import { TwoRoomsVisual } from "@/components/sql/window-functions/TwoRoomsVisual";
+import { CalculatorWindowVisual } from "@/components/sql/window-functions/CalculatorWindowVisual";
+import { OrderSlipsVisual } from "@/components/sql/window-functions/OrderSlipsVisual";
+import { ExecutionOrderVisual } from "@/components/sql/window-functions/ExecutionOrderVisual";
+import { FrameSelector } from "@/components/sql/window-functions/FrameSelector";
+import { ScoreboardVisual } from "@/components/sql/window-functions/ScoreboardVisual";
+import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
+import { lazy, Suspense } from "react";
+import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { Quiz } from "@/components/lesson/Quiz";
 import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
+
+const InlineSqlPractice = lazy(() => import("@/components/sql/InlineSqlPractice"));
+const FinalAssessment = lazy(() => import("@/components/sql/assessment/FinalAssessment"));
+const WindowCheatsheet = lazy(() => import("@/components/sql/cheatsheet/WindowCheatsheet"));
 
 function parseInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
@@ -36,7 +49,7 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-function highlightSql(line: string) {
+export function highlightSql(line: string) {
   const KEYWORDS = new Set([
     "SELECT",
     "FROM",
@@ -193,6 +206,27 @@ function highlightSql(line: string) {
     "PRIVILEGES",
     "PUBLIC",
     "ROLE",
+    "OVER",
+    "PARTITION",
+    "WINDOW",
+    "ROWS",
+    "RANGE",
+    "GROUPS",
+    "UNBOUNDED",
+    "PRECEDING",
+    "FOLLOWING",
+    "CURRENT",
+    "ROW",
+    "SUM",
+    "COUNT",
+    "AVG",
+    "MIN",
+    "MAX",
+    "ROW_NUMBER",
+    "RANK",
+    "DENSE_RANK",
+    "LAG",
+    "LEAD",
   ]);
   const nodes: React.ReactNode[] = [];
   let i = 0;
@@ -270,6 +304,52 @@ export function SectionRenderer({
               {parseInlineMarkdown(p)}
             </p>
           ))}
+        </section>
+      );
+
+    case "cheatsheet":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <WindowCheatsheet />
+          </Suspense>
+        </ClientOnly>
+      );
+
+    case "assessment":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <FinalAssessment />
+          </Suspense>
+        </ClientOnly>
+      );
+
+    case "sql-practice":
+      return (
+        <ClientOnly fallback={<div className="h-64 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <InlineSqlPractice
+              challengeId={section.challengeId}
+              title={section.title}
+              prompt={section.prompt}
+              playgroundHref={section.playgroundHref}
+            />
+          </Suspense>
+        </ClientOnly>
+      );
+
+    case "list":
+      return (
+        <section className="space-y-3">
+          {section.heading ? (
+            <h3 className="text-base font-semibold tracking-tight text-foreground">{section.heading}</h3>
+          ) : null}
+          <ul className="lesson-prose list-disc space-y-2 pl-6 text-muted-foreground marker:text-mint">
+            {section.items.map((item, i) => (
+              <li key={i}>{parseInlineMarkdown(item)}</li>
+            ))}
+          </ul>
         </section>
       );
 
@@ -418,6 +498,24 @@ export function SectionRenderer({
 
     case "image-carousel":
       return <ImageCarousel images={section.images} />;
+
+    case "visual":
+      switch (section.id) {
+        case "window-calculator":
+          return <CalculatorWindowVisual caption={section.caption} />;
+        case "window-order-slips":
+          return <OrderSlipsVisual caption={section.caption} />;
+        case "window-execution-order":
+          return <ExecutionOrderVisual caption={section.caption} />;
+        case "window-frame-selector":
+          return <FrameSelector caption={section.caption} />;
+        case "window-scoreboard":
+          return <ScoreboardVisual caption={section.caption} />;
+        case "window-partition-explorer":
+          return <PartitionExplorer caption={section.caption} />;
+        default:
+          return <TwoRoomsVisual caption={section.caption} />;
+      }
 
     case "animation":
       return <LessonAnimation variant={section.variant as any} caption={section.caption} />;
