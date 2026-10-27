@@ -173,6 +173,8 @@ export const AVAILABLE_LESSONS: readonly string[] = [
   "sql/what-is-a-dbms",
   "sql/what-is-database",
   "sql/where",
+  "sql/window-foundations-cheatsheet",
+  "sql/window-foundations-quiz",
   "sql/writing-efficient-where-predicates",
   "sql/your-first-query",
   "strings/string-operations",
