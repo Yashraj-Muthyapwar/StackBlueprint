@@ -61,6 +61,10 @@ import { olistDateSpinesStages } from "./datetime-functions/date-spines-gap-fill
 import { shopflowInnerJoinStages } from "./querying/inner-joins-conditions.tsx";
 import { shopflowOuterJoinStages } from "./querying/outer-joins-null.tsx";
 import { shopflowCrossSelfJoinStages } from "./querying/cross-self-joins.tsx";
+import { logicalExecutionOrderStages } from "./window-functions/logical-execution-order";
+import { defaultFramesPeersStages } from "./window-functions/default-frames-peers";
+import { peersTiesStages } from "./window-functions/peers-ties";
+import { orderByRunningTotalStages } from "./window-functions/order-by-in-over";
 import { partitionByStages } from "./window-functions/partition-by";
 import { overWindowConceptStages } from "./window-functions/over-window-concept";
 import { groupByVsWindowStages } from "./window-functions/group-by-vs-window";
@@ -142,6 +146,10 @@ export const STAGES_REGISTRY = {
   "q-window-group-by-vs-window": groupByVsWindowStages,
   "q-window-over-concept": overWindowConceptStages,
   "q-window-partition-by": partitionByStages,
+  "q-window-order-by-running-total": orderByRunningTotalStages,
+  "q-window-peers-ties": peersTiesStages,
+  "q-window-default-frames-peers": defaultFramesPeersStages,
+  "q-window-execution-order-cte": logicalExecutionOrderStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

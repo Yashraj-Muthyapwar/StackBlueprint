@@ -20,6 +20,10 @@ export type ChallengeDefinition = {
   solutionSql: Partial<Record<ChallengeEngine, string>>;
   /** Constructs the exercise forbids. Tested against the query with comments and quoted text removed. */
   forbiddenSql?: { pattern: string; message: string }[];
+  /** Constructs the exercise requires. Each pattern must match the query with comments and quoted text removed. */
+  requiredSql?: { pattern: string; message: string }[];
+  /** The query must end with its own ORDER BY outside any parentheses, so the display order is guaranteed. */
+  requiresOuterOrderBy?: boolean;
   /** Hand-indented version of the solution, shown when revealed. Falls back to a formatted solutionSql. */
   solutionDisplay?: string;
   validator: ResultValidator;

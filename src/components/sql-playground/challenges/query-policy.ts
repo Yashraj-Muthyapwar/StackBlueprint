@@ -148,3 +148,34 @@ export function findForbiddenConstruct(
   }
   return null;
 }
+
+/** True when the query has an ORDER BY outside every pair of parentheses. */
+export function hasOuterOrderBy(sql: string): boolean {
+  const cleaned = stripQuotedText(sql).toLowerCase();
+  let depth = 0;
+  for (let i = 0; i < cleaned.length; i++) {
+    const ch = cleaned[i];
+    if (ch === "(") depth++;
+    else if (ch === ")") depth = Math.max(0, depth - 1);
+    else if (depth === 0 && /^order\s+by\b/.test(cleaned.slice(i)) && !/[a-z0-9_]/.test(cleaned[i - 1] ?? " ")) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Returns the message of the first required construct the query lacks, or null
+ * when every required pattern matches. Comments and quoted text are ignored.
+ */
+export function findMissingRequirement(
+  sql: string,
+  required: { pattern: string; message: string }[] | undefined,
+): string | null {
+  if (!required?.length) return null;
+  const cleaned = stripQuotedText(sql);
+  for (const rule of required) {
+    if (!new RegExp(rule.pattern, "i").test(cleaned)) return rule.message;
+  }
+  return null;
+}

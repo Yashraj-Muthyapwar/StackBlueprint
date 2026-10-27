@@ -109,6 +109,8 @@ Keep the layout still while stepping. The intuition visuals reserve the tallest 
    - `solutionSql` for `postgres` and `duckdb`,
    - a hand-indented `solutionDisplay`,
    - `forbiddenSql` when the exercise bans constructs (for example "Do not use GROUP BY, PARTITION BY, or a subquery"): a list of `{ pattern, message }` regexes tested with comments and quotes removed; a match shows the message instead of running the query,
+   - `requiredSql` (a list of `{ pattern, message }` regexes the query must match) when the result alone cannot prove the learner used the taught construct, for example an explicit `ROWS` frame where the data has no ties,
+   - `requiresOuterOrderBy: true` when the lesson teaches that only the outer `ORDER BY` guarantees display order (the query must then contain its own top-level `ORDER BY`),
    - a `result-set` `validator` (`requiredColumns`, `columnOrder: "exact"`, `rowOrder: "any"` unless order is the point),
    - `success` copy.
    Add a matching entry in `src/components/sql-playground/content/practice.ts`.
@@ -152,3 +154,7 @@ Give each question a unique `id` prefixed with the lesson slug (`<slug>-row-coun
 ## Step 8: Report
 
 Say what was formatted, which files changed (so the user can push them), what was verified and what was not. Name any assumption instead of presenting it as fact. Do not claim a check you did not run.
+
+## Module quiz and cheatsheet
+
+A module's `...-quiz` and `...-cheatsheet` lessons are not teaching lessons. Do not build them with this template. Use `.agents/skills/sql-module-quiz/SKILL.md` and `.agents/skills/sql-module-cheatsheet/SKILL.md`.

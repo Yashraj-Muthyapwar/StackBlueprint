@@ -450,6 +450,55 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Do not use GROUP BY, a CTE, or a subquery.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-employee-running-total": {
+    id: "cycledepot-employee-running-total",
+    title: "Show a running total of sales for each employee",
+    prompt:
+      "Write a query on employee_sales that returns employee_id, sale_id, sale_date, amount, running_total. Calculate a running total separately for each employee, following chronological order using sale_date. Display employees in ascending order, then their sales by date. Preserve all five sales. Do not use GROUP BY, CTEs, or subqueries.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-employee-running-total",
+    starterSql: `-- Show a running total of sales for each employee.
+-- Table: employee_sales (sale_id, employee_id, sale_date, amount)
+-- Return employee_id, sale_id, sale_date, amount, and running_total.
+-- Restart the running total for each employee, in order of sale_date.
+-- Display employees in ascending order, then their sales by date.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-ties-running-total": {
+    id: "cycledepot-ties-running-total",
+    title: "Build a deterministic running total for tied sales",
+    prompt:
+      "Write a query on daily_sales that produces a deterministic row-by-row running total. Return sale_id, sale_date, amount, running_total. Use SUM(amount) OVER (...), order the calculation by date with sale_id as the tie-breaker, specify an explicit ROWS frame, and display the result by sale_date then sale_id. Do not use a CTE or subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-ties-running-total",
+    starterSql: `-- Build a deterministic, row-by-row running total for the four sales.
+-- Table: daily_sales (sale_id, sale_date, amount)
+-- Return sale_id, sale_date, amount, and running_total.
+-- Use SUM(amount) OVER (...), ordered by sale_date with sale_id as the tie-breaker.
+-- Specify an explicit ROWS frame.
+-- Display the final result by sale_date, then sale_id.
+-- Do not use a CTE or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-above-average-sales": {
+    id: "cycledepot-above-average-sales",
+    title: "Find sales above the overall average",
+    prompt:
+      "Write a PostgreSQL query on sales_amounts returning sale_id, employee_id, amount, average_amount. Calculate the average using AVG(amount) OVER (), keep only sales whose amount is strictly greater than that average, use a CTE, sort the final output by sale_id, and do not use GROUP BY.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-above-average-sales",
+    starterSql: `-- Find the sales whose amount is above the average of all five sales.
+-- Table: sales_amounts (sale_id, employee_id, amount)
+-- Return sale_id, employee_id, amount, and average_amount.
+-- Calculate average_amount with AVG(amount) OVER () and keep amount > average_amount.
+-- Use a CTE and sort the final output by sale_id.
+-- Do not use GROUP BY.
+-- Write your query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",

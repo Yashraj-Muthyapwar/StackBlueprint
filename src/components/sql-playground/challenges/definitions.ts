@@ -2538,6 +2538,304 @@ FROM department_salaries;`,
       nextConcept: "ORDER BY inside OVER()",
     },
   },
+  {
+    id: "cycle-depot-employee-running-total",
+    version: 1,
+    title: "Show a running total of sales for each employee",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every sale with a running total that restarts for each employee.",
+    requirements: [
+      "Use the employee_sales table.",
+      "Return exactly employee_id, sale_id, sale_date, amount, and running_total.",
+      "Calculate running_total separately for each employee, in chronological order of sale_date.",
+      "Display employees in ascending order, then their sales by date.",
+      "Keep all 5 sales.",
+      "Do not use GROUP BY, a CTE, or a subquery.",
+    ],
+    requiredTables: ["employee_sales"],
+    starterSql: `-- Show a running total of sales for each employee.
+-- Table: employee_sales (sale_id, employee_id, sale_date, amount)
+-- Return employee_id, sale_id, sale_date, amount, and running_total.
+-- Restart the running total for each employee, in order of sale_date.
+-- Display employees in ascending order, then their sales by date.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the columns in the order listed, then add SUM(amount) OVER (...) as running_total.",
+      "Inside OVER, put PARTITION BY employee_id first and ORDER BY sale_date after it.",
+      "The window ORDER BY does not sort the final output. Add an outer ORDER BY employee_id, sale_date after FROM.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the sales." },
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let the window function do the work." },
+    ],
+    requiresOuterOrderBy: true,
+    solutionDisplay: `SELECT
+    employee_id,
+    sale_id,
+    sale_date,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY employee_id
+        ORDER BY sale_date
+    ) AS running_total
+FROM employee_sales
+ORDER BY employee_id, sale_date;`,
+    solutionSql: {
+      postgres: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+      duckdb: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+        duckdb: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+      },
+      requiredColumns: ["employee_id", "sale_id", "sale_date", "amount", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Running total complete",
+      body: "Correct. The window ORDER BY built the running total for each employee, and the outer ORDER BY set the display order.",
+      nextConcept: "Default window frames and peers",
+    },
+  },
+  {
+    id: "cycle-depot-ties-running-total",
+    version: 1,
+    title: "Build a deterministic running total for tied sales",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Produce a row-by-row running total for four sales where two share a date.",
+    requirements: [
+      "Use the daily_sales table.",
+      "Return exactly sale_id, sale_date, amount, and running_total.",
+      "Use SUM(amount) OVER (...).",
+      "Order the calculation by sale_date and use sale_id as the tie-breaker.",
+      "Specify an explicit ROWS frame.",
+      "Display the final result by sale_date, then sale_id.",
+      "Do not use a CTE or a subquery.",
+    ],
+    requiredTables: ["daily_sales"],
+    starterSql: `-- Build a deterministic, row-by-row running total for the four sales.
+-- Table: daily_sales (sale_id, sale_date, amount)
+-- Return sale_id, sale_date, amount, and running_total.
+-- Use SUM(amount) OVER (...), ordered by sale_date with sale_id as the tie-breaker.
+-- Specify an explicit ROWS frame.
+-- Display the final result by sale_date, then sale_id.
+-- Do not use a CTE or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the columns in the order listed, then add SUM(amount) OVER (...) as running_total.",
+      "Inside OVER, write ORDER BY sale_date, sale_id and then an explicit ROWS frame that runs from UNBOUNDED PRECEDING to CURRENT ROW.",
+      "Add an outer ORDER BY sale_date, sale_id after FROM to control the final display order.",
+    ],
+    requiredSql: [
+      { pattern: "\\bsum\\s*\\(\\s*amount\\s*\\)\\s*over\\b", message: "Use SUM(amount) OVER (...) to calculate running_total." },
+      { pattern: "\\bover\\s*\\([^)]*order\\s+by\\s+sale_date\\s*,\\s*sale_id", message: "Order the calculation inside OVER by sale_date, with sale_id as the tie-breaker." },
+      { pattern: "\\brows\\b", message: "Specify an explicit ROWS frame inside OVER." },
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let the window function do the work." },
+    ],
+    solutionDisplay: `SELECT
+    sale_id,
+    sale_date,
+    amount,
+    SUM(amount) OVER (
+        ORDER BY sale_date, sale_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+                 AND CURRENT ROW
+    ) AS running_total
+FROM daily_sales
+ORDER BY sale_date, sale_id;`,
+    solutionSql: {
+      postgres: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+      duckdb: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+        duckdb: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+      },
+      requiredColumns: ["sale_id", "sale_date", "amount", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Deterministic running total complete",
+      body: "Correct. The sale_id tie-breaker and the explicit ROWS frame made the two tied sales accumulate one row at a time: 100, 300, 600, 650.",
+      nextConcept: "SQL logical execution order",
+    },
+  },
+  {
+    id: "cycle-depot-above-average-sales",
+    version: 1,
+    title: "Find sales above the overall average",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Filter on a window function result by calculating it in a CTE first.",
+    requirements: [
+      "Use the sales_amounts table.",
+      "Return exactly sale_id, employee_id, amount, and average_amount.",
+      "Calculate the average using AVG(amount) OVER ().",
+      "Keep only sales whose amount is strictly greater than that average.",
+      "Use a CTE.",
+      "Sort the final output by sale_id.",
+      "Do not use GROUP BY.",
+    ],
+    requiredTables: ["sales_amounts"],
+    starterSql: `-- Find the sales whose amount is above the average of all five sales.
+-- Table: sales_amounts (sale_id, employee_id, amount)
+-- Return sale_id, employee_id, amount, and average_amount.
+-- Calculate average_amount with AVG(amount) OVER () and keep amount > average_amount.
+-- Use a CTE and sort the final output by sale_id.
+-- Do not use GROUP BY.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Inside the CTE, select the three columns and add AVG(amount) OVER () AS average_amount.",
+      "In the outer query, select FROM your CTE and use WHERE amount > average_amount. A window result can be filtered one query level up.",
+      "Finish the outer query with ORDER BY sale_id.",
+    ],
+    requiredSql: [
+      { pattern: "^\\s*with\\b", message: "Start with a CTE: WITH name AS (...) SELECT ..." },
+      { pattern: "\\bavg\\s*\\(\\s*amount\\s*\\)\\s*over\\s*\\(\\s*\\)", message: "Calculate the average with AVG(amount) OVER ()." },
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. The window function keeps every sale row." },
+    ],
+    solutionDisplay: `WITH sale_stats AS (
+    SELECT
+        sale_id,
+        employee_id,
+        amount,
+        AVG(amount) OVER () AS average_amount
+    FROM sales_amounts
+)
+SELECT
+    sale_id,
+    employee_id,
+    amount,
+    average_amount
+FROM sale_stats
+WHERE amount > average_amount
+ORDER BY sale_id;`,
+    solutionSql: {
+      postgres: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+      duckdb: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+        duckdb: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+      },
+      requiredColumns: ["sale_id", "employee_id", "amount", "average_amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Window result filtered",
+      body: "Correct. The CTE calculated the window average first, and the outer query filtered on it as an ordinary column. Only sales 4 and 5 are above 300.",
+      nextConcept: "Window Function Foundations: Final Quiz",
+    },
+  },
+  {
+    id: "cycle-depot-window-foundations-final",
+    version: 1,
+    title: "Transaction analytics report",
+    group: "windows",
+    difficulty: "advanced",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return the above-average transactions of each account with a deterministic running total calculated before the filter.",
+    requirements: [
+      "Use the transactions table.",
+      "Return exactly txn_id, account_id, txn_date, amount, account_avg, and running_total.",
+      "Use AVG(amount) OVER (PARTITION BY account_id) for the account average.",
+      "Use SUM(amount) OVER (...) for a separate running total per account, ordered by txn_date, txn_id, with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+      "Use a CTE to calculate the window results, then apply WHERE amount > account_avg in the outer query.",
+      "Display the final rows by account_id, txn_date, then txn_id.",
+      "Calculate the running total across all transactions of each account, before filtering.",
+      "Do not use a correlated subquery or GROUP BY.",
+    ],
+    requiredTables: ["transactions"],
+    starterSql: `-- Transaction analytics report.
+-- Table: transactions (txn_id, account_id, txn_date, amount)
+-- Return txn_id, account_id, txn_date, amount, account_avg, running_total.
+-- Keep only transactions above their account's average amount.
+-- Calculate the running total across all of the account's transactions first.
+-- Use a CTE. Do not use a correlated subquery or GROUP BY.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Calculate account_avg and running_total together inside a CTE, over all of each account's transactions.",
+      "Give the running total PARTITION BY account_id, ORDER BY txn_date, txn_id and an explicit ROWS frame.",
+      "In the outer query, filter with WHERE amount > account_avg and add ORDER BY account_id, txn_date, txn_id.",
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Window functions keep every transaction row." },
+      { pattern: "(?<!\\bas\\s*)\\(\\s*select\\b", message: "Use a CTE, not a correlated or inline subquery." },
+    ],
+    solutionDisplay: `WITH account_stats AS (
+    SELECT
+        txn_id,
+        account_id,
+        txn_date,
+        amount,
+        AVG(amount) OVER (
+            PARTITION BY account_id
+        ) AS account_avg,
+        SUM(amount) OVER (
+            PARTITION BY account_id
+            ORDER BY txn_date, txn_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+                     AND CURRENT ROW
+        ) AS running_total
+    FROM transactions
+)
+SELECT
+    txn_id,
+    account_id,
+    txn_date,
+    amount,
+    account_avg,
+    running_total
+FROM account_stats
+WHERE amount > account_avg
+ORDER BY account_id, txn_date, txn_id;`,
+    solutionSql: {
+      postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+        duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      },
+      requiredColumns: ["txn_id", "account_id", "txn_date", "amount", "account_avg", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Transaction report complete",
+      body: "Correct. The CTE calculated the account average and the deterministic running total over every transaction, and the outer query filtered afterwards.",
+    },
+  },
 ];
 
 export function getChallenges(
