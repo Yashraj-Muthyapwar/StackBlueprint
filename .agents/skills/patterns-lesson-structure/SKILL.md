@@ -80,6 +80,8 @@ src/
 References: `src/components/dsa/two-pointers/three-sum/` (`TripletStage.tsx`, `triplet-step.ts`, `problems.tsx`, `ThreeSumIntuition.tsx`: a fixed pointer plus left and right, a 30-line listing, a single problem), `src/components/dsa/two-pointers/opposite-ends/` (`ArrayStage.tsx`, `array-step.ts`, `problems.tsx`, `OppositeEndsIntuition.tsx`) `src/components/dsa/two-pointers/fast-slow/` (`ScanStage.tsx`, `scan-step.ts`, `problems.tsx`, `FastSlowIntuition.tsx`) and `src/components/dsa/two-pointers/dutch-flag/` (`FlagStage.tsx`, `flag-step.ts`, `problems.tsx`, `DutchFlagIntuition.tsx`, three pointers and one builder shared by two problems).
 
 Header rules, so every lesson header looks the same:
+- **No numbering wording.** Never write "Module 1", "Lesson 1.2" or "Module 2 Mastered" badges, even when the supplied text has them. Refer to "the previous lesson" or to a lesson by name, and drop progress badges.
+- **Optional opening paragraph.** When the supplied text opens with a short "what is X" or recap paragraph before stage 1, keep it as a `prose` section with no `eyebrow` and no heading, so it sits under the subtitle and the numbered stages still start at 01.
 - **Title:** `Pattern Name: Lesson Name`, matching the other lessons in the pattern (for example `Two Pointers: Opposite Ends`, `Two Pointers: Same Direction (Slow & Fast)`).
 - **Subtitle:** one plain sentence of at most about 95 characters, with no colon, so it stays on one line on desktop. The header balances wrapped text, so a longer subtitle breaks into two short lines and looks unfinished.
 
@@ -99,6 +101,8 @@ Only stage-opening sections get an eyebrow. Follow-up prose inside a stage has n
 3. **A short explanation below the code.** A `list` introduced by one sentence ("There are three important operations:", "Notice three things:", "This is the core decision structure."), followed by a `callout` (`tone: "info"`) **when the supplied text contains a rule, caveat or stopping condition**. If the text has none (3-Sum ends with a list of three details), do not invent one: the list alone is the explanation. Keep it to a few lines. Use the supplied wording; split paragraphs into list items (and a callout when there is a rule) instead of leaving them as plain prose.
 
 A stage that jumps straight from the heading to the canvas, or follows the code with loose paragraphs, is wrong.
+
+**The Example is always a complete implementation on the shared canvas**, for hash and every other pattern too. Do not replace it with a hand-made step-through widget or a "pattern template" code block. Teach the generic template in stage 3, then in stage 4 show a full worked problem (for example Contains Duplicate) that is **different from the practice problem**, and say so in the lead-in. The learner is tested on the other problem in the quiz.
 
 | Stage | Eyebrow | Purpose | Typical sections |
 |---|---|---|---|
@@ -126,6 +130,10 @@ A lesson that teaches a way of thinking instead of an algorithm (the Two Pointer
 - opens with a `callout` (`tone: "violet"`) saying it is not a pattern, and never calls it one in copy;
 - has no `pattern-canvas` or `pattern-example`; the Example stage is a `table` that connects the idea to the other lessons;
 - still ends with a quiz whose last question is a coding challenge, written as a pure function (for example `check_invariant`) that the hidden grader compares with a reference on fixed and generated inputs.
+
+### 2.2 Lessons outside Two Pointers
+
+The same structure applies to every pattern (hashing lessons live in `src/lessons/hash-map/` and `src/components/dsa/hashing/<module>/`). A lesson that only compares or explains data structures (set vs dict, collisions) may use lesson-owned interactive scenes in place of the canvas, but still needs the six stages, the opening paragraph rules, takeaways and a quiz with a coding challenge. Registration needs **two** edits in `src/lessons/roadmap.ts`: the lesson in the module's entry in `patterns`, **and** the module slug in the right `dsaSections` group, otherwise the module is missing from the sidebar and the roadmap.
 
 ## 3. The shared UI kit (`src/components/dsa/shared/`)
 
@@ -259,6 +267,10 @@ The canvas must keep **one size** for every step and problem, and it must also b
 - Use `motion` `layout` / `layoutId` for movement and CSS transitions for colour and size. Do **not** use `AnimatePresence mode="wait"` for content that changes every step: the exit can stall and leave stale content. Key the element and use an enter animation instead.
 - Use `overflow-clip` instead of `overflow-hidden` on cards with focusable controls.
 
+### 3.5 Emphasis
+
+Supplied text usually bolds its key terms. Keep them: use `**bold**` in `prose`, `list`, `table` cells and `callout` bodies (all of them render it), for key terms, the rule of a callout, and the first column of a table. In custom components, split on `**` yourself. Do not bold whole sentences.
+
 ## 4. Stepper (stage 3)
 
 ```ts
@@ -282,6 +294,8 @@ The canvas must keep **one size** for every step and problem, and it must also b
 Several pointers can share a cell (for example `low`, `mid` and `high` all at index 0): they stack above one arrow, and the cell takes the colour of the most specific role (`accent`, then `mid`, `left`, `right`). In a stage, reserve room for the tallest stack of pointer labels so the cells never move.
 
 ## 5. Exercises (stage 6)
+
+**The Practice stage never contains the coding challenge.** No problem statement, function signature, examples table or "where to write the code" callout. Stage 6 is a short bold lead-in such as "**Do not run any code yet.**", an optional scenario `code` block, and `pattern-exercises` that trace the pattern by hand and reason about it (complexity, why the order of operations matters, an interview question as a `choice`). The graded coding challenge lives **only in the quiz**. If the supplied text puts the coding problem in Practice, move it to the quiz and mention that in the summary.
 
 Start with "trace it first" exercises that need no code. Three types: `fields` (labelled answers), `cells` (one answer per index) and `choice` (pick one option). Each card is labelled "Exercise N" unless you set `label` (for example `"Question A"` when the supplied content letters its questions).
 
@@ -322,6 +336,8 @@ Start with "trace it first" exercises that need no code. Three types: `fields` (
 }
 ```
 
+`cells` exercises can take `cellLabels` (for example `["key 23", "key 15"]`) and `brackets: false` so each box says what it belongs to instead of `[0]`, `[1]`. Use them whenever the boxes are not array indices: a learner who sees `[0]` to `[4]` for five keys will think there are only five locations. State the full range in the prompt (for example "locations 0 to 9").
+
 Numbers are compared by value; text answers are trimmed and compared case-insensitively. A wrong check shows "N of M correct." (or "Not quite." for `choice`) followed by your `hint`, so write the hint as the next thing to think about, not the answer.
 
 ## 6. Quiz and completion criteria
@@ -333,6 +349,9 @@ Numbers are compared by value; text answers are trimmed and compared case-insens
 - With three multiple-choice questions plus the challenge there are four questions, so the bar is 75% and one multiple-choice miss is allowed. Without a challenge a three-question quiz needs every answer right.
 - Options are shuffled at runtime, so never write "A.", "B." or "all of the above".
 - Every question has an `explanation`. Write complexity as `O(n)`, `O(n²)` (no LaTeX).
+
+- A lesson may carry **two coding challenges**: an easier warm-up first (for example `contains_duplicate`) and the main transfer second. Three multiple-choice questions plus two challenges is five questions, so the bar is 80% and both challenges must pass.
+- Non-in-place challenges that must use a hash structure (set, dict) are graded with an **instrumented list**: a `list` subclass that raises on `in`, `index`, `count`, `sort` and slicing, counts every read, and fails above about `2n + 5` reads on a 300-value input. Compare the answer with a reference on fixed edge cases (empty, one value, all repeats) and generated inputs, check the input was not changed, and check the return type (`-1` versus `None`). Do not forbid every list read: a learner may loop over the list once.
 
 ### Pass rule (enforced by the global `Quiz`)
 - Four questions: **75%** to pass. Five or more: **80%**. Three or fewer: 80%.
@@ -372,6 +391,11 @@ Run all of these before you report the lesson done.
 
 The Claude browser pane may be hidden, which freezes `motion` and CSS animations. Verify state through the DOM, and say plainly when animation smoothness was not observed.
 
+## 7.1 Editors and ports
+
+- Every code editor (lesson blocks and quiz challenges) uses `src/components/lesson/python-editor-extensions.ts`: four-space indents, Tab indents, and Enter keeps the current indentation and adds a level after a colon. Do not replace the editor extensions in a lesson. Type into a challenge editor once (`def f(a):`, Enter, a line, Enter) and check the second line keeps its four spaces.
+- The dev server port can change between sessions (8080, 8081). Check with `lsof -iTCP -sTCP:LISTEN -P | grep node` before assuming; a failed navigation is not a failed page.
+
 ## 8. Do not
 
 - Do not fork `PatternCanvas`, `PatternExample`, `PatternStepper`, `PatternExercises` or `Quiz` into a lesson; extend the shared component instead.
@@ -379,6 +403,9 @@ The Claude browser pane may be hidden, which freezes `motion` and CSS animations
 - Do not edit `HeroInteractiveDemo.tsx` for a lesson.
 - Do not add a static code block that duplicates the canvas listing.
 - Do not leave old canvases, view types, Step fields or helper files behind after a revamp.
+- Do not put the coding problem statement, signature or examples in the Practice stage; it lives only in the quiz.
+- Do not replace the Example's canvas and implementation with a custom step-through widget or a template snippet.
+- Do not write "Module N" or "Lesson N.N" in titles, subtitles or prose.
 - Do not ship a quiz without a coding challenge, an Example stage without its description line and explanation below the code, or a canvas taller than the budget in section 3.3.
 - Do not change the global sidebar, Rivet or quiz behaviour for one lesson without asking.
 

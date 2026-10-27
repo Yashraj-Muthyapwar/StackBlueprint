@@ -154,3 +154,7 @@ Give each question a unique `id` prefixed with the lesson slug (`<slug>-row-coun
 ## Step 8: Report
 
 Say what was formatted, which files changed (so the user can push them), what was verified and what was not. Name any assumption instead of presenting it as fact. Do not claim a check you did not run.
+
+## Module quiz and cheatsheet
+
+A module's `...-quiz` and `...-cheatsheet` lessons are not teaching lessons. Do not build them with this template. Use `.agents/skills/sql-module-quiz/SKILL.md` and `.agents/skills/sql-module-cheatsheet/SKILL.md`.
