@@ -20,6 +20,8 @@ import type { AnyVariant } from "@/components/sql/animation-registry";
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
   | { kind: "sql-practice"; challengeId: string; title: string; prompt: string; playgroundHref?: string }
+  | { kind: "assessment"; assessmentId: "window-foundations" }
+  | { kind: "cheatsheet"; cheatsheetId: "window-foundations" }
   | { kind: "list"; heading?: string; items: string[] }
   | { kind: "code"; language: "sql" | "text"; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: string[][] }
