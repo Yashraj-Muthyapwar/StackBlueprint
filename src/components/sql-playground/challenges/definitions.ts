@@ -2753,6 +2753,89 @@ ORDER BY sale_id;`,
       nextConcept: "Window Function Foundations: Final Quiz",
     },
   },
+  {
+    id: "cycle-depot-window-foundations-final",
+    version: 1,
+    title: "Transaction analytics report",
+    group: "windows",
+    difficulty: "advanced",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return the above-average transactions of each account with a deterministic running total calculated before the filter.",
+    requirements: [
+      "Use the transactions table.",
+      "Return exactly txn_id, account_id, txn_date, amount, account_avg, and running_total.",
+      "Use AVG(amount) OVER (PARTITION BY account_id) for the account average.",
+      "Use SUM(amount) OVER (...) for a separate running total per account, ordered by txn_date, txn_id, with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+      "Use a CTE to calculate the window results, then apply WHERE amount > account_avg in the outer query.",
+      "Display the final rows by account_id, txn_date, then txn_id.",
+      "Calculate the running total across all transactions of each account, before filtering.",
+      "Do not use a correlated subquery or GROUP BY.",
+    ],
+    requiredTables: ["transactions"],
+    starterSql: `-- Transaction analytics report.
+-- Table: transactions (txn_id, account_id, txn_date, amount)
+-- Return txn_id, account_id, txn_date, amount, account_avg, running_total.
+-- Keep only transactions above their account's average amount.
+-- Calculate the running total across all of the account's transactions first.
+-- Use a CTE. Do not use a correlated subquery or GROUP BY.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Calculate account_avg and running_total together inside a CTE, over all of each account's transactions.",
+      "Give the running total PARTITION BY account_id, ORDER BY txn_date, txn_id and an explicit ROWS frame.",
+      "In the outer query, filter with WHERE amount > account_avg and add ORDER BY account_id, txn_date, txn_id.",
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Window functions keep every transaction row." },
+      { pattern: "(?<!\\bas\\s*)\\(\\s*select\\b", message: "Use a CTE, not a correlated or inline subquery." },
+    ],
+    solutionDisplay: `WITH account_stats AS (
+    SELECT
+        txn_id,
+        account_id,
+        txn_date,
+        amount,
+        AVG(amount) OVER (
+            PARTITION BY account_id
+        ) AS account_avg,
+        SUM(amount) OVER (
+            PARTITION BY account_id
+            ORDER BY txn_date, txn_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+                     AND CURRENT ROW
+        ) AS running_total
+    FROM transactions
+)
+SELECT
+    txn_id,
+    account_id,
+    txn_date,
+    amount,
+    account_avg,
+    running_total
+FROM account_stats
+WHERE amount > account_avg
+ORDER BY account_id, txn_date, txn_id;`,
+    solutionSql: {
+      postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+        duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      },
+      requiredColumns: ["txn_id", "account_id", "txn_date", "amount", "account_avg", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Transaction report complete",
+      body: "Correct. The CTE calculated the account average and the deterministic running total over every transaction, and the outer query filtered afterwards.",
+    },
+  },
 ];
 
 export function getChallenges(

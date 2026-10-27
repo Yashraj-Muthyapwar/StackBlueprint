@@ -110,6 +110,13 @@ CREATE TABLE department_salaries (
   salary      INTEGER NOT NULL
 );
 
+CREATE TABLE transactions (
+  txn_id     INTEGER PRIMARY KEY,
+  account_id VARCHAR NOT NULL,
+  txn_date   DATE    NOT NULL,
+  amount     INTEGER NOT NULL
+);
+
 CREATE TABLE sales_amounts (
   sale_id     INTEGER PRIMARY KEY,
   employee_id VARCHAR NOT NULL,
@@ -490,6 +497,14 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["4", q("E2"), "400"],
       ["5", q("E3"), "500"],
     ]),
+    ...insertBatches("transactions", ["txn_id", "account_id", "txn_date", "amount"], [
+      ["1", q("A"), q("2026-04-01"), "100"],
+      ["2", q("A"), q("2026-04-02"), "200"],
+      ["3", q("A"), q("2026-04-02"), "50"],
+      ["4", q("B"), q("2026-04-01"), "300"],
+      ["5", q("B"), q("2026-04-03"), "100"],
+      ["6", q("A"), q("2026-04-04"), "150"],
+    ]),
   ];
 
   const tables: DatasetTableInfo[] = [
@@ -540,6 +555,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       rows: 5,
       blurb: "Five sales by employees E1, E2 and E3. Used by the SQL logical execution order lesson.",
     },
+    {
+      name: "transactions",
+      rows: 6,
+      blurb: "Six bank transactions on accounts A and B. Used by the window function foundations final assessment.",
+    },
   ];
 
   cached = { statements, tables };
@@ -559,6 +579,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   employee_sales: ["sale_id", "employee_id", "sale_date", "amount"],
   daily_sales: ["sale_id", "sale_date", "amount"],
   sales_amounts: ["sale_id", "employee_id", "amount"],
+  transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
 
 export const STARTER_SQL = `-- Cycle Depot. Same data on PostgreSQL and DuckDB.
