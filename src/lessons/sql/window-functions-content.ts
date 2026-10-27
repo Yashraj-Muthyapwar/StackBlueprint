@@ -1633,39 +1633,7 @@ ORDER BY employee_id;`,
     {
       kind: "prose",
       heading: "4. EXAMPLE: Filtering on a window result",
-      body: ["Let's return to the original employees table."],
-    },
-    {
-      kind: "code",
-      language: "sql",
-      caption: "WHERE runs before the window calculation",
-      code: `SELECT
-    employee_id,
-    department,
-    salary,
-    AVG(salary) OVER (
-        PARTITION BY department
-    ) AS department_avg
-FROM employees
-WHERE salary >= 5000
-ORDER BY employee_id;`,
-    },
-    {
-      kind: "table",
-      caption: "Result: 3 rows",
-      headers: ["employee_id", "department", "salary", "department_avg"],
-      rows: [
-        ["1", "IT", "5000", "6000"],
-        ["2", "IT", "6000", "6000"],
-        ["3", "IT", "7000", "6000"],
-      ],
-    },
-    {
-      kind: "prose",
-      body: [
-        "The HR employees are removed before the window calculation. The IT average happens to remain 6000 because all IT employees pass the filter.",
-        "To use a window result in a filter, create a separate query level using a CTE.",
-      ],
+      body: [""],
     },
     {
       kind: "callout",
@@ -1705,7 +1673,7 @@ ORDER BY employee_id;`,
       kind: "list",
       heading: "How the two query levels work",
       items: [
-        "**Inner query, `employee_stats`:** calculate the department average for each employee.",
+        "**Inner query,** `employee_stats`**:** calculate the department average for each employee.",
         "**Outer query:** read the calculated column `department_avg`, then filter employees whose salary is greater.",
       ],
     },
@@ -1858,14 +1826,24 @@ const windowFoundationsQuiz: LessonContent = {
   slug: "window-foundations-quiz",
   title: "Window Function Foundations: Final Quiz",
   subtitle: "Test your knowledge on window function foundations.",
-  sections: [],
+  sections: [
+    {
+      kind: "assessment",
+      assessmentId: "window-foundations",
+    },
+  ],
 };
 
 const windowFoundationsCheatsheet: LessonContent = {
   slug: "window-foundations-cheatsheet",
   title: "Window Function Foundations: Cheatsheet",
-  subtitle: "One-page reference for OVER(), PARTITION BY, ORDER BY, frames, and execution order.",
-  sections: [],
+  subtitle: "One page reference for OVER(), PARTITION BY, ORDER BY, frames, and execution order.",
+  sections: [
+    {
+      kind: "cheatsheet",
+      cheatsheetId: "window-foundations",
+    },
+  ],
 };
 
 // ---------- Multi-Dimensional Aggregations (GROUPING SETS) ----------
