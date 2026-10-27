@@ -15,6 +15,8 @@ import { ZoomableImage } from "@/components/ui/zoomable-image";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 
 const InlineSqlPractice = lazy(() => import("@/components/sql/InlineSqlPractice"));
+const FinalAssessment = lazy(() => import("@/components/sql/assessment/FinalAssessment"));
+const WindowCheatsheet = lazy(() => import("@/components/sql/cheatsheet/WindowCheatsheet"));
 
 function parseInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
@@ -47,7 +49,7 @@ function parseInlineMarkdown(text: string) {
   });
 }
 
-function highlightSql(line: string) {
+export function highlightSql(line: string) {
   const KEYWORDS = new Set([
     "SELECT",
     "FROM",
@@ -303,6 +305,24 @@ export function SectionRenderer({
             </p>
           ))}
         </section>
+      );
+
+    case "cheatsheet":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <WindowCheatsheet />
+          </Suspense>
+        </ClientOnly>
+      );
+
+    case "assessment":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <FinalAssessment />
+          </Suspense>
+        </ClientOnly>
       );
 
     case "sql-practice":
