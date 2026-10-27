@@ -204,7 +204,7 @@ export function LessonLayout({
               )}
 
               {showKeyTakeaways &&
-                !sections?.some((s) => s.kind === "quiz" && s.isFinalQuiz) &&
+                !sections?.some((s) => (s.kind === "quiz" && s.isFinalQuiz) || s.kind === "assessment" || s.kind === "cheatsheet") &&
                 !sections?.some((s) => s.kind === "takeaways" || s.type === "takeaways") && (
                   <div className="mt-16 rounded-xl border border-hairline/60 bg-surface/20 p-8 text-center">
                     <h3 className="text-xl font-medium tracking-tight text-foreground">
@@ -282,8 +282,9 @@ export function LessonLayout({
           // A quiz-only page keeps Rivet hidden until it is submitted. A lesson that teaches first and
           // ends with a final quiz keeps Rivet during the teaching; it hides once the learner starts answering.
           quizPending={Boolean(
-            sections?.some((s) => s.kind === "quiz" && s.isFinalQuiz) &&
-            sections.every((s) => s.kind === "quiz"),
+            (sections?.some((s) => s.kind === "quiz" && s.isFinalQuiz) &&
+              sections.every((s) => s.kind === "quiz")) ||
+              (sections?.length && sections.every((s) => s.kind === "assessment")),
           )}
         />
       )}

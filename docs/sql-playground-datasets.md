@@ -40,7 +40,7 @@ flowchart TD
 
 | Dataset | Rows | Description |
 | --- | --- | --- |
-| **Cycle Depot** | 507 | Small synthetic lab, hand-built for tutorials. |
+| **Cycle Depot** | 535 | Small synthetic lab, hand-built for tutorials. Eleven tables, including `staff_salaries`, `customer_orders`, `department_salaries`, `employee_sales`, `daily_sales` and `sales_amounts`, which the Window Function Foundations lessons use. |
 | **Ergast Formula 1** | 701,439 | Racing stats (1950-2024). Standardized snake_case IDs. |
 | **Marvel Networks** | 207,727 | JSON arrays flattened into mechanical SQL tables. |
 | **Olist** | 1.5M | Real Brazilian e-commerce snapshot (2016-2018). |

@@ -117,13 +117,15 @@ The application strictly separates content (data) from presentation (UI).
 - **`src/lessons/roadmap.ts`**: The central configuration file. It defines every course track, section, pattern, and lesson. It dictates the URL paths, sidebar titles, icons, and descriptions.
 - **Rendering Workflow**: 
   1. `app-sidebar.tsx` maps over `roadmap.ts` to build the navigation.
-  2. When a user clicks a lesson, TanStack router loads a dynamic route (e.g., `src/routes/sql/$lesson.tsx`).
-  3. The route fetches the specific text, quiz data, and component references from `src/lessons/` and renders them using `src/components/sql/` components.
+  2. When a user clicks a lesson, TanStack router loads a dynamic route. SQL lessons use one route folder per module group, for example `src/routes/sql/querying/$topic/$lesson.tsx` and `src/routes/sql/window-functions/$topic/$lesson.tsx`.
+  3. The route fetches the specific text, quiz data, and component references from `src/lessons/` (for example `src/lessons/sql/window-functions-content.ts`) and renders them using `src/components/sql/` components.
+  4. SQL lessons follow the fixed structure in `.agents/skills/sql-lesson-revamp/SKILL.md`: numbered sections, an intuition visual, a step-by-step SQL animation, an inline SQL sandbox practice, takeaways, and a quiz.
 
 ### B. Interactive Playgrounds (WASM)
 Playgrounds bypass the standard lesson structure to provide full-screen, interactive coding environments entirely in the browser.
 - **CodeMirror Integration**: Used heavily for syntax-highlighted SQL and Python editors (`@uiw/react-codemirror`).
 - **WASM Databases**: The SQL playground (`src/components/sql-playground`) spins up local WebAssembly databases (DuckDB-WASM, PGLite, or sql.js) so users can execute real SQL queries against datasets without needing a backend server.
+- **Inline SQL Practice**: lessons can embed a checked exercise (`sql-practice` section). It runs in an isolated Web Worker with its own in-memory PostgreSQL, a read-only transaction and a 5 second timeout. See `docs/sql-playground-query-challenges-feature-note.md`, section 5.
 - **Dataset Generation**: `scripts/datasets/build.mjs` is run via `npm run datasets` to process CSV files into a format the WASM databases can easily ingest on the client side.
 
 ### C. UI Component Architecture (`src/components/`)

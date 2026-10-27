@@ -408,6 +408,97 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name and price for Road Bikes, highest price first, keeping 3 rows.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-customer-order-totals": {
+    id: "cycledepot-customer-order-totals",
+    title: "Show each order beside its customer total",
+    prompt:
+      "Write a PostgreSQL query on customer_orders to return the following columns: order_id, customer_id, amount, customer_total (the total amount spent by that order's customer). Do not use a GROUP BY query that removes individual orders.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-order-totals",
+    starterSql: `-- Show every order beside its customer's total.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and customer_total.
+-- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-order-average-over": {
+    id: "cycledepot-order-average-over",
+    title: "Show each order beside the overall average",
+    prompt:
+      "Write a query that returns order_id, customer_id, amount, and average_order_amount from customer_orders. The new column must show the average amount across all five orders, while keeping every order row. Do not use GROUP BY, PARTITION BY, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-order-average-over",
+    starterSql: `-- Show every order beside the average of all five orders.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and average_order_amount.
+-- Do not use GROUP BY, PARTITION BY, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-department-average-partition": {
+    id: "cycledepot-department-average-partition",
+    title: "Show each employee beside their department average",
+    prompt:
+      "Write a query on department_salaries returning employee_id, department, salary, department_avg. Use AVG() with OVER() and PARTITION BY. Do not use GROUP BY, a CTE, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-department-average-partition",
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-employee-running-total": {
+    id: "cycledepot-employee-running-total",
+    title: "Show a running total of sales for each employee",
+    prompt:
+      "Write a query on employee_sales that returns employee_id, sale_id, sale_date, amount, running_total. Calculate a running total separately for each employee, following chronological order using sale_date. Display employees in ascending order, then their sales by date. Preserve all five sales. Do not use GROUP BY, CTEs, or subqueries.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-employee-running-total",
+    starterSql: `-- Show a running total of sales for each employee.
+-- Table: employee_sales (sale_id, employee_id, sale_date, amount)
+-- Return employee_id, sale_id, sale_date, amount, and running_total.
+-- Restart the running total for each employee, in order of sale_date.
+-- Display employees in ascending order, then their sales by date.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-ties-running-total": {
+    id: "cycledepot-ties-running-total",
+    title: "Build a deterministic running total for tied sales",
+    prompt:
+      "Write a query on daily_sales that produces a deterministic row-by-row running total. Return sale_id, sale_date, amount, running_total. Use SUM(amount) OVER (...), order the calculation by date with sale_id as the tie-breaker, specify an explicit ROWS frame, and display the result by sale_date then sale_id. Do not use a CTE or subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-ties-running-total",
+    starterSql: `-- Build a deterministic, row-by-row running total for the four sales.
+-- Table: daily_sales (sale_id, sale_date, amount)
+-- Return sale_id, sale_date, amount, and running_total.
+-- Use SUM(amount) OVER (...), ordered by sale_date with sale_id as the tie-breaker.
+-- Specify an explicit ROWS frame.
+-- Display the final result by sale_date, then sale_id.
+-- Do not use a CTE or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-above-average-sales": {
+    id: "cycledepot-above-average-sales",
+    title: "Find sales above the overall average",
+    prompt:
+      "Write a PostgreSQL query on sales_amounts returning sale_id, employee_id, amount, average_amount. Calculate the average using AVG(amount) OVER (), keep only sales whose amount is strictly greater than that average, use a CTE, sort the final output by sale_id, and do not use GROUP BY.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-above-average-sales",
+    starterSql: `-- Find the sales whose amount is above the average of all five sales.
+-- Table: sales_amounts (sale_id, employee_id, amount)
+-- Return sale_id, employee_id, amount, and average_amount.
+-- Calculate average_amount with AVG(amount) OVER () and keep amount > average_amount.
+-- Use a CTE and sort the final output by sale_id.
+-- Do not use GROUP BY.
+-- Write your query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",

@@ -19,6 +19,10 @@ import type { AnyVariant } from "@/components/sql/animation-registry";
 
 export type Section =
   | { kind: "prose"; heading?: string; body: string[] }
+  | { kind: "sql-practice"; challengeId: string; title: string; prompt: string; playgroundHref?: string }
+  | { kind: "assessment"; assessmentId: "window-foundations" }
+  | { kind: "cheatsheet"; cheatsheetId: "window-foundations" }
+  | { kind: "list"; heading?: string; items: string[] }
   | { kind: "code"; language: "sql" | "text"; caption?: string; code: string }
   | { kind: "table"; caption?: string; headers: string[]; rows: string[][] }
   | {
@@ -30,6 +34,7 @@ export type Section =
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
+  | { kind: "visual"; id: "window-two-rooms" | "window-calculator" | "window-order-slips" | "window-partition-explorer" | "window-scoreboard" | "window-frame-selector" | "window-execution-order"; caption?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | {
       kind: "animation";

@@ -18,6 +18,14 @@ export type ChallengeDefinition = {
   starterSql?: string;
   hints: string[];
   solutionSql: Partial<Record<ChallengeEngine, string>>;
+  /** Constructs the exercise forbids. Tested against the query with comments and quoted text removed. */
+  forbiddenSql?: { pattern: string; message: string }[];
+  /** Constructs the exercise requires. Each pattern must match the query with comments and quoted text removed. */
+  requiredSql?: { pattern: string; message: string }[];
+  /** The query must end with its own ORDER BY outside any parentheses, so the display order is guaranteed. */
+  requiresOuterOrderBy?: boolean;
+  /** Hand-indented version of the solution, shown when revealed. Falls back to a formatted solutionSql. */
+  solutionDisplay?: string;
   validator: ResultValidator;
   success: SuccessCopy;
 };
@@ -84,7 +92,9 @@ export type CheckReason =
   | "zero-rows"
   | "aggregate-mismatch"
   | "duplicate-rows"
-  | "wrong-value";
+  | "wrong-value"
+  | "forbidden-construct"
+  | "wrong-column-order";
 
 export type CheckOutcome =
   | { state: "passed"; rowCount: number }

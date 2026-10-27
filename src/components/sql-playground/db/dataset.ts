@@ -91,6 +91,50 @@ CREATE TABLE employees (
   hired_on   DATE          NOT NULL,
   salary     DECIMAL(10,2) NOT NULL
 );
+
+CREATE TABLE staff_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
+
+CREATE TABLE customer_orders (
+  order_id    INTEGER PRIMARY KEY,
+  customer_id VARCHAR NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
+CREATE TABLE department_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
+
+CREATE TABLE transactions (
+  txn_id     INTEGER PRIMARY KEY,
+  account_id VARCHAR NOT NULL,
+  txn_date   DATE    NOT NULL,
+  amount     INTEGER NOT NULL
+);
+
+CREATE TABLE sales_amounts (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
+CREATE TABLE daily_sales (
+  sale_id   INTEGER PRIMARY KEY,
+  sale_date DATE    NOT NULL,
+  amount    INTEGER NOT NULL
+);
+
+CREATE TABLE employee_sales (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  sale_date   DATE    NOT NULL,
+  amount      INTEGER NOT NULL
+);
 `;
 
 // ---------------------------------------------------------------- source data
@@ -412,6 +456,55 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
       employees,
     ),
+    // Tiny tables for the Window Function Foundations lessons.
+    ...insertBatches("staff_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+    ]),
+    ...insertBatches("customer_orders", ["order_id", "customer_id", "amount"], [
+      ["101", q("A"), "100"],
+      ["102", q("A"), "200"],
+      ["103", q("B"), "150"],
+      ["104", q("B"), "250"],
+      ["105", q("B"), "100"],
+    ]),
+    ...insertBatches("department_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+      ["5", q("Sales"), "7000"],
+    ]),
+    ...insertBatches("employee_sales", ["sale_id", "employee_id", "sale_date", "amount"], [
+      ["1", q("E1"), q("2026-02-01"), "100"],
+      ["2", q("E1"), q("2026-02-03"), "150"],
+      ["3", q("E1"), q("2026-02-05"), "200"],
+      ["4", q("E2"), q("2026-02-01"), "300"],
+      ["5", q("E2"), q("2026-02-04"), "100"],
+    ]),
+    ...insertBatches("daily_sales", ["sale_id", "sale_date", "amount"], [
+      ["1", q("2026-03-01"), "100"],
+      ["2", q("2026-03-02"), "200"],
+      ["3", q("2026-03-02"), "300"],
+      ["4", q("2026-03-03"), "50"],
+    ]),
+    ...insertBatches("sales_amounts", ["sale_id", "employee_id", "amount"], [
+      ["1", q("E1"), "100"],
+      ["2", q("E1"), "200"],
+      ["3", q("E2"), "300"],
+      ["4", q("E2"), "400"],
+      ["5", q("E3"), "500"],
+    ]),
+    ...insertBatches("transactions", ["txn_id", "account_id", "txn_date", "amount"], [
+      ["1", q("A"), q("2026-04-01"), "100"],
+      ["2", q("A"), q("2026-04-02"), "200"],
+      ["3", q("A"), q("2026-04-02"), "50"],
+      ["4", q("B"), q("2026-04-01"), "300"],
+      ["5", q("B"), q("2026-04-03"), "100"],
+      ["6", q("A"), q("2026-04-04"), "150"],
+    ]),
   ];
 
   const tables: DatasetTableInfo[] = [
@@ -432,6 +525,41 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       rows: employees.length,
       blurb: "Self-referencing hierarchy via manager_id.",
     },
+    {
+      name: "staff_salaries",
+      rows: 4,
+      blurb: "Four employees in IT and HR. Used by the window function lessons.",
+    },
+    {
+      name: "customer_orders",
+      rows: 5,
+      blurb: "Five orders from customers A and B. Used by the window function lessons.",
+    },
+    {
+      name: "department_salaries",
+      rows: 5,
+      blurb: "Five employees in IT, HR and Sales. Used by the PARTITION BY lesson.",
+    },
+    {
+      name: "employee_sales",
+      rows: 5,
+      blurb: "Five dated sales by employees E1 and E2. Used by the ORDER BY inside OVER() lesson.",
+    },
+    {
+      name: "daily_sales",
+      rows: 4,
+      blurb: "Four sales where two share a date. Used by the default window frames lesson.",
+    },
+    {
+      name: "sales_amounts",
+      rows: 5,
+      blurb: "Five sales by employees E1, E2 and E3. Used by the SQL logical execution order lesson.",
+    },
+    {
+      name: "transactions",
+      rows: 6,
+      blurb: "Six bank transactions on accounts A and B. Used by the window function foundations final assessment.",
+    },
   ];
 
   cached = { statements, tables };
@@ -445,6 +573,13 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   orders: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
   order_items: ["id", "order_id", "product_id", "quantity", "unit_price"],
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
+  staff_salaries: ["employee_id", "department", "salary"],
+  customer_orders: ["order_id", "customer_id", "amount"],
+  department_salaries: ["employee_id", "department", "salary"],
+  employee_sales: ["sale_id", "employee_id", "sale_date", "amount"],
+  daily_sales: ["sale_id", "sale_date", "amount"],
+  sales_amounts: ["sale_id", "employee_id", "amount"],
+  transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
 
 export const STARTER_SQL = `-- Cycle Depot. Same data on PostgreSQL and DuckDB.
