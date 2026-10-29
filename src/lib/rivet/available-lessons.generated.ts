@@ -156,6 +156,7 @@ export const AVAILABLE_LESSONS: readonly string[] = [
   "sql/regex",
   "sql/relational-model-basics",
   "sql/round-trunc-ceil-floor",
+  "sql/row-number",
   "sql/safe-casts",
   "sql/scalar-subqueries",
   "sql/semi-anti-joins",
