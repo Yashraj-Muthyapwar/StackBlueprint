@@ -68,6 +68,10 @@ import { orderByRunningTotalStages } from "./window-functions/order-by-in-over";
 import { partitionByStages } from "./window-functions/partition-by";
 import { overWindowConceptStages } from "./window-functions/over-window-concept";
 import { rowNumberStages } from "./ranking/row-number";
+import { rankDenseRankStages } from "./ranking/rank-dense-rank";
+import { ntileStages } from "./ranking/ntile";
+import { topNPerGroupStages } from "./ranking/top-n-per-group";
+import { percentRankCumeDistStages } from "./ranking/percent-rank-cume-dist";
 import { groupByVsWindowStages } from "./window-functions/group-by-vs-window";
 import { shopflowSemiAntiJoinStages } from "./querying/semi-anti-joins.tsx";
 
@@ -152,6 +156,10 @@ export const STAGES_REGISTRY = {
   "q-window-default-frames-peers": defaultFramesPeersStages,
   "q-window-execution-order-cte": logicalExecutionOrderStages,
   "q-ranking-row-number": rowNumberStages,
+  "q-ranking-rank-dense-rank": rankDenseRankStages,
+  "q-ranking-ntile": ntileStages,
+  "q-ranking-top-n-per-group": topNPerGroupStages,
+  "q-ranking-percent-rank-cume-dist": percentRankCumeDistStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

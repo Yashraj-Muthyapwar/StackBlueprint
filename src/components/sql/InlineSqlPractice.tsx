@@ -80,6 +80,9 @@ export default function InlineSqlPractice({
   playgroundHref?: string;
 }) {
   const challenge = useMemo(() => getChallenge(challengeId), [challengeId]);
+  // A prompt can list its requirements as lines starting with "- " after the task sentence.
+  const [task, ...promptLines] = prompt.split("\n");
+  const requirements = promptLines.filter((line) => line.startsWith("- ")).map((line) => line.slice(2));
   const dark = useIsDark();
   const editorRef = useRef<SqlEditorHandle>(null);
   const starter = challenge?.starterSql ?? "";
@@ -251,7 +254,14 @@ export default function InlineSqlPractice({
       <div className="space-y-4 p-5">
         <div>
           <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-          <p className="lesson-prose mt-1 text-muted-foreground">{prompt}</p>
+          <p className="lesson-prose mt-1 text-muted-foreground">{task}</p>
+          {requirements.length > 0 ? (
+            <ul className="lesson-prose mt-2 list-disc space-y-1 pl-5 text-muted-foreground marker:text-mint">
+              {requirements.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         {Object.entries(preview).map(([table, res]) => (
