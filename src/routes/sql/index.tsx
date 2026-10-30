@@ -279,6 +279,23 @@ const sections: Section[] = [
         routeBase: "window-functions",
       },
       {
+        slug: "ranking-distribution",
+        title: "Ranking & Distribution",
+        blurb: "ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK, CUME_DIST, and top N per group.",
+        icon: Hash,
+        modules: [
+          "ROW_NUMBER()",
+          "RANK() vs DENSE_RANK()",
+          "NTILE()",
+          "PERCENT_RANK() and CUME_DIST()",
+          "Top-N per group and tie-breaking",
+          "Final quiz",
+          "Cheatsheet",
+        ],
+        unlocked: true,
+        routeBase: "window-functions",
+      },
+      {
         slug: "multi-dimensional-aggregations",
         title: "Window Functions",
         blurb: "Advanced analytical SQL, beginning with GROUPING SETS, ROLLUP, and CUBE.",

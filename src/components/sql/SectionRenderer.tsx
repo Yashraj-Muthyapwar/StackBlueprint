@@ -7,6 +7,16 @@ import { OrderSlipsVisual } from "@/components/sql/window-functions/OrderSlipsVi
 import { ExecutionOrderVisual } from "@/components/sql/window-functions/ExecutionOrderVisual";
 import { FrameSelector } from "@/components/sql/window-functions/FrameSelector";
 import { ScoreboardVisual } from "@/components/sql/window-functions/ScoreboardVisual";
+import { QueueTicketsVisual } from "@/components/sql/ranking/QueueTicketsVisual";
+import { RowNumberExplorer } from "@/components/sql/ranking/RowNumberExplorer";
+import { ContestPodiumVisual } from "@/components/sql/ranking/ContestPodiumVisual";
+import { TieRankExplorer } from "@/components/sql/ranking/TieRankExplorer";
+import { NtileBasketsVisual } from "@/components/sql/ranking/NtileBasketsVisual";
+import { NtileExplorer } from "@/components/sql/ranking/NtileExplorer";
+import { TopNCompetitionVisual } from "@/components/sql/ranking/TopNCompetitionVisual";
+import { TopNExplorer } from "@/components/sql/ranking/TopNExplorer";
+import { RelativePositionVisual } from "@/components/sql/ranking/RelativePositionVisual";
+import { PercentRankExplorer } from "@/components/sql/ranking/PercentRankExplorer";
 import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
@@ -16,7 +26,9 @@ import { ImageCarousel } from "@/components/ui/image-carousel";
 
 const InlineSqlPractice = lazy(() => import("@/components/sql/InlineSqlPractice"));
 const FinalAssessment = lazy(() => import("@/components/sql/assessment/FinalAssessment"));
+const RankingAssessment = lazy(() => import("@/components/sql/assessment/RankingAssessment"));
 const WindowCheatsheet = lazy(() => import("@/components/sql/cheatsheet/WindowCheatsheet"));
+const RankingCheatsheet = lazy(() => import("@/components/sql/cheatsheet/RankingCheatsheet"));
 
 function parseInlineMarkdown(text: string) {
   const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`)/g);
@@ -311,7 +323,7 @@ export function SectionRenderer({
       return (
         <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
           <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
-            <WindowCheatsheet />
+            {section.cheatsheetId === "ranking-distribution" ? <RankingCheatsheet /> : <WindowCheatsheet />}
           </Suspense>
         </ClientOnly>
       );
@@ -320,7 +332,7 @@ export function SectionRenderer({
       return (
         <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
           <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
-            <FinalAssessment />
+            {section.assessmentId === "ranking-distribution" ? <RankingAssessment /> : <FinalAssessment />}
           </Suspense>
         </ClientOnly>
       );
@@ -513,6 +525,26 @@ export function SectionRenderer({
           return <ScoreboardVisual caption={section.caption} />;
         case "window-partition-explorer":
           return <PartitionExplorer caption={section.caption} />;
+        case "ranking-queue-tickets":
+          return <QueueTicketsVisual caption={section.caption} />;
+        case "ranking-row-number-explorer":
+          return <RowNumberExplorer caption={section.caption} />;
+        case "ranking-contest-podium":
+          return <ContestPodiumVisual caption={section.caption} />;
+        case "ranking-tie-explorer":
+          return <TieRankExplorer caption={section.caption} />;
+        case "ranking-ntile-baskets":
+          return <NtileBasketsVisual caption={section.caption} />;
+        case "ranking-ntile-explorer":
+          return <NtileExplorer caption={section.caption} />;
+        case "ranking-top-n-competition":
+          return <TopNCompetitionVisual caption={section.caption} />;
+        case "ranking-top-n-explorer":
+          return <TopNExplorer caption={section.caption} />;
+        case "ranking-relative-position":
+          return <RelativePositionVisual caption={section.caption} />;
+        case "ranking-percent-rank-explorer":
+          return <PercentRankExplorer caption={section.caption} />;
         default:
           return <TwoRoomsVisual caption={section.caption} />;
       }

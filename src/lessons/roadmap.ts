@@ -1219,6 +1219,57 @@ export const roadmap: RoadmapCategory[] = [
             ],
           },
           {
+            title: "Ranking & Distribution",
+            slug: "ranking-distribution",
+            path: "/sql/window-functions/ranking-distribution",
+            blurb:
+              "Number, rank, bucket and measure rows with ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK and CUME_DIST.",
+            lessons: [
+              {
+                title: "ROW_NUMBER()",
+                slug: "row-number",
+                path: "/sql/window-functions/ranking-distribution/row-number",
+                icon: FunctionSquare,
+              },
+              {
+                title: "RANK() vs DENSE_RANK()",
+                slug: "rank-vs-dense-rank",
+                path: "/sql/window-functions/ranking-distribution/rank-vs-dense-rank",
+                icon: FunctionSquare,
+              },
+              {
+                title: "NTILE()",
+                slug: "ntile",
+                path: "/sql/window-functions/ranking-distribution/ntile",
+                icon: FunctionSquare,
+              },
+              {
+                title: "PERCENT_RANK() and CUME_DIST()",
+                slug: "percent-rank-cume-dist",
+                path: "/sql/window-functions/ranking-distribution/percent-rank-cume-dist",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Top-N per Group and Tie-Breaking",
+                slug: "top-n-per-group",
+                path: "/sql/window-functions/ranking-distribution/top-n-per-group",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Ranking & Distribution: Final Quiz",
+                slug: "ranking-distribution-quiz",
+                path: "/sql/window-functions/ranking-distribution/ranking-distribution-quiz",
+                icon: HelpCircle,
+              },
+              {
+                title: "Ranking & Distribution: Cheatsheet",
+                slug: "ranking-distribution-cheatsheet",
+                path: "/sql/window-functions/ranking-distribution/ranking-distribution-cheatsheet",
+                icon: FileText,
+              },
+            ],
+          },
+          {
             title: "Window Functions",
             slug: "multi-dimensional-aggregations",
             path: "/sql/window-functions/multi-dimensional-aggregations",
