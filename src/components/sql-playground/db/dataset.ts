@@ -136,6 +136,38 @@ CREATE TABLE daily_sales (
   amount    INTEGER NOT NULL
 );
 
+CREATE TABLE department_sales_totals (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  total_sales INTEGER NOT NULL
+);
+
+CREATE TABLE employee_performance (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  sales       INTEGER NOT NULL
+);
+
+CREATE TABLE employee_scores (
+  employee_id       INTEGER PRIMARY KEY,
+  department        VARCHAR NOT NULL,
+  performance_score INTEGER NOT NULL
+);
+
+CREATE TABLE product_sales (
+  sale_id    INTEGER PRIMARY KEY,
+  category   VARCHAR NOT NULL,
+  product_id VARCHAR NOT NULL,
+  revenue    INTEGER NOT NULL
+);
+
+CREATE TABLE employee_performance_review (
+  employee_id       INTEGER PRIMARY KEY,
+  department        VARCHAR NOT NULL,
+  salary            INTEGER NOT NULL,
+  performance_score INTEGER NOT NULL
+);
+
 CREATE TABLE employee_sales (
   sale_id     INTEGER PRIMARY KEY,
   employee_id VARCHAR NOT NULL,
@@ -512,6 +544,61 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["15", q("E2"), q("2026-05-04"), "600"],
       ["16", q("E3"), q("2026-05-01"), "250"],
     ]),
+    ...insertBatches("department_sales_totals", ["employee_id", "department", "total_sales"], [
+      ["101", q("IT"), "900"],
+      ["102", q("IT"), "700"],
+      ["103", q("IT"), "700"],
+      ["104", q("IT"), "500"],
+      ["105", q("HR"), "800"],
+      ["106", q("HR"), "800"],
+      ["107", q("HR"), "600"],
+    ]),
+    ...insertBatches("employee_performance", ["employee_id", "department", "sales"], [
+      ["101", q("IT"), "900"],
+      ["102", q("IT"), "800"],
+      ["103", q("IT"), "700"],
+      ["104", q("IT"), "600"],
+      ["105", q("IT"), "500"],
+      ["106", q("HR"), "950"],
+      ["107", q("HR"), "850"],
+      ["108", q("HR"), "750"],
+      ["109", q("HR"), "650"],
+    ]),
+    ...insertBatches("employee_scores", ["employee_id", "department", "performance_score"], [
+      ["101", q("IT"), "40"],
+      ["102", q("IT"), "60"],
+      ["103", q("IT"), "60"],
+      ["104", q("IT"), "80"],
+      ["105", q("HR"), "50"],
+      ["106", q("HR"), "70"],
+      ["107", q("HR"), "90"],
+    ]),
+    ...insertBatches("product_sales", ["sale_id", "category", "product_id", "revenue"], [
+      ["1", q("Electronics"), q("P1"), "1200"],
+      ["2", q("Electronics"), q("P2"), "1000"],
+      ["3", q("Electronics"), q("P3"), "1000"],
+      ["4", q("Electronics"), q("P4"), "700"],
+      ["5", q("Clothing"), q("P5"), "900"],
+      ["6", q("Clothing"), q("P6"), "900"],
+      ["7", q("Clothing"), q("P7"), "800"],
+      ["8", q("Clothing"), q("P8"), "600"],
+      ["9", q("Books"), q("P9"), "500"],
+      ["10", q("Books"), q("P10"), "400"],
+    ]),
+    ...insertBatches("employee_performance_review", ["employee_id", "department", "salary", "performance_score"], [
+      ["101", q("Engineering"), "120000", "95"],
+      ["102", q("Engineering"), "110000", "90"],
+      ["103", q("Engineering"), "110000", "90"],
+      ["104", q("Engineering"), "90000", "70"],
+      ["105", q("Engineering"), "80000", "60"],
+      ["201", q("Sales"), "100000", "92"],
+      ["202", q("Sales"), "95000", "85"],
+      ["203", q("Sales"), "95000", "85"],
+      ["204", q("Sales"), "75000", "65"],
+      ["301", q("HR"), "90000", "88"],
+      ["302", q("HR"), "80000", "75"],
+      ["303", q("HR"), "70000", "75"],
+    ]),
     ...insertBatches("transactions", ["txn_id", "account_id", "txn_date", "amount"], [
       ["1", q("A"), q("2026-04-01"), "100"],
       ["2", q("A"), q("2026-04-02"), "200"],
@@ -576,6 +663,31 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       blurb: "Six dated sales by employees E1, E2 and E3. Used by the ROW_NUMBER() lesson.",
     },
     {
+      name: "department_sales_totals",
+      rows: 7,
+      blurb: "Seven employees in IT and HR with tied sales totals. Used by the RANK() vs DENSE_RANK() lesson.",
+    },
+    {
+      name: "employee_performance",
+      rows: 9,
+      blurb: "Nine employees in IT and HR with sales figures. Used by the NTILE() lesson.",
+    },
+    {
+      name: "employee_scores",
+      rows: 7,
+      blurb: "Seven employees in IT and HR with performance scores. Used by the PERCENT_RANK() and CUME_DIST() lesson.",
+    },
+    {
+      name: "product_sales",
+      rows: 10,
+      blurb: "Ten product sales in Electronics, Clothing and Books with tied revenue. Used by the Top-N per group lesson.",
+    },
+    {
+      name: "employee_performance_review",
+      rows: 12,
+      blurb: "Twelve employees in Engineering, Sales and HR with salaries and performance scores. Used by the Ranking & Distribution final quiz.",
+    },
+    {
       name: "transactions",
       rows: 6,
       blurb: "Six bank transactions on accounts A and B. Used by the window function foundations final assessment.",
@@ -600,6 +712,11 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   daily_sales: ["sale_id", "sale_date", "amount"],
   sales_amounts: ["sale_id", "employee_id", "amount"],
   employee_sales_log: ["sale_id", "employee_id", "sale_date", "amount"],
+  department_sales_totals: ["employee_id", "department", "total_sales"],
+  employee_performance: ["employee_id", "department", "sales"],
+  employee_scores: ["employee_id", "department", "performance_score"],
+  product_sales: ["sale_id", "category", "product_id", "revenue"],
+  employee_performance_review: ["employee_id", "department", "salary", "performance_score"],
   transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
 
