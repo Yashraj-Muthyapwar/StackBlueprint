@@ -450,6 +450,20 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Do not use GROUP BY, a CTE, or a subquery.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-first-sale-row-number": {
+    id: "cycledepot-first-sale-row-number",
+    title: "Find the first sale made by each employee",
+    prompt:
+      "Write a query on employee_sales_log that returns sale_id, employee_id, sale_date, amount for each employee's first sale. Use ROW_NUMBER() with PARTITION BY employee_id and sale_date, sale_id as the ordering. Use a CTE. Sort the final result by employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-first-sale-row-number",
+    starterSql: `-- Find the first sale made by each employee.
+-- Table: employee_sales_log (sale_id, employee_id, sale_date, amount)
+-- Return sale_id, employee_id, sale_date, and amount.
+-- Use ROW_NUMBER() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+  },
   "cycledepot-employee-running-total": {
     id: "cycledepot-employee-running-total",
     title: "Show a running total of sales for each employee",

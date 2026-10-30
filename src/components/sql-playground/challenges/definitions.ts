@@ -2539,6 +2539,85 @@ FROM department_salaries;`,
     },
   },
   {
+    id: "cycle-depot-first-sale-row-number",
+    version: 1,
+    title: "Find the first sale made by each employee",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Find the first sale made by each employee.",
+    requirements: [
+      "Use the employee_sales_log table.",
+      "Return exactly sale_id, employee_id, sale_date, and amount.",
+      "Use ROW_NUMBER() and restart the numbering for each employee.",
+      "Use sale_date, sale_id in ascending order to break ties.",
+      "Use a CTE and return only the first sale for each employee.",
+      "Sort the final result by employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["employee_sales_log"],
+    starterSql: `-- Find the first sale made by each employee.
+-- Table: employee_sales_log (sale_id, employee_id, sale_date, amount)
+-- Return sale_id, employee_id, sale_date, and amount.
+-- Use ROW_NUMBER() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds ROW_NUMBER() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY employee_id and ORDER BY sale_date, sale_id.",
+      "In the outer query, keep only the rows where the row number equals 1, then add ORDER BY employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\brow_number\\s*\\(\\s*\\)\\s*over\\b", message: "Use ROW_NUMBER() OVER (...) to number each employee's sales." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the row number before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Number the sales with ROW_NUMBER() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use ROW_NUMBER() instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the row number in the outer query." },
+    ],
+    solutionDisplay: `WITH numbered_sales AS (
+    SELECT
+        sale_id,
+        employee_id,
+        sale_date,
+        amount,
+        ROW_NUMBER() OVER (
+            PARTITION BY employee_id
+            ORDER BY sale_date, sale_id
+        ) AS sale_sequence
+    FROM employee_sales_log
+)
+SELECT
+    sale_id,
+    employee_id,
+    sale_date,
+    amount
+FROM numbered_sales
+WHERE sale_sequence = 1
+ORDER BY employee_id;`,
+    solutionSql: {
+      postgres: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+      duckdb: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+        duckdb: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+      },
+      requiredColumns: ["sale_id", "employee_id", "sale_date", "amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "First sales found",
+      body: "Correct. ROW_NUMBER() numbered each employee's sales, and the outer query kept only number 1.",
+      nextConcept: "RANK() vs DENSE_RANK()",
+    },
+  },
+  {
     id: "cycle-depot-employee-running-total",
     version: 1,
     title: "Show a running total of sales for each employee",

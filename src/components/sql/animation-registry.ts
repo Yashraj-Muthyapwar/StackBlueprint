@@ -67,6 +67,7 @@ import { peersTiesStages } from "./window-functions/peers-ties";
 import { orderByRunningTotalStages } from "./window-functions/order-by-in-over";
 import { partitionByStages } from "./window-functions/partition-by";
 import { overWindowConceptStages } from "./window-functions/over-window-concept";
+import { rowNumberStages } from "./ranking/row-number";
 import { groupByVsWindowStages } from "./window-functions/group-by-vs-window";
 import { shopflowSemiAntiJoinStages } from "./querying/semi-anti-joins.tsx";
 
@@ -150,6 +151,7 @@ export const STAGES_REGISTRY = {
   "q-window-peers-ties": peersTiesStages,
   "q-window-default-frames-peers": defaultFramesPeersStages,
   "q-window-execution-order-cte": logicalExecutionOrderStages,
+  "q-ranking-row-number": rowNumberStages,
 } as const;
 
 export type AnyVariant = keyof typeof STAGES_REGISTRY;

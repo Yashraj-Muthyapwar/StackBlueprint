@@ -117,6 +117,13 @@ CREATE TABLE transactions (
   amount     INTEGER NOT NULL
 );
 
+CREATE TABLE employee_sales_log (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  sale_date   DATE    NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
 CREATE TABLE sales_amounts (
   sale_id     INTEGER PRIMARY KEY,
   employee_id VARCHAR NOT NULL,
@@ -497,6 +504,14 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["4", q("E2"), "400"],
       ["5", q("E3"), "500"],
     ]),
+    ...insertBatches("employee_sales_log", ["sale_id", "employee_id", "sale_date", "amount"], [
+      ["11", q("E1"), q("2026-05-01"), "300"],
+      ["12", q("E1"), q("2026-05-03"), "500"],
+      ["13", q("E1"), q("2026-05-03"), "200"],
+      ["14", q("E2"), q("2026-05-02"), "400"],
+      ["15", q("E2"), q("2026-05-04"), "600"],
+      ["16", q("E3"), q("2026-05-01"), "250"],
+    ]),
     ...insertBatches("transactions", ["txn_id", "account_id", "txn_date", "amount"], [
       ["1", q("A"), q("2026-04-01"), "100"],
       ["2", q("A"), q("2026-04-02"), "200"],
@@ -556,6 +571,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       blurb: "Five sales by employees E1, E2 and E3. Used by the SQL logical execution order lesson.",
     },
     {
+      name: "employee_sales_log",
+      rows: 6,
+      blurb: "Six dated sales by employees E1, E2 and E3. Used by the ROW_NUMBER() lesson.",
+    },
+    {
       name: "transactions",
       rows: 6,
       blurb: "Six bank transactions on accounts A and B. Used by the window function foundations final assessment.",
@@ -579,6 +599,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   employee_sales: ["sale_id", "employee_id", "sale_date", "amount"],
   daily_sales: ["sale_id", "sale_date", "amount"],
   sales_amounts: ["sale_id", "employee_id", "amount"],
+  employee_sales_log: ["sale_id", "employee_id", "sale_date", "amount"],
   transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
 
