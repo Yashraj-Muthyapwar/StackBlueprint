@@ -7,6 +7,8 @@ import { OrderSlipsVisual } from "@/components/sql/window-functions/OrderSlipsVi
 import { ExecutionOrderVisual } from "@/components/sql/window-functions/ExecutionOrderVisual";
 import { FrameSelector } from "@/components/sql/window-functions/FrameSelector";
 import { ScoreboardVisual } from "@/components/sql/window-functions/ScoreboardVisual";
+import { QueueTicketsVisual } from "@/components/sql/ranking/QueueTicketsVisual";
+import { RowNumberExplorer } from "@/components/sql/ranking/RowNumberExplorer";
 import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
 import { lazy, Suspense } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
@@ -513,6 +515,10 @@ export function SectionRenderer({
           return <ScoreboardVisual caption={section.caption} />;
         case "window-partition-explorer":
           return <PartitionExplorer caption={section.caption} />;
+        case "ranking-queue-tickets":
+          return <QueueTicketsVisual caption={section.caption} />;
+        case "ranking-row-number-explorer":
+          return <RowNumberExplorer caption={section.caption} />;
         default:
           return <TwoRoomsVisual caption={section.caption} />;
       }

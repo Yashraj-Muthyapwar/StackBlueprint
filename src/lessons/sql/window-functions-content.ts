@@ -1846,6 +1846,385 @@ const windowFoundationsCheatsheet: LessonContent = {
   ],
 };
 
+// ---------- Ranking & Distribution (placeholders) ----------
+const rankingRowNumber: LessonContent = {
+  slug: "row-number",
+  title: "ROW_NUMBER()",
+  subtitle: "Unique sequence numbers / restart per group / tie-breaking",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "In the Window Function Foundations module, you mastered `OVER()`, `PARTITION BY`, `ORDER BY`, window frames, and SQL logical execution order.",
+        "We will now use these concepts to solve ranking problems.",
+        "Assign a unique sequence number to rows, restart the numbering for each group, and understand how PostgreSQL handles tied ordering values.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need ROW_NUMBER()?",
+      body: [
+        "Imagine that you are a data engineer at an **e-commerce company**.",
+        "Your manager asks: Show each customer's purchases in chronological order. Assign 1 to their first purchase, 2 to their second purchase, and so on.",
+        "Consider this orders table:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The orders table",
+      headers: ["order_id", "customer_id", "order_date", "amount"],
+      rows: [
+        ["101", "A", "2026-01-01", "100"],
+        ["102", "A", "2026-01-03", "250"],
+        ["103", "B", "2026-01-02", "150"],
+        ["104", "B", "2026-01-05", "300"],
+        ["105", "A", "2026-01-06", "200"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["You could sort these records using `ORDER BY`, but that does not create a sequence number."],
+    },
+    {
+      kind: "list",
+      heading: "You need a function that:",
+      items: [
+        "Assigns a different number to every row.",
+        "Starts counting at 1.",
+        "Restarts for each customer.",
+        "Follows a specified ordering rule.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "PostgreSQL provides **`ROW_NUMBER()`** for this purpose.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of a queue ticket system",
+      body: [
+        "Imagine customers A and B have separate queues.",
+        "Each customer receives sequence numbers for their orders.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "ranking-queue-tickets",
+      caption: "Separate queues with their own ticket numbers",
+    },
+    {
+      kind: "prose",
+      body: ["The sequence restarts at 1 for each customer."],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "`ROW_NUMBER()` assigns a unique position within a partition. It does not calculate the sum or average of a group.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How does ROW_NUMBER() work?",
+      body: ["The basic PostgreSQL syntax is:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "ROW_NUMBER() with PARTITION BY and ORDER BY",
+      code: `ROW_NUMBER() OVER (
+    PARTITION BY customer_id
+    ORDER BY order_date, order_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "Conceptually, PostgreSQL follows these steps:",
+        "1. **Divide** rows into partitions using `customer_id`.",
+        "2. **Order** rows within each partition using `order_date, order_id`.",
+        "3. **Assign** sequential numbers starting at 1 within each partition.",
+        "4. **Return** the row number beside each original order.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Understand the syntax",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Reading the syntax",
+      headers: ["SQL component", "Purpose"],
+      rows: [
+        ["ROW_NUMBER()", "Assign a unique sequential number"],
+        ["OVER (...)", "Define the window"],
+        ["PARTITION BY customer_id", "Restart numbering for each customer"],
+        ["ORDER BY order_date", "Sequence orders by date"],
+        ["order_id", "Break date ties when unique"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important PostgreSQL facts",
+      items: [
+        "`ROW_NUMBER()` takes no arguments.",
+        "It returns a `bigint`.",
+        "It does not skip sequence numbers.",
+        "If `PARTITION BY` is omitted, numbering runs across one partition.",
+        "If ordering is not unique, tied rows can receive their row numbers in an unspecified order.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "`ROW_NUMBER()` does not require an explicit `ROWS` frame. Unlike `SUM()`, it is not a frame-sensitive cumulative calculation.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Number each customer's orders",
+      body: [""],
+    },
+    {
+      kind: "animation",
+      variant: "q-ranking-row-number",
+      caption: "ROW_NUMBER() numbering each customer's orders.",
+    },
+    {
+      kind: "prose",
+      body: ["Expected output: 5 rows, and the numbering restarts for customer B."],
+    },
+    {
+      kind: "visual",
+      id: "ranking-row-number-explorer",
+      caption: "Try switching to All orders. Notice that the numbering no longer restarts for customer B.",
+    },
+    {
+      kind: "prose",
+      heading: "What happens when two orders have the same date?",
+      body: ["Suppose customer A has two orders on January 3."],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Ordering with a tie on order_date",
+      code: `ROW_NUMBER() OVER (
+    PARTITION BY customer_id
+    ORDER BY order_date
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "Both orders still receive different row numbers. However, PostgreSQL does not guarantee which tied order receives the smaller number.",
+        "For a stable result, add a unique tie-breaker:",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A unique tie-breaker makes the numbering stable",
+      code: `ROW_NUMBER() OVER (
+    PARTITION BY customer_id
+    ORDER BY order_date, order_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: ["This is a common interview requirement."],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and alternatives",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Choose by the output you need",
+      headers: ["Situation", "Consideration"],
+      rows: [
+        ["Need one unique sequence number per row", "Use ROW_NUMBER()"],
+        ["Need tied values to share a rank", "ROW_NUMBER() does not do this"],
+        ["Need stable numbering", "Use a deterministic ORDER BY"],
+        ["Need to return only the first row in each group", "Use a CTE or subquery to filter ROW_NUMBER()"],
+        ["Very large partitions", "Sorting can increase memory and execution cost"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important difference from RANK()",
+      items: [
+        "`ROW_NUMBER()` assigns a different number to every row, including rows tied on the ordering value.",
+        "`RANK()` can assign the same rank to tied rows.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["We will study `RANK()` and `DENSE_RANK()` in the next lesson. For now, focus only on `ROW_NUMBER()`."],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A common PostgreSQL restriction",
+      body: "The `WHERE` clause cannot access `rn` at the same query level.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Fails: WHERE cannot use the row number alias",
+      code: `SELECT
+    order_id,
+    ROW_NUMBER() OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date
+    ) AS rn
+FROM orders
+WHERE rn = 1;`,
+    },
+    {
+      kind: "prose",
+      body: ["You already learned the solution pattern in previous lessons, calculate the row number in a CTE, then filter in an outer query."],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Works: calculate in a CTE, then filter",
+      code: `WITH numbered_orders AS (
+    SELECT
+        order_id,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+        ) AS rn
+    FROM orders
+)
+SELECT order_id
+FROM numbered_orders
+WHERE rn = 1;`,
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-first-sale-row-number",
+      title: "Find the first sale made by each employee",
+      prompt:
+        "Use the employee_sales_log table (sale_id, employee_id, sale_date, amount). Your manager asks: Find the first sale made by each employee. Write a query returning sale_id, employee_id, sale_date, amount. Use ROW_NUMBER(), restart the numbering for each employee, and use sale_date, sale_id in ascending order to break ties. Use a CTE and return only the first sale for each employee. Sort the final result by employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+      playgroundHref: "/sql-playground?practice=cycledepot-first-sale-row-number",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`ROW_NUMBER()` assigns a unique sequence number to every row, starting at 1, and it never skips a number.",
+        "`PARTITION BY` restarts the numbering for each group. Without it, numbering runs across one partition.",
+        "`ORDER BY` inside `OVER()` decides which row gets which number.",
+        "Tied ordering values still get different numbers, but PostgreSQL does not guarantee which tied row gets the smaller one. Add a unique tie-breaker such as `order_id`.",
+        "`WHERE` cannot use a row number at the same query level. Calculate it in a CTE, then filter in the outer query.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "row-number-output-shape",
+          question: "The example query numbers the five orders with `ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date, order_id)`. Customer A has three orders and customer B has two. What does the query return?",
+          options: [
+            "Five rows, and the highest `order_sequence` is 3 for customer A and 2 for customer B.",
+            "Two rows, one for each customer, each showing its number of orders.",
+            "Five rows, and `order_sequence` runs from 1 to 5 across all customers.",
+            "Five rows, and customer B starts at 4 because customer A used 1 to 3.",
+          ],
+          correctIndex: 0,
+          explanation: "`PARTITION BY customer_id` restarts the numbering for each customer, and `ROW_NUMBER()` keeps every row. The result has five rows. Customer A gets 1, 2, 3 and customer B gets 1, 2.",
+        },
+        {
+          id: "row-number-first-per-group",
+          question: "You need only the first order of each customer. Which approach is correct in PostgreSQL?",
+          options: [
+            "Put `ROW_NUMBER() OVER (...) = 1` directly in the `WHERE` clause of the same query.",
+            "Calculate `ROW_NUMBER()` in a CTE, then filter `WHERE rn = 1` in the outer query.",
+            "Add `GROUP BY customer_id` and select `ROW_NUMBER()` for each group.",
+            "Add `ROW_NUMBER()` to the `SELECT` list and `ORDER BY rn` without any filter.",
+          ],
+          correctIndex: 1,
+          explanation: "The window function runs after `WHERE`, so `WHERE` cannot use it at the same level. A CTE calculates the row number first, and the outer query filters it.",
+        },
+        {
+          id: "row-number-correct-query",
+          question: "An orders table has `order_id`, `customer_id`, `order_date` and `amount`. Which query numbers each customer's orders by date, with `order_id` as the tie-breaker?",
+          options: [
+            "SELECT order_id, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date, order_id) AS order_sequence FROM orders;",
+            "SELECT order_id, ROW_NUMBER() OVER (ORDER BY order_date, order_id) PARTITION BY customer_id AS order_sequence FROM orders;",
+            "SELECT order_id, ROW_NUMBER(customer_id) OVER (ORDER BY order_date, order_id) AS order_sequence FROM orders;",
+            "SELECT order_id, ROW_NUMBER() OVER (PARTITION BY customer_id) AS order_sequence FROM orders ORDER BY order_date, order_id;",
+          ],
+          correctIndex: 0,
+          explanation: "`PARTITION BY` and `ORDER BY` both belong inside the `OVER` parentheses. `ROW_NUMBER()` takes no arguments. An outer `ORDER BY` does not tell the window how to sequence rows.",
+        },
+        {
+          id: "row-number-ties",
+          question: "Two orders of the same customer share the same `order_date`, and the window uses `ORDER BY order_date` only. What does PostgreSQL do?",
+          options: [
+            "Both rows get the same number, because they are tied.",
+            "The rows get different numbers, but PostgreSQL does not guarantee which one gets the smaller number.",
+            "The rows get different numbers, and the one with the smaller `order_id` always gets the smaller number.",
+            "PostgreSQL returns an error until you add a tie-breaker.",
+          ],
+          correctIndex: 1,
+          explanation: "`ROW_NUMBER()` never gives the same number twice, but tied rows can receive their numbers in an unspecified order. Add a unique column such as `order_id` to make the result stable.",
+        },
+      ],
+    },
+  ],
+};
+
+const rankingRankVsDenseRank: LessonContent = {
+  slug: "rank-vs-dense-rank",
+  title: "RANK() vs DENSE_RANK()",
+  subtitle: "",
+  sections: [],
+};
+
+const rankingNtile: LessonContent = {
+  slug: "ntile",
+  title: "NTILE()",
+  subtitle: "",
+  sections: [],
+};
+
+const rankingPercentRankCumeDist: LessonContent = {
+  slug: "percent-rank-cume-dist",
+  title: "PERCENT_RANK() and CUME_DIST()",
+  subtitle: "",
+  sections: [],
+};
+
+const rankingTopNPerGroup: LessonContent = {
+  slug: "top-n-per-group",
+  title: "Top-N per Group and Tie-Breaking",
+  subtitle: "",
+  sections: [],
+};
+
+const rankingQuiz: LessonContent = {
+  slug: "ranking-distribution-quiz",
+  title: "Ranking & Distribution: Final Quiz",
+  subtitle: "",
+  sections: [],
+};
+
+const rankingCheatsheet: LessonContent = {
+  slug: "ranking-distribution-cheatsheet",
+  title: "Ranking & Distribution: Cheatsheet",
+  subtitle: "",
+  sections: [],
+};
+
 // ---------- Multi-Dimensional Aggregations (GROUPING SETS) ----------
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
@@ -1961,6 +2340,15 @@ export const WINDOW_FUNCTION_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "How window functions differ from GROUP BY, what OVER() defines, and the rules that decide which rows each calculation sees.",
     lessons: [groupByVsWindow, overWindowConcept, partitionBy, orderByInOver, defaultFramesPeers, sqlLogicalExecutionOrder, windowFoundationsQuiz, windowFoundationsCheatsheet],
+  },
+  "ranking-distribution": {
+    slug: "ranking-distribution",
+    title: "Ranking & Distribution",
+    category: "Advanced SQL",
+    iconKey: "database",
+    blurb:
+      "Number, rank, bucket and measure rows with ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK and CUME_DIST.",
+    lessons: [rankingRowNumber, rankingRankVsDenseRank, rankingNtile, rankingPercentRankCumeDist, rankingTopNPerGroup, rankingQuiz, rankingCheatsheet],
   },
   "multi-dimensional-aggregations": {
     slug: "multi-dimensional-aggregations",
