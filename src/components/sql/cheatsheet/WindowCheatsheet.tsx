@@ -11,7 +11,7 @@ const TONE: Record<Tone, string> = {
   rose: "border-rose-500/40 bg-rose-500/10 text-rose-400",
 };
 
-function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
+export function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
   return (
     <span className={`inline-flex shrink-0 items-center rounded-md border px-2 py-0.5 font-mono text-[11px] font-semibold ${TONE[tone]}`}>
       {children}
@@ -19,7 +19,7 @@ function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
   );
 }
 
-function Card({ title, children }: { title: string; children: ReactNode }) {
+export function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mb-4 break-inside-avoid rounded-xl border border-hairline bg-surface/60 p-4 shadow-sm">
       <h3 className="mb-3 font-mono text-[11px] font-semibold uppercase tracking-[0.16em] text-mint">{title}</h3>
@@ -28,11 +28,11 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-const ROW = "grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] gap-x-3 gap-y-1 border-t border-hairline/60 py-2 first:border-t-0 first:pt-0 last:pb-0";
-const TEXT = "text-[13px] leading-snug text-foreground/90";
-const MONO = "font-mono text-[12px] leading-snug text-foreground";
+export const ROW = "grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] gap-x-3 gap-y-1 border-t border-hairline/60 py-2 first:border-t-0 first:pt-0 last:pb-0";
+export const TEXT = "text-[13px] leading-snug text-foreground/90";
+export const MONO = "font-mono text-[12px] leading-snug text-foreground";
 
-function Snippet({ title, code }: { title: string; code: string }) {
+export function Snippet({ title, code }: { title: string; code: string }) {
   const [copied, setCopied] = useState(false);
   const copy = async () => {
     let done = false;

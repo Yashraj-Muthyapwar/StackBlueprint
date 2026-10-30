@@ -2186,43 +2186,1193 @@ WHERE rn = 1;`,
 const rankingRankVsDenseRank: LessonContent = {
   slug: "rank-vs-dense-rank",
   title: "RANK() vs DENSE_RANK()",
-  subtitle: "",
-  sections: [],
+  subtitle: "Ties share a rank / gaps or no gaps / peer groups",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "In the previous lesson, you mastered `ROW_NUMBER()`.",
+        "You learned that `ROW_NUMBER()` assigns a unique sequence number to every row, even when two rows have the same ordering value.",
+        "In this lesson, we will learn what happens when two or more rows must share the same rank.",
+        "Our focus is one concept: how `RANK()` and `DENSE_RANK()` handle ties differently.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need RANK() and DENSE_RANK()?",
+      body: [
+        "Imagine that you are a data engineer at a company.",
+        "Your manager asks: Rank employees by salary. Employees with equal salaries must receive the same rank.",
+        "Consider this employees table:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The employees table",
+      headers: ["employee_id", "employee_name", "salary"],
+      rows: [
+        ["1", "Alice", "9000"],
+        ["2", "Bob", "8000"],
+        ["3", "Charlie", "8000"],
+        ["4", "David", "6000"],
+        ["5", "Emma", "5000"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "We already know `ROW_NUMBER()`.",
+        "But if Bob and Charlie both earn 8000, should one be ranked second and the other third?",
+        "For a salary ranking, that may be unfair. They have equal salaries.",
+        "We need functions that assign the same rank to tied salary values.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "PostgreSQL provides `RANK()` and `DENSE_RANK()`. Both handle ties, but they assign the next rank differently.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of a ranking contest",
+      body: [
+        "Imagine five employees compete in a salary-ranking contest.",
+        "Bob and Charlie tie for second place.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "ranking-contest-podium",
+      caption: "The same tie ranked by RANK() and by DENSE_RANK()",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "`RANK()` gives the same rank to ties and leaves gaps after them. `DENSE_RANK()` gives the same rank to ties and does not leave gaps. This is the most important distinction for this lesson.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How do RANK() and DENSE_RANK() work?",
+      body: ["Consider this PostgreSQL syntax:"],
+    },
+    {
+      kind: "prose",
+      heading: "A. RANK()",
+      body: [],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "RANK() with ORDER BY",
+      code: `RANK() OVER (
+    ORDER BY salary DESC
+)`,
+    },
+    {
+      kind: "prose",
+      heading: "B. DENSE_RANK()",
+      body: [],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "DENSE_RANK() with ORDER BY",
+      code: `DENSE_RANK() OVER (
+    ORDER BY salary DESC
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "Conceptually, PostgreSQL:",
+        "1. **Orders** rows by salary, highest first.",
+        "2. **Identifies** peer groups with equal salaries.",
+        "3. **Assigns** equal ranks to rows in the same peer group.",
+        "4. **Uses** the selected ranking rule to determine the next rank.",
+        "`RANK()` assigns each peer group a rank equal to the position of its first row. `DENSE_RANK()` assigns consecutive ranks to distinct peer groups.",
+        "For our example:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Ranks for each salary level",
+      headers: ["Salary", "Number of employees", "RANK", "DENSE_RANK"],
+      rows: [
+        ["9000", "1", "1", "1"],
+        ["8000", "2", "2", "2"],
+        ["6000", "1", "4", "3"],
+        ["5000", "1", "5", "4"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Why the next rank differs",
+      items: [
+        "Why does `RANK()` jump from 2 to 4? Two employees occupy the second-ranked peer group. The next employee is in the fourth row position.",
+        "Why does `DENSE_RANK()` move from 2 to 3? It counts distinct salary levels, not occupied row positions.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["You can use either function within departments:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "RANK() restarting for each department",
+      code: `RANK() OVER (
+    PARTITION BY department
+    ORDER BY salary DESC
+)`,
+    },
+    {
+      kind: "prose",
+      body: ["This restarts ranking for each department. The same applies to `DENSE_RANK()`."],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Compare ROW_NUMBER(), RANK() and DENSE_RANK()",
+      body: [""],
+    },
+    {
+      kind: "animation",
+      variant: "q-ranking-rank-dense-rank",
+      caption: "RANK() and DENSE_RANK() sharing a rank for tied salaries.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Notice that `ROW_NUMBER()` has a unique `employee_id` tie-breaker. The other two functions order by salary alone, so equal salaries remain peers.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "ranking-tie-explorer",
+      caption: "Try adding employee_id to the window ORDER BY. Notice that the salary tie disappears.",
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Choosing between the three functions",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Choose by the ranking you need",
+      headers: ["Situation", "Correct choice or behavior"],
+      rows: [
+        ["Each row needs a unique number", "ROW_NUMBER()"],
+        ["Equal values must share a rank, with gaps", "RANK()"],
+        ["Equal values must share a rank, without gaps", "DENSE_RANK()"],
+        ["No ties exist", "All three produce the same sequence"],
+        ["Need ranking within departments", "Use PARTITION BY department"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A unique tie-breaker removes the ties",
+      body: "If `employee_id` is unique, employees with equal salaries no longer have equal values across the complete window `ORDER BY` list. Therefore, they no longer belong to the same peer group. This can accidentally remove the salary ties you wanted to preserve.",
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Fails to keep ties: employee_id makes every row unique",
+      code: `RANK() OVER (
+    ORDER BY salary DESC, employee_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: ["For salary-based ranking, use:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "Works: salary alone keeps equal salaries as peers",
+      code: `RANK() OVER (
+    ORDER BY salary DESC
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "You can still use an outer `ORDER BY salary DESC, employee_id` to make the final display deterministic without changing the salary ranks.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "Ranking functions do not use the window frame to determine their ranks.",
+        "Peer groups are determined by the window's `ORDER BY` values.",
+        "`RANK()` and `DENSE_RANK()` return `bigint` values in PostgreSQL.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-top-two-sales-levels",
+      title: "Find employees at the top two sales levels",
+      prompt:
+        "Use the department_sales_totals table (employee_id, department, total_sales). Your manager asks: Show employees who belong to the top two distinct sales levels in each department. Include all employees tied at those sales levels. Write a query returning employee_id, department, total_sales. Use DENSE_RANK(), partition by department, and order sales from highest to lowest. Use a CTE to filter the ranking result and return employees with dense rank 1 or 2. Sort the final output by department, total_sales DESC, and employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+      playgroundHref: "/sql-playground?practice=cycledepot-top-two-sales-levels",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`RANK()` and `DENSE_RANK()` give tied rows the same rank. `ROW_NUMBER()` always gives a unique number.",
+        "`RANK()` leaves gaps after a tie: 1, 2, 2, 4, 5. `DENSE_RANK()` does not: 1, 2, 2, 3, 4.",
+        "Rows are peers when every value in the window `ORDER BY` list is equal. Peer groups decide which rows share a rank.",
+        "Adding a unique column such as `employee_id` to the window `ORDER BY` removes the ties. Use it in the outer `ORDER BY` instead.",
+        "`PARTITION BY` restarts the ranking for each group. Filter a rank in a CTE or subquery, not in `WHERE` at the same level.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "rank-vs-dense-rank-output-shape",
+          question: "Five employees earn 9000, 8000, 8000, 6000 and 5000. What does `DENSE_RANK() OVER (ORDER BY salary DESC)` return, and how many rows does the query return?",
+          options: [
+            "Five rows with ranks 1, 2, 2, 3, 4.",
+            "Five rows with ranks 1, 2, 2, 4, 5.",
+            "Four rows, one for each distinct salary, with ranks 1, 2, 3, 4.",
+            "Five rows with ranks 1, 2, 3, 4, 5.",
+          ],
+          correctIndex: 0,
+          explanation: "`DENSE_RANK()` counts distinct salary levels and does not leave gaps. A window function keeps every row, so the query still returns five rows.",
+        },
+        {
+          id: "rank-vs-dense-rank-pick-function",
+          question: "Equal values must share a rank, and the next rank must follow without skipping a number. Which function fits?",
+          options: [
+            "`ROW_NUMBER()`",
+            "`RANK()`",
+            "`DENSE_RANK()`",
+            "`SUM()` with `ORDER BY`",
+          ],
+          correctIndex: 2,
+          explanation: "`DENSE_RANK()` shares a rank among ties and leaves no gap. `RANK()` shares a rank but skips numbers. `ROW_NUMBER()` never shares a number.",
+        },
+        {
+          id: "rank-vs-dense-rank-correct-query",
+          question: "You want the top two distinct salary levels in each department, with ties kept together. Which window definition is correct?",
+          options: [
+            "`DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC)`",
+            "`DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC, employee_id)`",
+            "`ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC)`",
+            "`DENSE_RANK() OVER (ORDER BY department, salary DESC)`",
+          ],
+          correctIndex: 0,
+          explanation: "`PARTITION BY department` restarts the ranking for each department, and ordering by salary alone keeps equal salaries as peers. Adding `employee_id` removes the ties, `ROW_NUMBER()` never shares a number, and without `PARTITION BY` the ranking does not restart.",
+        },
+        {
+          id: "rank-vs-dense-rank-unique-tiebreaker",
+          question: "A learner writes `RANK() OVER (ORDER BY salary DESC, employee_id)` and `employee_id` is unique. Bob and Charlie both earn 8000. What happens?",
+          options: [
+            "They still share rank 2, because the salaries are equal.",
+            "They get different ranks, because they are no longer peers across the whole `ORDER BY` list.",
+            "PostgreSQL returns an error, because `employee_id` is not allowed in the window.",
+            "They both get rank 3.",
+          ],
+          correctIndex: 1,
+          explanation: "Peers must be equal across every value in the window `ORDER BY` list. A unique `employee_id` makes every row different, so the salary tie is lost. Use `employee_id` in the outer `ORDER BY` for a stable display.",
+        },
+      ],
+    },
+  ],
 };
 
 const rankingNtile: LessonContent = {
   slug: "ntile",
   title: "NTILE()",
-  subtitle: "",
-  sections: [],
+  subtitle: "Equal-sized buckets / quartiles / position, not amount",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "You have learnt `ROW_NUMBER()`, `RANK()`, and `DENSE_RANK()`.",
+        "Those functions assign numbers based on a row's position or its ranking among peers.",
+        "In this lesson, we will learn a different concept:",
+        " `NTILE(n)` **divides ordered rows into** `n` **buckets that have approximately equal numbers of rows.**",
+        "This is useful for **customer segmentation**, **sales performance analysis**, and **interview problems involving quartiles or deciles.**",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need NTILE()?",
+      body: [
+        "Suppose you work for an **e-commerce company**.",
+        "Your manager asks: Divide our customers into four groups based on total spending. Put the highest-spending customers in the first group.",
+        "You have eight customers.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The customer_spending table",
+      headers: ["customer_id", "total_spent"],
+      rows: [
+        ["A", "1000"],
+        ["B", "900"],
+        ["C", "800"],
+        ["D", "700"],
+        ["E", "600"],
+        ["F", "500"],
+        ["G", "400"],
+        ["H", "300"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "You could rank every customer using `ROW_NUMBER()`.",
+        "But your manager does not need eight individual positions. They need four spending groups. This is what `NTILE(4)` does.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of sorting customers into baskets",
+      body: [
+        "Imagine you sort all eight customers from highest spending to lowest spending.",
+        "Then you place the customers into four baskets, with two customers in each basket.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "ranking-ntile-baskets",
+      caption: "Eight sorted customers placed into four baskets",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "`NTILE()` groups rows by their ordered positions. It does not group them by equal numerical ranges. For example, `NTILE(4)` does not mean each bucket covers 25% of the spending amount. It aims to place approximately 25% of the rows into each bucket.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How does NTILE() work?",
+      body: ["The basic PostgreSQL syntax is:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "NTILE(4) with ORDER BY",
+      code: `NTILE(4) OVER (
+    ORDER BY total_spent DESC, customer_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "The argument `4` asks PostgreSQL to make four buckets.",
+        "Conceptually, PostgreSQL:",
+        "1. **Takes** the rows available to the window function.",
+        "2. **Orders** the rows by `total_spent DESC, customer_id`.",
+        "3. **Divides** the ordered rows into four buckets.",
+        "4. **Assigns** bucket numbers starting at 1.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "What if the rows do not divide evenly?",
+      body: [
+        "Suppose you have ten rows and request three buckets.",
+        "Ten cannot be divided evenly into three whole-number groups.",
+        "PostgreSQL creates bucket sizes that differ by at most one row. Larger buckets come first.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "10 rows divided into 3 buckets",
+      headers: ["Bucket", "Rows in bucket"],
+      rows: [
+        ["Bucket 1", "4 rows"],
+        ["Bucket 2", "3 rows"],
+        ["Bucket 3", "3 rows"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["The first bucket has four rows. The remaining two buckets have three rows each."],
+    },
+    {
+      kind: "table",
+      caption: "NTILE() rules",
+      headers: ["Rule", "Meaning"],
+      rows: [
+        ["NTILE(n)", "Request n buckets"],
+        ["n must be positive", "Zero or negative bucket counts are invalid"],
+        ["Bucket numbers start at 1", "The first bucket receives 1"],
+        ["Buckets are approximately equal in size", "Their row counts differ by at most one"],
+        ["Larger buckets appear first", "Extra rows go into earlier buckets"],
+        ["PARTITION BY can be used", "Bucket assignment restarts in each partition"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "If a partition contains fewer rows than the requested number of buckets, some bucket numbers are not assigned.",
+        "For example, `NTILE(4)` over a partition containing only two rows assigns bucket numbers 1 and 2.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Spending buckets for eight customers",
+      body: ["Consider the eight-customer table."],
+    },
+    {
+      kind: "animation",
+      variant: "q-ranking-ntile",
+      caption: "NTILE(4) splitting eight ordered customers into four buckets.",
+    },
+    {
+      kind: "prose",
+      body: ["Change the number of buckets and inspect the result. This example keeps a unique order for every customer."],
+    },
+    {
+      kind: "visual",
+      id: "ranking-ntile-explorer",
+      caption: "Explore NTILE(n). With 5 buckets, the sizes are 2 / 2 / 2 / 1 / 1 rows.",
+    },
+    {
+      kind: "prose",
+      heading: "Buckets within groups",
+      body: ["You can calculate buckets separately for each region:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "NTILE(4) restarting for each region",
+      code: `NTILE(4) OVER (
+    PARTITION BY region
+    ORDER BY total_spent DESC, customer_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "PostgreSQL creates separate spending buckets within each region.",
+        "The first bucket in one region is independent of the first bucket in another region.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and alternatives",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "What to understand in each situation",
+      headers: ["Situation", "What to understand"],
+      rows: [
+        ["Two customers have equal spending", "They can be placed in different buckets"],
+        ["You need tied values to stay together", "NTILE() does not guarantee that"],
+        ["You omit a unique tie-breaker", "Tied rows may receive different, unpredictable bucket assignments"],
+        ["You use PARTITION BY region", "Buckets restart for each region"],
+        ["You request more buckets than rows", "Some bucket numbers remain unused"],
+        ["You need equal spending ranges", "NTILE() is not designed for that"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Equal values can land in different buckets",
+      body: "`NTILE(4)` assigns rows to four approximately equal-sized groups. It does not guarantee that equal spending values stay in the same bucket. Even if two customers both spend $500, they may receive different buckets if the bucket boundary falls between them.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "Adding a unique `customer_id` as a tie-breaker can make the assignment deterministic, but it does not keep tied spending values together.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "Like other ranking functions, `NTILE()` does not use a cumulative `ROWS` frame to determine its bucket numbers.",
+        "`NTILE()` cuts by row position, so it cannot create buckets of equal spending ranges.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-top-performance-bucket",
+      title: "Find employees in the top performance bucket",
+      prompt:
+        "Use the employee_performance table (employee_id, department, sales). Your manager asks: Identify employees who belong to bucket 1 of three performance buckets in each department. Write a query returning employee_id, department, sales, performance_bucket. Use NTILE(3), partition by department, and order sales from highest to lowest. Use employee_id as a tie-breaker. Use a CTE and return only employees assigned to bucket 1. Sort the final output by department, sales DESC, and employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+      playgroundHref: "/sql-playground?practice=cycledepot-top-performance-bucket",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`NTILE(n)` divides ordered rows into `n` buckets with approximately equal numbers of rows. Bucket numbers start at 1.",
+        "Bucket sizes differ by at most one row, and the larger buckets come first.",
+        "`NTILE()` groups by row position, not by equal numerical ranges of the values.",
+        "Equal values can land in different buckets. A unique tie-breaker makes the result deterministic but does not keep ties together.",
+        "`PARTITION BY` restarts the buckets in each group. Filter a bucket in a CTE or subquery, not in `WHERE` at the same level.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "ntile-output-shape",
+          question: "A query applies `NTILE(3)` to 10 ordered rows. How many rows does it return, and how big are the buckets?",
+          options: [
+            "10 rows, with buckets of 4, 3 and 3 rows.",
+            "10 rows, with buckets of 3, 3 and 4 rows.",
+            "3 rows, one for each bucket.",
+            "10 rows, with buckets of 5, 3 and 2 rows.",
+          ],
+          correctIndex: 0,
+          explanation: "A window function keeps every row. Ten rows cannot divide evenly into three buckets, so sizes differ by at most one and the larger bucket comes first: 4, 3, 3.",
+        },
+        {
+          id: "ntile-pick-function",
+          question: "Your manager wants customers split into four spending groups of about the same number of customers. Which function fits?",
+          options: [
+            "`ROW_NUMBER()`",
+            "`DENSE_RANK()`",
+            "`NTILE(4)`",
+            "`SUM()` with `ORDER BY`",
+          ],
+          correctIndex: 2,
+          explanation: "`NTILE(4)` divides the ordered rows into four buckets with about equal row counts. The ranking functions give positions or ranks, not groups.",
+        },
+        {
+          id: "ntile-correct-query",
+          question: "Which window definition creates three performance buckets in each department, highest sales first, with `employee_id` as the tie-breaker?",
+          options: [
+            "`NTILE(3) OVER (PARTITION BY department ORDER BY sales DESC, employee_id)`",
+            "`NTILE(department) OVER (ORDER BY sales DESC, employee_id)`",
+            "`NTILE(3) OVER (ORDER BY department, sales DESC, employee_id)`",
+            "`NTILE(0) OVER (PARTITION BY department ORDER BY sales DESC)`",
+          ],
+          correctIndex: 0,
+          explanation: "`PARTITION BY department` restarts the buckets in each department. The argument must be a positive number of buckets, and without `PARTITION BY` the buckets do not restart.",
+        },
+        {
+          id: "ntile-ties",
+          question: "Two customers both spend $500, and the bucket boundary falls between them. What does `NTILE(4)` do?",
+          options: [
+            "It always keeps both customers in the same bucket.",
+            "It may place them in different buckets, because it cuts by row position.",
+            "It returns an error until the tie is removed.",
+            "It gives both customers a decimal bucket number.",
+          ],
+          correctIndex: 1,
+          explanation: "`NTILE()` aims for equal row counts, not equal values. Tied values can land in different buckets, and a unique tie-breaker only makes the assignment deterministic.",
+        },
+      ],
+    },
+  ],
 };
 
 const rankingPercentRankCumeDist: LessonContent = {
   slug: "percent-rank-cume-dist",
   title: "PERCENT_RANK() and CUME_DIST()",
-  subtitle: "",
-  sections: [],
+  subtitle: "Relative rank / cumulative distribution / values from 0 to 1",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "You have already learnt `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, and `NTILE()`.",
+        "In this lesson, you will learn how to describe a row's position **relative to the other rows in its partition**, using two **PostgreSQL** functions:",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "`PERCENT_RANK()` measures relative rank.",
+        "`CUME_DIST()` measures the proportion of rows at or below the current ordering value.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["Both return a value between 0 and 1, but they calculate that value differently."],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why do we need relative positions?",
+      body: [
+        "Suppose you are building a student performance report.",
+        "Your manager asks: How well did each student perform compared with the other students?",
+        "A rank such as 3 tells you a student's position, but it does not directly express that position relative to the size of the group.",
+        "You need a way to compare relative positions across groups of different sizes.",
+        "Consider this exam_scores table:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The exam_scores table",
+      headers: ["student_id", "student_name", "score"],
+      rows: [
+        ["1", "Alice", "50"],
+        ["2", "Bob", "70"],
+        ["3", "Charlie", "70"],
+        ["4", "David", "90"],
+        ["5", "Emma", "100"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The idea",
+      body: "Notice that Bob and Charlie have the same score. We need to handle this tie correctly.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of students standing in a line",
+      body: [
+        "Imagine five students standing in a line, from lowest score to highest.",
+        "Now consider two different questions.",
+      ],
+    },
+    {
+      kind: "visual",
+      id: "ranking-relative-position",
+      caption: "The same line of students, measured two ways",
+    },
+    {
+      kind: "list",
+      items: [
+        "`PERCENT_RANK()` asks: How far along the rank scale is this student, relative to the first and last rank positions?",
+        "`CUME_DIST()` asks: What fraction of students have scores less than or equal to this student's score?",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "Four of the five students have scores of 90 or below. Therefore, David's cumulative distribution is 4/5, or 0.8. These are different measurements, even though both use ranking information.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How do PERCENT_RANK() and CUME_DIST() work?",
+      body: [],
+    },
+    {
+      kind: "prose",
+      heading: "A. PERCENT_RANK()",
+      body: ["PostgreSQL calculates:"],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "The PERCENT_RANK() formula",
+      code: `PERCENT_RANK = (RANK - 1) / (N - 1)`,
+    },
+    {
+      kind: "list",
+      heading: "Where",
+      items: [
+        "`RANK` is the current row's competition rank.",
+        "`N` is the number of rows in its partition.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["For a partition containing only one row, PostgreSQL returns 0."],
+    },
+    {
+      kind: "prose",
+      heading: "B. CUME_DIST()",
+      body: ["PostgreSQL calculates:"],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "The CUME_DIST() formula",
+      code: `CUME_DIST = (rows up to and including the current peer group) / N`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "In an ascending score order, this is the proportion of students whose scores are less than or equal to the current student's score.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "PERCENT_RANK() compared with CUME_DIST()",
+      headers: ["Property", "PERCENT_RANK()", "CUME_DIST()"],
+      rows: [
+        ["Based on", "Competition rank", "Cumulative row count"],
+        ["Tied values", "Same result", "Same result"],
+        ["Minimum possible value", "0", "Greater than 0 for a nonempty partition"],
+        ["Maximum possible value", "1", "1"],
+        ["Single-row partition", "0", "1"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Both functions use the window's `ORDER BY` to identify peer groups. Adding a unique tie-breaker can change which rows are peers.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Score the five students",
+      body: [""],
+    },
+    {
+      kind: "animation",
+      variant: "q-ranking-percent-rank-cume-dist",
+      caption: "PERCENT_RANK() and CUME_DIST() first on one partition, then with PARTITION BY department.",
+    },
+    {
+      kind: "visual",
+      id: "ranking-percent-rank-explorer",
+      caption: "Select a student to examine both calculations.",
+    },
+    {
+      kind: "prose",
+      heading: "What if you add PARTITION BY?",
+      body: [],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "PERCENT_RANK() restarting for each department",
+      code: `PERCENT_RANK() OVER (
+    PARTITION BY department
+    ORDER BY score
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "PostgreSQL calculates relative rank separately for each department. `CUME_DIST()` works the same way with partitioning.",
+        "The second stage of the animation above shows this with the same students split into Science and Arts.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and common mistakes",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Common mistakes",
+      headers: ["Mistake", "Correct understanding"],
+      rows: [
+        ["Assume the two functions are equivalent", "They use different calculations"],
+        ["Assume PERCENT_RANK() means percentage of rows with smaller scores", "It measures relative competition rank"],
+        ["Assume CUME_DIST() counts only strictly smaller values", "It includes the entire current peer group"],
+        ["Add a unique ID to the window ORDER BY unintentionally", "It may break ties and change results"],
+        ["Assume ascending and descending order give the same values", "Ordering direction matters"],
+        ["Assume results always represent statistical percentiles exactly", "They are window-based rank and distribution measures"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A useful interview distinction",
+      body: "`CUME_DIST()` is closely related to an empirical cumulative distribution, while `PERCENT_RANK()` scales competition ranks between 0 and 1.",
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "Neither function requires a cumulative `ROWS` frame.",
+        "Their behavior depends on the partition and ordering, including peer groups.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-cume-dist-above-half",
+      title: "Find employees above half of their department",
+      prompt:
+        "Use the employee_scores table (employee_id, department, performance_score). Your manager asks: Return employees whose cumulative distribution is greater than 0.50 within their department, using ascending performance scores. Write a query returning employee_id, department, performance_score, cumulative_distribution. Use CUME_DIST(), partition by department, and order by performance_score ASC inside the window. Keep tied scores as peers: do not add employee_id inside the window ordering. Use a CTE to filter results and return only rows where cumulative distribution is strictly greater than 0.50. Sort the final result by department, performance_score, and employee_id. Do not use GROUP BY, DISTINCT ON, or a subquery instead of the required CTE.",
+      playgroundHref: "/sql-playground?practice=cycledepot-cume-dist-above-half",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`PERCENT_RANK()` equals `(RANK - 1) / (N - 1)`. It scales competition ranks between 0 and 1, and the first row is always 0.",
+        "`CUME_DIST()` is the number of rows up to and including the current peer group, divided by `N`. It is always greater than 0 and ends at 1.",
+        "Tied values are peers and receive the same result from both functions.",
+        "A unique tie-breaker in the window `ORDER BY` breaks the ties and changes the results. Ordering direction also changes them.",
+        "`PARTITION BY` calculates both measures separately for each group. Neither function needs a `ROWS` frame.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "percent-rank-output-shape",
+          question: "Five students have scores 50, 70, 70, 90 and 100. What does `CUME_DIST() OVER (ORDER BY score ASC)` return for the two students with score 70?",
+          options: [
+            "0.60 for both students, and the query returns five rows.",
+            "0.40 and 0.60, and the query returns five rows.",
+            "0.25 for both students, and the query returns five rows.",
+            "0.60 for one row, because tied rows collapse into one.",
+          ],
+          correctIndex: 0,
+          explanation: "Three of the five rows are at or below 70, so both peers get 3/5 = 0.60. A window function keeps every row, so the query still returns five rows.",
+        },
+        {
+          id: "percent-rank-pick-function",
+          question: "You need the fraction of students whose score is less than or equal to each student's score. Which function fits?",
+          options: [
+            "`PERCENT_RANK()`",
+            "`CUME_DIST()`",
+            "`NTILE(5)`",
+            "`ROW_NUMBER()`",
+          ],
+          correctIndex: 1,
+          explanation: "`CUME_DIST()` counts rows up to and including the current peer group and divides by `N`. `PERCENT_RANK()` scales the competition rank instead.",
+        },
+        {
+          id: "percent-rank-correct-query",
+          question: "Which window definition calculates the cumulative distribution separately for each department, lowest score first, and keeps tied scores as peers?",
+          options: [
+            "`CUME_DIST() OVER (PARTITION BY department ORDER BY score ASC)`",
+            "`CUME_DIST() OVER (PARTITION BY department ORDER BY score ASC, employee_id)`",
+            "`CUME_DIST(department) OVER (ORDER BY score ASC)`",
+            "`CUME_DIST() OVER (ORDER BY department, score ASC)`",
+          ],
+          correctIndex: 0,
+          explanation: "`PARTITION BY department` restarts the calculation in each department. Adding `employee_id` breaks the ties, `CUME_DIST()` takes no argument, and without `PARTITION BY` the departments are not separate.",
+        },
+        {
+          id: "percent-rank-single-row",
+          question: "A partition contains only one row. What do `PERCENT_RANK()` and `CUME_DIST()` return for it?",
+          options: [
+            "Both return 0.",
+            "`PERCENT_RANK()` returns 0 and `CUME_DIST()` returns 1.",
+            "`PERCENT_RANK()` returns 1 and `CUME_DIST()` returns 0.",
+            "Both return 1.",
+          ],
+          correctIndex: 1,
+          explanation: "`PERCENT_RANK()` returns 0 for a single-row partition because `N - 1` would be 0. `CUME_DIST()` returns 1 because the one row is at or below itself.",
+        },
+      ],
+    },
+  ],
 };
 
 const rankingTopNPerGroup: LessonContent = {
   slug: "top-n-per-group",
   title: "Top-N per Group and Tie-Breaking",
-  subtitle: "",
-  sections: [],
+  subtitle: "Exactly N rows / N distinct levels / tie rules",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "You have learnt the ranking and distribution functions introduced so far: `ROW_NUMBER()`, `RANK()`, `DENSE_RANK()`, `NTILE()`, `PERCENT_RANK()`, and `CUME_DIST()`.",
+        "In this lesson, we will combine your ranking knowledge into one important SQL interview pattern: finding the **Top-N rows in each group**, with a clear rule for ties.",
+        "This pattern frequently appears in data engineering and SQL interviews.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Why is Top-N per group tricky?",
+      body: [
+        "Imagine you are a data engineer at an **e-commerce company**.",
+        "Your manager asks: Find the top two highest-paid employees in every department.",
+        "You have this employees table:",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The employees table",
+      headers: ["employee_id", "department", "salary"],
+      rows: [
+        ["101", "Engineering", "120000"],
+        ["102", "Engineering", "110000"],
+        ["103", "Engineering", "110000"],
+        ["104", "Engineering", "90000"],
+        ["201", "Sales", "100000"],
+        ["202", "Sales", "95000"],
+        ["203", "Sales", "95000"],
+        ["204", "Sales", "80000"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["A query using:"],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "LIMIT applies to the whole result",
+      code: `ORDER BY salary DESC
+LIMIT 2;`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "returns only two employees from the entire table, not two from each department.",
+        "We need to rank employees within each department, then select the employees that meet the Top-N rule.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The question that matters",
+      body: "When two employees tie, do we return exactly two employees, or do we include every employee tied at the cutoff? The answer determines which ranking function to use.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Think of each department as a competition",
+      body: ["Think of each department as a separate competition."],
+    },
+    {
+      kind: "visual",
+      id: "ranking-top-n-competition",
+      caption: "The same Engineering department selected two different ways",
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Key rule",
+      body: "Top-N employees and Top-N distinct salary levels are not the same requirement.",
+    },
+    {
+      kind: "prose",
+      heading: "3. HOW: How do we build Top-N per group?",
+      body: ["The general pattern is:"],
+    },
+    {
+      kind: "prose",
+      body: [
+        "1. **Divide** rows by the group key using `PARTITION BY`.",
+        "2. **Order** rows from highest to lowest using the business metric.",
+        "3. **Assign** a position or rank with a window function.",
+        "4. **Filter** the calculated results with a CTE or subquery.",
+        "5. **Sort** the final output with an outer `ORDER BY`.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Choose the function by the business requirement",
+      headers: ["Business requirement", "Function"],
+      rows: [
+        ["Exactly N rows per group, when at least N rows exist", "ROW_NUMBER()"],
+        ["Top N competition-rank positions, including ties", "RANK()"],
+        ["Top N distinct metric levels, including ties", "DENSE_RANK()"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "A. Exactly N rows with ROW_NUMBER()",
+      body: [],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "A unique tie-breaker makes the selection deterministic",
+      code: `ROW_NUMBER() OVER (
+    PARTITION BY department
+    ORDER BY salary DESC, employee_id
+)`,
+    },
+    {
+      kind: "prose",
+      body: ["`employee_id` makes the selection deterministic, assuming it is unique."],
+    },
+    {
+      kind: "prose",
+      heading: "B. Salary levels with DENSE_RANK()",
+      body: [
+        "But if the business rule requires equal salaries to receive equal ranks, use the metric alone in the ranking window:",
+      ],
+    },
+    {
+      kind: "code",
+      language: "sql",
+      caption: "The metric alone keeps salary ties together",
+      code: `DENSE_RANK() OVER (
+    PARTITION BY department
+    ORDER BY salary DESC
+)`,
+    },
+    {
+      kind: "prose",
+      body: [
+        "Adding `employee_id` inside this second window would break salary ties.",
+        "You can still use `employee_id` in the final outer `ORDER BY` for stable display ordering.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Two Top-N rules on the same table",
+      body: [""],
+    },
+    {
+      kind: "animation",
+      variant: "q-ranking-top-n-per-group",
+      caption: "ROW_NUMBER() keeps exactly two rows, then DENSE_RANK() keeps two salary levels.",
+    },
+    {
+      kind: "visual",
+      id: "ranking-top-n-explorer",
+      caption: "Change the ranking function and N. Watch how many employees each rule selects.",
+    },
+    {
+      kind: "prose",
+      heading: "5. TRADE-OFFS: Limitations and common mistakes",
+      body: [],
+    },
+    {
+      kind: "table",
+      caption: "Common issues",
+      headers: ["Issue", "What you should know"],
+      rows: [
+        ["LIMIT N applied to entire query", "Does not give N rows per group"],
+        ["ROW_NUMBER() with tied salaries", "Selects one ordering among ties; a unique key makes it deterministic"],
+        ["RANK() <= N", "Can return more than N rows, and may include fewer than N distinct levels"],
+        ["DENSE_RANK() <= N", "Includes all ties across the top N distinct metric levels"],
+        ["Fewer than N rows in a partition", "Returns all available rows"],
+        ["Filtering a window alias in the same WHERE", "Not valid in PostgreSQL; use a CTE or subquery"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: ["Suppose salaries are 100, 100, 90, 80."],
+    },
+    {
+      kind: "table",
+      caption: "Competition ranks compared with dense ranks",
+      headers: ["Salary", "RANK", "DENSE_RANK"],
+      rows: [
+        ["100", "1", "1"],
+        ["100", "1", "1"],
+        ["90", "3", "2"],
+        ["80", "4", "3"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "RANK() <= 2 and DENSE_RANK() <= 2 differ",
+      body: "Filtering `RANK() <= 2` returns only employees earning 100. Filtering `DENSE_RANK() <= 2` also includes the employee earning 90. This distinction is important for senior SQL interviews.",
+    },
+    {
+      kind: "list",
+      heading: "Important limitations",
+      items: [
+        "Ranking can require sorting within partitions. On large tables, this can increase CPU, memory usage, and disk activity.",
+        "Indexes that match the partition and ordering keys may help some execution plans.",
+        "Verify performance with `EXPLAIN (ANALYZE, BUFFERS)` rather than assuming that an index removes all sorting.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "6. PRACTICE: Your turn",
+      body: [],
+    },
+    {
+      kind: "sql-practice",
+      challengeId: "cycle-depot-top-two-revenue-levels",
+      title: "Find products at the top two revenue levels",
+      prompt:
+        "Use the product_sales table (sale_id, category, product_id, revenue). Assume sale_id uniquely identifies a row. Your manager asks: Return all products belonging to the top two distinct revenue levels within each category. Include every product tied at those levels. Write a query returning sale_id, category, product_id, revenue. Use DENSE_RANK(), partition by category, and order by revenue DESC inside the ranking window, without sale_id or product_id in the window ordering. Use a CTE, filter in the outer query, and return ranks 1 and 2. Order the final output by category, revenue DESC, sale_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+      playgroundHref: "/sql-playground?practice=cycledepot-top-two-revenue-levels",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "`LIMIT N` applies to the whole result. For N rows per group, rank within each group using `PARTITION BY`, then filter in a CTE or subquery.",
+        "Use `ROW_NUMBER()` for exactly N rows per group, and add a unique tie-breaker such as `employee_id` to make the choice deterministic.",
+        "Use `RANK()` for Top N competition-rank positions and `DENSE_RANK()` for Top N distinct metric levels. Both include ties.",
+        "To keep ties together, use the metric alone in the ranking window. Use the unique key only in the outer `ORDER BY`.",
+        "`RANK() <= N` and `DENSE_RANK() <= N` can return different rows. Ranking on large tables can need sorting, so check plans with `EXPLAIN (ANALYZE, BUFFERS)`.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "top-n-output-shape",
+          question: "Each department has four employees, and two of them tie for the second highest salary. How many rows does the `DENSE_RANK() <= 2` query return for two such departments?",
+          options: [
+            "Six rows, because tied employees share the second salary rank.",
+            "Four rows, two for each department.",
+            "Two rows, because the final filter limits the whole result.",
+            "Eight rows, because every employee is ranked.",
+          ],
+          correctIndex: 0,
+          explanation: "Each department has the top level plus a second level shared by two employees, so three rows per department and six in total. A `ROW_NUMBER() <= 2` query would return four rows.",
+        },
+        {
+          id: "top-n-pick-function",
+          question: "A report must contain exactly two employees per department, even when other employees tie at the cutoff. Which approach fits?",
+          options: [
+            "`ROW_NUMBER()` with a unique tie-breaker, filtered with `rn <= 2`.",
+            "`DENSE_RANK()` with the salary alone, filtered with `<= 2`.",
+            "`RANK()` with the salary alone, filtered with `<= 2`.",
+            "`ORDER BY salary DESC LIMIT 2` on the whole table.",
+          ],
+          correctIndex: 0,
+          explanation: "`ROW_NUMBER()` never gives two rows the same number, so it keeps exactly N rows per group. `RANK()` and `DENSE_RANK()` include ties, and `LIMIT 2` returns two rows for the whole table.",
+        },
+        {
+          id: "top-n-correct-query",
+          question: "You need every product in the top two distinct revenue levels of each category, with ties kept together. Which window definition is correct?",
+          options: [
+            "`DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC)`",
+            "`DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC, product_id)`",
+            "`ROW_NUMBER() OVER (PARTITION BY category ORDER BY revenue DESC)`",
+            "`DENSE_RANK() OVER (ORDER BY category, revenue DESC)`",
+          ],
+          correctIndex: 0,
+          explanation: "The metric alone keeps equal revenue values as peers, and `PARTITION BY category` restarts the ranking. Adding `product_id` breaks the ties, `ROW_NUMBER()` never shares a number, and without `PARTITION BY` the categories are not separate.",
+        },
+        {
+          id: "top-n-rank-vs-dense",
+          question: "Salaries are 100, 100, 90 and 80. Which employees does `RANK() <= 2` return?",
+          options: [
+            "Only the two employees earning 100.",
+            "The two employees earning 100 and the employee earning 90.",
+            "Only one employee, because `RANK()` removes ties.",
+            "All four employees.",
+          ],
+          correctIndex: 0,
+          explanation: "The competition ranks are 1, 1, 3, 4, so only the two employees earning 100 pass `<= 2`. The dense ranks are 1, 1, 2, 3, so `DENSE_RANK() <= 2` also includes the employee earning 90.",
+        },
+      ],
+    },
+  ],
 };
 
 const rankingQuiz: LessonContent = {
   slug: "ranking-distribution-quiz",
   title: "Ranking & Distribution: Final Quiz",
-  subtitle: "",
-  sections: [],
+  subtitle: "Test your knowledge of ranking, bucketing, percentile functions, and Top-N filtering.",
+  sections: [
+    {
+      kind: "assessment",
+      assessmentId: "ranking-distribution",
+    },
+  ],
 };
 
 const rankingCheatsheet: LessonContent = {
   slug: "ranking-distribution-cheatsheet",
   title: "Ranking & Distribution: Cheatsheet",
-  subtitle: "",
-  sections: [],
+  subtitle: "One page reference for ROW_NUMBER(), RANK(), DENSE_RANK(), NTILE(), PERCENT_RANK(), CUME_DIST(), and Top-N patterns.",
+  sections: [
+    {
+      kind: "cheatsheet",
+      cheatsheetId: "ranking-distribution",
+    },
+  ],
 };
 
 // ---------- Multi-Dimensional Aggregations (GROUPING SETS) ----------
