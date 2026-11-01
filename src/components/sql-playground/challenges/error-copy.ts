@@ -80,8 +80,9 @@ export function getErrorCopy(
 export function getCheckFeedback(reason: CheckReason, detail?: string): { body: string } {
   switch (reason) {
     case "extra-column":
+      return { body: detail ? `Not quite yet. Your result has a column that was not asked for: ${detail}. Return exactly the requested columns.` : `Not quite yet. Make sure you return exactly the requested columns.` };
     case "missing-column":
-      return { body: detail ? `Not quite yet. Check the required columns. ${detail} is incorrect.` : `Not quite yet. Make sure you return exactly the requested columns.` };
+      return { body: detail ? `Not quite yet. Your result is missing the column ${detail}. Return exactly the requested columns.` : `Not quite yet. Make sure you return exactly the requested columns.` };
     case "missing-rows":
       return { body: "Your query ran, but it leaves out some expected rows. Check your JOIN conditions and WHERE filters." };
     case "extra-rows":
@@ -94,6 +95,10 @@ export function getCheckFeedback(reason: CheckReason, detail?: string): { body: 
       return { body: "The grouping is close, but the totals do not match. Check the join grain before summing values." };
     case "duplicate-rows":
       return { body: "Some rows appear more than once. A join may be multiplying records; inspect the join keys and grouping." };
+    case "wrong-column-order":
+      return { body: detail ? `Not quite yet. You have the right columns, but in a different order. Return them in this order: ${detail}.` : "Not quite yet. You have the right columns, but in a different order." };
+    case "forbidden-construct":
+      return { body: detail ? `Not quite yet. ${detail}` : "Not quite yet. This exercise asks you to avoid a construct your query uses." };
     case "wrong-value":
       return { body: "The result values don't quite match the expected output. Double check your logic." };
     default:
@@ -130,7 +135,7 @@ export function categorizeEngineError(errorMsg: string): { category: QueryErrorC
     return { category: "type-mismatch" };
   }
   
-  if (msg.includes("timeout") || msg.includes("memory limit") || msg.includes("aborted")) {
+  if (msg.includes("timeout") || msg.includes("was stopped") || msg.includes("memory limit") || msg.includes("aborted")) {
     return { category: "timeout" };
   }
   

@@ -62,7 +62,7 @@ When a learner submits a challenge:
 4. Validate the resulting fields and rows against the oracle `expectedSql`.
 
 > [!CAUTION]  
-> **Read-only Policy**: Reject all `INSERT`, `UPDATE`, `DROP`, `INSTALL`, and DML/DDL commands.
+> **Read-only Policy** (`src/components/sql-playground/challenges/query-policy.ts`): Accept one statement of at most 5,000 characters that starts with `SELECT` or `WITH`. Comments, string literals, quoted identifiers and `$$` bodies are removed first, then the remaining words are checked. Reject `INSERT`, `UPDATE`, `DELETE`, `MERGE`, `INTO` (so `SELECT ... INTO` fails) and `FOR UPDATE` anywhere in the query, including inside a CTE. Reject functions that sleep, read the host, change settings or run SQL held in a string (`pg_sleep`, `pg_read_*`, `set_config`, `query_to_xml`, `dblink`, `lo_*`). A first word that is not a known write command, such as the typo `SELEC`, is reported as a syntax issue, not as a read-only violation.
 
 ## 4. Feedback States
 
@@ -72,3 +72,17 @@ When a learner submits a challenge:
 
 > [!WARNING]  
 > **Never** expose raw database exception stack traces to the UI. Map them to friendly categories (e.g. "Table does not exist" or "Ambiguous column") to prevent confusing beginners with implementation jargon.
+
+## 5. Inline Practice in Lessons
+
+SQL lessons can embed a challenge directly in the lesson page with a `sql-practice` section (`challengeId`, `title`, `prompt`, `playgroundHref`). It is rendered by `src/components/sql/InlineSqlPractice.tsx` and reuses the same challenge definition, query policy, validator and feedback copy as Challenge Mode. It does not use the shared playground database.
+
+- **Isolation**: queries run in `src/components/sql/sandbox/pg-sandbox.worker.ts`, a Web Worker with its own in-memory PostgreSQL (PGlite) seeded from Cycle Depot. Nothing a learner runs touches the SQL Playground session.
+- **Read-only at the engine**: every query runs inside `BEGIN TRANSACTION READ ONLY` and is rolled back, so a write that slipped past the policy is still refused by PostgreSQL.
+- **Timeout**: `src/components/sql/sandbox/pg-sandbox.ts` stops a query after 5 seconds by terminating the worker. A fresh worker starts on the next run. Results are capped at 500 rows.
+- **Solution lock**: Reveal solution stays disabled until the learner has run a query once. The revealed text uses the challenge's hand-indented `solutionDisplay` when present.
+- **Start-up**: the worker starts when the practice scrolls into view, so the rest of the lesson loads normally.
+- **Progress**: a passing run is saved with the same progress record as Challenge Mode.
+
+Do not loosen the policy, the read-only transaction or the timeout when adding a new practice.
+

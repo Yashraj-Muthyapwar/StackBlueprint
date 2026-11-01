@@ -1,0 +1,4 @@
+interface:
+  display_name: "SQL Module Quiz"
+  short_description: "Build or fix a scored SQL module final quiz"
+  default_prompt: "Use $sql-module-quiz to create or fix this SQL module final quiz: MCQ only, sections A to D, SQL challenge scored by rules, Rivet hidden until results."

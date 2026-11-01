@@ -437,8 +437,8 @@ function StageBanner({ stages, stageIdx }: { stages: Stage[]; stageIdx: number }
         <span className="shrink-0 rounded-md bg-violet/15 px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[0.16em] text-violet">
           Concept {stageIdx + 1} / {stages.length}
         </span>
-        <span className="font-mono text-[13px] text-foreground/90">{s.name}</span>
-        {s.blurb ? <span className="text-[12.5px] text-muted-foreground">— {s.blurb}</span> : null}
+        <span className="font-mono text-[13px] text-foreground/90">{s.name}{s.blurb ? ":" : ""}</span>
+        {s.blurb ? <span className="text-[12.5px] text-muted-foreground">{s.blurb}</span> : null}
       </div>
       <div className="flex items-center gap-1">
         {stages.map((_, i) => (

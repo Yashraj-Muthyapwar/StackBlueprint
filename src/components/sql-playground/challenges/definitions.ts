@@ -2366,6 +2366,1029 @@ ORDER BY raw_product_id;`,
     requirements: ["Generate dates from 2016-09-04 through 2016-09-08.", "LEFT JOIN the orders table with a half-open daily predicate.", "Return exactly purchase_date and order_count.", "Use COUNT(order_id) AS order_count.", "Order by purchase_date."], requiredTables: ["orders"], starterSql: "-- Generate a five-day Olist date spine.\n-- LEFT JOIN orders by a half-open day range.\n-- Return purchase_date and COUNT(order_id) AS order_count.", hints: ["Use generate_series with a one-day interval.", "Join where the timestamp is >= the spine date and < the next date.", "Group and order by the spine date."],
     solutionSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, validator: { kind: "result-set", expectedSql: { postgres: "WITH date_spine AS (SELECT generate_series(DATE '2016-09-04', DATE '2016-09-08', INTERVAL '1 day')::date AS purchase_date) SELECT d.purchase_date, COUNT(o.order_id) AS order_count FROM date_spine AS d LEFT JOIN orders AS o ON o.order_purchase_timestamp >= d.purchase_date AND o.order_purchase_timestamp < d.purchase_date + INTERVAL '1 day' GROUP BY d.purchase_date ORDER BY d.purchase_date;" }, requiredColumns: ["purchase_date", "order_count"], columnOrder: "exact", rowOrder: "exact" }, success: { title: "Date gaps filled", body: "Correct. You preserved the complete date axis and turned unmatched order rows into real zeroes.", nextConcept: "Date & Time final quiz" },
   },
+  {
+    id: "cycle-depot-customer-order-totals",
+    version: 1,
+    title: "Show each order beside its customer total",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every order together with the total amount spent by that order's customer.",
+    requirements: [
+      "Use the customer_orders table.",
+      "Return exactly order_id, customer_id, amount, and customer_total.",
+      "Calculate customer_total with SUM(amount) OVER (PARTITION BY customer_id).",
+      "Keep all 5 order rows. Do not collapse them with GROUP BY.",
+    ],
+    requiredTables: ["customer_orders"],
+    starterSql: `-- Show every order beside its customer's total.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and customer_total.
+-- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add SUM(amount) OVER (...) as a fourth column named customer_total.",
+      "Put PARTITION BY customer_id inside the OVER parentheses.",
+    ],
+    solutionDisplay: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY customer_id
+    ) AS customer_total
+FROM customer_orders;`,
+    solutionSql: {
+      postgres: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+      duckdb: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+        duckdb: "SELECT order_id, customer_id, amount, SUM(amount) OVER (PARTITION BY customer_id) AS customer_total FROM customer_orders;",
+      },
+      requiredColumns: ["order_id", "customer_id", "amount", "customer_total"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Window total complete",
+      body: "Correct. Every order kept its own row and also carries its customer's total, which a plain GROUP BY cannot do.",
+      nextConcept: "OVER() and the window concept",
+    },
+  },
+  {
+    id: "cycle-depot-order-average-over",
+    version: 1,
+    title: "Show each order beside the overall average",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every order together with the average amount across all five orders.",
+    requirements: [
+      "Use the customer_orders table.",
+      "Return exactly order_id, customer_id, amount, and average_order_amount.",
+      "Calculate average_order_amount with AVG(amount) OVER ().",
+      "Keep all 5 order rows.",
+      "Do not use GROUP BY, PARTITION BY, or a subquery.",
+    ],
+    requiredTables: ["customer_orders"],
+    starterSql: `-- Show every order beside the average of all five orders.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and average_order_amount.
+-- Do not use GROUP BY, PARTITION BY, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add AVG(amount) as a fourth column named average_order_amount.",
+      "Put empty parentheses after OVER so the window uses all five rows.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the order rows." },
+      { pattern: "\\bpartition\\s+by\\b", message: "This exercise asks you not to use PARTITION BY. Leave the OVER parentheses empty." },
+      { pattern: "\\(\\s*(select|with)\\b", message: "This exercise asks you not to use a subquery. Let OVER () do the work." },
+    ],
+    solutionDisplay: `SELECT
+    order_id,
+    customer_id,
+    amount,
+    AVG(amount) OVER () AS average_order_amount
+FROM customer_orders;`,
+    solutionSql: {
+      postgres: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+      duckdb: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+        duckdb: "SELECT order_id, customer_id, amount, AVG(amount) OVER () AS average_order_amount FROM customer_orders;",
+      },
+      requiredColumns: ["order_id", "customer_id", "amount", "average_order_amount"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Overall average complete",
+      body: "Correct. OVER () put the average of all five orders on every row, and no order row was lost.",
+      nextConcept: "PARTITION BY",
+    },
+  },
+  {
+    id: "cycle-depot-department-average-partition",
+    version: 1,
+    title: "Show each employee beside their department average",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every employee with the average salary of their own department.",
+    requirements: [
+      "Use the department_salaries table.",
+      "Return exactly employee_id, department, salary, and department_avg.",
+      "Calculate department_avg with AVG(salary) OVER (PARTITION BY department).",
+      "Keep all 5 employee rows.",
+      "Do not use GROUP BY, a CTE, or a subquery.",
+    ],
+    requiredTables: ["department_salaries"],
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first.",
+      "Add AVG(salary) OVER (...) as a fourth column named department_avg.",
+      "Put PARTITION BY department inside the OVER parentheses.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the employee rows." },
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let PARTITION BY do the work." },
+    ],
+    solutionDisplay: `SELECT
+    employee_id,
+    department,
+    salary,
+    AVG(salary) OVER (
+        PARTITION BY department
+    ) AS department_avg
+FROM department_salaries;`,
+    solutionSql: {
+      postgres: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+      duckdb: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+        duckdb: "SELECT employee_id, department, salary, AVG(salary) OVER (PARTITION BY department) AS department_avg FROM department_salaries;",
+      },
+      requiredColumns: ["employee_id", "department", "salary", "department_avg"],
+      columnOrder: "exact",
+      rowOrder: "any",
+    },
+    success: {
+      title: "Department average complete",
+      body: "Correct. PARTITION BY gave each department its own average, and every employee kept their own row.",
+      nextConcept: "ORDER BY inside OVER()",
+    },
+  },
+  {
+    id: "cycle-depot-first-sale-row-number",
+    version: 1,
+    title: "Find the first sale made by each employee",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Find the first sale made by each employee.",
+    requirements: [
+      "Use the employee_sales_log table.",
+      "Return exactly sale_id, employee_id, sale_date, and amount.",
+      "Use ROW_NUMBER() and restart the numbering for each employee.",
+      "Use sale_date, sale_id in ascending order to break ties.",
+      "Use a CTE and return only the first sale for each employee.",
+      "Sort the final result by employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["employee_sales_log"],
+    starterSql: `-- Find the first sale made by each employee.
+-- Table: employee_sales_log (sale_id, employee_id, sale_date, amount)
+-- Return sale_id, employee_id, sale_date, and amount.
+-- Use ROW_NUMBER() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds ROW_NUMBER() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY employee_id and ORDER BY sale_date, sale_id.",
+      "In the outer query, keep only the rows where the row number equals 1, then add ORDER BY employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\brow_number\\s*\\(\\s*\\)\\s*over\\b", message: "Use ROW_NUMBER() OVER (...) to number each employee's sales." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the row number before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Number the sales with ROW_NUMBER() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use ROW_NUMBER() instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the row number in the outer query." },
+    ],
+    solutionDisplay: `WITH numbered_sales AS (
+    SELECT
+        sale_id,
+        employee_id,
+        sale_date,
+        amount,
+        ROW_NUMBER() OVER (
+            PARTITION BY employee_id
+            ORDER BY sale_date, sale_id
+        ) AS sale_sequence
+    FROM employee_sales_log
+)
+SELECT
+    sale_id,
+    employee_id,
+    sale_date,
+    amount
+FROM numbered_sales
+WHERE sale_sequence = 1
+ORDER BY employee_id;`,
+    solutionSql: {
+      postgres: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+      duckdb: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+        duckdb: "WITH numbered_sales AS (SELECT sale_id, employee_id, sale_date, amount, ROW_NUMBER() OVER (PARTITION BY employee_id ORDER BY sale_date, sale_id) AS sale_sequence FROM employee_sales_log) SELECT sale_id, employee_id, sale_date, amount FROM numbered_sales WHERE sale_sequence = 1 ORDER BY employee_id;",
+      },
+      requiredColumns: ["sale_id", "employee_id", "sale_date", "amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "First sales found",
+      body: "Correct. ROW_NUMBER() numbered each employee's sales, and the outer query kept only number 1.",
+      nextConcept: "RANK() vs DENSE_RANK()",
+    },
+  },
+  {
+    id: "cycle-depot-top-two-sales-levels",
+    version: 1,
+    title: "Find employees at the top two sales levels",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show employees who belong to the top two distinct sales levels in each department. Include all employees tied at those sales levels.",
+    requirements: [
+      "Use the department_sales_totals table.",
+      "Return exactly employee_id, department, and total_sales.",
+      "Use DENSE_RANK() and partition by department.",
+      "Order sales from highest to lowest.",
+      "Use a CTE to filter the ranking result.",
+      "Return employees with dense rank 1 or 2.",
+      "Sort the final output by department, total_sales DESC, and employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["department_sales_totals"],
+    starterSql: `-- Show employees at the top two distinct sales levels in each department.
+-- Table: department_sales_totals (employee_id, department, total_sales)
+-- Return employee_id, department, and total_sales.
+-- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds DENSE_RANK() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY department and ORDER BY total_sales DESC. Do not add employee_id here, or the ties disappear.",
+      "In the outer query, keep rows where the dense rank is 1 or 2, then add ORDER BY department, total_sales DESC, employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bdense_rank\\s*\\(\\s*\\)\\s*over\\b", message: "Use DENSE_RANK() OVER (...) so tied sales levels share a rank without gaps." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the dense rank before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Rank the rows with DENSE_RANK() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use DENSE_RANK() instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the dense rank in the outer query." },
+    ],
+    solutionDisplay: `WITH ranked_sales AS (
+    SELECT
+        employee_id,
+        department,
+        total_sales,
+        DENSE_RANK() OVER (
+            PARTITION BY department
+            ORDER BY total_sales DESC
+        ) AS sales_level
+    FROM department_sales_totals
+)
+SELECT
+    employee_id,
+    department,
+    total_sales
+FROM ranked_sales
+WHERE sales_level <= 2
+ORDER BY department, total_sales DESC, employee_id;`,
+    solutionSql: {
+      postgres: "WITH ranked_sales AS (SELECT employee_id, department, total_sales, DENSE_RANK() OVER (PARTITION BY department ORDER BY total_sales DESC) AS sales_level FROM department_sales_totals) SELECT employee_id, department, total_sales FROM ranked_sales WHERE sales_level <= 2 ORDER BY department, total_sales DESC, employee_id;",
+      duckdb: "WITH ranked_sales AS (SELECT employee_id, department, total_sales, DENSE_RANK() OVER (PARTITION BY department ORDER BY total_sales DESC) AS sales_level FROM department_sales_totals) SELECT employee_id, department, total_sales FROM ranked_sales WHERE sales_level <= 2 ORDER BY department, total_sales DESC, employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH ranked_sales AS (SELECT employee_id, department, total_sales, DENSE_RANK() OVER (PARTITION BY department ORDER BY total_sales DESC) AS sales_level FROM department_sales_totals) SELECT employee_id, department, total_sales FROM ranked_sales WHERE sales_level <= 2 ORDER BY department, total_sales DESC, employee_id;",
+        duckdb: "WITH ranked_sales AS (SELECT employee_id, department, total_sales, DENSE_RANK() OVER (PARTITION BY department ORDER BY total_sales DESC) AS sales_level FROM department_sales_totals) SELECT employee_id, department, total_sales FROM ranked_sales WHERE sales_level <= 2 ORDER BY department, total_sales DESC, employee_id;",
+      },
+      requiredColumns: ["employee_id", "department", "total_sales"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Top sales levels found",
+      body: "Correct. DENSE_RANK() kept tied employees together, and the outer query kept dense ranks 1 and 2.",
+      nextConcept: "NTILE()",
+    },
+  },
+  {
+    id: "cycle-depot-top-performance-bucket",
+    version: 1,
+    title: "Find employees in the top performance bucket",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Identify employees who belong to bucket 1 of three performance buckets in each department.",
+    requirements: [
+      "Use the employee_performance table.",
+      "Return exactly employee_id, department, sales, and performance_bucket.",
+      "Use NTILE(3) and partition by department.",
+      "Order sales from highest to lowest and use employee_id as a tie-breaker.",
+      "Use a CTE and return only employees assigned to bucket 1.",
+      "Sort the final output by department, sales DESC, and employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["employee_performance"],
+    starterSql: `-- Identify employees in bucket 1 of three performance buckets in each department.
+-- Table: employee_performance (employee_id, department, sales)
+-- Return employee_id, department, sales, and performance_bucket.
+-- Use NTILE(3) and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds NTILE(3) OVER (...) as performance_bucket.",
+      "Inside OVER, use PARTITION BY department and ORDER BY sales DESC, employee_id.",
+      "In the outer query, keep rows where performance_bucket = 1, then add ORDER BY department, sales DESC, employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bntile\\s*\\(\\s*3\\s*\\)\\s*over\\b", message: "Use NTILE(3) OVER (...) to create three buckets." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the bucket before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Create the buckets with NTILE() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use NTILE() instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the bucket in the outer query." },
+    ],
+    solutionDisplay: `WITH performance_buckets AS (
+    SELECT
+        employee_id,
+        department,
+        sales,
+        NTILE(3) OVER (
+            PARTITION BY department
+            ORDER BY sales DESC, employee_id
+        ) AS performance_bucket
+    FROM employee_performance
+)
+SELECT
+    employee_id,
+    department,
+    sales,
+    performance_bucket
+FROM performance_buckets
+WHERE performance_bucket = 1
+ORDER BY department, sales DESC, employee_id;`,
+    solutionSql: {
+      postgres: "WITH performance_buckets AS (SELECT employee_id, department, sales, NTILE(3) OVER (PARTITION BY department ORDER BY sales DESC, employee_id) AS performance_bucket FROM employee_performance) SELECT employee_id, department, sales, performance_bucket FROM performance_buckets WHERE performance_bucket = 1 ORDER BY department, sales DESC, employee_id;",
+      duckdb: "WITH performance_buckets AS (SELECT employee_id, department, sales, NTILE(3) OVER (PARTITION BY department ORDER BY sales DESC, employee_id) AS performance_bucket FROM employee_performance) SELECT employee_id, department, sales, performance_bucket FROM performance_buckets WHERE performance_bucket = 1 ORDER BY department, sales DESC, employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH performance_buckets AS (SELECT employee_id, department, sales, NTILE(3) OVER (PARTITION BY department ORDER BY sales DESC, employee_id) AS performance_bucket FROM employee_performance) SELECT employee_id, department, sales, performance_bucket FROM performance_buckets WHERE performance_bucket = 1 ORDER BY department, sales DESC, employee_id;",
+        duckdb: "WITH performance_buckets AS (SELECT employee_id, department, sales, NTILE(3) OVER (PARTITION BY department ORDER BY sales DESC, employee_id) AS performance_bucket FROM employee_performance) SELECT employee_id, department, sales, performance_bucket FROM performance_buckets WHERE performance_bucket = 1 ORDER BY department, sales DESC, employee_id;",
+      },
+      requiredColumns: ["employee_id", "department", "sales", "performance_bucket"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Top bucket found",
+      body: "Correct. NTILE(3) split each department into three buckets, and the outer query kept bucket 1.",
+      nextConcept: "PERCENT_RANK() and CUME_DIST()",
+    },
+  },
+  {
+    id: "cycle-depot-cume-dist-above-half",
+    version: 1,
+    title: "Find employees above half of their department",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return employees whose cumulative distribution is greater than 0.50 within their department, using ascending performance scores.",
+    requirements: [
+      "Use the employee_scores table.",
+      "Return exactly employee_id, department, performance_score, and cumulative_distribution.",
+      "Use CUME_DIST() and partition by department.",
+      "Order by performance_score ASC inside the window.",
+      "Keep tied scores as peers: do not add employee_id inside the window ordering.",
+      "Use a CTE and return only rows where cumulative distribution is strictly greater than 0.50.",
+      "Sort the final result by department, performance_score, and employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or a subquery instead of the required CTE.",
+    ],
+    requiredTables: ["employee_scores"],
+    starterSql: `-- Return employees whose cumulative distribution is greater than 0.50 in their department.
+-- Table: employee_scores (employee_id, department, performance_score)
+-- Return employee_id, department, performance_score, and cumulative_distribution.
+-- Use CUME_DIST() and a CTE. Do not use GROUP BY, DISTINCT ON, or a subquery.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds CUME_DIST() OVER (...) as cumulative_distribution.",
+      "Inside OVER, use PARTITION BY department and ORDER BY performance_score ASC. Do not add employee_id here, or the ties disappear.",
+      "In the outer query, keep rows where cumulative_distribution > 0.50, then add ORDER BY department, performance_score, employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bcume_dist\\s*\\(\\s*\\)\\s*over\\b", message: "Use CUME_DIST() OVER (...) to measure the cumulative distribution." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the cumulative distribution before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Measure the distribution with CUME_DIST() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use CUME_DIST() instead." },
+      { pattern: "\\bfrom\\s*\\(\\s*select\\b", message: "Do not use a subquery. Use a CTE to filter the result." },
+      { pattern: "\\bover\\s*\\([^)]*employee_id", message: "Do not use employee_id inside the window. Keep tied scores as peers." },
+    ],
+    solutionDisplay: `WITH scored_employees AS (
+    SELECT
+        employee_id,
+        department,
+        performance_score,
+        CUME_DIST() OVER (
+            PARTITION BY department
+            ORDER BY performance_score ASC
+        ) AS cumulative_distribution
+    FROM employee_scores
+)
+SELECT
+    employee_id,
+    department,
+    performance_score,
+    cumulative_distribution
+FROM scored_employees
+WHERE cumulative_distribution > 0.50
+ORDER BY department, performance_score, employee_id;`,
+    solutionSql: {
+      postgres: "WITH scored AS (SELECT employee_id, department, performance_score, CUME_DIST() OVER (PARTITION BY department ORDER BY performance_score ASC) AS cumulative_distribution FROM employee_scores) SELECT employee_id, department, performance_score, cumulative_distribution FROM scored WHERE cumulative_distribution > 0.50 ORDER BY department, performance_score, employee_id;",
+      duckdb: "WITH scored AS (SELECT employee_id, department, performance_score, CUME_DIST() OVER (PARTITION BY department ORDER BY performance_score ASC) AS cumulative_distribution FROM employee_scores) SELECT employee_id, department, performance_score, cumulative_distribution FROM scored WHERE cumulative_distribution > 0.50 ORDER BY department, performance_score, employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH scored AS (SELECT employee_id, department, performance_score, CUME_DIST() OVER (PARTITION BY department ORDER BY performance_score ASC) AS cumulative_distribution FROM employee_scores) SELECT employee_id, department, performance_score, cumulative_distribution FROM scored WHERE cumulative_distribution > 0.50 ORDER BY department, performance_score, employee_id;",
+        duckdb: "WITH scored AS (SELECT employee_id, department, performance_score, CUME_DIST() OVER (PARTITION BY department ORDER BY performance_score ASC) AS cumulative_distribution FROM employee_scores) SELECT employee_id, department, performance_score, cumulative_distribution FROM scored WHERE cumulative_distribution > 0.50 ORDER BY department, performance_score, employee_id;",
+      },
+      requiredColumns: ["employee_id", "department", "performance_score", "cumulative_distribution"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.0001,
+    },
+    success: {
+      title: "Upper half found",
+      body: "Correct. CUME_DIST() kept tied scores together, and the outer query kept distributions above 0.50.",
+      nextConcept: "Top-N per group",
+    },
+  },
+  {
+    id: "cycle-depot-top-two-revenue-levels",
+    version: 1,
+    title: "Find products at the top two revenue levels",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return all products belonging to the top two distinct revenue levels within each category. Include every product tied at those levels.",
+    requirements: [
+      "Use the product_sales table.",
+      "Return exactly sale_id, category, product_id, and revenue.",
+      "Use DENSE_RANK() and partition by category.",
+      "Order by revenue DESC inside the ranking window.",
+      "Do not add sale_id or product_id inside the window ordering.",
+      "Use a CTE and filter in the outer query. Return ranks 1 and 2.",
+      "Order the final output by category, revenue DESC, sale_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["product_sales"],
+    starterSql: `-- Return all products at the top two distinct revenue levels in each category.
+-- Table: product_sales (sale_id, category, product_id, revenue)
+-- Return sale_id, category, product_id, and revenue.
+-- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects every column and adds DENSE_RANK() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY category and ORDER BY revenue DESC. Do not add sale_id or product_id here, or the ties disappear.",
+      "In the outer query, keep ranks 1 and 2, then add ORDER BY category, revenue DESC, sale_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bdense_rank\\s*\\(\\s*\\)\\s*over\\b", message: "Use DENSE_RANK() OVER (...) so tied revenue levels share a rank." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the dense rank before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Rank the rows with DENSE_RANK() instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use DENSE_RANK() instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the dense rank in the outer query." },
+      { pattern: "\\bover\\s*\\([^)]*(sale_id|product_id)", message: "Do not use sale_id or product_id inside the window. Keep tied revenue as peers." },
+    ],
+    solutionDisplay: `WITH ranked_products AS (
+    SELECT
+        sale_id,
+        category,
+        product_id,
+        revenue,
+        DENSE_RANK() OVER (
+            PARTITION BY category
+            ORDER BY revenue DESC
+        ) AS revenue_rank
+    FROM product_sales
+)
+SELECT
+    sale_id,
+    category,
+    product_id,
+    revenue
+FROM ranked_products
+WHERE revenue_rank <= 2
+ORDER BY category, revenue DESC, sale_id;`,
+    solutionSql: {
+      postgres: "WITH ranked_products AS (SELECT sale_id, category, product_id, revenue, DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC) AS revenue_rank FROM product_sales) SELECT sale_id, category, product_id, revenue FROM ranked_products WHERE revenue_rank <= 2 ORDER BY category, revenue DESC, sale_id;",
+      duckdb: "WITH ranked_products AS (SELECT sale_id, category, product_id, revenue, DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC) AS revenue_rank FROM product_sales) SELECT sale_id, category, product_id, revenue FROM ranked_products WHERE revenue_rank <= 2 ORDER BY category, revenue DESC, sale_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH ranked_products AS (SELECT sale_id, category, product_id, revenue, DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC) AS revenue_rank FROM product_sales) SELECT sale_id, category, product_id, revenue FROM ranked_products WHERE revenue_rank <= 2 ORDER BY category, revenue DESC, sale_id;",
+        duckdb: "WITH ranked_products AS (SELECT sale_id, category, product_id, revenue, DENSE_RANK() OVER (PARTITION BY category ORDER BY revenue DESC) AS revenue_rank FROM product_sales) SELECT sale_id, category, product_id, revenue FROM ranked_products WHERE revenue_rank <= 2 ORDER BY category, revenue DESC, sale_id;",
+      },
+      requiredColumns: ["sale_id", "category", "product_id", "revenue"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Top revenue levels found",
+      body: "Correct. DENSE_RANK() kept tied products together, and the outer query kept ranks 1 and 2 in each category.",
+      nextConcept: "Module quiz",
+    },
+  },
+  {
+    id: "cycle-depot-ranking-final-top-two-levels",
+    version: 1,
+    title: "Top two distinct salary levels per department",
+    group: "windows",
+    difficulty: "advanced",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return every employee in the top two distinct salary levels within their department, keeping all salary ties.",
+    requirements: [
+      "Use the employee_performance_review table.",
+      "Return exactly employee_id, department, and salary.",
+      "Use DENSE_RANK() and partition by department.",
+      "Order by salary DESC inside the window.",
+      "Preserve salary ties, so do not add employee_id inside the window.",
+      "Use a CTE and filter in the outer query.",
+      "Order the final output by department, salary DESC, employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["employee_performance_review"],
+    starterSql: `-- Top two distinct salary levels in each department.
+-- Table: employee_performance_review (employee_id, department, salary, performance_score)
+-- Return employee_id, department, and salary.
+-- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects the columns and adds DENSE_RANK() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY department and ORDER BY salary DESC only. Do not add employee_id here, or the ties disappear.",
+      "In the outer query, keep ranks 1 and 2, then add ORDER BY department, salary DESC, employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bdense_rank\\s*\\(\\s*\\)\\s*over\\b", message: "Use DENSE_RANK() OVER (...) so equal salaries share a rank." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the dense rank before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Rank the rows with a window function instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use a window function instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the window result in the outer query." },
+      { pattern: "\\bover\\s*\\([^)]*employee_id", message: "Do not use employee_id inside the window. Keep equal salaries as peers." },
+    ],
+    solutionDisplay: `WITH ranked_employees AS (
+    SELECT
+        employee_id,
+        department,
+        salary,
+        DENSE_RANK() OVER (
+            PARTITION BY department
+            ORDER BY salary DESC
+        ) AS salary_rank
+    FROM employee_performance_review
+)
+SELECT
+    employee_id,
+    department,
+    salary
+FROM ranked_employees
+WHERE salary_rank <= 2
+ORDER BY department, salary DESC, employee_id;`,
+    solutionSql: {
+      postgres: "WITH ranked_employees AS (SELECT employee_id, department, salary, DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS salary_rank FROM employee_performance_review) SELECT employee_id, department, salary FROM ranked_employees WHERE salary_rank <= 2 ORDER BY department, salary DESC, employee_id;",
+      duckdb: "WITH ranked_employees AS (SELECT employee_id, department, salary, DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS salary_rank FROM employee_performance_review) SELECT employee_id, department, salary FROM ranked_employees WHERE salary_rank <= 2 ORDER BY department, salary DESC, employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH ranked_employees AS (SELECT employee_id, department, salary, DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS salary_rank FROM employee_performance_review) SELECT employee_id, department, salary FROM ranked_employees WHERE salary_rank <= 2 ORDER BY department, salary DESC, employee_id;",
+        duckdb: "WITH ranked_employees AS (SELECT employee_id, department, salary, DENSE_RANK() OVER (PARTITION BY department ORDER BY salary DESC) AS salary_rank FROM employee_performance_review) SELECT employee_id, department, salary FROM ranked_employees WHERE salary_rank <= 2 ORDER BY department, salary DESC, employee_id;",
+      },
+      requiredColumns: ["employee_id", "department", "salary"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Top salary levels found",
+      body: "Correct. DENSE_RANK() kept equal salaries together, and the outer query kept the first two levels in each department. That is 8 rows.",
+      nextConcept: "Ranking & Distribution: Final Quiz",
+    },
+  },
+  {
+    id: "cycle-depot-ranking-final-exactly-two",
+    version: 1,
+    title: "Exactly two highest-paid employees per department",
+    group: "windows",
+    difficulty: "advanced",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return exactly two employees with the highest salaries from each department, using the smaller employee ID to break a salary tie.",
+    requirements: [
+      "Use the employee_performance_review table.",
+      "Return exactly employee_id, department, and salary.",
+      "Use ROW_NUMBER() and partition by department.",
+      "Use a deterministic window ordering: salary DESC, then employee_id.",
+      "Use a CTE and return only rows numbered 1 or 2 from the outer query.",
+      "Order the final output by department, salary DESC, employee_id.",
+      "Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    ],
+    requiredTables: ["employee_performance_review"],
+    starterSql: `-- Exactly two highest-paid employees in each department.
+-- Table: employee_performance_review (employee_id, department, salary, performance_score)
+-- Return employee_id, department, and salary.
+-- Use ROW_NUMBER() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Start with a CTE that selects the columns and adds ROW_NUMBER() OVER (...) as a new column.",
+      "Inside OVER, use PARTITION BY department and ORDER BY salary DESC, employee_id so a salary tie is always broken the same way.",
+      "In the outer query, keep row numbers 1 and 2, then add ORDER BY department, salary DESC, employee_id.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\brow_number\\s*\\(\\s*\\)\\s*over\\b", message: "Use ROW_NUMBER() OVER (...) so exactly two rows per department remain." },
+      { pattern: "^\\s*with\\b", message: "Use a CTE to calculate the row number before you filter." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Rank the rows with a window function instead." },
+      { pattern: "\\bdistinct\\s+on\\b", message: "Do not use DISTINCT ON. Use a window function instead." },
+      { pattern: "\\blimit\\b", message: "Do not use LIMIT. Filter the window result in the outer query." },
+    ],
+    solutionDisplay: `WITH numbered_employees AS (
+    SELECT
+        employee_id,
+        department,
+        salary,
+        ROW_NUMBER() OVER (
+            PARTITION BY department
+            ORDER BY salary DESC, employee_id
+        ) AS row_num
+    FROM employee_performance_review
+)
+SELECT
+    employee_id,
+    department,
+    salary
+FROM numbered_employees
+WHERE row_num <= 2
+ORDER BY department, salary DESC, employee_id;`,
+    solutionSql: {
+      postgres: "WITH numbered_employees AS (SELECT employee_id, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC, employee_id) AS row_num FROM employee_performance_review) SELECT employee_id, department, salary FROM numbered_employees WHERE row_num <= 2 ORDER BY department, salary DESC, employee_id;",
+      duckdb: "WITH numbered_employees AS (SELECT employee_id, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC, employee_id) AS row_num FROM employee_performance_review) SELECT employee_id, department, salary FROM numbered_employees WHERE row_num <= 2 ORDER BY department, salary DESC, employee_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH numbered_employees AS (SELECT employee_id, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC, employee_id) AS row_num FROM employee_performance_review) SELECT employee_id, department, salary FROM numbered_employees WHERE row_num <= 2 ORDER BY department, salary DESC, employee_id;",
+        duckdb: "WITH numbered_employees AS (SELECT employee_id, department, salary, ROW_NUMBER() OVER (PARTITION BY department ORDER BY salary DESC, employee_id) AS row_num FROM employee_performance_review) SELECT employee_id, department, salary FROM numbered_employees WHERE row_num <= 2 ORDER BY department, salary DESC, employee_id;",
+      },
+      requiredColumns: ["employee_id", "department", "salary"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Exactly two employees found",
+      body: "Correct. ROW_NUMBER() with a unique tie-breaker numbered every employee once, and the outer query kept rows 1 and 2. That is 6 rows.",
+      nextConcept: "Ranking & Distribution: Final Quiz",
+    },
+  },
+  {
+    id: "cycle-depot-employee-running-total",
+    version: 1,
+    title: "Show a running total of sales for each employee",
+    group: "windows",
+    difficulty: "beginner",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show every sale with a running total that restarts for each employee.",
+    requirements: [
+      "Use the employee_sales table.",
+      "Return exactly employee_id, sale_id, sale_date, amount, and running_total.",
+      "Calculate running_total separately for each employee, in chronological order of sale_date.",
+      "Display employees in ascending order, then their sales by date.",
+      "Keep all 5 sales.",
+      "Do not use GROUP BY, a CTE, or a subquery.",
+    ],
+    requiredTables: ["employee_sales"],
+    starterSql: `-- Show a running total of sales for each employee.
+-- Table: employee_sales (sale_id, employee_id, sale_date, amount)
+-- Return employee_id, sale_id, sale_date, amount, and running_total.
+-- Restart the running total for each employee, in order of sale_date.
+-- Display employees in ascending order, then their sales by date.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the columns in the order listed, then add SUM(amount) OVER (...) as running_total.",
+      "Inside OVER, put PARTITION BY employee_id first and ORDER BY sale_date after it.",
+      "The window ORDER BY does not sort the final output. Add an outer ORDER BY employee_id, sale_date after FROM.",
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. It would collapse the sales." },
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let the window function do the work." },
+    ],
+    requiresOuterOrderBy: true,
+    solutionDisplay: `SELECT
+    employee_id,
+    sale_id,
+    sale_date,
+    amount,
+    SUM(amount) OVER (
+        PARTITION BY employee_id
+        ORDER BY sale_date
+    ) AS running_total
+FROM employee_sales
+ORDER BY employee_id, sale_date;`,
+    solutionSql: {
+      postgres: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+      duckdb: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+        duckdb: "SELECT employee_id, sale_id, sale_date, amount, SUM(amount) OVER (PARTITION BY employee_id ORDER BY sale_date) AS running_total FROM employee_sales ORDER BY employee_id, sale_date;",
+      },
+      requiredColumns: ["employee_id", "sale_id", "sale_date", "amount", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Running total complete",
+      body: "Correct. The window ORDER BY built the running total for each employee, and the outer ORDER BY set the display order.",
+      nextConcept: "Default window frames and peers",
+    },
+  },
+  {
+    id: "cycle-depot-ties-running-total",
+    version: 1,
+    title: "Build a deterministic running total for tied sales",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Produce a row-by-row running total for four sales where two share a date.",
+    requirements: [
+      "Use the daily_sales table.",
+      "Return exactly sale_id, sale_date, amount, and running_total.",
+      "Use SUM(amount) OVER (...).",
+      "Order the calculation by sale_date and use sale_id as the tie-breaker.",
+      "Specify an explicit ROWS frame.",
+      "Display the final result by sale_date, then sale_id.",
+      "Do not use a CTE or a subquery.",
+    ],
+    requiredTables: ["daily_sales"],
+    starterSql: `-- Build a deterministic, row-by-row running total for the four sales.
+-- Table: daily_sales (sale_id, sale_date, amount)
+-- Return sale_id, sale_date, amount, and running_total.
+-- Use SUM(amount) OVER (...), ordered by sale_date with sale_id as the tie-breaker.
+-- Specify an explicit ROWS frame.
+-- Display the final result by sale_date, then sale_id.
+-- Do not use a CTE or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+    hints: [
+      "Select the columns in the order listed, then add SUM(amount) OVER (...) as running_total.",
+      "Inside OVER, write ORDER BY sale_date, sale_id and then an explicit ROWS frame that runs from UNBOUNDED PRECEDING to CURRENT ROW.",
+      "Add an outer ORDER BY sale_date, sale_id after FROM to control the final display order.",
+    ],
+    requiredSql: [
+      { pattern: "\\bsum\\s*\\(\\s*amount\\s*\\)\\s*over\\b", message: "Use SUM(amount) OVER (...) to calculate running_total." },
+      { pattern: "\\bover\\s*\\([^)]*order\\s+by\\s+sale_date\\s*,\\s*sale_id", message: "Order the calculation inside OVER by sale_date, with sale_id as the tie-breaker." },
+      { pattern: "\\brows\\b", message: "Specify an explicit ROWS frame inside OVER." },
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bwith\\b", message: "This exercise asks you not to use a CTE. Write a single SELECT." },
+      { pattern: "\\(\\s*select\\b", message: "This exercise asks you not to use a subquery. Let the window function do the work." },
+    ],
+    solutionDisplay: `SELECT
+    sale_id,
+    sale_date,
+    amount,
+    SUM(amount) OVER (
+        ORDER BY sale_date, sale_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+                 AND CURRENT ROW
+    ) AS running_total
+FROM daily_sales
+ORDER BY sale_date, sale_id;`,
+    solutionSql: {
+      postgres: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+      duckdb: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+        duckdb: "SELECT sale_id, sale_date, amount, SUM(amount) OVER (ORDER BY sale_date, sale_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM daily_sales ORDER BY sale_date, sale_id;",
+      },
+      requiredColumns: ["sale_id", "sale_date", "amount", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Deterministic running total complete",
+      body: "Correct. The sale_id tie-breaker and the explicit ROWS frame made the two tied sales accumulate one row at a time: 100, 300, 600, 650.",
+      nextConcept: "SQL logical execution order",
+    },
+  },
+  {
+    id: "cycle-depot-above-average-sales",
+    version: 1,
+    title: "Find sales above the overall average",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Filter on a window function result by calculating it in a CTE first.",
+    requirements: [
+      "Use the sales_amounts table.",
+      "Return exactly sale_id, employee_id, amount, and average_amount.",
+      "Calculate the average using AVG(amount) OVER ().",
+      "Keep only sales whose amount is strictly greater than that average.",
+      "Use a CTE.",
+      "Sort the final output by sale_id.",
+      "Do not use GROUP BY.",
+    ],
+    requiredTables: ["sales_amounts"],
+    starterSql: `-- Find the sales whose amount is above the average of all five sales.
+-- Table: sales_amounts (sale_id, employee_id, amount)
+-- Return sale_id, employee_id, amount, and average_amount.
+-- Calculate average_amount with AVG(amount) OVER () and keep amount > average_amount.
+-- Use a CTE and sort the final output by sale_id.
+-- Do not use GROUP BY.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Inside the CTE, select the three columns and add AVG(amount) OVER () AS average_amount.",
+      "In the outer query, select FROM your CTE and use WHERE amount > average_amount. A window result can be filtered one query level up.",
+      "Finish the outer query with ORDER BY sale_id.",
+    ],
+    requiredSql: [
+      { pattern: "^\\s*with\\b", message: "Start with a CTE: WITH name AS (...) SELECT ..." },
+      { pattern: "\\bavg\\s*\\(\\s*amount\\s*\\)\\s*over\\s*\\(\\s*\\)", message: "Calculate the average with AVG(amount) OVER ()." },
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "This exercise asks you not to use GROUP BY. The window function keeps every sale row." },
+    ],
+    solutionDisplay: `WITH sale_stats AS (
+    SELECT
+        sale_id,
+        employee_id,
+        amount,
+        AVG(amount) OVER () AS average_amount
+    FROM sales_amounts
+)
+SELECT
+    sale_id,
+    employee_id,
+    amount,
+    average_amount
+FROM sale_stats
+WHERE amount > average_amount
+ORDER BY sale_id;`,
+    solutionSql: {
+      postgres: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+      duckdb: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+        duckdb: "WITH sale_stats AS (SELECT sale_id, employee_id, amount, AVG(amount) OVER () AS average_amount FROM sales_amounts) SELECT sale_id, employee_id, amount, average_amount FROM sale_stats WHERE amount > average_amount ORDER BY sale_id;",
+      },
+      requiredColumns: ["sale_id", "employee_id", "amount", "average_amount"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Window result filtered",
+      body: "Correct. The CTE calculated the window average first, and the outer query filtered on it as an ordinary column. Only sales 4 and 5 are above 300.",
+      nextConcept: "Window Function Foundations: Final Quiz",
+    },
+  },
+  {
+    id: "cycle-depot-window-foundations-final",
+    version: 1,
+    title: "Transaction analytics report",
+    group: "windows",
+    difficulty: "advanced",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Return the above-average transactions of each account with a deterministic running total calculated before the filter.",
+    requirements: [
+      "Use the transactions table.",
+      "Return exactly txn_id, account_id, txn_date, amount, account_avg, and running_total.",
+      "Use AVG(amount) OVER (PARTITION BY account_id) for the account average.",
+      "Use SUM(amount) OVER (...) for a separate running total per account, ordered by txn_date, txn_id, with ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.",
+      "Use a CTE to calculate the window results, then apply WHERE amount > account_avg in the outer query.",
+      "Display the final rows by account_id, txn_date, then txn_id.",
+      "Calculate the running total across all transactions of each account, before filtering.",
+      "Do not use a correlated subquery or GROUP BY.",
+    ],
+    requiredTables: ["transactions"],
+    starterSql: `-- Transaction analytics report.
+-- Table: transactions (txn_id, account_id, txn_date, amount)
+-- Return txn_id, account_id, txn_date, amount, account_avg, running_total.
+-- Keep only transactions above their account's average amount.
+-- Calculate the running total across all of the account's transactions first.
+-- Use a CTE. Do not use a correlated subquery or GROUP BY.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Calculate account_avg and running_total together inside a CTE, over all of each account's transactions.",
+      "Give the running total PARTITION BY account_id, ORDER BY txn_date, txn_id and an explicit ROWS frame.",
+      "In the outer query, filter with WHERE amount > account_avg and add ORDER BY account_id, txn_date, txn_id.",
+    ],
+    requiresOuterOrderBy: true,
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. Window functions keep every transaction row." },
+      { pattern: "(?<!\\bas\\s*)\\(\\s*select\\b", message: "Use a CTE, not a correlated or inline subquery." },
+    ],
+    solutionDisplay: `WITH account_stats AS (
+    SELECT
+        txn_id,
+        account_id,
+        txn_date,
+        amount,
+        AVG(amount) OVER (
+            PARTITION BY account_id
+        ) AS account_avg,
+        SUM(amount) OVER (
+            PARTITION BY account_id
+            ORDER BY txn_date, txn_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+                     AND CURRENT ROW
+        ) AS running_total
+    FROM transactions
+)
+SELECT
+    txn_id,
+    account_id,
+    txn_date,
+    amount,
+    account_avg,
+    running_total
+FROM account_stats
+WHERE amount > account_avg
+ORDER BY account_id, txn_date, txn_id;`,
+    solutionSql: {
+      postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+        duckdb: "WITH account_stats AS (SELECT txn_id, account_id, txn_date, amount, AVG(amount) OVER (PARTITION BY account_id) AS account_avg, SUM(amount) OVER (PARTITION BY account_id ORDER BY txn_date, txn_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_total FROM transactions) SELECT txn_id, account_id, txn_date, amount, account_avg, running_total FROM account_stats WHERE amount > account_avg ORDER BY account_id, txn_date, txn_id;",
+      },
+      requiredColumns: ["txn_id", "account_id", "txn_date", "amount", "account_avg", "running_total"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+    },
+    success: {
+      title: "Transaction report complete",
+      body: "Correct. The CTE calculated the account average and the deterministic running total over every transaction, and the outer query filtered afterwards.",
+    },
+  },
 ];
 
 export function getChallenges(

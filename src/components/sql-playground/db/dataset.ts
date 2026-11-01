@@ -91,6 +91,89 @@ CREATE TABLE employees (
   hired_on   DATE          NOT NULL,
   salary     DECIMAL(10,2) NOT NULL
 );
+
+CREATE TABLE staff_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
+
+CREATE TABLE customer_orders (
+  order_id    INTEGER PRIMARY KEY,
+  customer_id VARCHAR NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
+CREATE TABLE department_salaries (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  salary      INTEGER NOT NULL
+);
+
+CREATE TABLE transactions (
+  txn_id     INTEGER PRIMARY KEY,
+  account_id VARCHAR NOT NULL,
+  txn_date   DATE    NOT NULL,
+  amount     INTEGER NOT NULL
+);
+
+CREATE TABLE employee_sales_log (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  sale_date   DATE    NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
+CREATE TABLE sales_amounts (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  amount      INTEGER NOT NULL
+);
+
+CREATE TABLE daily_sales (
+  sale_id   INTEGER PRIMARY KEY,
+  sale_date DATE    NOT NULL,
+  amount    INTEGER NOT NULL
+);
+
+CREATE TABLE department_sales_totals (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  total_sales INTEGER NOT NULL
+);
+
+CREATE TABLE employee_performance (
+  employee_id INTEGER PRIMARY KEY,
+  department  VARCHAR NOT NULL,
+  sales       INTEGER NOT NULL
+);
+
+CREATE TABLE employee_scores (
+  employee_id       INTEGER PRIMARY KEY,
+  department        VARCHAR NOT NULL,
+  performance_score INTEGER NOT NULL
+);
+
+CREATE TABLE product_sales (
+  sale_id    INTEGER PRIMARY KEY,
+  category   VARCHAR NOT NULL,
+  product_id VARCHAR NOT NULL,
+  revenue    INTEGER NOT NULL
+);
+
+CREATE TABLE employee_performance_review (
+  employee_id       INTEGER PRIMARY KEY,
+  department        VARCHAR NOT NULL,
+  salary            INTEGER NOT NULL,
+  performance_score INTEGER NOT NULL
+);
+
+CREATE TABLE employee_sales (
+  sale_id     INTEGER PRIMARY KEY,
+  employee_id VARCHAR NOT NULL,
+  sale_date   DATE    NOT NULL,
+  amount      INTEGER NOT NULL
+);
 `;
 
 // ---------------------------------------------------------------- source data
@@ -412,6 +495,118 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
       employees,
     ),
+    // Tiny tables for the Window Function Foundations lessons.
+    ...insertBatches("staff_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+    ]),
+    ...insertBatches("customer_orders", ["order_id", "customer_id", "amount"], [
+      ["101", q("A"), "100"],
+      ["102", q("A"), "200"],
+      ["103", q("B"), "150"],
+      ["104", q("B"), "250"],
+      ["105", q("B"), "100"],
+    ]),
+    ...insertBatches("department_salaries", ["employee_id", "department", "salary"], [
+      ["1", q("IT"), "5000"],
+      ["2", q("IT"), "6000"],
+      ["3", q("HR"), "4000"],
+      ["4", q("HR"), "4500"],
+      ["5", q("Sales"), "7000"],
+    ]),
+    ...insertBatches("employee_sales", ["sale_id", "employee_id", "sale_date", "amount"], [
+      ["1", q("E1"), q("2026-02-01"), "100"],
+      ["2", q("E1"), q("2026-02-03"), "150"],
+      ["3", q("E1"), q("2026-02-05"), "200"],
+      ["4", q("E2"), q("2026-02-01"), "300"],
+      ["5", q("E2"), q("2026-02-04"), "100"],
+    ]),
+    ...insertBatches("daily_sales", ["sale_id", "sale_date", "amount"], [
+      ["1", q("2026-03-01"), "100"],
+      ["2", q("2026-03-02"), "200"],
+      ["3", q("2026-03-02"), "300"],
+      ["4", q("2026-03-03"), "50"],
+    ]),
+    ...insertBatches("sales_amounts", ["sale_id", "employee_id", "amount"], [
+      ["1", q("E1"), "100"],
+      ["2", q("E1"), "200"],
+      ["3", q("E2"), "300"],
+      ["4", q("E2"), "400"],
+      ["5", q("E3"), "500"],
+    ]),
+    ...insertBatches("employee_sales_log", ["sale_id", "employee_id", "sale_date", "amount"], [
+      ["11", q("E1"), q("2026-05-01"), "300"],
+      ["12", q("E1"), q("2026-05-03"), "500"],
+      ["13", q("E1"), q("2026-05-03"), "200"],
+      ["14", q("E2"), q("2026-05-02"), "400"],
+      ["15", q("E2"), q("2026-05-04"), "600"],
+      ["16", q("E3"), q("2026-05-01"), "250"],
+    ]),
+    ...insertBatches("department_sales_totals", ["employee_id", "department", "total_sales"], [
+      ["101", q("IT"), "900"],
+      ["102", q("IT"), "700"],
+      ["103", q("IT"), "700"],
+      ["104", q("IT"), "500"],
+      ["105", q("HR"), "800"],
+      ["106", q("HR"), "800"],
+      ["107", q("HR"), "600"],
+    ]),
+    ...insertBatches("employee_performance", ["employee_id", "department", "sales"], [
+      ["101", q("IT"), "900"],
+      ["102", q("IT"), "800"],
+      ["103", q("IT"), "700"],
+      ["104", q("IT"), "600"],
+      ["105", q("IT"), "500"],
+      ["106", q("HR"), "950"],
+      ["107", q("HR"), "850"],
+      ["108", q("HR"), "750"],
+      ["109", q("HR"), "650"],
+    ]),
+    ...insertBatches("employee_scores", ["employee_id", "department", "performance_score"], [
+      ["101", q("IT"), "40"],
+      ["102", q("IT"), "60"],
+      ["103", q("IT"), "60"],
+      ["104", q("IT"), "80"],
+      ["105", q("HR"), "50"],
+      ["106", q("HR"), "70"],
+      ["107", q("HR"), "90"],
+    ]),
+    ...insertBatches("product_sales", ["sale_id", "category", "product_id", "revenue"], [
+      ["1", q("Electronics"), q("P1"), "1200"],
+      ["2", q("Electronics"), q("P2"), "1000"],
+      ["3", q("Electronics"), q("P3"), "1000"],
+      ["4", q("Electronics"), q("P4"), "700"],
+      ["5", q("Clothing"), q("P5"), "900"],
+      ["6", q("Clothing"), q("P6"), "900"],
+      ["7", q("Clothing"), q("P7"), "800"],
+      ["8", q("Clothing"), q("P8"), "600"],
+      ["9", q("Books"), q("P9"), "500"],
+      ["10", q("Books"), q("P10"), "400"],
+    ]),
+    ...insertBatches("employee_performance_review", ["employee_id", "department", "salary", "performance_score"], [
+      ["101", q("Engineering"), "120000", "95"],
+      ["102", q("Engineering"), "110000", "90"],
+      ["103", q("Engineering"), "110000", "90"],
+      ["104", q("Engineering"), "90000", "70"],
+      ["105", q("Engineering"), "80000", "60"],
+      ["201", q("Sales"), "100000", "92"],
+      ["202", q("Sales"), "95000", "85"],
+      ["203", q("Sales"), "95000", "85"],
+      ["204", q("Sales"), "75000", "65"],
+      ["301", q("HR"), "90000", "88"],
+      ["302", q("HR"), "80000", "75"],
+      ["303", q("HR"), "70000", "75"],
+    ]),
+    ...insertBatches("transactions", ["txn_id", "account_id", "txn_date", "amount"], [
+      ["1", q("A"), q("2026-04-01"), "100"],
+      ["2", q("A"), q("2026-04-02"), "200"],
+      ["3", q("A"), q("2026-04-02"), "50"],
+      ["4", q("B"), q("2026-04-01"), "300"],
+      ["5", q("B"), q("2026-04-03"), "100"],
+      ["6", q("A"), q("2026-04-04"), "150"],
+    ]),
   ];
 
   const tables: DatasetTableInfo[] = [
@@ -432,6 +627,71 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       rows: employees.length,
       blurb: "Self-referencing hierarchy via manager_id.",
     },
+    {
+      name: "staff_salaries",
+      rows: 4,
+      blurb: "Four employees in IT and HR. Used by the window function lessons.",
+    },
+    {
+      name: "customer_orders",
+      rows: 5,
+      blurb: "Five orders from customers A and B. Used by the window function lessons.",
+    },
+    {
+      name: "department_salaries",
+      rows: 5,
+      blurb: "Five employees in IT, HR and Sales. Used by the PARTITION BY lesson.",
+    },
+    {
+      name: "employee_sales",
+      rows: 5,
+      blurb: "Five dated sales by employees E1 and E2. Used by the ORDER BY inside OVER() lesson.",
+    },
+    {
+      name: "daily_sales",
+      rows: 4,
+      blurb: "Four sales where two share a date. Used by the default window frames lesson.",
+    },
+    {
+      name: "sales_amounts",
+      rows: 5,
+      blurb: "Five sales by employees E1, E2 and E3. Used by the SQL logical execution order lesson.",
+    },
+    {
+      name: "employee_sales_log",
+      rows: 6,
+      blurb: "Six dated sales by employees E1, E2 and E3. Used by the ROW_NUMBER() lesson.",
+    },
+    {
+      name: "department_sales_totals",
+      rows: 7,
+      blurb: "Seven employees in IT and HR with tied sales totals. Used by the RANK() vs DENSE_RANK() lesson.",
+    },
+    {
+      name: "employee_performance",
+      rows: 9,
+      blurb: "Nine employees in IT and HR with sales figures. Used by the NTILE() lesson.",
+    },
+    {
+      name: "employee_scores",
+      rows: 7,
+      blurb: "Seven employees in IT and HR with performance scores. Used by the PERCENT_RANK() and CUME_DIST() lesson.",
+    },
+    {
+      name: "product_sales",
+      rows: 10,
+      blurb: "Ten product sales in Electronics, Clothing and Books with tied revenue. Used by the Top-N per group lesson.",
+    },
+    {
+      name: "employee_performance_review",
+      rows: 12,
+      blurb: "Twelve employees in Engineering, Sales and HR with salaries and performance scores. Used by the Ranking & Distribution final quiz.",
+    },
+    {
+      name: "transactions",
+      rows: 6,
+      blurb: "Six bank transactions on accounts A and B. Used by the window function foundations final assessment.",
+    },
   ];
 
   cached = { statements, tables };
@@ -445,6 +705,19 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   orders: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
   order_items: ["id", "order_id", "product_id", "quantity", "unit_price"],
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
+  staff_salaries: ["employee_id", "department", "salary"],
+  customer_orders: ["order_id", "customer_id", "amount"],
+  department_salaries: ["employee_id", "department", "salary"],
+  employee_sales: ["sale_id", "employee_id", "sale_date", "amount"],
+  daily_sales: ["sale_id", "sale_date", "amount"],
+  sales_amounts: ["sale_id", "employee_id", "amount"],
+  employee_sales_log: ["sale_id", "employee_id", "sale_date", "amount"],
+  department_sales_totals: ["employee_id", "department", "total_sales"],
+  employee_performance: ["employee_id", "department", "sales"],
+  employee_scores: ["employee_id", "department", "performance_score"],
+  product_sales: ["sale_id", "category", "product_id", "revenue"],
+  employee_performance_review: ["employee_id", "department", "salary", "performance_score"],
+  transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
 
 export const STARTER_SQL = `-- Cycle Depot. Same data on PostgreSQL and DuckDB.

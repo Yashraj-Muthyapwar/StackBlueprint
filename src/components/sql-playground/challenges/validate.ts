@@ -116,6 +116,22 @@ export function validateResult(
       }
     }
 
+    // The column names are right. When the challenge asks for an exact column
+    // order, follow the reference query's order (the order the prompt lists).
+    if (validator.columnOrder === "exact") {
+      const expectedOrder = expected.fields.map((f) => f.name.toLowerCase());
+      const sameOrder =
+        expectedOrder.length === actualColsLower.length &&
+        expectedOrder.every((name, i) => name === actualColsLower[i]);
+      if (!sameOrder) {
+        return {
+          state: "incorrect",
+          reason: "wrong-column-order",
+          detail: expected.fields.map((f) => f.name).join(", "),
+        };
+      }
+    }
+
     if (actual.rows.length < expected.rows.length) {
       return { state: "incorrect", reason: "missing-rows" };
     }

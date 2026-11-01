@@ -56,6 +56,7 @@ import { Route as PythonTopicLessonRouteImport } from './routes/python/$topic/$l
 import { Route as SqlFoundationsTopicRouteImport } from './routes/sql/foundations/$topic'
 import { Route as SqlQueryingTopicRouteImport } from './routes/sql/querying/$topic'
 import { Route as SqlSpecializedTopicRouteImport } from './routes/sql/specialized/$topic'
+import { Route as SqlWindowFunctionsTopicRouteImport } from './routes/sql/window-functions/$topic'
 import { Route as SystemDesignDistributedSystemsTopicRouteImport } from './routes/system-design/distributed-systems/$topic'
 import { Route as SystemDesignFoundationsTopicRouteImport } from './routes/system-design/foundations/$topic'
 import { Route as SystemDesignFundamentalsTopicRouteImport } from './routes/system-design/fundamentals/$topic'
@@ -78,6 +79,8 @@ import { Route as SqlQueryingTopicIndexRouteImport } from './routes/sql/querying
 import { Route as SqlQueryingTopicLessonRouteImport } from './routes/sql/querying/$topic/$lesson'
 import { Route as SqlSpecializedTopicIndexRouteImport } from './routes/sql/specialized/$topic/index'
 import { Route as SqlSpecializedTopicLessonRouteImport } from './routes/sql/specialized/$topic/$lesson'
+import { Route as SqlWindowFunctionsTopicIndexRouteImport } from './routes/sql/window-functions/$topic/index'
+import { Route as SqlWindowFunctionsTopicLessonRouteImport } from './routes/sql/window-functions/$topic/$lesson'
 import { Route as SystemDesignDistributedSystemsTopicIndexRouteImport } from './routes/system-design/distributed-systems/$topic/index'
 import { Route as SystemDesignDistributedSystemsTopicLessonRouteImport } from './routes/system-design/distributed-systems/$topic/$lesson'
 import { Route as SystemDesignFoundationsTopicIndexRouteImport } from './routes/system-design/foundations/$topic/index'
@@ -331,6 +334,11 @@ const SqlSpecializedTopicRoute = SqlSpecializedTopicRouteImport.update({
   path: '/sql/specialized/$topic',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SqlWindowFunctionsTopicRoute = SqlWindowFunctionsTopicRouteImport.update({
+  id: '/sql/window-functions/$topic',
+  path: '/sql/window-functions/$topic',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SystemDesignDistributedSystemsTopicRoute =
   SystemDesignDistributedSystemsTopicRouteImport.update({
     id: '/system-design/distributed-systems/$topic',
@@ -461,6 +469,18 @@ const SqlSpecializedTopicLessonRoute =
     path: '/$lesson',
     getParentRoute: () => SqlSpecializedTopicRoute,
   } as any)
+const SqlWindowFunctionsTopicIndexRoute =
+  SqlWindowFunctionsTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => SqlWindowFunctionsTopicRoute,
+  } as any)
+const SqlWindowFunctionsTopicLessonRoute =
+  SqlWindowFunctionsTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => SqlWindowFunctionsTopicRoute,
+  } as any)
 const SystemDesignDistributedSystemsTopicIndexRoute =
   SystemDesignDistributedSystemsTopicIndexRouteImport.update({
     id: '/',
@@ -564,6 +584,7 @@ export interface FileRoutesByFullPath {
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
   '/sql/specialized/$topic': typeof SqlSpecializedTopicRouteWithChildren
+  '/sql/window-functions/$topic': typeof SqlWindowFunctionsTopicRouteWithChildren
   '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicRouteWithChildren
   '/system-design/foundations/$topic': typeof SystemDesignFoundationsTopicRouteWithChildren
   '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
@@ -583,6 +604,7 @@ export interface FileRoutesByFullPath {
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
   '/sql/specialized/$topic/$lesson': typeof SqlSpecializedTopicLessonRoute
+  '/sql/window-functions/$topic/$lesson': typeof SqlWindowFunctionsTopicLessonRoute
   '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
   '/system-design/foundations/$topic/$lesson': typeof SystemDesignFoundationsTopicLessonRoute
   '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
@@ -596,6 +618,7 @@ export interface FileRoutesByFullPath {
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
   '/sql/specialized/$topic/': typeof SqlSpecializedTopicIndexRoute
+  '/sql/window-functions/$topic/': typeof SqlWindowFunctionsTopicIndexRoute
   '/system-design/distributed-systems/$topic/': typeof SystemDesignDistributedSystemsTopicIndexRoute
   '/system-design/foundations/$topic/': typeof SystemDesignFoundationsTopicIndexRoute
   '/system-design/fundamentals/$topic/': typeof SystemDesignFundamentalsTopicIndexRoute
@@ -647,6 +670,7 @@ export interface FileRoutesByTo {
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
   '/sql/specialized/$topic/$lesson': typeof SqlSpecializedTopicLessonRoute
+  '/sql/window-functions/$topic/$lesson': typeof SqlWindowFunctionsTopicLessonRoute
   '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
   '/system-design/foundations/$topic/$lesson': typeof SystemDesignFoundationsTopicLessonRoute
   '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
@@ -660,6 +684,7 @@ export interface FileRoutesByTo {
   '/sql/foundations/$topic': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic': typeof SqlQueryingTopicIndexRoute
   '/sql/specialized/$topic': typeof SqlSpecializedTopicIndexRoute
+  '/sql/window-functions/$topic': typeof SqlWindowFunctionsTopicIndexRoute
   '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicIndexRoute
   '/system-design/foundations/$topic': typeof SystemDesignFoundationsTopicIndexRoute
   '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicIndexRoute
@@ -710,6 +735,7 @@ export interface FileRoutesById {
   '/sql/foundations/$topic': typeof SqlFoundationsTopicRouteWithChildren
   '/sql/querying/$topic': typeof SqlQueryingTopicRouteWithChildren
   '/sql/specialized/$topic': typeof SqlSpecializedTopicRouteWithChildren
+  '/sql/window-functions/$topic': typeof SqlWindowFunctionsTopicRouteWithChildren
   '/system-design/distributed-systems/$topic': typeof SystemDesignDistributedSystemsTopicRouteWithChildren
   '/system-design/foundations/$topic': typeof SystemDesignFoundationsTopicRouteWithChildren
   '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
@@ -729,6 +755,7 @@ export interface FileRoutesById {
   '/sql/foundations/$topic/$lesson': typeof SqlFoundationsTopicLessonRoute
   '/sql/querying/$topic/$lesson': typeof SqlQueryingTopicLessonRoute
   '/sql/specialized/$topic/$lesson': typeof SqlSpecializedTopicLessonRoute
+  '/sql/window-functions/$topic/$lesson': typeof SqlWindowFunctionsTopicLessonRoute
   '/system-design/distributed-systems/$topic/$lesson': typeof SystemDesignDistributedSystemsTopicLessonRoute
   '/system-design/foundations/$topic/$lesson': typeof SystemDesignFoundationsTopicLessonRoute
   '/system-design/fundamentals/$topic/$lesson': typeof SystemDesignFundamentalsTopicLessonRoute
@@ -742,6 +769,7 @@ export interface FileRoutesById {
   '/sql/foundations/$topic/': typeof SqlFoundationsTopicIndexRoute
   '/sql/querying/$topic/': typeof SqlQueryingTopicIndexRoute
   '/sql/specialized/$topic/': typeof SqlSpecializedTopicIndexRoute
+  '/sql/window-functions/$topic/': typeof SqlWindowFunctionsTopicIndexRoute
   '/system-design/distributed-systems/$topic/': typeof SystemDesignDistributedSystemsTopicIndexRoute
   '/system-design/foundations/$topic/': typeof SystemDesignFoundationsTopicIndexRoute
   '/system-design/fundamentals/$topic/': typeof SystemDesignFundamentalsTopicIndexRoute
@@ -793,6 +821,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
     | '/sql/specialized/$topic'
+    | '/sql/window-functions/$topic'
     | '/system-design/distributed-systems/$topic'
     | '/system-design/foundations/$topic'
     | '/system-design/fundamentals/$topic'
@@ -812,6 +841,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
     | '/sql/specialized/$topic/$lesson'
+    | '/sql/window-functions/$topic/$lesson'
     | '/system-design/distributed-systems/$topic/$lesson'
     | '/system-design/foundations/$topic/$lesson'
     | '/system-design/fundamentals/$topic/$lesson'
@@ -825,6 +855,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
     | '/sql/specialized/$topic/'
+    | '/sql/window-functions/$topic/'
     | '/system-design/distributed-systems/$topic/'
     | '/system-design/foundations/$topic/'
     | '/system-design/fundamentals/$topic/'
@@ -876,6 +907,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
     | '/sql/specialized/$topic/$lesson'
+    | '/sql/window-functions/$topic/$lesson'
     | '/system-design/distributed-systems/$topic/$lesson'
     | '/system-design/foundations/$topic/$lesson'
     | '/system-design/fundamentals/$topic/$lesson'
@@ -889,6 +921,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
     | '/sql/specialized/$topic'
+    | '/sql/window-functions/$topic'
     | '/system-design/distributed-systems/$topic'
     | '/system-design/foundations/$topic'
     | '/system-design/fundamentals/$topic'
@@ -938,6 +971,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic'
     | '/sql/querying/$topic'
     | '/sql/specialized/$topic'
+    | '/sql/window-functions/$topic'
     | '/system-design/distributed-systems/$topic'
     | '/system-design/foundations/$topic'
     | '/system-design/fundamentals/$topic'
@@ -957,6 +991,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic/$lesson'
     | '/sql/querying/$topic/$lesson'
     | '/sql/specialized/$topic/$lesson'
+    | '/sql/window-functions/$topic/$lesson'
     | '/system-design/distributed-systems/$topic/$lesson'
     | '/system-design/foundations/$topic/$lesson'
     | '/system-design/fundamentals/$topic/$lesson'
@@ -970,6 +1005,7 @@ export interface FileRouteTypes {
     | '/sql/foundations/$topic/'
     | '/sql/querying/$topic/'
     | '/sql/specialized/$topic/'
+    | '/sql/window-functions/$topic/'
     | '/system-design/distributed-systems/$topic/'
     | '/system-design/foundations/$topic/'
     | '/system-design/fundamentals/$topic/'
@@ -1016,6 +1052,7 @@ export interface RootRouteChildren {
   SqlFoundationsTopicRoute: typeof SqlFoundationsTopicRouteWithChildren
   SqlQueryingTopicRoute: typeof SqlQueryingTopicRouteWithChildren
   SqlSpecializedTopicRoute: typeof SqlSpecializedTopicRouteWithChildren
+  SqlWindowFunctionsTopicRoute: typeof SqlWindowFunctionsTopicRouteWithChildren
   SystemDesignDistributedSystemsTopicRoute: typeof SystemDesignDistributedSystemsTopicRouteWithChildren
   SystemDesignFoundationsTopicRoute: typeof SystemDesignFoundationsTopicRouteWithChildren
   SystemDesignFundamentalsTopicRoute: typeof SystemDesignFundamentalsTopicRouteWithChildren
@@ -1357,6 +1394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SqlSpecializedTopicRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sql/window-functions/$topic': {
+      id: '/sql/window-functions/$topic'
+      path: '/sql/window-functions/$topic'
+      fullPath: '/sql/window-functions/$topic'
+      preLoaderRoute: typeof SqlWindowFunctionsTopicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/system-design/distributed-systems/$topic': {
       id: '/system-design/distributed-systems/$topic'
       path: '/system-design/distributed-systems/$topic'
@@ -1510,6 +1554,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/sql/specialized/$topic/$lesson'
       preLoaderRoute: typeof SqlSpecializedTopicLessonRouteImport
       parentRoute: typeof SqlSpecializedTopicRoute
+    }
+    '/sql/window-functions/$topic/': {
+      id: '/sql/window-functions/$topic/'
+      path: '/'
+      fullPath: '/sql/window-functions/$topic/'
+      preLoaderRoute: typeof SqlWindowFunctionsTopicIndexRouteImport
+      parentRoute: typeof SqlWindowFunctionsTopicRoute
+    }
+    '/sql/window-functions/$topic/$lesson': {
+      id: '/sql/window-functions/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/sql/window-functions/$topic/$lesson'
+      preLoaderRoute: typeof SqlWindowFunctionsTopicLessonRouteImport
+      parentRoute: typeof SqlWindowFunctionsTopicRoute
     }
     '/system-design/distributed-systems/$topic/': {
       id: '/system-design/distributed-systems/$topic/'
@@ -1773,6 +1831,22 @@ const SqlSpecializedTopicRouteChildren: SqlSpecializedTopicRouteChildren = {
 const SqlSpecializedTopicRouteWithChildren =
   SqlSpecializedTopicRoute._addFileChildren(SqlSpecializedTopicRouteChildren)
 
+interface SqlWindowFunctionsTopicRouteChildren {
+  SqlWindowFunctionsTopicLessonRoute: typeof SqlWindowFunctionsTopicLessonRoute
+  SqlWindowFunctionsTopicIndexRoute: typeof SqlWindowFunctionsTopicIndexRoute
+}
+
+const SqlWindowFunctionsTopicRouteChildren: SqlWindowFunctionsTopicRouteChildren =
+  {
+    SqlWindowFunctionsTopicLessonRoute: SqlWindowFunctionsTopicLessonRoute,
+    SqlWindowFunctionsTopicIndexRoute: SqlWindowFunctionsTopicIndexRoute,
+  }
+
+const SqlWindowFunctionsTopicRouteWithChildren =
+  SqlWindowFunctionsTopicRoute._addFileChildren(
+    SqlWindowFunctionsTopicRouteChildren,
+  )
+
 interface SystemDesignDistributedSystemsTopicRouteChildren {
   SystemDesignDistributedSystemsTopicLessonRoute: typeof SystemDesignDistributedSystemsTopicLessonRoute
   SystemDesignDistributedSystemsTopicIndexRoute: typeof SystemDesignDistributedSystemsTopicIndexRoute
@@ -1885,6 +1959,7 @@ const rootRouteChildren: RootRouteChildren = {
   SqlFoundationsTopicRoute: SqlFoundationsTopicRouteWithChildren,
   SqlQueryingTopicRoute: SqlQueryingTopicRouteWithChildren,
   SqlSpecializedTopicRoute: SqlSpecializedTopicRouteWithChildren,
+  SqlWindowFunctionsTopicRoute: SqlWindowFunctionsTopicRouteWithChildren,
   SystemDesignDistributedSystemsTopicRoute:
     SystemDesignDistributedSystemsTopicRouteWithChildren,
   SystemDesignFoundationsTopicRoute:

@@ -408,6 +408,167 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Return name and price for Road Bikes, highest price first, keeping 3 rows.
 -- Write your SELECT query below, then choose Run and check.`,
   },
+  "cycledepot-customer-order-totals": {
+    id: "cycledepot-customer-order-totals",
+    title: "Show each order beside its customer total",
+    prompt:
+      "Write a PostgreSQL query on customer_orders to return the following columns: order_id, customer_id, amount, customer_total (the total amount spent by that order's customer). Do not use a GROUP BY query that removes individual orders.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-customer-order-totals",
+    starterSql: `-- Show every order beside its customer's total.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and customer_total.
+-- Keep all 5 orders. Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-order-average-over": {
+    id: "cycledepot-order-average-over",
+    title: "Show each order beside the overall average",
+    prompt:
+      "Write a query that returns order_id, customer_id, amount, and average_order_amount from customer_orders. The new column must show the average amount across all five orders, while keeping every order row. Do not use GROUP BY, PARTITION BY, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-order-average-over",
+    starterSql: `-- Show every order beside the average of all five orders.
+-- Table: customer_orders (order_id, customer_id, amount)
+-- Return order_id, customer_id, amount, and average_order_amount.
+-- Do not use GROUP BY, PARTITION BY, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-department-average-partition": {
+    id: "cycledepot-department-average-partition",
+    title: "Show each employee beside their department average",
+    prompt:
+      "Write a query on department_salaries returning employee_id, department, salary, department_avg. Use AVG() with OVER() and PARTITION BY. Do not use GROUP BY, a CTE, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-department-average-partition",
+    starterSql: `-- Show every employee beside their department's average salary.
+-- Table: department_salaries (employee_id, department, salary)
+-- Return employee_id, department, salary, and department_avg.
+-- Use AVG() with OVER() and PARTITION BY.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-first-sale-row-number": {
+    id: "cycledepot-first-sale-row-number",
+    title: "Find the first sale made by each employee",
+    prompt:
+      "Write a query on employee_sales_log that returns sale_id, employee_id, sale_date, amount for each employee's first sale. Use ROW_NUMBER() with PARTITION BY employee_id and sale_date, sale_id as the ordering. Use a CTE. Sort the final result by employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-first-sale-row-number",
+    starterSql: `-- Find the first sale made by each employee.
+-- Table: employee_sales_log (sale_id, employee_id, sale_date, amount)
+-- Return sale_id, employee_id, sale_date, and amount.
+-- Use ROW_NUMBER() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+  },
+  "cycledepot-top-two-sales-levels": {
+    id: "cycledepot-top-two-sales-levels",
+    title: "Find employees at the top two sales levels",
+    prompt:
+      "Write a query on department_sales_totals that returns employee_id, department, total_sales for employees at the top two distinct sales levels in each department, including all tied employees. Use DENSE_RANK() with PARTITION BY department and ORDER BY total_sales DESC. Use a CTE. Sort the final output by department, total_sales DESC, and employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-top-two-sales-levels",
+    starterSql: `-- Show employees at the top two distinct sales levels in each department.
+-- Table: department_sales_totals (employee_id, department, total_sales)
+-- Return employee_id, department, and total_sales.
+-- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+  },
+  "cycledepot-top-performance-bucket": {
+    id: "cycledepot-top-performance-bucket",
+    title: "Find employees in the top performance bucket",
+    prompt:
+      "Write a query on employee_performance that returns employee_id, department, sales, performance_bucket for employees in bucket 1 of three performance buckets in each department. Use NTILE(3) with PARTITION BY department and ORDER BY sales DESC, employee_id. Use a CTE. Sort the final output by department, sales DESC, and employee_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-top-performance-bucket",
+    starterSql: `-- Identify employees in bucket 1 of three performance buckets in each department.
+-- Table: employee_performance (employee_id, department, sales)
+-- Return employee_id, department, sales, and performance_bucket.
+-- Use NTILE(3) and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+  },
+  "cycledepot-cume-dist-above-half": {
+    id: "cycledepot-cume-dist-above-half",
+    title: "Find employees above half of their department",
+    prompt:
+      "Write a query on employee_scores that returns employee_id, department, performance_score, cumulative_distribution for employees whose cumulative distribution is greater than 0.50 within their department. Use CUME_DIST() with PARTITION BY department and ORDER BY performance_score ASC, without employee_id in the window. Use a CTE. Sort the final result by department, performance_score, and employee_id. Do not use GROUP BY, DISTINCT ON, or a subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-cume-dist-above-half",
+    starterSql: `-- Return employees whose cumulative distribution is greater than 0.50 in their department.
+-- Table: employee_scores (employee_id, department, performance_score)
+-- Return employee_id, department, performance_score, and cumulative_distribution.
+-- Use CUME_DIST() and a CTE. Do not use GROUP BY, DISTINCT ON, or a subquery.
+-- Write your query below, then choose Run and check.`,
+  },
+  "cycledepot-top-two-revenue-levels": {
+    id: "cycledepot-top-two-revenue-levels",
+    title: "Find products at the top two revenue levels",
+    prompt:
+      "Write a query on product_sales that returns sale_id, category, product_id, revenue for all products in the top two distinct revenue levels within each category, including every tied product. Use DENSE_RANK() with PARTITION BY category and ORDER BY revenue DESC, without sale_id or product_id in the window. Use a CTE and filter ranks 1 and 2 in the outer query. Order the final output by category, revenue DESC, sale_id. Do not use GROUP BY, DISTINCT ON, or LIMIT.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-top-two-revenue-levels",
+    starterSql: `-- Return all products at the top two distinct revenue levels in each category.
+-- Table: product_sales (sale_id, category, product_id, revenue)
+-- Return sale_id, category, product_id, and revenue.
+-- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
+-- Write your query below, then choose Run and check.`,
+  },
+  "cycledepot-employee-running-total": {
+    id: "cycledepot-employee-running-total",
+    title: "Show a running total of sales for each employee",
+    prompt:
+      "Write a query on employee_sales that returns employee_id, sale_id, sale_date, amount, running_total. Calculate a running total separately for each employee, following chronological order using sale_date. Display employees in ascending order, then their sales by date. Preserve all five sales. Do not use GROUP BY, CTEs, or subqueries.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-employee-running-total",
+    starterSql: `-- Show a running total of sales for each employee.
+-- Table: employee_sales (sale_id, employee_id, sale_date, amount)
+-- Return employee_id, sale_id, sale_date, amount, and running_total.
+-- Restart the running total for each employee, in order of sale_date.
+-- Display employees in ascending order, then their sales by date.
+-- Do not use GROUP BY, a CTE, or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-ties-running-total": {
+    id: "cycledepot-ties-running-total",
+    title: "Build a deterministic running total for tied sales",
+    prompt:
+      "Write a query on daily_sales that produces a deterministic row-by-row running total. Return sale_id, sale_date, amount, running_total. Use SUM(amount) OVER (...), order the calculation by date with sale_id as the tie-breaker, specify an explicit ROWS frame, and display the result by sale_date then sale_id. Do not use a CTE or subquery.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-ties-running-total",
+    starterSql: `-- Build a deterministic, row-by-row running total for the four sales.
+-- Table: daily_sales (sale_id, sale_date, amount)
+-- Return sale_id, sale_date, amount, and running_total.
+-- Use SUM(amount) OVER (...), ordered by sale_date with sale_id as the tie-breaker.
+-- Specify an explicit ROWS frame.
+-- Display the final result by sale_date, then sale_id.
+-- Do not use a CTE or a subquery.
+-- Write your SELECT query below, then choose Run and check.`,
+  },
+  "cycledepot-above-average-sales": {
+    id: "cycledepot-above-average-sales",
+    title: "Find sales above the overall average",
+    prompt:
+      "Write a PostgreSQL query on sales_amounts returning sale_id, employee_id, amount, average_amount. Calculate the average using AVG(amount) OVER (), keep only sales whose amount is strictly greater than that average, use a CTE, sort the final output by sale_id, and do not use GROUP BY.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-above-average-sales",
+    starterSql: `-- Find the sales whose amount is above the average of all five sales.
+-- Table: sales_amounts (sale_id, employee_id, amount)
+-- Return sale_id, employee_id, amount, and average_amount.
+-- Calculate average_amount with AVG(amount) OVER () and keep amount > average_amount.
+-- Use a CTE and sort the final output by sale_id.
+-- Do not use GROUP BY.
+-- Write your query below, then choose Run and check.`,
+  },
   "cycledepot-customer-coverage-summary": {
     id: "cycledepot-customer-coverage-summary",
     title: "Build a customer coverage summary",
