@@ -16,12 +16,18 @@ export type BoardNode = {
   h?: number;
   tone?: "mint" | "violet" | "amber" | "muted" | "sky" | "rose";
   /** Defaults to a rounded rectangle. A cylinder is drawn as one grouped component. */
-  shape?: "rectangle" | "ellipse" | "diamond" | "cylinder";
+  shape?: "rectangle" | "ellipse" | "diamond" | "cylinder" | "note";
   /** Square corners (rectangles only). */
   sharp?: boolean;
 };
 
-export type BoardEdge = { from: string; to: string; label?: string };
+export type BoardEdge = {
+  from: string;
+  to: string;
+  label?: string;
+  /** Shifts the arrow up (negative) or down (positive), so a request and its response can run side by side. */
+  offset?: number;
+};
 
 export type BoardRule = {
   id: string;
@@ -31,6 +37,14 @@ export type BoardRule = {
   node?: string[];
   /** Passes when an arrow joins a shape matching `from` to a shape matching `to`. */
   edge?: { from: string[]; to: string[]; anyDirection?: boolean };
+  /**
+   * Passes when at least `atLeast` pieces of text on the board match the pattern (a
+   * case-insensitive regular expression), for example three delays such as "20 ms". With
+   * `attached`, only text that belongs to a component or an arrow counts (written on an arrow,
+   * inside a shape's name, or right next to one), so a note floating on its own does not. With
+   * `distinct`, the matched values themselves must differ (four different delays, not "20 ms" twice).
+   */
+  text?: { pattern: string; atLeast: number; attached?: boolean; distinct?: boolean };
 };
 
 export type BoardDefinition = {
@@ -51,6 +65,10 @@ export type BoardDefinition = {
 export type DiagramGraph = {
   nodes: { id: string; label: string }[];
   edges: { from: string; to: string }[];
+  /** Every piece of text on the board: shape labels, arrow labels and loose notes. */
+  texts: string[];
+  /** The text that belongs to a component or an arrow, not text floating on its own. */
+  attachedTexts: string[];
 };
 
 const matches = (label: string, words: string[]) => {
@@ -63,6 +81,20 @@ export function evaluateRules(rules: BoardRule[], graph: DiagramGraph) {
     let done = false;
     if (rule.node) {
       done = graph.nodes.some((n) => matches(n.label, rule.node!));
+    } else if (rule.text) {
+      const re = new RegExp(rule.text.pattern, "i");
+      const pool = rule.text.attached ? graph.attachedTexts : graph.texts;
+      if (rule.text.distinct) {
+        const found = new Set<string>();
+        for (const t of pool) {
+          for (const m of t.match(new RegExp(rule.text.pattern, "gi")) ?? []) {
+            found.add(m.toLowerCase().replace(/\s+/g, ""));
+          }
+        }
+        done = found.size >= rule.text.atLeast;
+      } else {
+        done = pool.filter((t) => re.test(t)).length >= rule.text.atLeast;
+      }
     } else if (rule.edge) {
       const { from, to, anyDirection } = rule.edge;
       const byId = new Map(graph.nodes.map((n) => [n.id, n.label]));
@@ -93,7 +125,85 @@ const flowNodes: BoardNode[] = [
   { id: "db", label: "Database", x: 780, y: 107, tone: "violet", shape: "cylinder" },
 ];
 
+/**
+ * The Latency vs Throughput vs Bandwidth lesson's whiteboard practice: an image service whose
+ * numbers differ from the lesson's product-search API. The answer shows the latency, the
+ * throughput, the payload, the network load against the link, and the requests in progress.
+ */
+const imageApiNodes: BoardNode[] = [
+  { id: "client", label: "Phone App", x: 0, y: 110, tone: "muted" },
+  { id: "service", label: "Image Service (80 ms)", x: 340, y: 110, w: 250, tone: "mint" },
+  {
+    id: "load",
+    label: "Network load: 300 x 100 KB = 30 MB/s = 240 Mbps of a 1 Gbps link",
+    x: 150,
+    y: 250,
+    shape: "note",
+    tone: "violet",
+  },
+  {
+    id: "progress",
+    label: "In progress: 300 x 0.08 s = 24 requests",
+    x: 150,
+    y: 300,
+    shape: "note",
+    tone: "amber",
+  },
+];
+
 export const BOARDS: Record<string, BoardDefinition> = {
+  "throughput-bandwidth-load": {
+    id: "throughput-bandwidth-load",
+    file: "image_service_load.board",
+    title: "Work out the load on an image service",
+    prompt:
+      "A phone app requests thumbnails from an image service. The service completes 300 requests per second, each response is 100 KB, and the average request takes 80 ms. The link between them is 1 Gbps. Draw the app and the service with an arrow in each direction. Write the throughput on the request arrow, put the latency in the service's name, then add two notes: the network load in Mbps, and the average number of requests in progress. Double-click an arrow to write on it, or double-click a shape to edit its name.",
+    rules: [
+      { id: "client", label: "Add a Client", node: ["app", ...USER] },
+      { id: "service", label: "Add the Image Service", node: ["image", ...SERVICE] },
+      {
+        id: "client-service",
+        label: "Connect Client → Service",
+        edge: { from: ["app", ...USER], to: ["image", ...SERVICE] },
+      },
+      {
+        id: "service-client",
+        label: "Connect Service → Client",
+        edge: { from: ["image", ...SERVICE], to: ["app", ...USER] },
+      },
+      {
+        id: "latency",
+        label: "Show the latency, like 80 ms",
+        text: { pattern: "\\b80\\s*ms", atLeast: 1 },
+      },
+      {
+        id: "throughput",
+        label: "Show the throughput, like 300 RPS",
+        text: { pattern: "\\b300\\s*(rps|requests)", atLeast: 1 },
+      },
+      {
+        id: "load",
+        label: "Write the network load in Mbps",
+        text: { pattern: "\\b240\\s*mbps", atLeast: 1 },
+      },
+      {
+        id: "progress",
+        label: "Write the requests in progress",
+        text: { pattern: "\\b24\\s*(requests|in progress)", atLeast: 1 },
+      },
+    ],
+    starter: { nodes: [], edges: [] },
+    solution: {
+      nodes: imageApiNodes,
+      edges: [
+        { from: "client", to: "service", label: "300 RPS", offset: -24 },
+        { from: "service", to: "client", label: "100 KB each", offset: 24 },
+      ],
+    },
+    passNote:
+      "300 responses of 100 KB each need 240 Mbps, about a quarter of the 1 Gbps link, so the network is not the limit here. With 80 ms per request, about 24 requests are in progress at any moment.",
+  },
+
   "url-shortener-basic": {
     id: "url-shortener-basic",
     file: "url_shortener_basic.board",
