@@ -1,23 +1,13 @@
-import { useEffect, useId, useMemo, useState } from "react";
-import type { KeyboardEvent } from "react";
+import { useId } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import {
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Pause,
-  Play,
-  RotateCcw,
-  Sparkles,
-} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { LessonWalkthrough } from "@/components/system-design/LessonWalkthrough";
+import { NodeBox, WhiteboardDefs } from "@/components/system-design/whiteboard";
 import { cn } from "@/lib/utils";
 
-/* A whiteboard walkthrough of the URL shortener: requirements first, then the
-   basic create and redirect flow. It uses the same frame and controls as the
-   pattern lessons (window chrome, status card, transport bar) without a code
-   panel. The stage has a fixed height, so the page never jumps while it plays. */
+/* A whiteboard walkthrough of the URL shortener: requirements first, then the basic create and
+   redirect flow. The frame and controls come from the shared LessonWalkthrough; this file owns
+   the steps and what is drawn inside the stage. */
 
 const FUNCTIONAL = ["Create short URLs", "Redirect to original URLs"];
 const NON_FUNCTIONAL = [
@@ -328,312 +318,52 @@ const STEPS: Step[] = [
   },
 ];
 
-const TONE: Record<NonNullable<Stat["tone"]>, string> = {
-  mint: "text-mint",
-  violet: "text-violet",
-  amber: "text-amber-600 dark:text-amber-400",
-};
-
-const firstStepOf = (group: string) => STEPS.findIndex((s) => s.group === group);
-
 export function UrlShortenerWhiteboard() {
-  const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState<0.5 | 1 | 2>(1);
   const reduced = !!useReducedMotion();
   const uid = useId().replace(/:/g, "");
 
-  const step = STEPS[index];
-  const last = index >= STEPS.length - 1;
-  const reservedNarrations = useMemo(
-    () =>
-      [...new Set(STEPS.map((s) => s.narration))].sort((a, b) => b.length - a.length).slice(0, 4),
-    [],
-  );
-
-  useEffect(() => {
-    if (!playing) return;
-    const timer = setInterval(
-      () =>
-        setIndex((current) => {
-          if (current >= STEPS.length - 1) {
-            setPlaying(false);
-            return current;
-          }
-          return current + 1;
-        }),
-      Math.round(2000 / speed),
-    );
-    return () => clearInterval(timer);
-  }, [playing, speed]);
-
-  useEffect(() => {
-    const pause = () => setPlaying(false);
-    window.addEventListener("quiz-started", pause);
-    return () => window.removeEventListener("quiz-started", pause);
-  }, []);
-
-  const goTo = (i: number) => {
-    setPlaying(false);
-    setIndex(Math.max(0, Math.min(i, STEPS.length - 1)));
-  };
-  const stepBy = (d: number) => goTo(index + d);
-  const togglePlay = () => {
-    if (last) {
-      setIndex(0);
-      setPlaying(true);
-    } else setPlaying((p) => !p);
-  };
-  const onKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-    if (e.key === "ArrowRight") {
-      e.preventDefault();
-      stepBy(1);
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      stepBy(-1);
-    } else if (e.key === " ") {
-      e.preventDefault();
-      togglePlay();
-    }
-  };
-
   return (
-    <section
-      tabIndex={0}
-      onKeyDown={onKeyDown}
-      aria-label="URL shortener requirements and basic flow, drawn on a whiteboard"
-      className="@container relative overflow-clip rounded-2xl border border-hairline bg-slate-50 shadow-sm outline-none focus-visible:ring-2 focus-visible:ring-mint/50 dark:bg-surface"
-    >
-      <div className="pointer-events-none absolute -left-20 -top-20 size-56 rounded-full bg-mint/10 blur-[70px]" />
-      <div className="pointer-events-none absolute -bottom-20 -right-20 size-56 rounded-full bg-blue-500/10 blur-[70px]" />
-
-      {/* Window chrome */}
-      <div className="relative space-y-3 border-b border-hairline bg-surface-2/40 px-4 py-3 sm:px-5">
-        <div className="flex items-center gap-2.5 whitespace-nowrap">
-          <div className="flex shrink-0 items-center gap-1.5">
-            <div className="size-2.5 rounded-full bg-rose-500/80" />
-            <div className="size-2.5 rounded-full bg-amber-500/80" />
-            <div className="size-2.5 rounded-full bg-emerald-500/80" />
-          </div>
-          <div className="h-3.5 w-px shrink-0 bg-hairline" />
-          <Sparkles className="size-3.5 shrink-0 text-mint" />
-          <span className="font-mono text-[13px] font-semibold text-foreground">
-            url_shortener.board
-          </span>
-          <span className="hidden min-w-0 truncate text-[13px] text-muted-foreground @min-[30rem]:inline">
-            Requirements and basic flow
-          </span>
-        </div>
-        <div className="-mx-1 flex min-w-0 items-center gap-2 overflow-x-auto px-1 py-0.5 [scrollbar-width:none]">
-          {GROUPS.map((g) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => goTo(firstStepOf(g))}
-              className={cn(
-                "h-8 shrink-0 whitespace-nowrap rounded-full border px-3 text-xs font-medium transition-colors",
-                step.group === g
-                  ? "border-mint bg-mint/10 text-mint"
-                  : "border-hairline bg-background text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {g}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="relative flex min-w-0 flex-col gap-4 p-4 sm:p-6">
-        {/* Stage */}
-        <div className="flex h-[17.5rem] items-center justify-center rounded-xl border border-hairline bg-background/60 bg-[radial-gradient(circle,_var(--hairline)_1px,_transparent_1px)] [background-size:22px_22px] px-2">
-          <svg
-            viewBox="0 0 760 320"
-            role="img"
-            aria-label={step.narration}
-            className="h-full w-full max-w-[880px]"
-          >
-            <defs>
-              <filter id={`${uid}-rough`} x="-5%" y="-5%" width="110%" height="110%">
-                <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="4" />
-                <feDisplacementMap in="SourceGraphic" scale="2.6" />
-              </filter>
-              <marker
-                id={`${uid}-arrow`}
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto-start-reverse"
-              >
-                <path d="M0 0 L10 5 L0 10 z" className="fill-muted-foreground" />
-              </marker>
-              <marker
-                id={`${uid}-arrow-on`}
-                viewBox="0 0 10 10"
-                refX="8"
-                refY="5"
-                markerWidth="7"
-                markerHeight="7"
-                orient="auto-start-reverse"
-              >
-                <path d="M0 0 L10 5 L0 10 z" className="fill-mint" />
-              </marker>
-            </defs>
-
-            <AnimatePresence mode="wait" initial={false}>
-              {step.stage === "board" ? (
-                <motion.g
-                  key="board"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Board uid={uid} step={step} reduced={reduced} />
-                </motion.g>
-              ) : (
-                <motion.g
-                  key={step.stage}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <Flow uid={uid} stage={step.stage} index={index} reduced={reduced} />
-                </motion.g>
-              )}
-            </AnimatePresence>
-          </svg>
-        </div>
-
-        {/* Status card */}
-        <div
-          className={cn(
-            "rounded-xl border px-4 py-3 transition-colors duration-300",
-            last ? "border-mint/40 bg-mint/5" : "border-hairline bg-background/70",
-          )}
+    <LessonWalkthrough
+      ariaLabel="URL shortener requirements and basic flow, drawn on a whiteboard"
+      fileName="url_shortener.board"
+      label="Requirements and basic flow"
+      groups={GROUPS}
+      steps={STEPS}
+      renderStage={(step, index) => (
+        <svg
+          viewBox="0 0 760 320"
+          role="img"
+          aria-label={step.narration}
+          className="h-full w-full max-w-[880px]"
         >
-          <div className="flex items-center gap-2.5">
-            {last ? (
-              <CheckCircle2 className="size-5 shrink-0 text-mint" />
+          <WhiteboardDefs uid={uid} />
+
+          <AnimatePresence mode="wait" initial={false}>
+            {step.stage === "board" ? (
+              <motion.g
+                key="board"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Board uid={uid} step={step} reduced={reduced} />
+              </motion.g>
             ) : (
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-hairline font-mono text-[10px] font-bold text-muted-foreground">
-                {index + 1}
-              </span>
+              <motion.g
+                key={step.stage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Flow uid={uid} stage={step.stage} index={index} reduced={reduced} />
+              </motion.g>
             )}
-            <span className="min-w-0 truncate text-[13px] font-semibold text-mint">
-              {step.phase}
-            </span>
-          </div>
-          <div className="mt-1.5 grid min-h-[3.2rem] text-sm leading-relaxed">
-            {reservedNarrations.map((text) => (
-              <p key={text} aria-hidden className="invisible [grid-area:1/1]">
-                {text}
-              </p>
-            ))}
-            <p
-              key={index}
-              className="text-foreground/90 duration-300 animate-in fade-in [grid-area:1/1]"
-            >
-              {step.narration}
-            </p>
-          </div>
-          <div className="mt-3 flex gap-1.5 overflow-x-auto [scrollbar-width:none]">
-            {step.stats.map((stat) => (
-              <span
-                key={stat.label}
-                className="flex shrink-0 items-baseline gap-1.5 rounded-md border border-hairline bg-surface-2/60 px-2 py-1 font-mono"
-              >
-                <span className="text-[11px] text-muted-foreground">{stat.label}</span>
-                <strong
-                  className={cn("text-[13px]", stat.tone ? TONE[stat.tone] : "text-foreground")}
-                >
-                  {stat.value}
-                </strong>
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Transport controls */}
-      <div className="relative flex items-center gap-2 border-t border-hairline bg-surface-2/30 px-4 py-3 sm:px-5">
-        <div className="absolute inset-x-0 top-0 h-0.5 bg-hairline/60">
-          <div
-            className="h-full bg-mint transition-[width] duration-300"
-            style={{ width: `${((index + 1) / STEPS.length) * 100}%` }}
-          />
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          onClick={togglePlay}
-          className="h-9 min-w-[6.5rem] @min-[30rem]:min-w-28"
-        >
-          {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
-          {playing ? "Pause" : last ? "Replay" : "Autoplay"}
-        </Button>
-        <Button
-          type="button"
-          size="icon"
-          variant="outline"
-          className="size-9"
-          onClick={() => stepBy(-1)}
-          disabled={index === 0}
-          aria-label="Previous step"
-        >
-          <ChevronLeft className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          size="icon"
-          variant="outline"
-          className="size-9"
-          onClick={() => stepBy(1)}
-          disabled={last}
-          aria-label="Next step"
-        >
-          <ChevronRight className="size-4" />
-        </Button>
-        <Button
-          type="button"
-          size="icon"
-          variant="outline"
-          className="size-9"
-          onClick={() => goTo(0)}
-          aria-label="Reset to the first step"
-        >
-          <RotateCcw className="size-4" />
-        </Button>
-        <span className="ml-1 whitespace-nowrap font-mono text-xs text-muted-foreground">
-          {index + 1} / {STEPS.length}
-        </span>
-        <div className="ml-auto hidden items-center gap-3 @min-[34rem]:flex">
-          <span className="hidden whitespace-nowrap font-mono text-[11px] text-muted-foreground @min-[60rem]:inline">
-            ← → step · space play
-          </span>
-          <div className="flex items-center rounded-lg border border-hairline bg-background p-0.5 font-mono text-[11px]">
-            {([0.5, 1, 2] as const).map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() => setSpeed(option)}
-                className={cn(
-                  "rounded-md px-2 py-1 font-semibold transition-colors",
-                  speed === option
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-                aria-label={`Playback speed ${option}x`}
-              >
-                {option}x
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
+          </AnimatePresence>
+        </svg>
+      )}
+    />
   );
 }
 
@@ -934,101 +664,6 @@ function Flow({
           </motion.g>
         ) : null}
       </AnimatePresence>
-    </g>
-  );
-}
-
-function NodeBox({
-  x,
-  y,
-  w,
-  h,
-  uid,
-  tone,
-  title,
-  sub,
-  icon,
-  highlight,
-}: {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  uid: string;
-  tone: "mint" | "violet" | "muted";
-  title: string;
-  sub: string;
-  icon: "user" | "server" | "db";
-  highlight?: boolean;
-}) {
-  const stroke =
-    tone === "mint"
-      ? "stroke-mint"
-      : tone === "violet"
-        ? "stroke-violet"
-        : "stroke-muted-foreground";
-  const fill =
-    tone === "mint" ? "fill-mint" : tone === "violet" ? "fill-violet" : "fill-foreground";
-  const strokeOnly =
-    tone === "mint" ? "stroke-mint" : tone === "violet" ? "stroke-violet" : "stroke-foreground";
-  const cx = x + w / 2;
-  return (
-    <g>
-      <motion.rect
-        x={x}
-        y={y}
-        width={w}
-        height={h}
-        rx={14}
-        strokeWidth={2.2}
-        className={cn(
-          stroke,
-          highlight ? (tone === "violet" ? "fill-violet/10" : "fill-mint/10") : "fill-background",
-        )}
-        filter={`url(#${uid}-rough)`}
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.7, ease: "easeInOut" }}
-      />
-      <g
-        className={strokeOnly}
-        fill="none"
-        strokeWidth={2}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        {icon === "user" ? (
-          <>
-            <circle cx={cx} cy={y + 30} r={9} />
-            <path d={`M${cx - 18} ${y + 62} Q${cx} ${y + 40} ${cx + 18} ${y + 62}`} />
-          </>
-        ) : null}
-        {icon === "server" ? (
-          <>
-            <rect x={cx - 20} y={y + 16} width={40} height={16} rx={4} />
-            <rect x={cx - 20} y={y + 36} width={40} height={16} rx={4} />
-            <circle cx={cx - 11} cy={y + 24} r={1.6} className={fill} />
-            <circle cx={cx - 11} cy={y + 44} r={1.6} className={fill} />
-          </>
-        ) : null}
-        {icon === "db" ? (
-          <>
-            <ellipse cx={cx} cy={y + 20} rx={20} ry={7} />
-            <path
-              d={`M${cx - 20} ${y + 20} V${y + 46} C${cx - 20} ${y + 56} ${cx + 20} ${y + 56} ${cx + 20} ${y + 46} V${y + 20}`}
-            />
-            <path
-              d={`M${cx - 20} ${y + 33} C${cx - 20} ${y + 43} ${cx + 20} ${y + 43} ${cx + 20} ${y + 33}`}
-            />
-          </>
-        ) : null}
-      </g>
-      <text x={cx} y={y + 88} textAnchor="middle" className={cn("text-[15px] font-semibold", fill)}>
-        {title}
-      </text>
-      <text x={cx} y={y + 106} textAnchor="middle" className="fill-muted-foreground text-[11.5px]">
-        {sub}
-      </text>
     </g>
   );
 }

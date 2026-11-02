@@ -99,6 +99,7 @@ const sections: Section[] = [
         blurb: "Measuring performance and reliability, and why p50 and p99 tell different stories.",
         icon: Gauge,
         modules: [
+          "Latency vs Throughput vs Bandwidth",
           "Scalability",
         ],
         unlocked: true,

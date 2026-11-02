@@ -311,6 +311,10 @@ export type Section =
   | { kind: "system-design-estimation-walkthrough" }
   | { kind: "system-design-scalability-loop" }
   | { kind: "url-shortener-whiteboard" }
+  | { kind: "highway-metrics" }
+  | { kind: "throughput-concurrency" }
+  | { kind: "percentile-bars" }
+  | { kind: "api-load-calculator" }
   | { kind: "diagram-board"; boardId: string }
   | { kind: "scaled-framework" }
   | { kind: "mnemonic"; text: string; title?: string; subtext?: string }

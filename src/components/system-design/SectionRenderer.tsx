@@ -43,15 +43,48 @@ import { EstimationWalkthrough } from "@/components/system-design/foundations/Es
 import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
 import { UrlShortenerWhiteboard } from "@/components/system-design/foundations/UrlShortenerWhiteboard";
 import { DiagramBoard } from "@/components/lesson/diagram-board/DiagramBoard";
+import { HighwayMetrics } from "@/components/system-design/core-metrics/HighwayMetrics";
+import { ConcurrencyLanes } from "@/components/system-design/core-metrics/ConcurrencyLanes";
+import { PercentileBars } from "@/components/system-design/core-metrics/PercentileBars";
+import { ApiLoadCalculator } from "@/components/system-design/core-metrics/ApiLoadCalculator";
 import { ScaledFramework } from "@/components/system-design/foundations/ScaledFramework";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
-    "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
-    "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
-    "RUN", "ENV", "EXPOSE", "VOLUME", "ENTRYPOINT",
-    "ssh", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh-agent", "scp", "sftp", "chmod",
-    "Host", "HostName", "User", "IdentityFile",
+    "docker",
+    "run",
+    "build",
+    "pull",
+    "push",
+    "ps",
+    "stop",
+    "start",
+    "exec",
+    "systemctl",
+    "sudo",
+    "open",
+    "uname",
+    "FROM",
+    "WORKDIR",
+    "COPY",
+    "CMD",
+    "RUN",
+    "ENV",
+    "EXPOSE",
+    "VOLUME",
+    "ENTRYPOINT",
+    "ssh",
+    "ssh-keygen",
+    "ssh-copy-id",
+    "ssh-add",
+    "ssh-agent",
+    "scp",
+    "sftp",
+    "chmod",
+    "Host",
+    "HostName",
+    "User",
+    "IdentityFile",
   ]);
   const nodes: React.ReactNode[] = [];
   let i = 0;
@@ -62,7 +95,12 @@ export function highlightShell(line: string, isTerminal?: boolean) {
       const newlineIdx = line.indexOf("\n", i);
       const end = newlineIdx === -1 ? line.length : newlineIdx;
       nodes.push(
-        <span key={key++} className={isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"}>
+        <span
+          key={key++}
+          className={
+            isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"
+          }
+        >
           {line.slice(i, end)}
         </span>,
       );
@@ -134,9 +172,12 @@ export function highlightShell(line: string, isTerminal?: boolean) {
   return nodes;
 }
 
-function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|\n)/g);
+function parseInlineMarkdown(text: string): React.ReactNode {
+  const parts = text.split(
+    /(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|<sub>.*?<\/sub>|<sup>.*?<\/sup>|_{[^{}]+}|\^{[^{}]+}|~[^\s~]+~|\n)/g,
+  );
   return parts.map((part, i) => {
+    if (!part) return null;
     if (part === "\n") {
       return <br key={i} />;
     }
@@ -171,14 +212,14 @@ function parseInlineMarkdown(text: string) {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={i} className="font-semibold text-foreground">
-          {part.slice(2, -2)}
+          {parseInlineMarkdown(part.slice(2, -2))}
         </strong>
       );
     }
     if (part.startsWith("*") && part.endsWith("*")) {
       return (
         <em key={i} className="italic text-foreground">
-          {part.slice(1, -1)}
+          {parseInlineMarkdown(part.slice(1, -1))}
         </em>
       );
     }
@@ -192,11 +233,44 @@ function parseInlineMarkdown(text: string) {
         </code>
       );
     }
+    if (part.startsWith("<sub>") && part.endsWith("</sub>")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(5, -6)}
+        </sub>
+      );
+    }
+    if (part.startsWith("^{") && part.endsWith("}")) {
+      return (
+        <sup key={i} className="text-[0.75em]">
+          {part.slice(2, -1)}
+        </sup>
+      );
+    }
+    if (part.startsWith("<sup>") && part.endsWith("</sup>")) {
+      return (
+        <sup key={i} className="text-[0.75em]">
+          {part.slice(5, -6)}
+        </sup>
+      );
+    }
+    if (part.startsWith("_{") && part.endsWith("}")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(2, -1)}
+        </sub>
+      );
+    }
+    if (part.startsWith("~") && part.endsWith("~")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(1, -1)}
+        </sub>
+      );
+    }
     return part;
   });
 }
-
-
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -228,16 +302,20 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
+export function SectionRenderer({
+  section,
+  onQuizActiveChange,
+}: {
+  section: Section;
+  onQuizActiveChange?: (active: boolean) => void;
+}) {
   switch (section.kind) {
     case "prose":
       return (
         <section className="space-y-3">
           {section.eyebrow ? <SectionMarker label={section.eyebrow} /> : null}
           {section.heading ? (
-            <h2 className="lesson-section-title font-semibold tracking-tight">
-              {section.heading}
-            </h2>
+            <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
           {section.body.map((p, i) => (
             <p key={i} className="lesson-prose text-muted-foreground">
@@ -251,7 +329,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       const lines = section.code.split("\n");
       let langLabel = section.language || "docker";
       if (section.language === "bash") {
-        const hasLinuxCmd = section.code.includes("sudo ") || section.code.includes("apt-get") || section.code.includes("nano ") || section.code.includes("systemctl ");
+        const hasLinuxCmd =
+          section.code.includes("sudo ") ||
+          section.code.includes("apt-get") ||
+          section.code.includes("nano ") ||
+          section.code.includes("systemctl ");
         langLabel = hasLinuxCmd || !section.code.includes("docker") ? "bash" : "docker";
       }
       return (
@@ -283,7 +365,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                   <span className="mr-4 inline-block w-6 shrink-0 select-none text-right text-muted-foreground/50">
                     {i + 1}
                   </span>
-                  <span className="text-foreground/90">{highlightShell(line, false)}</span>
+                  <span className="text-foreground/90">
+                    {section.language === "text"
+                      ? parseInlineMarkdown(line)
+                      : highlightShell(line, false)}
+                  </span>
                 </div>
               ))}
             </code>
@@ -360,9 +446,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               };
       const Icon = tone.Icon;
       return (
-        <aside
-          className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}
-        >
+        <aside className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}>
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
@@ -420,7 +504,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       if (section.variant === "vpc-packet-flow") return <VpcPacketFlow />;
       return (
         <LessonAnimation
-          variant={section.variant as import("@/components/system-design/animation-stages").AnyVariant}
+          variant={
+            section.variant as import("@/components/system-design/animation-stages").AnyVariant
+          }
           caption={section.caption}
         />
       );
@@ -451,6 +537,18 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "diagram-board":
       return <DiagramBoard boardId={section.boardId} />;
+
+    case "highway-metrics":
+      return <HighwayMetrics />;
+
+    case "throughput-concurrency":
+      return <ConcurrencyLanes />;
+
+    case "percentile-bars":
+      return <PercentileBars />;
+
+    case "api-load-calculator":
+      return <ApiLoadCalculator />;
 
     case "scaled-framework":
       return <ScaledFramework />;
@@ -501,13 +599,13 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "cidr-explorer":
       return <CidrExplorer />;
-      
+
     case "subnet-math-steps":
       return <SubnetMathSteps />;
-      
+
     case "reserved-ips-diagram":
       return <ReservedIpsDiagram />;
-      
+
     case "vpc-carve-diagram":
       return <VpcCarveDiagram />;
     case "http-req-res-viewer":
@@ -549,7 +647,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "pacelc-theorem-diagram":
       return <PacelcTheoremDiagram />;
     case "osi-tcp-mapping-diagram":
-        return <OsiToTcpDiagram />;
+      return <OsiToTcpDiagram />;
     case "pattern-exercises":
       return <PatternExercises exercises={section.exercises} />;
 
@@ -561,10 +659,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           </p>
           <ul className="mt-3 space-y-2">
             {section.items.map((it, i) => (
-              <li
-                key={i}
-                className="lesson-supporting flex gap-2.5 text-foreground/90"
-              >
+              <li key={i} className="lesson-supporting flex gap-2.5 text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
@@ -577,9 +672,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => (
             <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
