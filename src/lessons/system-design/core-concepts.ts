@@ -1,6 +1,4 @@
 import { type LessonContent } from "@/lessons/types";
-import scalabilityLoopImg from "@/images/system-design/Foundations/scalability-loop.png";
-import scalabilityArchitectureImg from "@/images/system-design/Foundations/scalability-architecture.png";
 
 /*
  * The lessons of the "Core Concepts & Metrics" module, in the order learners take them.
@@ -22,9 +20,21 @@ const latencyThroughputBandwidthLesson: LessonContent = {
       caption: "The three metrics at a glance",
       headers: ["Metric", "Definition", "Common unit"],
       rows: [
-        ["Latency", "The time it takes for a request to travel from the client to the server and back (end-to-end delay). Think of latency as the response time", "ms, seconds"],
-        ["Throughput", "The number of requests a system can handle per unit time", "RPS, TPS, MB/s"],
-        ["Bandwidth", "The maximum rate at which data can be transferred over a network", "Mbps, Gbps"],
+        [
+          "Latency",
+          "The time it takes for a request to travel from the client to the server and back (end-to-end delay). Think of latency as the response time",
+          "ms, seconds",
+        ],
+        [
+          "Throughput",
+          "The number of requests a system can handle per unit time",
+          "RPS, TPS, MB/s",
+        ],
+        [
+          "Bandwidth",
+          "The maximum rate at which data can be transferred over a network",
+          "Mbps, Gbps",
+        ],
       ],
     },
     { kind: "prose", body: ["**Interview-ready definitions:**"] },
@@ -448,322 +458,372 @@ const latencyThroughputBandwidthLesson: LessonContent = {
 const scalabilityLesson: LessonContent = {
   slug: "scalability",
   title: "Scalability",
-  subtitle:
-    "Handle growing load by finding and relieving the limit that is actually under pressure.",
+  subtitle: "Handle growing workloads by adding the right resources.",
   sections: [
     {
       kind: "prose",
-      heading: "What Scalability Means",
       body: [
-        "A system is **scalable** when it can handle increased load by adding resources while keeping performance within its requirements.",
-        "Load is not one number. It can mean more read traffic, write traffic, storage, bandwidth, concurrent users, background jobs, or a few hot keys. Scaling is not adding every component at once. It is finding the current bottleneck and increasing the capacity of that part of the system.",
-        "A system is not scalable simply because it has multiple servers. It is scalable when it can continue to meet its latency, reliability, and throughput targets as load grows.",
+        "**Scalability is the ability of a system to handle increasing workloads by adding resources while maintaining acceptable performance.**",
+        "A workload can include:",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "Number of incoming requests.",
+        "Number of concurrent users.",
+        "Amount of stored data.",
+        "Number of operations performed per second.",
       ],
     },
     {
       kind: "prose",
-      heading: "How Systems Grow",
       body: [
-        "Scaling pressure can come from more than request volume. A growing user base raises request and connection counts. New features can add dependencies, background jobs, or expensive queries. More content raises storage, indexing, backup, and recovery costs.",
-        "A wider geographic reach adds latency, localization, and sometimes data-residency constraints. More modules and integrations also increase operational complexity. Name the type of growth first, because it determines what should scale.",
+        "A scalable system can support growth without unacceptable increases in latency, error rates, or cost.",
+        "**For example**, suppose a shopping application handles **1,000 requests per second (RPS)**. As the business grows, demand increases to **10,000 RPS**.",
+        "If the system can handle this growth by adding resources while meeting its performance targets, it demonstrates scalability.",
       ],
     },
     {
-      kind: "table",
-      caption: "Growth trigger and the pressure it creates",
-      headers: ["Growth", "Typical pressure", "Likely first question"],
-      rows: [
-        [
-          "User base",
-          "More requests and concurrent connections",
-          "Which tier reaches capacity first at peak?",
-        ],
-        ["Features", "New workflows and dependencies", "Which path adds latency or failure risk?"],
-        [
-          "Data volume",
-          "Storage, indexes, backups, recovery",
-          "Does one data store still fit and recover in time?",
-        ],
-        [
-          "System complexity",
-          "More service-to-service calls",
-          "Where does coordination or fan-out amplify work?",
-        ],
-        [
-          "Geographic reach",
-          "Latency, compliance, availability",
-          "Do users need content or data closer to them?",
-        ],
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Scalability does not mean a system has unlimited capacity. Every scaling approach has limits.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "1 · Why",
+      heading: "Why do systems need scalability?",
+      body: [
+        "Consider an online shopping application.",
+        "Initially, only 100 users visit the application simultaneously. One server can handle the traffic.",
+        "Later, the application becomes popular. Thousands of users begin searching, adding products to carts, and making payments.",
       ],
     },
+    { kind: "demand-capacity-chart" },
     {
-      kind: "image",
-      src: scalabilityLoopImg,
-      alt: "Scalability infographic showing the loop from measuring load to finding a bottleneck, scaling a component, and verifying the result",
-      caption:
-        "The scaling loop: measure the load, find the limiting resource, make a targeted change, then verify the new limit.",
-    },
-    {
-      kind: "table",
-      caption: "Measure the load before choosing a scaling technique",
-      headers: ["Load type", "Useful signal", "Question to answer"],
-      rows: [
-        [
-          "Read traffic",
-          "Read QPS, cache hit rate",
-          "Can the database serve repeated reads fast enough?",
-        ],
-        [
-          "Write traffic",
-          "Write QPS, write latency",
-          "Can the primary accept and persist the write rate?",
-        ],
-        ["Storage", "Data growth, index size", "Will data, backups, and recovery still fit?"],
-        ["Bandwidth", "Bytes/sec in and out", "Are payloads or media exhausting the network path?"],
-        [
-          "Concurrency",
-          "Open connections, queue depth",
-          "Can the system serve users who are active at the same time?",
-        ],
-        [
-          "Skew",
-          "Top keys, busiest partitions",
-          "Is a small set of users or keys dominating load?",
-        ],
+      kind: "prose",
+      body: [
+        "When incoming demand exceeds sustainable processing capacity, requests may queue, fail, or be rejected.",
+        "Without sufficient capacity, the application may experience higher latency, timeouts, failed requests, or resource exhaustion.",
       ],
     },
     {
       kind: "callout",
       tone: "info",
-      title: "The bottleneck loop",
-      body: "Measure the load → find the bottleneck → scale the limiting component → verify the result. After every change, a different dependency may become the next limit.",
+      title: "The goal",
+      body: "Scalability helps systems support growth while maintaining defined performance and reliability targets.",
     },
     {
       kind: "prose",
-      heading: "Scale Up or Scale Out",
+      eyebrow: "2 · Intuition",
+      heading: "Restaurant analogy",
       body: [
-        "**Vertical scaling** means making one machine larger: more CPU, memory, disk, or network capacity. It is simple and has fewer moving parts, but it has a hardware ceiling and can leave one large failure domain.",
-        "**Horizontal scaling** means adding more machines. It can increase capacity and availability, but it introduces load balancing, coordination, data distribution, and operational complexity.",
-        "Start with vertical scaling or one well-sized node while it comfortably meets the requirement. Scale out when one machine is no longer enough, or when availability requires multiple instances.",
+        "Imagine a restaurant with one kitchen.",
+        "The kitchen can prepare 100 meals per hour. One day, customers begin ordering 300 meals per hour.",
+        "The restaurant has two broad ways to increase capacity.",
+        "**Vertical scaling: Upgrade one kitchen**",
+        "Install a larger stove, faster ovens, and more powerful equipment.",
+        "The restaurant has one kitchen with more processing power.",
+        "In computing, this means adding more CPU, RAM, or other resources to an existing server.",
+        "**Horizontal scaling: Add more kitchens**",
+        "Create additional kitchens and distribute customer orders among them.",
+        "In computing, this means adding more servers or instances that share the workload.",
+        "Try both below. The orders stay at 300 meals per hour.",
+      ],
+    },
+    { kind: "restaurant-scaling" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Memory shortcut",
+      body: "Vertical scaling = Make one machine bigger. Horizontal scaling = Add more machines.",
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "No guaranteed threefold gain",
+      body: "Neither approach guarantees a threefold increase in output. The result depends on other bottlenecks, such as ingredients, staff, or payment processing.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "3 · How",
+      heading: "How scalability works",
+      body: [""],
+    },
+    {
+      kind: "prose",
+      heading: "Vertical scaling (Scale Up)",
+      body: [
+        "Vertical scaling increases the resources available to one server.",
+        "**How it works:**",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "Identify the resource limiting performance.",
+        "Upgrade the server's CPU, RAM, or storage capacity as appropriate.",
+        "Verify that the application can use the additional resources.",
+        "Measure performance again.",
+      ],
+    },
+    { kind: "scaling-walkthrough", mode: "vertical" },
+    {
+      kind: "prose",
+      body: [
+        "**Advantages:** include simple architecture and fewer machines to manage.",
+        "**Limitations:** include hardware ceilings, increasing costs, possible downtime during upgrades, and a single point of failure if only one server exists.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "Horizontal scaling (Scale Out)",
+      body: [
+        "Horizontal scaling increases capacity by adding servers or application instances.",
+      ],
+    },
+    { kind: "scaling-walkthrough", mode: "horizontal" },
+    { kind: "prose", body: ["**How it works:**"] },
+    {
+      kind: "list",
+      items: [
+        "Deploy multiple application instances.",
+        "Place a load balancer in front of them.",
+        "Distribute incoming requests across healthy instances.",
+        "Add or remove instances as demand changes.",
+        "Monitor application and shared backend capacity.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "If one server sustainably handles 1,000 RPS, three equivalent servers might handle approximately 3,000 RPS when work distributes evenly and no other component becomes the bottleneck.",
+        "**Stateless application servers**",
+        "Horizontal scaling is often easier for stateless application servers.",
+        "A stateless server does not rely on locally stored user-session data between requests. User sessions can be represented by tokens or stored in an external shared service when necessary.",
+        "This allows different application servers to handle successive requests from the same user.",
+        "**Load balancing**",
+        "A load balancer distributes incoming traffic across servers.",
+        "Common strategies include round-robin and least-connections routing.",
+        "It can also check server health and stop directing traffic to unhealthy instances.",
+        "However, adding a load balancer does not automatically increase capacity. You need sufficient healthy backend resources.",
+        "**Scalability and elasticity**",
+        "These concepts are related, but they are not identical.",
       ],
     },
     {
       kind: "table",
-      caption: "Vertical and horizontal scaling",
-      headers: ["Approach", "Best when", "Strength", "Trade-off"],
+      caption: "Scalability and elasticity",
+      headers: ["Scalability", "Elasticity"],
       rows: [
         [
-          "Scale up",
-          "The workload still fits one larger machine",
-          "Simple operations and no distributed coordination",
-          "A hard ceiling and a larger single failure domain",
+          "Ability to handle workload growth by adding resources",
+          "Ability to adjust allocated resources as demand changes",
         ],
+        ["Can involve manual or automatic scaling", "Typically emphasizes dynamic adjustments"],
         [
-          "Scale out",
-          "Capacity or availability exceeds one machine",
-          "More aggregate capacity and fault tolerance",
-          "Load balancing, coordination, and uneven distribution",
-        ],
-        [
-          "Hybrid",
-          "Different tiers have different limits",
-          "Scale each tier in the way it needs",
-          "More system-specific decisions",
+          "Focuses on supporting a larger workload",
+          "Focuses on matching capacity to changing demand",
         ],
       ],
     },
     {
       kind: "prose",
-      heading: "Choose the Smallest Strategy That Meets the Need",
       body: [
-        "For an early product, vertical scaling, a cache, and basic load balancing are often enough. Instrument CPU, memory, request latency, database read and write capacity, and queue depth so the next limit is visible before it becomes an outage.",
-        "Use horizontal scaling, partitioning, or independently scalable services only when the measured workload requires them. Auto-scaling can reduce idle cost and absorb bursts, but use conservative thresholds and cooldowns so instances do not repeatedly scale out and in during a noisy traffic pattern.",
+        "For example, adding five servers permanently demonstrates scaling. Automatically adding servers during peak traffic and removing them when demand falls demonstrates elasticity.",
+        "Switch between the two below and compare how many servers run through the same day.",
       ],
     },
-    { kind: "system-design-scalability-loop" },
+    { kind: "elasticity-compare" },
     {
       kind: "prose",
-      heading: "Stateless Application Servers",
+      eyebrow: "4 · Example",
+      heading: "Scaling an e-commerce API",
       body: [
-        "Application servers are easiest to scale horizontally when they are **stateless**. Any server should be able to handle any request without depending on memory stored by a previous server.",
-        "Move sessions to a shared store, persist files in object storage, and keep request-specific state out of local process memory. With stateless servers, a load balancer can add or remove instances without changing the client experience.",
-        "A local session or uploaded file may be convenient at first, but it becomes a routing or data-loss problem as soon as requests can land on multiple instances.",
+        "An application currently handles 1,000 RPS using one server.",
+        "A major sale is expected to generate 10,000 RPS.",
+        "Assume that each equivalent application server can sustainably process 1,000 RPS, requests can be distributed evenly, and downstream services have sufficient capacity.",
+        "Under these idealized assumptions:",
       ],
     },
     {
-      kind: "image",
-      src: scalabilityArchitectureImg,
-      alt: "System design diagram showing client requests through a CDN, load balancer, application servers, cache, and database, with a queue and worker branch",
-      caption:
-        "A scale-out request path: keep the application tier stateless, cache repeated reads, and move slow work to a queue and worker.",
-    },
-    {
-      kind: "prose",
-      heading: "Linear Scaling Is a Goal, Not a Guarantee",
-      body: [
-        "If one server handles 100 requests per second, two servers rarely handle exactly 200. Shared databases, locks, network calls, cache misses, uneven traffic, and coordination all reduce the gain from extra servers.",
-        "Use load tests and production metrics to compare added capacity with actual throughput and tail latency. If adding instances does not improve the metric, the bottleneck is probably downstream.",
-      ],
+      kind: "code",
+      language: "text",
+      caption: "Server count",
+      code: "**Server count = Target RPS / RPS per server**\n**= 10,000 / 1,000 = 10**",
     },
     {
       kind: "prose",
-      heading: "Scale Reads Before the Primary Database Becomes the Limit",
       body: [
-        "A **cache** serves repeated data from memory and reduces database work. It is useful when reads are frequent and stale data is acceptable for a bounded period. The cost is invalidation, cache misses, and the risk of stale results.",
-        "**Read replicas** copy data from the primary and spread read traffic. They improve read capacity and can isolate analytical or reporting work, but replication lag means a read may not immediately see a completed write.",
-        "Use both only when measurements show read pressure. A cache and replicas cannot solve a write-bound primary database.",
+        "The application needs a theoretical minimum of 10 servers.",
+        "In production, engineers would normally plan spare capacity for failures, traffic spikes, maintenance, and latency targets. They would also load-test the complete system.",
+        "For instance, 10 application servers cannot guarantee 10,000 RPS if the shared database becomes saturated at 4,000 RPS.",
+        "Plan the sale yourself below. Start with the defaults, then move the database limit.",
       ],
+    },
+    { kind: "server-count-calculator" },
+    {
+      kind: "prose",
+      eyebrow: "5 · Trade-offs",
+      heading: "Vertical versus horizontal scaling",
+      body: [],
     },
     {
       kind: "table",
-      caption: "Read scaling choices",
-      headers: ["Technique", "Use when", "Trade-off", "Failure mode"],
+      caption: "Vertical and horizontal scaling compared",
+      headers: ["Factor", "Vertical scaling", "Horizontal scaling"],
       rows: [
-        [
-          "Cache",
-          "The same data is read repeatedly",
-          "Invalidation and stale data",
-          "A cold cache overloads the database",
-        ],
-        [
-          "Read replicas",
-          "Reads dominate writes",
-          "Replication lag and additional operations",
-          "Read-after-write returns stale data",
-        ],
-        [
-          "Precompute",
-          "The same expensive result is read often",
-          "More write work and derived state",
-          "Materializing rarely used results",
-        ],
+        ["Basic method", "Increase machine resources", "Add more machines"],
+        ["Implementation", "Often simpler", "More architectural complexity"],
+        ["Hardware limits", "Restricted by machine size", "Can expand across more instances"],
+        ["Availability", "Single-server risks remain", "Can provide redundancy"],
+        ["Cost", "Larger machines can be expensive", "More infrastructure and operating costs"],
+        ["Stateful workloads", "Often simpler", "Requires careful state management"],
+      ],
+    },
+    { kind: "prose", body: ["**What can still limit you**"] },
+    {
+      kind: "list",
+      items: [
+        "**Database bottleneck:** Application servers scale, but all requests still depend on one overloaded database.",
+        "**Load balancer bottleneck:** The traffic distribution layer itself becomes insufficient or unavailable.",
+        "**Shared state:** Users experience inconsistent sessions if their data is stored only on one server.",
+        "**Uneven traffic distribution:** Some instances become overloaded while others remain underused.",
+        "**Resource contention:** Increasing concurrency can produce higher throughput initially, then longer queues and worse latency once resources saturate.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "success",
+      title: "The key system design principle",
+      body: "Scale the bottleneck, not simply the number of servers.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "6 · Practice",
+      heading: "Demonstrate your understanding",
+      body: ["Work each one out by hand before you check it."],
+    },
+    {
+      kind: "pattern-exercises",
+      exercises: [
+        {
+          type: "fields",
+          label: "Practice A",
+          title: "Count the servers",
+          prompt:
+            "A flash sale is expected to bring 7,200 RPS. Each equivalent server sustainably handles 900 RPS, requests spread evenly, and the database has enough capacity. What is the theoretical minimum number of servers?",
+          fields: [{ label: "Servers", answer: 8, tone: "accent" }],
+          success:
+            "Correct. 7,200 / 900 = 8. A real plan would add spare capacity for failures and spikes.",
+          hint: "Divide the target traffic by what one server sustains.",
+        },
+        {
+          type: "fields",
+          label: "Practice B",
+          title: "Find the ceiling",
+          prompt:
+            "Four application servers each sustain 1,500 RPS, but the shared database saturates at 4,000 RPS. What is the most RPS the whole system can sustain?",
+          fields: [{ label: "RPS", answer: 4000, tone: "accent" }],
+          success:
+            "Correct. The servers could take 6,000 RPS, but the system sustains only the smallest capacity on the path, which is the database at 4,000 RPS.",
+          hint: "Compare what the servers can take with what the database can take.",
+        },
+        {
+          type: "choice",
+          label: "Practice C",
+          title: "Before scaling out",
+          prompt:
+            "A shop keeps each user's cart in the memory of its one application server. Adding a second server makes carts disappear at random. What should change first?",
+          options: [
+            "Move the cart to a shared store or a token, so any server can serve any request",
+            "Buy a bigger load balancer",
+            "Add a third server so the odds improve",
+            "Ask users to refresh the page",
+          ],
+          answer: 0,
+          success:
+            "Right. While state lives on one server, requests must return to that server. Sharing the state makes the servers interchangeable.",
+          hint: "Ask where the information lives, and whether another server could read it.",
+        },
       ],
     },
     {
       kind: "prose",
-      heading: "Scale Writes and Data Deliberately",
       body: [
-        "When one primary cannot sustain write volume or storage, **sharding** partitions data across multiple nodes. Choose a key that matches access patterns and distributes load evenly. Sharding adds capacity, but cross-shard queries, rebalancing, and hot partitions become operational concerns.",
-        "Queues separate a fast request path from slower background work. A queue can absorb bursts and let workers scale independently, but it introduces backlog, retries, duplicates, ordering decisions, and delayed results.",
-        "Use object storage for large binary data. It keeps the transactional database focused on metadata and gives media a storage path that can grow independently.",
+        "Now try one on the whiteboard. This is optional practice: the goals tick as you go, and a badge appears when you meet them all.",
       ],
     },
-    {
-      kind: "prose",
-      heading: "Scale Delivery and Services Only When Their Load Differs",
-      body: [
-        "A **CDN** caches static or cacheable content close to users. It reduces origin bandwidth and latency for global audiences, but content freshness and invalidation still need a clear policy.",
-        "Independent services can be scaled separately when their workloads, release cadence, or reliability needs genuinely differ. Splitting a system into microservices too early adds network calls, observability work, data ownership decisions, and more failure modes. Keep a modular monolith while it remains easier to operate.",
-        "For global latency, availability, or legal requirements, deploy in more than one region. Multi-region systems improve reach and resilience but introduce replication, routing, and consistency trade-offs.",
-      ],
-    },
-    {
-      kind: "table",
-      caption: "Match the pressure to the smallest useful change",
-      headers: ["Pressure", "First direction", "What to verify next"],
-      rows: [
-        [
-          "Application CPU",
-          "Add stateless app instances behind a load balancer",
-          "Per-instance utilization and downstream latency",
-        ],
-        [
-          "Repeated database reads",
-          "Cache or add read replicas",
-          "Hit rate, primary CPU, and replication lag",
-        ],
-        [
-          "Slow asynchronous work",
-          "Queue the work and scale workers",
-          "Queue depth, retries, and end-to-end delay",
-        ],
-        [
-          "Write or storage limit",
-          "Partition data or move media to object storage",
-          "Partition balance, hot keys, and recovery time",
-        ],
-        [
-          "Large public media delivery",
-          "Use a CDN",
-          "Origin egress, cache hit rate, and freshness",
-        ],
-      ],
-    },
-    {
-      kind: "prose",
-      heading: "Verify the Change and Name the Next Limit",
-      body: [
-        "A scaling change is complete only after it is verified against the requirement. Compare throughput, P95 or P99 latency, error rate, utilization, queue depth, cache hit rate, and cost before and after the change.",
-        "Scaling is a sequence: `load grows → a limit appears → add capacity or reduce work → a new limit appears`. A strong design explains where the system breaks next and what change would address it.",
-      ],
-    },
+    { kind: "diagram-board", boardId: "scale-out-load-balancer" },
     {
       kind: "takeaways",
       items: [
-        "Scalability means preserving requirements as load grows, not simply adding servers.",
-        "Measure first. Different load shapes create different bottlenecks and need different responses.",
-        "Scale up for simplicity while it fits. Scale out when capacity or availability requires it.",
-        "Keep application servers stateless so the load balancer can distribute requests freely.",
-        "Caches, replicas, shards, queues, CDNs, and object storage are targeted tools. Each improves one pressure and adds its own trade-offs.",
-        "Use autoscaling with stable thresholds and cooldowns. Use multi-region deployment only when geographic latency, availability, or compliance requires it.",
-        "After every scaling change, verify the metric and identify the next bottleneck.",
+        "Scalability is handling growing workload by adding resources while keeping performance acceptable. It never means unlimited capacity.",
+        "Vertical scaling makes one machine bigger and is simpler, but it has a hardware ceiling and one point of failure. Horizontal scaling adds machines and brings redundancy and complexity.",
+        "Stateless servers are easier to scale out, because any healthy instance can serve any request.",
+        "A load balancer spreads requests across healthy instances, but it adds no capacity on its own.",
+        "Scalability is about supporting a larger workload. Elasticity is about matching capacity to demand as it changes.",
+        "Servers needed is roughly target RPS divided by RPS per server, but the system sustains only its smallest capacity. Scale the bottleneck, not just the number of servers.",
       ],
     },
     {
       kind: "quiz",
       questions: [
         {
-          id: "scalability-db-bottleneck",
+          id: "scalability-q1-vertical",
+          question: "What is vertical scaling?",
+          options: [
+            "Add more servers to share the workload.",
+            "Add resources such as CPU and RAM to an existing server.",
+            "Reduce the number of incoming requests.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Vertical scaling makes one machine bigger. Adding servers is horizontal scaling, and cutting requests changes the demand, not the capacity.",
+        },
+        {
+          id: "scalability-q2-load-balancer",
           question:
-            "Application servers are mostly idle, but database CPU is saturated by repeated profile reads. What is the best first scaling direction?",
-          options: [
-            "Add more application servers",
-            "Add a cache or read replicas",
-            "Shard every table immediately",
-            "Increase the request timeout",
-          ],
-          correctIndex: 1,
-          explanation:
-            "The database read path is the measured bottleneck. A cache can remove repeated work; replicas can distribute remaining reads. More app servers would only send more work to the saturated database.",
-        },
-        {
-          id: "scalability-stateless",
-          question: "Why do stateless application servers scale more easily horizontally?",
-          options: [
-            "They never use a database",
-            "A load balancer can send any request to any instance",
-            "They require sticky sessions",
-            "They store every upload on local disk",
-          ],
-          correctIndex: 1,
-          explanation:
-            "Stateless instances keep sessions and durable data in shared stores, so no client depends on a particular server.",
-        },
-        {
-          id: "scalability-replica-tradeoff",
-          question: "What trade-off does a read replica commonly introduce?",
-          options: [
-            "Replication lag can return stale data",
-            "It eliminates the need for backups",
-            "It increases primary write capacity without limits",
-            "It guarantees linear scaling",
-          ],
+            "Which component commonly distributes incoming requests across horizontally scaled application servers?",
+          options: ["Load balancer", "CPU cache", "Local disk"],
           correctIndex: 0,
           explanation:
-            "Replicas copy data asynchronously in many systems. That improves read capacity but can make a just-completed write temporarily invisible on a replica.",
+            "A load balancer is the entry point that spreads requests across healthy instances. A CPU cache and a local disk are parts of a single machine.",
         },
         {
-          id: "scalability-queue",
-          question: "Which signal best shows whether a queue-based scaling change is keeping up?",
+          id: "scalability-q3-stateless",
+          question: "Why are stateless application servers generally easier to scale horizontally?",
           options: [
-            "The number of colors in the architecture diagram",
-            "Queue depth and end-to-end processing delay",
-            "The size of the load balancer icon",
-            "Only average application CPU",
+            "They never access a database.",
+            "Any healthy instance can generally process a request without depending on locally stored session state.",
+            "They require no network connections.",
           ],
           correctIndex: 1,
           explanation:
-            "A queue is healthy when workers drain work at least as fast as it arrives and the delay stays within the product requirement.",
+            "When no instance holds state the others lack, the load balancer can send any request to any instance. Stateless servers still use databases and networks.",
+        },
+        {
+          id: "scalability-q4-elasticity",
+          question:
+            "A system adds servers automatically during a traffic spike and removes them when traffic falls. What capability does this demonstrate most specifically?",
+          options: ["Latency", "Elasticity", "Bandwidth"],
+          correctIndex: 1,
+          explanation:
+            "Elasticity is adjusting allocated resources as demand changes. Latency is a delay and bandwidth is a capacity of a connection.",
+        },
+        {
+          id: "scalability-q5-bottleneck",
+          question:
+            "You increase application servers from 2 to 10, but overall throughput barely improves. What is a reasonable explanation?",
+          options: [
+            "Horizontal scaling never improves throughput.",
+            "The application must use vertical scaling instead.",
+            "Another resource, such as the database, may be the bottleneck.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "The system sustains only its smallest capacity. If the shared database is saturated, more application servers cannot help, and horizontal scaling does improve throughput when the application tier is the limit.",
         },
       ],
     },
