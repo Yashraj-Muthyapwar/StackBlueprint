@@ -35,6 +35,8 @@ export type BoardRule = {
   label: string;
   /** Passes when some labelled shape contains any of these words (case-insensitive). */
   node?: string[];
+  /** With `node`: how many different shapes must match (default 1), for example three servers. */
+  count?: number;
   /** Passes when an arrow joins a shape matching `from` to a shape matching `to`. */
   edge?: { from: string[]; to: string[]; anyDirection?: boolean };
   /**
@@ -80,7 +82,7 @@ export function evaluateRules(rules: BoardRule[], graph: DiagramGraph) {
   return rules.map((rule) => {
     let done = false;
     if (rule.node) {
-      done = graph.nodes.some((n) => matches(n.label, rule.node!));
+      done = graph.nodes.filter((n) => matches(n.label, rule.node!)).length >= (rule.count ?? 1);
     } else if (rule.text) {
       const re = new RegExp(rule.text.pattern, "i");
       const pool = rule.text.attached ? graph.attachedTexts : graph.texts;
@@ -118,6 +120,7 @@ const USER = ["user", "client", "browser"];
 const SERVICE = ["service", "shortener", "server", "api", "app"];
 const DATABASE = ["database", "db", "storage", "store"];
 const CACHE = ["cache", "redis"];
+const BALANCER = ["load balancer", "balancer"];
 
 const flowNodes: BoardNode[] = [
   { id: "user", label: "User", x: 0, y: 120, tone: "muted" },
@@ -151,7 +154,105 @@ const imageApiNodes: BoardNode[] = [
   },
 ];
 
+/**
+ * The Scalability lesson's whiteboard practice: scale a ticket-booking API out to three servers
+ * behind a load balancer. The numbers differ from the lesson's e-commerce example, and the answer
+ * shows each server's capacity, the total, and the shared database limit that caps the system.
+ */
+const scaleOutNodes: BoardNode[] = [
+  { id: "client", label: "Users", x: 0, y: 120, tone: "muted" },
+  {
+    id: "lb",
+    label: "Load Balancer",
+    x: 210,
+    y: 107,
+    w: 170,
+    h: 90,
+    tone: "sky",
+    shape: "diamond",
+  },
+  { id: "s1", label: "App Server 1 (1,000 RPS)", x: 500, y: 10, w: 240, tone: "mint" },
+  { id: "s2", label: "App Server 2 (1,000 RPS)", x: 500, y: 120, w: 240, tone: "mint" },
+  { id: "s3", label: "App Server 3 (1,000 RPS)", x: 500, y: 230, w: 240, tone: "mint" },
+  {
+    id: "db",
+    label: "Database (limit 4,000 RPS)",
+    x: 880,
+    y: 104,
+    w: 250,
+    tone: "violet",
+    shape: "cylinder",
+  },
+  {
+    id: "total",
+    label: "Total: 3 x 1,000 = 3,000 RPS, within the 4,000 RPS database limit",
+    x: 330,
+    y: 340,
+    shape: "note",
+    tone: "mint",
+  },
+];
+
 export const BOARDS: Record<string, BoardDefinition> = {
+  "scale-out-load-balancer": {
+    id: "scale-out-load-balancer",
+    file: "scale_out.board",
+    title: "Scale a booking API out to 3,000 RPS",
+    prompt:
+      "A ticket-booking API must handle 3,000 requests per second. Each application server can sustainably handle 1,000 RPS, and the shared database saturates at 4,000 RPS. Draw the users, a load balancer, three application servers and the database, with an arrow between each layer. Put each server's capacity in its name, write the total capacity, and put the database limit in the database's name. Double-click a shape to edit its name, or an arrow to write on it.",
+    rules: [
+      { id: "users", label: "Add Users", node: USER },
+      { id: "lb", label: "Add a Load Balancer", node: BALANCER },
+      { id: "servers", label: "Add three application servers", node: SERVICE, count: 3 },
+      { id: "db", label: "Add a Database", node: DATABASE },
+      {
+        id: "users-lb",
+        label: "Connect Users → Load Balancer",
+        edge: { from: USER, to: BALANCER },
+      },
+      {
+        id: "lb-servers",
+        label: "Connect Load Balancer → Servers",
+        edge: { from: BALANCER, to: SERVICE },
+      },
+      {
+        id: "servers-db",
+        label: "Connect Servers → Database",
+        edge: { from: SERVICE, to: DATABASE },
+      },
+      {
+        id: "server-capacity",
+        label: "Label each server, like 1,000 RPS",
+        text: { pattern: "\\b1,?000\\s*rps", atLeast: 3, attached: true },
+      },
+      {
+        id: "total",
+        label: "Write the total capacity",
+        text: { pattern: "\\b3,?000\\s*rps", atLeast: 1 },
+      },
+      {
+        id: "db-limit",
+        label: "Write the database limit",
+        text: { pattern: "\\b4,?000\\s*rps", atLeast: 1, attached: true },
+      },
+    ],
+    starter: { nodes: [], edges: [] },
+    solution: {
+      nodes: scaleOutNodes,
+      edges: [
+        { from: "client", to: "lb", label: "3,000 RPS" },
+        { from: "lb", to: "s1" },
+        { from: "lb", to: "s2" },
+        { from: "lb", to: "s3" },
+        { from: "s1", to: "db" },
+        { from: "s2", to: "db" },
+        { from: "s3", to: "db" },
+      ],
+    },
+    passNote:
+      "Three servers give 3,000 RPS, which meets the target and stays under the database's 4,000 RPS limit. A fourth server would add application capacity, but the database would still cap the system at 4,000 RPS, so the database is the next thing to scale.",
+  },
+
   "throughput-bandwidth-load": {
     id: "throughput-bandwidth-load",
     file: "image_service_load.board",

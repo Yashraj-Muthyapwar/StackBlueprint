@@ -40,7 +40,11 @@ import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/De
 import { FeedStrategy } from "@/components/system-design/foundations/FeedStrategy";
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
-import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
+import { DemandCapacityChart } from "@/components/system-design/core-metrics/DemandCapacityChart";
+import { RestaurantKitchens } from "@/components/system-design/core-metrics/RestaurantKitchens";
+import { ScalingWalkthrough } from "@/components/system-design/core-metrics/ScalingWalkthrough";
+import { ElasticityCompare } from "@/components/system-design/core-metrics/ElasticityCompare";
+import { ServerCountCalculator } from "@/components/system-design/core-metrics/ServerCountCalculator";
 import { UrlShortenerWhiteboard } from "@/components/system-design/foundations/UrlShortenerWhiteboard";
 import { DiagramBoard } from "@/components/lesson/diagram-board/DiagramBoard";
 import { HighwayMetrics } from "@/components/system-design/core-metrics/HighwayMetrics";
@@ -529,8 +533,20 @@ export function SectionRenderer({
     case "system-design-estimation-walkthrough":
       return <EstimationWalkthrough />;
 
-    case "system-design-scalability-loop":
-      return <ScalabilityLoop />;
+    case "demand-capacity-chart":
+      return <DemandCapacityChart />;
+
+    case "restaurant-scaling":
+      return <RestaurantKitchens />;
+
+    case "scaling-walkthrough":
+      return <ScalingWalkthrough mode={section.mode} />;
+
+    case "elasticity-compare":
+      return <ElasticityCompare />;
+
+    case "server-count-calculator":
+      return <ServerCountCalculator />;
 
     case "url-shortener-whiteboard":
       return <UrlShortenerWhiteboard />;
