@@ -309,9 +309,13 @@ export type Section =
   | { kind: "system-design-feed-strategy" }
   | { kind: "system-design-whatsapp-requirements" }
   | { kind: "system-design-estimation-walkthrough" }
-  | { kind: "system-design-scalability-loop" }
   | { kind: "url-shortener-whiteboard" }
   | { kind: "highway-metrics" }
+  | { kind: "demand-capacity-chart" }
+  | { kind: "restaurant-scaling" }
+  | { kind: "scaling-walkthrough"; mode: "vertical" | "horizontal" }
+  | { kind: "elasticity-compare" }
+  | { kind: "server-count-calculator" }
   | { kind: "throughput-concurrency" }
   | { kind: "percentile-bars" }
   | { kind: "api-load-calculator" }
