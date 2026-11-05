@@ -20,6 +20,18 @@ const ICON_PARTS = new Set(["rectangle", "ellipse", "diamond", "line", "freedraw
 const LABEL_MARGIN = 30;
 const ARROW_MARGIN = 24;
 
+/** How far loose text may sit from an arrow and still count as that arrow's label. */
+const ARROW_LABEL_MARGIN = 40;
+
+/** Distance from a point to a line segment. */
+function segmentDistance(px: number, py: number, [x1, y1, x2, y2]: number[]) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / len2));
+  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+}
+
 const gap = (v: number, lo: number, hi: number) => (v < lo ? lo - v : v > hi ? v - hi : 0);
 
 /** Distance from a point to a box (0 when inside). */
@@ -75,6 +87,23 @@ export function toGraph(elements: readonly ExcalidrawElement[]): DiagramGraph {
     const box = boxes.get(key);
     if (box) box.label = `${box.label} ${text}`.trim();
   };
+  // Arrow lines, so loose text next to an arrow counts as attached to it.
+  const arrowIds = new Set<string>();
+  const segments: number[][] = [];
+  for (const a of live) {
+    if (a.type !== "arrow" || a.points.length < 2) continue;
+    arrowIds.add(a.id);
+    for (let i = 1; i < a.points.length; i++) {
+      segments.push([
+        a.x + a.points[i - 1][0],
+        a.y + a.points[i - 1][1],
+        a.x + a.points[i][0],
+        a.y + a.points[i][1],
+      ]);
+    }
+  }
+  /** Text that belongs to a component or an arrow, not text floating on its own. */
+  const attachedTexts: string[] = [];
   for (const e of live) {
     if (e.type !== "text") continue;
     const owner =
@@ -82,11 +111,23 @@ export function toGraph(elements: readonly ExcalidrawElement[]): DiagramGraph {
       (e.groupIds.length ? e.groupIds[e.groupIds.length - 1] : undefined);
     if (owner && boxes.has(owner)) {
       addLabel(owner, e.text);
+      attachedTexts.push(e.text);
       continue;
     }
-    if (e.containerId) continue; // text on an arrow, not a component
-    const key = nearest(boxes, e.x + e.width / 2, e.y + e.height / 2, LABEL_MARGIN);
-    if (key) addLabel(key, e.text);
+    if (e.containerId) {
+      // Text written on an arrow is a label for that arrow, not for a component.
+      if (arrowIds.has(e.containerId)) attachedTexts.push(e.text);
+      continue;
+    }
+    const cx = e.x + e.width / 2;
+    const cy = e.y + e.height / 2;
+    const key = nearest(boxes, cx, cy, LABEL_MARGIN);
+    if (key) {
+      addLabel(key, e.text);
+      attachedTexts.push(e.text);
+    } else if (segments.some((seg) => segmentDistance(cx, cy, seg) <= ARROW_LABEL_MARGIN)) {
+      attachedTexts.push(e.text);
+    }
   }
 
   // 3. Arrows: attached ends first, then wherever each end lands.
@@ -107,5 +148,6 @@ export function toGraph(elements: readonly ExcalidrawElement[]): DiagramGraph {
   const nodes = [...boxes]
     .filter(([, b]) => b.label !== "")
     .map(([id, b]) => ({ id, label: b.label }));
-  return { nodes, edges };
+  const texts = live.flatMap((e) => (e.type === "text" ? [e.text] : []));
+  return { nodes, edges, texts, attachedTexts };
 }

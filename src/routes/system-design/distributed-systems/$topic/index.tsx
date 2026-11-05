@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, ChevronRight, Network, Layers, Terminal, CheckCircle2 } from "lucide-react";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems";
 import { useProgress } from "@/hooks/use-progress";
 
 const ICONS = { network: Network, layers: Layers, terminal: Terminal } as const;

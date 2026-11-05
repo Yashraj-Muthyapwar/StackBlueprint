@@ -19,6 +19,7 @@ import {
   RotateCcw,
   Sparkles,
   Trophy,
+  Undo2,
   Wand2,
 } from "lucide-react";
 
@@ -49,8 +50,6 @@ const ExcalidrawCanvas = lazy(() =>
 const STROKES = ["#1e1e1e", "#e03131", "#2f9e44", "#1971c2", "#f08c00"];
 const FILLS = ["transparent", "#ffc9c9", "#b2f2bb", "#a5d8ff", "#ffec99"];
 
-const tipKey = "sb-diagram-tip:v1";
-
 const passedKey = (id: string) => `sb-diagram-passed:v1:${id}`;
 
 function useSiteTheme(): "light" | "dark" {
@@ -69,12 +68,23 @@ function useSiteTheme(): "light" | "dark" {
 export function DiagramBoard({ boardId }: { boardId: string }) {
   const board = BOARDS[boardId];
   const theme = useSiteTheme();
-  const [graph, setGraph] = useState<DiagramGraph>({ nodes: [], edges: [] });
+  const [graph, setGraph] = useState<DiagramGraph>({
+    nodes: [],
+    edges: [],
+    texts: [],
+    attachedTexts: [],
+  });
   const [controller, setController] = useState<BoardController | null>(null);
   const [everPassed, setEverPassed] = useState(false);
+  const [exampleOn, setExampleOn] = useState(false);
+  // Whether the drawing the goals were last checked against is the example answer. The canvas
+  // reports a drawing a moment after it changes, so the flag is read when the drawing arrives:
+  // after Reset the old example drawing is still being checked until the new one is reported.
+  const exampleRef = useRef(false);
+  const [graphIsExample, setGraphIsExample] = useState(false);
   const [goalsOpen, setGoalsOpen] = useState(true);
   const [paletteOpen, setPaletteOpen] = useState(true);
-  const [tipOpen, setTipOpen] = useState(false);
+  const [tipOpen, setTipOpen] = useState(true);
   const boardRef = useRef<HTMLDivElement>(null);
   const tipButtonRef = useRef<HTMLButtonElement>(null);
   const [stroke, setStroke] = useState(STROKES[0]);
@@ -88,23 +98,17 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
     }
   }, [boardId]);
 
-  // First visit in this browser: ask learners to build with our components, but only once they
-  // have scrolled to the whiteboard. Opening it on page load would pull focus (and the scroll
-  // position) down the page before they have read anything. Reopen it any time.
+  // The "How it works" tip is open every time the board loads, so the learner reads how to use
+  // the components and clicks "Got it" before drawing. It never takes focus on page load (that
+  // would pull the page down to the board); the button is focused only once the board is on screen.
   useEffect(() => {
-    let seen = false;
-    try {
-      seen = window.localStorage.getItem(tipKey) === "1";
-    } catch {
-      /* storage unavailable: show the tip */
-    }
-    // Watch the canvas area: the whole card can be taller than a laptop screen.
+    if (!tipOpen) return;
     const el = boardRef.current;
-    if (seen || !el) return;
+    if (!el) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
-          setTipOpen(true);
+          tipButtonRef.current?.focus({ preventScroll: true });
           observer.disconnect();
         }
       },
@@ -112,52 +116,45 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
-
-  // Focus the dialog's button for keyboard users, without scrolling anything.
-  useEffect(() => {
-    if (tipOpen) tipButtonRef.current?.focus({ preventScroll: true });
   }, [tipOpen]);
 
-  const closeTip = useCallback(() => {
-    setTipOpen(false);
-    try {
-      window.localStorage.setItem(tipKey, "1");
-    } catch {
-      /* storage unavailable: the tip may show again next visit */
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!tipOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeTip();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [tipOpen, closeTip]);
+  const closeTip = useCallback(() => setTipOpen(false), []);
 
   const results = useMemo(() => (board ? evaluateRules(board.rules, graph) : []), [board, graph]);
   const passedNow = results.length > 0 && results.every((r) => r.done);
 
   useEffect(() => {
-    if (!passedNow || everPassed) return;
+    // The example answer always meets the goals, so it must not earn the badge.
+    if (!passedNow || everPassed || graphIsExample) return;
     setEverPassed(true);
     try {
       window.localStorage.setItem(passedKey(boardId), "1");
     } catch {
       /* storage unavailable: the badge just is not remembered */
     }
-  }, [passedNow, everPassed, boardId]);
+  }, [passedNow, everPassed, graphIsExample, boardId]);
+
+  const onGraph = useCallback((next: DiagramGraph) => {
+    setGraph(next);
+    setGraphIsExample(exampleRef.current);
+  }, []);
+
+  const setExample = useCallback((on: boolean) => {
+    exampleRef.current = on;
+    setExampleOn(on);
+  }, []);
 
   // Reset starts the exercise over, so it also clears the earned badge. Clear only empties the drawing.
   const resetBoard = useCallback(() => {
     controller?.load("starter");
+    setExample(false);
     setEverPassed(false);
     try {
       window.localStorage.removeItem(passedKey(boardId));
     } catch {
       /* storage unavailable */
     }
-  }, [controller, boardId]);
+  }, [controller, boardId, setExample]);
 
   const onReady = useCallback((c: BoardController) => setController(c), []);
 
@@ -316,7 +313,7 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
       <div ref={boardRef} className="relative h-[34rem] bg-background">
         <ClientOnly fallback={<BoardLoading />}>
           <Suspense fallback={<BoardLoading />}>
-            <ExcalidrawCanvas board={board} theme={theme} onGraph={setGraph} onReady={onReady} />
+            <ExcalidrawCanvas board={board} theme={theme} onGraph={onGraph} onReady={onReady} />
           </Suspense>
         </ClientOnly>
         {paletteOpen ? (
@@ -374,9 +371,21 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
             variant="outline"
             className="h-8 gap-1.5 px-2.5 text-xs"
             disabled={!controller}
-            onClick={() => controller?.load("solution")}
+            onClick={() => {
+              if (exampleOn) controller?.hideExample();
+              else void controller?.showExample();
+              setExample(!exampleOn);
+            }}
           >
-            <Wand2 className="size-3.5" /> Show example
+            {exampleOn ? (
+              <>
+                <Undo2 className="size-3.5" /> Back to my drawing
+              </>
+            ) : (
+              <>
+                <Wand2 className="size-3.5" /> Show example
+              </>
+            )}
           </Button>
           <Button
             type="button"
@@ -394,7 +403,10 @@ export function DiagramBoard({ boardId }: { boardId: string }) {
             variant="outline"
             className="h-8 gap-1.5 px-2.5 text-xs"
             disabled={!controller}
-            onClick={() => controller?.load("blank")}
+            onClick={() => {
+              controller?.load("blank");
+              setExample(false);
+            }}
           >
             <Eraser className="size-3.5" /> Clear
           </Button>

@@ -94,6 +94,18 @@ function cylinder(n: BoardNode): Skeleton[] {
 function plainShape(n: BoardNode): Skeleton {
   const tone = TONES[n.tone ?? "muted"];
   const shape = n.shape ?? "rectangle";
+  // A note is loose text with no box, for things like "Total: 25 + 5 + 3 + 22 = 55 ms".
+  if (shape === "note") {
+    return {
+      type: "text",
+      id: n.id,
+      x: n.x,
+      y: n.y,
+      text: n.label,
+      fontSize: 22,
+      strokeColor: tone.stroke,
+    } as Skeleton;
+  }
   return {
     type: shape,
     id: n.id,
@@ -125,15 +137,22 @@ export function buildElements(scene: { nodes: BoardNode[]; edges: BoardEdge[] })
     const a = byId.get(e.from);
     const b = byId.get(e.to);
     if (!a || !b) return [];
-    const ax = a.x + (a.w ?? DEFAULT_W);
-    const ay = a.y + heightOf(a) / 2;
+    const aw = a.w ?? DEFAULT_W;
+    const bw = b.w ?? DEFAULT_W;
+    const offset = e.offset ?? 0;
+    // Leave from the side of `a` that faces `b`, and arrive at the side of `b` that faces `a`.
+    const rightward = b.x + bw / 2 >= a.x + aw / 2;
+    const ax = rightward ? a.x + aw : a.x;
+    const bx = rightward ? b.x : b.x + bw;
+    const ay = a.y + heightOf(a) / 2 + offset;
+    const by = b.y + heightOf(b) / 2 + offset;
     return [
       {
         type: "arrow",
         x: ax,
         y: ay,
-        width: b.x - ax,
-        height: b.y + heightOf(b) / 2 - ay,
+        width: bx - ax,
+        height: by - ay,
         strokeColor: "#475569",
         start: { id: a.id },
         end: { id: b.id },
