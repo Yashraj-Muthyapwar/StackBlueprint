@@ -30,7 +30,7 @@ import type { LucideIcon } from "lucide-react";
 import { useProgress } from "@/hooks/use-progress";
 import { TrackCard } from "@/components/learning-paths/TrackCard";
 import { FOUNDATIONS_TOPICS } from "@/lessons/system-design/foundations-content";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems";
 import systemDesignLogo from "@/images/logos/system-design-logo.png";
 
 export const Route = createFileRoute("/system-design/")({
@@ -99,7 +99,9 @@ const sections: Section[] = [
         blurb: "Measuring performance and reliability, and why p50 and p99 tell different stories.",
         icon: Gauge,
         modules: [
+          "Latency vs Throughput vs Bandwidth",
           "Scalability",
+          "Availability",
         ],
         unlocked: true,
         routeBase: "foundations",

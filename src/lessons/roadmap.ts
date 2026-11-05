@@ -72,7 +72,7 @@ import pandasLogo from "@/images/logos/pandas-logo.svg";
 import mongoDbLogo from "@/images/logos/MongoDB_Logomark_ForestGreen.png";
 
 import { FOUNDATIONS_TOPICS } from "./system-design/foundations-content";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";

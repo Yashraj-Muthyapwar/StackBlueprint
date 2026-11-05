@@ -18,6 +18,14 @@ import { SshConnectionFlow } from "@/components/system-design/networking-protoco
 import { CidrCalculatorDiagram } from "@/components/system-design/networking-protocols/CidrCalculatorDiagram";
 import { VpcArchitectureDiagram } from "@/components/system-design/networking-protocols/VpcArchitectureDiagram";
 import { AvailabilityDiagram } from "@/components/system-design/distributed-systems/AvailabilityDiagram";
+import { Formula } from "@/components/system-design/Formula";
+import { DowntimeBars } from "@/components/system-design/distributed-systems/DowntimeBars";
+import { HospitalOnCall } from "@/components/system-design/distributed-systems/HospitalOnCall";
+import { AvailabilityWalkthrough } from "@/components/system-design/distributed-systems/AvailabilityWalkthrough";
+import { ActiveModes } from "@/components/system-design/distributed-systems/ActiveModes";
+import { HighAvailabilityDesign } from "@/components/system-design/distributed-systems/HighAvailabilityDesign";
+import { RecoveryObjectives } from "@/components/system-design/distributed-systems/RecoveryObjectives";
+import { SloBudget } from "@/components/system-design/distributed-systems/SloBudget";
 import { ReliabilityDiagram } from "@/components/system-design/distributed-systems/ReliabilityDiagram";
 import { ConsistencyDiagram } from "@/components/system-design/distributed-systems/ConsistencyDiagram";
 import { CapTheoremDiagram } from "@/components/system-design/distributed-systems/CapTheoremDiagram";
@@ -40,18 +48,55 @@ import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/De
 import { FeedStrategy } from "@/components/system-design/foundations/FeedStrategy";
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
-import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
+import { DemandCapacityChart } from "@/components/system-design/core-metrics/DemandCapacityChart";
+import { RestaurantKitchens } from "@/components/system-design/core-metrics/RestaurantKitchens";
+import { ScalingWalkthrough } from "@/components/system-design/core-metrics/ScalingWalkthrough";
+import { ElasticityCompare } from "@/components/system-design/core-metrics/ElasticityCompare";
+import { ServerCountCalculator } from "@/components/system-design/core-metrics/ServerCountCalculator";
 import { UrlShortenerWhiteboard } from "@/components/system-design/foundations/UrlShortenerWhiteboard";
 import { DiagramBoard } from "@/components/lesson/diagram-board/DiagramBoard";
+import { HighwayMetrics } from "@/components/system-design/core-metrics/HighwayMetrics";
+import { ConcurrencyLanes } from "@/components/system-design/core-metrics/ConcurrencyLanes";
+import { PercentileBars } from "@/components/system-design/core-metrics/PercentileBars";
+import { ApiLoadCalculator } from "@/components/system-design/core-metrics/ApiLoadCalculator";
 import { ScaledFramework } from "@/components/system-design/foundations/ScaledFramework";
 
 export function highlightShell(line: string, isTerminal?: boolean) {
   const KEYWORDS = new Set([
-    "docker", "run", "build", "pull", "push", "ps", "stop", "start", "exec",
-    "systemctl", "sudo", "open", "uname", "FROM", "WORKDIR", "COPY", "CMD",
-    "RUN", "ENV", "EXPOSE", "VOLUME", "ENTRYPOINT",
-    "ssh", "ssh-keygen", "ssh-copy-id", "ssh-add", "ssh-agent", "scp", "sftp", "chmod",
-    "Host", "HostName", "User", "IdentityFile",
+    "docker",
+    "run",
+    "build",
+    "pull",
+    "push",
+    "ps",
+    "stop",
+    "start",
+    "exec",
+    "systemctl",
+    "sudo",
+    "open",
+    "uname",
+    "FROM",
+    "WORKDIR",
+    "COPY",
+    "CMD",
+    "RUN",
+    "ENV",
+    "EXPOSE",
+    "VOLUME",
+    "ENTRYPOINT",
+    "ssh",
+    "ssh-keygen",
+    "ssh-copy-id",
+    "ssh-add",
+    "ssh-agent",
+    "scp",
+    "sftp",
+    "chmod",
+    "Host",
+    "HostName",
+    "User",
+    "IdentityFile",
   ]);
   const nodes: React.ReactNode[] = [];
   let i = 0;
@@ -62,7 +107,12 @@ export function highlightShell(line: string, isTerminal?: boolean) {
       const newlineIdx = line.indexOf("\n", i);
       const end = newlineIdx === -1 ? line.length : newlineIdx;
       nodes.push(
-        <span key={key++} className={isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"}>
+        <span
+          key={key++}
+          className={
+            isTerminal ? "text-slate-400 italic" : "text-slate-500 dark:text-slate-400 italic"
+          }
+        >
           {line.slice(i, end)}
         </span>,
       );
@@ -134,9 +184,12 @@ export function highlightShell(line: string, isTerminal?: boolean) {
   return nodes;
 }
 
-function parseInlineMarkdown(text: string) {
-  const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|\n)/g);
+function parseInlineMarkdown(text: string): React.ReactNode {
+  const parts = text.split(
+    /(\*\*.*?\*\*|\*.*?\*|`.*?`|==.*?==|<sub>.*?<\/sub>|<sup>.*?<\/sup>|_{[^{}]+}|\^{[^{}]+}|~[^\s~]+~|\n)/g,
+  );
   return parts.map((part, i) => {
+    if (!part) return null;
     if (part === "\n") {
       return <br key={i} />;
     }
@@ -171,14 +224,14 @@ function parseInlineMarkdown(text: string) {
     if (part.startsWith("**") && part.endsWith("**")) {
       return (
         <strong key={i} className="font-semibold text-foreground">
-          {part.slice(2, -2)}
+          {parseInlineMarkdown(part.slice(2, -2))}
         </strong>
       );
     }
     if (part.startsWith("*") && part.endsWith("*")) {
       return (
         <em key={i} className="italic text-foreground">
-          {part.slice(1, -1)}
+          {parseInlineMarkdown(part.slice(1, -1))}
         </em>
       );
     }
@@ -192,11 +245,44 @@ function parseInlineMarkdown(text: string) {
         </code>
       );
     }
+    if (part.startsWith("<sub>") && part.endsWith("</sub>")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(5, -6)}
+        </sub>
+      );
+    }
+    if (part.startsWith("^{") && part.endsWith("}")) {
+      return (
+        <sup key={i} className="text-[0.75em]">
+          {part.slice(2, -1)}
+        </sup>
+      );
+    }
+    if (part.startsWith("<sup>") && part.endsWith("</sup>")) {
+      return (
+        <sup key={i} className="text-[0.75em]">
+          {part.slice(5, -6)}
+        </sup>
+      );
+    }
+    if (part.startsWith("_{") && part.endsWith("}")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(2, -1)}
+        </sub>
+      );
+    }
+    if (part.startsWith("~") && part.endsWith("~")) {
+      return (
+        <sub key={i} className="text-[0.75em]">
+          {part.slice(1, -1)}
+        </sub>
+      );
+    }
     return part;
   });
 }
-
-
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
@@ -228,16 +314,20 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export function SectionRenderer({ section, onQuizActiveChange }: { section: Section; onQuizActiveChange?: (active: boolean) => void }) {
+export function SectionRenderer({
+  section,
+  onQuizActiveChange,
+}: {
+  section: Section;
+  onQuizActiveChange?: (active: boolean) => void;
+}) {
   switch (section.kind) {
     case "prose":
       return (
         <section className="space-y-3">
           {section.eyebrow ? <SectionMarker label={section.eyebrow} /> : null}
           {section.heading ? (
-            <h2 className="lesson-section-title font-semibold tracking-tight">
-              {section.heading}
-            </h2>
+            <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
           ) : null}
           {section.body.map((p, i) => (
             <p key={i} className="lesson-prose text-muted-foreground">
@@ -251,7 +341,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       const lines = section.code.split("\n");
       let langLabel = section.language || "docker";
       if (section.language === "bash") {
-        const hasLinuxCmd = section.code.includes("sudo ") || section.code.includes("apt-get") || section.code.includes("nano ") || section.code.includes("systemctl ");
+        const hasLinuxCmd =
+          section.code.includes("sudo ") ||
+          section.code.includes("apt-get") ||
+          section.code.includes("nano ") ||
+          section.code.includes("systemctl ");
         langLabel = hasLinuxCmd || !section.code.includes("docker") ? "bash" : "docker";
       }
       return (
@@ -283,7 +377,11 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
                   <span className="mr-4 inline-block w-6 shrink-0 select-none text-right text-muted-foreground/50">
                     {i + 1}
                   </span>
-                  <span className="text-foreground/90">{highlightShell(line, false)}</span>
+                  <span className="text-foreground/90">
+                    {section.language === "text"
+                      ? parseInlineMarkdown(line)
+                      : highlightShell(line, false)}
+                  </span>
                 </div>
               ))}
             </code>
@@ -360,9 +458,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
               };
       const Icon = tone.Icon;
       return (
-        <aside
-          className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}
-        >
+        <aside className={`flex gap-3 rounded-xl ${tone.bg} p-4 ring-1 ${tone.ring}`}>
           <Icon className={`mt-0.5 size-5 shrink-0 ${tone.text}`} />
           <div>
             <p className={`text-sm font-semibold ${tone.text}`}>{section.title}</p>
@@ -420,7 +516,9 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       if (section.variant === "vpc-packet-flow") return <VpcPacketFlow />;
       return (
         <LessonAnimation
-          variant={section.variant as import("@/components/system-design/animation-stages").AnyVariant}
+          variant={
+            section.variant as import("@/components/system-design/animation-stages").AnyVariant
+          }
           caption={section.caption}
         />
       );
@@ -443,14 +541,62 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "system-design-estimation-walkthrough":
       return <EstimationWalkthrough />;
 
-    case "system-design-scalability-loop":
-      return <ScalabilityLoop />;
+    case "formula":
+      return <Formula caption={section.caption} lines={section.lines} />;
+
+    case "downtime-bars":
+      return <DowntimeBars />;
+
+    case "hospital-availability":
+      return <HospitalOnCall />;
+
+    case "availability-walkthrough":
+      return <AvailabilityWalkthrough mode={section.mode} />;
+
+    case "active-modes":
+      return <ActiveModes />;
+
+    case "ha-architecture":
+      return <HighAvailabilityDesign />;
+
+    case "rto-rpo":
+      return <RecoveryObjectives />;
+
+    case "slo-budget":
+      return <SloBudget />;
+
+    case "demand-capacity-chart":
+      return <DemandCapacityChart />;
+
+    case "restaurant-scaling":
+      return <RestaurantKitchens />;
+
+    case "scaling-walkthrough":
+      return <ScalingWalkthrough mode={section.mode} />;
+
+    case "elasticity-compare":
+      return <ElasticityCompare />;
+
+    case "server-count-calculator":
+      return <ServerCountCalculator />;
 
     case "url-shortener-whiteboard":
       return <UrlShortenerWhiteboard />;
 
     case "diagram-board":
       return <DiagramBoard boardId={section.boardId} />;
+
+    case "highway-metrics":
+      return <HighwayMetrics />;
+
+    case "throughput-concurrency":
+      return <ConcurrencyLanes />;
+
+    case "percentile-bars":
+      return <PercentileBars />;
+
+    case "api-load-calculator":
+      return <ApiLoadCalculator />;
 
     case "scaled-framework":
       return <ScaledFramework />;
@@ -501,13 +647,13 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
 
     case "cidr-explorer":
       return <CidrExplorer />;
-      
+
     case "subnet-math-steps":
       return <SubnetMathSteps />;
-      
+
     case "reserved-ips-diagram":
       return <ReservedIpsDiagram />;
-      
+
     case "vpc-carve-diagram":
       return <VpcCarveDiagram />;
     case "http-req-res-viewer":
@@ -549,7 +695,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
     case "pacelc-theorem-diagram":
       return <PacelcTheoremDiagram />;
     case "osi-tcp-mapping-diagram":
-        return <OsiToTcpDiagram />;
+      return <OsiToTcpDiagram />;
     case "pattern-exercises":
       return <PatternExercises exercises={section.exercises} />;
 
@@ -561,10 +707,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
           </p>
           <ul className="mt-3 space-y-2">
             {section.items.map((it, i) => (
-              <li
-                key={i}
-                className="lesson-supporting flex gap-2.5 text-foreground/90"
-              >
+              <li key={i} className="lesson-supporting flex gap-2.5 text-foreground/90">
                 <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-mint" />
                 <span>{parseInlineMarkdown(it)}</span>
               </li>
@@ -577,9 +720,7 @@ export function SectionRenderer({ section, onQuizActiveChange }: { section: Sect
       return (
         <section className="space-y-3">
           {section.heading ? (
-            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">
-              {section.heading}
-            </h2>
+            <h2 className="text-xl font-semibold tracking-tight lg:text-2xl">{section.heading}</h2>
           ) : null}
           {section.body?.map((p, i) => (
             <p key={i} className="leading-relaxed text-muted-foreground lg:text-lg">
