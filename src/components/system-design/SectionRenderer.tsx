@@ -18,6 +18,14 @@ import { SshConnectionFlow } from "@/components/system-design/networking-protoco
 import { CidrCalculatorDiagram } from "@/components/system-design/networking-protocols/CidrCalculatorDiagram";
 import { VpcArchitectureDiagram } from "@/components/system-design/networking-protocols/VpcArchitectureDiagram";
 import { AvailabilityDiagram } from "@/components/system-design/distributed-systems/AvailabilityDiagram";
+import { Formula } from "@/components/system-design/Formula";
+import { DowntimeBars } from "@/components/system-design/distributed-systems/DowntimeBars";
+import { HospitalOnCall } from "@/components/system-design/distributed-systems/HospitalOnCall";
+import { AvailabilityWalkthrough } from "@/components/system-design/distributed-systems/AvailabilityWalkthrough";
+import { ActiveModes } from "@/components/system-design/distributed-systems/ActiveModes";
+import { HighAvailabilityDesign } from "@/components/system-design/distributed-systems/HighAvailabilityDesign";
+import { RecoveryObjectives } from "@/components/system-design/distributed-systems/RecoveryObjectives";
+import { SloBudget } from "@/components/system-design/distributed-systems/SloBudget";
 import { ReliabilityDiagram } from "@/components/system-design/distributed-systems/ReliabilityDiagram";
 import { ConsistencyDiagram } from "@/components/system-design/distributed-systems/ConsistencyDiagram";
 import { CapTheoremDiagram } from "@/components/system-design/distributed-systems/CapTheoremDiagram";
@@ -40,7 +48,11 @@ import { DeliveryFrameworkFlow } from "@/components/system-design/foundations/De
 import { FeedStrategy } from "@/components/system-design/foundations/FeedStrategy";
 import { WhatsAppRequirements } from "@/components/system-design/foundations/WhatsAppRequirements";
 import { EstimationWalkthrough } from "@/components/system-design/foundations/EstimationWalkthrough";
-import { ScalabilityLoop } from "@/components/system-design/foundations/ScalabilityLoop";
+import { DemandCapacityChart } from "@/components/system-design/core-metrics/DemandCapacityChart";
+import { RestaurantKitchens } from "@/components/system-design/core-metrics/RestaurantKitchens";
+import { ScalingWalkthrough } from "@/components/system-design/core-metrics/ScalingWalkthrough";
+import { ElasticityCompare } from "@/components/system-design/core-metrics/ElasticityCompare";
+import { ServerCountCalculator } from "@/components/system-design/core-metrics/ServerCountCalculator";
 import { UrlShortenerWhiteboard } from "@/components/system-design/foundations/UrlShortenerWhiteboard";
 import { DiagramBoard } from "@/components/lesson/diagram-board/DiagramBoard";
 import { HighwayMetrics } from "@/components/system-design/core-metrics/HighwayMetrics";
@@ -529,8 +541,44 @@ export function SectionRenderer({
     case "system-design-estimation-walkthrough":
       return <EstimationWalkthrough />;
 
-    case "system-design-scalability-loop":
-      return <ScalabilityLoop />;
+    case "formula":
+      return <Formula caption={section.caption} lines={section.lines} />;
+
+    case "downtime-bars":
+      return <DowntimeBars />;
+
+    case "hospital-availability":
+      return <HospitalOnCall />;
+
+    case "availability-walkthrough":
+      return <AvailabilityWalkthrough mode={section.mode} />;
+
+    case "active-modes":
+      return <ActiveModes />;
+
+    case "ha-architecture":
+      return <HighAvailabilityDesign />;
+
+    case "rto-rpo":
+      return <RecoveryObjectives />;
+
+    case "slo-budget":
+      return <SloBudget />;
+
+    case "demand-capacity-chart":
+      return <DemandCapacityChart />;
+
+    case "restaurant-scaling":
+      return <RestaurantKitchens />;
+
+    case "scaling-walkthrough":
+      return <ScalingWalkthrough mode={section.mode} />;
+
+    case "elasticity-compare":
+      return <ElasticityCompare />;
+
+    case "server-count-calculator":
+      return <ServerCountCalculator />;
 
     case "url-shortener-whiteboard":
       return <UrlShortenerWhiteboard />;
