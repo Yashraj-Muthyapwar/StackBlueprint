@@ -72,7 +72,7 @@ import pandasLogo from "@/images/logos/pandas-logo.svg";
 import mongoDbLogo from "@/images/logos/MongoDB_Logomark_ForestGreen.png";
 
 import { FOUNDATIONS_TOPICS } from "./system-design/foundations-content";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "./system-design/distributed-systems";
 
 import { oppositeEnds } from "./two-pointers/opposite-ends";
 import { fastSlow } from "./two-pointers/fast-slow";
@@ -1265,6 +1265,63 @@ export const roadmap: RoadmapCategory[] = [
                 title: "Ranking & Distribution: Cheatsheet",
                 slug: "ranking-distribution-cheatsheet",
                 path: "/sql/window-functions/ranking-distribution/ranking-distribution-cheatsheet",
+                icon: FileText,
+              },
+            ],
+          },
+          {
+            title: "Aggregate Window Functions",
+            slug: "aggregate-window-functions",
+            path: "/sql/window-functions/aggregate-window-functions",
+            blurb:
+              "Use SUM, AVG, COUNT, MIN and MAX over windows for running totals, rolling metrics, percentages of total and conditional aggregates.",
+            lessons: [
+              {
+                title: "Basic aggregate windows: SUM, AVG, COUNT",
+                slug: "basic-aggregate-windows",
+                path: "/sql/window-functions/aggregate-window-functions/basic-aggregate-windows",
+                icon: FunctionSquare,
+              },
+              {
+                title: "MIN, MAX, and partition comparisons",
+                slug: "min-max-partition-comparisons",
+                path: "/sql/window-functions/aggregate-window-functions/min-max-partition-comparisons",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Running totals",
+                slug: "running-totals",
+                path: "/sql/window-functions/aggregate-window-functions/running-totals",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Rolling averages and counts",
+                slug: "rolling-averages-counts",
+                path: "/sql/window-functions/aggregate-window-functions/rolling-averages-counts",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Percentage of total",
+                slug: "percentage-of-total",
+                path: "/sql/window-functions/aggregate-window-functions/percentage-of-total",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Conditional Window Aggregates",
+                slug: "conditional-window-aggregates",
+                path: "/sql/window-functions/aggregate-window-functions/conditional-window-aggregates",
+                icon: FunctionSquare,
+              },
+              {
+                title: "Aggregate Window Functions: Final Quiz",
+                slug: "aggregate-windows-quiz",
+                path: "/sql/window-functions/aggregate-window-functions/aggregate-windows-quiz",
+                icon: HelpCircle,
+              },
+              {
+                title: "Aggregate Window Functions: Cheatsheet",
+                slug: "aggregate-windows-cheatsheet",
+                path: "/sql/window-functions/aggregate-window-functions/aggregate-windows-cheatsheet",
                 icon: FileText,
               },
             ],
