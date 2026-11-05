@@ -121,6 +121,8 @@ const SERVICE = ["service", "shortener", "server", "api", "app"];
 const DATABASE = ["database", "db", "storage", "store"];
 const CACHE = ["cache", "redis"];
 const BALANCER = ["load balancer", "balancer"];
+const PRIMARY = ["primary", "database", "db"];
+const REPLICA = ["replica", "standby", "secondary"];
 
 const flowNodes: BoardNode[] = [
   { id: "user", label: "User", x: 0, y: 120, tone: "muted" },
@@ -193,7 +195,113 @@ const scaleOutNodes: BoardNode[] = [
   },
 ];
 
+/**
+ * The Availability lesson's whiteboard practice: remove the single points of failure from a
+ * payments API. The lesson's example is an e-commerce shop, so this uses a different system, and
+ * the answer shows redundancy at every layer, replication, and a recovery target.
+ */
+const haNodes: BoardNode[] = [
+  { id: "client", label: "Users", x: 0, y: 150, tone: "muted" },
+  {
+    id: "lb",
+    label: "Load Balancer",
+    x: 200,
+    y: 137,
+    w: 170,
+    h: 90,
+    tone: "sky",
+    shape: "diamond",
+  },
+  { id: "s1", label: "App Server A", x: 470, y: 60, w: 220, tone: "mint" },
+  { id: "s2", label: "App Server B", x: 470, y: 240, w: 220, tone: "mint" },
+  {
+    id: "p",
+    label: "Primary Database",
+    x: 790,
+    y: 44,
+    w: 220,
+    tone: "violet",
+    shape: "cylinder",
+  },
+  {
+    id: "r",
+    label: "Standby Replica",
+    x: 790,
+    y: 224,
+    w: 220,
+    tone: "violet",
+    shape: "cylinder",
+  },
+  {
+    id: "rto",
+    label: "RTO: 5 min, RPO: 1 min",
+    x: 200,
+    y: 360,
+    shape: "note",
+    tone: "amber",
+  },
+];
+
 export const BOARDS: Record<string, BoardDefinition> = {
+  "high-availability-design": {
+    id: "high-availability-design",
+    file: "high_availability.board",
+    title: "Remove the single points of failure",
+    prompt:
+      "A payments API runs on one application server and one database, so either one can take the whole service down. Redesign it for availability. Draw the users, a load balancer, two application servers, a primary database and a standby replica, with an arrow between the layers. Label the link between the two databases with the word replication, and add a note with a recovery target, such as RTO 5 min. Double-click a shape to edit its name, or an arrow to write on it.",
+    rules: [
+      { id: "users", label: "Add Users", node: USER },
+      { id: "lb", label: "Add a Load Balancer", node: BALANCER },
+      { id: "servers", label: "Add two application servers", node: SERVICE, count: 2 },
+      { id: "primary", label: "Add a primary database", node: PRIMARY },
+      { id: "replica", label: "Add a standby replica", node: REPLICA },
+      {
+        id: "users-lb",
+        label: "Connect Users → Load Balancer",
+        edge: { from: USER, to: BALANCER },
+      },
+      {
+        id: "lb-servers",
+        label: "Connect Load Balancer → Servers",
+        edge: { from: BALANCER, to: SERVICE },
+      },
+      {
+        id: "servers-db",
+        label: "Connect Servers → Database",
+        edge: { from: SERVICE, to: PRIMARY },
+      },
+      {
+        id: "replication",
+        label: "Connect Primary → Replica",
+        edge: { from: PRIMARY, to: REPLICA, anyDirection: true },
+      },
+      {
+        id: "replication-label",
+        label: "Label the link, like replication",
+        text: { pattern: "replicat", atLeast: 1 },
+      },
+      {
+        id: "recovery",
+        label: "Write a recovery target, like RTO 5 min",
+        text: { pattern: "\\b(rto|rpo)\\b", atLeast: 1 },
+      },
+    ],
+    starter: { nodes: [], edges: [] },
+    solution: {
+      nodes: haNodes,
+      edges: [
+        { from: "client", to: "lb" },
+        { from: "lb", to: "s1" },
+        { from: "lb", to: "s2" },
+        { from: "s1", to: "p" },
+        { from: "s2", to: "p" },
+        { from: "p", to: "r", label: "replication" },
+      ],
+    },
+    passNote:
+      "Every layer now has a backup: two servers behind a load balancer, and a replica that can be promoted. The load balancer is still a single point of failure, so a second one is the next step, and the failover itself still has to be tested.",
+  },
+
   "scale-out-load-balancer": {
     id: "scale-out-load-balancer",
     file: "scale_out.board",
