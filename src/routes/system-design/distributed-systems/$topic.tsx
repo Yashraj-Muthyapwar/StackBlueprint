@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems";
 
 export const Route = createFileRoute("/system-design/distributed-systems/$topic")({
   head: ({ params }) => {
