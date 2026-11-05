@@ -259,6 +259,9 @@ export type QuizQuestion = {
   gradeLastLine?: boolean;
 };
 
+/** One piece of a typeset formula: text, a subscript (base, subscript), or a fraction (top, bottom). */
+export type FormulaToken = string | { sub: [string, string] } | { frac: [string, string] };
+
 export type Section =
   | { kind: "prose"; heading?: string; eyebrow?: string; body: string[] }
   | { kind: "code"; language?: string; caption?: string; code: string }
@@ -310,7 +313,15 @@ export type Section =
   | { kind: "system-design-whatsapp-requirements" }
   | { kind: "system-design-estimation-walkthrough" }
   | { kind: "url-shortener-whiteboard" }
+  | { kind: "formula"; caption?: string; lines: FormulaToken[][] }
   | { kind: "highway-metrics" }
+  | { kind: "downtime-bars" }
+  | { kind: "hospital-availability" }
+  | { kind: "availability-walkthrough"; mode: "spof" | "failover" | "database" }
+  | { kind: "active-modes" }
+  | { kind: "ha-architecture" }
+  | { kind: "rto-rpo" }
+  | { kind: "slo-budget" }
   | { kind: "demand-capacity-chart" }
   | { kind: "restaurant-scaling" }
   | { kind: "scaling-walkthrough"; mode: "vertical" | "horizontal" }
