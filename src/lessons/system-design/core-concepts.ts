@@ -138,10 +138,21 @@ const latencyThroughputBandwidthLesson: LessonContent = {
       ],
     },
     {
-      kind: "code",
-      language: "text",
+      kind: "formula",
       caption: "Total latency",
-      code: "**L_total = L_1 + L_2 + ... + L_n**",
+      lines: [
+        [
+          { sub: ["L", "total"] },
+          "=",
+          { sub: ["L", "1"] },
+          "+",
+          { sub: ["L", "2"] },
+          "+",
+          "…",
+          "+",
+          { sub: ["L", "n"] },
+        ],
+      ],
     },
     {
       kind: "prose",
@@ -154,10 +165,9 @@ const latencyThroughputBandwidthLesson: LessonContent = {
       ],
     },
     {
-      kind: "code",
-      language: "text",
+      kind: "formula",
       caption: "Throughput",
-      code: "**Throughput = Completed requests / Elapsed time**",
+      lines: [["Throughput", "=", { frac: ["Completed requests", "Elapsed time"] }]],
     },
     {
       kind: "prose",
@@ -210,12 +220,7 @@ const latencyThroughputBandwidthLesson: LessonContent = {
         "For a stable system:",
       ],
     },
-    {
-      kind: "code",
-      language: "text",
-      caption: "Little's Law",
-      code: "**N = λ × W**",
-    },
+    { kind: "formula", caption: "Little's Law", lines: [["N", "=", "λ", "×", "W"]] },
     { kind: "prose", body: ["**Where:**"] },
     {
       kind: "list",
@@ -255,10 +260,9 @@ const latencyThroughputBandwidthLesson: LessonContent = {
       ],
     },
     {
-      kind: "code",
-      language: "text",
+      kind: "formula",
       caption: "Little's Law applied",
-      code: "**N = 1000 × 0.2 = 200**",
+      lines: [["N", "=", "1,000", "×", "0.2", "=", "200"]],
     },
     {
       kind: "prose",
@@ -579,9 +583,7 @@ const scalabilityLesson: LessonContent = {
     {
       kind: "prose",
       heading: "Horizontal scaling (Scale Out)",
-      body: [
-        "Horizontal scaling increases capacity by adding servers or application instances.",
-      ],
+      body: ["Horizontal scaling increases capacity by adding servers or application instances."],
     },
     { kind: "scaling-walkthrough", mode: "horizontal" },
     { kind: "prose", body: ["**How it works:**"] },
@@ -648,10 +650,12 @@ const scalabilityLesson: LessonContent = {
       ],
     },
     {
-      kind: "code",
-      language: "text",
+      kind: "formula",
       caption: "Server count",
-      code: "**Server count = Target RPS / RPS per server**\n**= 10,000 / 1,000 = 10**",
+      lines: [
+        ["Server count", "=", { frac: ["Target RPS", "RPS per server"] }],
+        ["=", { frac: ["10,000", "1,000"] }, "=", "10"],
+      ],
     },
     {
       kind: "prose",
@@ -830,8 +834,454 @@ const scalabilityLesson: LessonContent = {
   ],
 };
 
+const availability: LessonContent = {
+  slug: "availability",
+  title: "Availability",
+  subtitle: "Keep the service working when parts of it fail.",
+  sections: [
+    {
+      kind: "prose",
+      body: [
+        "**Availability** is the ability of a system to remain operational and accessible when users need it.",
+        "A system is available when it can successfully provide its intended service.",
+        "For example, an online banking application is available when users can log in, check balances, and perform supported transactions.",
+        "A system that is running but cannot process requests correctly may still be considered unavailable.",
+      ],
+    },
+    {
+      kind: "formula",
+      caption: "Availability formula",
+      lines: [["Availability", "=", { frac: ["Uptime", "Total time"] }, "×", "100"]],
+    },
+    { kind: "prose", body: ["**Where:**"] },
+    {
+      kind: "list",
+      items: [
+        "**Uptime:** Time during which the service meets its availability requirements.",
+        "**Downtime:** Time during which the service does not meet those requirements.",
+        "**Total time:** The measurement period, including uptime and downtime.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Availability is usually expressed as a percentage.",
+        "The following table shows approximate maximum downtime over a 365-day year.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Downtime permitted per year",
+      headers: ["Availability", "Common name", "Downtime per year"],
+      rows: [
+        ["99%", "Two nines", "3.65 days"],
+        ["99.9%", "Three nines", "8 hr 45 min 36 sec"],
+        ["99.99%", "Four nines", "52 min 34 sec"],
+        ["99.999%", "Five nines", "5 min 15 sec"],
+        ["99.9999999%", "Nine nines", "31.6 milliseconds"],
+      ],
+    },
+    { kind: "downtime-bars" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The cost of each nine",
+      body: "A higher availability target permits less downtime. It usually requires more redundancy, automation, testing, and operational investment.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "1 · Why",
+      heading: "Why do we need availability?",
+      body: [
+        "Imagine that you are designing a banking application.",
+        "Users expect to access their money at any time.",
+        "However, servers can fail because of hardware faults, software bugs, network failures, power outages, maintenance, or overloaded dependencies.",
+        "If the application has only one server and that server fails, users cannot access the service.",
+        "Availability engineering aims to reduce the impact of failures and restore service quickly.",
+        "The key idea is not to prevent every failure. It is to keep the service operating, or restore it quickly, when failures occur.",
+        "An availability design must consider the complete request path.",
+        "For example, two healthy application servers do not provide end-to-end availability if both depend on one database that has failed.",
+      ],
+    },
+    {
+      kind: "prose",
+      eyebrow: "2 · Intuition",
+      heading: "Hospital emergency department analogy",
+      body: [
+        "Imagine a hospital with one emergency doctor on duty.",
+        "If that doctor becomes unavailable, emergency treatment may stop.",
+        "The hospital can improve availability by arranging backup doctors, alternative treatment rooms, and a process for transferring patients.",
+        "**Single point of failure**",
+        "Only one doctor can provide emergency treatment.",
+        "If that doctor is unavailable, treatment stops.",
+        "**Redundancy**",
+        "Multiple qualified doctors can provide treatment.",
+        "If one becomes unavailable, others can continue.",
+        "**Failover**",
+        "When one treatment team cannot continue, another team takes responsibility through a planned transfer process.",
+        "Try each arrangement below. Make Doctor 1 unavailable and watch the patients.",
+      ],
+    },
+    { kind: "hospital-availability" },
+    { kind: "prose", body: ["Remember these three ideas:"] },
+    {
+      kind: "list",
+      items: [
+        "**Redundancy:** Have backup resources.",
+        "**Failover:** Switch to a healthy resource after failure.",
+        "**Fault isolation:** Prevent one failure from bringing down unrelated resources.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A backup has to work",
+      body: "A backup that cannot take over when needed provides limited protection.",
+    },
+    {
+      kind: "prose",
+      eyebrow: "3 · How",
+      heading: "How high availability works",
+      body: [
+        "**A. Single point of failure (SPOF)**",
+        "A SPOF is a component whose failure can make the entire service unavailable.",
+        "In this architecture, both the application server and database are possible single points of failure.",
+        "To remove these risks, we can introduce redundancy.",
+        "**B. Redundancy**",
+        "Redundancy means having additional components that can provide the same essential function.",
+        "Examples include multiple application servers, multiple network paths, backup power supplies, and replicated databases.",
+        "But redundant resources should not all depend on the same failure-prone component.",
+        "For example, two servers connected to one failed power supply may both become unavailable.",
+        "This is called a common-mode failure.",
+      ],
+    },
+    { kind: "availability-walkthrough", mode: "spof" },
+    {
+      kind: "prose",
+      body: [
+        "**C. Health checks and failover**",
+        "A health check determines whether an application instance is capable of handling requests.",
+        "A load balancer may periodically check an endpoint such as:",
+      ],
+    },
+    {
+      kind: "code",
+      language: "text",
+      caption: "A health check request",
+      code: "GET /health",
+    },
+    {
+      kind: "prose",
+      body: [
+        "A useful readiness check indicates whether an instance can safely receive traffic, not merely whether its process is running.",
+        "When an instance becomes unhealthy:",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "The monitoring or load-balancing system detects the failure.",
+        "The failed instance is marked unhealthy.",
+        "New requests are directed to healthy instances.",
+        "Existing in-flight requests may fail and require retry.",
+        "Recovery automation restores or replaces the failed instance.",
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Failover is not always instantaneous. Detection, switching, reconnection, and recovery take time.",
+      ],
+    },
+    { kind: "availability-walkthrough", mode: "failover" },
+    {
+      kind: "prose",
+      body: [
+        "**D. Active-active vs active-passive**",
+        "These are two common availability architectures.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Active-active and active-passive",
+      headers: ["Factor", "Active-active", "Active-passive"],
+      rows: [
+        ["Normal traffic", "Multiple active instances", "Primary handles traffic"],
+        ["Resource usage", "Both serve work", "Standby capacity reserved"],
+        ["Failure recovery", "Traffic shifts to survivors", "Standby must take over"],
+        ["Main challenge", "Coordination and spare capacity", "Failover detection and switching"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Both strategies can support high availability. Neither eliminates every failure risk.",
+        "Switch between them and fail server A to compare.",
+      ],
+    },
+    { kind: "active-modes" },
+    {
+      kind: "prose",
+      body: [
+        "**E. Database replication**",
+        "Application availability also depends on data availability.",
+        "A common database design uses a primary database and one or more replicas.",
+        "The primary handles writes. Replicas maintain copies of data and may serve reads, depending on the design.",
+        "If the primary fails, an eligible replica may be promoted.",
+        "However, replication introduces important questions:",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "Is replication synchronous or asynchronous?",
+        "Could recent writes be lost during failover?",
+        "How does the system prevent two databases from both acting as primary?",
+        "How does the application reconnect after failover?",
+      ],
+    },
+    { kind: "prose", body: ["These are essential design considerations."] },
+    { kind: "availability-walkthrough", mode: "database" },
+    {
+      kind: "prose",
+      body: [
+        "**F. Availability vs reliability vs fault tolerance**",
+        "These terms are related but different.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Three related ideas",
+      headers: ["Concept", "Meaning"],
+      rows: [
+        ["Availability", "Whether the service is operational when needed"],
+        [
+          "Reliability",
+          "Whether the service performs correctly over a specified period or operation without failure",
+        ],
+        ["Fault tolerance", "Ability to continue operating despite certain component failures"],
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "A system may experience occasional failures but remain highly available because it recovers quickly.",
+        "A fault-tolerant architecture can keep operating during particular failures without a noticeable service interruption, depending on its design.",
+        "High availability often permits a short failover interruption, whereas stronger fault-tolerance requirements may demand uninterrupted operation.",
+      ],
+    },
+    {
+      kind: "prose",
+      eyebrow: "4 · Example",
+      heading: "Highly available e-commerce application",
+      body: [
+        "Consider an online shopping service.",
+        "It needs to remain available when an application server fails.",
+        "A simplified architecture is below. Break parts of it and watch whether the service stays up.",
+      ],
+    },
+    { kind: "ha-architecture" },
+    {
+      kind: "prose",
+      body: [
+        "If application server A fails, the load balancer should stop routing new traffic to it and direct traffic to server B.",
+        "If the primary database fails, a standby replica may take over after the system detects failure and completes a safe promotion.",
+        "For stronger availability, engineers may distribute resources across separate availability zones to reduce the impact of a single-zone failure.",
+        "However, multi-zone deployment does not guarantee high availability by itself. Shared dependencies, operational mistakes, and regional failures can still affect the system.",
+      ],
+    },
+    {
+      kind: "prose",
+      eyebrow: "5 · Trade-offs",
+      heading: "Availability engineering decisions",
+      body: [
+        "**A. Redundancy vs cost**",
+        "Additional servers, replicas, network paths, and monitoring systems increase infrastructure and operational costs.",
+        "Higher availability targets generally require more investment.",
+        "**B. Availability vs consistency**",
+        "In some distributed-system network partitions, an application must choose whether to reject certain operations to preserve consistency or continue serving operations that may not have the latest data.",
+        "This is related to the CAP theorem.",
+        "It does not mean every system must always choose between availability and consistency. The trade-off is specifically important when communication between distributed components fails.",
+        "**C. Recovery time and recovery point**",
+        "Two metrics are often used when designing failover and disaster recovery:",
+        "**Recovery Time Objective (RTO):** The target maximum time to restore service after disruption.",
+        "**Recovery Point Objective (RPO):** The target maximum acceptable amount of data loss, expressed as a time interval.",
+        "For example, an RTO of five minutes means the recovery design aims to restore service within five minutes.",
+        "An RPO of one minute means the design targets no more than approximately one minute of lost data changes in a qualifying failure.",
+        "These are objectives, not automatic guarantees.",
+      ],
+    },
+    { kind: "rto-rpo" },
+    {
+      kind: "prose",
+      body: [
+        "**D. Service-level objectives (SLOs)**",
+        "An SLO defines a measurable service target.",
+        "For example:",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Example SLO",
+      body: "At least 99.9% of eligible API requests should succeed during each calendar month.",
+    },
+    {
+      kind: "prose",
+      body: [
+        "This is a request-based availability SLO. A service can also use time-based availability measurements.",
+        "An SLA is a contractual agreement and may specify consequences if service commitments are missed.",
+        "An SLI is the metric used to measure service behavior.",
+        "A useful way to remember these terms:",
+      ],
+    },
+    {
+      kind: "list",
+      items: [
+        "**Service Level Indicator (SLI):** What we measure. Example: actual availability is 99.95%.",
+        "**Service Level Objective (SLO):** What target we aim to meet. Example: target availability is ≥99.9%.",
+        "**Service Level Agreement (SLA):** What you promise/contract with customers, often with consequences if unmet.",
+      ],
+    },
+    { kind: "prose", body: ["Set the downtime for a month below and watch which targets hold."] },
+    { kind: "slo-budget" },
+    {
+      kind: "prose",
+      eyebrow: "6 · Practice",
+      heading: "Demonstrate your understanding",
+      body: ["Work each one out by hand before you check it."],
+    },
+    {
+      kind: "pattern-exercises",
+      exercises: [
+        {
+          type: "fields",
+          label: "Practice A",
+          title: "Downtime allowance",
+          prompt:
+            "A 30-day month has 43,200 minutes. A service promises 99% availability for the month. How many minutes of downtime does that permit?",
+          fields: [{ label: "Minutes", answer: 432, tone: "accent" }],
+          success:
+            "Correct. 1% of 43,200 minutes is 432 minutes, which is 7.2 hours. Each extra nine would cut it by ten.",
+          hint: "Find the share of the month that may be unavailable, then take that share of 43,200.",
+        },
+        {
+          type: "choice",
+          label: "Practice B",
+          title: "Name the failure",
+          prompt:
+            "Two application servers sit in the same rack on one power supply. The power supply fails and both servers go down. What is this called?",
+          options: ["A common-mode failure", "Failover", "Fault isolation", "Replication lag"],
+          answer: 0,
+          success:
+            "Right. The two servers looked redundant, but they shared one failure-prone component, so one fault removed both.",
+          hint: "Ask what the two servers have in common, and whether that one thing can fail.",
+        },
+        {
+          type: "choice",
+          label: "Practice C",
+          title: "RTO or RPO",
+          prompt:
+            "After a failover, service returns in 2 minutes but the last 4 minutes of orders are missing. The targets were RTO 5 minutes and RPO 1 minute. What happened?",
+          options: [
+            "The RTO was met, but the RPO was missed",
+            "Both were met",
+            "Both were missed",
+            "The RTO was missed, but the RPO was met",
+          ],
+          answer: 0,
+          success:
+            "Correct. Service came back within 5 minutes, but 4 minutes of data was lost, which is more than the 1 minute the RPO allowed.",
+          hint: "One objective is about time to restore service, the other about how much data may be lost.",
+        },
+      ],
+    },
+    {
+      kind: "prose",
+      body: [
+        "Now try one on the whiteboard. This is optional practice: the goals tick as you go, and a badge appears when you meet them all.",
+      ],
+    },
+    { kind: "diagram-board", boardId: "high-availability-design" },
+    {
+      kind: "takeaways",
+      items: [
+        "Availability is the share of time a service meets its availability requirements. A service that is running but cannot process requests correctly counts as unavailable.",
+        "Each extra nine cuts the allowed downtime by ten: 99.9% allows about 8 hr 45 min a year, while 99.999% allows about 5 min 15 sec.",
+        "A single point of failure is a component whose failure takes down the whole service. Redundancy removes it, but only if the copies do not share a failure-prone dependency.",
+        "Failover is detect, mark unhealthy, redirect, and recover. It takes time, and in-flight requests may need a retry.",
+        "Active-active shares traffic and needs spare capacity. Active-passive keeps a standby that must detect failure and take over.",
+        "RTO is how long recovery may take and RPO is how much data may be lost. An SLI is measured, an SLO is the target, and an SLA is the promise.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "availability-q1-meaning",
+          question: "What does 99.9% availability mean?",
+          options: [
+            "The application processes 99.9% of all possible requests per second.",
+            "The service meets its defined availability criteria for 99.9% of the measured period, under a time-based definition.",
+            "Every request finishes within 99.9 milliseconds.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Availability is a share of the measurement period in which the service meets its requirements. It is not a request rate and not a latency.",
+        },
+        {
+          id: "availability-q2-spof",
+          question: "What is a single point of failure?",
+          options: [
+            "Any component with CPU utilization above 80%.",
+            "A component whose failure can make the whole service unavailable.",
+            "A server that processes only one request at a time.",
+          ],
+          correctIndex: 1,
+          explanation:
+            "A SPOF is defined by what its failure does, not by how busy it is or how many requests it handles.",
+        },
+        {
+          id: "availability-q3-active-passive",
+          question: "Which statement best describes active-passive architecture?",
+          options: [
+            "Both servers always process equal amounts of traffic.",
+            "The standby server is used only to store logs and cannot take over.",
+            "A primary serves traffic, while a standby is prepared to take over during failover.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "In active-passive the primary handles traffic and the standby waits. Equal traffic on both describes active-active, and a standby that cannot take over is not a standby.",
+        },
+        {
+          id: "availability-q4-failover",
+          question:
+            "A primary database fails. Its replica becomes the new primary after a failover process. What mechanism is demonstrated?",
+          options: ["Database failover", "Vertical scaling", "Request batching"],
+          correctIndex: 0,
+          explanation:
+            "Promoting a replica after the primary fails is database failover. Vertical scaling makes a machine bigger, and batching groups requests.",
+        },
+        {
+          id: "availability-q5-redundancy",
+          question: "Which statement is correct?",
+          options: [
+            "A system with redundant servers can never fail.",
+            "High availability and fault tolerance always mean exactly the same thing.",
+            "Redundancy can reduce failure impact, but shared dependencies can still cause outages.",
+          ],
+          correctIndex: 2,
+          explanation:
+            "Redundancy helps only when the copies are independent. A shared database, power supply or network can still bring everything down, and high availability usually allows a short interruption that fault tolerance may not.",
+        },
+      ],
+    },
+  ],
+};
+
 /** The module's lessons in order. Add a new lesson above and list it here. */
 export const CORE_CONCEPTS_LESSONS: LessonContent[] = [
   latencyThroughputBandwidthLesson,
   scalabilityLesson,
+  availability,
 ];
