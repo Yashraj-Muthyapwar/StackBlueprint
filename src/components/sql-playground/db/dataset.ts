@@ -161,6 +161,12 @@ CREATE TABLE product_sales (
   revenue    INTEGER NOT NULL
 );
 
+CREATE TABLE sales_transactions (
+  transaction_id INTEGER PRIMARY KEY,
+  region         VARCHAR NOT NULL,
+  sales_amount   INTEGER
+);
+
 CREATE TABLE employee_performance_review (
   employee_id       INTEGER PRIMARY KEY,
   department        VARCHAR NOT NULL,
@@ -585,6 +591,15 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["9", q("Books"), q("P9"), "500"],
       ["10", q("Books"), q("P10"), "400"],
     ]),
+    ...insertBatches("sales_transactions", ["transaction_id", "region", "sales_amount"], [
+      ["1", q("East"), "100"],
+      ["2", q("East"), "200"],
+      ["3", q("East"), "300"],
+      ["4", q("West"), "400"],
+      ["5", q("West"), "600"],
+      ["6", q("North"), "250"],
+      ["7", q("North"), "NULL"],
+    ]),
     ...insertBatches("employee_performance_review", ["employee_id", "department", "salary", "performance_score"], [
       ["101", q("Engineering"), "120000", "95"],
       ["102", q("Engineering"), "110000", "90"],
@@ -683,6 +698,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       blurb: "Ten product sales in Electronics, Clothing and Books with tied revenue. Used by the Top-N per group lesson.",
     },
     {
+      name: "sales_transactions",
+      rows: 7,
+      blurb: "Seven sales transactions in East, West and North, including one NULL amount. Used by the basic aggregate windows lesson.",
+    },
+    {
       name: "employee_performance_review",
       rows: 12,
       blurb: "Twelve employees in Engineering, Sales and HR with salaries and performance scores. Used by the Ranking & Distribution final quiz.",
@@ -716,6 +736,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   employee_performance: ["employee_id", "department", "sales"],
   employee_scores: ["employee_id", "department", "performance_score"],
   product_sales: ["sale_id", "category", "product_id", "revenue"],
+  sales_transactions: ["transaction_id", "region", "sales_amount"],
   employee_performance_review: ["employee_id", "department", "salary", "performance_score"],
   transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };

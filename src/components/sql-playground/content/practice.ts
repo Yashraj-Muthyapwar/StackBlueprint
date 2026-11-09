@@ -520,6 +520,21 @@ const PRACTICES: Record<string, PlaygroundPractice> = {
 -- Use DENSE_RANK() and a CTE. Do not use GROUP BY, DISTINCT ON, or LIMIT.
 -- Write your query below, then choose Run and check.`,
   },
+  "cycledepot-regional-sales-window-aggregates": {
+    id: "cycledepot-regional-sales-window-aggregates",
+    title: "Regional totals beside every transaction",
+    prompt:
+      "Write a query on sales_transactions that returns transaction_id, region, sales_amount, region_total, region_average, valid_sales_count. Use SUM(), AVG() and COUNT(sales_amount) with OVER (PARTITION BY region). Keep all seven rows, including the NULL amount row. Do not use GROUP BY or ORDER BY inside the window. Sort the final output by region, transaction_id.",
+    dataset: "cycledepot",
+    engine: "postgres",
+    challengeId: "cycle-depot-regional-sales-window-aggregates",
+    starterSql: `-- Show each transaction with its regional total, average and count.
+-- Table: sales_transactions (transaction_id, region, sales_amount)
+-- Return transaction_id, region, sales_amount, region_total, region_average, valid_sales_count.
+-- Use SUM(), AVG() and COUNT(sales_amount) with OVER (PARTITION BY region).
+-- Do not use GROUP BY. Keep all seven rows.
+-- Write your query below, then choose Run and check.`,
+  },
   "cycledepot-employee-running-total": {
     id: "cycledepot-employee-running-total",
     title: "Show a running total of sales for each employee",

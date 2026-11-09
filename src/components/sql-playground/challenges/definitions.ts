@@ -2936,6 +2936,85 @@ ORDER BY category, revenue DESC, sale_id;`,
     },
   },
   {
+    id: "cycle-depot-regional-sales-window-aggregates",
+    version: 1,
+    title: "Regional totals beside every transaction",
+    group: "windows",
+    difficulty: "intermediate",
+    dataset: "cycledepot",
+    engines: ["postgres", "duckdb"],
+    prompt: "Show each transaction with its regional total sales, average sales amount, and number of non-NULL sales amounts.",
+    requirements: [
+      "Use the sales_transactions table.",
+      "Return transaction_id, region, sales_amount, region_total, region_average, valid_sales_count.",
+      "Use SUM() with OVER().",
+      "Use AVG() with OVER().",
+      "Use COUNT(sales_amount) with OVER().",
+      "Partition every window calculation by region.",
+      "Keep all seven transaction rows, including the NULL amount row.",
+      "Do not use GROUP BY.",
+      "Do not add an ORDER BY inside the window definitions.",
+      "Sort the final output by region, transaction_id.",
+    ],
+    requiredTables: ["sales_transactions"],
+    starterSql: `-- Show each transaction with its regional total, average and count.
+-- Table: sales_transactions (transaction_id, region, sales_amount)
+-- Return transaction_id, region, sales_amount, region_total, region_average, valid_sales_count.
+-- Use SUM(), AVG() and COUNT(sales_amount) with OVER (PARTITION BY region).
+-- Do not use GROUP BY. Keep all seven rows.
+-- Write your query below, then choose Run and check.`,
+    hints: [
+      "Select the three original columns first, then add one window aggregate for each new column.",
+      "Each new column follows the same pattern: SUM(sales_amount) OVER (PARTITION BY region) AS region_total. Use AVG(sales_amount) and COUNT(sales_amount) the same way.",
+      "Do not put ORDER BY inside OVER. Add ORDER BY region, transaction_id once, at the very end of the query.",
+    ],
+    requiresOuterOrderBy: true,
+    requiredSql: [
+      { pattern: "\\bsum\\s*\\([^)]*\\)\\s*over\\b", message: "Use SUM() with OVER (...) for region_total." },
+      { pattern: "\\bavg\\s*\\([^)]*\\)\\s*over\\b", message: "Use AVG() with OVER (...) for region_average." },
+      { pattern: "\\bcount\\s*\\(\\s*sales_amount\\s*\\)\\s*over\\b", message: "Use COUNT(sales_amount) with OVER (...) so the NULL amount is not counted." },
+    ],
+    forbiddenSql: [
+      { pattern: "\\bgroup\\s+by\\b", message: "Do not use GROUP BY. A window aggregate keeps every row." },
+      { pattern: "\\bover\\s*\\([^)]*order\\s+by", message: "Do not add ORDER BY inside the window. Sort only the final output." },
+    ],
+    solutionDisplay: `SELECT
+    transaction_id,
+    region,
+    sales_amount,
+    SUM(sales_amount) OVER (
+        PARTITION BY region
+    ) AS region_total,
+    AVG(sales_amount) OVER (
+        PARTITION BY region
+    ) AS region_average,
+    COUNT(sales_amount) OVER (
+        PARTITION BY region
+    ) AS valid_sales_count
+FROM sales_transactions
+ORDER BY region, transaction_id;`,
+    solutionSql: {
+      postgres: "SELECT transaction_id, region, sales_amount, SUM(sales_amount) OVER (PARTITION BY region) AS region_total, AVG(sales_amount) OVER (PARTITION BY region) AS region_average, COUNT(sales_amount) OVER (PARTITION BY region) AS valid_sales_count FROM sales_transactions ORDER BY region, transaction_id;",
+      duckdb: "SELECT transaction_id, region, sales_amount, SUM(sales_amount) OVER (PARTITION BY region) AS region_total, AVG(sales_amount) OVER (PARTITION BY region) AS region_average, COUNT(sales_amount) OVER (PARTITION BY region) AS valid_sales_count FROM sales_transactions ORDER BY region, transaction_id;",
+    },
+    validator: {
+      kind: "result-set",
+      expectedSql: {
+        postgres: "SELECT transaction_id, region, sales_amount, SUM(sales_amount) OVER (PARTITION BY region) AS region_total, AVG(sales_amount) OVER (PARTITION BY region) AS region_average, COUNT(sales_amount) OVER (PARTITION BY region) AS valid_sales_count FROM sales_transactions ORDER BY region, transaction_id;",
+        duckdb: "SELECT transaction_id, region, sales_amount, SUM(sales_amount) OVER (PARTITION BY region) AS region_total, AVG(sales_amount) OVER (PARTITION BY region) AS region_average, COUNT(sales_amount) OVER (PARTITION BY region) AS valid_sales_count FROM sales_transactions ORDER BY region, transaction_id;",
+      },
+      requiredColumns: ["transaction_id", "region", "sales_amount", "region_total", "region_average", "valid_sales_count"],
+      columnOrder: "exact",
+      rowOrder: "exact",
+      numericTolerance: 0.001,
+    },
+    success: {
+      title: "Regional statistics attached",
+      body: "Correct. Each window aggregate was partitioned by region, all seven rows stayed, and COUNT(sales_amount) ignored the NULL amount.",
+      nextConcept: "MIN, MAX, and partition comparisons",
+    },
+  },
+  {
     id: "cycle-depot-ranking-final-top-two-levels",
     version: 1,
     title: "Top two distinct salary levels per department",
