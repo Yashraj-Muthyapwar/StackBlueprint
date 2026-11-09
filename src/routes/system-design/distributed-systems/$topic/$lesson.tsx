@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { LessonLayout } from "@/components/learning-paths/LessonLayout";
-import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems-content";
+import { DISTRIBUTED_SYSTEMS_TOPICS } from "@/lessons/system-design/distributed-systems";
 import { SectionRenderer } from "@/components/system-design/SectionRenderer";
 import { useProgress } from "@/hooks/use-progress";
 

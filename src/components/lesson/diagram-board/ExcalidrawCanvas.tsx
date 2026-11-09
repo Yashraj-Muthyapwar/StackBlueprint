@@ -18,7 +18,12 @@ import type { BoardDefinition, DiagramGraph } from "./rules";
  */
 
 export type BoardController = {
-  load: (scene: "starter" | "solution" | "blank") => void | Promise<void>;
+  /** Replaces the drawing with the starter or an empty board. This forgets any drawing set aside by `showExample`. */
+  load: (scene: "starter" | "blank") => void | Promise<void>;
+  /** Sets the learner's drawing aside and shows the example answer. Calling it again does nothing. */
+  showExample: () => Promise<void>;
+  /** Removes the example and brings the learner's own drawing back. */
+  hideExample: () => void;
   /**
    * Adds a System Design component. With a screen position (a drop) it lands there; without
    * one it lands in the middle of what the learner is looking at.
@@ -53,6 +58,8 @@ export default function ExcalidrawCanvas({ board, theme, onGraph, onReady }: Can
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const saveTimer = useRef<number | undefined>(undefined);
   const inserted = useRef(0);
+  // The learner's own drawing while the example is on screen. It is also why autosave pauses then.
+  const mine = useRef<readonly ExcalidrawElement[] | null>(null);
   const onGraphRef = useRef(onGraph);
   onGraphRef.current = onGraph;
 
@@ -75,6 +82,7 @@ export default function ExcalidrawCanvas({ board, theme, onGraph, onReady }: Can
     (elements: readonly ExcalidrawElement[]) => {
       onGraphRef.current(toGraph(elements));
       window.clearTimeout(saveTimer.current);
+      if (mine.current) return;
       saveTimer.current = window.setTimeout(() => {
         try {
           window.localStorage.setItem(
@@ -95,13 +103,32 @@ export default function ExcalidrawCanvas({ board, theme, onGraph, onReady }: Can
       onReady({
         load: async (scene) => {
           await whenFontReady();
-          const elements =
-            scene === "blank"
-              ? []
-              : buildElements(scene === "solution" ? board.solution : board.starter);
+          mine.current = null;
+          const elements = scene === "blank" ? [] : buildElements(board.starter);
           api.updateScene({ elements });
           // Wait a frame so the new scene is registered, then centre and fit it.
           if (elements.length) {
+            requestAnimationFrame(() =>
+              api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }),
+            );
+          }
+        },
+        showExample: async () => {
+          if (mine.current) return;
+          await whenFontReady();
+          if (mine.current) return;
+          mine.current = api.getSceneElements().filter((e) => !e.isDeleted);
+          api.updateScene({ elements: buildElements(board.solution) });
+          requestAnimationFrame(() =>
+            api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }),
+          );
+        },
+        hideExample: () => {
+          const saved = mine.current;
+          if (!saved) return;
+          mine.current = null;
+          api.updateScene({ elements: saved });
+          if (saved.length) {
             requestAnimationFrame(() =>
               api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }),
             );
