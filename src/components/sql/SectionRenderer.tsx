@@ -15,6 +15,8 @@ import { NtileBasketsVisual } from "@/components/sql/ranking/NtileBasketsVisual"
 import { NtileExplorer } from "@/components/sql/ranking/NtileExplorer";
 import { TopNCompetitionVisual } from "@/components/sql/ranking/TopNCompetitionVisual";
 import { TopNExplorer } from "@/components/sql/ranking/TopNExplorer";
+import { ReportCardVisual } from "@/components/sql/aggregate-windows/ReportCardVisual";
+import { AggregateExplorer } from "@/components/sql/aggregate-windows/AggregateExplorer";
 import { RelativePositionVisual } from "@/components/sql/ranking/RelativePositionVisual";
 import { PercentRankExplorer } from "@/components/sql/ranking/PercentRankExplorer";
 import { PartitionExplorer } from "@/components/sql/window-functions/PartitionExplorer";
@@ -541,6 +543,10 @@ export function SectionRenderer({
           return <TopNCompetitionVisual caption={section.caption} />;
         case "ranking-top-n-explorer":
           return <TopNExplorer caption={section.caption} />;
+        case "aggregate-report-card":
+          return <ReportCardVisual caption={section.caption} />;
+        case "aggregate-explorer":
+          return <AggregateExplorer caption={section.caption} />;
         case "ranking-relative-position":
           return <RelativePositionVisual caption={section.caption} />;
         case "ranking-percent-rank-explorer":

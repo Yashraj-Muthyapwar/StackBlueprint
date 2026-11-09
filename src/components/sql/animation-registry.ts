@@ -71,6 +71,7 @@ import { rowNumberStages } from "./ranking/row-number";
 import { rankDenseRankStages } from "./ranking/rank-dense-rank";
 import { ntileStages } from "./ranking/ntile";
 import { topNPerGroupStages } from "./ranking/top-n-per-group";
+import { aggregateBasicStages } from "./aggregate-windows/basic-aggregate-windows";
 import { percentRankCumeDistStages } from "./ranking/percent-rank-cume-dist";
 import { groupByVsWindowStages } from "./window-functions/group-by-vs-window";
 import { shopflowSemiAntiJoinStages } from "./querying/semi-anti-joins.tsx";
@@ -159,6 +160,7 @@ export const STAGES_REGISTRY = {
   "q-ranking-rank-dense-rank": rankDenseRankStages,
   "q-ranking-ntile": ntileStages,
   "q-ranking-top-n-per-group": topNPerGroupStages,
+  "q-aggregate-basic-windows": aggregateBasicStages,
   "q-ranking-percent-rank-cume-dist": percentRankCumeDistStages,
 } as const;
 
