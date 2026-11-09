@@ -3375,6 +3375,63 @@ const rankingCheatsheet: LessonContent = {
   ],
 };
 
+// ---------- Aggregate Window Functions (placeholders) ----------
+const aggregateBasic: LessonContent = {
+  slug: "basic-aggregate-windows",
+  title: "Basic aggregate windows: SUM, AVG, COUNT",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateMinMax: LessonContent = {
+  slug: "min-max-partition-comparisons",
+  title: "MIN, MAX, and partition comparisons",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateRunningTotals: LessonContent = {
+  slug: "running-totals",
+  title: "Running totals",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateRolling: LessonContent = {
+  slug: "rolling-averages-counts",
+  title: "Rolling averages and counts",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregatePercentOfTotal: LessonContent = {
+  slug: "percentage-of-total",
+  title: "Percentage of total",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateConditional: LessonContent = {
+  slug: "conditional-window-aggregates",
+  title: "Conditional Window Aggregates",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateQuiz: LessonContent = {
+  slug: "aggregate-windows-quiz",
+  title: "Aggregate Window Functions: Final Quiz",
+  subtitle: "",
+  sections: [],
+};
+
+const aggregateCheatsheet: LessonContent = {
+  slug: "aggregate-windows-cheatsheet",
+  title: "Aggregate Window Functions: Cheatsheet",
+  subtitle: "",
+  sections: [],
+};
+
 // ---------- Multi-Dimensional Aggregations (GROUPING SETS) ----------
 const groupingSets: LessonContent = {
   slug: "grouping-sets",
@@ -3499,6 +3556,15 @@ export const WINDOW_FUNCTION_TOPICS: Record<string, FoundationTopicMeta> = {
     blurb:
       "Number, rank, bucket and measure rows with ROW_NUMBER, RANK, DENSE_RANK, NTILE, PERCENT_RANK and CUME_DIST.",
     lessons: [rankingRowNumber, rankingRankVsDenseRank, rankingNtile, rankingPercentRankCumeDist, rankingTopNPerGroup, rankingQuiz, rankingCheatsheet],
+  },
+  "aggregate-window-functions": {
+    slug: "aggregate-window-functions",
+    title: "Aggregate Window Functions",
+    category: "Advanced SQL",
+    iconKey: "database",
+    blurb:
+      "Use SUM, AVG, COUNT, MIN and MAX over windows for running totals, rolling metrics, percentages of total and conditional aggregates.",
+    lessons: [aggregateBasic, aggregateMinMax, aggregateRunningTotals, aggregateRolling, aggregatePercentOfTotal, aggregateConditional, aggregateQuiz, aggregateCheatsheet],
   },
   "multi-dimensional-aggregations": {
     slug: "multi-dimensional-aggregations",
