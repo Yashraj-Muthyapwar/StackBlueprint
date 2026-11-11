@@ -26,14 +26,14 @@ import {
   getCheckFeedback,
   getErrorCopy,
 } from "@/components/sql-playground/challenges/error-copy";
-import { getProgress, saveProgress } from "@/components/sql-playground/challenges/progress";
+import { deleteProgress, getProgress, saveProgress } from "@/components/sql-playground/challenges/progress";
 import type { CheckOutcome } from "@/components/sql-playground/challenges/types";
 
 const ENGINE = "postgres" as const;
 const OUTER_ORDER_BY_MESSAGE =
   "Add an ORDER BY after FROM. The window ORDER BY only orders the calculation, so only an outer ORDER BY guarantees the display order.";
 
-function MiniTable({ result, maxRows = 8 }: { result: QueryResult; maxRows?: number }) {
+function MiniTable({ result, maxRows = 8, compact = false }: { result: QueryResult; maxRows?: number; compact?: boolean }) {
   const rows = result.rows.slice(0, maxRows);
   return (
     <div className="overflow-x-auto rounded-lg border border-hairline">
@@ -51,7 +51,7 @@ function MiniTable({ result, maxRows = 8 }: { result: QueryResult; maxRows?: num
           {rows.map((row, i) => (
             <tr key={i} className="border-b border-hairline/60 last:border-b-0">
               {result.fields.map((f) => (
-                <td key={f.name} className="px-3 py-1.5 font-mono text-[12.5px] text-foreground/85">
+                <td key={f.name} className={`px-3 ${compact ? "py-0.5" : "py-1.5"} font-mono text-[12.5px] text-foreground/85`}>
                   {row[f.name] === null || row[f.name] === undefined ? "NULL" : String(row[f.name])}
                 </td>
               ))}
@@ -209,6 +209,17 @@ export default function InlineSqlPractice({
     setRunning(false);
   }, [challenge, running, sql]);
 
+  const resetPractice = useCallback(() => {
+    setSql(starter);
+    setFeedback(null);
+    setResult(null);
+    setHintIndex(-1);
+    setShowSolution(false);
+    setAttempts(0);
+    setPassedBefore(false);
+    deleteProgress(challengeId);
+  }, [starter, challengeId]);
+
   const solutionText = useMemo(() => {
     if (challenge?.solutionDisplay) return challenge.solutionDisplay;
     const raw = challenge?.solutionSql[ENGINE] ?? challenge?.solutionSql.postgres ?? "";
@@ -252,24 +263,28 @@ export default function InlineSqlPractice({
       </div>
 
       <div className="space-y-4 p-5">
-        <div>
-          <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
-          <p className="lesson-prose mt-1 text-muted-foreground">{task}</p>
-          {requirements.length > 0 ? (
-            <ul className="lesson-prose mt-2 list-disc space-y-1 pl-5 text-muted-foreground marker:text-mint">
-              {requirements.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-
-        {Object.entries(preview).map(([table, res]) => (
-          <div key={table} className="space-y-1.5">
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{table}</p>
-            <MiniTable result={res} />
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <div>
+            <h3 className="text-lg font-semibold tracking-tight">{title}</h3>
+            <p className="lesson-supporting mt-1 text-muted-foreground">{task}</p>
+            {requirements.length > 0 ? (
+              <ul className="lesson-supporting mt-2 list-disc space-y-1 pl-5 text-muted-foreground marker:text-mint">
+                {requirements.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            ) : null}
           </div>
-        ))}
+
+          <div className="space-y-3">
+            {Object.entries(preview).map(([table, res]) => (
+              <div key={table} className="space-y-1.5">
+                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">{table}</p>
+                <MiniTable result={res} maxRows={12} compact />
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className={`sqlx sqlx-embed ${dark ? "sqlx-dark" : ""}`} data-engine={ENGINE}>
           {ready ? (
@@ -298,7 +313,7 @@ export default function InlineSqlPractice({
             {running ? <Loader2 className="size-3.5 animate-spin" /> : <Play className="size-3.5" />}
             Run and check
           </button>
-          <button type="button" className={btn} onClick={() => { setSql(starter); setFeedback(null); setResult(null); setHintIndex(-1); setShowSolution(false); }}>
+          <button type="button" className={btn} onClick={resetPractice}>
             <RotateCcw className="size-3.5" /> Reset
           </button>
           {challenge.hints.length > 0 ? (

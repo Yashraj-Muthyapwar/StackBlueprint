@@ -1,3 +1,4 @@
+import { minMaxStages } from "./aggregate-windows/min-max-partition-comparisons";
 import { aggrStages, cubeStages, grpStages, havingStages } from "./querying/aggregation";
 import {
   introHow,
@@ -160,6 +161,7 @@ export const STAGES_REGISTRY = {
   "q-ranking-rank-dense-rank": rankDenseRankStages,
   "q-ranking-ntile": ntileStages,
   "q-ranking-top-n-per-group": topNPerGroupStages,
+  "q-aggregate-min-max": minMaxStages,
   "q-aggregate-basic-windows": aggregateBasicStages,
   "q-ranking-percent-rank-cume-dist": percentRankCumeDistStages,
 } as const;

@@ -1,3 +1,4 @@
+import { SalaryBoundariesVisual, SalaryComparisonExplorer } from "./aggregate-windows/SalaryComparisons";
 import type { Section } from "@/lessons/sql/foundations-content";
 import { AlertTriangle, CheckCircle2, Info, Brain, Play } from "lucide-react";
 import { LessonAnimation } from "@/components/sql/LessonAnimation";
@@ -515,6 +516,10 @@ export function SectionRenderer({
 
     case "visual":
       switch (section.id) {
+        case "aggregate-salary-boundaries":
+          return <SalaryBoundariesVisual caption={section.caption} />;
+        case "aggregate-salary-explorer":
+          return <SalaryComparisonExplorer caption={section.caption} />;
         case "window-calculator":
           return <CalculatorWindowVisual caption={section.caption} />;
         case "window-order-slips":
