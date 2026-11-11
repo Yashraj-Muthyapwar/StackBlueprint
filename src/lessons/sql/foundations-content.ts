@@ -34,7 +34,7 @@ export type Section =
   | { kind: "analogy"; title: string; text: string }
   | { kind: "diagram"; ascii: string; caption?: string }
   | { kind: "image"; src: string; alt: string; caption?: string }
-  | { kind: "visual"; id: "window-two-rooms" | "window-calculator" | "window-order-slips" | "window-partition-explorer" | "window-scoreboard" | "window-frame-selector" | "window-execution-order" | "ranking-queue-tickets" | "ranking-row-number-explorer" | "ranking-contest-podium" | "ranking-tie-explorer" | "ranking-ntile-baskets" | "ranking-ntile-explorer" | "ranking-relative-position" | "ranking-percent-rank-explorer" | "ranking-top-n-competition" | "ranking-top-n-explorer" | "aggregate-report-card" | "aggregate-explorer"; caption?: string }
+  | { kind: "visual"; id: "window-two-rooms" | "window-calculator" | "window-order-slips" | "window-partition-explorer" | "window-scoreboard" | "window-frame-selector" | "window-execution-order" | "ranking-queue-tickets" | "ranking-row-number-explorer" | "ranking-contest-podium" | "ranking-tie-explorer" | "ranking-ntile-baskets" | "ranking-ntile-explorer" | "ranking-relative-position" | "ranking-percent-rank-explorer" | "ranking-top-n-competition" | "ranking-top-n-explorer" | "aggregate-report-card" | "aggregate-explorer" | "aggregate-salary-boundaries" | "aggregate-salary-explorer"; caption?: string }
   | { kind: "image-carousel"; images: { src: string; alt: string; caption?: string }[] }
   | {
       kind: "animation";
