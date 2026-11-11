@@ -17,6 +17,15 @@ export interface PlaygroundPractice {
  * in the URL, keep links compact and make every launchable exercise reviewable.
  */
 const PRACTICES: Record<string, PlaygroundPractice> = {
+"cycledepot-category-max-prices": {
+  "id": "cycledepot-category-max-prices",
+  "title": "Highest price in each category",
+  "prompt": "Find all products that have the highest non-NULL price in their respective categories. Include ties. Return product_id, category, price. Use MAX(price) with OVER(). Partition by category. Use a CTE. Filter for products whose price equals the category maximum. Include every product tied for the maximum. Do not use GROUP BY, DISTINCT ON, ROW_NUMBER(), or LIMIT. Do not add ORDER BY inside the window. Sort the final result by category, product_id.",
+  "dataset": "cycledepot",
+  "engine": "postgres",
+  "challengeId": "cycle-depot-category-max-prices",
+  "starterSql": "-- Table: product_prices (product_id, category, price)\n-- Find all products that have the highest non-NULL price in their respective categories. Include ties.\n-- Use MAX(price) with OVER(), PARTITION BY category, and a CTE.\n-- Return product_id, category, price.\n-- Sort the final result by category, product_id."
+},
   "shopflow-find-customer-without-qualifying-order": {
     id: "shopflow-find-customer-without-qualifying-order",
     title: "Find a ShopFlow customer without a qualifying order",

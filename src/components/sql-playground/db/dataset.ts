@@ -92,6 +92,12 @@ CREATE TABLE employees (
   salary     DECIMAL(10,2) NOT NULL
 );
 
+CREATE TABLE product_prices (
+  product_id INTEGER PRIMARY KEY,
+  category VARCHAR NOT NULL,
+  price INTEGER
+);
+
 CREATE TABLE staff_salaries (
   employee_id INTEGER PRIMARY KEY,
   department  VARCHAR NOT NULL,
@@ -501,6 +507,18 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
       employees,
     ),
+    ...insertBatches("product_prices", ["product_id", "category", "price"], [
+      ["1", q("Electronics"), "1200"],
+      ["2", q("Electronics"), "900"],
+      ["3", q("Electronics"), "900"],
+      ["4", q("Electronics"), "600"],
+      ["5", q("Furniture"), "1500"],
+      ["6", q("Furniture"), "1000"],
+      ["7", q("Furniture"), "1500"],
+      ["8", q("Books"), "50"],
+      ["9", q("Books"), "30"],
+      ["10", q("Books"), "NULL"],
+    ]),
     // Tiny tables for the Window Function Foundations lessons.
     ...insertBatches("staff_salaries", ["employee_id", "department", "salary"], [
       ["1", q("IT"), "5000"],
@@ -643,6 +661,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       blurb: "Self-referencing hierarchy via manager_id.",
     },
     {
+      name: "product_prices",
+      rows: 10,
+      blurb: "Ten products in three categories, including tied maxima and a NULL price.",
+    },
+    {
       name: "staff_salaries",
       rows: 4,
       blurb: "Four employees in IT and HR. Used by the window function lessons.",
@@ -725,6 +748,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   orders: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
   order_items: ["id", "order_id", "product_id", "quantity", "unit_price"],
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
+  product_prices: ["product_id", "category", "price"],
   staff_salaries: ["employee_id", "department", "salary"],
   customer_orders: ["order_id", "customer_id", "amount"],
   department_salaries: ["employee_id", "department", "salary"],

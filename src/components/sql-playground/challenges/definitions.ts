@@ -1,6 +1,84 @@
 import type { ChallengeDefinition, ChallengeDataset, ChallengeEngine } from "./types";
 
 export const CHALLENGES: ChallengeDefinition[] = [
+{
+  "id": "cycle-depot-category-max-prices",
+  "version": 1,
+  "title": "Highest price in each category",
+  "group": "windows",
+  "difficulty": "intermediate",
+  "dataset": "cycledepot",
+  "engines": [
+    "postgres",
+    "duckdb"
+  ],
+  "prompt": "Find all products that have the highest non-NULL price in their respective categories. Include ties.",
+  "requirements": [
+    "Use MAX(price) with OVER().",
+    "Partition by category.",
+    "Use a CTE.",
+    "Filter for products whose price equals the category maximum.",
+    "Include every product tied for the maximum.",
+    "Do not use GROUP BY, DISTINCT ON, ROW_NUMBER(), or LIMIT.",
+    "Do not add ORDER BY inside the window.",
+    "Sort the final result by category, product_id."
+  ],
+  "requiredTables": [
+    "product_prices"
+  ],
+  "starterSql": "-- Table: product_prices (product_id, category, price)\n-- Find all products that have the highest non-NULL price in their respective categories. Include ties.\n-- Use MAX(price) with OVER(), PARTITION BY category, and a CTE.\n-- Return product_id, category, price.\n-- Sort the final result by category, product_id.",
+  "hints": [
+    "Calculate MAX(price) OVER (PARTITION BY category) AS category_max inside a CTE.",
+    "Select product_id, category, price from the CTE and filter WHERE price = category_max. This includes all ties.",
+    "Add ORDER BY category, product_id to the outer query. NULL prices do not match the category maximum."
+  ],
+  "requiresOuterOrderBy": true,
+  "requiredSql": [
+    {
+      "pattern": "\\bmax\\s*\\(\\s*(?:\\w+\\.)?price\\s*\\)\\s*over\\s*\\(\\s*partition\\s+by\\s+(?:\\w+\\.)?category\\s*\\)",
+      "message": "Use MAX(price) OVER (PARTITION BY category) without an ordered window."
+    },
+    {
+      "pattern": "^\\s*with\\b",
+      "message": "Use a CTE to calculate the category maximum before filtering."
+    }
+  ],
+  "forbiddenSql": [
+    {
+      "pattern": "\\b(?:group\\s+by|distinct\\s+on|row_number\\s*\\(|limit\\b)",
+      "message": "Do not use GROUP BY, DISTINCT ON, ROW_NUMBER(), or LIMIT."
+    },
+    {
+      "pattern": "\\bover\\s*\\([^)]*order\\s+by",
+      "message": "Do not add ORDER BY inside the window."
+    }
+  ],
+  "solutionDisplay": "WITH price_stats AS (\n    SELECT\n        product_id,\n        category,\n        price,\n        MAX(price) OVER (\n            PARTITION BY category\n        ) AS category_max\n    FROM product_prices\n)\nSELECT\n    product_id,\n    category,\n    price\nFROM price_stats\nWHERE price = category_max\nORDER BY category, product_id;",
+  "solutionSql": {
+    "postgres": "WITH price_stats AS (\n    SELECT\n        product_id,\n        category,\n        price,\n        MAX(price) OVER (\n            PARTITION BY category\n        ) AS category_max\n    FROM product_prices\n)\nSELECT\n    product_id,\n    category,\n    price\nFROM price_stats\nWHERE price = category_max\nORDER BY category, product_id;",
+    "duckdb": "WITH price_stats AS (\n    SELECT\n        product_id,\n        category,\n        price,\n        MAX(price) OVER (\n            PARTITION BY category\n        ) AS category_max\n    FROM product_prices\n)\nSELECT\n    product_id,\n    category,\n    price\nFROM price_stats\nWHERE price = category_max\nORDER BY category, product_id;"
+  },
+  "validator": {
+    "kind": "result-set",
+    "expectedSql": {
+      "postgres": "WITH price_stats AS (\n    SELECT\n        product_id,\n        category,\n        price,\n        MAX(price) OVER (\n            PARTITION BY category\n        ) AS category_max\n    FROM product_prices\n)\nSELECT\n    product_id,\n    category,\n    price\nFROM price_stats\nWHERE price = category_max\nORDER BY category, product_id;",
+      "duckdb": "WITH price_stats AS (\n    SELECT\n        product_id,\n        category,\n        price,\n        MAX(price) OVER (\n            PARTITION BY category\n        ) AS category_max\n    FROM product_prices\n)\nSELECT\n    product_id,\n    category,\n    price\nFROM price_stats\nWHERE price = category_max\nORDER BY category, product_id;"
+    },
+    "requiredColumns": [
+      "product_id",
+      "category",
+      "price"
+    ],
+    "columnOrder": "exact",
+    "rowOrder": "exact",
+    "numericTolerance": 0.001
+  },
+  "success": {
+    "title": "Category maxima found",
+    "body": "Every product tied for its category maximum is included. NULL prices are excluded.",
+    "nextConcept": "Running totals"
+  }
+},
   {
     id: "shopflow-find-customer-without-qualifying-order",
     version: 1,
