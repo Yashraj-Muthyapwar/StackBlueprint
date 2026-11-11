@@ -1283,7 +1283,7 @@ export const roadmap: RoadmapCategory[] = [
                 icon: FunctionSquare,
               },
               {
-                title: "MIN, MAX, and partition comparisons",
+                title: "MIN(), MAX(), and Partition Comparisons",
                 slug: "min-max-partition-comparisons",
                 path: "/sql/window-functions/aggregate-window-functions/min-max-partition-comparisons",
                 icon: FunctionSquare,

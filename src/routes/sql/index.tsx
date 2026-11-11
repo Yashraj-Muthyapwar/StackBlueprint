@@ -302,7 +302,7 @@ const sections: Section[] = [
         icon: Sigma,
         modules: [
           "Basic aggregate windows: SUM, AVG, COUNT",
-          "MIN, MAX, and partition comparisons",
+          "MIN(), MAX(), and Partition Comparisons",
           "Running totals",
           "Rolling averages and counts",
           "Percentage of total",

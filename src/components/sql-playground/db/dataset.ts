@@ -92,6 +92,12 @@ CREATE TABLE employees (
   salary     DECIMAL(10,2) NOT NULL
 );
 
+CREATE TABLE product_prices (
+  product_id INTEGER PRIMARY KEY,
+  category VARCHAR NOT NULL,
+  price INTEGER
+);
+
 CREATE TABLE staff_salaries (
   employee_id INTEGER PRIMARY KEY,
   department  VARCHAR NOT NULL,
@@ -159,6 +165,12 @@ CREATE TABLE product_sales (
   category   VARCHAR NOT NULL,
   product_id VARCHAR NOT NULL,
   revenue    INTEGER NOT NULL
+);
+
+CREATE TABLE sales_transactions (
+  transaction_id INTEGER PRIMARY KEY,
+  region         VARCHAR NOT NULL,
+  sales_amount   INTEGER
 );
 
 CREATE TABLE employee_performance_review (
@@ -495,6 +507,18 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
       employees,
     ),
+    ...insertBatches("product_prices", ["product_id", "category", "price"], [
+      ["1", q("Electronics"), "1200"],
+      ["2", q("Electronics"), "900"],
+      ["3", q("Electronics"), "900"],
+      ["4", q("Electronics"), "600"],
+      ["5", q("Furniture"), "1500"],
+      ["6", q("Furniture"), "1000"],
+      ["7", q("Furniture"), "1500"],
+      ["8", q("Books"), "50"],
+      ["9", q("Books"), "30"],
+      ["10", q("Books"), "NULL"],
+    ]),
     // Tiny tables for the Window Function Foundations lessons.
     ...insertBatches("staff_salaries", ["employee_id", "department", "salary"], [
       ["1", q("IT"), "5000"],
@@ -585,6 +609,15 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       ["9", q("Books"), q("P9"), "500"],
       ["10", q("Books"), q("P10"), "400"],
     ]),
+    ...insertBatches("sales_transactions", ["transaction_id", "region", "sales_amount"], [
+      ["1", q("East"), "100"],
+      ["2", q("East"), "200"],
+      ["3", q("East"), "300"],
+      ["4", q("West"), "400"],
+      ["5", q("West"), "600"],
+      ["6", q("North"), "250"],
+      ["7", q("North"), "NULL"],
+    ]),
     ...insertBatches("employee_performance_review", ["employee_id", "department", "salary", "performance_score"], [
       ["101", q("Engineering"), "120000", "95"],
       ["102", q("Engineering"), "110000", "90"],
@@ -626,6 +659,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       name: "employees",
       rows: employees.length,
       blurb: "Self-referencing hierarchy via manager_id.",
+    },
+    {
+      name: "product_prices",
+      rows: 10,
+      blurb: "Ten products in three categories, including tied maxima and a NULL price.",
     },
     {
       name: "staff_salaries",
@@ -683,6 +721,11 @@ export function buildSeed(): { statements: string[]; tables: DatasetTableInfo[] 
       blurb: "Ten product sales in Electronics, Clothing and Books with tied revenue. Used by the Top-N per group lesson.",
     },
     {
+      name: "sales_transactions",
+      rows: 7,
+      blurb: "Seven sales transactions in East, West and North, including one NULL amount. Used by the basic aggregate windows lesson.",
+    },
+    {
       name: "employee_performance_review",
       rows: 12,
       blurb: "Twelve employees in Engineering, Sales and HR with salaries and performance scores. Used by the Ranking & Distribution final quiz.",
@@ -705,6 +748,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   orders: ["id", "customer_id", "order_date", "shipped_date", "status", "channel"],
   order_items: ["id", "order_id", "product_id", "quantity", "unit_price"],
   employees: ["id", "name", "role", "manager_id", "store_city", "hired_on", "salary"],
+  product_prices: ["product_id", "category", "price"],
   staff_salaries: ["employee_id", "department", "salary"],
   customer_orders: ["order_id", "customer_id", "amount"],
   department_salaries: ["employee_id", "department", "salary"],
@@ -716,6 +760,7 @@ export const SCHEMA_HINT: Record<string, string[]> = {
   employee_performance: ["employee_id", "department", "sales"],
   employee_scores: ["employee_id", "department", "performance_score"],
   product_sales: ["sale_id", "category", "product_id", "revenue"],
+  sales_transactions: ["transaction_id", "region", "sales_amount"],
   employee_performance_review: ["employee_id", "department", "salary", "performance_score"],
   transactions: ["txn_id", "account_id", "txn_date", "amount"],
 };
