@@ -549,6 +549,31 @@ const unlockedMongoPattern = (
   locked: false,
 });
 
+const unlockedAwsPattern = (
+  title: string,
+  slug: string,
+  blurb: string,
+  lessonsList: string[],
+): RoadmapPattern => ({
+  title,
+  slug,
+  path: `/aws-cloud-practitioner/${slug}`,
+  blurb,
+  lessons: lessonsList.map((lTitle) => {
+    const lSlug = lTitle
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    return {
+      title: lTitle,
+      slug: lSlug,
+      path: `/aws-cloud-practitioner/${slug}/${lSlug}`,
+      icon: Cloud,
+    };
+  }),
+  locked: false,
+});
+
 export const roadmap: RoadmapCategory[] = [
   {
     title: "Patterns (DSA)",
@@ -3768,6 +3793,90 @@ export const roadmap: RoadmapCategory[] = [
             "Aggregation in Python",
             "aggregation-python",
             "Run aggregation pipelines in Python.",
+          ),
+        ],
+      },
+    ],
+  },
+  {
+    title: "AWS Cloud Practitioner",
+    slug: "aws-cloud-practitioner",
+    icon: Cloud,
+    iconColor: "text-amber-500",
+    locked: false,
+    overviewPath: "/aws-cloud-practitioner",
+    blurb: "Prepare for the AWS Cloud Practitioner exam, from cloud concepts to Well-Architected solutions.",
+    patterns: [],
+    sections: [
+      {
+        title: "Modules",
+        blurb: "Thirteen modules covering the AWS Cloud Practitioner syllabus.",
+        patterns: [
+          unlockedAwsPattern(
+            "Module 1: Introduction to the Cloud",
+            "introduction-to-the-cloud",
+            "Cloud computing basics, AWS benefits, global infrastructure, and the shared responsibility model.",
+            ["What is Cloud Computing?", "Benefits of the AWS Cloud", "Introduction to AWS Global Infrastructure", "The AWS Shared Responsibility Model", "Applying Cloud Concepts to Real Life Use Cases", "Module 1 Mini-Quiz and Practical Challenge", "Module 1 Cheat Sheet"],
+          ),
+          lockedPattern(
+            "Module 2: Compute in the Cloud",
+            "compute-in-the-cloud",
+            "Virtual servers and the core ideas of cloud compute.",
+          ),
+          lockedPattern(
+            "Module 3: Exploring Compute Services",
+            "exploring-compute-services",
+            "Choosing between EC2, containers, and serverless compute.",
+          ),
+          lockedPattern(
+            "Module 4: Going Global",
+            "going-global",
+            "Regions, Availability Zones, edge locations, and global delivery.",
+          ),
+          lockedPattern(
+            "Module 5: Networking",
+            "networking",
+            "Virtual networks, connectivity, and traffic control on AWS.",
+          ),
+          lockedPattern(
+            "Module 6: Storage",
+            "storage",
+            "Block, object, and file storage options on AWS.",
+          ),
+          lockedPattern(
+            "Module 7: Databases",
+            "databases",
+            "Managed relational and non-relational databases on AWS.",
+          ),
+          lockedPattern(
+            "Module 8: AI, ML, and Data Analytics",
+            "ai-ml-and-data-analytics",
+            "AWS services for machine learning, AI, and analytics.",
+          ),
+          lockedPattern(
+            "Module 9: Security",
+            "security",
+            "Identity, access, and protecting workloads on AWS.",
+          ),
+          lockedPattern(
+            "Module 10: Monitoring, Compliance, and Governance",
+            "monitoring-compliance-and-governance",
+            "Observing, auditing, and governing AWS environments.",
+          ),
+          lockedPattern(
+            "Module 11: Pricing and Support",
+            "pricing-and-support",
+            "Pricing models, cost tools, and AWS support plans.",
+          ),
+          lockedPattern(
+            "Module 12: Migrating to the AWS Cloud",
+            "migrating-to-the-aws-cloud",
+            "Migration strategies and tools for moving to AWS.",
+          ),
+          lockedPattern(
+            "Module 13: Well-Architected Solutions",
+            "well-architected-solutions",
+            "Design principles from the AWS Well-Architected Framework.",
           ),
         ],
       },
