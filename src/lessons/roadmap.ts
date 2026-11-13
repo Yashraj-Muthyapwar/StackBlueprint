@@ -3816,7 +3816,7 @@ export const roadmap: RoadmapCategory[] = [
             "Module 1: Introduction to the Cloud",
             "introduction-to-the-cloud",
             "Cloud computing basics, AWS benefits, global infrastructure, and the shared responsibility model.",
-            ["What is Cloud Computing?", "Benefits of the AWS Cloud", "Introduction to AWS Global Infrastructure", "The AWS Shared Responsibility Model", "Applying Cloud Concepts to Real Life Use Cases", "Module 1 Mini-Quiz and Practical Challenge", "Module 1 Cheat Sheet"],
+            ["What is Cloud Computing?", "Traditional IT vs Cloud Computing", "Benefits of the AWS Cloud", "Introduction to AWS Global Infrastructure", "The AWS Shared Responsibility Model", "Applying Cloud Concepts to Real Life Use Cases", "Module 1 Mini-Quiz and Practical Challenge", "Module 1 Cheat Sheet"],
           ),
           lockedPattern(
             "Module 2: Compute in the Cloud",
