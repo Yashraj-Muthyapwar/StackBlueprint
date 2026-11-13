@@ -3,6 +3,7 @@ import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
+import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
 import { Quiz } from "@/components/lesson/Quiz";
 import type { AwsSection } from "@/lessons/aws-cloud-practitioner/introduction-to-the-cloud-content";
 
@@ -58,10 +59,35 @@ export function SectionRenderer({
       );
     }
     case "visual":
-      return section.id === "power-plant" ? (
-        <PowerPlantVisual caption={section.caption} />
-      ) : (
-        <HolidayScalingVisual caption={section.caption} />
+      switch (section.id) {
+        case "power-plant":
+          return <PowerPlantVisual caption={section.caption} />;
+        case "holiday-scaling":
+          return <HolidayScalingVisual caption={section.caption} />;
+        case "car-analogy":
+          return <CarAnalogyVisual caption={section.caption} />;
+        case "workflow-compare":
+          return <WorkflowCompareVisual caption={section.caption} />;
+        case "black-friday":
+          return <BlackFridayVisual caption={section.caption} />;
+      }
+      return null;
+    case "list":
+      return (
+        <section className="space-y-3">
+          {section.heading ? (
+            <h2 className="lesson-section-title font-semibold tracking-tight">{section.heading}</h2>
+          ) : null}
+          {section.lead ? <p className="lesson-prose text-muted-foreground">{inline(section.lead)}</p> : null}
+          <ul className="space-y-2">
+            {section.items.map((item) => (
+              <li key={item} className="lesson-prose flex gap-2.5 text-muted-foreground">
+                <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-mint" />
+                <span>{inline(item)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
       );
     case "table":
       return (
