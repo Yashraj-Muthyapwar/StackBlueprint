@@ -4,7 +4,8 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday"; caption: string }
+  | { kind: "list"; heading: string; lead?: string; items: string[] }
   | { kind: "takeaways"; items: string[] }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
@@ -166,6 +167,165 @@ const whatIsCloudComputing: AwsLesson = {
   ],
 };
 
+const traditionalItVsCloud: AwsLesson = {
+  slug: "traditional-it-vs-cloud-computing",
+  title: "Traditional IT vs Cloud Computing",
+  subtitle:
+    "Understand how traditional IT differs from cloud computing in cost, scalability, and infrastructure management.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "**Traditional IT (On-Premises):** An organization owns or directly manages physical servers, networking equipment, and storage in its own facilities or data center.",
+        "**Cloud Computing:** An organization accesses computing resources from a cloud provider, such as AWS, on demand.",
+      ],
+    },
+    { kind: "prose", heading: "1. WHY: Traditional IT has challenges", body: ["Traditional IT has several challenges:"] },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**High upfront cost:** Purchasing servers and networking equipment.",
+        "**Slow provisioning:** New hardware may take days or weeks to acquire.",
+        "**Limited scalability:** Increasing capacity often requires additional hardware.",
+        "**Maintenance:** The organization manages physical hardware failures and replacements.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The cloud answer",
+      body: "Cloud computing reduces these challenges by providing resources on demand.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Buying a car vs renting a car",
+      body: ["Think about transportation."],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**Traditional IT:** Buying a car. You purchase and maintain it even when you are not using it.",
+        "**Cloud Computing:** Renting a car. You use it when needed and pay according to the rental agreement.",
+      ],
+    },
+    { kind: "visual", id: "car-analogy", caption: "Own the car, or rent it only when you need it" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "The key difference",
+      body: "The cloud provides flexibility without requiring you to own the underlying infrastructure.",
+    },
+    { kind: "prose", heading: "3. HOW: Two different workflows", body: [] },
+    { kind: "visual", id: "workflow-compare", caption: "Traditional IT and Cloud Computing, step by step" },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Black Friday",
+      body: [
+        "An e-commerce company needs additional servers during Black Friday.",
+        "**Traditional IT:** The company purchases more physical servers before the sale. Afterward, those servers may remain underused.",
+        "**AWS:** The company provisions additional EC2 instances during peak demand and terminates the extra instances afterward.",
+      ],
+    },
+    { kind: "visual", id: "black-friday", caption: "Servers bought for the peak versus instances added and removed" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["This flexibility is a major reason organizations use cloud computing."],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Cost, scaling, and control", body: [] },
+    {
+      kind: "table",
+      caption: "Traditional IT compared with the cloud",
+      headers: ["Factor", "Traditional IT", "Cloud"],
+      rows: [
+        ["Upfront cost", "Usually high", "Usually low"],
+        ["Scaling", "Hardware acquisition", "On-demand provisioning"],
+        ["Hardware maintenance", "Customer", "Cloud provider"],
+        ["Physical control", "Greater", "Limited"],
+        ["Billing", "Hardware and operating costs", "Service-dependent usage charges"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Cloud is not always cheaper. For stable, predictable workloads, owned infrastructure can sometimes have a lower long-term cost.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "**Traditional IT** means owning or directly managing physical servers, networking equipment, and storage.",
+        "**Cloud computing** means accessing resources from a provider such as AWS on demand.",
+        "Traditional IT brings high upfront cost, slow provisioning, limited scalability, and hardware maintenance.",
+        "Buying a car is like traditional IT. Renting a car is like the cloud.",
+        "On Black Friday, AWS lets a company add EC2 instances for the peak and terminate them afterward.",
+        "Cloud is not always cheaper. Stable, predictable workloads can cost less on owned infrastructure.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "traditional-it-vs-cloud-computing-q1",
+          question: "Which statement describes traditional IT (on-premises)?",
+          options: [
+            "An organization accesses resources from a cloud provider on demand",
+            "An organization owns or directly manages physical servers, networking equipment, and storage in its own facilities",
+            "An organization rents virtual servers by the hour",
+            "An organization has no servers at all",
+          ],
+          correctIndex: 1,
+          explanation:
+            "On-premises IT means the organization owns or directly manages the physical equipment in its own facilities or data center.",
+        },
+        {
+          id: "traditional-it-vs-cloud-computing-q2",
+          question:
+            "An e-commerce company needs extra capacity for Black Friday. What can it do with AWS?",
+          options: [
+            "Order more physical servers weeks before the sale",
+            "Provision additional EC2 instances during peak demand and terminate them afterward",
+            "Keep the extra capacity running all year",
+            "Move its servers to a bigger building",
+          ],
+          correctIndex: 1,
+          explanation:
+            "AWS lets the company provision additional EC2 instances for the peak and terminate the extra instances afterward.",
+        },
+        {
+          id: "traditional-it-vs-cloud-computing-q3",
+          question: "In the transportation analogy, which pair is correct?",
+          options: [
+            "Traditional IT is renting a car, cloud is buying a car",
+            "Traditional IT is buying a car, cloud is renting a car",
+            "Both are buying a car",
+            "Both are renting a car",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Buying means you purchase and maintain the car even when you are not using it. Renting means you use it when needed and pay according to the agreement.",
+        },
+        {
+          id: "traditional-it-vs-cloud-computing-q4",
+          question: "Which statement about cost is correct?",
+          options: [
+            "Cloud is always cheaper than owned infrastructure",
+            "Owned infrastructure is always cheaper than the cloud",
+            "Cloud is not always cheaper, and stable predictable workloads can cost less on owned infrastructure",
+            "Cost does not depend on the workload",
+          ],
+          correctIndex: 2,
+          explanation:
+            "For stable, predictable workloads, owned infrastructure can sometimes have a lower long-term cost.",
+        },
+      ],
+    },
+  ],
+};
+
 const placeholder = (slug: string, title: string, subtitle: string): AwsLesson => ({
   slug,
   title,
@@ -177,6 +337,7 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   "introduction-to-the-cloud": {
     lessons: [
       whatIsCloudComputing,
+      traditionalItVsCloud,
       placeholder("benefits-of-the-aws-cloud", "Benefits of the AWS Cloud", "Coming soon."),
       placeholder(
         "introduction-to-aws-global-infrastructure",
