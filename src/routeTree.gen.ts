@@ -17,6 +17,8 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AiEngineeringIndexRouteImport } from './routes/ai-engineering/index'
 import { Route as AiEngineeringTopicRouteImport } from './routes/ai-engineering/$topic'
 import { Route as ApiRivetProxyRouteImport } from './routes/api/rivet-proxy'
+import { Route as AwsCloudPractitionerIndexRouteImport } from './routes/aws-cloud-practitioner/index'
+import { Route as AwsCloudPractitionerTopicRouteImport } from './routes/aws-cloud-practitioner/$topic'
 import { Route as DataEngineeringIndexRouteImport } from './routes/data-engineering/index'
 import { Route as DataEngineeringTopicRouteImport } from './routes/data-engineering/$topic'
 import { Route as DataWarehousesIndexRouteImport } from './routes/data-warehouses/index'
@@ -36,6 +38,8 @@ import { Route as TracksTrackRouteImport } from './routes/tracks/$track'
 import { Route as WebScrapingIndexRouteImport } from './routes/web-scraping/index'
 import { Route as AiEngineeringTopicIndexRouteImport } from './routes/ai-engineering/$topic/index'
 import { Route as AiEngineeringTopicLessonRouteImport } from './routes/ai-engineering/$topic/$lesson'
+import { Route as AwsCloudPractitionerTopicIndexRouteImport } from './routes/aws-cloud-practitioner/$topic/index'
+import { Route as AwsCloudPractitionerTopicLessonRouteImport } from './routes/aws-cloud-practitioner/$topic/$lesson'
 import { Route as DataEngineeringTopicIndexRouteImport } from './routes/data-engineering/$topic/index'
 import { Route as DataEngineeringTopicLessonRouteImport } from './routes/data-engineering/$topic/$lesson'
 import { Route as DataWarehousesCloudWarehousesTopicRouteImport } from './routes/data-warehouses/cloud-warehouses/$topic'
@@ -132,6 +136,18 @@ const ApiRivetProxyRoute = ApiRivetProxyRouteImport.update({
   path: '/api/rivet-proxy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AwsCloudPractitionerIndexRoute =
+  AwsCloudPractitionerIndexRouteImport.update({
+    id: '/aws-cloud-practitioner/',
+    path: '/aws-cloud-practitioner/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AwsCloudPractitionerTopicRoute =
+  AwsCloudPractitionerTopicRouteImport.update({
+    id: '/aws-cloud-practitioner/$topic',
+    path: '/aws-cloud-practitioner/$topic',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DataEngineeringIndexRoute = DataEngineeringIndexRouteImport.update({
   id: '/data-engineering/',
   path: '/data-engineering/',
@@ -227,6 +243,18 @@ const AiEngineeringTopicLessonRoute =
     id: '/$lesson',
     path: '/$lesson',
     getParentRoute: () => AiEngineeringTopicRoute,
+  } as any)
+const AwsCloudPractitionerTopicIndexRoute =
+  AwsCloudPractitionerTopicIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AwsCloudPractitionerTopicRoute,
+  } as any)
+const AwsCloudPractitionerTopicLessonRoute =
+  AwsCloudPractitionerTopicLessonRouteImport.update({
+    id: '/$lesson',
+    path: '/$lesson',
+    getParentRoute: () => AwsCloudPractitionerTopicRoute,
   } as any)
 const DataEngineeringTopicIndexRoute =
   DataEngineeringTopicIndexRouteImport.update({
@@ -550,12 +578,14 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/ai-engineering/$topic': typeof AiEngineeringTopicRouteWithChildren
   '/api/rivet-proxy': typeof ApiRivetProxyRoute
+  '/aws-cloud-practitioner/$topic': typeof AwsCloudPractitionerTopicRouteWithChildren
   '/data-engineering/$topic': typeof DataEngineeringTopicRouteWithChildren
   '/mongodb/$topic': typeof MongodbTopicRouteWithChildren
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering/': typeof AiEngineeringIndexRoute
+  '/aws-cloud-practitioner/': typeof AwsCloudPractitionerIndexRoute
   '/data-engineering/': typeof DataEngineeringIndexRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
   '/docker/': typeof DockerIndexRoute
@@ -569,6 +599,7 @@ export interface FileRoutesByFullPath {
   '/terraform/': typeof TerraformIndexRoute
   '/web-scraping/': typeof WebScrapingIndexRoute
   '/ai-engineering/$topic/$lesson': typeof AiEngineeringTopicLessonRoute
+  '/aws-cloud-practitioner/$topic/$lesson': typeof AwsCloudPractitionerTopicLessonRoute
   '/data-engineering/$topic/$lesson': typeof DataEngineeringTopicLessonRoute
   '/data-warehouses/cloud-warehouses/$topic': typeof DataWarehousesCloudWarehousesTopicRouteWithChildren
   '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
@@ -590,6 +621,7 @@ export interface FileRoutesByFullPath {
   '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
   '/web-scraping/foundations/$topic': typeof WebScrapingFoundationsTopicRouteWithChildren
   '/ai-engineering/$topic/': typeof AiEngineeringTopicIndexRoute
+  '/aws-cloud-practitioner/$topic/': typeof AwsCloudPractitionerTopicIndexRoute
   '/data-engineering/$topic/': typeof DataEngineeringTopicIndexRoute
   '/mongodb/$topic/': typeof MongodbTopicIndexRoute
   '/pandas/$topic/': typeof PandasTopicIndexRoute
@@ -636,6 +668,7 @@ export interface FileRoutesByTo {
   '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering': typeof AiEngineeringIndexRoute
+  '/aws-cloud-practitioner': typeof AwsCloudPractitionerIndexRoute
   '/data-engineering': typeof DataEngineeringIndexRoute
   '/data-warehouses': typeof DataWarehousesIndexRoute
   '/docker': typeof DockerIndexRoute
@@ -649,6 +682,7 @@ export interface FileRoutesByTo {
   '/terraform': typeof TerraformIndexRoute
   '/web-scraping': typeof WebScrapingIndexRoute
   '/ai-engineering/$topic/$lesson': typeof AiEngineeringTopicLessonRoute
+  '/aws-cloud-practitioner/$topic/$lesson': typeof AwsCloudPractitionerTopicLessonRoute
   '/data-engineering/$topic/$lesson': typeof DataEngineeringTopicLessonRoute
   '/mongodb/$topic/$lesson': typeof MongodbTopicLessonRoute
   '/pandas/$topic/$lesson': typeof PandasTopicLessonRoute
@@ -656,6 +690,7 @@ export interface FileRoutesByTo {
   '/patterns/category/$category': typeof PatternsCategoryCategoryRoute
   '/python/$topic/$lesson': typeof PythonTopicLessonRoute
   '/ai-engineering/$topic': typeof AiEngineeringTopicIndexRoute
+  '/aws-cloud-practitioner/$topic': typeof AwsCloudPractitionerTopicIndexRoute
   '/data-engineering/$topic': typeof DataEngineeringTopicIndexRoute
   '/mongodb/$topic': typeof MongodbTopicIndexRoute
   '/pandas/$topic': typeof PandasTopicIndexRoute
@@ -701,12 +736,14 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/ai-engineering/$topic': typeof AiEngineeringTopicRouteWithChildren
   '/api/rivet-proxy': typeof ApiRivetProxyRoute
+  '/aws-cloud-practitioner/$topic': typeof AwsCloudPractitionerTopicRouteWithChildren
   '/data-engineering/$topic': typeof DataEngineeringTopicRouteWithChildren
   '/mongodb/$topic': typeof MongodbTopicRouteWithChildren
   '/patterns/$pattern': typeof PatternsPatternRouteWithChildren
   '/sandbox/python': typeof SandboxPythonRoute
   '/tracks/$track': typeof TracksTrackRoute
   '/ai-engineering/': typeof AiEngineeringIndexRoute
+  '/aws-cloud-practitioner/': typeof AwsCloudPractitionerIndexRoute
   '/data-engineering/': typeof DataEngineeringIndexRoute
   '/data-warehouses/': typeof DataWarehousesIndexRoute
   '/docker/': typeof DockerIndexRoute
@@ -720,6 +757,7 @@ export interface FileRoutesById {
   '/terraform/': typeof TerraformIndexRoute
   '/web-scraping/': typeof WebScrapingIndexRoute
   '/ai-engineering/$topic/$lesson': typeof AiEngineeringTopicLessonRoute
+  '/aws-cloud-practitioner/$topic/$lesson': typeof AwsCloudPractitionerTopicLessonRoute
   '/data-engineering/$topic/$lesson': typeof DataEngineeringTopicLessonRoute
   '/data-warehouses/cloud-warehouses/$topic': typeof DataWarehousesCloudWarehousesTopicRouteWithChildren
   '/data-warehouses/foundations/$topic': typeof DataWarehousesFoundationsTopicRouteWithChildren
@@ -741,6 +779,7 @@ export interface FileRoutesById {
   '/system-design/fundamentals/$topic': typeof SystemDesignFundamentalsTopicRouteWithChildren
   '/web-scraping/foundations/$topic': typeof WebScrapingFoundationsTopicRouteWithChildren
   '/ai-engineering/$topic/': typeof AiEngineeringTopicIndexRoute
+  '/aws-cloud-practitioner/$topic/': typeof AwsCloudPractitionerTopicIndexRoute
   '/data-engineering/$topic/': typeof DataEngineeringTopicIndexRoute
   '/mongodb/$topic/': typeof MongodbTopicIndexRoute
   '/pandas/$topic/': typeof PandasTopicIndexRoute
@@ -787,12 +826,14 @@ export interface FileRouteTypes {
     | '/terms'
     | '/ai-engineering/$topic'
     | '/api/rivet-proxy'
+    | '/aws-cloud-practitioner/$topic'
     | '/data-engineering/$topic'
     | '/mongodb/$topic'
     | '/patterns/$pattern'
     | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering/'
+    | '/aws-cloud-practitioner/'
     | '/data-engineering/'
     | '/data-warehouses/'
     | '/docker/'
@@ -806,6 +847,7 @@ export interface FileRouteTypes {
     | '/terraform/'
     | '/web-scraping/'
     | '/ai-engineering/$topic/$lesson'
+    | '/aws-cloud-practitioner/$topic/$lesson'
     | '/data-engineering/$topic/$lesson'
     | '/data-warehouses/cloud-warehouses/$topic'
     | '/data-warehouses/foundations/$topic'
@@ -827,6 +869,7 @@ export interface FileRouteTypes {
     | '/system-design/fundamentals/$topic'
     | '/web-scraping/foundations/$topic'
     | '/ai-engineering/$topic/'
+    | '/aws-cloud-practitioner/$topic/'
     | '/data-engineering/$topic/'
     | '/mongodb/$topic/'
     | '/pandas/$topic/'
@@ -873,6 +916,7 @@ export interface FileRouteTypes {
     | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering'
+    | '/aws-cloud-practitioner'
     | '/data-engineering'
     | '/data-warehouses'
     | '/docker'
@@ -886,6 +930,7 @@ export interface FileRouteTypes {
     | '/terraform'
     | '/web-scraping'
     | '/ai-engineering/$topic/$lesson'
+    | '/aws-cloud-practitioner/$topic/$lesson'
     | '/data-engineering/$topic/$lesson'
     | '/mongodb/$topic/$lesson'
     | '/pandas/$topic/$lesson'
@@ -893,6 +938,7 @@ export interface FileRouteTypes {
     | '/patterns/category/$category'
     | '/python/$topic/$lesson'
     | '/ai-engineering/$topic'
+    | '/aws-cloud-practitioner/$topic'
     | '/data-engineering/$topic'
     | '/mongodb/$topic'
     | '/pandas/$topic'
@@ -937,12 +983,14 @@ export interface FileRouteTypes {
     | '/terms'
     | '/ai-engineering/$topic'
     | '/api/rivet-proxy'
+    | '/aws-cloud-practitioner/$topic'
     | '/data-engineering/$topic'
     | '/mongodb/$topic'
     | '/patterns/$pattern'
     | '/sandbox/python'
     | '/tracks/$track'
     | '/ai-engineering/'
+    | '/aws-cloud-practitioner/'
     | '/data-engineering/'
     | '/data-warehouses/'
     | '/docker/'
@@ -956,6 +1004,7 @@ export interface FileRouteTypes {
     | '/terraform/'
     | '/web-scraping/'
     | '/ai-engineering/$topic/$lesson'
+    | '/aws-cloud-practitioner/$topic/$lesson'
     | '/data-engineering/$topic/$lesson'
     | '/data-warehouses/cloud-warehouses/$topic'
     | '/data-warehouses/foundations/$topic'
@@ -977,6 +1026,7 @@ export interface FileRouteTypes {
     | '/system-design/fundamentals/$topic'
     | '/web-scraping/foundations/$topic'
     | '/ai-engineering/$topic/'
+    | '/aws-cloud-practitioner/$topic/'
     | '/data-engineering/$topic/'
     | '/mongodb/$topic/'
     | '/pandas/$topic/'
@@ -1022,12 +1072,14 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   AiEngineeringTopicRoute: typeof AiEngineeringTopicRouteWithChildren
   ApiRivetProxyRoute: typeof ApiRivetProxyRoute
+  AwsCloudPractitionerTopicRoute: typeof AwsCloudPractitionerTopicRouteWithChildren
   DataEngineeringTopicRoute: typeof DataEngineeringTopicRouteWithChildren
   MongodbTopicRoute: typeof MongodbTopicRouteWithChildren
   PatternsPatternRoute: typeof PatternsPatternRouteWithChildren
   SandboxPythonRoute: typeof SandboxPythonRoute
   TracksTrackRoute: typeof TracksTrackRoute
   AiEngineeringIndexRoute: typeof AiEngineeringIndexRoute
+  AwsCloudPractitionerIndexRoute: typeof AwsCloudPractitionerIndexRoute
   DataEngineeringIndexRoute: typeof DataEngineeringIndexRoute
   DataWarehousesIndexRoute: typeof DataWarehousesIndexRoute
   DockerIndexRoute: typeof DockerIndexRoute
@@ -1119,6 +1171,20 @@ declare module '@tanstack/react-router' {
       path: '/api/rivet-proxy'
       fullPath: '/api/rivet-proxy'
       preLoaderRoute: typeof ApiRivetProxyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aws-cloud-practitioner/': {
+      id: '/aws-cloud-practitioner/'
+      path: '/aws-cloud-practitioner'
+      fullPath: '/aws-cloud-practitioner/'
+      preLoaderRoute: typeof AwsCloudPractitionerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aws-cloud-practitioner/$topic': {
+      id: '/aws-cloud-practitioner/$topic'
+      path: '/aws-cloud-practitioner/$topic'
+      fullPath: '/aws-cloud-practitioner/$topic'
+      preLoaderRoute: typeof AwsCloudPractitionerTopicRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/data-engineering/': {
@@ -1253,6 +1319,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/ai-engineering/$topic/$lesson'
       preLoaderRoute: typeof AiEngineeringTopicLessonRouteImport
       parentRoute: typeof AiEngineeringTopicRoute
+    }
+    '/aws-cloud-practitioner/$topic/': {
+      id: '/aws-cloud-practitioner/$topic/'
+      path: '/'
+      fullPath: '/aws-cloud-practitioner/$topic/'
+      preLoaderRoute: typeof AwsCloudPractitionerTopicIndexRouteImport
+      parentRoute: typeof AwsCloudPractitionerTopicRoute
+    }
+    '/aws-cloud-practitioner/$topic/$lesson': {
+      id: '/aws-cloud-practitioner/$topic/$lesson'
+      path: '/$lesson'
+      fullPath: '/aws-cloud-practitioner/$topic/$lesson'
+      preLoaderRoute: typeof AwsCloudPractitionerTopicLessonRouteImport
+      parentRoute: typeof AwsCloudPractitionerTopicRoute
     }
     '/data-engineering/$topic/': {
       id: '/data-engineering/$topic/'
@@ -1655,6 +1735,22 @@ const AiEngineeringTopicRouteChildren: AiEngineeringTopicRouteChildren = {
 const AiEngineeringTopicRouteWithChildren =
   AiEngineeringTopicRoute._addFileChildren(AiEngineeringTopicRouteChildren)
 
+interface AwsCloudPractitionerTopicRouteChildren {
+  AwsCloudPractitionerTopicLessonRoute: typeof AwsCloudPractitionerTopicLessonRoute
+  AwsCloudPractitionerTopicIndexRoute: typeof AwsCloudPractitionerTopicIndexRoute
+}
+
+const AwsCloudPractitionerTopicRouteChildren: AwsCloudPractitionerTopicRouteChildren =
+  {
+    AwsCloudPractitionerTopicLessonRoute: AwsCloudPractitionerTopicLessonRoute,
+    AwsCloudPractitionerTopicIndexRoute: AwsCloudPractitionerTopicIndexRoute,
+  }
+
+const AwsCloudPractitionerTopicRouteWithChildren =
+  AwsCloudPractitionerTopicRoute._addFileChildren(
+    AwsCloudPractitionerTopicRouteChildren,
+  )
+
 interface DataEngineeringTopicRouteChildren {
   DataEngineeringTopicLessonRoute: typeof DataEngineeringTopicLessonRoute
   DataEngineeringTopicIndexRoute: typeof DataEngineeringTopicIndexRoute
@@ -1927,12 +2023,14 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   AiEngineeringTopicRoute: AiEngineeringTopicRouteWithChildren,
   ApiRivetProxyRoute: ApiRivetProxyRoute,
+  AwsCloudPractitionerTopicRoute: AwsCloudPractitionerTopicRouteWithChildren,
   DataEngineeringTopicRoute: DataEngineeringTopicRouteWithChildren,
   MongodbTopicRoute: MongodbTopicRouteWithChildren,
   PatternsPatternRoute: PatternsPatternRouteWithChildren,
   SandboxPythonRoute: SandboxPythonRoute,
   TracksTrackRoute: TracksTrackRoute,
   AiEngineeringIndexRoute: AiEngineeringIndexRoute,
+  AwsCloudPractitionerIndexRoute: AwsCloudPractitionerIndexRoute,
   DataEngineeringIndexRoute: DataEngineeringIndexRoute,
   DataWarehousesIndexRoute: DataWarehousesIndexRoute,
   DockerIndexRoute: DockerIndexRoute,
