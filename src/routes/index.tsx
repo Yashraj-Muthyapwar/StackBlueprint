@@ -65,6 +65,7 @@ function Landing() {
       tracks: [
         "docker",
         "terraform",
+        "aws-cloud-practitioner",
         "git-github",
       ]
         .map((slug) => roadmap.find((c) => c.slug === slug))
