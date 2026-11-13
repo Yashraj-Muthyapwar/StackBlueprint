@@ -45,7 +45,8 @@ function Smoke({ x, delay }: { x: number; delay: number }) {
     <motion.circle
       cx={x} cy={118} r="7"
       className="fill-muted-foreground/50"
-      animate={{ cy: [118, 50], r: [6, 18], opacity: [0.7, 0], cx: [x, x + 22] }}
+      style={{ transformBox: "fill-box", transformOrigin: "center" }}
+      animate={{ cy: [118, 50], scale: [0.85, 2.6], opacity: [0.7, 0], cx: [x, x + 22] }}
       transition={{ duration: 3.4, repeat: Infinity, delay, ease: "easeOut" }}
     />
   );
