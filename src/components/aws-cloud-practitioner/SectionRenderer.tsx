@@ -3,6 +3,7 @@ import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
+import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
 import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
 import { Quiz } from "@/components/lesson/Quiz";
 import type { AwsSection } from "@/lessons/aws-cloud-practitioner/introduction-to-the-cloud-content";
@@ -70,6 +71,12 @@ export function SectionRenderer({
           return <WorkflowCompareVisual caption={section.caption} />;
         case "black-friday":
           return <BlackFridayVisual caption={section.caption} />;
+        case "restaurant":
+          return <RestaurantVisual caption={section.caption} />;
+        case "six-advantages":
+          return <SixAdvantagesVisual caption={section.caption} />;
+        case "europe-expansion":
+          return <EuropeExpansionVisual caption={section.caption} />;
       }
       return null;
     case "list":
