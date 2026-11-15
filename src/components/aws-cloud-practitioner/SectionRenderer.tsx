@@ -1,9 +1,13 @@
-import type { ReactNode } from "react";
+import { Suspense, lazy, type ReactNode } from "react";
+import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
 import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
+import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./AwsIntroVisuals";
+import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./DeploymentVisuals";
+import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./ServiceModelsVisuals";
 import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
 import { Quiz } from "@/components/lesson/Quiz";
 import type { AwsSection } from "@/lessons/aws-cloud-practitioner/introduction-to-the-cloud-content";
@@ -25,6 +29,9 @@ function inline(text: string): ReactNode {
     return part;
   });
 }
+
+const ModuleAssessment = lazy(() => import("./ModuleAssessment"));
+const ModuleCheatsheet = lazy(() => import("./ModuleCheatsheet"));
 
 export function SectionRenderer({
   section,
@@ -77,8 +84,42 @@ export function SectionRenderer({
           return <SixAdvantagesVisual caption={section.caption} />;
         case "europe-expansion":
           return <EuropeExpansionVisual caption={section.caption} />;
+        case "food-models":
+          return <FoodModelsVisual caption={section.caption} />;
+        case "responsibility-stack":
+          return <ResponsibilityVisual caption={section.caption} />;
+        case "python-app-models":
+          return <PythonAppVisual caption={section.caption} />;
+        case "housing-models":
+          return <HousingVisual caption={section.caption} />;
+        case "deployment-models":
+          return <DeploymentModelsVisual caption={section.caption} />;
+        case "bank-hybrid":
+          return <BankHybridVisual caption={section.caption} />;
+        case "aws-toolbox":
+          return <ToolboxVisual caption={section.caption} />;
+        case "aws-services":
+          return <AwsServicesVisual caption={section.caption} />;
+        case "shopping-architecture":
+          return <ShoppingArchitectureVisual caption={section.caption} />;
       }
       return null;
+    case "assessment":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <ModuleAssessment />
+          </Suspense>
+        </ClientOnly>
+      );
+    case "cheatsheet":
+      return (
+        <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+          <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
+            <ModuleCheatsheet />
+          </Suspense>
+        </ClientOnly>
+      );
     case "list":
       return (
         <section className="space-y-3">
