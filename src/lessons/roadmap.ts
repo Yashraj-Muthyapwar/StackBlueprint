@@ -3818,10 +3818,11 @@ export const roadmap: RoadmapCategory[] = [
             "Cloud computing basics, AWS benefits, global infrastructure, and the shared responsibility model.",
             ["What is Cloud Computing?", "Traditional IT vs Cloud Computing", "Benefits of Cloud Computing", "IaaS vs PaaS vs SaaS", "Public, Private, and Hybrid Cloud", "Introduction to Amazon Web Services (AWS)", "Module 1 Final Quiz", "Module 1 Cheat Sheet"],
           ),
-          lockedPattern(
-            "Module 2: Compute in the Cloud",
-            "compute-in-the-cloud",
-            "Virtual servers and the core ideas of cloud compute.",
+          unlockedAwsPattern(
+            "Module 2: Global Infrastructure",
+            "global-infrastructure",
+            "AWS Regions, Availability Zones, Edge Locations, and designing for high availability and fault tolerance.",
+            ["AWS Regions", "Availability Zones", "Edge Locations", "High Availability and Fault Tolerance", "Module 2 Final Quiz", "Module 2 Cheat Sheet"],
           ),
           lockedPattern(
             "Module 3: Exploring Compute Services",
