@@ -6,6 +6,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
 import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
 import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./AwsIntroVisuals";
+import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./RegionsVisuals";
 import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./DeploymentVisuals";
 import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./ServiceModelsVisuals";
 import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
@@ -96,6 +97,12 @@ export function SectionRenderer({
           return <DeploymentModelsVisual caption={section.caption} />;
         case "bank-hybrid":
           return <BankHybridVisual caption={section.caption} />;
+        case "hotel-chain":
+          return <HotelChainVisual caption={section.caption} />;
+        case "region-deploy":
+          return <RegionDeployVisual caption={section.caption} />;
+        case "mumbai-ireland":
+          return <MumbaiToIrelandVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":
