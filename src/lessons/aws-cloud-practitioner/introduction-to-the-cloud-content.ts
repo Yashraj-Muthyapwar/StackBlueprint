@@ -4,7 +4,7 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland"; caption: string }
   | { kind: "list"; heading: string; lead?: string; items: string[] }
   | { kind: "takeaways"; items: string[] }
   | { kind: "assessment"; assessmentId: "module-1" }
@@ -737,10 +737,12 @@ const publicPrivateHybrid: AwsLesson = {
       title: "Private cloud is not a server room",
       body: "A private cloud is not simply any traditional server room. It uses cloud-like features such as resource pooling, automation, and self-service provisioning.",
     },
-    { kind: "prose", heading: "4. EXAMPLE: A bank with a hybrid cloud", body: [
-      "A bank operates a sensitive legacy application in its private data center but uses AWS for customer-facing web applications.",
-      "It securely connects both environments through a VPN or a dedicated network connection.",
-    ] },
+    {
+      kind: "prose", heading: "4. EXAMPLE: A bank with a hybrid cloud", body: [
+        "A bank operates a sensitive legacy application in its private data center but uses AWS for customer-facing web applications.",
+        "It securely connects both environments through a VPN or a dedicated network connection.",
+      ]
+    },
     { kind: "visual", id: "bank-hybrid", caption: "A private data center connected to AWS" },
     {
       kind: "prose",
@@ -996,6 +998,186 @@ const module1CheatSheet: AwsLesson = {
   sections: [{ kind: "cheatsheet", cheatsheetId: "module-1" }],
 };
 
+const awsRegions: AwsLesson = {
+  slug: "aws-regions",
+  title: "AWS Regions",
+  subtitle: "Understand what an AWS Region is, why it matters, and how to choose the right Region for an application.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An **AWS Region** is a **separate geographic area** where AWS operates **cloud infrastructure**.",
+        "Each Region contains multiple **isolated locations** called `Availability Zones (AZs)`.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Examples of AWS Regions",
+      headers: ["AWS Region", "Region code"],
+      rows: [
+        ["US East (N. Virginia)", "us-east-1"],
+        ["US East (Ohio)", "us-east-2"],
+        ["Europe (Ireland)", "eu-west-1"],
+        ["Asia Pacific (Mumbai)", "ap-south-1"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Customers are in different places",
+      body: [
+        "Companies have customers in different locations.",
+        "Deploying an application closer to its users can reduce network latency. Choosing the correct Region can also help meet legal requirements and control costs.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: A hotel chain",
+      body: ["Think of AWS as a **hotel chain**."],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS:** The hotel company.",
+        "**Region:** A hotel location in a particular city.",
+        "**Availability Zone:** A separate building within that location.",
+      ],
+    },
+    { kind: "visual", id: "hotel-chain", caption: "AWS as the hotel company, a Region as a location, and Availability Zones as separate buildings" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Regions are independent",
+      body: "Different Regions operate independently, although AWS provides ways to connect them.",
+    },
+    { kind: "prose", heading: "3. HOW: Deploying into a Region", body: ["When deploying an application:"] },
+    { kind: "visual", id: "region-deploy", caption: "Choosing a Region, creating resources, and deploying elsewhere separately" },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**1.** Select an AWS Region.",
+        "**2.** Create resources such as EC2 or RDS in that Region.",
+        "**3.** AWS hosts those resources within its regional infrastructure.",
+        "**4.** Deploy resources in other Regions separately when needed.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Most AWS resources are regional. Creating an EC2 instance in Virginia does not automatically create another in Ireland.",
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "The illustration is conceptual: each Region has multiple Availability Zones, which contain one or more data centers. Region markers on the map show the approximate area of each Region.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: From Mumbai to Ireland",
+      body: [
+        "An e-commerce company serves customers primarily in India.",
+        "It selects the Mumbai Region (`ap-south-1`) because it is geographically closer to many of its users.",
+        "Later, it expands into Europe and considers deploying additional infrastructure in Ireland.",
+      ],
+    },
+    { kind: "visual", id: "mumbai-ireland", caption: "Starting in Mumbai, then considering Ireland, with replication configured explicitly" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["The company must explicitly configure any necessary cross-Region data replication."],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Choosing a Region", body: ["The four main factors when selecting an AWS Region are:"] },
+    {
+      kind: "table",
+      caption: "Factors for selecting a Region",
+      headers: ["Factor", "Why it matters"],
+      rows: [
+        ["Latency", "Choose infrastructure close to users"],
+        ["Cost", "Service prices can differ by Region"],
+        ["Compliance", "Some data must remain within specified locations"],
+        ["Service availability", "Not every AWS service or feature is available everywhere"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["AWS recommends considering these factors when selecting a Region."],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Interview takeaway",
+      body: "Choose an AWS Region based on latency, cost, compliance, and service availability, not simply geographical proximity.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An AWS Region is a separate geographic area where AWS operates cloud infrastructure. Each Region contains multiple isolated Availability Zones.",
+        "Region codes look like us-east-1, us-east-2, eu-west-1, and ap-south-1.",
+        "Deploying closer to users can reduce latency, and the right Region helps meet legal requirements and control costs.",
+        "Think of AWS as a hotel chain: a Region is a hotel location in a city, and an Availability Zone is a separate building there.",
+        "Different Regions operate independently, although AWS provides ways to connect them.",
+        "Most AWS resources are regional. An EC2 instance in Virginia does not automatically create another in Ireland.",
+        "Cross-Region data replication must be configured explicitly.",
+        "Choose a Region by latency, cost, compliance, and service availability, not simply proximity.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "aws-regions-q1",
+          question: "In the hotel chain analogy, what is an Availability Zone?",
+          options: [
+            "The hotel company",
+            "A hotel location in a particular city",
+            "A separate building within that location",
+            "A booking website",
+          ],
+          correctIndex: 2,
+          explanation: "AWS is the hotel company, a Region is a hotel location in a city, and an Availability Zone is a separate building within that location.",
+        },
+        {
+          id: "aws-regions-q2",
+          question: "You create an EC2 instance in US East (N. Virginia). What happens in Europe (Ireland)?",
+          options: [
+            "AWS automatically creates a copy there",
+            "Nothing. Most AWS resources are regional, so you deploy in Ireland separately",
+            "The instance moves to Ireland when users arrive",
+            "Ireland becomes the primary Region",
+          ],
+          correctIndex: 1,
+          explanation: "Most AWS resources are regional. Creating an EC2 instance in Virginia does not automatically create another in Ireland.",
+        },
+        {
+          id: "aws-regions-q3",
+          question: "Which is the Region code for Asia Pacific (Mumbai)?",
+          options: ["us-east-1", "eu-west-1", "ap-south-1", "us-east-2"],
+          correctIndex: 2,
+          explanation: "ap-south-1 is Asia Pacific (Mumbai). us-east-1 is N. Virginia, us-east-2 is Ohio, and eu-west-1 is Ireland.",
+        },
+        {
+          id: "aws-regions-q4",
+          question: "Which set lists the four main factors for selecting an AWS Region?",
+          options: [
+            "Latency, cost, compliance, and service availability",
+            "Latency, color, size, and age",
+            "Proximity only",
+            "Cost, logo, language, and time zone",
+          ],
+          correctIndex: 0,
+          explanation: "Choose based on latency, cost, compliance, and service availability, not simply geographical proximity.",
+        },
+      ],
+    },
+  ],
+};
+
 const placeholder = (slug: string, title: string): AwsLesson => ({
   slug,
   title,
@@ -1018,7 +1200,7 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   },
   "global-infrastructure": {
     lessons: [
-      placeholder("aws-regions", "AWS Regions"),
+      awsRegions,
       placeholder("availability-zones", "Availability Zones"),
       placeholder("edge-locations", "Edge Locations"),
       placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
