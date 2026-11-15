@@ -36,7 +36,7 @@ function AwsLessonPage() {
 
   const content = AWS_TOPICS[topic]?.lessons.find((item) => item.slug === lesson);
   useEffect(() => {
-    if (!l || !content?.sections.some((section) => section.kind === "quiz")) return;
+    if (!l || !content?.sections.some((section) => section.kind === "quiz" || section.kind === "assessment")) return;
     const handleQuizPassed = () => markComplete(l.slug);
     window.addEventListener("quiz-passed", handleQuizPassed);
     return () => window.removeEventListener("quiz-passed", handleQuizPassed);
@@ -61,7 +61,7 @@ function AwsLessonPage() {
       key={`${topic}/${lesson}`}
       topic={t}
       lesson={{ ...l, subtitle: content?.subtitle }}
-      hasQuiz={content?.sections.some((section) => section.kind === "quiz") ?? false}
+      hasQuiz={content?.sections.some((section) => section.kind === "quiz" || section.kind === "assessment") ?? false}
       isCompleted={isCompleted(l.slug)}
       onToggleComplete={() => (isCompleted(l.slug) ? markIncomplete(l.slug) : markComplete(l.slug))}
       isPlaceholder={!content || content.sections.length === 0}
