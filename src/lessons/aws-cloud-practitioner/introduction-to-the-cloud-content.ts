@@ -4,9 +4,11 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture"; caption: string }
   | { kind: "list"; heading: string; lead?: string; items: string[] }
   | { kind: "takeaways"; items: string[] }
+  | { kind: "assessment"; assessmentId: "module-1" }
+  | { kind: "cheatsheet"; cheatsheetId: "module-1" }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type AwsLesson = {
@@ -493,12 +495,506 @@ const benefitsOfCloudComputing: AwsLesson = {
   ],
 };
 
-const placeholder = (slug: string, title: string, subtitle: string): AwsLesson => ({
-  slug,
-  title,
-  subtitle,
-  sections: [],
-});
+const iaasPaasSaas: AwsLesson = {
+  slug: "iaas-vs-paas-vs-saas",
+  title: "IaaS vs PaaS vs SaaS",
+  subtitle: "Understand the three cloud service models, what you manage in each model, and when to choose them.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "**Cloud service models** describe how much infrastructure the cloud provider manages and how much the customer manages.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The three cloud service models",
+      headers: ["Model", "Full form", "What you get"],
+      rows: [
+        ["IaaS", "Infrastructure as a Service", "Virtual servers, storage, and networking"],
+        ["PaaS", "Platform as a Service", "A managed platform to build and run applications"],
+        ["SaaS", "Software as a Service", "Ready-to-use software"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Choosing your level of control",
+      body: [
+        "Not every company wants to manage servers, operating systems, databases, and applications.",
+        "These models let organizations choose their level of control and operational responsibility.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**IaaS:** More control, more management.",
+        "**PaaS:** Focus more on application development.",
+        "**SaaS:** Use software without building or operating it.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: Getting food",
+      body: ["Think about getting food."],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**IaaS, rent a kitchen:** You get the infrastructure but prepare the meal yourself.",
+        "**PaaS, meal kit service:** Much of the preparation is handled, but you still create the meal.",
+        "**SaaS, restaurant:** You receive a finished meal.",
+      ],
+    },
+    { kind: "visual", id: "food-models", caption: "Rent a kitchen, order a meal kit, or eat at a restaurant" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Remember",
+      body: "Moving from IaaS to SaaS generally means less infrastructure management for the customer.",
+    },
+    { kind: "prose", heading: "3. HOW: Who manages what?", body: [] },
+    { kind: "visual", id: "responsibility-stack", caption: "Customer-managed and provider-managed layers in each model" },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "A simplified model",
+      body: "Exact responsibilities vary by service. Customers always retain some security and data responsibilities.",
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Deploying a Python web application",
+      body: ["Suppose you want to deploy a Python web application."],
+    },
+    {
+      kind: "table",
+      caption: "One goal, three service models",
+      headers: ["Model", "Example", "Your responsibility"],
+      rows: [
+        ["IaaS", "Amazon EC2", "Configure the server, OS, and application"],
+        ["PaaS", "AWS Elastic Beanstalk", "Provide application code and configure the environment"],
+        ["SaaS", "Google Workspace", "Use and configure an existing application"],
+      ],
+    },
+    { kind: "visual", id: "python-app-models", caption: "Amazon EC2, AWS Elastic Beanstalk, and Google Workspace compared" },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "AWS Elastic Beanstalk is a PaaS-like service that helps deploy and manage web applications. SaaS is different: you use finished software rather than deploy your own code into it.",
+      ],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Control versus convenience", body: [] },
+    {
+      kind: "table",
+      caption: "Each model trades control for convenience",
+      headers: ["Model", "Main advantage", "Main limitation"],
+      rows: [
+        ["IaaS", "Greater control", "More operational work"],
+        ["PaaS", "Faster application development", "Less control over underlying infrastructure"],
+        ["SaaS", "Minimal setup", "Limited customization"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Interview takeaway",
+      body: "The main difference is the division of management responsibilities between the customer and provider.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "Cloud service models describe how much infrastructure the provider manages and how much the customer manages.",
+        "IaaS gives virtual servers, storage, and networking. PaaS gives a managed platform to build and run applications. SaaS gives ready-to-use software.",
+        "Rent a kitchen, meal kit, restaurant: moving from IaaS to SaaS generally means less infrastructure management for the customer.",
+        "In IaaS the customer manages the application and runtime / OS. In PaaS the customer manages the application. In SaaS the provider manages all three layers.",
+        "Amazon EC2 is IaaS, AWS Elastic Beanstalk is PaaS-like, and Google Workspace is SaaS.",
+        "IaaS means greater control but more work, PaaS means faster development but less control, and SaaS means minimal setup but limited customization.",
+        "Customers always retain some security and data responsibilities.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "iaas-vs-paas-vs-saas-q1",
+          question:
+            "A team wants to focus on application development and leave the runtime and OS to the provider. Which model fits best?",
+          options: ["IaaS", "PaaS", "SaaS", "On-premises"],
+          correctIndex: 1,
+          explanation:
+            "In PaaS the customer manages the application, while the provider manages the runtime / OS and the physical infrastructure.",
+        },
+        {
+          id: "iaas-vs-paas-vs-saas-q2",
+          question: "In the food analogy, which model is the restaurant?",
+          options: ["IaaS", "PaaS", "SaaS", "None of them"],
+          correctIndex: 2,
+          explanation:
+            "SaaS is like a restaurant: you receive a finished meal, just as you use finished software without building or operating it.",
+        },
+        {
+          id: "iaas-vs-paas-vs-saas-q3",
+          question: "Which service is an example of IaaS?",
+          options: ["Google Workspace", "AWS Elastic Beanstalk", "Amazon EC2", "None of these"],
+          correctIndex: 2,
+          explanation:
+            "With Amazon EC2 you configure the server, the OS, and the application, which is the IaaS level of control.",
+        },
+        {
+          id: "iaas-vs-paas-vs-saas-q4",
+          question: "What is the main limitation of SaaS?",
+          options: [
+            "More operational work",
+            "Less control over underlying infrastructure",
+            "Limited customization",
+            "You must configure the OS",
+          ],
+          correctIndex: 2,
+          explanation:
+            "SaaS needs minimal setup, but customization is limited. More operational work is the limitation of IaaS.",
+        },
+      ],
+    },
+  ],
+};
+
+const publicPrivateHybrid: AwsLesson = {
+  slug: "public-private-and-hybrid-cloud",
+  title: "Public, Private, and Hybrid Cloud",
+  subtitle: "Understand the three cloud deployment models, their differences, and when to use each.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "A **cloud deployment model** describes where cloud infrastructure operates and how it is made available to an organization.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "The three cloud deployment models",
+      headers: ["Model", "Definition"],
+      rows: [
+        ["Public Cloud", "Infrastructure operated by a cloud provider and offered to multiple customers"],
+        ["Private Cloud", "Cloud infrastructure dedicated to one organization"],
+        ["Hybrid Cloud", "A combination of private/on-premises infrastructure and public cloud services"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Important",
+      body: "Deployment models are different from service models (IaaS, PaaS, SaaS).",
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Different requirements",
+      body: ["Organizations have different requirements for security, control, costs, and existing infrastructure."],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**Public:** Useful for fast provisioning and flexible capacity.",
+        "**Private:** Useful when dedicated infrastructure and greater control are required.",
+        "**Hybrid:** Useful when organizations need to combine existing systems with public cloud services.",
+      ],
+    },
+    { kind: "prose", heading: "2. INTUITION: Housing", body: ["Think about housing."] },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**Public Cloud:** An apartment building. Different tenants use separate spaces within shared infrastructure.",
+        "**Private Cloud:** A private house dedicated to one household.",
+        "**Hybrid Cloud:** A private house plus rented space used when additional capacity is needed.",
+      ],
+    },
+    { kind: "visual", id: "housing-models", caption: "An apartment building, a private house, or a house plus rented space" },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Where the analogy stops",
+      body: "The apartment analogy does not mean public cloud customers can access one another's resources. Cloud providers use isolation controls.",
+    },
+    { kind: "prose", heading: "3. HOW: The three models", body: [] },
+    { kind: "visual", id: "deployment-models", caption: "Public, private, and hybrid cloud, side by side" },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**Public:** Provider infrastructure, multiple isolated customers.",
+        "**Private:** Dedicated infrastructure, one organization.",
+        "**Hybrid:** Connected private and public environments.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Private cloud is not a server room",
+      body: "A private cloud is not simply any traditional server room. It uses cloud-like features such as resource pooling, automation, and self-service provisioning.",
+    },
+    { kind: "prose", heading: "4. EXAMPLE: A bank with a hybrid cloud", body: [
+      "A bank operates a sensitive legacy application in its private data center but uses AWS for customer-facing web applications.",
+      "It securely connects both environments through a VPN or a dedicated network connection.",
+    ] },
+    { kind: "visual", id: "bank-hybrid", caption: "A private data center connected to AWS" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["This is an example of a **hybrid cloud** architecture."],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Choosing a model", body: [] },
+    {
+      kind: "table",
+      caption: "Each deployment model has a limitation",
+      headers: ["Model", "Advantage", "Limitation"],
+      rows: [
+        ["Public", "Fast provisioning, flexible capacity", "Less physical infrastructure control"],
+        ["Private", "Dedicated resources and greater control", "Higher management burden"],
+        ["Hybrid", "Combines existing systems with cloud services", "More networking and operational complexity"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Interview takeaway",
+      body: "Choose a deployment model based on workload requirements, not the assumption that one model is always cheaper or more secure.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "A cloud deployment model describes where cloud infrastructure operates and how it is made available to an organization.",
+        "Public cloud is provider infrastructure offered to multiple isolated customers, private cloud is dedicated to one organization, and hybrid cloud combines private/on-premises infrastructure with public cloud services.",
+        "Deployment models are different from service models (IaaS, PaaS, SaaS).",
+        "Apartment, house, house plus rented space: customers of a public cloud cannot access one another's resources because providers use isolation controls.",
+        "A private cloud is not just a server room. It uses resource pooling, automation, and self-service provisioning.",
+        "A bank that keeps a legacy application in its private data center and uses AWS for web applications, connected by VPN or a dedicated connection, runs a hybrid cloud.",
+        "Choose based on workload requirements, not the assumption that one model is always cheaper or more secure.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "public-private-and-hybrid-cloud-q1",
+          question:
+            "A bank keeps a sensitive legacy application in its own data center and runs customer-facing web apps on AWS, connected by VPN. Which deployment model is this?",
+          options: ["Public cloud", "Private cloud", "Hybrid cloud", "SaaS"],
+          correctIndex: 2,
+          explanation:
+            "Combining private/on-premises infrastructure with public cloud services is a hybrid cloud architecture.",
+        },
+        {
+          id: "public-private-and-hybrid-cloud-q2",
+          question: "Which statement about the apartment analogy for public cloud is correct?",
+          options: [
+            "Customers can access one another's resources",
+            "Tenants use separate spaces within shared infrastructure, with isolation controls",
+            "Every customer gets dedicated hardware",
+            "The provider has no isolation controls",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Public cloud customers share infrastructure, but providers use isolation controls so they cannot access one another's resources.",
+        },
+        {
+          id: "public-private-and-hybrid-cloud-q3",
+          question: "What is the main limitation of a private cloud?",
+          options: [
+            "Less physical infrastructure control",
+            "Higher management burden",
+            "More networking complexity than any other model",
+            "It cannot use automation",
+          ],
+          correctIndex: 1,
+          explanation:
+            "Private cloud offers dedicated resources and greater control, but with a higher management burden.",
+        },
+        {
+          id: "public-private-and-hybrid-cloud-q4",
+          question: "Which is the best way to choose a deployment model?",
+          options: [
+            "Always pick public cloud because it is cheaper",
+            "Always pick private cloud because it is more secure",
+            "Base it on workload requirements",
+            "Always pick hybrid cloud",
+          ],
+          correctIndex: 2,
+          explanation:
+            "No model is always cheaper or more secure. Choose based on workload requirements.",
+        },
+      ],
+    },
+  ],
+};
+
+const introToAws: AwsLesson = {
+  slug: "introduction-to-amazon-web-services-aws",
+  title: "Introduction to Amazon Web Services (AWS)",
+  subtitle: "Understand what AWS is, how its services work together, and how organizations use AWS to build applications.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "**Amazon Web Services (AWS)** is a cloud computing platform that provides on-demand services for computing, storage, networking, databases, security, and more.",
+        "Instead of purchasing physical infrastructure, organizations can provision AWS resources as needed.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: What AWS helps organizations do",
+      body: ["AWS helps organizations:"],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "Deploy applications without building their own data centers.",
+        "Scale infrastructure based on demand.",
+        "Access managed services for common technical needs.",
+        "Build applications across different geographic locations.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: A toolbox",
+      body: [
+        "Think of AWS as a **toolbox** for building software applications.",
+        "Each tool solves a different problem.",
+        "For example, you would not use a storage service to perform the same job as a virtual server.",
+      ],
+    },
+    { kind: "visual", id: "aws-toolbox", caption: "A toolbox of services, and choosing the right tool for the job" },
+    {
+      kind: "prose",
+      heading: "3. HOW: Using AWS services",
+      body: [
+        "AWS provides services through the **AWS Management Console**, **Command Line Interface (CLI)**, **APIs**, and **infrastructure-as-code** tools.",
+        "Some foundational services are Amazon EC2, Amazon S3, Amazon RDS, Amazon VPC, AWS IAM, and Amazon CloudWatch.",
+      ],
+    },
+    { kind: "visual", id: "aws-services", caption: "Ways to use AWS, and the foundational services you choose from" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["You select and configure these services based on your application's requirements."],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: An online shopping application",
+      body: ["Suppose you are building an online shopping application."],
+    },
+    { kind: "visual", id: "shopping-architecture", caption: "Customers, Amazon EC2, Amazon RDS, and Amazon S3 working together" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Simplified architecture",
+      body: "A production application also needs networking, security, and other configurations.",
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["These AWS services work together to support a single application."],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Choice and responsibility", body: [] },
+    {
+      kind: "table",
+      caption: "Each advantage comes with a limitation",
+      headers: ["Advantage", "Limitation"],
+      rows: [
+        ["Many managed services", "Choosing services can be complex"],
+        ["Flexible infrastructure", "Poor configuration can increase costs"],
+        ["Fast provisioning", "Security remains a shared responsibility"],
+        ["Integrated AWS ecosystem", "Some designs create vendor lock-in"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Interview takeaway",
+      body: "AWS is not a single service. It is a collection of cloud services used together to build and operate applications.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "AWS is a cloud computing platform that provides on-demand services for computing, storage, networking, databases, security, and more.",
+        "It helps organizations deploy without their own data centers, scale with demand, use managed services, and build across geographic locations.",
+        "AWS is like a toolbox: each service solves a different problem, so match the service to the job.",
+        "You use AWS through the Management Console, CLI, APIs, and infrastructure-as-code tools.",
+        "Foundational services: EC2 runs applications, S3 stores files, RDS runs managed relational databases, VPC creates isolated networks, IAM manages access, and CloudWatch monitors.",
+        "An online shop might use EC2 for the application, RDS for orders and customer records, and S3 for product images.",
+        "AWS is not a single service. It is a collection of services used together, and security remains a shared responsibility.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "introduction-to-amazon-web-services-aws-q1",
+          question: "Which service would you use to store product images for a shopping application?",
+          options: ["Amazon EC2", "Amazon S3", "Amazon RDS", "AWS IAM"],
+          correctIndex: 1,
+          explanation: "Amazon S3 stores files and objects, such as product images.",
+        },
+        {
+          id: "introduction-to-amazon-web-services-aws-q2",
+          question: "What is the primary purpose of Amazon RDS?",
+          options: [
+            "Run applications on virtual servers",
+            "Monitor resources and applications",
+            "Run managed relational databases",
+            "Create logically isolated cloud networks",
+          ],
+          correctIndex: 2,
+          explanation: "Amazon RDS runs managed relational databases, for example storing orders and customer records.",
+        },
+        {
+          id: "introduction-to-amazon-web-services-aws-q3",
+          question: "Which is NOT one of the ways AWS provides its services?",
+          options: [
+            "AWS Management Console",
+            "Command Line Interface (CLI)",
+            "Physical servers delivered to your office",
+            "Infrastructure-as-code tools",
+          ],
+          correctIndex: 2,
+          explanation: "AWS provides services through the Management Console, CLI, APIs, and infrastructure-as-code tools.",
+        },
+        {
+          id: "introduction-to-amazon-web-services-aws-q4",
+          question: "What best describes AWS?",
+          options: [
+            "A single service for running virtual servers",
+            "A collection of cloud services used together to build and operate applications",
+            "A tool that removes all security responsibility",
+            "A storage service",
+          ],
+          correctIndex: 1,
+          explanation: "AWS is not a single service. It is a collection of cloud services, and security remains a shared responsibility.",
+        },
+      ],
+    },
+  ],
+};
+
+const module1FinalQuiz: AwsLesson = {
+  slug: "module-1-final-quiz",
+  title: "Module 1 Final Quiz",
+  subtitle: "Test your knowledge of cloud computing, service and deployment models, and the core AWS services.",
+  sections: [{ kind: "assessment", assessmentId: "module-1" }],
+};
+
+const module1CheatSheet: AwsLesson = {
+  slug: "module-1-cheat-sheet",
+  title: "Module 1 Cheat Sheet",
+  subtitle: "One page reference for cloud basics, the six AWS advantages, service and deployment models, and core services.",
+  sections: [{ kind: "cheatsheet", cheatsheetId: "module-1" }],
+};
 
 export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   "introduction-to-the-cloud": {
@@ -506,27 +1002,11 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
       whatIsCloudComputing,
       traditionalItVsCloud,
       benefitsOfCloudComputing,
-      placeholder(
-        "introduction-to-aws-global-infrastructure",
-        "Introduction to AWS Global Infrastructure",
-        "Coming soon.",
-      ),
-      placeholder(
-        "the-aws-shared-responsibility-model",
-        "The AWS Shared Responsibility Model",
-        "Coming soon.",
-      ),
-      placeholder(
-        "applying-cloud-concepts-to-real-life-use-cases",
-        "Applying Cloud Concepts to Real Life Use Cases",
-        "Coming soon.",
-      ),
-      placeholder(
-        "module-1-mini-quiz-and-practical-challenge",
-        "Module 1 Mini-Quiz and Practical Challenge",
-        "Coming soon.",
-      ),
-      placeholder("module-1-cheat-sheet", "Module 1 Cheat Sheet", "Coming soon."),
+      iaasPaasSaas,
+      publicPrivateHybrid,
+      introToAws,
+      module1FinalQuiz,
+      module1CheatSheet,
     ],
   },
 };
