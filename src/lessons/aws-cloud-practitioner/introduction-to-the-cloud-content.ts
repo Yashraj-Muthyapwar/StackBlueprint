@@ -996,6 +996,13 @@ const module1CheatSheet: AwsLesson = {
   sections: [{ kind: "cheatsheet", cheatsheetId: "module-1" }],
 };
 
+const placeholder = (slug: string, title: string): AwsLesson => ({
+  slug,
+  title,
+  subtitle: "Coming soon.",
+  sections: [],
+});
+
 export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   "introduction-to-the-cloud": {
     lessons: [
@@ -1007,6 +1014,16 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
       introToAws,
       module1FinalQuiz,
       module1CheatSheet,
+    ],
+  },
+  "global-infrastructure": {
+    lessons: [
+      placeholder("aws-regions", "AWS Regions"),
+      placeholder("availability-zones", "Availability Zones"),
+      placeholder("edge-locations", "Edge Locations"),
+      placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
+      placeholder("module-2-final-quiz", "Module 2 Final Quiz"),
+      placeholder("module-2-cheat-sheet", "Module 2 Cheat Sheet"),
     ],
   },
 };
