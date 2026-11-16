@@ -3,14 +3,14 @@ import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
-import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
-import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./AwsIntroVisuals";
-import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./RegionsVisuals";
-import { AzHowVisual, HospitalAzVisual, MultiAzExampleVisual } from "./AvailabilityZoneVisuals";
-import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./DeploymentVisuals";
-import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./ServiceModelsVisuals";
-import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
+import { HolidayScalingVisual, PowerPlantVisual } from "./introduction-to-the-cloud/CloudVisuals";
+import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./introduction-to-the-cloud/BenefitsVisuals";
+import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./introduction-to-the-cloud/AwsIntroVisuals";
+import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./global-infrastructure/RegionsVisuals";
+import { AzHowVisual, HospitalAzVisual, MultiAzExampleVisual } from "./global-infrastructure/AvailabilityZoneVisuals";
+import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./introduction-to-the-cloud/DeploymentVisuals";
+import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./introduction-to-the-cloud/ServiceModelsVisuals";
+import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./introduction-to-the-cloud/TraditionalVsCloudVisuals";
 import { Quiz } from "@/components/lesson/Quiz";
 import type { AwsSection } from "@/lessons/aws-cloud-practitioner/introduction-to-the-cloud-content";
 
@@ -32,8 +32,8 @@ function inline(text: string): ReactNode {
   });
 }
 
-const ModuleAssessment = lazy(() => import("./ModuleAssessment"));
-const ModuleCheatsheet = lazy(() => import("./ModuleCheatsheet"));
+const ModuleAssessment = lazy(() => import("./introduction-to-the-cloud/ModuleAssessment"));
+const ModuleCheatsheet = lazy(() => import("./introduction-to-the-cloud/ModuleCheatsheet"));
 
 export function SectionRenderer({
   section,
