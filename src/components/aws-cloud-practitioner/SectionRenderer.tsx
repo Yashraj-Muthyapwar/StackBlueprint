@@ -7,6 +7,7 @@ import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
 import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
 import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./AwsIntroVisuals";
 import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./RegionsVisuals";
+import { AzHowVisual, HospitalAzVisual, MultiAzExampleVisual } from "./AvailabilityZoneVisuals";
 import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./DeploymentVisuals";
 import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./ServiceModelsVisuals";
 import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
@@ -103,6 +104,12 @@ export function SectionRenderer({
           return <RegionDeployVisual caption={section.caption} />;
         case "mumbai-ireland":
           return <MumbaiToIrelandVisual caption={section.caption} />;
+        case "hospital-az":
+          return <HospitalAzVisual caption={section.caption} />;
+        case "az-how":
+          return <AzHowVisual caption={section.caption} />;
+        case "multi-az-example":
+          return <MultiAzExampleVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":

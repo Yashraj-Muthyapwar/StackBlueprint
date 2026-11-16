@@ -528,3 +528,6 @@ function ExampleScene({ s }: { s: number }) {
 export function MumbaiToIrelandVisual({ caption }: { caption: string }) {
   return <StoryPlayer caption={caption} scenes={EX_SCENES} viewBox="0 0 640 322" sceneMs={8500} render={(s) => <ExampleScene s={s} />} />;
 }
+
+export { T, Pill, Person, Arc, LabelChip, Fence, Panel };
+export type { Tone };
