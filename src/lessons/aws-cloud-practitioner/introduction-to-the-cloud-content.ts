@@ -4,7 +4,7 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example"; caption: string }
   | { kind: "list"; heading: string; lead?: string; items: string[] }
   | { kind: "takeaways"; items: string[] }
   | { kind: "assessment"; assessmentId: "module-1" }
@@ -1178,6 +1178,184 @@ const awsRegions: AwsLesson = {
   ],
 };
 
+const availabilityZones: AwsLesson = {
+  slug: "availability-zones",
+  title: "Availability Zones",
+  subtitle: "Understand what Availability Zones are, why they exist, and how they help applications survive infrastructure failures.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An AWS **Availability Zone (AZ)** is one or more **physically separate data centers** within an AWS Region.",
+        "Each AZ has **independent power, networking, and cooling** infrastructure.",
+        "Example within `us-east-1`:",
+      ],
+    },
+    { kind: "list", heading: "", items: ["`us-east-1a`", "`us-east-1b`", "`us-east-1c`"] },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["These are example AZ names. The letter-to-physical-AZ mapping can differ between AWS accounts."],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: One data center is a single point of failure",
+      body: [
+        "Imagine your entire application runs in one data center.",
+        "If that data center experiences a major power failure, your application may become unavailable.",
+        "AWS provides multiple isolated Availability Zones to help reduce this risk.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Main purpose",
+      body: "Fault isolation and high availability.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: A hospital with multiple buildings",
+      body: [
+        "Think of a hospital with multiple independent buildings.",
+        "If one building loses power, another building can continue providing essential services.",
+      ],
+    },
+    { kind: "visual", id: "hospital-az", caption: "A hospital campus compared with the Availability Zones of one Region" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Provided the application is designed correctly",
+      body: "Applications deployed across multiple AZs can remain operational when one AZ fails, provided the application is designed correctly.",
+    },
+    { kind: "prose", heading: "3. HOW: Multiple AZs inside a Region", body: ["Walk through how a Region such as `us-east-1` is organized:"] },
+    { kind: "visual", id: "az-how", caption: "Isolated Availability Zones, their connections, and spreading an application across them" },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS Region:** `us-east-1` has multiple isolated Availability Zones.",
+        "`us-east-1a`, `us-east-1b`, `us-east-1c`: Each one has independent infrastructure.",
+        "**Connections:** AWS connects AZs within a Region through highly redundant, low-latency, high-bandwidth networking.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An application can run instances across multiple AZs. When one AZ fails, healthy instances in another AZ can continue serving users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: An online shopping application",
+      body: [
+        "An online shopping application runs on two EC2 instances.",
+        "Customer requests go to an **Application Load Balancer**, which routes requests to healthy instances. One instance runs in **AZ A** and the other in **AZ B**.",
+      ],
+    },
+    { kind: "visual", id: "multi-az-example", caption: "A load balancer sending customer requests to healthy instances in two Availability Zones" },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "If AZ A fails, the load balancer can direct requests to the healthy instance in AZ B.",
+        "This is an example of **Multi-AZ deployment**.",
+        "This is a simplified Multi-AZ design. It assumes a properly configured load balancer and independently available application dependencies.",
+      ],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Single-AZ vs Multi-AZ", body: [] },
+    {
+      kind: "table",
+      caption: "Single-AZ compared with Multi-AZ",
+      headers: ["Single-AZ", "Multi-AZ"],
+      rows: [
+        ["Simpler architecture", "Better protection from AZ failures"],
+        ["Often lower cost", "May incur additional resource and data-transfer costs"],
+        ["AZ failure can cause downtime", "Can continue operating during an AZ failure"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Multi-AZ protects against certain AZ-level failures, but it does not automatically protect against an entire Region failure.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An Availability Zone is one or more physically separate data centers within an AWS Region, with independent power, networking, and cooling.",
+        "AZ names such as us-east-1a, us-east-1b, and us-east-1c are examples. The letter-to-physical-AZ mapping can differ between AWS accounts.",
+        "The main purpose of AZs is fault isolation and high availability.",
+        "Think of a hospital with multiple independent buildings: if one loses power, another keeps providing essential services.",
+        "AWS connects the AZs in a Region through highly redundant, low-latency, high-bandwidth networking.",
+        "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+        "In a Multi-AZ deployment, a load balancer can send requests to healthy instances when one AZ fails.",
+        "Multi-AZ adds protection but may add cost, and it does not automatically protect against an entire Region failure.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "availability-zones-q1",
+          question: "What is an AWS Availability Zone?",
+          options: [
+            "A single server inside a data center",
+            "One or more physically separate data centers within a Region, with independent power, networking, and cooling",
+            "A group of Regions in one country",
+            "A pricing tier for EC2",
+          ],
+          correctIndex: 1,
+          explanation: "An AZ is one or more physically separate data centers within an AWS Region, each AZ with independent power, networking, and cooling infrastructure.",
+        },
+        {
+          id: "availability-zones-q2",
+          question: "A shop runs one EC2 instance in AZ A and one in AZ B behind a load balancer. AZ A fails. What can happen?",
+          options: [
+            "The whole application goes down",
+            "The load balancer can direct requests to the healthy instance in AZ B",
+            "AWS moves the instance in AZ A to another Region",
+            "Customers must wait for AZ A to recover",
+          ],
+          correctIndex: 1,
+          explanation: "This is a Multi-AZ deployment. The load balancer can direct requests to the healthy instance in AZ B.",
+        },
+        {
+          id: "availability-zones-q3",
+          question: "Does AWS automatically spread every application across Availability Zones?",
+          options: [
+            "Yes, every application is spread across all AZs by default",
+            "Yes, but only for databases",
+            "No. You must configure the relevant architecture",
+            "No. AZs cannot run applications",
+          ],
+          correctIndex: 2,
+          explanation: "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+        },
+        {
+          id: "availability-zones-q4",
+          question: "What does a Multi-AZ deployment NOT automatically protect against?",
+          options: [
+            "A failure of one AZ",
+            "A power failure in one data center of one AZ",
+            "An entire Region failure",
+            "A single instance becoming unhealthy",
+          ],
+          correctIndex: 2,
+          explanation: "Multi-AZ protects against certain AZ-level failures, but it does not automatically protect against an entire Region failure.",
+        },
+      ],
+    },
+  ],
+};
+
 const placeholder = (slug: string, title: string): AwsLesson => ({
   slug,
   title,
@@ -1201,7 +1379,7 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   "global-infrastructure": {
     lessons: [
       awsRegions,
-      placeholder("availability-zones", "Availability Zones"),
+      availabilityZones,
       placeholder("edge-locations", "Edge Locations"),
       placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
       placeholder("module-2-final-quiz", "Module 2 Final Quiz"),
