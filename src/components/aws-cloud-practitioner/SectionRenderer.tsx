@@ -8,6 +8,7 @@ import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./
 import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./introduction-to-the-cloud/AwsIntroVisuals";
 import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./global-infrastructure/RegionsVisuals";
 import { CloudFrontHowVisual, EdgeExampleVisual, RestaurantChainVisual } from "./global-infrastructure/EdgeLocationVisuals";
+import { AirplaneHaVisual, HaExampleVisual, HaHowVisual, HaModesVisual } from "./global-infrastructure/HaFaultToleranceVisuals";
 import { AzHowVisual, HospitalAzVisual, MultiAzExampleVisual } from "./global-infrastructure/AvailabilityZoneVisuals";
 import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./introduction-to-the-cloud/DeploymentVisuals";
 import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./introduction-to-the-cloud/ServiceModelsVisuals";
@@ -35,6 +36,7 @@ function inline(text: string): ReactNode {
 
 const ModuleAssessment = lazy(() => import("./introduction-to-the-cloud/ModuleAssessment"));
 const ModuleCheatsheet = lazy(() => import("./introduction-to-the-cloud/ModuleCheatsheet"));
+const Module2Cheatsheet = lazy(() => import("./global-infrastructure/Module2Cheatsheet"));
 
 export function SectionRenderer({
   section,
@@ -117,6 +119,14 @@ export function SectionRenderer({
           return <CloudFrontHowVisual caption={section.caption} />;
         case "edge-example":
           return <EdgeExampleVisual caption={section.caption} />;
+        case "airplane-ha":
+          return <AirplaneHaVisual caption={section.caption} />;
+        case "ha-how":
+          return <HaHowVisual caption={section.caption} />;
+        case "ha-example":
+          return <HaExampleVisual caption={section.caption} />;
+        case "ha-modes":
+          return <HaModesVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":
@@ -129,7 +139,7 @@ export function SectionRenderer({
       return (
         <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
           <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
-            <ModuleAssessment />
+            <ModuleAssessment moduleId={section.assessmentId} />
           </Suspense>
         </ClientOnly>
       );
@@ -137,7 +147,7 @@ export function SectionRenderer({
       return (
         <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
           <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
-            <ModuleCheatsheet />
+            {section.cheatsheetId === "module-2" ? <Module2Cheatsheet /> : <ModuleCheatsheet />}
           </Suspense>
         </ClientOnly>
       );

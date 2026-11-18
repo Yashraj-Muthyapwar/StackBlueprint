@@ -381,4 +381,4 @@ export function MultiAzExampleVisual({ caption }: { caption: string }) {
   return <StoryPlayer caption={caption} scenes={EX_SCENES} viewBox="0 0 640 322" sceneMs={8500} render={(s) => <ExampleScene s={s} />} />;
 }
 
-export { Server, Flow, Equals };
+export { Server, Flow, Equals, FailOverlay };
