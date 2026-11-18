@@ -4,8 +4,8 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example"; caption: string }
-  | { kind: "list"; heading: string; lead?: string; items: string[] }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example"; caption: string }
+  | { kind: "list"; heading: string; lead?: string; items: string[]; ordered?: boolean }
   | { kind: "takeaways"; items: string[] }
   | { kind: "assessment"; assessmentId: "module-1" }
   | { kind: "cheatsheet"; cheatsheetId: "module-1" }
@@ -1056,11 +1056,12 @@ const awsRegions: AwsLesson = {
     {
       kind: "list",
       heading: "",
+      ordered: true,
       items: [
-        "**1.** Select an AWS Region.",
-        "**2.** Create resources such as EC2 or RDS in that Region.",
-        "**3.** AWS hosts those resources within its regional infrastructure.",
-        "**4.** Deploy resources in other Regions separately when needed.",
+        "Select an AWS Region.",
+        "Create resources such as EC2 or RDS in that Region.",
+        "AWS hosts those resources within its regional infrastructure.",
+        "Deploy resources in other Regions separately when needed.",
       ],
     },
     {
@@ -1356,6 +1357,188 @@ const availabilityZones: AwsLesson = {
   ],
 };
 
+const edgeLocations: AwsLesson = {
+  slug: "edge-locations",
+  title: "Edge Locations",
+  subtitle: "Understand what Edge Locations are, how they reduce latency, and how they differ from AWS Regions and Availability Zones.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An **AWS Edge Location** is a site in AWS's global network that helps deliver content and certain services closer to end users.",
+        "Edge Locations are commonly used by **Amazon CloudFront**, AWS's **Content Delivery Network (CDN)**.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Distance adds latency",
+      body: [
+        "Imagine your website is hosted in the US, but users access it from India.",
+        "Each request for an image might travel a long distance to your US server, increasing latency.",
+        "Edge Locations help by storing cached copies of eligible content closer to users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Main purpose",
+      body: "Improve content delivery performance and reduce latency.",
+    },
+    { kind: "prose", heading: "2. INTUITION: A restaurant chain", body: ["Think of a **restaurant chain**."] },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS Region:** The central kitchen preparing food.",
+        "**Edge Location:** A local distribution center storing popular prepared items.",
+        "**Customer:** Receives available items from the nearby distribution center instead of waiting for delivery from the central kitchen.",
+      ],
+    },
+    { kind: "visual", id: "restaurant-chain", caption: "A restaurant chain compared with an AWS Region and its Edge Locations" },
+    {
+      kind: "prose",
+      heading: "3. HOW: A request through CloudFront",
+      body: ["Amazon CloudFront works with an **origin**, such as Amazon S3 or a web server."],
+    },
+    { kind: "visual", id: "cloudfront-how", caption: "A request routed through CloudFront, as a cache hit and as a cache miss" },
+    {
+      kind: "list",
+      heading: "",
+      ordered: true,
+      items: [
+        "A user in India requests an image.",
+        "The request is routed through CloudFront to an Edge Location.",
+        "The Edge Location checks whether the image is cached.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "",
+      lead: "Then one of two things happens:",
+      items: [
+        "**Cache hit:** CloudFront serves the cached image to the user.",
+        "**Cache miss:** CloudFront fetches the image from the origin, then delivers it.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Hit and miss",
+      body: "A cache hit means the requested content is available in the cache. A cache miss means CloudFront needs to retrieve it from another cache layer or the origin.",
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Product images for India",
+      body: [
+        "An e-commerce website runs in the AWS Virginia Region.",
+        "Customers in India frequently request product images.",
+      ],
+    },
+    { kind: "visual", id: "edge-example", caption: "Product images fetched from Virginia, then cached at Edge Locations near Indian users" },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "Without CloudFront, these images may need to be fetched from the US origin.",
+        "With CloudFront, frequently requested images can be cached at Edge Locations closer to Indian users, reducing delivery latency.",
+      ],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Speed against freshness and cost", body: [] },
+    {
+      kind: "table",
+      caption: "Advantages and limitations of Edge Locations",
+      headers: ["Advantage", "Limitation"],
+      rows: [
+        ["Lower content delivery latency", "First request may require an origin fetch"],
+        ["Reduced origin traffic", "Extra CDN charges"],
+        ["Global content distribution", "Cached content can become stale"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important distinction",
+      items: [
+        "**Region:** Geographic area hosting AWS services.",
+        "**Availability Zone:** Isolated infrastructure within a Region for fault tolerance.",
+        "**Edge Location:** Helps deliver content and edge services closer to users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Edge Locations do not automatically replicate your entire application or replace Multi-AZ architecture.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An AWS Edge Location is a site in AWS's global network that helps deliver content and certain services closer to end users.",
+        "Amazon CloudFront, AWS's Content Delivery Network, commonly uses Edge Locations.",
+        "Edge Locations store cached copies of eligible content closer to users, which improves delivery performance and reduces latency.",
+        "Think of a restaurant chain: the Region is the central kitchen, and an Edge Location is a local distribution center.",
+        "A cache hit serves content from the Edge Location. A cache miss means CloudFront retrieves it from another cache layer or the origin.",
+        "Trade-offs: the first request may need an origin fetch, CDN charges apply, and cached content can become stale.",
+        "A Region hosts services, an Availability Zone gives fault tolerance inside a Region, and an Edge Location brings content closer to users.",
+        "Edge Locations do not replicate your entire application or replace Multi-AZ architecture.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "edge-locations-q1",
+          question: "In the restaurant chain analogy, what is an Edge Location?",
+          options: [
+            "The central kitchen preparing food",
+            "A local distribution center storing popular prepared items",
+            "The customer",
+            "The delivery truck",
+          ],
+          correctIndex: 1,
+          explanation: "The Region is the central kitchen, an Edge Location is a local distribution center storing popular items, and the customer receives items from the nearby center.",
+        },
+        {
+          id: "edge-locations-q2",
+          question: "A user in India requests an image that is already cached at the nearest Edge Location. What happens?",
+          options: [
+            "CloudFront always fetches it from the origin first",
+            "This is a cache hit, and CloudFront serves the cached image",
+            "The request fails",
+            "The image is copied to every Region",
+          ],
+          correctIndex: 1,
+          explanation: "A cache hit means the requested content is available in the cache, so CloudFront serves the cached image to the user.",
+        },
+        {
+          id: "edge-locations-q3",
+          question: "Which is a limitation of using Edge Locations with CloudFront?",
+          options: [
+            "They remove the need for an origin",
+            "Cached content can become stale, and CDN charges apply",
+            "They increase latency for users",
+            "They only work inside one Availability Zone",
+          ],
+          correctIndex: 1,
+          explanation: "Limitations include a possible origin fetch on the first request, extra CDN charges, and cached content that can become stale.",
+        },
+        {
+          id: "edge-locations-q4",
+          question: "Do Edge Locations replace Multi-AZ architecture?",
+          options: [
+            "Yes, they replicate the whole application",
+            "Yes, but only for databases",
+            "No. They do not automatically replicate your entire application or replace Multi-AZ architecture",
+            "No. They are the same as Availability Zones",
+          ],
+          correctIndex: 2,
+          explanation: "Edge Locations help deliver content and edge services closer to users. They do not automatically replicate your entire application or replace Multi-AZ architecture.",
+        },
+      ],
+    },
+  ],
+};
+
 const placeholder = (slug: string, title: string): AwsLesson => ({
   slug,
   title,
@@ -1380,7 +1563,7 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
     lessons: [
       awsRegions,
       availabilityZones,
-      placeholder("edge-locations", "Edge Locations"),
+      edgeLocations,
       placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
       placeholder("module-2-final-quiz", "Module 2 Final Quiz"),
       placeholder("module-2-cheat-sheet", "Module 2 Cheat Sheet"),
