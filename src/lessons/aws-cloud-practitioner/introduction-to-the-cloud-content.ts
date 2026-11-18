@@ -4,8 +4,8 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture"; caption: string }
-  | { kind: "list"; heading: string; lead?: string; items: string[] }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example"; caption: string }
+  | { kind: "list"; heading: string; lead?: string; items: string[]; ordered?: boolean }
   | { kind: "takeaways"; items: string[] }
   | { kind: "assessment"; assessmentId: "module-1" }
   | { kind: "cheatsheet"; cheatsheetId: "module-1" }
@@ -737,10 +737,12 @@ const publicPrivateHybrid: AwsLesson = {
       title: "Private cloud is not a server room",
       body: "A private cloud is not simply any traditional server room. It uses cloud-like features such as resource pooling, automation, and self-service provisioning.",
     },
-    { kind: "prose", heading: "4. EXAMPLE: A bank with a hybrid cloud", body: [
-      "A bank operates a sensitive legacy application in its private data center but uses AWS for customer-facing web applications.",
-      "It securely connects both environments through a VPN or a dedicated network connection.",
-    ] },
+    {
+      kind: "prose", heading: "4. EXAMPLE: A bank with a hybrid cloud", body: [
+        "A bank operates a sensitive legacy application in its private data center but uses AWS for customer-facing web applications.",
+        "It securely connects both environments through a VPN or a dedicated network connection.",
+      ]
+    },
     { kind: "visual", id: "bank-hybrid", caption: "A private data center connected to AWS" },
     {
       kind: "prose",
@@ -996,6 +998,554 @@ const module1CheatSheet: AwsLesson = {
   sections: [{ kind: "cheatsheet", cheatsheetId: "module-1" }],
 };
 
+const awsRegions: AwsLesson = {
+  slug: "aws-regions",
+  title: "AWS Regions",
+  subtitle: "Understand what an AWS Region is, why it matters, and how to choose the right Region for an application.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An **AWS Region** is a **separate geographic area** where AWS operates **cloud infrastructure**.",
+        "Each Region contains multiple **isolated locations** called `Availability Zones (AZs)`.",
+      ],
+    },
+    {
+      kind: "table",
+      caption: "Examples of AWS Regions",
+      headers: ["AWS Region", "Region code"],
+      rows: [
+        ["US East (N. Virginia)", "us-east-1"],
+        ["US East (Ohio)", "us-east-2"],
+        ["Europe (Ireland)", "eu-west-1"],
+        ["Asia Pacific (Mumbai)", "ap-south-1"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Customers are in different places",
+      body: [
+        "Companies have customers in different locations.",
+        "Deploying an application closer to its users can reduce network latency. Choosing the correct Region can also help meet legal requirements and control costs.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: A hotel chain",
+      body: ["Think of AWS as a **hotel chain**."],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS:** The hotel company.",
+        "**Region:** A hotel location in a particular city.",
+        "**Availability Zone:** A separate building within that location.",
+      ],
+    },
+    { kind: "visual", id: "hotel-chain", caption: "AWS as the hotel company, a Region as a location, and Availability Zones as separate buildings" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Regions are independent",
+      body: "Different Regions operate independently, although AWS provides ways to connect them.",
+    },
+    { kind: "prose", heading: "3. HOW: Deploying into a Region", body: ["When deploying an application:"] },
+    { kind: "visual", id: "region-deploy", caption: "Choosing a Region, creating resources, and deploying elsewhere separately" },
+    {
+      kind: "list",
+      heading: "",
+      ordered: true,
+      items: [
+        "Select an AWS Region.",
+        "Create resources such as EC2 or RDS in that Region.",
+        "AWS hosts those resources within its regional infrastructure.",
+        "Deploy resources in other Regions separately when needed.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Most AWS resources are regional. Creating an EC2 instance in Virginia does not automatically create another in Ireland.",
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "The illustration is conceptual: each Region has multiple Availability Zones, which contain one or more data centers. Region markers on the map show the approximate area of each Region.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: From Mumbai to Ireland",
+      body: [
+        "An e-commerce company serves customers primarily in India.",
+        "It selects the Mumbai Region (`ap-south-1`) because it is geographically closer to many of its users.",
+        "Later, it expands into Europe and considers deploying additional infrastructure in Ireland.",
+      ],
+    },
+    { kind: "visual", id: "mumbai-ireland", caption: "Starting in Mumbai, then considering Ireland, with replication configured explicitly" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["The company must explicitly configure any necessary cross-Region data replication."],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Choosing a Region", body: ["The four main factors when selecting an AWS Region are:"] },
+    {
+      kind: "table",
+      caption: "Factors for selecting a Region",
+      headers: ["Factor", "Why it matters"],
+      rows: [
+        ["Latency", "Choose infrastructure close to users"],
+        ["Cost", "Service prices can differ by Region"],
+        ["Compliance", "Some data must remain within specified locations"],
+        ["Service availability", "Not every AWS service or feature is available everywhere"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["AWS recommends considering these factors when selecting a Region."],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Interview takeaway",
+      body: "Choose an AWS Region based on latency, cost, compliance, and service availability, not simply geographical proximity.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An AWS Region is a separate geographic area where AWS operates cloud infrastructure. Each Region contains multiple isolated Availability Zones.",
+        "Region codes look like us-east-1, us-east-2, eu-west-1, and ap-south-1.",
+        "Deploying closer to users can reduce latency, and the right Region helps meet legal requirements and control costs.",
+        "Think of AWS as a hotel chain: a Region is a hotel location in a city, and an Availability Zone is a separate building there.",
+        "Different Regions operate independently, although AWS provides ways to connect them.",
+        "Most AWS resources are regional. An EC2 instance in Virginia does not automatically create another in Ireland.",
+        "Cross-Region data replication must be configured explicitly.",
+        "Choose a Region by latency, cost, compliance, and service availability, not simply proximity.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "aws-regions-q1",
+          question: "In the hotel chain analogy, what is an Availability Zone?",
+          options: [
+            "The hotel company",
+            "A hotel location in a particular city",
+            "A separate building within that location",
+            "A booking website",
+          ],
+          correctIndex: 2,
+          explanation: "AWS is the hotel company, a Region is a hotel location in a city, and an Availability Zone is a separate building within that location.",
+        },
+        {
+          id: "aws-regions-q2",
+          question: "You create an EC2 instance in US East (N. Virginia). What happens in Europe (Ireland)?",
+          options: [
+            "AWS automatically creates a copy there",
+            "Nothing. Most AWS resources are regional, so you deploy in Ireland separately",
+            "The instance moves to Ireland when users arrive",
+            "Ireland becomes the primary Region",
+          ],
+          correctIndex: 1,
+          explanation: "Most AWS resources are regional. Creating an EC2 instance in Virginia does not automatically create another in Ireland.",
+        },
+        {
+          id: "aws-regions-q3",
+          question: "Which is the Region code for Asia Pacific (Mumbai)?",
+          options: ["us-east-1", "eu-west-1", "ap-south-1", "us-east-2"],
+          correctIndex: 2,
+          explanation: "ap-south-1 is Asia Pacific (Mumbai). us-east-1 is N. Virginia, us-east-2 is Ohio, and eu-west-1 is Ireland.",
+        },
+        {
+          id: "aws-regions-q4",
+          question: "Which set lists the four main factors for selecting an AWS Region?",
+          options: [
+            "Latency, cost, compliance, and service availability",
+            "Latency, color, size, and age",
+            "Proximity only",
+            "Cost, logo, language, and time zone",
+          ],
+          correctIndex: 0,
+          explanation: "Choose based on latency, cost, compliance, and service availability, not simply geographical proximity.",
+        },
+      ],
+    },
+  ],
+};
+
+const availabilityZones: AwsLesson = {
+  slug: "availability-zones",
+  title: "Availability Zones",
+  subtitle: "Understand what Availability Zones are, why they exist, and how they help applications survive infrastructure failures.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An AWS **Availability Zone (AZ)** is one or more **physically separate data centers** within an AWS Region.",
+        "Each AZ has **independent power, networking, and cooling** infrastructure.",
+        "Example within `us-east-1`:",
+      ],
+    },
+    { kind: "list", heading: "", items: ["`us-east-1a`", "`us-east-1b`", "`us-east-1c`"] },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["These are example AZ names. The letter-to-physical-AZ mapping can differ between AWS accounts."],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: One data center is a single point of failure",
+      body: [
+        "Imagine your entire application runs in one data center.",
+        "If that data center experiences a major power failure, your application may become unavailable.",
+        "AWS provides multiple isolated Availability Zones to help reduce this risk.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Main purpose",
+      body: "Fault isolation and high availability.",
+    },
+    {
+      kind: "prose",
+      heading: "2. INTUITION: A hospital with multiple buildings",
+      body: [
+        "Think of a hospital with multiple independent buildings.",
+        "If one building loses power, another building can continue providing essential services.",
+      ],
+    },
+    { kind: "visual", id: "hospital-az", caption: "A hospital campus compared with the Availability Zones of one Region" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Provided the application is designed correctly",
+      body: "Applications deployed across multiple AZs can remain operational when one AZ fails, provided the application is designed correctly.",
+    },
+    { kind: "prose", heading: "3. HOW: Multiple AZs inside a Region", body: ["Walk through how a Region such as `us-east-1` is organized:"] },
+    { kind: "visual", id: "az-how", caption: "Isolated Availability Zones, their connections, and spreading an application across them" },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS Region:** `us-east-1` has multiple isolated Availability Zones.",
+        "`us-east-1a`, `us-east-1b`, `us-east-1c`: Each one has independent infrastructure.",
+        "**Connections:** AWS connects AZs within a Region through highly redundant, low-latency, high-bandwidth networking.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An application can run instances across multiple AZs. When one AZ fails, healthy instances in another AZ can continue serving users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: An online shopping application",
+      body: [
+        "An online shopping application runs on two EC2 instances.",
+        "Customer requests go to an **Application Load Balancer**, which routes requests to healthy instances. One instance runs in **AZ A** and the other in **AZ B**.",
+      ],
+    },
+    { kind: "visual", id: "multi-az-example", caption: "A load balancer sending customer requests to healthy instances in two Availability Zones" },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "If AZ A fails, the load balancer can direct requests to the healthy instance in AZ B.",
+        "This is an example of **Multi-AZ deployment**.",
+        "This is a simplified Multi-AZ design. It assumes a properly configured load balancer and independently available application dependencies.",
+      ],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Single-AZ vs Multi-AZ", body: [] },
+    {
+      kind: "table",
+      caption: "Single-AZ compared with Multi-AZ",
+      headers: ["Single-AZ", "Multi-AZ"],
+      rows: [
+        ["Simpler architecture", "Better protection from AZ failures"],
+        ["Often lower cost", "May incur additional resource and data-transfer costs"],
+        ["AZ failure can cause downtime", "Can continue operating during an AZ failure"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Multi-AZ protects against certain AZ-level failures, but it does not automatically protect against an entire Region failure.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An Availability Zone is one or more physically separate data centers within an AWS Region, with independent power, networking, and cooling.",
+        "AZ names such as us-east-1a, us-east-1b, and us-east-1c are examples. The letter-to-physical-AZ mapping can differ between AWS accounts.",
+        "The main purpose of AZs is fault isolation and high availability.",
+        "Think of a hospital with multiple independent buildings: if one loses power, another keeps providing essential services.",
+        "AWS connects the AZs in a Region through highly redundant, low-latency, high-bandwidth networking.",
+        "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+        "In a Multi-AZ deployment, a load balancer can send requests to healthy instances when one AZ fails.",
+        "Multi-AZ adds protection but may add cost, and it does not automatically protect against an entire Region failure.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "availability-zones-q1",
+          question: "What is an AWS Availability Zone?",
+          options: [
+            "A single server inside a data center",
+            "One or more physically separate data centers within a Region, with independent power, networking, and cooling",
+            "A group of Regions in one country",
+            "A pricing tier for EC2",
+          ],
+          correctIndex: 1,
+          explanation: "An AZ is one or more physically separate data centers within an AWS Region, each AZ with independent power, networking, and cooling infrastructure.",
+        },
+        {
+          id: "availability-zones-q2",
+          question: "A shop runs one EC2 instance in AZ A and one in AZ B behind a load balancer. AZ A fails. What can happen?",
+          options: [
+            "The whole application goes down",
+            "The load balancer can direct requests to the healthy instance in AZ B",
+            "AWS moves the instance in AZ A to another Region",
+            "Customers must wait for AZ A to recover",
+          ],
+          correctIndex: 1,
+          explanation: "This is a Multi-AZ deployment. The load balancer can direct requests to the healthy instance in AZ B.",
+        },
+        {
+          id: "availability-zones-q3",
+          question: "Does AWS automatically spread every application across Availability Zones?",
+          options: [
+            "Yes, every application is spread across all AZs by default",
+            "Yes, but only for databases",
+            "No. You must configure the relevant architecture",
+            "No. AZs cannot run applications",
+          ],
+          correctIndex: 2,
+          explanation: "AWS does not automatically distribute every application across AZs. You must configure the relevant architecture.",
+        },
+        {
+          id: "availability-zones-q4",
+          question: "What does a Multi-AZ deployment NOT automatically protect against?",
+          options: [
+            "A failure of one AZ",
+            "A power failure in one data center of one AZ",
+            "An entire Region failure",
+            "A single instance becoming unhealthy",
+          ],
+          correctIndex: 2,
+          explanation: "Multi-AZ protects against certain AZ-level failures, but it does not automatically protect against an entire Region failure.",
+        },
+      ],
+    },
+  ],
+};
+
+const edgeLocations: AwsLesson = {
+  slug: "edge-locations",
+  title: "Edge Locations",
+  subtitle: "Understand what Edge Locations are, how they reduce latency, and how they differ from AWS Regions and Availability Zones.",
+  sections: [
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "An **AWS Edge Location** is a site in AWS's global network that helps deliver content and certain services closer to end users.",
+        "Edge Locations are commonly used by **Amazon CloudFront**, AWS's **Content Delivery Network (CDN)**.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: Distance adds latency",
+      body: [
+        "Imagine your website is hosted in the US, but users access it from India.",
+        "Each request for an image might travel a long distance to your US server, increasing latency.",
+        "Edge Locations help by storing cached copies of eligible content closer to users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Main purpose",
+      body: "Improve content delivery performance and reduce latency.",
+    },
+    { kind: "prose", heading: "2. INTUITION: A restaurant chain", body: ["Think of a **restaurant chain**."] },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**AWS Region:** The central kitchen preparing food.",
+        "**Edge Location:** A local distribution center storing popular prepared items.",
+        "**Customer:** Receives available items from the nearby distribution center instead of waiting for delivery from the central kitchen.",
+      ],
+    },
+    { kind: "visual", id: "restaurant-chain", caption: "A restaurant chain compared with an AWS Region and its Edge Locations" },
+    {
+      kind: "prose",
+      heading: "3. HOW: A request through CloudFront",
+      body: ["Amazon CloudFront works with an **origin**, such as Amazon S3 or a web server."],
+    },
+    { kind: "visual", id: "cloudfront-how", caption: "A request routed through CloudFront, as a cache hit and as a cache miss" },
+    {
+      kind: "list",
+      heading: "",
+      ordered: true,
+      items: [
+        "A user in India requests an image.",
+        "The request is routed through CloudFront to an Edge Location.",
+        "The Edge Location checks whether the image is cached.",
+      ],
+    },
+    {
+      kind: "list",
+      heading: "",
+      lead: "Then one of two things happens:",
+      items: [
+        "**Cache hit:** CloudFront serves the cached image to the user.",
+        "**Cache miss:** CloudFront fetches the image from the origin, then delivers it.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Hit and miss",
+      body: "A cache hit means the requested content is available in the cache. A cache miss means CloudFront needs to retrieve it from another cache layer or the origin.",
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: Product images for India",
+      body: [
+        "An e-commerce website runs in the AWS Virginia Region.",
+        "Customers in India frequently request product images.",
+      ],
+    },
+    { kind: "visual", id: "edge-example", caption: "Product images fetched from Virginia, then cached at Edge Locations near Indian users" },
+    {
+      kind: "prose",
+      heading: "",
+      body: [
+        "Without CloudFront, these images may need to be fetched from the US origin.",
+        "With CloudFront, frequently requested images can be cached at Edge Locations closer to Indian users, reducing delivery latency.",
+      ],
+    },
+    { kind: "prose", heading: "5. TRADE-OFFS: Speed against freshness and cost", body: [] },
+    {
+      kind: "table",
+      caption: "Advantages and limitations of Edge Locations",
+      headers: ["Advantage", "Limitation"],
+      rows: [
+        ["Lower content delivery latency", "First request may require an origin fetch"],
+        ["Reduced origin traffic", "Extra CDN charges"],
+        ["Global content distribution", "Cached content can become stale"],
+      ],
+    },
+    {
+      kind: "list",
+      heading: "Important distinction",
+      items: [
+        "**Region:** Geographic area hosting AWS services.",
+        "**Availability Zone:** Isolated infrastructure within a Region for fault tolerance.",
+        "**Edge Location:** Helps deliver content and edge services closer to users.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "warn",
+      title: "Important",
+      body: "Edge Locations do not automatically replicate your entire application or replace Multi-AZ architecture.",
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "An AWS Edge Location is a site in AWS's global network that helps deliver content and certain services closer to end users.",
+        "Amazon CloudFront, AWS's Content Delivery Network, commonly uses Edge Locations.",
+        "Edge Locations store cached copies of eligible content closer to users, which improves delivery performance and reduces latency.",
+        "Think of a restaurant chain: the Region is the central kitchen, and an Edge Location is a local distribution center.",
+        "A cache hit serves content from the Edge Location. A cache miss means CloudFront retrieves it from another cache layer or the origin.",
+        "Trade-offs: the first request may need an origin fetch, CDN charges apply, and cached content can become stale.",
+        "A Region hosts services, an Availability Zone gives fault tolerance inside a Region, and an Edge Location brings content closer to users.",
+        "Edge Locations do not replicate your entire application or replace Multi-AZ architecture.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "edge-locations-q1",
+          question: "In the restaurant chain analogy, what is an Edge Location?",
+          options: [
+            "The central kitchen preparing food",
+            "A local distribution center storing popular prepared items",
+            "The customer",
+            "The delivery truck",
+          ],
+          correctIndex: 1,
+          explanation: "The Region is the central kitchen, an Edge Location is a local distribution center storing popular items, and the customer receives items from the nearby center.",
+        },
+        {
+          id: "edge-locations-q2",
+          question: "A user in India requests an image that is already cached at the nearest Edge Location. What happens?",
+          options: [
+            "CloudFront always fetches it from the origin first",
+            "This is a cache hit, and CloudFront serves the cached image",
+            "The request fails",
+            "The image is copied to every Region",
+          ],
+          correctIndex: 1,
+          explanation: "A cache hit means the requested content is available in the cache, so CloudFront serves the cached image to the user.",
+        },
+        {
+          id: "edge-locations-q3",
+          question: "Which is a limitation of using Edge Locations with CloudFront?",
+          options: [
+            "They remove the need for an origin",
+            "Cached content can become stale, and CDN charges apply",
+            "They increase latency for users",
+            "They only work inside one Availability Zone",
+          ],
+          correctIndex: 1,
+          explanation: "Limitations include a possible origin fetch on the first request, extra CDN charges, and cached content that can become stale.",
+        },
+        {
+          id: "edge-locations-q4",
+          question: "Do Edge Locations replace Multi-AZ architecture?",
+          options: [
+            "Yes, they replicate the whole application",
+            "Yes, but only for databases",
+            "No. They do not automatically replicate your entire application or replace Multi-AZ architecture",
+            "No. They are the same as Availability Zones",
+          ],
+          correctIndex: 2,
+          explanation: "Edge Locations help deliver content and edge services closer to users. They do not automatically replicate your entire application or replace Multi-AZ architecture.",
+        },
+      ],
+    },
+  ],
+};
+
+const placeholder = (slug: string, title: string): AwsLesson => ({
+  slug,
+  title,
+  subtitle: "Coming soon.",
+  sections: [],
+});
+
 export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
   "introduction-to-the-cloud": {
     lessons: [
@@ -1007,6 +1557,16 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
       introToAws,
       module1FinalQuiz,
       module1CheatSheet,
+    ],
+  },
+  "global-infrastructure": {
+    lessons: [
+      awsRegions,
+      availabilityZones,
+      edgeLocations,
+      placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
+      placeholder("module-2-final-quiz", "Module 2 Final Quiz"),
+      placeholder("module-2-cheat-sheet", "Module 2 Cheat Sheet"),
     ],
   },
 };

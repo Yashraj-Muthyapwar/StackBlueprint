@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { StoryPlayer } from "./CloudFrame";
+import { StoryPlayer } from "../CloudFrame";
 
 /* ======================================================================
    1. INTUITION: own a power plant, plug in, or use the cloud

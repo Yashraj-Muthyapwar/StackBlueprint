@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { StoryPlayer } from "./CloudFrame";
+import { StoryPlayer } from "../CloudFrame";
 
 /* Static class maps so Tailwind can see every class. */
 type Tone = "mint" | "amber" | "muted";

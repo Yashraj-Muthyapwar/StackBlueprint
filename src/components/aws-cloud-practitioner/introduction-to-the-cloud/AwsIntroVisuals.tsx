@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { motion } from "motion/react";
-import { StoryPlayer } from "./CloudFrame";
+import { StoryPlayer } from "../CloudFrame";
 
 /* ---------------------------------------------------------------------
    Shared bits (static Tailwind classes only)

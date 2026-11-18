@@ -3,12 +3,15 @@ import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { HolidayScalingVisual, PowerPlantVisual } from "./CloudVisuals";
-import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./BenefitsVisuals";
-import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./AwsIntroVisuals";
-import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./DeploymentVisuals";
-import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./ServiceModelsVisuals";
-import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./TraditionalVsCloudVisuals";
+import { HolidayScalingVisual, PowerPlantVisual } from "./introduction-to-the-cloud/CloudVisuals";
+import { EuropeExpansionVisual, RestaurantVisual, SixAdvantagesVisual } from "./introduction-to-the-cloud/BenefitsVisuals";
+import { AwsServicesVisual, ShoppingArchitectureVisual, ToolboxVisual } from "./introduction-to-the-cloud/AwsIntroVisuals";
+import { HotelChainVisual, MumbaiToIrelandVisual, RegionDeployVisual } from "./global-infrastructure/RegionsVisuals";
+import { CloudFrontHowVisual, EdgeExampleVisual, RestaurantChainVisual } from "./global-infrastructure/EdgeLocationVisuals";
+import { AzHowVisual, HospitalAzVisual, MultiAzExampleVisual } from "./global-infrastructure/AvailabilityZoneVisuals";
+import { BankHybridVisual, DeploymentModelsVisual, HousingVisual } from "./introduction-to-the-cloud/DeploymentVisuals";
+import { FoodModelsVisual, PythonAppVisual, ResponsibilityVisual } from "./introduction-to-the-cloud/ServiceModelsVisuals";
+import { BlackFridayVisual, CarAnalogyVisual, WorkflowCompareVisual } from "./introduction-to-the-cloud/TraditionalVsCloudVisuals";
 import { Quiz } from "@/components/lesson/Quiz";
 import type { AwsSection } from "@/lessons/aws-cloud-practitioner/introduction-to-the-cloud-content";
 
@@ -30,8 +33,8 @@ function inline(text: string): ReactNode {
   });
 }
 
-const ModuleAssessment = lazy(() => import("./ModuleAssessment"));
-const ModuleCheatsheet = lazy(() => import("./ModuleCheatsheet"));
+const ModuleAssessment = lazy(() => import("./introduction-to-the-cloud/ModuleAssessment"));
+const ModuleCheatsheet = lazy(() => import("./introduction-to-the-cloud/ModuleCheatsheet"));
 
 export function SectionRenderer({
   section,
@@ -96,6 +99,24 @@ export function SectionRenderer({
           return <DeploymentModelsVisual caption={section.caption} />;
         case "bank-hybrid":
           return <BankHybridVisual caption={section.caption} />;
+        case "hotel-chain":
+          return <HotelChainVisual caption={section.caption} />;
+        case "region-deploy":
+          return <RegionDeployVisual caption={section.caption} />;
+        case "mumbai-ireland":
+          return <MumbaiToIrelandVisual caption={section.caption} />;
+        case "hospital-az":
+          return <HospitalAzVisual caption={section.caption} />;
+        case "az-how":
+          return <AzHowVisual caption={section.caption} />;
+        case "multi-az-example":
+          return <MultiAzExampleVisual caption={section.caption} />;
+        case "restaurant-chain":
+          return <RestaurantChainVisual caption={section.caption} />;
+        case "cloudfront-how":
+          return <CloudFrontHowVisual caption={section.caption} />;
+        case "edge-example":
+          return <EdgeExampleVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":
@@ -128,9 +149,15 @@ export function SectionRenderer({
           ) : null}
           {section.lead ? <p className="lesson-prose text-muted-foreground">{inline(section.lead)}</p> : null}
           <ul className="space-y-2">
-            {section.items.map((item) => (
+            {section.items.map((item, i) => (
               <li key={item} className="lesson-prose flex gap-2.5 text-muted-foreground">
-                <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-mint" />
+                {section.ordered ? (
+                  <span className="mt-1 flex size-6 shrink-0 items-center justify-center rounded-full border border-mint/40 bg-mint/10 font-mono text-[12px] font-semibold text-mint">
+                    {i + 1}
+                  </span>
+                ) : (
+                  <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-mint" />
+                )}
                 <span>{inline(item)}</span>
               </li>
             ))}

@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { StoryPlayer } from "./CloudFrame";
+import { StoryPlayer } from "../CloudFrame";
 import { MAP_EUROPE, MAP_LAND, MAP_PINS, MAP_US } from "./map-data";
 
 /* ---------------------------------------------------------------------

@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { StoryPlayer } from "./CloudFrame";
+import { StoryPlayer } from "../CloudFrame";
 
 /* ---------------------------------------------------------------------
    1. INTUITION: buying a car versus renting a car
