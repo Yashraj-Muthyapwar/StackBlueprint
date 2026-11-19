@@ -3824,10 +3824,11 @@ export const roadmap: RoadmapCategory[] = [
             "AWS Regions, Availability Zones, Edge Locations, and designing for high availability and fault tolerance.",
             ["AWS Regions", "Availability Zones", "Edge Locations", "High Availability and Fault Tolerance", "Module 2 Final Quiz", "Module 2 Cheat Sheet"],
           ),
-          lockedPattern(
-            "Module 3: Exploring Compute Services",
-            "exploring-compute-services",
-            "Choosing between EC2, containers, and serverless compute.",
+          unlockedAwsPattern(
+            "Module 3: AWS Security and IAM",
+            "aws-security-and-iam",
+            "The shared responsibility model, IAM identities and policies, MFA, credentials, encryption, and security services.",
+            ["AWS Shared Responsibility Model", "IAM Users and Groups", "IAM Policies and Least Privilege", "IAM Roles and Temporary Credentials", "Root Account, Password Policies, and MFA", "AWS CLI, SDK, and Credentials", "Encryption and AWS KMS", "Security Monitoring and Auditing", "AWS Security Services", "IAM Best Practices and Permissions Boundaries"],
           ),
           lockedPattern(
             "Module 4: Going Global",
