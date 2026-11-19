@@ -4,11 +4,11 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example" | "airplane-ha" | "ha-how" | "ha-example" | "ha-modes"; caption: string }
   | { kind: "list"; heading: string; lead?: string; items: string[]; ordered?: boolean }
   | { kind: "takeaways"; items: string[] }
-  | { kind: "assessment"; assessmentId: "module-1" }
-  | { kind: "cheatsheet"; cheatsheetId: "module-1" }
+  | { kind: "assessment"; assessmentId: "module-1" | "module-2" }
+  | { kind: "cheatsheet"; cheatsheetId: "module-1" | "module-2" }
   | { kind: "quiz"; questions: QuizQuestion[] };
 
 export type AwsLesson = {
@@ -998,6 +998,20 @@ const module1CheatSheet: AwsLesson = {
   sections: [{ kind: "cheatsheet", cheatsheetId: "module-1" }],
 };
 
+const module2FinalQuiz: AwsLesson = {
+  slug: "module-2-final-quiz",
+  title: "Module 2 Final Quiz",
+  subtitle: "Test your knowledge of Regions, Availability Zones, Edge Locations, and high availability.",
+  sections: [{ kind: "assessment", assessmentId: "module-2" }],
+};
+
+const module2CheatSheet: AwsLesson = {
+  slug: "module-2-cheat-sheet",
+  title: "Module 2 Cheat Sheet",
+  subtitle: "One page reference for Regions, Availability Zones, Edge Locations, and designing for availability.",
+  sections: [{ kind: "cheatsheet", cheatsheetId: "module-2" }],
+};
+
 const awsRegions: AwsLesson = {
   slug: "aws-regions",
   title: "AWS Regions",
@@ -1539,6 +1553,199 @@ const edgeLocations: AwsLesson = {
   ],
 };
 
+const highAvailability: AwsLesson = {
+  slug: "high-availability-and-fault-tolerance",
+  title: "High Availability and Fault Tolerance",
+  subtitle: "Understand how AWS applications remain available during failures using redundancy, health checks, and failover.",
+  sections: [
+    { kind: "prose", heading: "", body: ["There are four important concepts to separate before going further."] },
+    {
+      kind: "table",
+      caption: "Four important concepts",
+      headers: ["Concept", "Meaning"],
+      rows: [
+        ["High Availability (HA)", "Designing a system to minimize downtime"],
+        ["Fault Tolerance (FT)", "Continuing to operate despite component failures"],
+        ["Redundancy", "Having additional resources that can take over when something fails"],
+        ["Failover", "Switching operations from a failed resource to a healthy one"],
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Key difference",
+      body: "**High availability** focuses on keeping downtime low. **Fault tolerance** focuses on continuing service despite failures, potentially without interruption.",
+    },
+    {
+      kind: "prose",
+      heading: "1. WHY: A single point of failure",
+      body: [
+        "Imagine an online banking application running on one EC2 instance.",
+        "If that instance fails, customers cannot access the application.",
+        "This server is a **Single Point of Failure (SPOF)**.",
+      ],
+    },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Reducing the risk",
+      body: "AWS architectures can reduce this risk by using **multiple instances**, **Availability Zones**, and **automatic failover**.",
+    },
+    { kind: "prose", heading: "2. INTUITION: An airplane with backup systems", body: ["Think of an **airplane** with backup systems."] },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "**Redundancy:** Multiple systems can perform the same critical function.",
+        "**Fault tolerance:** The airplane continues operating when a component fails.",
+        "**Failover:** A backup system takes over after a failure.",
+        "**High availability:** The overall service remains operational with minimal disruption.",
+      ],
+    },
+    { kind: "visual", id: "airplane-ha", caption: "An airplane with backup systems compared with an AWS application" },
+    {
+      kind: "callout",
+      tone: "info",
+      title: "Same ideas, different machines",
+      body: "Redundancy exists before the failure, failover happens after it, and fault tolerance and high availability describe how the whole service behaves.",
+    },
+    { kind: "prose", heading: "3. HOW: A common high-availability design", body: ["A common AWS high-availability design uses:"] },
+    {
+      kind: "list",
+      heading: "",
+      ordered: true,
+      items: [
+        "EC2 instances in multiple Availability Zones.",
+        "An Application Load Balancer (ALB).",
+        "Health checks to identify unhealthy instances.",
+        "Sufficient healthy capacity to handle requests during failures.",
+      ],
+    },
+    { kind: "visual", id: "ha-how", caption: "Customers, an Application Load Balancer, health checks, and instances in two Availability Zones" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["This is a conceptual Multi-AZ example: requests can continue through healthy resources when a configured failure-detection and routing mechanism responds.",
+        "AWS recommends deploying production workloads across multiple isolated locations to improve resilience.",
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "4. EXAMPLE: An e-commerce application",
+      body: ["An e-commerce application has two EC2 instances in different AZs.", "If one instance fails:"],
+    },
+    {
+      kind: "list",
+      heading: "",
+      items: [
+        "The load balancer detects that it is unhealthy.",
+        "Requests are directed to the healthy instance.",
+        "EC2 Auto Scaling can launch replacement capacity when configured appropriately.",
+      ],
+    },
+    { kind: "visual", id: "ha-example", caption: "An unhealthy instance detected, traffic rerouted, and replacement capacity launched" },
+    {
+      kind: "prose",
+      heading: "",
+      body: ["This can maintain service availability, provided the remaining application components and capacity are healthy."],
+    },
+    {
+      kind: "list",
+      heading: "Two common approaches",
+      items: [
+        "**Active-active:** Multiple resources serve traffic simultaneously.",
+        "**Active-passive:** One resource serves traffic while another waits to take over.",
+      ],
+    },
+    { kind: "visual", id: "ha-modes", caption: "Active-active and active-passive, before and after a failure" },
+    { kind: "prose", heading: "5. TRADE-OFFS: Resilience against cost and complexity", body: [] },
+    {
+      kind: "table",
+      caption: "Design choices compared",
+      headers: ["Design", "Benefit", "Limitation"],
+      rows: [
+        ["Single instance", "Simple, lower cost", "Single point of failure"],
+        ["Multi-AZ", "Better resilience", "Additional cost and complexity"],
+        ["Active-active", "Resources already serving traffic", "Requires coordination and capacity planning"],
+        ["Active-passive", "Simpler primary/standby behavior", "Failover may introduce downtime"],
+      ],
+    },
+    {
+      kind: "prose",
+      heading: "",
+      body: [" **Important:** Redundancy alone is not sufficient. Databases, network paths, storage, and other critical dependencies must also be considered.",
+        "A Multi-AZ architecture also does not automatically protect against a complete Region failure.",
+      ]
+    },
+    {
+      kind: "takeaways",
+      items: [
+        "High availability means designing a system to minimize downtime. Fault tolerance means continuing to operate despite component failures.",
+        "Redundancy is having additional resources that can take over. Failover is switching operations from a failed resource to a healthy one.",
+        "A server that the whole application depends on is a Single Point of Failure.",
+        "A common AWS design uses EC2 instances in multiple Availability Zones, an Application Load Balancer, health checks, and enough healthy capacity.",
+        "The load balancer uses health checks to stop sending requests to unhealthy instances, and EC2 Auto Scaling can launch replacement capacity when configured appropriately.",
+        "Active-active has multiple resources serving traffic at once. Active-passive has one serving while another waits, so failover may introduce downtime.",
+        "Redundancy alone is not enough: databases, network paths, storage, and other critical dependencies must also be considered.",
+        "A Multi-AZ architecture does not automatically protect against a complete Region failure.",
+      ],
+    },
+    {
+      kind: "quiz",
+      questions: [
+        {
+          id: "high-availability-and-fault-tolerance-q1",
+          question: "Which statement describes the key difference between high availability and fault tolerance?",
+          options: [
+            "They mean exactly the same thing",
+            "High availability focuses on keeping downtime low, while fault tolerance focuses on continuing service despite failures, potentially without interruption",
+            "High availability only applies to databases",
+            "Fault tolerance means a system can never fail",
+          ],
+          correctIndex: 1,
+          explanation: "High availability aims to minimize downtime. Fault tolerance aims to keep operating through component failures, potentially without interruption.",
+        },
+        {
+          id: "high-availability-and-fault-tolerance-q2",
+          question: "An online banking application runs on a single EC2 instance. When that instance fails, customers lose access. What is this server?",
+          options: [
+            "A load balancer",
+            "A Single Point of Failure",
+            "An active-active pair",
+            "An Edge Location",
+          ],
+          correctIndex: 1,
+          explanation: "When one resource's failure takes the whole application down, that resource is a Single Point of Failure (SPOF).",
+        },
+        {
+          id: "high-availability-and-fault-tolerance-q3",
+          question: "Which design keeps one resource waiting to take over, so failover may introduce downtime?",
+          options: [
+            "Active-active",
+            "Active-passive",
+            "Single instance",
+            "Edge caching",
+          ],
+          correctIndex: 1,
+          explanation: "In active-passive, one resource serves traffic while another waits. Switching to the standby is failover, which may introduce downtime.",
+        },
+        {
+          id: "high-availability-and-fault-tolerance-q4",
+          question: "A team deploys EC2 instances in two Availability Zones. What is still true?",
+          options: [
+            "The application is fully protected from any failure",
+            "Databases and other dependencies no longer matter",
+            "Redundancy alone is not sufficient, and Multi-AZ does not automatically protect against a complete Region failure",
+            "Auto Scaling is no longer needed",
+          ],
+          correctIndex: 2,
+          explanation: "Databases, network paths, storage, and other critical dependencies must also be considered, and a Multi-AZ design does not automatically cover a complete Region failure.",
+        },
+      ],
+    },
+  ],
+};
+
 const placeholder = (slug: string, title: string): AwsLesson => ({
   slug,
   title,
@@ -1564,9 +1771,9 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
       awsRegions,
       availabilityZones,
       edgeLocations,
-      placeholder("high-availability-and-fault-tolerance", "High Availability and Fault Tolerance"),
-      placeholder("module-2-final-quiz", "Module 2 Final Quiz"),
-      placeholder("module-2-cheat-sheet", "Module 2 Cheat Sheet"),
+      highAvailability,
+      module2FinalQuiz,
+      module2CheatSheet,
     ],
   },
 };

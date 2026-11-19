@@ -2,17 +2,17 @@ import { useState, type ReactNode } from "react";
 import { ROW } from "@/components/sql/cheatsheet/WindowCheatsheet";
 
 // Same layout as the SQL cheatsheets, with larger type so the page is easy to read.
-type Tone = "violet" | "amber" | "mint" | "rose";
+export type Tone = "violet" | "amber" | "mint" | "rose";
 const TONE: Record<Tone, string> = {
   violet: "border-violet/40 bg-violet/10 text-violet",
   amber: "border-amber/40 bg-amber/10 text-amber",
   mint: "border-mint/40 bg-mint/10 text-mint",
   rose: "border-rose-500/40 bg-rose-500/10 text-rose-400",
 };
-function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
+export function Chip({ tone, children }: { tone: Tone; children: ReactNode }) {
   return <span className={`inline-flex shrink-0 items-center rounded-md border px-2.5 py-1 font-mono text-[13px] font-semibold ${TONE[tone]}`}>{children}</span>;
 }
-function Card({ title, children }: { title: string; children: ReactNode }) {
+export function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="mb-4 break-inside-avoid rounded-xl border border-hairline bg-surface/60 p-5 shadow-sm">
       <h3 className="mb-4 font-mono text-[13px] font-semibold uppercase tracking-[0.14em] text-mint">{title}</h3>
@@ -20,8 +20,8 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
     </section>
   );
 }
-const TEXT = "text-[16px] leading-snug text-foreground/90";
-const MONO = "font-mono text-[14.5px] leading-snug text-foreground";
+export const TEXT = "text-[16px] leading-snug text-foreground/90";
+export const MONO = "font-mono text-[14.5px] leading-snug text-foreground";
 
 // Same one-page cheatsheet layout as the SQL modules: a legend strip, then
 // two-column cards of tables, a small explorer, checklists, and common mistakes.

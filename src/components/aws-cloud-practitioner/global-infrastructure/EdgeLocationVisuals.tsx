@@ -1,8 +1,8 @@
+import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { StoryPlayer } from "../CloudFrame";
 import { Equals, Flow, Server } from "./AvailabilityZoneVisuals";
 import { Arc, FULL, LabelChip, Marker, Panel, Person, Pill, T, Tag, WorldMap, at, atXY, type Tone } from "./RegionsVisuals";
-import { USER_SPOTS } from "./world-map-data";
 
 /* ---------------------------------------------------------------------
    Visuals for the Edge Locations lesson. Static Tailwind classes only.
@@ -238,28 +238,34 @@ const EX_SCENES = [
   { label: "Result", note: "Cached images reach Indian users from nearby, reducing delivery latency." },
 ] as const;
 
-function EdgeNode({ x, y, k = 1, delay = 0, pulse = true, cached = false }: { x: number; y: number; k?: number; delay?: number; pulse?: boolean; cached?: boolean }) {
-  const u = 1 / k;
+function EdgeNode({ x, y, delay = 0, cachedAt = null }: { x: number; y: number; delay?: number; cachedAt?: number | null }) {
   return (
     <motion.g initial={{ opacity: 0, scale: 0.3 }} animate={{ opacity: 1, scale: 1 }} style={{ transformBox: "fill-box", transformOrigin: "center" }} transition={{ delay, type: "spring", stiffness: 220, damping: 13 }}>
-      <g transform={`translate(${x} ${y}) scale(${u})`}>
-        {pulse ? (
-          <motion.circle r="16" className="fill-amber/20" animate={{ scale: [0.8, 1.5, 0.8], opacity: [0.7, 0, 0.7] }} transition={{ duration: 2, repeat: Infinity, delay }} />
-        ) : null}
+      <g transform={`translate(${x} ${y}) scale(0.4)`}>
+        <motion.circle r="16" className="fill-amber/20" animate={{ scale: [0.8, 1.5, 0.8], opacity: [0.7, 0, 0.7] }} transition={{ duration: 2, repeat: Infinity, delay }} />
         <rect x="-12" y="-12" width="24" height="24" rx="6" className="fill-background" />
         <rect x="-12" y="-12" width="24" height="24" rx="6" className="fill-amber/25 stroke-amber" strokeWidth="2.2" />
-        {cached ? (
-          <g transform="translate(-7 -5) scale(0.5)">
-            <rect width="28" height="22" rx="3" className="fill-mint/30 stroke-mint" strokeWidth="2.4" />
-            <circle cx="8" cy="8" r="3" className="fill-mint" />
-            <path d="M3 19 L11 11 L16 16 L20 12 L25 19 Z" className="fill-mint" opacity={0.8} />
-          </g>
-        ) : (
-          <g className="stroke-amber" strokeWidth="2" strokeLinecap="round">
-            <path d="M-6 -4 H6 M-6 0 H6 M-6 4 H6" />
-          </g>
-        )}
+        <motion.g initial={{ opacity: 1 }} animate={{ opacity: cachedAt === null ? 1 : 0 }} transition={{ delay: cachedAt ?? 0, duration: 0.3 }}>
+          <path d="M-6 -4 H6 M-6 0 H6 M-6 4 H6" className="fill-none stroke-amber" strokeWidth="2" strokeLinecap="round" />
+        </motion.g>
+        {cachedAt !== null ? (
+          <motion.g initial={{ opacity: 0, scale: 0.3 }} animate={{ opacity: 1, scale: 1 }} style={{ transformBox: "fill-box", transformOrigin: "center" }} transition={{ delay: cachedAt, type: "spring", stiffness: 240, damping: 12 }}>
+            <g transform="translate(-7 -5) scale(0.5)">
+              <rect width="28" height="22" rx="3" className="fill-mint/30 stroke-mint" strokeWidth="2.4" />
+              <circle cx="8" cy="8" r="3" className="fill-mint" />
+              <path d="M3 19 L11 11 L16 16 L20 12 L25 19 Z" className="fill-mint" opacity={0.8} />
+            </g>
+          </motion.g>
+        ) : null}
       </g>
+    </motion.g>
+  );
+}
+
+function Fade({ until, children }: { until: number; children: ReactNode }) {
+  return (
+    <motion.g initial={{ opacity: 1 }} animate={{ opacity: [1, 1, 0] }} transition={{ duration: until + 0.4, times: [0, until / (until + 0.4), 1] }}>
+      {children}
     </motion.g>
   );
 }
@@ -267,30 +273,27 @@ function EdgeNode({ x, y, k = 1, delay = 0, pulse = true, cached = false }: { x:
 function ExampleScene({ s }: { s: number }) {
   const L = FULL;
   const us = at(L, "us-east-1");
-  const spots = USER_SPOTS.india;
-  const users = [spots[0], spots[4], [742, 196]].map((p) => atXY(L, p));
-  const edges = [spots[1], spots[2], spots[3]].map((p) => atXY(L, p));
-  const extra = [spots[5]].map((p) => atXY(L, p));
+  const users = [[724, 188], [743, 213], [749, 171]].map((p) => atXY(L, p));
+  const edges = [[711.6, 196.6], [730, 222], [757.1, 181.7]].map((p) => atXY(L, p));
   const pts = [...users, ...edges];
   const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length;
   const cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
-  const zoom = s === 3;
+  const zoom = s >= 2;
+  const zs = s === 2 ? 3.6 : 0.3;
   const k = zoom ? 2.6 : 1;
   const tx = 320 - k * cx;
   const ty = 140 - k * cy;
   const proj = (p: number[]): [number, number] => (zoom ? [tx + k * p[0], ty + k * p[1]] : [p[0], p[1]]);
   const personScale = zoom ? 0.55 : 0.85;
-  const pills = ["Origin in Virginia, customers in India", "Images travel from the US origin", "Edge Locations cache popular images", "Zoomed in: served from the nearest Edge Location"];
+  const pills = ["Origin in Virginia, customers in India", "Images travel from the US origin", "First request fills a nearby Edge Location", "Zoomed in: served from the nearest Edge Location"];
+  const ready = s === 2 ? zs + 2.2 : zs + 1.8;
   return (
     <g>
-      <motion.g key={zoom ? "z" : "n"} initial={zoom ? { x: 0, y: 0, scale: 1 } : false} animate={{ x: zoom ? tx : 0, y: zoom ? ty : 0, scale: k }} transition={{ delay: 0.3, duration: 1.8, ease: "easeInOut" }} style={{ transformBox: "view-box", originX: 0, originY: 0 }}>
+      <motion.g key={zoom ? "z" + s : "n"} initial={zoom ? { x: 0, y: 0, scale: 1 } : false} animate={{ x: zoom ? tx : 0, y: zoom ? ty : 0, scale: k }} transition={{ delay: zs, duration: 1.8, ease: "easeInOut" }} style={{ transformBox: "view-box", originX: 0, originY: 0 }}>
         <WorldMap L={L} india />
         <Marker x={us[0]} y={us[1]} r={5} delay={0.2} />
         {users.map(([x, y], i) => (
           <Person key={i} x={x} y={y} tone="amber" scale={personScale} delay={i * 0.2} />
-        ))}
-        {extra.map(([x, y], i) => (
-          <Person key={`e${i}`} x={x} y={y} tone="amber" scale={personScale} delay={0.5} />
         ))}
 
         {s === 1
@@ -298,33 +301,39 @@ function ExampleScene({ s }: { s: number }) {
           : null}
 
         {s >= 2
-          ? users.map((u, i) => (
-              <motion.line key={i} x1={u[0]} y1={u[1]} x2={edges[i][0]} y2={edges[i][1]} className="stroke-mint" strokeWidth={zoom ? 1 : 1.8} strokeDasharray="3 3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: zoom ? 2.2 + i * 0.15 : 1.4 + i * 0.15, duration: 0.5 }} />
-            ))
+          ? edges.map(([x, y], i) => <EdgeNode key={i} x={x} y={y} delay={0.4 + i * 0.25} cachedAt={s === 3 ? 0.4 : i === 0 ? ready + 0.2 : null} />)
           : null}
-        {s >= 2 ? edges.map(([x, y], i) => <EdgeNode key={i} x={x} y={y} k={k} delay={zoom ? 0 : 0.4 + i * 0.25} pulse cached={zoom} />) : null}
-        {s === 2 ? <Arc a={[us[0], us[1]]} b={[edges[0][0], edges[0][1]]} tone="amber" lift={52} delay={2} dots={1} dur={4} /> : null}
+        {s === 2 ? <Arc a={[us[0], us[1]]} b={[edges[0][0], edges[0][1]]} tone="amber" lift={52} delay={1} dots={1} dur={2.6} /> : null}
         {zoom
-          ? users.map(([x, y], i) => (
-              <motion.circle key={i} r="2.2" cx={edges[i][0]} cy={edges[i][1]} className="fill-mint" initial={{ opacity: 0 }} animate={{ cx: [edges[i][0], x], cy: [edges[i][1], y], opacity: [0, 1, 1, 0] }} transition={{ duration: 1.4, repeat: Infinity, delay: 2.6 + i * 0.4, repeatDelay: 0.6 }} />
+          ? (s === 2 ? [0] : [0, 1, 2]).map((i) => (
+              <g key={i}>
+                <motion.line x1={users[i][0]} y1={users[i][1]} x2={edges[i][0]} y2={edges[i][1]} className="stroke-mint" strokeWidth={1} strokeDasharray="3 3" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: ready + i * 0.15, duration: 0.5 }} />
+                <motion.circle r="2.2" cx={edges[i][0]} cy={edges[i][1]} className="fill-mint" initial={{ opacity: 0 }} animate={{ cx: [edges[i][0], users[i][0]], cy: [edges[i][1], users[i][1]], opacity: [0, 1, 1, 0] }} transition={{ duration: 1.4, repeat: Infinity, delay: ready + 0.8 + i * 0.4, repeatDelay: 0.6 }} />
+              </g>
             ))
           : null}
       </motion.g>
 
       {/* labels stay at a fixed size, outside the zoomed group */}
-      {!zoom ? <Tag x={us[0] + 2} y={us[1] + 24} text="Origin us-east-1" tone="mint" delay={0.5} /> : null}
+      {s <= 1 ? <Tag x={us[0] + 2} y={us[1] + 24} text="Origin us-east-1" tone="mint" delay={0.5} /> : null}
+      {s === 2 ? (
+        <Fade until={zs}>
+          <Tag x={us[0] + 2} y={us[1] + 24} text="Origin us-east-1" tone="mint" delay={0.5} />
+          <Tag x={(us[0] + edges[0][0]) / 2} y={us[1] - 40} text="First request only" tone="amber" delay={1.6} />
+        </Fade>
+      ) : null}
       {s === 0 ? <Tag x={users[0][0]} y={users[0][1] - 30} text="Customers in India" tone="amber" delay={0.6} /> : null}
       {s === 1 ? <Tag x={(us[0] + users[0][0]) / 2} y={us[1] - 44} text="Long distance" tone="red" delay={1.6} /> : null}
       {s === 2 ? (
         <g>
-          <Tag x={(us[0] + edges[0][0]) / 2} y={us[1] - 40} text="First request only" tone="amber" delay={2.8} />
-          <Tag x={edges[1][0] + 4} y={edges[1][1] + 58} text="Edge Locations" tone="amber" delay={1.2} />
+          <Tag x={proj(edges[1])[0] - 10} y={proj(edges[1])[1] + 70} text="Edge Locations" tone="amber" delay={zs + 1.6} />
+          <Tag x={proj(edges[0])[0] - 62} y={proj(edges[0])[1] + 36} text="Image cached here" tone="mint" delay={ready + 0.4} />
         </g>
       ) : null}
       {s === 3 ? (
         <g>
           <Tag x={proj(edges[1])[0] - 10} y={proj(edges[1])[1] + 70} text="Edge Locations with cached images" tone="amber" delay={2.4} />
-          <Tag x={proj(users[0])[0] + 56} y={proj(users[0])[1] - 40} text="Users nearby" tone="mint" delay={2.6} />
+          <Tag x={proj(users[2])[0] + 20} y={proj(users[2])[1] - 44} text="Users nearby" tone="mint" delay={2.6} />
         </g>
       ) : null}
 
