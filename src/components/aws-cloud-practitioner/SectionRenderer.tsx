@@ -1,6 +1,8 @@
-import { Suspense, lazy, type ReactNode } from "react";
+import { Suspense, lazy, useState, type ReactNode } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
-import { AlertTriangle, CheckCircle2, Info } from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, Copy, Info } from "lucide-react";
+import { ImageCarousel } from "@/components/ui/image-carousel";
+import { ApartmentSharedVisual, SharedResponsibilityHowVisual, SharedResponsibilityTerraformVisual } from "./aws-security-and-iam/SharedResponsibilityVisuals";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { HolidayScalingVisual, PowerPlantVisual } from "./introduction-to-the-cloud/CloudVisuals";
@@ -37,6 +39,81 @@ function inline(text: string): ReactNode {
 const ModuleAssessment = lazy(() => import("./introduction-to-the-cloud/ModuleAssessment"));
 const ModuleCheatsheet = lazy(() => import("./introduction-to-the-cloud/ModuleCheatsheet"));
 const Module2Cheatsheet = lazy(() => import("./global-infrastructure/Module2Cheatsheet"));
+
+const HCL_BLOCKS = new Set(["terraform", "required_providers", "provider", "data", "resource", "output", "variable", "locals", "module"]);
+
+/** Small line-based highlighter for HCL (Terraform) and shell commands. */
+function highlightCode(line: string, language: string): ReactNode {
+  if (!line) return " ";
+  const nodes: ReactNode[] = [];
+  const re =
+    language === "hcl"
+      ? /(#.*$|\/\/.*$)|("(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][\w-]*)(?=\s*=(?!=))|([A-Za-z_][\w-]*)/g
+      : /(#.*$)|("(?:[^"\\]|\\.)*")|(\b\d+\b)|(--?[A-Za-z][\w-]*)|([A-Za-z_][\w-]*)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  let k = 0;
+  while ((m = re.exec(line))) {
+    if (m.index > last) nodes.push(line.slice(last, m.index));
+    const [text, comment, str, num, a, b] = m;
+    let cls = "";
+    if (comment) cls = "italic text-muted-foreground/70";
+    else if (str) cls = "text-mint";
+    else if (num) cls = "text-amber";
+    else if (language === "hcl") {
+      if (a) cls = "text-sky-500 dark:text-sky-400";
+      else if (b && HCL_BLOCKS.has(b) && line.trimStart().startsWith(b)) cls = "font-semibold text-violet";
+      else if (b === "true" || b === "false") cls = "text-amber";
+    } else if (b && line.trimStart().startsWith(b) && !line.slice(0, m.index).trim()) cls = "font-semibold text-violet";
+    else if (a) cls = "text-sky-500 dark:text-sky-400";
+    nodes.push(cls ? <span key={k++} className={cls}>{text}</span> : text);
+    last = m.index + text.length;
+  }
+  if (last < line.length) nodes.push(line.slice(last));
+  return nodes;
+}
+
+function CodeBlock({ code, caption, language }: { code: string; caption: string; language: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <figure className="w-full max-w-full overflow-hidden rounded-xl border border-hairline bg-slate-50 shadow-sm dark:bg-surface">
+      <div className="flex min-w-0 items-center justify-between border-b border-hairline/60 bg-surface-2/40 px-4 py-2.5">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <div className="size-2.5 shrink-0 rounded-full bg-rose-500/80" />
+          <div className="size-2.5 shrink-0 rounded-full bg-amber-500/80" />
+          <div className="size-2.5 shrink-0 rounded-full bg-emerald-500/80" />
+          <span className="ml-2 truncate font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{caption}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="Copy code"
+            onClick={() => {
+              navigator.clipboard.writeText(code);
+              setCopied(true);
+              window.setTimeout(() => setCopied(false), 2000);
+            }}
+            className="flex items-center gap-1.5 rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
+          >
+            {copied ? <Check className="size-3.5 text-mint" /> : <Copy className="size-3.5" />}
+            <span className={copied ? "text-mint" : ""}>{copied ? "Copied" : "Copy"}</span>
+          </button>
+          <span className="rounded-md border border-hairline/60 bg-surface/50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{language}</span>
+        </div>
+      </div>
+      <pre className="lesson-code overflow-x-auto px-4 py-4 font-mono shadow-inner">
+        <code className="block min-w-max">
+          {code.split("\n").map((line, i) => (
+            <div key={i} className="flex">
+              <span className="mr-4 inline-block w-6 shrink-0 select-none text-right text-muted-foreground/50">{i + 1}</span>
+              <span className="text-foreground/90">{highlightCode(line, language)}</span>
+            </div>
+          ))}
+        </code>
+      </pre>
+    </figure>
+  );
+}
 
 export function SectionRenderer({
   section,
@@ -127,6 +204,12 @@ export function SectionRenderer({
           return <HaExampleVisual caption={section.caption} />;
         case "ha-modes":
           return <HaModesVisual caption={section.caption} />;
+        case "apartment-shared":
+          return <ApartmentSharedVisual caption={section.caption} />;
+        case "sr-how":
+          return <SharedResponsibilityHowVisual caption={section.caption} />;
+        case "sr-terraform":
+          return <SharedResponsibilityTerraformVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":
@@ -135,6 +218,10 @@ export function SectionRenderer({
           return <ShoppingArchitectureVisual caption={section.caption} />;
       }
       return null;
+    case "image-carousel":
+      return <ImageCarousel images={section.images} />;
+    case "code":
+      return <CodeBlock code={section.code} caption={section.caption} language={section.language} />;
     case "assessment":
       return (
         <ClientOnly fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface-2/40" />}>
