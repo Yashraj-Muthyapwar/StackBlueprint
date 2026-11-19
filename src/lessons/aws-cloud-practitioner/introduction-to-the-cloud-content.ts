@@ -1,3 +1,4 @@
+import { AWS_SECURITY_AND_IAM_LESSONS } from "./aws-security-and-iam-content";
 import type { QuizQuestion } from "@/components/lesson/Quiz";
 
 export type AwsSection =
@@ -1776,4 +1777,5 @@ export const AWS_TOPICS: Record<string, { lessons: AwsLesson[] }> = {
       module2CheatSheet,
     ],
   },
+  "aws-security-and-iam": { lessons: AWS_SECURITY_AND_IAM_LESSONS },
 };
