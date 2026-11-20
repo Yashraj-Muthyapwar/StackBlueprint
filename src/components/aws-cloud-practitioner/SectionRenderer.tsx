@@ -2,6 +2,7 @@ import { Suspense, lazy, useState, type ReactNode } from "react";
 import { ClientOnly } from "@/components/lesson/ClientOnly";
 import { AlertTriangle, Check, CheckCircle2, Copy, Info } from "lucide-react";
 import { ImageCarousel } from "@/components/ui/image-carousel";
+import { GroupHowVisual, IamTerraformVisual, OfficeIamVisual } from "./aws-security-and-iam/IamUsersGroupsVisuals";
 import { ApartmentSharedVisual, SharedResponsibilityHowVisual, SharedResponsibilityTerraformVisual } from "./aws-security-and-iam/SharedResponsibilityVisuals";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
@@ -210,6 +211,12 @@ export function SectionRenderer({
           return <SharedResponsibilityHowVisual caption={section.caption} />;
         case "sr-terraform":
           return <SharedResponsibilityTerraformVisual caption={section.caption} />;
+        case "office-iam":
+          return <OfficeIamVisual caption={section.caption} />;
+        case "group-how":
+          return <GroupHowVisual caption={section.caption} />;
+        case "iam-terraform":
+          return <IamTerraformVisual caption={section.caption} />;
         case "aws-toolbox":
           return <ToolboxVisual caption={section.caption} />;
         case "aws-services":
