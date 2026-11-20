@@ -5,7 +5,9 @@ export type AwsSection =
   | { kind: "prose"; heading: string; body: string[] }
   | { kind: "callout"; tone: "warn" | "info"; title: string; body: string }
   | { kind: "table"; caption: string; headers: string[]; rows: string[][] }
-  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example" | "airplane-ha" | "ha-how" | "ha-example" | "ha-modes"; caption: string }
+  | { kind: "visual"; id: "power-plant" | "holiday-scaling" | "car-analogy" | "workflow-compare" | "black-friday" | "restaurant" | "six-advantages" | "europe-expansion" | "food-models" | "responsibility-stack" | "python-app-models" | "housing-models" | "deployment-models" | "bank-hybrid" | "aws-toolbox" | "aws-services" | "shopping-architecture" | "hotel-chain" | "region-deploy" | "mumbai-ireland" | "hospital-az" | "az-how" | "multi-az-example" | "restaurant-chain" | "cloudfront-how" | "edge-example" | "airplane-ha" | "ha-how" | "ha-example" | "ha-modes" | "apartment-shared" | "sr-how" | "sr-terraform" | "office-iam" | "group-how" | "iam-terraform"; caption: string }
+  | { kind: "code"; language: string; caption: string; code: string }
+  | { kind: "image-carousel"; images: { src: string; alt: string; caption: string }[] }
   | { kind: "list"; heading: string; lead?: string; items: string[]; ordered?: boolean }
   | { kind: "takeaways"; items: string[] }
   | { kind: "assessment"; assessmentId: "module-1" | "module-2" }
